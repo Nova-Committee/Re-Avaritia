@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "avaritia:neutronium",
+    "avaritia:infinity",
+    "avaritia:crystal_matrix",
+    "avaritia:compressed_crafting_table",
+    "avaritia:double_compressed_crafting_table",
+    "avaritia:extreme_crafting_table",
+    "avaritia:neutron_collector",
+    "avaritia:compressor"
+  ]
+}

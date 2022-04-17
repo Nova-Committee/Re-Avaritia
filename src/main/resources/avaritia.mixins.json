@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "nova.committee.avaritia.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "avaritia.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
