@@ -15,7 +15,7 @@ import nova.committee.avaritia.common.slot.ExtremeCraftingSlot;
 import nova.committee.avaritia.common.tile.ExtremeCraftingTile;
 import nova.committee.avaritia.init.registry.ModMenus;
 import nova.committee.avaritia.init.registry.ModRecipe;
-import nova.committee.avaritia.util.BaseItemStackHandler;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
 
 import java.util.function.Function;
 

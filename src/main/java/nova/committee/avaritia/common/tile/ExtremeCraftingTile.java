@@ -14,8 +14,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import nova.committee.avaritia.api.common.tile.BaseInventoryTileEntity;
 import nova.committee.avaritia.common.menu.ExtremeCraftingMenu;
 import nova.committee.avaritia.init.registry.ModTileEntities;
-import nova.committee.avaritia.util.BaseItemStackHandler;
-import nova.committee.avaritia.util.Localizable;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import nova.committee.avaritia.util.lang.Localizable;
 import org.jetbrains.annotations.Nullable;
 
 /**

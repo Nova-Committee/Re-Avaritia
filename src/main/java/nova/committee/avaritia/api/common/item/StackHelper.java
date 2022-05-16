@@ -2,7 +2,7 @@ package nova.committee.avaritia.api.common.item;
 
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
-import nova.committee.avaritia.api.util.NBTHelper;
+import nova.committee.avaritia.util.NBTUtil;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -65,21 +65,21 @@ public class StackHelper {
         } else if (stack1.hasTag() && !stack2.hasTag()) {
             return false;
         } else {
-            Set<String> stack1Keys = NBTHelper.getTagCompound(stack1).getAllKeys();
-            Set<String> stack2Keys = NBTHelper.getTagCompound(stack2).getAllKeys();
-            Iterator var4 = stack1Keys.iterator();
+            Set<String> stack1Keys = NBTUtil.getTagCompound(stack1).getAllKeys();
+            Set<String> stack2Keys = NBTUtil.getTagCompound(stack2).getAllKeys();
+            Iterator<String> iterator = stack1Keys.iterator();
 
             String key;
             do {
-                if (!var4.hasNext()) {
+                if (!iterator.hasNext()) {
                     return true;
                 }
 
-                key = (String) var4.next();
+                key = iterator.next();
                 if (!stack2Keys.contains(key)) {
                     return false;
                 }
-            } while (NbtUtils.compareNbt(NBTHelper.getTag(stack1, key), NBTHelper.getTag(stack2, key), true));
+            } while (NbtUtils.compareNbt(NBTUtil.getTag(stack1, key), NBTUtil.getTag(stack2, key), true));
 
             return false;
         }

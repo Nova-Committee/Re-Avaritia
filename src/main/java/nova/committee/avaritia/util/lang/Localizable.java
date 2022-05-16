@@ -1,4 +1,4 @@
-package nova.committee.avaritia.util;
+package nova.committee.avaritia.util.lang;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
@@ -16,7 +16,7 @@ public class Localizable {
     private final ChatFormatting defaultColor;
 
     protected Localizable(String key) {
-        this(key, (ChatFormatting) null);
+        this(key, null);
     }
 
     protected Localizable(String key, ChatFormatting defaultColor) {

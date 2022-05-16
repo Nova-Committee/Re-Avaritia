@@ -55,7 +55,7 @@ public class JeiCompat implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(CompressorScreen.class, 97, 47, 21, 14, CompressorCategory.UID);
+        registration.addRecipeClickArea(CompressorScreen.class, 89, 35, 21, 16, CompressorCategory.UID);
 
     }
 

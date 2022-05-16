@@ -29,12 +29,15 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     private final ItemStack output;
     private final int inputCount;
 
+    private final int timeCost;
 
-    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount) {
+
+    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeCost) {
         this.recipeId = recipeId;
         this.inputs = NonNullList.of(Ingredient.EMPTY, input);
         this.output = output;
         this.inputCount = inputCount;
+        this.timeCost = timeCost;
 
     }
 
@@ -56,6 +59,11 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     @Override
     public ResourceLocation getId() {
         return this.recipeId;
+    }
+
+    @Override
+    public int getTimeCost() {
+        return timeCost;
     }
 
     @Override
@@ -101,8 +109,8 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
             var input = Ingredient.fromJson(json.getAsJsonObject("ingredient"));
             var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
             int inputCount = GsonHelper.getAsInt(json, "inputCount", 10000);
-
-            return new CompressorRecipe(recipeId, input, output, inputCount);
+            int timeCost = GsonHelper.getAsInt(json, "timeCost");
+            return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
         }
 
         @Override
@@ -110,8 +118,9 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
             var input = Ingredient.fromNetwork(buffer);
             var output = buffer.readItem();
             int inputCount = buffer.readInt();
+            int timeCost = buffer.readInt();
 
-            return new CompressorRecipe(recipeId, input, output, inputCount);
+            return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
         }
 
         @Override
@@ -119,6 +128,8 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
             recipe.inputs.get(0).toNetwork(buffer);
             buffer.writeItem(recipe.output);
             buffer.writeInt(recipe.inputCount);
+            buffer.writeInt(recipe.timeCost);
+
 
         }
     }

@@ -2,7 +2,7 @@ package nova.committee.avaritia.init;
 
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.ModList;
-import nova.committee.avaritia.util.Tooltip;
+import nova.committee.avaritia.util.lang.Tooltip;
 
 /**
  * Description:

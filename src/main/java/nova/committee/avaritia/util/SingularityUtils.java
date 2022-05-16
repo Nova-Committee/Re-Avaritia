@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import nova.committee.avaritia.api.util.NBTHelper;
 import nova.committee.avaritia.common.item.singularity.Singularity;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.init.registry.ModItems;
@@ -98,7 +97,7 @@ public class SingularityUtils {
     }
 
     public static Singularity getSingularity(ItemStack stack) {
-        var id = NBTHelper.getString(stack, "Id");
+        var id = NBTUtil.getString(stack, "Id");
         if (!id.isEmpty()) {
             return SingularityRegistryHandler.getInstance().getSingularityById(ResourceLocation.tryParse(id));
         }

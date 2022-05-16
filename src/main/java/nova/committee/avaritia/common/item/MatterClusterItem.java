@@ -22,8 +22,8 @@ import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
-import nova.committee.avaritia.util.ItemStackWrapper;
 import nova.committee.avaritia.util.ToolHelper;
+import nova.committee.avaritia.util.item.ItemStackWrapper;
 
 import java.util.*;
 

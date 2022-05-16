@@ -1,4 +1,4 @@
-package nova.committee.avaritia.util;
+package nova.committee.avaritia.util.math;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;

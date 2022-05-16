@@ -1,4 +1,4 @@
-package nova.committee.avaritia.util;
+package nova.committee.avaritia.util.item;
 
 /**
  * Description:
@@ -13,6 +13,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,14 +37,14 @@ public class BaseItemStackHandler extends ItemStackHandler {
         this.maxStackSize = 64;
         this.outputSlots = null;
         this.onContentsChanged = onContentsChanged;
-        this.slotSizeMap = new HashMap();
+        this.slotSizeMap = new HashMap<>();
     }
 
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+    public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         return this.outputSlots != null && ArrayUtils.contains(this.outputSlots, slot) ? stack : super.insertItem(slot, stack, simulate);
     }
 
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+    public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
         return this.outputSlots != null && !ArrayUtils.contains(this.outputSlots, slot) ? ItemStack.EMPTY : super.extractItem(slot, amount, simulate);
     }
 
@@ -51,7 +52,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
         return this.slotSizeMap.containsKey(slot) ? (Integer) this.slotSizeMap.get(slot) : this.maxStackSize;
     }
 
-    public boolean isItemValid(int slot, ItemStack stack) {
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return this.slotValidator == null || (Boolean) this.slotValidator.apply(slot, stack);
     }
 
@@ -103,9 +104,8 @@ public class BaseItemStackHandler extends ItemStackHandler {
         newInventory.setDefaultSlotLimit(this.maxStackSize);
         newInventory.setSlotValidator(this.slotValidator);
         newInventory.setOutputSlots(this.outputSlots);
-        Map<Integer, Integer> sizeMap = this.slotSizeMap;
         Objects.requireNonNull(newInventory);
-        sizeMap.forEach(newInventory::addSlotLimit);
+        this.slotSizeMap.forEach(newInventory::addSlotLimit);
 
         for (int i = 0; i < this.getSlots(); ++i) {
             ItemStack stack = this.getStackInSlot(i);

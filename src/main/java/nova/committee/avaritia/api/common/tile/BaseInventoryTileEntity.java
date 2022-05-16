@@ -10,7 +10,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import nova.committee.avaritia.util.BaseItemStackHandler;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -5,7 +5,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.api.util.IColored;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.util.ColorHelper;
+import nova.committee.avaritia.util.ColorUtil;
 
 /**
  * Description:
@@ -25,6 +25,6 @@ public class ColorHandler {
 
     private static int getCurrentRainbowColor() {
         var hue = (System.currentTimeMillis() % 18000) / 18000F;
-        return ColorHelper.hsbToRGB(hue, 1, 1);
+        return ColorUtil.hsbToRGB(hue, 1, 1);
     }
 }

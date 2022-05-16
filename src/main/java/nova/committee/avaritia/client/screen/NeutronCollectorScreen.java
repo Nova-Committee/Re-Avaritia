@@ -10,6 +10,7 @@ import nova.committee.avaritia.Static;
 import nova.committee.avaritia.api.client.screen.BaseContainerScreen;
 import nova.committee.avaritia.common.menu.NeutronCollectorMenu;
 import nova.committee.avaritia.common.tile.NeutronCollectorTile;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -51,7 +52,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
 
 
     @Override
-    protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
         this.font.draw(stack, title, (float) (175 / 2 - this.font.width(title) / 2), 6.0F, 4210752);
@@ -59,15 +60,38 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
+    protected void renderBg(@NotNull PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, BACKGROUND);
         int i = this.getGuiLeft();
         int j = this.getGuiTop();
         blit(pPoseStack, i, j, 0.0F, 0.0F, 175, 165, 255, 255);
-        int k = getMenu().getTimer();
-        this.blit(pPoseStack, i + 100, j + 48 - k, 176, 16 - k, 1, k);
+        if (this.getProgress() > 0) {
+            int i2 = this.getProgressBarScaled(21);
+            this.blit(pPoseStack, i + 100, j + 48, 176, 0, i2 + 1, 16);
+        }
+        this.blit(pPoseStack, i + 100, j + 48 - getProgressBarScaled(16), 176, 16 - getProgressBarScaled(16), 1, getProgressBarScaled(16));
+    }
+
+    public int getProgress() {
+        if (this.tile == null)
+            return 0;
+
+        return this.tile.getProgress();
+    }
+
+    public int getTimeRequired() {
+        if (this.tile == null)
+            return 0;
+
+        return NeutronCollectorTile.PRODUCTION_TICKS;
+    }
+
+    public int getProgressBarScaled(int pixels) {
+        int i = this.getProgress();
+        int j = this.getTimeRequired();
+        return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
     }
 
 

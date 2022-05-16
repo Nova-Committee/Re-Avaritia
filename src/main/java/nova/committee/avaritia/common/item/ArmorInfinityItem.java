@@ -21,7 +21,7 @@ import nova.committee.avaritia.init.ModArmorMaterial;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
-import nova.committee.avaritia.util.TextUtil;
+import nova.committee.avaritia.util.lang.TextUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

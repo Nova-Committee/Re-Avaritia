@@ -11,8 +11,8 @@ import nova.committee.avaritia.Static;
 import nova.committee.avaritia.api.util.IColored;
 import nova.committee.avaritia.init.ModTooltips;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
-import nova.committee.avaritia.util.Localizable;
 import nova.committee.avaritia.util.SingularityUtils;
+import nova.committee.avaritia.util.lang.Localizable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

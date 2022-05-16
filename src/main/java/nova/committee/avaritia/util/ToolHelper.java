@@ -17,6 +17,7 @@ import net.minecraftforge.event.world.BlockEvent;
 import nova.committee.avaritia.common.item.MatterClusterItem;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModItems;
+import nova.committee.avaritia.util.item.ItemStackWrapper;
 
 import java.util.*;
 

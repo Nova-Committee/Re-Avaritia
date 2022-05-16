@@ -1,4 +1,4 @@
-package nova.committee.avaritia.util;
+package nova.committee.avaritia.util.item;
 
 import net.minecraft.world.item.ItemStack;
 

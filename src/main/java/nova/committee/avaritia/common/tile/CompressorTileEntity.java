@@ -17,8 +17,9 @@ import nova.committee.avaritia.common.menu.CompressorMenu;
 import nova.committee.avaritia.common.recipe.CompressorRecipe;
 import nova.committee.avaritia.init.registry.ModRecipe;
 import nova.committee.avaritia.init.registry.ModTileEntities;
-import nova.committee.avaritia.util.BaseItemStackHandler;
-import nova.committee.avaritia.util.Localizable;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import nova.committee.avaritia.util.lang.Localizable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -87,17 +88,21 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
 
             if (tile.recipe != null) {
                 if (tile.materialCount >= tile.recipe.getInputCount()) {
+                    if (tile.progress >= tile.recipe.getTimeCost()) {
+                        var result = tile.recipe.assemble(tile.inventory);
 
-                    var result = tile.recipe.assemble(tile.inventory);
+                        if (StackHelper.canCombineStacks(result, output)) {
+                            tile.updateResult(result);
+                            tile.progress = 0;
+                            tile.materialCount -= tile.recipe.getInputCount();
 
-                    if (StackHelper.canCombineStacks(result, output)) {
-                        tile.updateResult(result);
-                        tile.progress = 0;
-                        tile.materialCount -= tile.recipe.getInputCount();
-
-                        if (tile.materialCount <= 0) {
-                            tile.materialStack = ItemStack.EMPTY;
+                            if (tile.materialCount <= 0) {
+                                tile.materialStack = ItemStack.EMPTY;
+                            }
                         }
+                    } else {
+                        ++tile.progress;
+                        //tile.process(tile.recipe);
                     }
                 }
             }
@@ -133,7 +138,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     }
 
     @Override
-    public BaseItemStackHandler getInventory() {
+    public @NotNull BaseItemStackHandler getInventory() {
         return this.inventory;
     }
 
@@ -156,13 +161,13 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Localizable.of("container.compressor").build();
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player p_39956_) {
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
         return CompressorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, new SimpleContainerData(0), this.getBlockPos());
     }
 
@@ -205,6 +210,13 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     public int getMaterialsRequired() {
         if (this.hasRecipe())
             return this.recipe.getInputCount();
+
+        return 0;
+    }
+
+    public int getTimeRequired() {
+        if (this.hasRecipe())
+            return this.recipe.getTimeCost();
 
         return 0;
     }

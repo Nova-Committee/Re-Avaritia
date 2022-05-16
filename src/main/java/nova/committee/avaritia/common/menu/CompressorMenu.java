@@ -10,7 +10,7 @@ import nova.committee.avaritia.api.common.slot.BaseItemStackHandlerSlot;
 import nova.committee.avaritia.api.common.slot.OutputSlot;
 import nova.committee.avaritia.common.tile.CompressorTileEntity;
 import nova.committee.avaritia.init.registry.ModMenus;
-import nova.committee.avaritia.util.BaseItemStackHandler;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
 
 import java.util.function.Function;
 

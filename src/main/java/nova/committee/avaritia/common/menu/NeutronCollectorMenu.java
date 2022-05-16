@@ -9,7 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import nova.committee.avaritia.api.common.slot.OutputSlot;
 import nova.committee.avaritia.common.tile.NeutronCollectorTile;
 import nova.committee.avaritia.init.registry.ModMenus;
-import nova.committee.avaritia.util.BaseItemStackHandler;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -24,6 +25,8 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final BlockPos pos;
 
+    private final NeutronCollectorTile tile;
+
     private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(type, id, playerInventory, p -> false, NeutronCollectorTile.createInventoryHandler(null), new SimpleContainerData(10), buffer.readBlockPos());
     }
@@ -33,6 +36,7 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
         this.isUsableByPlayer = isUsableByPlayer;
         this.data = data;
         this.pos = pos;
+        this.tile = (NeutronCollectorTile) playerInventory.player.level.getBlockEntity(pos);
         this.addSlot(new OutputSlot(inventory, 0, 80, 32));
 
         for (int i = 0; i < 3; i++) {
@@ -66,7 +70,7 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slotNumber) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
         var itemstack = ItemStack.EMPTY;
         var slot = this.slots.get(slotNumber);
 
@@ -109,6 +113,6 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
     }
 
     public int getTimer() {
-        return (int) Math.ceil(this.data.get(0) / 3600.0 * 16);
+        return (int) Math.ceil(tile.getProgress() / 3600.0 * 16);
     }
 }

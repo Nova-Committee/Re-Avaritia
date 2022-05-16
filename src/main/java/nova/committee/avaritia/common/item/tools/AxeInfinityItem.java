@@ -16,8 +16,8 @@ import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
-import nova.committee.avaritia.util.RayTracer;
 import nova.committee.avaritia.util.ToolHelper;
+import nova.committee.avaritia.util.math.RayTracer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;

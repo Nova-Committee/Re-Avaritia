@@ -16,7 +16,7 @@ import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.recipe.ICompressorRecipe;
 import nova.committee.avaritia.init.ModTooltips;
 import nova.committee.avaritia.init.registry.ModBlocks;
-import nova.committee.avaritia.util.Localizable;
+import nova.committee.avaritia.util.lang.Localizable;
 
 import java.util.Collections;
 import java.util.List;

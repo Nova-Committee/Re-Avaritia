@@ -1,4 +1,4 @@
-package nova.committee.avaritia.api.util;
+package nova.committee.avaritia.util;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
  * Date: 2022/4/2 12:40
  * Version: 1.0
  */
-public class NBTHelper {
+public class NBTUtil {
     public static String getString(ItemStack stack, String key) {
         return stack.hasTag() ? getTagCompound(stack).getString(key) : "";
     }

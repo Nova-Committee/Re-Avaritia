@@ -50,7 +50,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         super.render(matrix, mouseX, mouseY, partialTicks);
 
 
-        if (mouseX > x + 60 && mouseX < x + 85 && mouseY > y + 74 && mouseY < y + 83) {
+        if (mouseX > x + 63 && mouseX < x + 79 && mouseY > y + 35 && mouseY < y + 51) {
             List<Component> tooltip = new ArrayList<>();
 
             if (this.getMaterialCount() < 1) {
@@ -68,18 +68,18 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
         }
 
-        if (mouseX > x + 68 && mouseX < x + 79 && mouseY > y + 28 && mouseY < y + 39) {
-            if (this.isEjecting()) {
-                this.renderTooltip(matrix, ModTooltips.EJECTING.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
-            } else {
-                this.renderTooltip(matrix, ModTooltips.EJECT.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
-            }
-        }
+//        if (mouseX > x + 68 && mouseX < x + 79 && mouseY > y + 28 && mouseY < y + 39) {
+//            if (this.isEjecting()) {
+//                this.renderTooltip(matrix, ModTooltips.EJECTING.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
+//            } else {
+//                this.renderTooltip(matrix, ModTooltips.EJECT.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
+//            }
+//        }
 
     }
 
     @Override
-    protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
         this.font.draw(stack, title, (float) (this.imageWidth / 2 - this.font.width(title) / 2), 6.0F, 4210752);
@@ -87,7 +87,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull PoseStack stack, float partialTicks, int mouseX, int mouseY) {
         this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
 
         int x = this.getGuiLeft();
@@ -95,8 +95,13 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
-                int i2 = this.getMaterialBarScaled(26);
-                this.blit(stack, x + 62, y + 41, 176, 6, i2 + 1, 10);
+                int i2 = this.getMaterialBarScaled(16);
+                this.blit(stack, x + 63, y + 35, 176, 18, i2 + 1, 16);
+            }
+
+            if (this.getProgress() > 0) {
+                int i2 = this.getProgressBarScaled(21);
+                this.blit(stack, x + 89, y + 35, 176, 0, i2 + 1, 16);
             }
 
         }
@@ -177,10 +182,23 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         return this.tile.getMaterialsRequired();
     }
 
+    public int getTimeRequired() {
+        if (this.tile == null)
+            return 0;
+
+        return this.tile.getTimeRequired();
+    }
+
     public int getMaterialBarScaled(int pixels) {
         int i = Mth.clamp(this.getMaterialCount(), 0, this.getMaterialsRequired());
         int j = this.getMaterialsRequired();
         return j != 0 && i != 0 ? i * pixels / j : 0;
+    }
+
+    public int getProgressBarScaled(int pixels) {
+        int i = this.getProgress();
+        int j = this.getTimeRequired();
+        return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
     }
 
 }

@@ -6,8 +6,8 @@ package nova.committee.avaritia.util;
  * Date: 2022/4/2 12:53
  * Version: 1.0
  */
-public class ColorHelper {
-    public ColorHelper() {
+public class ColorUtil {
+    public ColorUtil() {
     }
 
     public static int intColor(int r, int g, int b) {

@@ -16,7 +16,7 @@ import java.util.List;
  * Date: 2022/4/2 11:03
  * Version: 1.0
  */
-public class TileEntityHelper {
+public class TileEntityUtil {
 
     public static void dispatchToNearbyPlayers(BlockEntity tile) {
         Level level = tile.getLevel();
@@ -27,8 +27,7 @@ public class TileEntityHelper {
                 BlockPos pos = tile.getBlockPos();
 
                 for (Player player : players) {
-                    if (player instanceof ServerPlayer) {
-                        ServerPlayer mPlayer = (ServerPlayer) player;
+                    if (player instanceof ServerPlayer mPlayer) {
                         if (isPlayerNearby(mPlayer.getX(), mPlayer.getZ(), (double) pos.getX() + 0.5D, (double) pos.getZ() + 0.5D)) {
                             mPlayer.connection.send(packet);
                         }

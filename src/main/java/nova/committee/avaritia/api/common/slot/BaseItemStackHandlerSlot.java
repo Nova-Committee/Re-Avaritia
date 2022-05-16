@@ -3,7 +3,8 @@ package nova.committee.avaritia.api.common.slot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
-import nova.committee.avaritia.util.BaseItemStackHandler;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -25,7 +26,7 @@ public class BaseItemStackHandlerSlot extends SlotItemHandler {
         return !this.inventory.extractItemSuper(this.index, 1, true).isEmpty();
     }
 
-    public ItemStack remove(int amount) {
+    public @NotNull ItemStack remove(int amount) {
         return this.inventory.extractItemSuper(this.index, amount, false);
     }
 

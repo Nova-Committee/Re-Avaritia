@@ -1,4 +1,4 @@
-package nova.committee.avaritia.util;
+package nova.committee.avaritia.util.math;
 
 /**
  * Description:

@@ -6,7 +6,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import nova.committee.avaritia.util.TileEntityHelper;
+import nova.committee.avaritia.util.TileEntityUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -24,12 +25,12 @@ public class BaseTileEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         return this.saveWithFullMetadata();
     }
 
     public void markDirtyAndDispatch() {
         super.setChanged();
-        TileEntityHelper.dispatchToNearbyPlayers(this);
+        TileEntityUtil.dispatchToNearbyPlayers(this);
     }
 }

@@ -16,8 +16,8 @@ import nova.committee.avaritia.api.common.tile.BaseInventoryTileEntity;
 import nova.committee.avaritia.common.menu.NeutronCollectorMenu;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTileEntities;
-import nova.committee.avaritia.util.BaseItemStackHandler;
-import nova.committee.avaritia.util.Localizable;
+import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import nova.committee.avaritia.util.lang.Localizable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,6 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     private final BaseItemStackHandler inventory;
     private int progress;
 
-
     public NeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile, pos, state);
         this.inventory = createInventoryHandler(null);
@@ -44,7 +43,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
         if (level.isClientSide) return;
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
-            ItemStack stack = new ItemStack(ModItems.neutron_pile);
+            var stack = new ItemStack(ModItems.neutron_pile);
             if (++tile.progress >= PRODUCTION_TICKS) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
@@ -59,6 +58,10 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
         }
 
 
+    }
+
+    public int getProgress() {
+        return progress;
     }
 
     public static BaseItemStackHandler createInventoryHandler(Runnable onContentsChanged) {
@@ -84,8 +87,8 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-        return NeutronCollectorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, new SimpleContainerData(0), this.getBlockPos());
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
+        return NeutronCollectorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, new SimpleContainerData(10), this.getBlockPos());
     }
 
 }
