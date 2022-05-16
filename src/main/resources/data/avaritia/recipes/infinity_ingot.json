@@ -1,13 +1,21 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "avaritia:shaped_extreme_craft",
   "pattern": [
-    "xxx",
-    "xxx",
-    "xxx"
+    "NNNNNNNNN",
+    "NCXXCXXCN",
+    "NXCCXCCXN",
+    "NCXXCXXCN",
+    "NNNNNNNNN"
   ],
   "key": {
-    "x": {
-      "item": "avaritia:infinity_nugget"
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutronium_ingot"
     }
   },
   "result": {

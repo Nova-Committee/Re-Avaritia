@@ -1,0 +1,31 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "pattern": [
+    "IIQQQQQII",
+    "I QQQQQ I",
+    "I  RRR  I",
+    "X RRRRR X",
+    "I RRXRR I",
+    "X RRRRR X",
+    "I  RRR  I",
+    "I       I",
+    "IIIXIXIII"
+  ],
+  "key": {
+    "X": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "Q": {
+      "item": "minecraft:quartz_block"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "item": "avaritia:neutron_collector"
+  }
+}

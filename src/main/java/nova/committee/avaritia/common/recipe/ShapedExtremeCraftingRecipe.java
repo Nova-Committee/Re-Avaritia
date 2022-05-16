@@ -59,6 +59,14 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
         return astring;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     @Override
     public ItemStack getResultItem() {
         return this.output;

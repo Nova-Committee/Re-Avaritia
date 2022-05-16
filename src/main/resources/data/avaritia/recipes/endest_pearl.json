@@ -1,0 +1,31 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "pattern": [
+    "   EEE   ",
+    " EEPPPEE ",
+    " EPPPPPE ",
+    "EPPPNPPPE",
+    "EPPNSNPPE",
+    "EPPPNPPPE",
+    " EPPPPPE ",
+    " EEPPPEE ",
+    "   EEE   "
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone"
+    },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    },
+    "N": {
+      "item": "avaritia:neutronium_ingot"
+    }
+  },
+  "result": {
+    "item": "avaritia:endest_pearl"
+  }
+}
