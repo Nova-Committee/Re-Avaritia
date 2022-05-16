@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:neutronium_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:endest_pearl"
+    },
+    "title": {
+      "translate": "advancements.avaritia.endest_pearl.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.endest_pearl.desc"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "endest_pearl": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:endest_pearl"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 30
+  }
+}

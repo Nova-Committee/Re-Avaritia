@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:diamond_lattice",
+  "display": {
+    "icon": {
+      "item": "avaritia:skull_fire_sword"
+    },
+    "title": {
+      "translate": "advancements.avaritia.skull_fire_sword.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.skull_fire_sword.desc"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "skull_fire_sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:skull_fire_sword"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 30
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:diamond_lattice",
+  "display": {
+    "icon": {
+      "item": "avaritia:neutron_pile"
+    },
+    "title": {
+      "translate": "advancements.avaritia.neutron_pile.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.neutron_pile.desc"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "neutron_pile": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:neutron_pile"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

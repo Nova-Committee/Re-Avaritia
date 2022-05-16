@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "xxx",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "item": "avaritia:crystal_matrix_ingot"
+    }
+  },
+  "result": {
+    "item": "avaritia:crystal_matrix"
+  }
+}

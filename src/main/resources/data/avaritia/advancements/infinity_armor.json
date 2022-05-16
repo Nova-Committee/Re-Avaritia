@@ -1,0 +1,44 @@
+{
+  "parent": "avaritia:infinity_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_chestplate"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_armor.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_armor.desc"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "infinity_armor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_helmet"
+          },
+          {
+            "item": "avaritia:infinity_chestplate"
+          },
+          {
+            "item": "avaritia:infinity_pants"
+          },
+          {
+            "item": "avaritia:infinity_boots"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "infinity_armor"
+    ]
+  ],
+  "rewards": {
+    "experience": 1000
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:neutronium_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:neutronium_compressor"
+    },
+    "title": {
+      "translate": "advancements.avaritia.neutronium_compressor.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.neutronium_compressor.desc"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "neutronium_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:neutronium_compressor"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

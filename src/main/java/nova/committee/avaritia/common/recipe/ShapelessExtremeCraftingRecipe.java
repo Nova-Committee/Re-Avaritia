@@ -16,7 +16,7 @@ import net.minecraftforge.common.util.RecipeMatcher;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import nova.committee.avaritia.init.registry.ModRecipe;
+import nova.committee.avaritia.init.registry.ModRecipeTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,12 +67,12 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipe.SHAPELESS_EXTREME_CRAFT_RECIPE;
+        return ModRecipeTypes.SHAPELESS_EXTREME_CRAFT_RECIPE;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipe.RecipeTypes.CRAFTING;
+        return ModRecipeTypes.RecipeTypes.CRAFTING;
     }
 
     @Override

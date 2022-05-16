@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:infinity_catalyst",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_ingot.desc"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "infinity_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

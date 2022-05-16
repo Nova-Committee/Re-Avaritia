@@ -15,7 +15,7 @@ import nova.committee.avaritia.api.common.item.StackHelper;
 import nova.committee.avaritia.api.common.tile.BaseInventoryTileEntity;
 import nova.committee.avaritia.common.menu.CompressorMenu;
 import nova.committee.avaritia.common.recipe.CompressorRecipe;
-import nova.committee.avaritia.init.registry.ModRecipe;
+import nova.committee.avaritia.init.registry.ModRecipeTypes;
 import nova.committee.avaritia.init.registry.ModTileEntities;
 import nova.committee.avaritia.util.item.BaseItemStackHandler;
 import nova.committee.avaritia.util.lang.Localizable;
@@ -60,7 +60,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
         tile.recipeInventory.setStackInSlot(0, tile.materialStack);
 
         if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory)) {
-            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipe.RecipeTypes.COMPRESSOR, tile.recipeInventory.toIInventory(), level).orElse(null);
+            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipeTypes.RecipeTypes.COMPRESSOR, tile.recipeInventory.toIInventory(), level).orElse(null);
         }
 
         if (!level.isClientSide()) {

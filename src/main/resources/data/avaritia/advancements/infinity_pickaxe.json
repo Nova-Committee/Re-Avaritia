@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:infinity_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_pickaxe.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_pickaxe.desc"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "infinity_pickaxe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_pickaxe"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}

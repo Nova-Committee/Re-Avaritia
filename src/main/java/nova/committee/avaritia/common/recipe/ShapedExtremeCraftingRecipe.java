@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import nova.committee.avaritia.init.registry.ModRecipe;
+import nova.committee.avaritia.init.registry.ModRecipeTypes;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -76,9 +76,8 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public boolean matches(IItemHandler inventory) {
-        int size = (int) Math.sqrt(inventory.getSlots());
-        for (int i = 0; i <= size - this.width; i++) {
-            for (int j = 0; j <= size - this.height; j++) {
+        for (int i = 0; i <= 9 - this.width; i++) {
+            for (int j = 0; j <= 9 - this.height; j++) {
                 if (this.checkMatch(inventory, i, j, true)) {
                     return true;
                 }
@@ -109,12 +108,12 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipe.SHAPED_EXTREME_CRAFT_RECIPE;
+        return ModRecipeTypes.SHAPED_EXTREME_CRAFT_RECIPE;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipe.RecipeTypes.CRAFTING;
+        return ModRecipeTypes.RecipeTypes.CRAFTING;
     }
 
     @Override
@@ -139,9 +138,8 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
 
     private boolean checkMatch(IItemHandler inventory, int x, int y, boolean mirror) {
-        int size = (int) Math.sqrt(inventory.getSlots());
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
                 int k = i - x;
                 int l = j - y;
                 var ingredient = Ingredient.EMPTY;
@@ -154,7 +152,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
                     }
                 }
 
-                if (!ingredient.test(inventory.getStackInSlot(i + j * size))) {
+                if (!ingredient.test(inventory.getStackInSlot(i + j * 9))) {
                     return false;
                 }
             }

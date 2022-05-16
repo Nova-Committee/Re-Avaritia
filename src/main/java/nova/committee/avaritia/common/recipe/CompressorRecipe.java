@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import nova.committee.avaritia.init.registry.ModRecipe;
+import nova.committee.avaritia.init.registry.ModRecipeTypes;
 
 /**
  * Description:
@@ -68,12 +68,12 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipe.COMPRESSOR_RECIPE;
+        return ModRecipeTypes.COMPRESSOR_RECIPE;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipe.RecipeTypes.COMPRESSOR;
+        return ModRecipeTypes.RecipeTypes.COMPRESSOR;
     }
 
     @Override

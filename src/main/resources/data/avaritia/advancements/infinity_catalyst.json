@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:extreme_crafting_table",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_catalyst.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_catalyst.desc"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "infinity_catalyst": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_catalyst"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

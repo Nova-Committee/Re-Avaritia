@@ -22,7 +22,7 @@ import java.util.Optional;
  * Version: 1.0
  */
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ModRecipe {
+public class ModRecipeTypes {
     public static RecipeSerializer<ShapedExtremeCraftingRecipe> SHAPED_EXTREME_CRAFT_RECIPE = new ShapedExtremeCraftingRecipe.Serializer();
 
     public static RecipeSerializer<ShapelessExtremeCraftingRecipe> SHAPELESS_EXTREME_CRAFT_RECIPE = new ShapelessExtremeCraftingRecipe.Serializer();

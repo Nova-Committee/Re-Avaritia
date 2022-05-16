@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:infinity_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_hoe"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_hoe.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_hoe.desc"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "infinity_hoe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_hoe"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}

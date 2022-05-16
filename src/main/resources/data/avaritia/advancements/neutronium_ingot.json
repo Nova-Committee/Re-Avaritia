@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:neutron_pile",
+  "display": {
+    "icon": {
+      "item": "avaritia:neutronium_ingot"
+    },
+    "title": {
+      "translate": "advancements.avaritia.neutronium_ingot.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.neutronium_ingot.desc"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "neutronium_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:neutronium_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

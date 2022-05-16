@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:infinity_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_sword"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_sword.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_sword.desc"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "infinity_sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_sword"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}

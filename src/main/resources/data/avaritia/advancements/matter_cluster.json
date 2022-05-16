@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:infinity_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:matter_cluster"
+    },
+    "title": {
+      "translate": "advancements.avaritia.matter_cluster.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.matter_cluster.desc"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "matter_cluster": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:matter_cluster"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 30
+  }
+}

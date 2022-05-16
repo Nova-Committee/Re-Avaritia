@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import nova.committee.avaritia.init.registry.ModRecipe;
+import nova.committee.avaritia.init.registry.ModRecipeTypes;
 
 /**
  * Description:
@@ -37,7 +37,7 @@ public class ExtremeCraftingSlot extends Slot {
 
         NonNullList<ItemStack> remaining;
 
-        remaining = player.level.getRecipeManager().getRemainingItemsFor(ModRecipe.RecipeTypes.CRAFTING, this.matrix, player.level);
+        remaining = player.level.getRecipeManager().getRemainingItemsFor(ModRecipeTypes.RecipeTypes.CRAFTING, this.matrix, player.level);
 
         for (int i = 0; i < remaining.size(); i++) {
             var slotStack = this.matrix.getItem(i);

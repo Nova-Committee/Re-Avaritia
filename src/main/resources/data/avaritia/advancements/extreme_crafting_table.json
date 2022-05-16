@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:diamond_lattice",
+  "display": {
+    "icon": {
+      "item": "avaritia:extreme_crafting_table"
+    },
+    "title": {
+      "translate": "advancements.avaritia.extreme_crafting_table.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.extreme_crafting_table.desc"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "extreme_crafting_table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:extreme_crafting_table"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

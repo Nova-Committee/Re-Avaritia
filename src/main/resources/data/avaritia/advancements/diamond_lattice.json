@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "title": {
+      "translate": "advancements.avaritia.diamond_lattice.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.diamond_lattice.desc"
+    },
+    "frame": "task",
+    "background": "avaritia:textures/blocks/resource/neutronium.png"
+  },
+  "criteria": {
+    "diamond_lattice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:diamond_lattice"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

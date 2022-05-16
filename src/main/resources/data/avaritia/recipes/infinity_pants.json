@@ -1,0 +1,31 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "pattern": [
+    "NNNNNNNNN",
+    "NIIIXIIIN",
+    "NINNXNNIN",
+    "NIN   NIN",
+    "NCN   NCN",
+    "NIN   NIN",
+    "NIN   NIN",
+    "NIN   NIN",
+    "NNN   NNN"
+  ],
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "N": {
+      "item": "avaritia:neutronium_ingot"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix"
+    }
+  },
+  "result": {
+    "item": "avaritia:infinity_pants"
+  }
+}

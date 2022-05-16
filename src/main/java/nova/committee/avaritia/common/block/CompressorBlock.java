@@ -35,7 +35,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
 
     public CompressorBlock() {
         super(Material.METAL, SoundType.METAL, 5.0F, 10.0F, true);
-        setRegistryName("compressor");
+        setRegistryName("neutronium_compressor");
     }
 
     @Nullable

@@ -1,0 +1,30 @@
+{
+  "parent": "avaritia:infinity_ingot",
+  "display": {
+    "icon": {
+      "item": "avaritia:infinity_shovel"
+    },
+    "title": {
+      "translate": "advancements.avaritia.infinity_shovel.title"
+    },
+    "description": {
+      "translate": "advancements.avaritia.infinity_shovel.desc"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "infinity_shovel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "avaritia:infinity_shovel"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}
