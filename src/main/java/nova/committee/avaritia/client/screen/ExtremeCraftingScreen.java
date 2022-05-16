@@ -15,7 +15,7 @@ import nova.committee.avaritia.common.menu.ExtremeCraftingMenu;
  * Version: 1.0
  */
 public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMenu> {
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/extreme_crafting_gui.png");
+    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/extreme_crafting_gui.png");
 
     public ExtremeCraftingScreen(ExtremeCraftingMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 234, 278, 512, 512);
@@ -30,7 +30,8 @@ public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMe
     }
 
     @Override
-    protected void renderBg(PoseStack matrix, float partialTicks, int mouseX, int mouseY) {
-        this.renderDefaultBg(matrix, partialTicks, mouseX, mouseY);
+    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+        this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
+
     }
 }

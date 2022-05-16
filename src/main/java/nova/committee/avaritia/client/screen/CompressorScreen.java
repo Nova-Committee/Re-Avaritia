@@ -12,6 +12,7 @@ import nova.committee.avaritia.api.client.screen.BaseContainerScreen;
 import nova.committee.avaritia.common.menu.CompressorMenu;
 import nova.committee.avaritia.common.tile.CompressorTileEntity;
 import nova.committee.avaritia.init.ModTooltips;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
+    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
     private CompressorTileEntity tile;
 
     public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
@@ -42,7 +43,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     }
 
     @Override
-    public void render(PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
 
@@ -87,7 +88,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
     @Override
     protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
-        super.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
+        this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
 
         int x = this.getGuiLeft();
         int y = this.getGuiTop();

@@ -46,7 +46,6 @@ public class ModSingularities {
                 GOLD,
                 DIAMOND,
                 EMERALD,
-
                 ALUMINUM,
                 COPPER,
                 TIN,

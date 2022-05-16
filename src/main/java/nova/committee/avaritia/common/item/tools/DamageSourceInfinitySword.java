@@ -6,6 +6,7 @@ import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -16,11 +17,14 @@ import net.minecraft.world.item.ItemStack;
 public class DamageSourceInfinitySword extends EntityDamageSource {
     public DamageSourceInfinitySword(Entity source) {
         super("infinity", source);
+        bypassArmor();
+        bypassInvul();
+        bypassMagic();
     }
 
     @Override
-    public Component getLocalizedDeathMessage(LivingEntity damageSourceEntity) {
-        ItemStack itemstack = damageSourceEntity instanceof LivingEntity ? ((LivingEntity) damageSourceEntity).getMainHandItem() : null;
+    public Component getLocalizedDeathMessage(@NotNull LivingEntity damageSourceEntity) {
+        ItemStack itemstack = damageSourceEntity.getMainHandItem();
         String s = "death.attack.infinity";
         int rando = entity.getLevel().random.nextInt(5);
         if (rando != 0) {

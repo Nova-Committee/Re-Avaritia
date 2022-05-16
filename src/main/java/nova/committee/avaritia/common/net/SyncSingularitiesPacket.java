@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import nova.committee.avaritia.api.common.net.IPacket;
 import nova.committee.avaritia.common.item.singularity.Singularity;
-import nova.committee.avaritia.common.item.singularity.SingularityRegistry;
+import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -33,20 +33,20 @@ public class SyncSingularitiesPacket extends IPacket<SyncSingularitiesPacket> {
 
     @Override
     public SyncSingularitiesPacket read(FriendlyByteBuf buf) {
-        var singularities = SingularityRegistry.getInstance().readFromBuffer(buf);
+        var singularities = SingularityRegistryHandler.getInstance().readFromBuffer(buf);
 
         return new SyncSingularitiesPacket(singularities);
     }
 
     @Override
     public void write(SyncSingularitiesPacket msg, FriendlyByteBuf buf) {
-        SingularityRegistry.getInstance().writeToBuffer(buf);
+        SingularityRegistryHandler.getInstance().writeToBuffer(buf);
     }
 
     @Override
     public void run(SyncSingularitiesPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            SingularityRegistry.getInstance().loadSingularities(msg);
+            SingularityRegistryHandler.getInstance().loadSingularities(msg);
         });
 
         ctx.get().setPacketHandled(true);

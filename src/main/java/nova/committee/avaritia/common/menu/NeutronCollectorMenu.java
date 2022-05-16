@@ -107,4 +107,8 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
 
         return itemstack;
     }
+
+    public int getTimer() {
+        return (int) Math.ceil(this.data.get(0) / 3600.0 * 16);
+    }
 }

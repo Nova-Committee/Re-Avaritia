@@ -23,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -36,7 +37,9 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.common.item.ArmorInfinityItem;
 import nova.committee.avaritia.common.item.MatterClusterItem;
+import nova.committee.avaritia.common.item.tools.*;
 import nova.committee.avaritia.init.event.AEOCrawlerTask;
 import nova.committee.avaritia.init.registry.ModItems;
 
@@ -61,9 +64,9 @@ public class InfinityHandler {
                 continue;
             }
             ItemStack stack = player.getItemBySlot(slot);
-//            if (stack.isEmpty() || !(stack.getItem() instanceof ItemArmorInfinity)) {
-//                return false;
-//            }
+            if (stack.isEmpty() || !(stack.getItem() instanceof ArmorInfinityItem)) {
+                return false;
+            }
         }
         return true;
     }
@@ -165,6 +168,7 @@ public class InfinityHandler {
 
     }
 
+    //给稿子添加时运
     @SubscribeEvent
     public static void handleExtraLuck(BlockEvent.BreakEvent event) {
         if (event.getPlayer() == null) {
@@ -185,10 +189,10 @@ public class InfinityHandler {
     }
 
     @SubscribeEvent
-    public static void diggity(PlayerEvent.BreakSpeed event) {
+    public static void digging(PlayerEvent.BreakSpeed event) {
         if (!event.getEntityLiving().getMainHandItem().isEmpty()) {
             ItemStack held = event.getEntityLiving().getMainHandItem();
-            if (held.getItem() == ModItems.pick_axe) {
+            if (held.getItem() == ModItems.pick_axe || held.getItem() == ModItems.infinity_shovel) {
                 if (!event.getEntityLiving().isOnGround()) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
@@ -214,6 +218,7 @@ public class InfinityHandler {
         }
     }
 
+    //黑名单功能
 //    private static boolean isGarbageBlock(Block block) {
 //        Static.LOGGER.info(TagCollectionManager.getInstance().getBlocks().getAllTags().keySet());
 //        for (ResourceLocation id : BlockTags.getAllTags().getMatchingTags(block)) {
@@ -226,6 +231,7 @@ public class InfinityHandler {
 //    }
 
 
+    //合并物质团
     @SubscribeEvent
     public static void clusterClustererererer(EntityItemPickupEvent event) {
         if (event.getPlayer() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster) {
@@ -252,13 +258,13 @@ public class InfinityHandler {
     }
 
 
+    //取消身穿无尽套时受到的所有伤害
     @SubscribeEvent
     public static void onGetHurt(LivingHurtEvent event) {
-        if (!(event.getEntityLiving() instanceof Player)) {
+        if (!(event.getEntityLiving() instanceof Player player)) {
             return;
         }
-        Player player = (Player) event.getEntityLiving();
-        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.infinity_sword && player.getMainHandItem().useOnRelease()) {//TODO Blocking? Maybe add a shield?
+        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.infinity_sword && player.getMainHandItem().useOnRelease()) {
             event.setCanceled(true);
         }
         if (isInfinite(player) && !event.getSource().getMsgId().equals("infinity")) {
@@ -266,15 +272,15 @@ public class InfinityHandler {
         }
     }
 
+    //取消对无尽套的伤害
     @SubscribeEvent
     public static void onAttacked(LivingAttackEvent event) {
-        if (!(event.getEntityLiving() instanceof Player)) {
+        if (!(event.getEntityLiving() instanceof Player player)) {
             return;
         }
         if (event.getSource().getEntity() != null && event.getSource().getEntity() instanceof Player) {
             return;
         }
-        Player player = (Player) event.getEntityLiving();
         if (isInfinite(player) && !event.getSource().getMsgId().equals("infinity")) {
             event.setCanceled(true);
         }
@@ -283,10 +289,8 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
-        if (event.isRecentlyHit() && event.getEntityLiving() instanceof Skeleton && event.getSource().getEntity() instanceof Player) {
-            Player player = (Player) event.getSource().getEntity();
+        if (event.isRecentlyHit() && event.getEntityLiving() instanceof Skeleton && event.getSource().getEntity() instanceof Player player) {
             if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.skull_sword) {
-                // ok, we need to drop a skull then.
                 if (event.getDrops().isEmpty()) {
                     addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
                 } else {
@@ -311,6 +315,17 @@ public class InfinityHandler {
                 }
 
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void entityItemUnDeath(ItemEvent event) {
+        ItemEntity entityItem = event.getEntityItem();
+        Item item = entityItem.getItem().getItem();
+        if (item instanceof ArmorInfinityItem || item instanceof AxeInfinityItem || item instanceof BowInfinityItem ||
+                item instanceof HoeInfinityItem || item instanceof ShovelInfinityItem || item instanceof PickaxeInfinityItem ||
+                item instanceof SwordInfinityItem) {
+            entityItem.setInvulnerable(true);
         }
     }
 

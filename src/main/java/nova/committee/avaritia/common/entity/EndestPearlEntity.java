@@ -1,19 +1,23 @@
 package nova.committee.avaritia.common.entity;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 
@@ -24,8 +28,23 @@ import nova.committee.avaritia.init.registry.ModItems;
  * Version: 1.0
  */
 public class EndestPearlEntity extends ThrowableItemProjectile {
+    private LivingEntity shooter;
+
     public EndestPearlEntity(EntityType<? extends ThrowableItemProjectile> p_37442_, Level p_37443_) {
         super(p_37442_, p_37443_);
+    }
+
+
+    public static EndestPearlEntity create(Level level, double x, double y, double z) {
+        EndestPearlEntity entity = new EndestPearlEntity(ModEntities.EnderPearl.get(), level);
+        entity.setPos(x, y, z);
+        return entity;
+    }
+
+    public static EndestPearlEntity create(Level level, LivingEntity shooter) {
+        EndestPearlEntity entity = new EndestPearlEntity(ModEntities.EnderPearl.get(), level);
+        entity.setShooter(shooter);
+        return entity;
     }
 
     @Override
@@ -34,18 +53,28 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     }
 
 
-    private ParticleOptions getParticle() {
-        ItemStack itemstack = this.getItemRaw();
-        return (ParticleOptions) (itemstack.isEmpty() ? ParticleTypes.PORTAL : new ItemParticleOption(ParticleTypes.ITEM, itemstack));
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
+    private ParticleOptions getParticle() {
+        ItemStack itemstack = this.getItemRaw();
+        return itemstack.isEmpty() ? ParticleTypes.PORTAL : new ItemParticleOption(ParticleTypes.ITEM, itemstack);
+    }
+
+    public void setShooter(LivingEntity shooter) {
+        this.shooter = shooter;
+    }
+
+
     @Override
-    public void handleEntityEvent(byte p_37402_) {
-        if (p_37402_ == 3) {
+    public void handleEntityEvent(byte pId) {
+        if (pId == 3) {
             ParticleOptions particleoptions = this.getParticle();
 
             for (int i = 0; i < 8; ++i) {
-                this.level.addParticle(particleoptions, this.getX(), this.getY(), this.getZ(), random.nextGaussian() * 3, random.nextGaussian() * 3, random.nextGaussian() * 3);
+                this.level.addParticle(particleoptions, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
 
@@ -54,21 +83,28 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     @Override
     protected void onHitEntity(EntityHitResult pos) {
         super.onHitEntity(pos);
+        Entity entity = pos.getEntity();
 
-        if (pos.getEntity() != null) {
-            pos.getEntity().hurt(DamageSource.thrown(this, getOwner()), 0.0F);
+        if (entity != null) {
+            entity.hurt(DamageSource.thrown(this, getOwner()), 0.0F);
         }
 
         if (!level.isClientSide) {
-            //this.worldObj.createExplosion(this, pos.hitVec.xCoord, pos.hitVec.yCoord, pos.hitVec.zCoord, 4.0f, true);
+            GapingVoidEntity ent;
+            if (shooter != null) {
+                ent = GapingVoidEntity.create(level, shooter);
 
-            Entity ent = ModEntities.GapingVoid.get().create(level);
-            Direction dir = pos.getEntity().getDirection();
+            } else ent = GapingVoidEntity.create(level);
+
+            Direction dir = entity.getDirection();
             Vec3 offset = Vec3.ZERO;
-            if (pos.getEntity() != null) {
+            if (dir != null) {
                 offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
             }
-            ent.moveTo(getX() + offset.x * 0.25, getY() + offset.y * 0.25, getZ() + offset.z * 0.25, getYRot(), 0.0F);
+            if (shooter != null) {
+                ent.setUser(shooter);
+            }
+            ent.moveTo(entity.getX() + offset.x * 0.25, entity.getY() + offset.y * 0.25, entity.getZ() + offset.z * 0.25, entity.getYRot(), 0.0F);
             level.addFreshEntity(ent);
 
             remove(RemovalReason.KILLED);
@@ -76,12 +112,30 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected void onHit(HitResult p_37406_) {
-        super.onHit(p_37406_);
-        if (!this.level.isClientSide) {
-            this.level.broadcastEntityEvent(this, (byte) 3);
-            this.discard();
-        }
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        BlockPos pos = result.getBlockPos();
 
+        if (!level.isClientSide) {
+
+            GapingVoidEntity ent;
+            if (shooter != null) {
+                ent = GapingVoidEntity.create(level, shooter);
+
+            } else ent = GapingVoidEntity.create(level);
+            Direction dir = result.getDirection();
+            Vec3 offset = Vec3.ZERO;
+            if (dir != null) {
+                offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
+            }
+            if (shooter != null) {
+                ent.setUser(shooter);
+            }
+            ent.moveTo(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25, getYRot(), 0.0F);
+            level.addFreshEntity(ent);
+
+
+            remove(RemovalReason.KILLED);
+        }
     }
 }

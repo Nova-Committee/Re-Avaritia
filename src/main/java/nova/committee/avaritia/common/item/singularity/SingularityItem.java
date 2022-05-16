@@ -10,11 +10,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.api.util.IColored;
 import nova.committee.avaritia.init.ModTooltips;
-import nova.committee.avaritia.init.registry.ModTab;
+import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.util.Localizable;
 import nova.committee.avaritia.util.SingularityUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Description:
@@ -23,25 +25,21 @@ import java.util.List;
  * Version: 1.0
  */
 public class SingularityItem extends Item implements IColored {
-    public SingularityItem() {
-        super(new Properties()
-                .rarity(Rarity.UNCOMMON)
-                .tab(ModTab.TAB));
-        setRegistryName("singularity");
+    public SingularityItem(Function<Properties, Properties> properties) {
+        super(properties.apply(new Properties().rarity(Rarity.UNCOMMON)));
     }
 
-
     @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
-            SingularityRegistry.getInstance().getSingularities().forEach(singularity -> {
+            SingularityRegistryHandler.getInstance().getSingularities().forEach(singularity -> {
                 items.add(SingularityUtils.getItemForSingularity(singularity));
             });
         }
     }
 
     @Override
-    public Component getName(ItemStack stack) {
+    public @NotNull Component getName(@NotNull ItemStack stack) {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity == null) {
@@ -53,7 +51,7 @@ public class SingularityItem extends Item implements IColored {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
@@ -76,4 +74,10 @@ public class SingularityItem extends Item implements IColored {
 
         return i == 0 ? singularity.getUnderlayColor() : i == 1 ? singularity.getOverlayColor() : -1;
     }
+
+//    @Nullable
+//    @Override
+//    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+//        return  ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+//    }
 }

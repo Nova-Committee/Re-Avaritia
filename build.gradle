@@ -3,11 +3,13 @@ buildscript {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 
@@ -18,6 +20,7 @@ plugins {
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 group = 'nova.committee'
 version = '1.18.2-1.0.0'
@@ -30,7 +33,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'parchment', version: '2022.03.13-1.18.2'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -105,13 +108,24 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     mavenLocal()
     maven { url = "https://maven.covers1624.net/" }
+    maven { url 'https://dvs1.progwml6.com/files/maven/' }
+    maven { url 'https://maven.blamejared.com' }
+    maven {
+        url 'https://cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
 }
 
 dependencies {
 
     minecraft 'net.minecraftforge:forge:1.18.2-40.0.34'
-
-    implementation "codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal"
+    //compileOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
+    //runtimeOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
+    implementation fg.deobf('curse.maven:jade-324717:3761542')
+    runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
+    compileOnly 'mezz.jei:jei-1.18.2:9.7.0.193:api'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -131,6 +145,7 @@ jar {
         attributes 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
     }
 }
+
 task srcJar(type: Jar) {
     build.dependsOn it
     from sourceSets.main.allSource

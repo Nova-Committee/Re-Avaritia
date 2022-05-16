@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "avaritia:items/tools/infinity_shovel/shovel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "avaritia:destroyer": 1
+      },
+      "model": "avaritia:item/infinity_shovel_destroyer"
+    }
+  ]
+}

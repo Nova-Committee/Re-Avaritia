@@ -1,4 +1,4 @@
-package nova.committee.avaritia.common.item.singularity;
+package nova.committee.avaritia.init.handler;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -11,12 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.PacketDistributor;
 import nova.committee.avaritia.Static;
+import nova.committee.avaritia.common.item.singularity.Singularity;
 import nova.committee.avaritia.common.net.SyncSingularitiesPacket;
 import nova.committee.avaritia.init.ModSingularities;
-import nova.committee.avaritia.init.handler.NetworkHandler;
 import nova.committee.avaritia.util.SingularityUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -36,13 +37,14 @@ import java.util.stream.Collectors;
  * Date: 2022/4/2 12:35
  * Version: 1.0
  */
-public class SingularityRegistry {
-    private static final SingularityRegistry INSTANCE = new SingularityRegistry();
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class SingularityRegistryHandler {
+    private static final SingularityRegistryHandler INSTANCE = new SingularityRegistryHandler();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
     private final Map<ResourceLocation, Singularity> singularities = new LinkedHashMap<>();
 
-    public static SingularityRegistry getInstance() {
+    public static SingularityRegistryHandler getInstance() {
         return INSTANCE;
     }
 
@@ -64,7 +66,7 @@ public class SingularityRegistry {
 
     public void loadSingularities() {
         var stopwatch = Stopwatch.createStarted();
-        var dir = FMLPaths.CONFIGDIR.get().resolve("extendedcrafting/singularities/").toFile();
+        var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
 
         this.writeDefaultSingularityFiles();
 
@@ -80,7 +82,7 @@ public class SingularityRegistry {
     }
 
     public void writeDefaultSingularityFiles() {
-        var dir = FMLPaths.CONFIGDIR.get().resolve("extendedcrafting/singularities/").toFile();
+        var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
 
         if (!dir.exists() && dir.mkdirs()) {
             for (var singularity : ModSingularities.getDefaults()) {

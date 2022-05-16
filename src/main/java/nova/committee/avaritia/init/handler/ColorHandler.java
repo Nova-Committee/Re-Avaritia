@@ -13,7 +13,7 @@ import nova.committee.avaritia.util.ColorHelper;
  * Date: 2022/4/2 12:52
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ColorHandler {
     @SubscribeEvent
     public static void onItemColors(ColorHandlerEvent.Item event) {

@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public class NeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
 
 
-    public static final int PRODUCTION_TICKS = 7111;
+    public static final int PRODUCTION_TICKS = 3600;
     private final BaseItemStackHandler inventory;
     private int progress;
 
@@ -87,4 +87,5 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return NeutronCollectorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, new SimpleContainerData(0), this.getBlockPos());
     }
+
 }

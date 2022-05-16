@@ -1,6 +1,7 @@
 package nova.committee.avaritia.init.registry;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.event.RegistryEvent;
@@ -8,14 +9,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import nova.committee.avaritia.Static;
+import nova.committee.avaritia.common.item.ArmorInfinityItem;
 import nova.committee.avaritia.common.item.EndestPearlItem;
 import nova.committee.avaritia.common.item.MatterClusterItem;
 import nova.committee.avaritia.common.item.ResourceItem;
 import nova.committee.avaritia.common.item.singularity.SingularityItem;
-import nova.committee.avaritia.common.item.tools.BowInfinityItem;
-import nova.committee.avaritia.common.item.tools.PickaxeInfinityItem;
-import nova.committee.avaritia.common.item.tools.SwordInfinityItem;
-import nova.committee.avaritia.common.item.tools.SwordSkullsItem;
+import nova.committee.avaritia.common.item.tools.*;
 import nova.committee.avaritia.init.ModFoods;
 
 /**
@@ -26,12 +25,27 @@ import nova.committee.avaritia.init.ModFoods;
  */
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModItems {
+
+    //tools
     public static Item pick_axe;
+    public static Item infinity_shovel;
+    public static Item infinity_axe;
+
+    public static Item infinity_hoe;
     public static Item matter_cluster;
 
+
+    //weapons
     public static Item infinity_sword;
     public static Item skull_sword;
     public static Item infinity_bow;
+
+
+    //armors
+    public static Item infinity_helmet;
+    public static Item infinity_chestplate;
+    public static Item infinity_pants;
+    public static Item infinity_boots;
 
 
     public static Item ultimate_stew;
@@ -61,11 +75,22 @@ public class ModItems {
         registry.registerAll(
                 pick_axe = new PickaxeInfinityItem(),
                 matter_cluster = new MatterClusterItem(),
+                infinity_shovel = new ShovelInfinityItem(),
+                infinity_hoe = new HoeInfinityItem(),
+                infinity_axe = new AxeInfinityItem(),
 
                 infinity_sword = new SwordInfinityItem(),
                 skull_sword = new SwordSkullsItem(),
                 infinity_bow = new BowInfinityItem(),
+
+                infinity_helmet = new ArmorInfinityItem(EquipmentSlot.HEAD).setRegistryName("infinity_helmet"),
+                infinity_chestplate = new ArmorInfinityItem(EquipmentSlot.CHEST).setRegistryName("infinity_chestplate"),
+                infinity_pants = new ArmorInfinityItem(EquipmentSlot.LEGS).setRegistryName("infinity_pants"),
+                infinity_boots = new ArmorInfinityItem(EquipmentSlot.FEET).setRegistryName("infinity_boots"),
+
+
                 endest_pearl = new EndestPearlItem(),
+
 
                 ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
                 cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
@@ -78,7 +103,7 @@ public class ModItems {
                 infinity_catalyst = new ResourceItem(Rarity.EPIC, "infinity_catalyst"),
                 infinity_ingot = new ResourceItem(COSMIC_RARITY, "infinity_ingot"),
                 record_fragment = new ResourceItem(COSMIC_RARITY, "record_fragment"),
-                singularity = new SingularityItem()
+                singularity = new SingularityItem(p -> p.tab(ModTab.TAB)).setRegistryName("singularity")
         );
 
     }

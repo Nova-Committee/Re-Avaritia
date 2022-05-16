@@ -2,6 +2,7 @@ package nova.committee.avaritia.util;
 
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -47,14 +48,31 @@ public class ToolHelper {
 
         Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
 
+        spawnClusters(world, player, drops);
+
+
+    }
+
+    public static void spawnClusters(Level world, Player player, Set<ItemStack> drops) {
         if (!world.isClientSide) {
             List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
             for (ItemStack cluster : clusters) {
                 Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), cluster);
             }
         }
+    }
 
+    public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
+        ItemStack itemStack = ItemUtil.mapEquals(drop, map);
+        if (!itemStack.isEmpty())
+            map.put(itemStack, map.get(itemStack) + drop.getCount());
+        else map.put(drop, drop.getCount());
+    }
 
+    public static void putMapDrops(Level world, BlockPos pos, Player player, ItemStack stack, Map<ItemStack, Integer> map) {
+        for (ItemStack drop : Block.getDrops(world.getBlockState(pos), (ServerLevel) world, pos, world.getBlockEntity(pos), player, stack)) {
+            putMapItem(drop, map);
+        }
     }
 
 //    public static Set<ItemStack> removeTrash(ItemStack holdingStack, Set<ItemStack> drops) {

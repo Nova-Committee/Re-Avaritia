@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import nova.committee.avaritia.api.util.NBTHelper;
 import nova.committee.avaritia.common.item.singularity.Singularity;
-import nova.committee.avaritia.common.item.singularity.SingularityRegistry;
+import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.init.registry.ModItems;
 
 /**
@@ -100,7 +100,7 @@ public class SingularityUtils {
     public static Singularity getSingularity(ItemStack stack) {
         var id = NBTHelper.getString(stack, "Id");
         if (!id.isEmpty()) {
-            return SingularityRegistry.getInstance().getSingularityById(ResourceLocation.tryParse(id));
+            return SingularityRegistryHandler.getInstance().getSingularityById(ResourceLocation.tryParse(id));
         }
 
         return null;

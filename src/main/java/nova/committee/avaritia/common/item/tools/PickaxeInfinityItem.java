@@ -12,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -27,12 +28,15 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.RayTracer;
 import nova.committee.avaritia.util.ToolHelper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
@@ -53,8 +57,14 @@ public class PickaxeInfinityItem extends PickaxeItem {
     }
 
     @Override
-    public void setDamage(ItemStack stack, int damage) {
-        super.setDamage(stack, 0);
+    public boolean isDamageable(ItemStack stack) {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override
@@ -62,9 +72,15 @@ public class PickaxeInfinityItem extends PickaxeItem {
         return ModItems.COSMIC_RARITY;
     }
 
+    @Override
+    public int getItemEnchantability(ItemStack stack) {
+        return 0;
+    }
+
+
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(@NotNull ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, TooltipFlag flagIn) {
         if (Screen.hasShiftDown()) {
             tooltip.add(new TextComponent(ChatFormatting.GRAY + "由" + ChatFormatting.BLUE + "演变" + "-" + ChatFormatting.DARK_PURPLE + "cnlimiter" + ChatFormatting.YELLOW + "倾情制作~"));
         }
@@ -116,9 +132,9 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
     public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
 
-        Level world = player.level;
-        BlockState state = world.getBlockState(pos);
-        Material mat = state.getMaterial();
+        var world = player.level;
+        var state = world.getBlockState(pos);
+        var mat = state.getMaterial();
         if (!MATERIALS.contains(mat)) {
             return;
         }
@@ -127,11 +143,11 @@ public class PickaxeInfinityItem extends PickaxeItem {
             return;
         }
 
-        boolean doY = sideHit.getAxis() != Direction.Axis.Y;
+        var doY = sideHit.getAxis() != Direction.Axis.Y;
 
         int range = 8;
-        BlockPos minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
-        BlockPos maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
+        var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
+        var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
         ToolHelper.aoeBlocks(player, stack, world, pos, minOffset, maxOffset, null, MATERIALS);
 
     }

@@ -11,18 +11,20 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ItemStackWrapper;
 import nova.committee.avaritia.util.ToolHelper;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -195,7 +197,7 @@ public class MatterClusterItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         if (!stack.hasTag() || !stack.getOrCreateTag().contains(MAINTAG)) {
             return;
         }
@@ -236,15 +238,10 @@ public class MatterClusterItem extends Item {
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
-//    @Override
-//    public boolean hasCustomEntity(ItemStack stack) {
-//        return true;
-//    }
-//
-//    @Nullable
-//    @Override
-//    public Entity createEntity(World world, Entity location, ItemStack itemstack) {
-//        return ModEntities.IMMORTAL.get().spawn((ServerWorld) world, itemstack, null, location.blockPosition(), SpawnReason.COMMAND, false, false);
-//    }
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+    }
 
 }

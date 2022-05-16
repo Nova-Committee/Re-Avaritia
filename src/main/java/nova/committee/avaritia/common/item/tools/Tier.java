@@ -16,12 +16,21 @@ public enum Tier implements net.minecraft.world.item.Tier {
     INFINITY_PICKAXE(32, 9999, 9999f, 6.0F, 200, () -> {
         return Ingredient.of(ModItems.infinity_ingot);
     }),
-    INFINITY_SWORD(32, 9999, 9999f, -3.0F, 200, () -> {
+    INFINITY_SWORD(32, 9999, 9999f, 10F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot);
     }),
-    SKULL_SWORD(18, 4888, 4888f, -1.0F, 200, () -> {
+    SKULL_SWORD(18, 4888, 4888f, 10F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot);
-    });;
+    }),
+    INFINITY_SHOVEL(32, 9999, 9999f, 7.0F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot);
+    }),
+    INFINITY_HOE(32, 9999, 9999f, 7.0F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot);
+    }),
+    INFINITY_AXE(32, 9999, 9999f, 7.0F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot);
+    });
 
 
     private final int level;
