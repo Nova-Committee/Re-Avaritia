@@ -34,20 +34,14 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     private final ItemStack output;
     private final int width;
     private final int height;
-    private final int tier;
     private Map<Integer, Function<ItemStack, ItemStack>> transformers;
 
     public ShapedExtremeCraftingRecipe(ResourceLocation recipeId, int width, int height, NonNullList<Ingredient> inputs, ItemStack output) {
-        this(recipeId, width, height, inputs, output, 0);
-    }
-
-    public ShapedExtremeCraftingRecipe(ResourceLocation recipeId, int width, int height, NonNullList<Ingredient> inputs, ItemStack output, int tier) {
         this.recipeId = recipeId;
         this.inputs = inputs;
         this.output = output;
         this.width = width;
         this.height = height;
-        this.tier = tier;
     }
 
     private static String[] patternFromJson(JsonArray jsonArr) {
@@ -82,9 +76,6 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public boolean matches(IItemHandler inventory) {
-        if (this.tier != 0 && this.tier != this.getTierFromGridSize(inventory))
-            return false;
-
         int size = (int) Math.sqrt(inventory.getSlots());
         for (int i = 0; i <= size - this.width; i++) {
             for (int j = 0; j <= size - this.height; j++) {
@@ -118,7 +109,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipe.EXTREME_CRAFT_RECIPE;
+        return ModRecipe.SHAPED_EXTREME_CRAFT_RECIPE;
     }
 
     @Override
@@ -146,13 +137,6 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
         return ISpecialRecipe.super.getRemainingItems(inv);
     }
 
-    private int getTierFromGridSize(IItemHandler inv) {
-        int size = inv.getSlots();
-        return size < 10 ? 1
-                : size < 26 ? 2
-                : size < 50 ? 3
-                : 4;
-    }
 
     private boolean checkMatch(IItemHandler inventory, int x, int y, boolean mirror) {
         int size = (int) Math.sqrt(inventory.getSlots());
@@ -192,13 +176,8 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
             int height = pattern.length;
             var inputs = ShapedRecipe.dissolvePattern(pattern, map, width, height);
             var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int tier = GsonHelper.getAsInt(json, "tier", 0);
-            int size = tier * 2 + 1;
 
-            if (tier != 0 && (width > size || height > size))
-                throw new JsonSyntaxException("The pattern size is larger than the specified tier can support");
-
-            return new ShapedExtremeCraftingRecipe(recipeId, width, height, inputs, output, tier);
+            return new ShapedExtremeCraftingRecipe(recipeId, width, height, inputs, output);
         }
 
         @Override
@@ -207,14 +186,11 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
             int height = buffer.readVarInt();
             var inputs = NonNullList.withSize(width * height, Ingredient.EMPTY);
 
-            for (int i = 0; i < inputs.size(); i++) {
-                inputs.set(i, Ingredient.fromNetwork(buffer));
-            }
+            inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
 
             var output = buffer.readItem();
-            int tier = buffer.readVarInt();
 
-            return new ShapedExtremeCraftingRecipe(recipeId, width, height, inputs, output, tier);
+            return new ShapedExtremeCraftingRecipe(recipeId, width, height, inputs, output);
         }
 
         @Override
@@ -227,7 +203,6 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
             }
 
             buffer.writeItem(recipe.output);
-            buffer.writeVarInt(recipe.tier);
         }
     }
 

@@ -198,7 +198,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     public int getProgressBarScaled(int pixels) {
         int i = this.getProgress();
         int j = this.getTimeRequired();
-        return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
+        return (int) (j != 0 && i != 0 ? (long) (i / j) * pixels : 0);
     }
 
 }

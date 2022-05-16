@@ -72,22 +72,26 @@ public class BowInfinityItem extends BowItem {
     }
 
     @Override
-    public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
-        var world = player.level;
+    public void releaseUsing(ItemStack stack, Level level, LivingEntity player, int count) {
+        super.releaseUsing(stack, level, player, count);
         var max = getUseDuration(stack);
         var velocity = BowItem.getPowerForTime(max - count);
 
-        if (!world.isClientSide) {
-            velocity = velocity < 1.0D ? 1.0f : velocity;
-            HeavenArrowEntity arrow = HeavenArrowEntity.create(world, player);
-            arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, velocity * 3.0F, 1.0F);
-            arrow.setCritArrow(true);
 
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (world.random.nextFloat() * 0.4F + 1.2F) + velocity * 0.5F);
-            arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+        velocity = velocity < 1.0D ? 1.0f : velocity;
+        HeavenArrowEntity arrow = HeavenArrowEntity.create(level, player);
+        arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, velocity * 4.0F, 1.0F);
+        arrow.setCritArrow(true);
 
-            world.addFreshEntity(arrow);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + velocity * 0.5F);
+        arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+
+        if (!level.isClientSide) {
+            level.addFreshEntity(arrow);
             if (player instanceof Player player1) player1.awardStat(Stats.ITEM_USED.get(this));
         }
     }
+
+
+
 }

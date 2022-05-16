@@ -11,10 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import nova.committee.avaritia.Static;
-import nova.committee.avaritia.common.recipe.CompressorRecipe;
-import nova.committee.avaritia.common.recipe.ICompressorRecipe;
-import nova.committee.avaritia.common.recipe.ICraftRecipe;
-import nova.committee.avaritia.common.recipe.ShapedExtremeCraftingRecipe;
+import nova.committee.avaritia.common.recipe.*;
 
 import java.util.Optional;
 
@@ -26,7 +23,10 @@ import java.util.Optional;
  */
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModRecipe {
-    public static RecipeSerializer<ShapedExtremeCraftingRecipe> EXTREME_CRAFT_RECIPE = new ShapedExtremeCraftingRecipe.Serializer();
+    public static RecipeSerializer<ShapedExtremeCraftingRecipe> SHAPED_EXTREME_CRAFT_RECIPE = new ShapedExtremeCraftingRecipe.Serializer();
+
+    public static RecipeSerializer<ShapelessExtremeCraftingRecipe> SHAPELESS_EXTREME_CRAFT_RECIPE = new ShapelessExtremeCraftingRecipe.Serializer();
+
     public static RecipeSerializer<CompressorRecipe> COMPRESSOR_RECIPE = new CompressorRecipe.Serializer();
 
     @SubscribeEvent
@@ -34,7 +34,8 @@ public class ModRecipe {
         final IForgeRegistry<RecipeSerializer<?>> registry = event.getRegistry();
 
         registry.registerAll(
-                EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shaped_craft")),
+                SHAPED_EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shaped_extreme_craft")),
+                SHAPELESS_EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shapeless_extreme_craft")),
                 COMPRESSOR_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "compressor"))
         );
 

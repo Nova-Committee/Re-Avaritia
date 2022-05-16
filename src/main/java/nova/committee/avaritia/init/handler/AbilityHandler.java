@@ -143,8 +143,7 @@ public class AbilityHandler {
 
     private static void handleChestplateStateChange(LivingEntity entity, boolean isNew) {
         String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
-        if (entity instanceof Player) {
-            Player player = ((Player) entity);
+        if (entity instanceof Player player) {
             if (isNew) {
                 player.getAbilities().mayfly = true;
                 entitiesWithFlight.add(key);

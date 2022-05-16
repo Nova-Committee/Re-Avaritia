@@ -40,16 +40,17 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     @Override
-    protected void onHitBlock(BlockHitResult result) {
-        var pos = result.getLocation();
+    protected void onHitBlock(@NotNull BlockHitResult result) {
+        super.onHitBlock(result);
+        var pos = result.getBlockPos();
         var randy = getLevel().random;
         for (int i = 0; i < 30; i++) {
             double angle = randy.nextDouble() * 2 * Math.PI;
             double dist = randy.nextGaussian() * 0.5;
 
-            double x = Math.sin(angle) * dist + pos.x();
-            double z = Math.cos(angle) * dist + pos.z();
-            double y = pos.y() + 25.0;
+            double x = Math.sin(angle) * dist + pos.getX();
+            double z = Math.cos(angle) * dist + pos.getZ();
+            double y = pos.getY() + 25.0;
 
             double dangle = randy.nextDouble() * 2 * Math.PI;
             double ddist = randy.nextDouble() * 0.35;
