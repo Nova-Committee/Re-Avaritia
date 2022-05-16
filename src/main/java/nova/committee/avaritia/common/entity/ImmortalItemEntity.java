@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import static net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent;
 
@@ -59,7 +60,7 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public void playerTouch(Player pEntity) {
+    public void playerTouch(@NotNull Player pEntity) {
         if (!this.level.isClientSide) {
             if (this.pickupDelay > 0) return;
             ItemStack itemstack = this.getItem();
@@ -75,7 +76,7 @@ public class ImmortalItemEntity extends ItemEntity {
                     && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))) {
                 copy.setCount(copy.getCount() - getItem().getCount());
                 firePlayerItemPickupEvent(pEntity, this, copy);
-                pEntity.onItemPickup(this, i);
+                pEntity.take(this, i);
                 if (itemstack.isEmpty()) {
                     this.age = 2400;
                     this.remove(RemovalReason.KILLED);
