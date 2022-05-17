@@ -31,7 +31,10 @@ import org.jetbrains.annotations.Nullable;
 public class ShovelInfinityItem extends ShovelItem {
 
     public ShovelInfinityItem() {
-        super(Tier.INFINITY_SHOVEL, -2, -2.8f, (new Properties()).tab(ModTab.TAB).fireResistant());
+        super(Tier.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
+                .tab(ModTab.TAB)
+                .stacksTo(1)
+                .fireResistant());
 
         setRegistryName("infinity_shovel");
     }

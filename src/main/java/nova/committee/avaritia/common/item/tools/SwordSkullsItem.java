@@ -28,7 +28,10 @@ import java.util.List;
  */
 public class SwordSkullsItem extends SwordItem {
     public SwordSkullsItem() {
-        super(Tier.SKULL_SWORD, 0, -2.4f, (new Properties()).tab(ModTab.TAB).fireResistant());
+        super(Tier.SKULL_SWORD, 0, -2.4f, (new Properties())
+                .tab(ModTab.TAB)
+                .stacksTo(1)
+                .fireResistant());
         setRegistryName("skull_fire_sword");
 
     }

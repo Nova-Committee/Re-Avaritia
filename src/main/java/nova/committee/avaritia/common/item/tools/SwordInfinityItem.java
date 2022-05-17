@@ -34,7 +34,10 @@ import java.util.List;
  */
 public class SwordInfinityItem extends SwordItem {
     public SwordInfinityItem() {
-        super(Tier.INFINITY_SWORD, 0, -2.8F, (new Properties()).tab(ModTab.TAB).fireResistant());
+        super(Tier.INFINITY_SWORD, 0, -2.8F, (new Properties())
+                .tab(ModTab.TAB)
+                .stacksTo(1)
+                .fireResistant());
         setRegistryName("infinity_sword");
     }
 

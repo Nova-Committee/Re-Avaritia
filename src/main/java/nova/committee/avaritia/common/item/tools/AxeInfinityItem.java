@@ -31,7 +31,10 @@ import java.util.HashSet;
 public class AxeInfinityItem extends AxeItem {
 
     public AxeInfinityItem() {
-        super(Tier.INFINITY_PICKAXE, 10, -3.0f, (new Properties()).tab(ModTab.TAB).fireResistant());
+        super(Tier.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
+                .tab(ModTab.TAB)
+                .stacksTo(1)
+                .fireResistant());
 
         setRegistryName("infinity_axe");
     }

@@ -24,7 +24,6 @@ public class HeavenSubArrowEntity extends Arrow {
         this.setBaseDamage(10000.0f);
     }
 
-
     public static HeavenSubArrowEntity create(Level level, double x, double y, double z) {
         HeavenSubArrowEntity entity = new HeavenSubArrowEntity(ModEntities.HeavenSubArrow.get(), level);
         entity.setPos(x, y, z);

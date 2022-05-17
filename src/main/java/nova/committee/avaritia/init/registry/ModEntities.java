@@ -35,11 +35,11 @@ public class ModEntities {
                     .build(new ResourceLocation(Static.MOD_ID, "enderst_pearl").toString()));
 
     public static final RegistryObject<EntityType<GapingVoidEntity>> GapingVoid = ENTITIES.register("gaping_void",
-            () -> EntityType.Builder.of(GapingVoidEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.<GapingVoidEntity>of(GapingVoidEntity::new, MobCategory.MISC)
                     .build(new ResourceLocation(Static.MOD_ID, "gaping_void").toString()));
 
     public static final RegistryObject<EntityType<HeavenArrowEntity>> HeavenArrow = ENTITIES.register("heaven_arrow",
-            () -> EntityType.Builder.of(HeavenArrowEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.<HeavenArrowEntity>of(HeavenArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .clientTrackingRange(32)
                     .updateInterval(1)
@@ -47,7 +47,7 @@ public class ModEntities {
                     .build(new ResourceLocation(Static.MOD_ID, "heaven_arrow").toString()));
 
     public static final RegistryObject<EntityType<HeavenSubArrowEntity>> HeavenSubArrow = ENTITIES.register("heaven_sub_arrow",
-            () -> EntityType.Builder.of(HeavenSubArrowEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.<HeavenSubArrowEntity>of(HeavenSubArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .clientTrackingRange(32)
                     .updateInterval(2)

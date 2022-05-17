@@ -1,27 +1,27 @@
 package nova.committee.avaritia.init.handler;
 
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.common.item.ArmorInfinityItem;
+import nova.committee.avaritia.common.item.tools.BowInfinityItem;
 import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
 import nova.committee.avaritia.init.registry.ModItems;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -217,9 +217,23 @@ public class AbilityHandler {
     public static void opTool(PlayerEvent.ItemCraftedEvent event) {
         ItemStack stack = event.getCrafting();
         if (stack.getItem().equals(ModItems.infinity_sword)) {
-            Map<Enchantment, Integer> map = new HashMap<>();
-            map.put(Enchantments.MOB_LOOTING, 10);
-            EnchantmentHelper.setEnchantments(map, stack);
+            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack) < 10) {
+                stack.enchant(Enchantments.MOB_LOOTING, 10);
+            }
+        }
+        if (stack.getItem().equals(ModItems.infinity_bow)) {
+            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, stack) < 10) {
+                stack.enchant(Enchantments.INFINITY_ARROWS, 10);
+            }
+        }
+    }
+
+    //取消需要至少一根箭矢才能无限
+    @SubscribeEvent
+    public static void infinityFix(final ArrowNockEvent event) {
+        if (event.getBow().getItem() instanceof BowInfinityItem && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, event.getBow()) > 0) {
+            event.getPlayer().startUsingItem(event.getHand());
+            event.setAction(InteractionResultHolder.success(event.getBow()));
         }
     }
 

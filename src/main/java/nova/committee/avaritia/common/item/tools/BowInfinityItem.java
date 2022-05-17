@@ -29,7 +29,9 @@ import org.jetbrains.annotations.Nullable;
 public class BowInfinityItem extends BowItem {
     public BowInfinityItem() {
         super(new Properties()
-                .tab(ModTab.TAB).stacksTo(1)
+                .tab(ModTab.TAB)
+                .stacksTo(1)
+                .fireResistant()
         );
         setRegistryName("infinity_bow");
     }
@@ -73,13 +75,14 @@ public class BowInfinityItem extends BowItem {
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity player, int count) {
-        super.releaseUsing(stack, level, player, count);
         var max = getUseDuration(stack);
         var velocity = BowItem.getPowerForTime(max - count);
 
+        ItemStack itemstack = player.getProjectile(stack);
 
         velocity = velocity < 1.0D ? 1.0f : velocity;
         HeavenArrowEntity arrow = HeavenArrowEntity.create(level, player);
+        arrow.setPos(player.getX() - 0.2, player.getEyeY() + 0.1, player.getZ());
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, velocity * 4.0F, 1.0F);
         arrow.setCritArrow(true);
 

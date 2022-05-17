@@ -36,7 +36,10 @@ import java.util.Map;
 public class HoeInfinityItem extends HoeItem {
 
     public HoeInfinityItem() {
-        super(Tier.INFINITY_HOE, -10, 17.0f, (new Properties()).tab(ModTab.TAB).fireResistant());
+        super(Tier.INFINITY_HOE, -10, 17.0f, (new Properties())
+                .tab(ModTab.TAB)
+                .stacksTo(1)
+                .fireResistant());
 
         setRegistryName("infinity_hoe");
     }
