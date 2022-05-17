@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -60,11 +61,11 @@ public class SingularityRegistryHandler {
         }
     }
 
-    public void onResourceManagerReload(ResourceManager manager) {
-        this.loadSingularities();
+    public void onResourceManagerReload(ResourceManager manager, ICondition.IContext context) {
+        this.loadSingularities(context);
     }
 
-    public void loadSingularities() {
+    public void loadSingularities(ICondition.IContext context) {
         var stopwatch = Stopwatch.createStarted();
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
 
@@ -73,7 +74,7 @@ public class SingularityRegistryHandler {
         this.singularities.clear();
 
         if (!dir.mkdirs() && dir.isDirectory()) {
-            this.loadFiles(dir);
+            this.loadFiles(dir, context);
         }
 
         stopwatch.stop();
@@ -145,7 +146,7 @@ public class SingularityRegistryHandler {
         Static.LOGGER.info("Loaded {} singularities from the server", singularities.size());
     }
 
-    private void loadFiles(File dir) {
+    private void loadFiles(File dir, ICondition.IContext context) {
         var files = dir.listFiles((FileFilter) FileFilterUtils.suffixFileFilter(".json"));
         if (files == null)
             return;
@@ -161,7 +162,7 @@ public class SingularityRegistryHandler {
                 var name = file.getName().replace(".json", "");
                 json = parser.parse(reader).getAsJsonObject();
 
-                singularity = SingularityUtils.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json);
+                singularity = SingularityUtils.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
 
                 reader.close();
             } catch (Exception e) {

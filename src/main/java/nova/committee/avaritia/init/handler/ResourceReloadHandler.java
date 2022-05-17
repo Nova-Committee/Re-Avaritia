@@ -4,6 +4,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +25,8 @@ public class ResourceReloadHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(new SingularityResourceReload());
+
+        event.addListener(new SingularityResourceReload(event.getServerResources().getConditionContext()));
         event.addListener(new RegisterRecipesReloadListener());
         RecipeUtil.recipeManager = event.getServerResources().getRecipeManager();
     }
@@ -34,10 +36,10 @@ public class ResourceReloadHandler {
         RecipeUtil.recipeManager = event.getRecipeManager();
     }
 
-    private static class SingularityResourceReload implements ResourceManagerReloadListener {
+    private record SingularityResourceReload(ICondition.IContext context) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            SingularityRegistryHandler.getInstance().onResourceManagerReload(manager);
+            SingularityRegistryHandler.getInstance().onResourceManagerReload(manager, context);
         }
     }
 

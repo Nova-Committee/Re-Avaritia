@@ -8,6 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.item.singularity.Singularity;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.init.registry.ModItems;
@@ -19,7 +22,7 @@ import nova.committee.avaritia.init.registry.ModItems;
  * Version: 1.0
  */
 public class SingularityUtils {
-    public static Singularity loadFromJson(ResourceLocation id, JsonObject json) {
+    public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
         var name = GsonHelper.getAsString(json, "name");
         var colors = GsonHelper.getAsJsonArray(json, "colors");
         int materialCount = GsonHelper.getAsInt(json, "materialCount", 1000);
@@ -32,10 +35,18 @@ public class SingularityUtils {
         Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
 
+
+        if (!CraftingHelper.processConditions(json, "conditions", context)) {
+            Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met", id);
+            return null;
+        }
+
+
         if (ing == null) {
             singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, inUltimateSingularity);
         } else if (ing.has("tag")) {
             var tag = ing.get("tag").getAsString();
+
             singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, inUltimateSingularity);
         } else {
             var ingredient = Ingredient.fromJson(json.get("ingredient"));
@@ -66,6 +77,20 @@ public class SingularityUtils {
             var obj = new JsonObject();
             obj.addProperty("tag", singularity.getTag());
             ingredient = obj;
+
+            var array = new JsonArray();
+            var main = new JsonObject();
+
+            var sub = new JsonObject();
+            main.addProperty("type", "forge:not");
+
+            sub.addProperty("tag", singularity.getTag());
+            sub.addProperty("type", "forge:tag_empty");
+
+            main.add("value", sub);
+            array.add(main);
+            json.add("conditions", array);
+
         } else {
             ingredient = singularity.getIngredient().toJson();
         }
