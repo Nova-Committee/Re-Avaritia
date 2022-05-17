@@ -19,36 +19,36 @@ public class Singularity {
     private final int[] colors;
     private final String tag;
     private final int ingredientCount;
-    private final boolean inUltimateSingularity;
+    private final int timeRequired;
     private Ingredient ingredient;
     private boolean enabled = true;
 
-    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, boolean inUltimateSingularity) {
+    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = colors;
         this.ingredient = ingredient;
         this.tag = null;
         this.ingredientCount = ingredientCount;
-        this.inUltimateSingularity = inUltimateSingularity;
+        this.timeRequired = timeRequired;
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, true);
+        this(id, name, colors, ingredient, -1, 240);
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, boolean inUltimateSingularity) {
+    public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = colors;
         this.ingredient = Ingredient.EMPTY;
         this.tag = tag;
         this.ingredientCount = ingredientCount;
-        this.inUltimateSingularity = inUltimateSingularity;
+        this.timeRequired = timeRequired;
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, true);
+        this(id, name, colors, tag, -1, 240);
     }
 
     public static Singularity read(FriendlyByteBuf buffer) {
@@ -56,6 +56,7 @@ public class Singularity {
         var name = buffer.readUtf();
         int[] colors = buffer.readVarIntArray();
         var isTagIngredient = buffer.readBoolean();
+        int time = buffer.readVarInt();
 
         String tag = null;
         var ingredient = Ingredient.EMPTY;
@@ -67,13 +68,12 @@ public class Singularity {
         }
 
         int ingredientCount = buffer.readVarInt();
-        var isInUltimateSingularity = buffer.readBoolean();
 
         Singularity singularity;
         if (isTagIngredient) {
-            singularity = new Singularity(id, name, colors, tag, ingredientCount, isInUltimateSingularity);
+            singularity = new Singularity(id, name, colors, tag, ingredientCount, time);
         } else {
-            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, isInUltimateSingularity);
+            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, time);
         }
 
         singularity.enabled = buffer.readBoolean();
@@ -121,8 +121,8 @@ public class Singularity {
         return Localizable.of(this.name).build();
     }
 
-    public boolean isInUltimateSingularity() {
-        return this.inUltimateSingularity;
+    public int getTimeRequired() {
+        return timeRequired;
     }
 
     public boolean isEnabled() {
@@ -146,7 +146,6 @@ public class Singularity {
         }
 
         buffer.writeVarInt(this.getIngredientCount());
-        buffer.writeBoolean(this.inUltimateSingularity);
         buffer.writeBoolean(this.enabled);
     }
 }

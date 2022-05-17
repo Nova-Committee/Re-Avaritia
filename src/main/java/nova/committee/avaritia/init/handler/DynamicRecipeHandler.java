@@ -52,7 +52,7 @@ public class DynamicRecipeHandler {
         var recipeId = new ResourceLocation(Static.MOD_ID, id.getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getIngredientCount();
-        int timeRequired = 120; //todo config
+        int timeRequired = singularity.getTimeRequired();
 
         return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
     }

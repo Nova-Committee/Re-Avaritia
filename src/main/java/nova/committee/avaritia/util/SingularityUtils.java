@@ -23,6 +23,10 @@ import nova.committee.avaritia.init.registry.ModItems;
  */
 public class SingularityUtils {
     public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
+        if (!CraftingHelper.processConditions(json, "conditions", context)) {
+            Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met", id);
+            return null;
+        }
         var name = GsonHelper.getAsString(json, "name");
         var colors = GsonHelper.getAsJsonArray(json, "colors");
         int materialCount = GsonHelper.getAsInt(json, "materialCount", 1000);
@@ -30,27 +34,22 @@ public class SingularityUtils {
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
-        var inUltimateSingularity = GsonHelper.getAsBoolean(json, "inUltimateSingularity", true);
-
         Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
 
 
-        if (!CraftingHelper.processConditions(json, "conditions", context)) {
-            Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met", id);
-            return null;
-        }
+        var time = GsonHelper.getAsInt(json, "timeRequired", 240);
 
 
         if (ing == null) {
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, inUltimateSingularity);
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
         } else if (ing.has("tag")) {
             var tag = ing.get("tag").getAsString();
 
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, inUltimateSingularity);
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
         } else {
             var ingredient = Ingredient.fromJson(json.get("ingredient"));
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, ingredient, materialCount, inUltimateSingularity);
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, ingredient, materialCount, time);
         }
 
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
@@ -71,6 +70,7 @@ public class SingularityUtils {
         colors.add(Integer.toString(singularity.getUnderlayColor(), 16));
 
         json.add("colors", colors);
+        json.addProperty("timeRequired", singularity.getTimeRequired());
 
         JsonElement ingredient;
         if (singularity.getTag() != null) {
