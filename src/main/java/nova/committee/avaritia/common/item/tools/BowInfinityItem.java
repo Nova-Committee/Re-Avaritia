@@ -65,12 +65,13 @@ public class BowInfinityItem extends BowItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        //无线箭矢
         var itemstack = player.getItemInHand(hand);
         InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
 
         player.startUsingItem(hand);
-        return InteractionResultHolder.consume(itemstack);
+        return InteractionResultHolder.success(itemstack);
     }
 
     @Override
@@ -78,11 +79,9 @@ public class BowInfinityItem extends BowItem {
         var max = getUseDuration(stack);
         var velocity = BowItem.getPowerForTime(max - count);
 
-        ItemStack itemstack = player.getProjectile(stack);
-
         velocity = velocity < 1.0D ? 1.0f : velocity;
         HeavenArrowEntity arrow = HeavenArrowEntity.create(level, player);
-        arrow.setPos(player.getX() - 0.2, player.getEyeY() + 0.1, player.getZ());
+        arrow.setPos(player.getX() - 0.3, player.getEyeY() - 0.1, player.getZ());
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, velocity * 4.0F, 1.0F);
         arrow.setCritArrow(true);
 

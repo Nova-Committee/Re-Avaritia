@@ -1,6 +1,5 @@
 package nova.committee.avaritia.init.handler;
 
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -12,12 +11,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.common.item.ArmorInfinityItem;
-import nova.committee.avaritia.common.item.tools.BowInfinityItem;
 import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
 import nova.committee.avaritia.init.registry.ModItems;
 
@@ -228,14 +225,6 @@ public class AbilityHandler {
         }
     }
 
-    //取消需要至少一根箭矢才能无限
-    @SubscribeEvent
-    public static void infinityFix(final ArrowNockEvent event) {
-        if (event.getBow().getItem() instanceof BowInfinityItem && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, event.getBow()) > 0) {
-            event.getPlayer().startUsingItem(event.getHand());
-            event.setAction(InteractionResultHolder.success(event.getBow()));
-        }
-    }
 
     //取消身穿无尽套时的伤害
     @SubscribeEvent
