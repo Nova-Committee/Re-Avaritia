@@ -76,7 +76,7 @@ public class JeiCompat implements IModPlugin {
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(ExtremeCraftingMenu.class, ExtremeCraftingTableCategory.UID, 1, 81, 83, 36);
+        registration.addRecipeTransferHandler(ExtremeCraftingMenu.class, ExtremeCraftingTableCategory.UID, 1, 81, 82, 36);
 
     }
 

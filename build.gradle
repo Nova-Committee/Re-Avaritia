@@ -33,7 +33,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 minecraft {
-    mappings channel: 'parchment', version: '2022.03.13-1.18.2'
+    mappings channel: 'parchment', version: '2022.05.02-1.18.2'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -119,9 +119,10 @@ repositories {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.34'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.19'
     //compileOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
     //runtimeOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
+    implementation fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
     implementation fg.deobf('curse.maven:jade-324717:3761542')
     runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
     compileOnly 'mezz.jei:jei-1.18.2:9.7.0.193:api'
