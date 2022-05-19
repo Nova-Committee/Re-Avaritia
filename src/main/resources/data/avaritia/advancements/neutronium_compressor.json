@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "neutronium_compressor"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

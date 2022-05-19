@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "infinity_bow"
+    ]
+  ],
   "rewards": {
     "experience": 200
   }

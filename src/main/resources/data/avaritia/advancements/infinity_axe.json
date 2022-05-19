@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "infinity_axe"
+    ]
+  ],
   "rewards": {
     "experience": 200
   }

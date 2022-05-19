@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "neutronium_ingot"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

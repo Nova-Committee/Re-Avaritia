@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "infinity_catalyst"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

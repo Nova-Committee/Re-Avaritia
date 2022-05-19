@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "diamond_lattice"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

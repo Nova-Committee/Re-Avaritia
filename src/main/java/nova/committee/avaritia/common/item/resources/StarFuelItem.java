@@ -35,7 +35,7 @@ public class StarFuelItem extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
         super.appendHoverText(stack, level, list, flag);
         list.add(new TranslatableComponent("tooltip.star_fuel.desc").withStyle(ChatFormatting.GRAY));
     }

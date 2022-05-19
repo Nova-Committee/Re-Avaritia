@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "infinity_pickaxe"
+    ]
+  ],
   "rewards": {
     "experience": 200
   }

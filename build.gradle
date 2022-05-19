@@ -32,6 +32,8 @@ java {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
     mappings channel: 'parchment', version: '2022.05.02-1.18.2'
 
@@ -107,10 +109,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     mavenLocal()
     maven { url = "https://maven.covers1624.net/" }
-    maven { url 'https://dvs1.progwml6.com/files/maven/' }
-    maven { url 'https://maven.blamejared.com' }
+    maven { url = 'https://dvs1.progwml6.com/files/maven/' }
+    maven { url = 'https://maven.blamejared.com' }
     maven {
-        url 'https://cursemaven.com'
+        url = 'https://cursemaven.com'
         content {
             includeGroup 'curse.maven'
         }
@@ -118,6 +120,21 @@ repositories {
     maven { url = 'https://maven.theillusivec4.top/' }
     maven { url = 'https://maven.melanx.de/' }
     maven { url = 'https://dvs1.progwml6.com/files/maven/' }
+    maven {
+        // Shedaniel's maven (Architectury API)
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "me.shedaniel"
+        }
+    }
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        // you can also use Lat's Maven @ https://maven.latvian.dev/
+        url = "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
 }
 
 dependencies {
@@ -125,14 +142,18 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.18.2-40.1.19'
     //compileOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
     //runtimeOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
-    implementation fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
-    implementation fg.deobf('curse.maven:jade-324717:3761542')
+    compileOnly fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
+    compileOnly fg.deobf('curse.maven:jade-324717:3761542')
+    compileOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193:api')
     //implementation fg.deobf('vazkii.botania:Botania:1.18.2-431')
 //    implementation fg.deobf('vazkii.patchouli:Patchouli:1.18.2-67')
 //    implementation fg.deobf('top.theillusivec4.curios:curios-forge:1.18.2-5.0.6.3')
-    implementation fg.deobf("curse.maven:projecte-226410:${projecte_id}")
+    //implementation fg.deobf("curse.maven:projecte-226410:${projecte_id}")
+//    compileOnly fg.deobf("me.shedaniel:architectury-forge:${architectury_version}")
+//    compileOnly fg.deobf("dev.latvian.mods:rhino:${rhino_version}")
+//    compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
-    compileOnly 'mezz.jei:jei-1.18.2:9.7.0.193:api'
+
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

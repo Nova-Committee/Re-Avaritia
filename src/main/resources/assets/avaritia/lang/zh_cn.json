@@ -137,5 +137,9 @@
   "advancements.avaritia.matter_cluster.title": "卡顿神器",
   "advancements.avaritia.matter_cluster.desc": "获取物质团",
   "advancements.avaritia.neutronium_compressor.title": "化零为整",
-  "advancements.avaritia.neutronium_compressor.desc": "合成压缩机"
+  "advancements.avaritia.neutronium_compressor.desc": "合成压缩机",
+  "advancements.avaritia.singularity.title": "挖矿工艺",
+  "advancements.avaritia.singularity.desc": "压缩矿物获取任意奇点",
+  "advancements.avaritia.star_fuel.title": "恒星能源",
+  "advancements.avaritia.star_fuel.desc": "获取恒星燃料"
 }

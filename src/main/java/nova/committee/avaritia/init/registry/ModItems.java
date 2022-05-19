@@ -97,7 +97,7 @@ public class ModItems {
 
                 endest_pearl = new EndestPearlItem(),
 
-                star_fuel = new StarFuelItem(COSMIC_RARITY, "star_fuel"),
+                star_fuel = new StarFuelItem(Rarity.EPIC, "star_fuel"),
                 ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
                 cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
 

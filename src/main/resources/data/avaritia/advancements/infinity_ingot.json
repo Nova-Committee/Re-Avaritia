@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "infinity_ingot"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

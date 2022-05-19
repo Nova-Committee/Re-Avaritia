@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "infinity_shovel"
+    ]
+  ],
   "rewards": {
     "experience": 200
   }

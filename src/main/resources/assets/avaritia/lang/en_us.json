@@ -137,5 +137,9 @@
   "advancements.avaritia.matter_cluster.title": "Cotton artifact",
   "advancements.avaritia.matter_cluster.desc": "Get Matter Cluster",
   "advancements.avaritia.neutronium_compressor.title": "Zero to whole",
-  "advancements.avaritia.neutronium_compressor.desc": "Craft Neutronium Compressor"
+  "advancements.avaritia.neutronium_compressor.desc": "Craft Neutronium Compressor",
+  "advancements.avaritia.singularity.title": "Mining Craft",
+  "advancements.avaritia.singularity.desc": "Compress minerals to get singularity",
+  "advancements.avaritia.star_fuel.title": "Stellar Energy",
+  "advancements.avaritia.star_fuel.desc": "Get stellar fuel"
 }

@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:diamond_lattice",
+  "parent": "avaritia:root",
   "display": {
     "icon": {
       "item": "avaritia:neutron_pile"
@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "neutron_pile"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

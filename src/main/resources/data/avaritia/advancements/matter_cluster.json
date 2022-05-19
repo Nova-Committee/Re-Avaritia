@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "matter_cluster"
+    ]
+  ],
   "rewards": {
     "experience": 30
   }

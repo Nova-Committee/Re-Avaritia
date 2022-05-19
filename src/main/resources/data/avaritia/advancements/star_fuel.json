@@ -1,24 +1,24 @@
 {
-  "parent": "avaritia:neutronium_ingot",
+  "parent": "avaritia:singularity",
   "display": {
     "icon": {
-      "item": "avaritia:endest_pearl"
+      "item": "avaritia:star_fuel"
     },
     "title": {
-      "translate": "advancements.avaritia.endest_pearl.title"
+      "translate": "advancements.avaritia.star_fuel.title"
     },
     "description": {
-      "translate": "advancements.avaritia.endest_pearl.desc"
+      "translate": "advancements.avaritia.star_fuel.desc"
     },
     "frame": "goal"
   },
   "criteria": {
-    "endest_pearl": {
+    "star_fuel": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "avaritia:endest_pearl"
+            "item": "avaritia:star_fuel"
           }
         ]
       }
@@ -26,7 +26,7 @@
   },
   "requirements": [
     [
-      "endest_pearl"
+      "star_fuel"
     ]
   ],
   "rewards": {

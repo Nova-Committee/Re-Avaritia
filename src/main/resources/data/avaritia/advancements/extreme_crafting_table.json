@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:diamond_lattice",
+  "parent": "avaritia:root",
   "display": {
     "icon": {
       "item": "avaritia:extreme_crafting_table"
@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "extreme_crafting_table"
+    ]
+  ],
   "rewards": {
     "experience": 10
   }

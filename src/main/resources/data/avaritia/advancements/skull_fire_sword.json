@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:diamond_lattice",
+  "parent": "avaritia:root",
   "display": {
     "icon": {
       "item": "avaritia:skull_fire_sword"
@@ -24,6 +24,11 @@
       }
     }
   },
+  "requirements": [
+    [
+      "skull_fire_sword"
+    ]
+  ],
   "rewards": {
     "experience": 30
   }

@@ -1,24 +1,24 @@
 {
-  "parent": "avaritia:infinity_ingot",
+  "parent": "avaritia:neutronium_compressor",
   "display": {
     "icon": {
-      "item": "avaritia:infinity_hoe"
+      "item": "avaritia:singularity"
     },
     "title": {
-      "translate": "advancements.avaritia.infinity_hoe.title"
+      "translate": "advancements.avaritia.singularity.title"
     },
     "description": {
-      "translate": "advancements.avaritia.infinity_hoe.desc"
+      "translate": "advancements.avaritia.singularity.desc"
     },
     "frame": "challenge"
   },
   "criteria": {
-    "infinity_hoe": {
+    "singularity": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "avaritia:infinity_hoe"
+            "item": "avaritia:singularity"
           }
         ]
       }
@@ -26,10 +26,10 @@
   },
   "requirements": [
     [
-      "infinity_hoe"
+      "singularity"
     ]
   ],
   "rewards": {
-    "experience": 200
+    "experience": 30
   }
 }
