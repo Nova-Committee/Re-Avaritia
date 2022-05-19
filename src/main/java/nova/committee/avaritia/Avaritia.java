@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import nova.committee.avaritia.common.item.EndestPearlItem;
+import nova.committee.avaritia.init.config.CommonConfig;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.init.proxy.ClientProxy;
 import nova.committee.avaritia.init.proxy.IProxy;
@@ -23,6 +24,7 @@ public class Avaritia {
     public static final IProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public Avaritia() {
+        CommonConfig.register();
 
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);

@@ -1,4 +1,4 @@
-package nova.committee.avaritia.common.item;
+package nova.committee.avaritia.common.item.resources;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;

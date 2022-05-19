@@ -12,7 +12,8 @@ import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.item.ArmorInfinityItem;
 import nova.committee.avaritia.common.item.EndestPearlItem;
 import nova.committee.avaritia.common.item.MatterClusterItem;
-import nova.committee.avaritia.common.item.ResourceItem;
+import nova.committee.avaritia.common.item.resources.ResourceItem;
+import nova.committee.avaritia.common.item.resources.StarFuelItem;
 import nova.committee.avaritia.common.item.singularity.SingularityItem;
 import nova.committee.avaritia.common.item.tools.*;
 import nova.committee.avaritia.init.ModFoods;
@@ -58,8 +59,13 @@ public class ModItems {
     public static Item neutron_pile;
     public static Item neutron_nugget;
     public static Item neutronium_ingot;
+    public static Item neutronium_gear;
+
+    public static Item infinity_nugget;
     public static Item infinity_catalyst;
     public static Item infinity_ingot;
+
+    public static Item star_fuel;
     public static Item record_fragment;
 
     public static Item singularity;
@@ -92,19 +98,30 @@ public class ModItems {
                 endest_pearl = new EndestPearlItem(),
 
 
-                ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
-                cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
+                ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
+                cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
 
                 diamond_lattice = new ResourceItem(Rarity.UNCOMMON, "diamond_lattice"),
                 crystal_matrix_ingot = new ResourceItem(Rarity.RARE, "crystal_matrix_ingot"),
+
                 neutron_pile = new ResourceItem(Rarity.UNCOMMON, "neutron_pile"),
                 neutron_nugget = new ResourceItem(Rarity.UNCOMMON, "neutron_nugget"),
                 neutronium_ingot = new ResourceItem(Rarity.RARE, "neutronium_ingot"),
+                neutronium_gear = new ResourceItem(Rarity.EPIC, "neutronium_gear"),
+
+                infinity_nugget = new ResourceItem(Rarity.RARE, "infinity_nugget"),
                 infinity_catalyst = new ResourceItem(Rarity.EPIC, "infinity_catalyst"),
                 infinity_ingot = new ResourceItem(COSMIC_RARITY, "infinity_ingot"),
+
+
                 record_fragment = new ResourceItem(COSMIC_RARITY, "record_fragment"),
                 singularity = new SingularityItem(p -> p.tab(ModTab.TAB)).setRegistryName("singularity")
         );
+
+        if (Static.isLoad("projecte")) {
+            registry.register(star_fuel = new StarFuelItem(COSMIC_RARITY, "star_fuel"));
+        }
+
 
     }
 

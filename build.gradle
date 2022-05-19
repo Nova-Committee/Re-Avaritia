@@ -23,7 +23,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 group = 'nova.committee'
-version = '1.18.2-1.0.2'
+version = '1.18.2-1.0.3'
 
 java {
     archivesBaseName = 'Avaritia-Reforged-forge'
@@ -115,6 +115,9 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
+    maven { url = 'https://maven.theillusivec4.top/' }
+    maven { url = 'https://maven.melanx.de/' }
+    maven { url = 'https://dvs1.progwml6.com/files/maven/' }
 }
 
 dependencies {
@@ -124,6 +127,10 @@ dependencies {
     //runtimeOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
     implementation fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
     implementation fg.deobf('curse.maven:jade-324717:3761542')
+    //implementation fg.deobf('vazkii.botania:Botania:1.18.2-431')
+//    implementation fg.deobf('vazkii.patchouli:Patchouli:1.18.2-67')
+//    implementation fg.deobf('top.theillusivec4.curios:curios-forge:1.18.2-5.0.6.3')
+    implementation fg.deobf("curse.maven:projecte-226410:${projecte_id}")
     runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
     compileOnly 'mezz.jei:jei-1.18.2:9.7.0.193:api'
 

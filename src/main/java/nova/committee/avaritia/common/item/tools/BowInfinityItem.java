@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import nova.committee.avaritia.common.entity.HeavenArrowEntity;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
+import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,7 @@ public class BowInfinityItem extends BowItem {
         super(new Properties()
                 .tab(ModTab.TAB)
                 .stacksTo(1)
+                .rarity(ModItems.COSMIC_RARITY)
                 .fireResistant()
         );
         setRegistryName("infinity_bow");
