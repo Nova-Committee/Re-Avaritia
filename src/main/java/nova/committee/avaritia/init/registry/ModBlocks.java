@@ -1,6 +1,7 @@
 package nova.committee.avaritia.init.registry;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -50,22 +51,21 @@ public class ModBlocks {
                 crystal_matrix = new ResourceBlock("crystal_matrix"),
                 compressor = new CompressorBlock()
         );
-
     }
 
     @SubscribeEvent
     public static void registerBlockItems(RegistryEvent.Register<Item> event) {
         final IForgeRegistry<Item> registry = event.getRegistry();
         registry.registerAll(
-                RegistryUtil.blockItem(compressed_crafting_table),
-                RegistryUtil.blockItem(double_compressed_crafting_table),
-                RegistryUtil.blockItem(extreme_crafting_table),
-                RegistryUtil.blockItem(neutron_collector),
-                RegistryUtil.blockItem(compressor),
+                RegistryUtil.blockItem(compressed_crafting_table, Rarity.COMMON),
+                RegistryUtil.blockItem(double_compressed_crafting_table, Rarity.UNCOMMON),
+                RegistryUtil.blockItem(extreme_crafting_table, ModItems.COSMIC_RARITY),
+                RegistryUtil.blockItem(neutron_collector, Rarity.EPIC),
+                RegistryUtil.blockItem(compressor, Rarity.EPIC),
 
-                RegistryUtil.blockItem(neutronium),
-                RegistryUtil.blockItem(infinity),
-                RegistryUtil.blockItem(crystal_matrix)
+                RegistryUtil.blockItem(neutronium, Rarity.EPIC),
+                RegistryUtil.blockItem(infinity, ModItems.COSMIC_RARITY),
+                RegistryUtil.blockItem(crystal_matrix, Rarity.RARE)
         );
     }
 }
