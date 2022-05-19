@@ -4,12 +4,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
 import nova.committee.avaritia.init.registry.ModEntities;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,22 +25,35 @@ import org.jetbrains.annotations.NotNull;
  */
 public class HeavenArrowEntity extends Arrow {
 
-    private Entity shooter;
+    private LivingEntity shooter;
 
     public HeavenArrowEntity(EntityType<? extends Arrow> p_36858_, Level p_36859_) {
         super(p_36858_, p_36859_);
-        this.setBaseDamage(Float.POSITIVE_INFINITY);
+        this.setBaseDamage(10000f);
 
     }
 
-    public static HeavenArrowEntity create(Level level, Entity shooter) {
+    public static HeavenArrowEntity create(Level level, LivingEntity shooter) {
         HeavenArrowEntity entity = new HeavenArrowEntity(ModEntities.HeavenArrow.get(), level);
         entity.setShooter(shooter);
         return entity;
     }
 
-    public void setShooter(Entity shooter) {
+    public void setShooter(LivingEntity shooter) {
         this.shooter = shooter;
+    }
+
+    @Override
+    protected void onHitEntity(@NotNull EntityHitResult result) {
+        super.onHitEntity(result);
+        Entity entity = result.getEntity();
+        if (entity instanceof LivingEntity living) {
+            living.hurt(new DamageSourceInfinitySword(this.shooter), Float.POSITIVE_INFINITY);
+            living.setHealth(0);
+            if (!(living instanceof Player))
+                living.remove(RemovalReason.KILLED);
+            this.remove(RemovalReason.KILLED);
+        }
     }
 
     @Override
@@ -70,14 +87,14 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putDouble("damage", Float.POSITIVE_INFINITY);
     }
 
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.setBaseDamage(compound.getDouble("damage"));
     }

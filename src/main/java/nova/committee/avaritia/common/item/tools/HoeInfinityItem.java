@@ -22,6 +22,7 @@ import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ItemUtil;
 import nova.committee.avaritia.util.ToolHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class HoeInfinityItem extends HoeItem {
     }
 
     @Override
-    public Rarity getRarity(ItemStack pStack) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
         return ModItems.COSMIC_RARITY;
     }
 
@@ -60,18 +61,17 @@ public class HoeInfinityItem extends HoeItem {
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
-
+    public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
         return Math.max(super.getDestroySpeed(stack, state), 6.0f);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
         return super.use(pLevel, pPlayer, pUsedHand);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NotNull InteractionResult useOn(UseOnContext context) {
         var world = context.getLevel();
         var blockpos = context.getClickedPos();
         var block1 = world.getBlockState(blockpos).getBlock();

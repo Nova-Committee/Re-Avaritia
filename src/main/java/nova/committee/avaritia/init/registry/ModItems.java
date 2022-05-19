@@ -97,7 +97,7 @@ public class ModItems {
 
                 endest_pearl = new EndestPearlItem(),
 
-
+                star_fuel = new StarFuelItem(COSMIC_RARITY, "star_fuel"),
                 ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
                 cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
 
@@ -113,14 +113,9 @@ public class ModItems {
                 infinity_catalyst = new ResourceItem(Rarity.EPIC, "infinity_catalyst"),
                 infinity_ingot = new ResourceItem(COSMIC_RARITY, "infinity_ingot"),
 
-
                 record_fragment = new ResourceItem(COSMIC_RARITY, "record_fragment"),
                 singularity = new SingularityItem(p -> p.tab(ModTab.TAB)).setRegistryName("singularity")
         );
-
-        if (Static.isLoad("projecte")) {
-            registry.register(star_fuel = new StarFuelItem(COSMIC_RARITY, "star_fuel"));
-        }
 
 
     }

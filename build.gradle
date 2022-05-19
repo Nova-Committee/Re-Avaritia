@@ -23,7 +23,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 group = 'nova.committee'
-version = '1.18.2-1.0.3'
+version = '1.18.2-1.0.4'
 
 java {
     archivesBaseName = 'Avaritia-Reforged-forge'

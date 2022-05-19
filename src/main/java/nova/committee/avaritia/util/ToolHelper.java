@@ -3,6 +3,7 @@ package nova.committee.avaritia.util;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -147,7 +148,7 @@ public class ToolHelper {
             ItemStackWrapper wrap = e.getKey();
 
             int size = wrap.stack.getMaxStackSize();
-            int fullstacks = (int) Math.floor(count / size);
+            int fullstacks = Mth.floor((float) count / size);
 
             for (int i = 0; i < fullstacks; i++) {
                 count -= size;
