@@ -2,7 +2,8 @@
   "credit": "Made with Blockbench",
   "textures": {
     "1": "avaritia:blocks/craft/extreme_side",
-    "2": "avaritia:blocks/craft/extreme_top"
+    "2": "avaritia:blocks/craft/extreme_top",
+    "particle": "avaritia:blocks/craft/extreme_clean"
   },
   "elements": [
     {
@@ -69,7 +70,7 @@
             16,
             16
           ],
-          "texture": "#missing"
+          "texture": "#2"
         }
       }
     }

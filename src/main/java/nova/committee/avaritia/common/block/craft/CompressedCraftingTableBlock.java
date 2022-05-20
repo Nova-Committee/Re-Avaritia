@@ -1,8 +1,6 @@
 package nova.committee.avaritia.common.block.craft;
 
-import net.minecraft.world.level.block.CraftingTableBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 
 /**
@@ -11,10 +9,9 @@ import net.minecraft.world.level.material.Material;
  * Date: 2022/4/1 21:44
  * Version: 1.0
  */
-public class CompressedCraftingTableBlock extends CraftingTableBlock {
+public class CompressedCraftingTableBlock extends AbstractCraftingTable {
     public CompressedCraftingTableBlock() {
-        super(BlockBehaviour.Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD));
-        setRegistryName("compressed_crafting_table");
+        super(Material.WOOD, SoundType.WOOD, 5F, 100F, true, "compressed_crafting_table");
     }
 
 }

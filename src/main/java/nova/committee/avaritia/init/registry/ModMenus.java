@@ -10,9 +10,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.client.screen.CompressorScreen;
+import nova.committee.avaritia.client.screen.CraftingScreen;
 import nova.committee.avaritia.client.screen.ExtremeCraftingScreen;
 import nova.committee.avaritia.client.screen.NeutronCollectorScreen;
 import nova.committee.avaritia.common.menu.CompressorMenu;
+import nova.committee.avaritia.common.menu.CraftingMenu;
 import nova.committee.avaritia.common.menu.ExtremeCraftingMenu;
 import nova.committee.avaritia.common.menu.NeutronCollectorMenu;
 import nova.committee.avaritia.util.RegistryUtil;
@@ -23,7 +25,7 @@ public class ModMenus {
     public static MenuType<ExtremeCraftingMenu> extreme_crafting_table;
     public static MenuType<NeutronCollectorMenu> neutron_collector;
     public static MenuType<CompressorMenu> compressor;
-
+    public static MenuType<CraftingMenu> crafting;
 
     @SubscribeEvent
     public static void registerContainers(RegistryEvent.Register<MenuType<?>> event) {
@@ -32,7 +34,8 @@ public class ModMenus {
         registry.registerAll(
                 extreme_crafting_table = RegistryUtil.registerContainer("extreme_crafting_table", ExtremeCraftingMenu::create),
                 neutron_collector = RegistryUtil.registerContainer("neutron_collector", NeutronCollectorMenu::create),
-                compressor = RegistryUtil.registerContainer("compressor", CompressorMenu::create)
+                compressor = RegistryUtil.registerContainer("compressor", CompressorMenu::create),
+                crafting = RegistryUtil.registerContainer("base_crafting", CraftingMenu::new)
 
         );
     }
@@ -42,6 +45,7 @@ public class ModMenus {
         MenuScreens.register(extreme_crafting_table, ExtremeCraftingScreen::new);
         MenuScreens.register(neutron_collector, NeutronCollectorScreen::new);
         MenuScreens.register(compressor, CompressorScreen::new);
+        MenuScreens.register(crafting, CraftingScreen::new);
 
     }
 

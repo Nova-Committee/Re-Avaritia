@@ -16,6 +16,7 @@ import nova.committee.avaritia.common.tile.ExtremeCraftingTile;
 import nova.committee.avaritia.init.registry.ModMenus;
 import nova.committee.avaritia.init.registry.ModRecipeTypes;
 import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -74,7 +75,7 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void slotsChanged(Container matrix) {
+    public void slotsChanged(@NotNull Container matrix) {
         var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.RecipeTypes.CRAFTING, matrix, this.world);
 
         if (recipe.isPresent()) {
@@ -88,12 +89,12 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return this.isUsableByPlayer.apply(player);
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slotNumber) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
         var itemstack = ItemStack.EMPTY;
         var slot = this.slots.get(slotNumber);
 
