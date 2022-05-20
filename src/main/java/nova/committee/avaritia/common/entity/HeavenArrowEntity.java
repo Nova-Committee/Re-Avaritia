@@ -1,5 +1,6 @@
 package nova.committee.avaritia.common.entity;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.NetworkHooks;
-import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
 import nova.committee.avaritia.init.registry.ModEntities;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +28,6 @@ public class HeavenArrowEntity extends Arrow {
 
     public HeavenArrowEntity(EntityType<? extends Arrow> p_36858_, Level p_36859_) {
         super(p_36858_, p_36859_);
-        this.setBaseDamage(10000f);
 
     }
 
@@ -46,9 +45,34 @@ public class HeavenArrowEntity extends Arrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
-        if (entity instanceof LivingEntity living && !entity.equals(this.shooter)) {
-            living.hurt(new DamageSourceInfinitySword(this.shooter), Float.POSITIVE_INFINITY);
-            living.setHealth(0);
+        var pos = new BlockPos(entity.getBlockX(), entity.getBlockY(), entity.getBlockZ());
+        var randy = getLevel().random;
+        
+        if (entity instanceof LivingEntity living) {
+        	
+            for (int i = 0; i < 30; i++) {
+                double angle = randy.nextDouble() * 2 * Math.PI;
+                double dist = randy.nextGaussian() * 0.5;
+
+                double x = Math.sin(angle) * dist + pos.getX();
+                double z = Math.cos(angle) * dist + pos.getZ();
+                double y = pos.getY() + 25.0;
+
+                double dangle = randy.nextDouble() * 2 * Math.PI;
+                double ddist = randy.nextDouble() * 0.35;
+                double dx = Math.sin(dangle) * ddist;
+                double dz = Math.cos(dangle) * ddist;
+
+                HeavenSubArrowEntity subArrow = HeavenSubArrowEntity.create(level, x, y, z);
+                if (shooter != null) subArrow.setOwner(shooter);
+                subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
+                subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
+                subArrow.setCritArrow(true);
+                subArrow.pickup = pickup;
+
+                level.addFreshEntity(subArrow);
+            }
+            
             this.remove(RemovalReason.KILLED);
         }
     }
