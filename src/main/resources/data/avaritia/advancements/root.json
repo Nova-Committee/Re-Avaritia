@@ -9,8 +9,10 @@
     "description": {
       "translate": "advancements.avaritia.diamond_lattice.desc"
     },
-    "frame": "task",
-    "background": "avaritia:textures/blocks/resource/neutronium.png"
+    "background": "avaritia:textures/blocks/resource/neutronium.png",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "diamond_lattice": {
