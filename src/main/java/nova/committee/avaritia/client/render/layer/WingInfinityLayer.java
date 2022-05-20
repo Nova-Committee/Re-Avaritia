@@ -35,9 +35,9 @@ public class WingInfinityLayer extends RenderLayer<Player, PlayerModel<Player>> 
 
         var loc = new ResourceLocation(Static.MOD_ID, "textures/models/armor/infinity_armor_wing.png");
 
-        if (InfinityHandler.isInfinite(player)) {
+        if (InfinityHandler.isInfiniteChestplate(player)) {
             var model = new WingModel(WingModel.createBodyLayer().bakeRoot());
-            if (!player.isInvisible()) {
+            if (!player.isInvisible() && player.getAbilities().flying) {
                 VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderType.entityTranslucentCull(loc));
                 poseStack.pushPose();
 

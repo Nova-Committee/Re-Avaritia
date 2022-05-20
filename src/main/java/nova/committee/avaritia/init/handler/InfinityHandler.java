@@ -70,6 +70,14 @@ public class InfinityHandler {
         }
         return true;
     }
+    
+    public static boolean isInfiniteChestplate(Player player) {
+        ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
+        if (stack.isEmpty() || !(stack.getItem() instanceof ArmorInfinityItem))
+        	return false;
+
+        return true;
+    }
 
 
     public static void enableItemCapture() {
