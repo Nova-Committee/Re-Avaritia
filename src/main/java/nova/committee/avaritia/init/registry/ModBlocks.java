@@ -41,8 +41,8 @@ public class ModBlocks {
         final IForgeRegistry<Block> registry = event.getRegistry();
 
         registry.registerAll(
-                compressed_crafting_table = new CompressedCraftingTableBlock(),
-                double_compressed_crafting_table = new DoubleCompressedCraftingTableBlock(),
+                compressed_crafting_table = new CompressedCraftingTableBlock(2.5F),
+                double_compressed_crafting_table = new DoubleCompressedCraftingTableBlock(20F),
                 extreme_crafting_table = new ExtremeCraftingTableBlock(),
                 neutron_collector = new NeutronCollectorBlock(),
 
