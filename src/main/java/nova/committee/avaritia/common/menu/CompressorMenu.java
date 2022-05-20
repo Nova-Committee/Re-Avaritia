@@ -11,6 +11,7 @@ import nova.committee.avaritia.api.common.slot.OutputSlot;
 import nova.committee.avaritia.common.tile.CompressorTileEntity;
 import nova.committee.avaritia.init.registry.ModMenus;
 import nova.committee.avaritia.util.item.BaseItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -60,7 +61,7 @@ public class CompressorMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slotNumber) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
         var itemstack = ItemStack.EMPTY;
         var slot = this.slots.get(slotNumber);
 
@@ -108,11 +109,15 @@ public class CompressorMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return this.isUsableByPlayer.apply(player);
     }
 
     public BlockPos getPos() {
         return this.pos;
+    }
+
+    public int getProgress() {
+        return data.get(0);
     }
 }

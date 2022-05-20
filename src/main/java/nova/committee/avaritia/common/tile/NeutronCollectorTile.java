@@ -1,6 +1,7 @@
 package nova.committee.avaritia.common.tile;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,6 +35,8 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     private final BaseItemStackHandler inventory;
     private int progress;
 
+    private SimpleContainerData data = new SimpleContainerData(1);
+
     public NeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile, pos, state);
         this.inventory = createInventoryHandler(null);
@@ -44,7 +47,9 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
             var stack = new ItemStack(ModItems.neutron_pile);
-            if (++tile.progress >= PRODUCTION_TICKS) {
+            tile.progress++;
+            tile.data.set(0, tile.progress);
+            if (tile.progress >= PRODUCTION_TICKS) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
                 } else if (result.is(ModItems.neutron_pile)) {
@@ -60,14 +65,22 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
 
     }
 
-    public int getProgress() {
-        return progress;
-    }
-
     public static BaseItemStackHandler createInventoryHandler(Runnable onContentsChanged) {
         var inventory = new BaseItemStackHandler(1, onContentsChanged);
         inventory.setOutputSlots(0);
         return inventory;
+    }
+
+    @Override
+    public void load(@NotNull CompoundTag tag) {
+        super.load(tag);
+        this.progress = tag.getInt("progress");
+    }
+
+    @Override
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putInt("progress", progress);
     }
 
     @Override
@@ -81,14 +94,14 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
 
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Localizable.of("container.neutron_collector").build();
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return NeutronCollectorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, new SimpleContainerData(10), this.getBlockPos());
+        return NeutronCollectorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, data, this.getBlockPos());
     }
 
 }

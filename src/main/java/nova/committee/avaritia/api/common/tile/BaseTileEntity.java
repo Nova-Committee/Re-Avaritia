@@ -20,6 +20,7 @@ public class BaseTileEntity extends BlockEntity {
         super(type, pos, state);
     }
 
+    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this, BlockEntity::saveWithFullMetadata);
     }

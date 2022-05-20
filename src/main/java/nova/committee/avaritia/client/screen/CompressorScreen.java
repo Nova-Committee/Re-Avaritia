@@ -68,6 +68,21 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
         }
 
+        if (mouseX > x + 89 && mouseX < x + 110 && mouseY > y + 35 && mouseY < y + 51) {
+            List<Component> tooltip = new ArrayList<>();
+
+            if (this.getProgress() < 1) {
+                tooltip.add(ModTooltips.PROGRESS_EMPTY.color(ChatFormatting.WHITE).build());
+            } else {
+
+                var text = new TextComponent(number(this.getProgress()) + " / " + number(this.getTimeRequired()));
+
+                tooltip.add(text);
+            }
+
+            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
+        }
+
 //        if (mouseX > x + 68 && mouseX < x + 79 && mouseY > y + 28 && mouseY < y + 39) {
 //            if (this.isEjecting()) {
 //                this.renderTooltip(matrix, ModTooltips.EJECTING.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
@@ -165,7 +180,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         if (this.tile == null)
             return 0;
 
-        return this.tile.getProgress();
+        return this.menu.getProgress();
     }
 
     public int getMaterialCount() {

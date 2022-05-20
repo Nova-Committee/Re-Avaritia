@@ -16,6 +16,7 @@ import nova.committee.avaritia.common.menu.ExtremeCraftingMenu;
 import nova.committee.avaritia.init.registry.ModTileEntities;
 import nova.committee.avaritia.util.item.BaseItemStackHandler;
 import nova.committee.avaritia.util.lang.Localizable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -40,7 +41,7 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     }
 
     @Override
-    public BaseItemStackHandler getInventory() {
+    public @NotNull BaseItemStackHandler getInventory() {
         return inventory;
     }
 
@@ -56,7 +57,7 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
         return !this.remove && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? LazyOptional.empty() : super.getCapability(cap, side);
     }
 

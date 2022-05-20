@@ -68,17 +68,17 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int j = this.getGuiTop();
         blit(pPoseStack, i, j, 0.0F, 0.0F, 175, 165, 255, 255);
         if (this.getProgress() > 0) {
-            int i2 = this.getProgressBarScaled(21);
-            this.blit(pPoseStack, i + 100, j + 48, 176, 0, i2 + 1, 16);
+            int i2 = this.getProgressBarScaled(16);
+            this.blit(pPoseStack, i + 100, j + 47 - i2, 176, 16 - i2, 3, i2);
         }
-        this.blit(pPoseStack, i + 100, j + 48 - getProgressBarScaled(16), 176, 16 - getProgressBarScaled(16), 1, getProgressBarScaled(16));
+        //this.blit(pPoseStack, i + 100, j + 48 - getProgressBarScaled(16), 176, 16 - getProgressBarScaled(16), 1, getProgressBarScaled(16));
     }
 
     public int getProgress() {
         if (this.tile == null)
             return 0;
 
-        return this.tile.getProgress();
+        return this.menu.getProgress();
     }
 
     public int getTimeRequired() {

@@ -25,8 +25,6 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
     private final ContainerData data;
     private final BlockPos pos;
 
-    private final NeutronCollectorTile tile;
-
     private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(type, id, playerInventory, p -> false, NeutronCollectorTile.createInventoryHandler(null), new SimpleContainerData(10), buffer.readBlockPos());
     }
@@ -36,7 +34,6 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
         this.isUsableByPlayer = isUsableByPlayer;
         this.data = data;
         this.pos = pos;
-        this.tile = (NeutronCollectorTile) playerInventory.player.level.getBlockEntity(pos);
         this.addSlot(new OutputSlot(inventory, 0, 80, 32));
 
         for (int i = 0; i < 3; i++) {
@@ -61,7 +58,7 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return this.isUsableByPlayer.apply(player);
     }
 
@@ -112,7 +109,7 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
         return itemstack;
     }
 
-    public int getTimer() {
-        return (int) Math.ceil(tile.getProgress() / 3600.0 * 16);
+    public int getProgress() {
+        return data.get(0);
     }
 }

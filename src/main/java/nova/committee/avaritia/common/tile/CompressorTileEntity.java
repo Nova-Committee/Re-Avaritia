@@ -37,6 +37,8 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     private int progress;
     private boolean ejecting = false;
 
+    private final SimpleContainerData data = new SimpleContainerData(1);
+
     public CompressorTileEntity(BlockPos pos, BlockState state) {
         super(ModTileEntities.compressor_tile, pos, state);
         this.inventory = createInventoryHandler(null);
@@ -88,6 +90,8 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
 
             if (tile.recipe != null) {
                 if (tile.materialCount >= tile.recipe.getInputCount()) {
+                    tile.progress++;
+                    tile.data.set(0, tile.progress);
                     if (tile.progress >= tile.recipe.getTimeCost()) {
                         var result = tile.recipe.assemble(tile.inventory);
 
@@ -99,10 +103,9 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
                             if (tile.materialCount <= 0) {
                                 tile.materialStack = ItemStack.EMPTY;
                             }
+                            if (!mark)
+                                mark = true;
                         }
-                    } else {
-                        ++tile.progress;
-                        //tile.process(tile.recipe);
                     }
                 }
             }
@@ -143,7 +146,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         this.materialCount = tag.getInt("MaterialCount");
         this.materialStack = ItemStack.of(tag.getCompound("MaterialStack"));
@@ -152,7 +155,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
+    public void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("MaterialCount", this.materialCount);
         tag.put("MaterialStack", this.materialStack.serializeNBT());

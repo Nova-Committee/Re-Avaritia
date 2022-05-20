@@ -31,17 +31,19 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
     public abstract @NotNull BaseItemStackHandler getInventory();
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         this.getInventory().deserializeNBT(tag);
     }
 
-    public void saveAdditional(CompoundTag tag) {
+    @Override
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.merge(this.getInventory().serializeNBT());
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
         return !this.isRemoved() && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, this.capability) : super.getCapability(cap, side);
     }
 

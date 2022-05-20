@@ -195,7 +195,7 @@ public class AbilityHandler {
             boolean sneaking = entity.isCrouching();
 
             float speed = 0.15f * (flying ? 1.1f : 1.0f)
-                    //* (swimming ? 1.2f : 1.0f)
+                    * (swimming ? 1.2f : 1.0f)
                     * (sneaking ? 0.1f : 1.0f);
 
             if (entity.zza > 0f) {
@@ -266,7 +266,7 @@ public class AbilityHandler {
     }
 
     @SubscribeEvent
-    public void entityContstructedEvent(EntityEvent.EntityConstructing event) {
+    public void entityConstructEvent(EntityEvent.EntityConstructing event) {
         if (event.getEntity() instanceof LivingEntity entity) {
             stripAbilities(entity);
         }
