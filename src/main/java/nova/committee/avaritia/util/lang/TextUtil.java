@@ -1,7 +1,7 @@
 package nova.committee.avaritia.util.lang;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
+import net.minecraft.Util;
 
 import static net.minecraft.ChatFormatting.*;
 
@@ -30,7 +30,7 @@ public class TextUtil {
             delay = 0.001;
         }
 
-        int offset = (int) Math.floor((Minecraft.getInstance().getFrameTime()) / delay) % colours.length;
+        int offset = (int) Math.floor(Util.getMillis() / delay) % colours.length;
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);

@@ -38,6 +38,9 @@ public class SyncMachinePacket extends IPacket<SyncMachinePacket> {
 
     @Override
     public void run(SyncMachinePacket msg, Supplier<NetworkEvent.Context> ctx) {
+    	if(ctx.get().getDirection().getReceptionSide().isServer())
+    		return;
+    	
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
                 NeutronCollectorTile tile = (NeutronCollectorTile) ctx.get().getSender().getLevel().getBlockEntity(pos);

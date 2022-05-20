@@ -21,7 +21,6 @@ public class HeavenSubArrowEntity extends Arrow {
 
     public HeavenSubArrowEntity(EntityType<? extends Arrow> p_36858_, Level p_36859_) {
         super(p_36858_, p_36859_);
-        this.setBaseDamage(10000.0f);
     }
 
     public static HeavenSubArrowEntity create(Level level, double x, double y, double z) {

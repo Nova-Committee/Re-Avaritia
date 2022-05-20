@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
@@ -47,6 +48,7 @@ public class SwordInfinityItem extends SwordItem {
         if (player.level.isClientSide) {
             return true;
         }
+        
         if (victim instanceof EnderDragon drageon && player instanceof Player player1) {
             drageon.hurt(drageon.head, new DamageSourceInfinitySword(player1), Float.POSITIVE_INFINITY);
         } else if (victim instanceof Player pvp) {
@@ -58,6 +60,12 @@ public class SwordInfinityItem extends SwordItem {
 
         victim.lastHurtByPlayerTime = 60;
         victim.getCombatTracker().recordDamage(new DamageSourceInfinitySword(player), victim.getHealth(), victim.getHealth());
+        
+        if(victim instanceof Player victimP && InfinityHandler.isInfinite(victimP)) {
+        	victimP.level.explode(player, victimP.getBlockX(), victimP.getBlockY(), victimP.getBlockZ(), 25.0f, Explosion.BlockInteraction.NONE);
+        	return true;
+        }
+        
         victim.setHealth(0);
         victim.die(new DamageSourceInfinitySword(player));
         return true;

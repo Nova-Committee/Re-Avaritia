@@ -1,88 +1,12 @@
 {
-  "credit": "Made with Blockbench",
-  "textures": {
-    "0": "avaritia:blocks/machine/collector/top",
-    "1": "avaritia:blocks/machine/collector/side",
-    "2": "avaritia:blocks/machine/collector/active",
-    "particle": "avaritia:blocks/machine/collector/top"
-  },
-  "elements": [
-    {
-      "from": [
-        0,
-        0,
-        0
-      ],
-      "to": [
-        16,
-        16,
-        16
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#2"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#0"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#0"
-        }
-      }
-    }
-  ],
-  "display": {
-    "thirdperson_righthand": {
-      "scale": [
-        0.5,
-        0.5,
-        0.5
-      ]
-    }
+	"parent": "minecraft:block/cube",
+    "textures": {
+		"north": "avaritia:blocks/machine/collector/side",
+		"east": "avaritia:blocks/machine/collector/side",
+		"south": "avaritia:blocks/machine/collector/active",
+		"west": "avaritia:blocks/machine/collector/side",
+		"up": "avaritia:blocks/machine/collector/top",
+		"down": "avaritia:blocks/machine/collector/side",
+		"particle": "avaritia:blocks/machine/collector/top"
   }
 }

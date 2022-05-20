@@ -21,7 +21,6 @@ import net.minecraft.world.phys.Vec3;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ToolHelper;
 import nova.committee.avaritia.util.item.ItemStackWrapper;
 
@@ -45,7 +44,6 @@ public class MatterClusterItem extends Item {
 
     public MatterClusterItem() {
         super(new Properties()
-                .tab(ModTab.TAB)
                 .stacksTo(1));
         setRegistryName("matter_cluster");
     }

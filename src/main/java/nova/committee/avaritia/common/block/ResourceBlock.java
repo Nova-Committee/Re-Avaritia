@@ -14,8 +14,8 @@ import nova.committee.avaritia.api.common.block.BaseBlock;
  * Version: 1.0
  */
 public class ResourceBlock extends BaseBlock {
-    public ResourceBlock(String registryName) {
-        super(Material.METAL, SoundType.METAL, 25f, 1000f, true);
+    public ResourceBlock(SoundType soundType, String registryName) {
+        super(Material.METAL, soundType, 25f, 1000f, true);
         setRegistryName(registryName);
     }
 
