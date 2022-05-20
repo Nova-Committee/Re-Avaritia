@@ -34,7 +34,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public CompressorBlock() {
-        super(Material.METAL, SoundType.METAL, 5.0F, 10.0F, true);
+        super(Material.METAL, SoundType.METAL, 50F, 2000F, true);
         setRegistryName("neutronium_compressor");
     }
 

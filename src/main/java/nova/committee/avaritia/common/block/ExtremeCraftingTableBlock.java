@@ -6,15 +6,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
+import nova.committee.avaritia.api.common.block.BaseTileEntityBlock;
 import nova.committee.avaritia.common.tile.ExtremeCraftingTile;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -23,17 +23,15 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 7:38
  * Version: 1.0
  */
-public class ExtremeCraftingTableBlock extends BaseEntityBlock {
+public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
 
     public ExtremeCraftingTableBlock() {
-        super(BlockBehaviour.Properties.of(Material.METAL)
-                .strength(2000f, 50f)
-                .sound(SoundType.GLASS));
+        super(Material.METAL, SoundType.GLASS, 100f, 2000F, true);
         setRegistryName("extreme_crafting_table");
     }
 
     @Override
-    public InteractionResult use(BlockState p_60503_, Level level, BlockPos pos, Player player, InteractionHand p_60507_, BlockHitResult p_60508_) {
+    public @NotNull InteractionResult use(@NotNull BlockState p_60503_, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
@@ -45,7 +43,7 @@ public class ExtremeCraftingTableBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
@@ -59,12 +57,12 @@ public class ExtremeCraftingTableBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new ExtremeCraftingTile(pos, state);
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState p_49232_) {
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState p_49232_) {
         return RenderShape.MODEL;
     }
 }

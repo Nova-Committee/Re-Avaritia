@@ -5,7 +5,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -50,8 +49,6 @@ public class HeavenArrowEntity extends Arrow {
         if (entity instanceof LivingEntity living) {
             living.hurt(new DamageSourceInfinitySword(this.shooter), Float.POSITIVE_INFINITY);
             living.setHealth(0);
-            if (!(living instanceof Player))
-                living.remove(RemovalReason.KILLED);
             this.remove(RemovalReason.KILLED);
         }
     }

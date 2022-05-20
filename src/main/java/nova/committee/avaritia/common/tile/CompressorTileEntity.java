@@ -36,7 +36,6 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     private int materialCount;
     private int progress;
     private boolean ejecting = false;
-
     private final SimpleContainerData data = new SimpleContainerData(1);
 
     public CompressorTileEntity(BlockPos pos, BlockState state) {
@@ -92,7 +91,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
                 if (tile.materialCount >= tile.recipe.getInputCount()) {
                     tile.progress++;
                     tile.data.set(0, tile.progress);
-                    if (tile.progress >= tile.recipe.getTimeCost()) {
+                    if (tile.progress >= tile.recipe.getTimeRequire()) {
                         var result = tile.recipe.assemble(tile.inventory);
 
                         if (StackHelper.canCombineStacks(result, output)) {
@@ -171,7 +170,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return CompressorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, new SimpleContainerData(0), this.getBlockPos());
+        return CompressorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, data, this.getBlockPos());
     }
 
     public ItemStack getMaterialStack() {
@@ -197,11 +196,6 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
         }
     }
 
-
-    public int getProgress() {
-        return this.progress;
-    }
-
     public boolean hasRecipe() {
         return this.recipe != null;
     }
@@ -219,8 +213,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
 
     public int getTimeRequired() {
         if (this.hasRecipe())
-            return this.recipe.getTimeCost();
-
+            return this.recipe.getTimeRequire();
         return 0;
     }
 

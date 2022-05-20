@@ -37,7 +37,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
 
 
     public NeutronCollectorBlock() {
-        super(Material.METAL, SoundType.METAL, 20f, 20f);
+        super(Material.METAL, SoundType.METAL, 50f, 2000f);
         setRegistryName("neutron_collector");
 
     }

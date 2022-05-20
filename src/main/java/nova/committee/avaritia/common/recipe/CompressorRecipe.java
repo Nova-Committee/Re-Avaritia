@@ -29,15 +29,15 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     private final ItemStack output;
     private final int inputCount;
 
-    private final int timeCost;
+    private final int timeRequire;
 
 
-    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeCost) {
+    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeRequire) {
         this.recipeId = recipeId;
         this.inputs = NonNullList.of(Ingredient.EMPTY, input);
         this.output = output;
         this.inputCount = inputCount;
-        this.timeCost = timeCost;
+        this.timeRequire = timeRequire;
 
     }
 
@@ -62,8 +62,8 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public int getTimeCost() {
-        return timeCost;
+    public int getTimeRequire() {
+        return timeRequire;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
             recipe.inputs.get(0).toNetwork(buffer);
             buffer.writeItem(recipe.output);
             buffer.writeInt(recipe.inputCount);
-            buffer.writeInt(recipe.timeCost);
+            buffer.writeInt(recipe.timeRequire);
 
 
         }

@@ -68,20 +68,20 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
         }
 
-        if (mouseX > x + 89 && mouseX < x + 110 && mouseY > y + 35 && mouseY < y + 51) {
-            List<Component> tooltip = new ArrayList<>();
-
-            if (this.getProgress() < 1) {
-                tooltip.add(ModTooltips.PROGRESS_EMPTY.color(ChatFormatting.WHITE).build());
-            } else {
-
-                var text = new TextComponent(number(this.getProgress()) + " / " + number(this.getTimeRequired()));
-
-                tooltip.add(text);
-            }
-
-            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
-        }
+//        if (mouseX > x + 89 && mouseX < x + 110 && mouseY > y + 35 && mouseY < y + 51) {
+//            List<Component> tooltip = new ArrayList<>();
+//
+//            if (this.getProgress() < 1) {
+//                tooltip.add(ModTooltips.PROGRESS_EMPTY.color(ChatFormatting.WHITE).build());
+//            } else {
+//
+//                var text = new TextComponent(number(this.getProgress()) + " / " + number(this.getTimeRequired()));
+//
+//                tooltip.add(text);
+//            }
+//
+//            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
+//        }
 
 //        if (mouseX > x + 68 && mouseX < x + 79 && mouseY > y + 28 && mouseY < y + 39) {
 //            if (this.isEjecting()) {
@@ -115,7 +115,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             }
 
             if (this.getProgress() > 0) {
-                int i2 = this.getProgressBarScaled(21);
+                int i2 = this.getProgressBarScaled(22);
                 this.blit(stack, x + 89, y + 35, 176, 0, i2 + 1, 16);
             }
 
@@ -213,7 +213,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     public int getProgressBarScaled(int pixels) {
         int i = this.getProgress();
         int j = this.getTimeRequired();
-        return (int) (j != 0 && i != 0 ? (long) (i / j) * pixels : 0);
+        return j != 0 && i != 0 ? i * pixels / j : 0;
     }
 
 }
