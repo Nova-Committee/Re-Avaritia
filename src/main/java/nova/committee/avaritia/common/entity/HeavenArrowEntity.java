@@ -46,7 +46,7 @@ public class HeavenArrowEntity extends Arrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
-        if (entity instanceof LivingEntity living) {
+        if (entity instanceof LivingEntity living && !entity.equals(this.shooter)) {
             living.hurt(new DamageSourceInfinitySword(this.shooter), Float.POSITIVE_INFINITY);
             living.setHealth(0);
             this.remove(RemovalReason.KILLED);
