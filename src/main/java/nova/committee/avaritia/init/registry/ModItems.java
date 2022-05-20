@@ -101,19 +101,19 @@ public class ModItems {
                 ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
                 cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
 
-                diamond_lattice = new ResourceItem(Rarity.UNCOMMON, "diamond_lattice"),
-                crystal_matrix_ingot = new ResourceItem(Rarity.RARE, "crystal_matrix_ingot"),
+                diamond_lattice = new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", false),
+                crystal_matrix_ingot = new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", true),
 
-                neutron_pile = new ResourceItem(Rarity.UNCOMMON, "neutron_pile"),
-                neutron_nugget = new ResourceItem(Rarity.UNCOMMON, "neutron_nugget"),
-                neutronium_ingot = new ResourceItem(Rarity.RARE, "neutronium_ingot"),
-                neutronium_gear = new ResourceItem(Rarity.EPIC, "neutronium_gear"),
+                neutron_pile = new ResourceItem(Rarity.UNCOMMON, "neutron_pile", true),
+                neutron_nugget = new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", true),
+                neutronium_ingot = new ResourceItem(Rarity.RARE, "neutronium_ingot", true),
+                neutronium_gear = new ResourceItem(Rarity.EPIC, "neutronium_gear", true),
 
-                infinity_nugget = new ResourceItem(Rarity.RARE, "infinity_nugget"),
-                infinity_catalyst = new ResourceItem(Rarity.EPIC, "infinity_catalyst"),
-                infinity_ingot = new ResourceItem(COSMIC_RARITY, "infinity_ingot"),
+                infinity_nugget = new ResourceItem(Rarity.RARE, "infinity_nugget", true),
+                infinity_catalyst = new ResourceItem(Rarity.EPIC, "infinity_catalyst", true),
+                infinity_ingot = new ResourceItem(COSMIC_RARITY, "infinity_ingot", true),
 
-                record_fragment = new ResourceItem(COSMIC_RARITY, "record_fragment"),
+                record_fragment = new ResourceItem(COSMIC_RARITY, "record_fragment", true),
                 singularity = new SingularityItem(p -> p.tab(ModTab.TAB)).setRegistryName("singularity")
         );
 

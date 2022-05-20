@@ -26,12 +26,14 @@ import java.util.List;
 public class ResourceItem extends Item {
     private final Rarity rarity;
     private final String name;
+    private final boolean needsTooltip;
 
-    public ResourceItem(Rarity rarity, String registryName) {
+    public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip) {
         super(new Properties().tab(ModTab.TAB));
         setRegistryName(registryName);
         this.rarity = rarity;
         this.name = registryName;
+		this.needsTooltip = needsTooltip;
     }
 
     @Override
@@ -42,7 +44,8 @@ public class ResourceItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> components, TooltipFlag p_41424_) {
-        components.add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip." + name + ".desc")));
+    	if(needsTooltip)
+    		components.add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip." + name + ".desc")));
     }
 
     @Nullable
