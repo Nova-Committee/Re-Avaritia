@@ -98,7 +98,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
         ingredients.setInputIngredients(recipe.getIngredients());
     }
 
-    @Override
+	@Override
     public void setRecipe(IRecipeLayout layout, ICraftRecipe recipe, IIngredients ingredients) {
         var stacks = layout.getItemStacks();
         var inputs = ingredients.getInputs(VanillaTypes.ITEM);
@@ -110,7 +110,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 int index = 1 + j + (i * 9);
-                stacks.init(index, true, j * 18, i * 18);
+                stacks.init(index, true, j * 18 + 1, i * 18 + 1);
             }
         }
 
