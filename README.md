@@ -21,7 +21,7 @@ This mod adds all from Avaritia.
 
 ## Authors
 
-- Programmer: `cnlimiter`
+- Programmer: `cnlimiter` `Asek3` `MikhailTapio`
 
 ## License
 
