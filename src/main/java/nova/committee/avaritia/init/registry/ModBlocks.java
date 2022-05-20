@@ -3,6 +3,7 @@ package nova.committee.avaritia.init.registry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -46,9 +47,9 @@ public class ModBlocks {
                 extreme_crafting_table = new ExtremeCraftingTableBlock(),
                 neutron_collector = new NeutronCollectorBlock(),
 
-                neutronium = new ResourceBlock("neutronium"),
-                infinity = new ResourceBlock("infinity"),
-                crystal_matrix = new ResourceBlock("crystal_matrix"),
+                neutronium = new ResourceBlock(SoundType.METAL ,"neutronium"),
+                infinity = new ResourceBlock(SoundType.METAL, "infinity"),
+                crystal_matrix = new ResourceBlock(SoundType.GLASS, "crystal_matrix"),
                 compressor = new CompressorBlock()
         );
     }
