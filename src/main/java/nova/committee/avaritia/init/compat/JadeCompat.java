@@ -16,6 +16,7 @@ import nova.committee.avaritia.init.ModTooltips;
  */
 @WailaPlugin
 public class JadeCompat implements IWailaPlugin {
+
     @Override
     public void register(IRegistrar registrar) {
         registrar.registerComponentProvider((tooltip, accessor, config) -> {

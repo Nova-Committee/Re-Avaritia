@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.CraftingTableBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -24,12 +25,9 @@ import net.minecraft.world.phys.BlockHitResult;
  * Date: 2022/4/1 21:44
  * Version: 1.0
  */
-public class CompressedCraftingTableBlock extends CraftingTableBlock {
-	private static final Component CONTAINER_TITLE = new TranslatableComponent("container.crafting");
-	
-    public CompressedCraftingTableBlock(float strength) {
-        super(BlockBehaviour.Properties.of(Material.WOOD).strength(strength).sound(SoundType.WOOD));
-        setRegistryName("compressed_crafting_table");
+public class CompressedCraftingTableBlock extends AbstractCraftingTable {
+    public CompressedCraftingTableBlock() {
+        super(Material.WOOD, SoundType.WOOD, 5F, 100F, true, "compressed_crafting_table");
     }
    
     @Override

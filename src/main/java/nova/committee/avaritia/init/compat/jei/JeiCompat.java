@@ -2,8 +2,10 @@ package nova.committee.avaritia.init.compat.jei;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import nova.committee.avaritia.Static;
@@ -62,6 +64,7 @@ public class JeiCompat implements IModPlugin {
 
             registration.addRecipes(recipes.getOrDefault(1, new ArrayList<>()), ExtremeCraftingTableCategory.UID);
 
+            registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.asItem()), VanillaTypes.ITEM_STACK, new TranslatableComponent("jei.tooltip.avaritia.neutron_collector"));
 
         }
 

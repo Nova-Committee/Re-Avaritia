@@ -46,13 +46,13 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Localizable.of("container.extreme_crafting_table").build();
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
+    public AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
         return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this::isUsableByPlayer, this.inventory);
     }
 
