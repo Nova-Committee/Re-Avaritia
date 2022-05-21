@@ -82,7 +82,7 @@ public class CompressorMenu extends AbstractContainerMenu {
                         return ItemStack.EMPTY;
                     }
                 } else if (slotNumber < 29) {
-                    if (!this.moveItemStackTo(itemstack1, 29, 38, false)) {
+                    if (!this.moveItemStackTo(itemstack1, 30, 38, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (slotNumber < 38) {

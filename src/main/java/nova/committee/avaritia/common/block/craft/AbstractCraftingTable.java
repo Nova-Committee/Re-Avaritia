@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import nova.committee.avaritia.api.common.block.BaseBlock;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -33,18 +34,16 @@ public class AbstractCraftingTable extends BaseBlock {
     }
 
     public static MenuProvider getCrafterContainerElement(Player player, Level world, BlockPos pos) {
-        return new SimpleMenuProvider((p_52229_, p_52230_, p_52231_) -> {
-            return new CraftingMenu(0, player.getInventory(), ContainerLevelAccess.create(world, pos)) {
-                @Override
-                public boolean stillValid(Player playerIn) {
-                    return true;
-                }
-            };
+        return new SimpleMenuProvider((p_52229_, p_52230_, p_52231_) -> new CraftingMenu(0, player.getInventory(), ContainerLevelAccess.create(world, pos)) {
+            @Override
+            public boolean stillValid(@NotNull Player playerIn) {
+                return true;
+            }
         }, CONTAINER_TITLE);
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    public @NotNull InteractionResult use(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
