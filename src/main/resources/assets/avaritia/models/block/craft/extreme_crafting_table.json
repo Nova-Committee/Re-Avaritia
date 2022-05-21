@@ -1,88 +1,12 @@
 {
-  "parent": "minecraft:block/cube",
-  "credit": "Made with Blockbench",
-  "textures": {
-    "1": "avaritia:blocks/craft/extreme_side",
-    "2": "avaritia:blocks/craft/extreme_top",
-    "particle": "avaritia:blocks/resource/crystal_matrix"
-  },
-  "elements": [
-    {
-      "from": [
-        0,
-        0,
-        0
-      ],
-      "to": [
-        16,
-        16,
-        16
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#1"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#2"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#2"
-        }
-      }
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "north": "avaritia:blocks/craft/extreme_side",
+        "east": "avaritia:blocks/craft/extreme_side",
+        "south": "avaritia:blocks/craft/extreme_side",
+        "west": "avaritia:blocks/craft/extreme_side",
+        "up": "avaritia:blocks/craft/extreme_top",
+        "down": "avaritia:blocks/resource/crystal_matrix",
+        "particle": "avaritia:blocks/resource/crystal_matrix"
     }
-  ],
-  "display": {
-    "thirdperson_righthand": {
-      "scale": [
-        0.5,
-        0.5,
-        0.5
-      ]
-    }
-  }
 }
