@@ -42,12 +42,12 @@ public class ModBlocks {
         final IForgeRegistry<Block> registry = event.getRegistry();
 
         registry.registerAll(
-                compressed_crafting_table = new CompressedCraftingTableBlock(2.5F),
-                double_compressed_crafting_table = new DoubleCompressedCraftingTableBlock(20F),
+                compressed_crafting_table = new CompressedCraftingTableBlock(),
+                double_compressed_crafting_table = new DoubleCompressedCraftingTableBlock(),
                 extreme_crafting_table = new ExtremeCraftingTableBlock(),
                 neutron_collector = new NeutronCollectorBlock(),
 
-                neutronium = new ResourceBlock(SoundType.METAL ,"neutronium"),
+                neutronium = new ResourceBlock(SoundType.METAL, "neutronium"),
                 infinity = new ResourceBlock(SoundType.METAL, "infinity"),
                 crystal_matrix = new ResourceBlock(SoundType.GLASS, "crystal_matrix"),
                 compressor = new CompressorBlock()
