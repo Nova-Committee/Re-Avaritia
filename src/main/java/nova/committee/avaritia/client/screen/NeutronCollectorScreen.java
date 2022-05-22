@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.api.client.screen.BaseContainerScreen;
@@ -23,7 +24,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     private NeutronCollectorTile tile;
 
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, BACKGROUND, 175, 165, 255, 255);
+        super(container, inventory, title, BACKGROUND, 176, 166, 256, 256);
 
 
     }
@@ -55,8 +56,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        this.font.draw(stack, title, (float) (175 / 2 - this.font.width(title) / 2), 6.0F, 4210752);
-        this.font.draw(stack, this.playerInventoryTitle, 8.0F, 165 - 94.0F, 4210752);
+        this.font.draw(stack, title, (float) (176 / 2 - this.font.width(title) / 2), 6.0F, 4210752);
+        this.font.draw(stack, this.playerInventoryTitle, 8.0F, 166 - 94.0F, 4210752);
     }
 
     @Override
@@ -66,10 +67,10 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         RenderSystem.setShaderTexture(0, BACKGROUND);
         int i = this.getGuiLeft();
         int j = this.getGuiTop();
-        blit(pPoseStack, i, j, 0.0F, 0.0F, 175, 165, 255, 255);
+        blit(pPoseStack, i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
         if (this.getProgress() > 0) {
-            int i2 = this.getProgressBarScaled(16);
-            this.blit(pPoseStack, i + 100, j + 48 - i2, 176, 16 - i2, 2, i2);
+            int i2 = this.getProgressBarScaled(18);
+            this.blit(pPoseStack, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
         }
     }
 
@@ -88,7 +89,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     public int getProgressBarScaled(int pixels) {
-        int i = this.getProgress();
+        int i = Mth.clamp(this.getProgress(), 0, this.getTimeRequired());
         int j = this.getTimeRequired();
         return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
     }

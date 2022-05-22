@@ -1,5 +1,6 @@
 package nova.committee.avaritia.init.proxy;
 
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.player.Player;
@@ -12,8 +13,10 @@ import nova.committee.avaritia.client.model.GapingVoidModel;
 import nova.committee.avaritia.client.model.WingModel;
 import nova.committee.avaritia.client.render.layer.EyeInfinityLayer;
 import nova.committee.avaritia.client.render.layer.WingInfinityLayer;
+import nova.committee.avaritia.client.render.tile.InfinitatoTileRender;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModMenus;
+import nova.committee.avaritia.init.registry.ModTileEntities;
 
 /**
  * Description:
@@ -45,11 +48,18 @@ public class ClientProxy implements IProxy {
         }
     }
 
+    private void addTESR(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            BlockEntityRenderers.register(ModTileEntities.infinitato_tile, InfinitatoTileRender::new);
+        });
+    }
+
 
     public void onClientSetUpEvent(FMLClientSetupEvent event) {
         //ClientRegistry.registerKeyBinding(openKey);
         ModMenus.onClientSetup();
         ModEntities.onClientSetup();
+        addTESR(event);
     }
 
     @Override

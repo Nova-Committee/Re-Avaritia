@@ -21,7 +21,7 @@ public class ModTooltips {
 
     public static final Tooltip CRAFTING = new Tooltip("tooltip.avaritia.crafting");
 
-    public static final Tooltip PROGRESS_EMPTY = new Tooltip("tooltip.avaritia.progress_empty");
+    public static final Tooltip TIME_CONSUME = new Tooltip("tooltip.avaritia.time_consume");
 
     public static Component getAddedByTooltip(String modid) {
         var name = ModList.get().getModFileById(modid).getMods().get(0).getDisplayName();

@@ -9,10 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import nova.committee.avaritia.Static;
-import nova.committee.avaritia.common.block.CompressorBlock;
-import nova.committee.avaritia.common.block.ExtremeCraftingTableBlock;
-import nova.committee.avaritia.common.block.NeutronCollectorBlock;
-import nova.committee.avaritia.common.block.ResourceBlock;
+import nova.committee.avaritia.common.block.*;
 import nova.committee.avaritia.common.block.craft.CompressedCraftingTableBlock;
 import nova.committee.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
 import nova.committee.avaritia.util.RegistryUtil;
@@ -35,6 +32,7 @@ public class ModBlocks {
     public static Block extreme_crafting_table;
     public static Block neutron_collector;
     public static Block compressor;
+    public static Block infinitato;
 
 
     @SubscribeEvent
@@ -50,7 +48,8 @@ public class ModBlocks {
                 neutronium = new ResourceBlock(SoundType.METAL, "neutronium"),
                 infinity = new ResourceBlock(SoundType.METAL, "infinity"),
                 crystal_matrix = new ResourceBlock(SoundType.GLASS, "crystal_matrix"),
-                compressor = new CompressorBlock()
+                compressor = new CompressorBlock(),
+                infinitato = new InfinitatoBlock()
         );
     }
 
@@ -66,7 +65,8 @@ public class ModBlocks {
 
                 RegistryUtil.blockItem(neutronium, Rarity.EPIC),
                 RegistryUtil.blockItem(infinity, ModItems.COSMIC_RARITY),
-                RegistryUtil.blockItem(crystal_matrix, Rarity.RARE)
+                RegistryUtil.blockItem(crystal_matrix, Rarity.RARE),
+                RegistryUtil.blockItem(infinitato)
         );
     }
 }

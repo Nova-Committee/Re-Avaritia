@@ -3,9 +3,11 @@ package nova.committee.avaritia.util;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -33,7 +35,7 @@ public class ToolHelper {
     public static Set<Material> materialsAxe = Sets.newHashSet(Material.LEAVES, Material.PLANT, Material.WOOD, Material.BAMBOO);
 
 
-    public static void aoeBlocks(Player player, ItemStack stack, Level world, BlockPos origin, BlockPos min, BlockPos max, Block target, Set<Material> validMaterials) {
+    public static void aoeBlocks(Player player, ItemStack stack, Level world, BlockPos origin, BlockPos min, BlockPos max, Block target, Set<Material> validMaterials, boolean filterTrash) {
 
         InfinityHandler.enableItemCapture();
 
@@ -49,7 +51,9 @@ public class ToolHelper {
         InfinityHandler.stopItemCapture();
 
         Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
-
+        if (filterTrash) {
+            removeTrash(drops);
+        }
         spawnClusters(world, player, drops);
 
 
@@ -77,29 +81,28 @@ public class ToolHelper {
         }
     }
 
-//    public static Set<ItemStack> removeTrash(ItemStack holdingStack, Set<ItemStack> drops) {
-//        Set<ItemStack> trashItems = new HashSet<>();
-//        for (ItemStack drop : drops) {
-//            if (isTrash(holdingStack, drop)) {
-//                trashItems.add(drop);
-//            }
-//        }
-//        drops.removeAll(trashItems);
-//        return drops;
-//    }
+    public static void removeTrash(Set<ItemStack> drops) {
+        Set<ItemStack> trashItems = new HashSet<>();
+        for (ItemStack drop : drops) {
+            if (isTrash(drop)) {
+                trashItems.add(drop);
+            }
+        }
+        drops.removeAll(trashItems);
+    }
 
-//    private static boolean isTrash(ItemStack holdingStack, ItemStack suspect) {
-//        boolean isTrash = false;
-//        for (ResourceLocation id : ItemTags.getAllTags().getMatchingTags(holdingStack.getItem())) {
-//            for (String ore : InfinityHandler.defaultTrashOres) {
-//                if (ItemTags.getAllTags().getTagOrEmpty(id).equals(ore)) {
-//                    return true;
-//                }
-//            }
-//        }
-//
-//        return isTrash;
-//    }
+    private static boolean isTrash(ItemStack suspect) {
+        boolean isTrash = false;
+        for (TagKey<Item> id : suspect.getTags().toList()) {
+            for (String ore : InfinityHandler.defaultTrashOres) {
+                if (id.registry().getRegistryName().toString().equals(ore)) {
+                    return true;
+                }
+            }
+        }
+
+        return isTrash;
+    }
 
     public static void removeBlockWithDrops(Player player, ItemStack stack, Level world, BlockPos pos, Block target, Set<Material> validMaterials) {
         if (!world.isLoaded(pos)) {

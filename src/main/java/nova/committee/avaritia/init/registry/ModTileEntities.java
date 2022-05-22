@@ -8,6 +8,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.tile.CompressorTileEntity;
 import nova.committee.avaritia.common.tile.ExtremeCraftingTile;
+import nova.committee.avaritia.common.tile.InfinitatoTile;
 import nova.committee.avaritia.common.tile.NeutronCollectorTile;
 import nova.committee.avaritia.util.RegistryUtil;
 
@@ -24,6 +25,8 @@ public class ModTileEntities {
     public static BlockEntityType<NeutronCollectorTile> neutron_collector_tile;
     public static BlockEntityType<CompressorTileEntity> compressor_tile;
 
+    public static BlockEntityType<InfinitatoTile> infinitato_tile;
+
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<BlockEntityType<?>> event) {
         final IForgeRegistry<BlockEntityType<?>> registry = event.getRegistry();
@@ -31,7 +34,8 @@ public class ModTileEntities {
         registry.registerAll(
                 extreme_crafting_tile = RegistryUtil.build(ExtremeCraftingTile::new, "extreme_crafting_tile", ModBlocks.extreme_crafting_table),
                 neutron_collector_tile = RegistryUtil.build(NeutronCollectorTile::new, "neutron_collector_tile", ModBlocks.neutron_collector),
-                compressor_tile = RegistryUtil.build(CompressorTileEntity::new, "compressor_tile", ModBlocks.compressor)
+                compressor_tile = RegistryUtil.build(CompressorTileEntity::new, "compressor_tile", ModBlocks.compressor),
+                infinitato_tile = RegistryUtil.build(InfinitatoTile::new, "infinitato_tile", ModBlocks.infinitato)
 
 
         );

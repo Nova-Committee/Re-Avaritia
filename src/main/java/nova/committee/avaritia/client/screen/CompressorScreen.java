@@ -28,7 +28,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     private CompressorTileEntity tile;
 
     public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, BACKGROUND, 175, 166, 255, 255);
+        super(container, inventory, title, BACKGROUND, 176, 166, 256, 256);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
                 this.blit(stack, x + 63, y + 35, 176, 18, i2 + 1, 16);
             }
 
-            if (this.getProgress() > 0) {
+            if (this.getProgress() > 0 && this.getMaterialCount() >= this.getMaterialsRequired()) {
                 int i2 = this.getProgressBarScaled(22);
                 this.blit(stack, x + 89, y + 35, 176, 0, i2 + 1, 16);
             }
@@ -211,7 +211,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     }
 
     public int getProgressBarScaled(int pixels) {
-        int i = this.getProgress();
+        int i = Mth.clamp(this.getProgress(), 0, this.getTimeRequired());
         int j = this.getTimeRequired();
         return j != 0 && i != 0 ? i * pixels / j : 0;
     }
