@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="300" src="https://s2.loli.net/2022/05/17/FDjzlJsSvx8EdML.png" alt="title">  
+    <img width="300" src="https://s2.loli.net/2022/05/22/VcARrbQdT5tjJiM.png" alt="title">  
 </p>
 <hr>
 <p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
