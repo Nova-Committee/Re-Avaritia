@@ -100,7 +100,7 @@ public class ShovelInfinityItem extends ShovelItem {
         var min = new BlockPos(-range, doY ? -1 : -range, -range);
         var max = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolHelper.aoeBlocks(player, stack, world, pos, min, max, null, PickaxeInfinityItem.MATERIALS);
+        ToolHelper.aoeBlocks(player, stack, world, pos, min, max, null, PickaxeInfinityItem.MATERIALS, false);
 
     }
 

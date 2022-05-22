@@ -51,8 +51,7 @@ public class MatterClusterItem extends Item {
     public static List<ItemStack> makeClusters(Set<ItemStack> input) {
         Map<ItemStackWrapper, Integer> items = ToolHelper.collateMatterCluster(input);
         List<ItemStack> clusters = new ArrayList<>();
-        List<Map.Entry<ItemStackWrapper, Integer>> itemlist = new ArrayList<>();
-        itemlist.addAll(items.entrySet());
+        List<Map.Entry<ItemStackWrapper, Integer>> itemlist = new ArrayList<>(items.entrySet());
 
         int currentTotal = 0;
         Map<ItemStackWrapper, Integer> currentItems = new HashMap<>();
@@ -225,7 +224,7 @@ public class MatterClusterItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         Vec3 pos = player.position();
         if (!world.isClientSide) {
-            List<ItemStack> drops = ToolHelper.collateMatterClusterContents(MatterClusterItem.getClusterData(stack));
+            List<ItemStack> drops = ToolHelper.collateMatterClusterContents(Objects.requireNonNull(MatterClusterItem.getClusterData(stack)));
 
             for (ItemStack drop : drops) {
                 Containers.dropItemStack(world, pos.x, pos.y, pos.z, drop);

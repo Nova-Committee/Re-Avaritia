@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
@@ -67,7 +68,54 @@ public class HoeInfinityItem extends HoeItem {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
-        return super.use(pLevel, pPlayer, pUsedHand);
+        ItemStack heldItem = pPlayer.getItemInHand(pUsedHand);
+        if (!pLevel.isClientSide) {
+            pPlayer.swing(InteractionHand.MAIN_HAND);
+            BlockPos blockPos = pPlayer.getOnPos();
+            int rang = 7;
+            int height = 2;
+            BlockPos minPos = blockPos.offset(-rang, -height, -rang);
+            BlockPos maxPos = blockPos.offset(rang, height, rang);
+            Map<ItemStack, Integer> map = new HashMap<>();
+            InfinityHandler.enableItemCapture();
+            for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+                BlockState state = pLevel.getBlockState(pos);
+                Block block = state.getBlock();
+                //harvest
+                if (block instanceof CropBlock) { //common
+                    if (block instanceof BeetrootBlock ? state.getValue(BeetrootBlock.AGE) >= 3 : state.getValue(CropBlock.AGE) >= 7) {
+                        ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                        pLevel.setBlock(pos, state.setValue(block instanceof BeetrootBlock ? BeetrootBlock.AGE : CropBlock.AGE, 0), 11);
+                    }
+                }
+                if (block instanceof CocoaBlock) { //coca
+                    if (state.getValue(CocoaBlock.AGE) >= 2) {
+                        ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                        pLevel.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), 11);
+                    }
+                }
+                if (block instanceof StemGrownBlock) { //pumpkin
+                    ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                    pLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
+                }
+                if (block instanceof SweetBerryBushBlock) { //SweetBerry
+                    if (state.getValue(SweetBerryBushBlock.AGE) >= 3) {
+                        ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                        pLevel.setBlock(pos, state.setValue(SweetBerryBushBlock.AGE, 0), 11);
+                    }
+                }
+                //grow
+                if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock) && bonemealableBlock.isValidBonemealTarget(pLevel, pos, state, true)) {
+                    for (int i = 0; i < 3; i++)
+                        bonemealableBlock.isBonemealSuccess(pLevel, pLevel.random, pos, state);
+                }
+            }
+            InfinityHandler.stopItemCapture();
+            ToolHelper.spawnClusters(pLevel, pPlayer, map.keySet());
+            pPlayer.getCooldowns().addCooldown(heldItem.getItem(), 20);
+        }
+        return InteractionResultHolder.pass(heldItem);
+
     }
 
     @Override
@@ -87,6 +135,7 @@ public class HoeInfinityItem extends HoeItem {
                 var minPos = blockpos.offset(-rang, 0, -rang);
                 var maxPos = blockpos.offset(rang, 0, rang);
                 if (playerentity.isCrouching()) {
+                    InfinityHandler.enableItemCapture();
                     Map<ItemStack, Integer> map = new HashMap<>();
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
@@ -109,6 +158,7 @@ public class HoeInfinityItem extends HoeItem {
                             world.setBlock(pos, blockstate, 11);
                         }
                     }
+                    InfinityHandler.stopItemCapture();
                     ToolHelper.spawnClusters(world, playerentity, map.keySet());
 
                     Iterable<BlockPos> inBoxMutable = BlockPos.betweenClosed(minPos, maxPos.offset(0, 3, 0));

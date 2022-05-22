@@ -1,7 +1,12 @@
 package nova.committee.avaritia.init.handler;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Skeleton;
@@ -42,6 +47,7 @@ import nova.committee.avaritia.common.item.MatterClusterItem;
 import nova.committee.avaritia.common.item.tools.*;
 import nova.committee.avaritia.init.event.AEOCrawlerTask;
 import nova.committee.avaritia.init.registry.ModItems;
+import nova.committee.avaritia.util.lang.TextUtil;
 
 import java.util.*;
 
@@ -70,7 +76,7 @@ public class InfinityHandler {
         }
         return true;
     }
-    
+
     public static boolean isInfiniteChestplate(Player player) {
         ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
         if (stack.isEmpty() || !(stack.getItem() instanceof ArmorInfinityItem))
@@ -94,15 +100,45 @@ public class InfinityHandler {
 
     public static Set<ItemStack> getCapturedDrops() {
         Set<ItemStack> dropsCopy = new LinkedHashSet<>(capturedDrops);
-//        List<String > id = new ArrayList<>();
-//        for(ItemStack entity : dropsCopy){
-//            id.add(entity.getDisplayName().getString());
-//        }
-//        Static.LOGGER.info(id);
         capturedDrops.clear();
         return dropsCopy;
     }
 
+    //黑名单功能
+    private static boolean isGarbageBlock(Block block) {
+        //Static.LOGGER.info(TagCollectionManager.getInstance().getBlocks().getAllTags().keySet());
+        for (TagKey<Block> id : block.defaultBlockState().getTags().toList()) {
+            ResourceLocation block_main = id.registry().getRegistryName();
+            String ore = block_main.getPath();
+            if (ore.contains("cobblestone") || ore.contains("stone") || ore.contains("netherrack")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static AEOCrawlerTask startCrawlerTask(Level world, Player player, ItemStack stack, BlockPos coords, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
+        AEOCrawlerTask swapper = new AEOCrawlerTask(world, player, stack, coords, steps, leaves, force, posChecked);
+        DimensionType dim = world.dimensionType();
+        if (!crawlerTasks.containsKey(dim)) {
+            crawlerTasks.put(dim, new ArrayList<>());
+        }
+        crawlerTasks.get(dim).add(swapper);
+        return swapper;
+    }
+
+    public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
+        if (event.getState().getMaterial() == Material.STONE) {
+            LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerLevel) event.getPlayer().level)).withRandom(event.getPlayer().level.random).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level.getBlockEntity(event.getPos()));
+            List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
+            for (ItemStack drop : drops) {
+                if (drop.getItem() != Item.byBlock(event.getState().getBlock()) && !(drop.getItem() instanceof BlockItem)) {
+                    drop.setCount(Math.min(drop.getCount() * multiplier, drop.getMaxStackSize()));
+                }
+            }
+
+        }
+    }
 
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinWorldEvent event) {
@@ -115,16 +151,6 @@ public class InfinityHandler {
         }
     }
 
-
-    public static AEOCrawlerTask startCrawlerTask(Level world, Player player, ItemStack stack, BlockPos coords, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
-        AEOCrawlerTask swapper = new AEOCrawlerTask(world, player, stack, coords, steps, leaves, force, posChecked);
-        DimensionType dim = world.dimensionType();
-        if (!crawlerTasks.containsKey(dim)) {
-            crawlerTasks.put(dim, new ArrayList<>());
-        }
-        crawlerTasks.get(dim).add(swapper);
-        return swapper;
-    }
 
     @SubscribeEvent
     public static void onTickEnd(TickEvent.WorldTickEvent event) {
@@ -140,19 +166,6 @@ public class InfinityHandler {
                     }
                 }
             }
-        }
-    }
-
-    public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
-        if (event.getState().getMaterial() == Material.STONE) {
-            LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerLevel) event.getPlayer().level)).withRandom(event.getPlayer().level.random).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level.getBlockEntity(event.getPos()));
-            List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
-            for (ItemStack drop : drops) {
-                if (drop.getItem() != Item.byBlock(event.getState().getBlock()) && !(drop.getItem() instanceof BlockItem)) {
-                    drop.setCount(Math.min(drop.getCount() * multiplier, drop.getMaxStackSize()));
-                }
-            }
-
         }
     }
 
@@ -189,13 +202,6 @@ public class InfinityHandler {
         }
     }
 
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onTooltip(ItemTooltipEvent event) {
-
-    }
-
     @SubscribeEvent
     public static void digging(PlayerEvent.BreakSpeed event) {
         if (!event.getEntityLiving().getMainHandItem().isEmpty()) {
@@ -219,25 +225,12 @@ public class InfinityHandler {
         if (!event.getEntityLiving().getMainHandItem().isEmpty()) {
             ItemStack held = event.getEntityLiving().getMainHandItem();
             if (held.getItem() == ModItems.pick_axe && event.getTargetBlock().getMaterial() == Material.STONE) {
-                if (held.getOrCreateTag().getBoolean("destroyer")) {
+                if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock())) {
                     event.setResult(Event.Result.ALLOW);
                 }
             }
         }
     }
-
-    //黑名单功能
-//    private static boolean isGarbageBlock(Block block) {
-//        Static.LOGGER.info(TagCollectionManager.getInstance().getBlocks().getAllTags().keySet());
-//        for (ResourceLocation id : BlockTags.getAllTags().getMatchingTags(block)) {
-//            String ore = id.getPath();
-//            if (ore.contains("cobblestone") || ore.contains("stone") || ore.contains("netherrack")) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
 
     //合并物质团
     @SubscribeEvent
@@ -257,11 +250,23 @@ public class InfinityHandler {
         }
     }
 
-
     @SubscribeEvent
     public static void expCancel(ItemExpireEvent event) {
         if (event.getEntityItem() instanceof ImmortalItemEntity) {
             event.setCanceled(true);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void onTooltip(ItemTooltipEvent event) {
+        if (event.getItemStack().getItem() instanceof SwordInfinityItem) {
+            for (int x = 0; x < event.getToolTip().size(); x++) {
+                if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.attackDamage")) || event.getToolTip().get(x).getString().contains("Attack Damage")) {
+                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tip.infinity")))).append(" ").append(new TextComponent(I18n.get("attribute.name.generic.attackDamage")).withStyle(ChatFormatting.BLUE)));
+                    return;
+                }
+            }
         }
     }
 

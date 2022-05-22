@@ -70,7 +70,7 @@ public class AxeInfinityItem extends AxeItem {
             var min = new BlockPos(-range, -3, -range);
             var max = new BlockPos(range, range * 2 - 3, range);
 
-            ToolHelper.aoeBlocks(player, stack, level, player.getOnPos(), min, max, null, ToolHelper.materialsAxe);
+            ToolHelper.aoeBlocks(player, stack, level, player.getOnPos(), min, max, null, ToolHelper.materialsAxe, false);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
