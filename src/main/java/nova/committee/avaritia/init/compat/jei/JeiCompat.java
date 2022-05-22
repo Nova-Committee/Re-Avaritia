@@ -65,6 +65,7 @@ public class JeiCompat implements IModPlugin {
             registration.addRecipes(recipes.getOrDefault(1, new ArrayList<>()), ExtremeCraftingTableCategory.UID);
 
             registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.asItem()), VanillaTypes.ITEM_STACK, new TranslatableComponent("jei.tooltip.avaritia.neutron_collector"));
+            registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile), VanillaTypes.ITEM_STACK, new TranslatableComponent("jei.tooltip.avaritia.neutron_pile"));
 
         }
 

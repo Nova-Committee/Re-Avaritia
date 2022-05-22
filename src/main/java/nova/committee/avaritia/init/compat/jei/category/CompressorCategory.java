@@ -35,7 +35,7 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
 
 
     public CompressorCategory(IGuiHelper helper) {
-        this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 75);
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 63);
         this.icon = helper.createDrawableIngredient(new ItemStack(ModBlocks.compressor));
     }
 
@@ -68,9 +68,14 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     public List<Component> getTooltipStrings(ICompressorRecipe recipe, double mouseX, double mouseY) {
 
 
-        if (mouseX > 36 && mouseX < 53 && mouseY > 32 && mouseY < 49) {
-            return Collections.singletonList(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.WHITE).build());
+        if (mouseX > 62 && mouseX < 77 && mouseY > 21 && mouseY < 36) {
+            return Collections.singletonList(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.LIGHT_PURPLE).build());
         }
+
+        if (mouseX > 86 && mouseX < 107 && mouseY > 22 && mouseY < 36) {
+            return Collections.singletonList(ModTooltips.TIME_CONSUME.args(recipe.getTimeRequire()).color(ChatFormatting.BLUE).build());
+        }
+
 
         return Collections.emptyList();
     }
@@ -92,8 +97,8 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         var inputs = ingredients.getInputs(VanillaTypes.ITEM);
         var outputs = ingredients.getOutputs(VanillaTypes.ITEM).get(0);
 
-        stacks.init(0, true, 36, 32);
-        stacks.init(1, false, 116, 32);
+        stacks.init(0, true, 36, 20);
+        stacks.init(1, false, 116, 20);
 
         stacks.set(0, inputs.get(0));
         stacks.set(1, outputs);

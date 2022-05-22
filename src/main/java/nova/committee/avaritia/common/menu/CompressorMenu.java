@@ -68,28 +68,24 @@ public class CompressorMenu extends AbstractContainerMenu {
         if (slot.hasItem()) {
             var itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-
-            if (slotNumber < 2) {
+            if (slotNumber == 0) {
                 if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
-
                 slot.onQuickCraft(itemstack1, itemstack);
-            } else {
-                ItemStack inputStack = this.slots.get(1).getItem();
-                if (inputStack.isEmpty() || (inputStack.sameItem(itemstack1) && inputStack.getCount() < inputStack.getMaxStackSize())) {
-                    if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (slotNumber < 29) {
-                    if (!this.moveItemStackTo(itemstack1, 30, 38, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (slotNumber < 38) {
-                    if (!this.moveItemStackTo(itemstack1, 2, 29, false)) {
+
+            } else if (slotNumber >= 2 && slotNumber < 38) {
+                if (!this.moveItemStackTo(itemstack1, 1, 2, false)) {
+                    if (slotNumber < 29) {
+                        if (!this.moveItemStackTo(itemstack1, 29, 38, false)) {
+                            return ItemStack.EMPTY;
+                        }
+                    } else if (!this.moveItemStackTo(itemstack1, 10, 29, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
+            } else if (!this.moveItemStackTo(itemstack1, 2, 38, false)) {
+                return ItemStack.EMPTY;
             }
 
             if (itemstack1.getCount() == 0) {

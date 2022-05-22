@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -262,8 +263,8 @@ public class InfinityHandler {
     public static void onTooltip(ItemTooltipEvent event) {
         if (event.getItemStack().getItem() instanceof SwordInfinityItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
-                if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.attackDamage")) || event.getToolTip().get(x).getString().contains("Attack Damage")) {
-                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tip.infinity")))).append(" ").append(new TextComponent(I18n.get("attribute.name.generic.attackDamage")).withStyle(ChatFormatting.BLUE)));
+                if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.infinity.desc")) || event.getToolTip().get(x).getString().contains("Attack Damage")) {
+                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 }
             }

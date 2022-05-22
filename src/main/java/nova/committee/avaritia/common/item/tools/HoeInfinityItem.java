@@ -114,6 +114,7 @@ public class HoeInfinityItem extends HoeItem {
             ToolHelper.spawnClusters(pLevel, pPlayer, map.keySet());
             pPlayer.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
+        pLevel.playSound(pPlayer, pPlayer.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         return InteractionResultHolder.pass(heldItem);
 
     }
