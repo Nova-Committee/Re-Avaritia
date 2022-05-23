@@ -1,6 +1,5 @@
 package nova.committee.avaritia.common.item.tools;
 
-import com.google.common.collect.Sets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -24,11 +23,11 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
@@ -38,7 +37,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Description:
@@ -47,8 +45,6 @@ import java.util.Set;
  * Version: 1.0
  */
 public class PickaxeInfinityItem extends PickaxeItem {
-    public static final Set<Material> MATERIALS = Sets.newHashSet(Material.STONE, Material.HEAVY_METAL, Material.METAL, Material.ICE, Material.GLASS, Material.PISTON, Material.GRASS, Material.DIRT, Material.SAND, Material.SNOW, Material.CLAY, Material.ICE, Material.ICE_SOLID);
-
 
     public PickaxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
@@ -83,14 +79,14 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(@NotNull ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
         if (Screen.hasShiftDown()) {
             tooltip.add(new TextComponent(ChatFormatting.GRAY + "由" + ChatFormatting.BLUE + "演变" + "-" + ChatFormatting.DARK_PURPLE + "cnlimiter" + ChatFormatting.YELLOW + "倾情制作~"));
         }
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
+    public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
             return 5.0F;
         }
@@ -98,12 +94,12 @@ public class PickaxeInfinityItem extends PickaxeItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             CompoundTag tags = stack.getOrCreateTag();
             if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack) < 10) {
-                stack.enchant(Enchantments.BLOCK_FORTUNE, 10);
+                stack.enchant(Enchantments.BLOCK_FORTUNE, 10);//FORTUNE X enchantment
             }
             tags.putBoolean("hammer", !tags.getBoolean("hammer"));
             player.setMainArm(HumanoidArm.RIGHT);
@@ -113,7 +109,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity victim, LivingEntity player) {
+    public boolean hurtEnemy(ItemStack stack, @NotNull LivingEntity victim, @NotNull LivingEntity player) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
             if (!(victim instanceof Player)) {
                 int i = 10;
@@ -138,7 +134,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
         var world = player.level;
         var state = world.getBlockState(pos);
         var mat = state.getMaterial();
-        if (!MATERIALS.contains(mat)) {
+        if (!ToolHelper.materialsPick.contains(mat)) {
             return;
         }
 
@@ -148,10 +144,11 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
         var doY = sideHit.getAxis() != Direction.Axis.Y;
 
-        int range = 8;
+        int range = ModConfig.SERVER.pickAxeBreakRange.get();
         var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
         var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
-        ToolHelper.aoeBlocks(player, stack, world, pos, minOffset, maxOffset, null, MATERIALS, false);
+
+        ToolHelper.aoeBlocks(player, stack, world, pos, minOffset, maxOffset, null, ToolHelper.materialsPick, false);
 
     }
 

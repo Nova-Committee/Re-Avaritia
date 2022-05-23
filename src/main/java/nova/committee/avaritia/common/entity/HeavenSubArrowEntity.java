@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.registry.ModEntities;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +55,7 @@ public class HeavenSubArrowEntity extends Arrow {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putDouble("damage", 10000.0f);
+        compound.putDouble("damage", ModConfig.SERVER.subArrowDamage.get());
 
     }
 
@@ -64,4 +65,8 @@ public class HeavenSubArrowEntity extends Arrow {
     }
 
 
+    @Override
+    protected float getWaterInertia() {
+        return 0.99F;
+    }
 }

@@ -10,14 +10,13 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ToolHelper;
-import nova.committee.avaritia.util.math.RayTracer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -77,8 +76,9 @@ public class AxeInfinityItem extends AxeItem {
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        BlockHitResult traceResult = RayTracer.retrace(player, 10);
-        breakOtherBlock(player, stack, pos);
+        if (player.isCrouching() && !player.level.isClientSide) {
+            breakOtherBlock(player, stack, pos);
+        }
         return false;
     }
 
@@ -86,6 +86,6 @@ public class AxeInfinityItem extends AxeItem {
         if (player.isCrouching()) {
             return;
         }
-        InfinityHandler.startCrawlerTask(player.level, player, stack, pos, 32, false, true, new HashSet<>());
+        InfinityHandler.startCrawlerTask(player.level, player, stack, pos, ModConfig.SERVER.axeChainCount.get(), false, true, new HashSet<>());
     }
 }

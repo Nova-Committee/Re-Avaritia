@@ -2,13 +2,13 @@ package nova.committee.avaritia.init.event;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.util.ToolHelper;
 
@@ -53,28 +53,20 @@ public class AEOCrawlerTask {
         }
         for (Direction dir : Direction.values()) {
             BlockPos stepPos = origin.relative(dir);
-            if (posChecked.contains(stepPos)) {
+            if (posChecked.contains(stepPos)) { //prevent manipulate duplicate coordinates
                 continue;
             }
             BlockState stepState = world.getBlockState(stepPos);
-            boolean log = canBeReplacedByLogs(stepState);
-            boolean leaf = canBeReplacedByLeaves(stepState);
+            Block stepBlock = stepState.getBlock();
+            boolean log = stepState.getMaterial() == Material.WOOD;
+            boolean leaf = stepBlock instanceof LeavesBlock;
             if (log || leaf) {
                 int steps = this.steps - 1;
                 steps = leaf ? leaves ? steps : 3 : steps;
-                InfinityHandler.startCrawlerTask(world, player, stack, stepPos, steps, leaf, false, posChecked);
+                InfinityHandler.startCrawlerTask(world, player, stack, stepPos, steps, leaf, false, posChecked);//recurring event
                 posChecked.add(stepPos);
             }
         }
-    }
-
-    boolean canBeReplacedByLogs(BlockState state) {
-        return (state.isAir() || state.is(BlockTags.LEAVES)) || state.getBlock() == Blocks.GRASS_BLOCK || state.is(BlockTags.DIRT)
-                || state.is(BlockTags.LOGS) || state.is(BlockTags.SAPLINGS) || state.getBlock() == Blocks.VINE;
-    }
-
-    boolean canBeReplacedByLeaves(BlockState state) {
-        return state.isAir() || state.is(BlockTags.LEAVES);
     }
 
 }

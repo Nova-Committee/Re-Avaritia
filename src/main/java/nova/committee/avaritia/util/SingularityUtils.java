@@ -12,6 +12,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.item.singularity.Singularity;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.init.registry.ModItems;
 
@@ -38,7 +39,7 @@ public class SingularityUtils {
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
 
 
-        var time = GsonHelper.getAsInt(json, "timeRequired", 240);
+        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.SERVER.singularityTimeRequired.get());
 
 
         if (ing == null) {

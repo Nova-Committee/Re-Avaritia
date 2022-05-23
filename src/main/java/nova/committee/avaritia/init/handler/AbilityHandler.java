@@ -135,7 +135,7 @@ public class AbilityHandler {
     }
 
     private static void handleHelmetStateChange(LivingEntity entity, boolean isNew) {
-        //TODO, Helmet abilities? Water breathing, NightVision, Auto Eat or No Hunger, No bad effects.
+        //todo, Helmet abilities? Water breathing, NightVision, Auto Eat or No Hunger, No bad effects.
     }
 
     private static void handleChestplateStateChange(LivingEntity entity, boolean isNew) {

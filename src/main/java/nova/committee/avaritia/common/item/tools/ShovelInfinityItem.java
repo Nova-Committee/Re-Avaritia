@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTab;
@@ -86,7 +87,7 @@ public class ShovelInfinityItem extends ShovelItem {
         var world = player.level;
         var state = world.getBlockState(pos);
         var mat = state.getMaterial();
-        if (!PickaxeInfinityItem.MATERIALS.contains(mat)) {
+        if (!ToolHelper.materialsShovel.contains(mat)) {
             return;
         }
 
@@ -96,11 +97,11 @@ public class ShovelInfinityItem extends ShovelItem {
 
         var doY = sideHit.getAxis() != Direction.Axis.Y;
 
-        var range = 8;
+        var range = ModConfig.SERVER.shovelBreakRange.get();
         var min = new BlockPos(-range, doY ? -1 : -range, -range);
         var max = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolHelper.aoeBlocks(player, stack, world, pos, min, max, null, PickaxeInfinityItem.MATERIALS, false);
+        ToolHelper.aoeBlocks(player, stack, world, pos, min, max, null, ToolHelper.materialsShovel, false);
 
     }
 

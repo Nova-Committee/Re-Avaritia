@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.crafting.Ingredient;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.util.lang.Localizable;
 
 /**
@@ -34,7 +35,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, 240);
+        this(id, name, colors, ingredient, -1, ModConfig.SERVER.singularityTimeRequired.get());
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
@@ -48,7 +49,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, 240);
+        this(id, name, colors, tag, -1, ModConfig.SERVER.singularityTimeRequired.get());
     }
 
     public static Singularity read(FriendlyByteBuf buffer) {

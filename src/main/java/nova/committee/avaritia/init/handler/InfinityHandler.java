@@ -60,7 +60,6 @@ import java.util.*;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InfinityHandler {
-    public static Set<String> defaultTrashOres = new HashSet<>();
     private static Map<DimensionType, List<AEOCrawlerTask>> crawlerTasks = new HashMap<>();
     private static boolean doItemCapture = false;
     private static Set<ItemStack> capturedDrops = new LinkedHashSet<>();

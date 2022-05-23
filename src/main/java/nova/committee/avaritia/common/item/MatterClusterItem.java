@@ -23,6 +23,7 @@ import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.util.ToolHelper;
 import nova.committee.avaritia.util.item.ItemStackWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -194,7 +195,7 @@ public class MatterClusterItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
         if (!stack.hasTag() || !stack.getOrCreateTag().contains(MAINTAG)) {
             return;
         }
@@ -220,7 +221,7 @@ public class MatterClusterItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Vec3 pos = player.position();
         if (!world.isClientSide) {

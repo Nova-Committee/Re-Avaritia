@@ -15,6 +15,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import nova.committee.avaritia.api.common.item.StackHelper;
 import nova.committee.avaritia.api.common.tile.BaseInventoryTileEntity;
 import nova.committee.avaritia.common.menu.NeutronCollectorMenu;
+import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModTileEntities;
 import nova.committee.avaritia.util.item.BaseItemStackHandler;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class NeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
 
 
-    public static final int PRODUCTION_TICKS = 3600;
+    public static final int PRODUCTION_TICKS = ModConfig.SERVER.neutronCollectorProductTick.get();
     private final BaseItemStackHandler inventory;
     private int progress;
 

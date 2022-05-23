@@ -31,8 +31,17 @@ import java.util.*;
  * Version: 1.0
  */
 public class ToolHelper {
-    public static Material[] materialsPick = new Material[]{Material.STONE, Material.METAL, Material.ICE, Material.GLASS, Material.PISTON, Material.HEAVY_METAL};
-    public static Set<Material> materialsAxe = Sets.newHashSet(Material.LEAVES, Material.PLANT, Material.WOOD, Material.BAMBOO);
+    public static final Set<Material> materialsPick = Sets.newHashSet(Material.STONE, Material.HEAVY_METAL, Material.METAL, Material.ICE,
+            Material.GLASS, Material.EXPLOSIVE, Material.PISTON, Material.ICE_SOLID, Material.SPONGE, Material.SHULKER_SHELL, Material.WOOL,
+            Material.PISTON, Material.WATER_PLANT, Material.GRASS, Material.SCULK);
+
+    public static final Set<Material> materialsAxe = Sets.newHashSet(Material.WOOD, Material.PORTAL, Material.WEB, Material.PLANT, Material.WATER_PLANT,
+            Material.NETHER_WOOD, Material.REPLACEABLE_PLANT, Material.NETHER_WOOD, Material.BAMBOO, Material.BAMBOO_SAPLING,
+            Material.LEAVES, Material.CACTUS);
+
+    public static final Set<Material> materialsShovel = Sets.newHashSet(Material.SAND, Material.DIRT, Material.SNOW, Material.CLAY, Material.GRASS,
+            Material.SNOW);
+    public static Set<String> defaultTrashOres = new HashSet<>();//todo, set trash block in gui
 
 
     public static void aoeBlocks(Player player, ItemStack stack, Level world, BlockPos origin, BlockPos min, BlockPos max, Block target, Set<Material> validMaterials, boolean filterTrash) {
@@ -54,6 +63,7 @@ public class ToolHelper {
         if (filterTrash) {
             removeTrash(drops);
         }
+
         spawnClusters(world, player, drops);
 
 
@@ -94,7 +104,7 @@ public class ToolHelper {
     private static boolean isTrash(ItemStack suspect) {
         boolean isTrash = false;
         for (TagKey<Item> id : suspect.getTags().toList()) {
-            for (String ore : InfinityHandler.defaultTrashOres) {
+            for (String ore : defaultTrashOres) {
                 if (id.registry().getRegistryName().toString().equals(ore)) {
                     return true;
                 }
@@ -118,6 +128,8 @@ public class ToolHelper {
             if (block == Blocks.GRASS && stack.getItem() == ModItems.pick_axe) {
                 world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
             }
+
+            //if material contains
             if (!block.canHarvestBlock(state, world, pos, player) || !validMaterials.contains(material)) {
                 return;
             }
@@ -125,11 +137,10 @@ public class ToolHelper {
             MinecraftForge.EVENT_BUS.post(event);
 
             if (!event.isCanceled()) {
-                if (!player.isCreative()) {
+                if (!player.isCreative()) {//not creative
                     BlockEntity tile = world.getBlockEntity(pos);
                     block.playerWillDestroy(world, pos, state, player);
                     if (block.onDestroyedByPlayer(state, world, pos, player, true, world.getFluidState(pos))) {
-                        stack.onBlockStartBreak(pos, player);
                         block.playerDestroy(world, player, pos, state, tile, stack);
                     }
                 } else {
