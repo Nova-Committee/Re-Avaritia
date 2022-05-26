@@ -11,7 +11,11 @@ import nova.committee.avaritia.Static;
 import nova.committee.avaritia.api.client.screen.BaseContainerScreen;
 import nova.committee.avaritia.common.menu.NeutronCollectorMenu;
 import nova.committee.avaritia.common.tile.NeutronCollectorTile;
+import nova.committee.avaritia.init.ModTooltips;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description:
@@ -51,6 +55,24 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         return null;
     }
 
+    @Override
+    public void render(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrix, mouseX, mouseY, partialTicks);
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+
+        if (mouseX > x + 99 && mouseX < x + 104 && mouseY > y + 30 && mouseY < y + 50) {
+            List<Component> tooltip = new ArrayList<>();
+
+            if (this.getProgress() > 0) {
+                int i = Mth.clamp(this.getProgress(), 0, this.getTimeRequired());
+                var text = ModTooltips.PROGRESS.args(number(i) + "%").build();
+                tooltip.add(text);
+            }
+
+            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
+        }
+    }
 
     @Override
     protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {

@@ -61,6 +61,7 @@
   "tooltip.avaritia.singularity_id": "奇点ID：%s",
   "tooltip.avaritia.added_by": "添加者：%s",
   "tooltip.avaritia.time_consume": "消耗时间: %s",
+  "tooltip.avaritia.progress": "进度: %s",
   "block.avaritia.neutronium": "中子态素块",
   "block.avaritia.infinity": "无尽之块",
   "block.avaritia.crystal_matrix": "水晶矩阵",

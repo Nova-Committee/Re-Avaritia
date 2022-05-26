@@ -68,8 +68,8 @@ public class ModBlocks {
 
                 RegistryUtil.blockItem(neutronium, Rarity.EPIC),
                 RegistryUtil.blockItem(infinity, ModItems.COSMIC_RARITY),
-                RegistryUtil.blockItem(crystal_matrix, Rarity.RARE),
-                RegistryUtil.blockItem(infinitato)
+                RegistryUtil.blockItem(crystal_matrix, Rarity.RARE)
+                //RegistryUtil.blockItem(infinitato)
         );
     }
 }

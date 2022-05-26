@@ -61,6 +61,7 @@
   "tooltip.avaritia.singularity_id": "Сингулярность ID: %s",
   "tooltip.avaritia.added_by": "Добавлено: %s",
   "tooltip.avaritia.time_consume": "Требуется время: %s",
+  "tooltip.avaritia.progress": "Progress: %s",
   "block.avaritia.neutronium": "Нейтронный блок",
   "block.avaritia.infinity": "Блок бесконечности",
   "block.avaritia.crystal_matrix": "Блок кристаллической матрицы",

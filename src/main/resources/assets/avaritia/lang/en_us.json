@@ -61,6 +61,7 @@
   "tooltip.avaritia.singularity_id": "Singularity ID: %s",
   "tooltip.avaritia.added_by": "Added By: %s",
   "tooltip.avaritia.time_consume": "Time Required: %s",
+  "tooltip.avaritia.progress": "Progress: %s",
   "block.avaritia.neutronium": "Neutronium Block",
   "block.avaritia.infinity": "Infinity Block",
   "block.avaritia.crystal_matrix": "Crystal Matrix",
