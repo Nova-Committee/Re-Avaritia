@@ -21,23 +21,23 @@ public class ModRecipes {
     public static ShapelessExtremeCraftingRecipe infinityCatalyst; //催化剂
 
     public static void addExtremeCrafts() {
-        List<ItemStack> sig = new ArrayList<>();
+        List<ItemStack> singularityList = new ArrayList<>();
         for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
             var itemStack = SingularityUtils.getItemForSingularity(singularity);
 
-            sig.add(itemStack);
+            singularityList.add(itemStack);
         }
 
-        sig.add(new ItemStack(Blocks.EMERALD_BLOCK));
-        sig.add(new ItemStack(ModItems.crystal_matrix_ingot));
-        sig.add(new ItemStack(ModItems.neutronium_ingot));
-        sig.add(new ItemStack(ModItems.cosmic_meatballs));
-        sig.add(new ItemStack(ModItems.ultimate_stew));
-        sig.add(new ItemStack(ModItems.endest_pearl));
-        sig.add(new ItemStack(ModItems.record_fragment));
+        singularityList.add(new ItemStack(Blocks.EMERALD_BLOCK));
+        singularityList.add(new ItemStack(ModItems.crystal_matrix_ingot));
+        singularityList.add(new ItemStack(ModItems.neutronium_ingot));
+        singularityList.add(new ItemStack(ModItems.cosmic_meatballs));
+        singularityList.add(new ItemStack(ModItems.ultimate_stew));
+        singularityList.add(new ItemStack(ModItems.endest_pearl));
+        singularityList.add(new ItemStack(ModItems.record_fragment));
 
         infinityCatalyst = DynamicRecipeHandler.addExtremeShapelessRecipe(
-                new ItemStack(ModItems.infinity_catalyst), sig);
+                new ItemStack(ModItems.infinity_catalyst), singularityList);
 
 
     }

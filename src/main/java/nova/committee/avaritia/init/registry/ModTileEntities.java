@@ -34,8 +34,8 @@ public class ModTileEntities {
         registry.registerAll(
                 extreme_crafting_tile = RegistryUtil.build(ExtremeCraftingTile::new, "extreme_crafting_tile", ModBlocks.extreme_crafting_table),
                 neutron_collector_tile = RegistryUtil.build(NeutronCollectorTile::new, "neutron_collector_tile", ModBlocks.neutron_collector),
-                compressor_tile = RegistryUtil.build(CompressorTileEntity::new, "compressor_tile", ModBlocks.compressor),
-                infinitato_tile = RegistryUtil.build(InfinitatoTile::new, "infinitato_tile", ModBlocks.infinitato)
+                compressor_tile = RegistryUtil.build(CompressorTileEntity::new, "compressor_tile", ModBlocks.compressor)
+                //infinitato_tile = RegistryUtil.build(InfinitatoTile::new, "infinitato_tile", ModBlocks.infinitato)
 
 
         );

@@ -76,12 +76,8 @@ public class InfinitatoBlock extends BaseTileEntityBlock {
                     ((ServerLevel) level).sendParticles(ParticleTypes.HEART, pos.getX() + box.minX + Math.random() * (box.maxX - box.minX), pos.getY() + box.maxY, pos.getZ() + box.minZ + Math.random() * (box.maxZ - box.minZ), 1, 0, 0, 0, 0);
                     ((ServerLevel) level).sendParticles(ParticleTypes.HEART, pos.getX() + box.minX + Math.random() * (box.maxX - box.minX), pos.getY() + box.maxY, pos.getZ() + box.minZ + Math.random() * (box.maxZ - box.minZ), 1, 0, 0, 0, 0);
                 }
-
             }
-
-
         }
-
         return InteractionResult.SUCCESS;
     }
 
@@ -108,7 +104,7 @@ public class InfinitatoBlock extends BaseTileEntityBlock {
     @Nonnull
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.MODEL;
     }
 
 
