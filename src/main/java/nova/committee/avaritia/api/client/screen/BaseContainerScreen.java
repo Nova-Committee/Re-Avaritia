@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 /**
@@ -38,6 +39,11 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
 
     protected static String number(Object number) {
         return NumberFormat.getInstance().format(number);
+    }
+
+    protected static String fraction(Object number) {
+        DecimalFormat df = new DecimalFormat("0.00%");
+        return df.format(number);
     }
 
     @Override

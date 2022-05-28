@@ -44,6 +44,8 @@
   "tooltip.diamond_lattice.desc": "Dense material...",
   "tooltip.infinity": "Infinity",
   "tooltip.infinity.desc": "Attack Damage",
+  "tooltip.armor.desc": "Armor",
+  "tooltip.armor_toughness.desc": "Armor Toughness",
   "tooltip.avaritia.empty": "Empty",
   "tooltip.avaritia.eject": "Eject",
   "tooltip.avaritia.ejecting": "Ejecting...",

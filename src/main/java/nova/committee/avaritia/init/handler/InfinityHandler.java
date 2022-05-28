@@ -262,10 +262,21 @@ public class InfinityHandler {
     public static void onTooltip(ItemTooltipEvent event) {
         if (event.getItemStack().getItem() instanceof SwordInfinityItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
-                if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.infinity.desc")) || event.getToolTip().get(x).getString().contains("Attack Damage")) {
+                if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.infinity.desc")) || event.getToolTip().get(x).getString().equals(I18n.get("attribute.name.generic.attack_damage"))) {
                     event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 }
+            }
+        } else if (event.getItemStack().getItem() instanceof ArmorInfinityItem) {
+            for (int x = 0; x < event.getToolTip().size(); x++) {
+                if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.armor.desc"))) {
+                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
+                    return;
+                } else if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.armor_toughness.desc"))) {
+                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
+                    return;
+                }
+
             }
         }
     }

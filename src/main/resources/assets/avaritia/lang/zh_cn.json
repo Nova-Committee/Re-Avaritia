@@ -44,6 +44,8 @@
   "tooltip.diamond_lattice.desc": "致密材料...",
   "tooltip.infinity": "无限",
   "tooltip.infinity.desc": "攻击伤害",
+  "tooltip.armor.desc": "盔甲",
+  "tooltip.armor_toughness.desc": "盔甲韧性",
   "tooltip.avaritia.empty": "空",
   "tooltip.avaritia.eject": "弹出",
   "tooltip.avaritia.ejecting": "弹出中……",

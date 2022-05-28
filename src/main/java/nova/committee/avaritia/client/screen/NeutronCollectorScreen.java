@@ -65,8 +65,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
             List<Component> tooltip = new ArrayList<>();
 
             if (this.getProgress() > 0) {
-                int i = Mth.clamp(this.getProgress(), 0, this.getTimeRequired());
-                var text = ModTooltips.PROGRESS.args(number(i) + "%").build();
+                int i = getProgressBarScaled(1);
+                var text = ModTooltips.PROGRESS.args(fraction(i)).build();
                 tooltip.add(text);
             }
 
