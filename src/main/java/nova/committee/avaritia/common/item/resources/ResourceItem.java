@@ -10,12 +10,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.IItemRenderProperties;
+import nova.committee.avaritia.api.client.render.SimpleCustomRenderer;
+import nova.committee.avaritia.client.render.item.PerspectiveItemRender;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModTab;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -33,19 +38,19 @@ public class ResourceItem extends Item {
         setRegistryName(registryName);
         this.rarity = rarity;
         this.name = registryName;
-		this.needsTooltip = needsTooltip;
+        this.needsTooltip = needsTooltip;
     }
 
     @Override
-    public Rarity getRarity(ItemStack p_41461_) {
+    public @NotNull Rarity getRarity(ItemStack p_41461_) {
         return rarity;
     }
 
 
     @Override
     public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> components, TooltipFlag p_41424_) {
-    	if(needsTooltip)
-    		components.add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip." + name + ".desc")));
+        if (needsTooltip)
+            components.add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip." + name + ".desc")));
     }
 
     @Nullable
@@ -53,4 +58,10 @@ public class ResourceItem extends Item {
     public Entity createEntity(Level level, Entity location, ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(SimpleCustomRenderer.create(this, new PerspectiveItemRender(name)));
+    }
+
 }

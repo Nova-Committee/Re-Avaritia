@@ -4,7 +4,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import nova.committee.avaritia.api.util.IColored;
+import nova.committee.avaritia.api.init.iface.IColored;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.util.ColorUtil;
 

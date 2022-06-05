@@ -146,14 +146,12 @@ dependencies {
     compileOnly fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
     compileOnly fg.deobf('curse.maven:jade-324717:3761542')
     compileOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193:api')
+    //compileOnly fg.deobf(fileTree(dir: 'libs', include: ['*.jar']))
     //compileOnly("teamtwilight:twilightforest:4.0.546:universal")
     //implementation fg.deobf('vazkii.botania:Botania:1.18.2-431')
 //    implementation fg.deobf('vazkii.patchouli:Patchouli:1.18.2-67')
 //    implementation fg.deobf('top.theillusivec4.curios:curios-forge:1.18.2-5.0.6.3')
     //implementation fg.deobf("curse.maven:projecte-226410:${projecte_id}")
-//    compileOnly fg.deobf("me.shedaniel:architectury-forge:${architectury_version}")
-//    compileOnly fg.deobf("dev.latvian.mods:rhino:${rhino_version}")
-//    compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
 
 

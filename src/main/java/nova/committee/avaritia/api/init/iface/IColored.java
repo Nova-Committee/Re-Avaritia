@@ -1,4 +1,4 @@
-package nova.committee.avaritia.api.util;
+package nova.committee.avaritia.api.init.iface;
 
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;

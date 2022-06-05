@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.Static;
-import nova.committee.avaritia.api.util.IColored;
+import nova.committee.avaritia.api.init.iface.IColored;
 import nova.committee.avaritia.init.ModTooltips;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.util.SingularityUtils;

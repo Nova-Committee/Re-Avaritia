@@ -2,6 +2,7 @@ package nova.committee.avaritia.init.registry;
 
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -17,7 +18,7 @@ public class ModTab extends CreativeModeTab {
     }
 
     @Override
-    public ItemStack makeIcon() {
+    public @NotNull ItemStack makeIcon() {
         return new ItemStack(ModItems.pick_axe);
     }
 }

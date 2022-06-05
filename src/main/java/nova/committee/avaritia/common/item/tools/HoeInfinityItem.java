@@ -113,7 +113,7 @@ public class HoeInfinityItem extends HoeItem {
             }
             InfinityHandler.stopItemCapture();
             Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
-            ToolHelper.spawnClusters(pLevel, pPlayer, drops);
+            ToolHelper.spawnClusters(pLevel, pPlayer, map.keySet());
             pPlayer.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
         pLevel.playSound(pPlayer, pPlayer.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
@@ -163,7 +163,7 @@ public class HoeInfinityItem extends HoeItem {
                     }
                     InfinityHandler.stopItemCapture();
                     Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
-                    ToolHelper.spawnClusters(world, playerentity, drops);
+                    ToolHelper.spawnClusters(world, playerentity, map.keySet());
 
                     Iterable<BlockPos> inBoxMutable = BlockPos.betweenClosed(minPos, maxPos.offset(0, 3, 0));
                     Iterable<BlockPos> allInBoxMutable = BlockPos.betweenClosed(minPos.offset(-1, 0, -1), maxPos.offset(1, 4, 1));

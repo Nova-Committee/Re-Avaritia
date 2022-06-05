@@ -65,35 +65,36 @@ public class ColorUtil {
             float q = brightness * (1.0F - saturation * f);
             float t = brightness * (1.0F - saturation * (1.0F - f));
             switch ((int) h) {
-                case 0:
+                case 0 -> {
                     r = (int) (brightness * 255.0F + 0.5F);
                     g = (int) (t * 255.0F + 0.5F);
                     b = (int) (p * 255.0F + 0.5F);
-                    break;
-                case 1:
+                }
+                case 1 -> {
                     r = (int) (q * 255.0F + 0.5F);
                     g = (int) (brightness * 255.0F + 0.5F);
                     b = (int) (p * 255.0F + 0.5F);
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     r = (int) (p * 255.0F + 0.5F);
                     g = (int) (brightness * 255.0F + 0.5F);
                     b = (int) (t * 255.0F + 0.5F);
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     r = (int) (p * 255.0F + 0.5F);
                     g = (int) (q * 255.0F + 0.5F);
                     b = (int) (brightness * 255.0F + 0.5F);
-                    break;
-                case 4:
+                }
+                case 4 -> {
                     r = (int) (t * 255.0F + 0.5F);
                     g = (int) (p * 255.0F + 0.5F);
                     b = (int) (brightness * 255.0F + 0.5F);
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     r = (int) (brightness * 255.0F + 0.5F);
                     g = (int) (p * 255.0F + 0.5F);
                     b = (int) (q * 255.0F + 0.5F);
+                }
             }
         }
 
