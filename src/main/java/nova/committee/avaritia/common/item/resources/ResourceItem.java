@@ -10,9 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.IItemRenderProperties;
-import nova.committee.avaritia.api.client.render.SimpleCustomRenderer;
-import nova.committee.avaritia.client.render.item.PerspectiveItemRender;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModTab;
@@ -20,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Description:
@@ -59,9 +55,9 @@ public class ResourceItem extends Item {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
-    @Override
-    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        consumer.accept(SimpleCustomRenderer.create(this, new PerspectiveItemRender(name)));
-    }
+//    @Override
+//    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+//        consumer.accept(SimpleCustomRenderer.create(this, new PerspectiveItemRender(name)));
+//    }
 
 }
