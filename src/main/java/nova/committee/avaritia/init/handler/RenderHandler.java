@@ -1,6 +1,7 @@
 package nova.committee.avaritia.init.handler;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,7 +17,7 @@ import java.nio.FloatBuffer;
  * Date: 2022/6/5 13:44
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class RenderHandler {
     public static FloatBuffer cosmicUVs = BufferUtils.createFloatBuffer(4 * 10);
 

@@ -16,6 +16,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import nova.committee.avaritia.init.registry.ModRecipeTypes;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -52,7 +53,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients() {
+    public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;
     }
 
