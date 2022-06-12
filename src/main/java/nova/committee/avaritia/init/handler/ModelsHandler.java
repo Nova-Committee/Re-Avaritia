@@ -6,6 +6,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ForgeModelBakery;
@@ -17,6 +18,7 @@ import nova.committee.avaritia.api.client.render.CustomRenderedItems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -25,7 +27,7 @@ import java.util.function.Function;
  * Date: 2022/6/4 12:36
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModelsHandler {
     //protected CustomBlockModels customBlockModels = new CustomBlockModels();
     //protected CustomItemModels customItemModels = new CustomItemModels();
@@ -90,6 +92,6 @@ public class ModelsHandler {
     }
 
     public static ModelResourceLocation getItemModelLocation(Item item) {
-        return new ModelResourceLocation(item.getRegistryName(), "inventory");
+        return new ModelResourceLocation(Objects.requireNonNull(item.getRegistryName()), "inventory");
     }
 }

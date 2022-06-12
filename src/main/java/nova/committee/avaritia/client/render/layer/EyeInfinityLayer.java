@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 
@@ -17,6 +19,7 @@ import nova.committee.avaritia.init.handler.InfinityHandler;
  * Date: 2022/5/16 20:40
  * Version: 1.0
  */
+@OnlyIn(Dist.CLIENT)
 public class EyeInfinityLayer extends EyesLayer<Player, HumanoidModel<Player>> {
     private static final RenderType EYES = RenderType.eyes(new ResourceLocation(Static.MOD_ID, "textures/models/armor/infinity_armor_eyes.png"));
 

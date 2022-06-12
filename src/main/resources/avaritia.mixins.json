@@ -7,7 +7,6 @@
   "mixins": [
   ],
   "client": [
-    "client.AccessorModelManager"
   ],
   "injectors": {
     "defaultRequire": 1

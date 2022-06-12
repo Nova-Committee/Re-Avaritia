@@ -3,6 +3,8 @@ package nova.committee.avaritia.init.proxy;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -35,6 +37,7 @@ public class ClientProxy implements IProxy {
         addPlayerLayer(evt, "slim");
     }
 
+    @OnlyIn(Dist.CLIENT)
     private void addPlayerLayer(EntityRenderersEvent.AddLayers evt, String skin) {
         EntityRenderer<? extends Player> renderer = evt.getSkin(skin);
 
@@ -56,7 +59,7 @@ public class ClientProxy implements IProxy {
         //ClientRegistry.registerKeyBinding(openKey);
         ModMenus.onClientSetup();
         ModEntities.onClientSetup();
-        addTESR(event);
+        //addTESR(event);
     }
 
     @Override

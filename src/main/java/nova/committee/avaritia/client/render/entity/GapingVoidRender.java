@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.client.model.GapingVoidModel;
 import nova.committee.avaritia.common.entity.GapingVoidEntity;
@@ -20,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/3 10:34
  * Version: 1.0
  */
+@OnlyIn(Dist.CLIENT)
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
     private final ResourceLocation fill = new ResourceLocation(Static.MOD_ID, "textures/entity/void.png");
 

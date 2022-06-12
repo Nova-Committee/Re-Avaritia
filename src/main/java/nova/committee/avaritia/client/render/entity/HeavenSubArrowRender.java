@@ -3,6 +3,8 @@ package nova.committee.avaritia.client.render.entity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.entity.HeavenSubArrowEntity;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/20 18:54
  * Version: 1.0
  */
+@OnlyIn(Dist.CLIENT)
 public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
 
     private static final ResourceLocation tex = new ResourceLocation(Static.MOD_ID, "textures/entity/heavenarrow.png");
