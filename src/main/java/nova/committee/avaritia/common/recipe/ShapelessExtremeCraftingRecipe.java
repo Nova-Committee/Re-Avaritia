@@ -72,7 +72,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeTypes.RecipeTypes.CRAFTING;
+        return ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING;
     }
 
     @Override

@@ -56,7 +56,7 @@ public class JeiCompat implements IModPlugin {
             registration.addRecipes(manager.byType(ModRecipeTypes.RecipeTypes.COMPRESSOR).values(), CompressorCategory.UID);
 
             var recipes = Stream.of(1).collect(Collectors.toMap(tier -> tier, tier ->
-                    manager.byType(ModRecipeTypes.RecipeTypes.CRAFTING).values()
+                    manager.byType(ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING).values()
                             .stream()
                             .map(recipe -> (ICraftRecipe) recipe)
                             .collect(Collectors.toList())

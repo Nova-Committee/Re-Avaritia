@@ -76,7 +76,7 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.RecipeTypes.CRAFTING, matrix, this.world);
+        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING, matrix, this.world);
 
         if (recipe.isPresent()) {
             var result = recipe.get().assemble(matrix);

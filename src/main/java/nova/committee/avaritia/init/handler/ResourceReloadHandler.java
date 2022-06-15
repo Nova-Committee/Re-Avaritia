@@ -39,7 +39,7 @@ public class ResourceReloadHandler {
     private record SingularityResourceReload(ICondition.IContext context) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            SingularityRegistryHandler.getInstance().onResourceManagerReload(manager, context);
+            SingularityRegistryHandler.getInstance().onResourceManagerReload(context);
         }
     }
 

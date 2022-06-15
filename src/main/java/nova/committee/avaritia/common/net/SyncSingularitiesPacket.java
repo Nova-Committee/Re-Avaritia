@@ -45,9 +45,6 @@ public class SyncSingularitiesPacket extends IPacket<SyncSingularitiesPacket> {
 
     @Override
     public void run(SyncSingularitiesPacket msg, Supplier<NetworkEvent.Context> ctx) {
-    	if(ctx.get().getDirection().getReceptionSide().isServer())
-    		return;
-    	
         ctx.get().enqueueWork(() -> {
             SingularityRegistryHandler.getInstance().loadSingularities(msg);
         });

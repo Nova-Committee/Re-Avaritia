@@ -1,5 +1,6 @@
 package nova.committee.avaritia.init.registry;
 
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
@@ -9,7 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.recipe.*;
 
@@ -31,18 +31,20 @@ public class ModRecipeTypes {
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<RecipeSerializer<?>> event) {
-        final IForgeRegistry<RecipeSerializer<?>> registry = event.getRegistry();
+        var registry = event.getRegistry();
 
         registry.registerAll(
                 SHAPED_EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shaped_extreme_craft")),
                 SHAPELESS_EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shapeless_extreme_craft")),
                 COMPRESSOR_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "compressor"))
         );
+        Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(Static.MOD_ID, "compressor"), RecipeTypes.COMPRESSOR);
+        Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(Static.MOD_ID, "extreme_craft"), RecipeTypes.EXTREME_CRAFTING);
 
     }
 
     public static class RecipeTypes {
-        public static final RecipeType<ICraftRecipe> CRAFTING = new RecipeType<>() {
+        public static final RecipeType<ICraftRecipe> EXTREME_CRAFTING = new RecipeType<>() {
             @Override
             public <C extends Container> Optional<ICraftRecipe> tryMatch(Recipe<C> recipe, Level world, C inv) {
                 return recipe.matches(inv, world) ? Optional.of((ICraftRecipe) recipe) : Optional.empty();

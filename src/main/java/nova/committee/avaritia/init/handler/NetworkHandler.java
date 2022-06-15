@@ -20,6 +20,9 @@ public class NetworkHandler {
 
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
-        INSTANCE.register(SyncSingularitiesPacket.class, new SyncSingularitiesPacket());
+        event.enqueueWork(() -> {
+            INSTANCE.register(SyncSingularitiesPacket.class, new SyncSingularitiesPacket());
+        });
+
     }
 }

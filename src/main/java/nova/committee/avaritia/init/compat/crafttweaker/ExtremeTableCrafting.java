@@ -121,14 +121,14 @@ public class ExtremeTableCrafting {
             @Override
             public void apply() {
                 var recipes = RecipeUtil.getRecipes()
-                        .getOrDefault(ModRecipeTypes.RecipeTypes.CRAFTING, new HashMap<>())
+                        .getOrDefault(ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING, new HashMap<>())
                         .values().stream()
                         .filter(r -> r.getResultItem().sameItem(stack.getInternal()))
                         .map(Recipe::getId)
                         .toList();
 
                 recipes.forEach(r -> {
-                    RecipeUtil.getRecipes().get(ModRecipeTypes.RecipeTypes.CRAFTING).remove(r);
+                    RecipeUtil.getRecipes().get(ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING).remove(r);
                 });
             }
 

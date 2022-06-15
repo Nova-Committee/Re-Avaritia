@@ -121,7 +121,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeTypes.RecipeTypes.CRAFTING;
+        return ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING;
     }
 
     @Override
