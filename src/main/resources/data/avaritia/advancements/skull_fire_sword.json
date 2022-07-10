@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.skull_fire_sword.desc"
     },
-    "frame": "goal"
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "skull_fire_sword": {

@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.infinity_food.desc"
     },
-    "frame": "goal"
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "infinity_food0": {

@@ -1,4 +1,4 @@
-package nova.committee.avaritia.common.recipe;
+package nova.committee.avaritia.common.crafting.recipe;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;

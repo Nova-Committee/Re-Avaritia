@@ -1,14 +1,11 @@
 package nova.committee.avaritia.common.item;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
@@ -56,34 +53,11 @@ public class ArmorInfinityItem extends ArmorItem {
         return true;
     }
 
-
     @Override
-    public void onArmorTick(ItemStack stack, Level level, Player player) {
-        if (slot == EquipmentSlot.HEAD) {
-            player.setAirSupply(300);
-            player.getFoodData().setFoodLevel(20);
-            player.getFoodData().setSaturation(20f);
-            MobEffectInstance nv = player.getEffect(MobEffects.NIGHT_VISION);
-            if (nv == null) {
-                nv = new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false);
-                player.addEffect(nv);
-            }
-            nv.duration = 300;
-        } else if (slot == EquipmentSlot.CHEST) {
-            player.getAbilities().mayfly = true;
-            List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
-            for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
-//                if (ModHelper.isHoldingCleaver(player) && potion.getPotion().equals(MobEffects.MINING_FATIGUE)) {
-//                    continue;
-//                }
-                player.removeEffect(potion.getEffect());
-            }
-        } else if (slot == EquipmentSlot.LEGS) {
-            if (player.fireImmune()) {
-                player.clearFire();
-            }
-        }
+    public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+        return true;
     }
+
 
     @Override
     public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
@@ -93,9 +67,21 @@ public class ArmorInfinityItem extends ArmorItem {
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+        if (slot == EquipmentSlot.HEAD) {
+            tooltip.add(new TextComponent(""));
+            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% NIGHT VISION"));
+        }
+        if (slot == EquipmentSlot.CHEST) {
+            tooltip.add(new TextComponent(""));
+            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% FLY SPEED"));
+        }
+        if (slot == EquipmentSlot.LEGS) {
+            tooltip.add(new TextComponent(""));
+            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% WALK SPEED"));
+        }
         if (slot == EquipmentSlot.FEET) {
             tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% Speed"));
+            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% SPEED"));
         }
         super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
     }

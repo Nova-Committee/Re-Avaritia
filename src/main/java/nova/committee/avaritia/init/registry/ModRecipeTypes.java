@@ -7,11 +7,13 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.Static;
-import nova.committee.avaritia.common.recipe.*;
+import nova.committee.avaritia.common.crafting.condition.InfinityCatalystCondition;
+import nova.committee.avaritia.common.crafting.recipe.*;
 
 import java.util.Optional;
 
@@ -24,10 +26,9 @@ import java.util.Optional;
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModRecipeTypes {
     public static RecipeSerializer<ShapedExtremeCraftingRecipe> SHAPED_EXTREME_CRAFT_RECIPE = new ShapedExtremeCraftingRecipe.Serializer();
-
     public static RecipeSerializer<ShapelessExtremeCraftingRecipe> SHAPELESS_EXTREME_CRAFT_RECIPE = new ShapelessExtremeCraftingRecipe.Serializer();
-
     public static RecipeSerializer<CompressorRecipe> COMPRESSOR_RECIPE = new CompressorRecipe.Serializer();
+    public static final RecipeSerializer<InfinityCatalystRecipe> INFINITY_CATALYST = new InfinityCatalystRecipe.Serializer();
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<RecipeSerializer<?>> event) {
@@ -36,8 +37,13 @@ public class ModRecipeTypes {
         registry.registerAll(
                 SHAPED_EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shaped_extreme_craft")),
                 SHAPELESS_EXTREME_CRAFT_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "shapeless_extreme_craft")),
-                COMPRESSOR_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "compressor"))
+                COMPRESSOR_RECIPE.setRegistryName(new ResourceLocation(Static.MOD_ID, "compressor")),
+                INFINITY_CATALYST.setRegistryName(new ResourceLocation(Static.MOD_ID, "infinity_catalyst"))
         );
+
+        CraftingHelper.register(InfinityCatalystCondition.Serializer.INSTANCE);
+
+
         Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(Static.MOD_ID, "compressor"), RecipeTypes.COMPRESSOR);
         Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(Static.MOD_ID, "extreme_craft"), RecipeTypes.EXTREME_CRAFTING);
 

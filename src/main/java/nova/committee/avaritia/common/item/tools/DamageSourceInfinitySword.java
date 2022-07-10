@@ -2,6 +2,7 @@ package nova.committee.avaritia.common.item.tools;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +25,9 @@ public class DamageSourceInfinitySword extends EntityDamageSource {
 
     @Override
     public Component getLocalizedDeathMessage(@NotNull LivingEntity damageSourceEntity) {
-        ItemStack itemstack = damageSourceEntity.getMainHandItem();
+        ItemStack itemstack = damageSourceEntity.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() ?
+                damageSourceEntity.getItemInHand(InteractionHand.OFF_HAND) :
+                damageSourceEntity.getItemInHand(InteractionHand.MAIN_HAND);
         String s = "death.attack.infinity";
         int rando = entity.getLevel().random.nextInt(5);
         if (rando != 0) {

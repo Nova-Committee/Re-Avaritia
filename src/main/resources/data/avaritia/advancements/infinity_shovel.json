@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.infinity_shovel.desc"
     },
-    "frame": "challenge"
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "infinity_shovel": {

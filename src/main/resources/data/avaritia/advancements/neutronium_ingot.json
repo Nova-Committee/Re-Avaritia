@@ -10,11 +10,14 @@
     "description": {
       "translate": "advancements.avaritia.neutronium_ingot.desc"
     },
-    "frame": "task"
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "neutronium_ingot": {
-      "trigger": "minecraft:inventory_changed",
+      "trigger": "avaritia:generic_int",
       "conditions": {
         "items": [
           {

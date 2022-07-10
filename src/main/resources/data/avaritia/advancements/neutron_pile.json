@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.neutron_pile.desc"
     },
-    "frame": "task"
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "neutron_pile": {

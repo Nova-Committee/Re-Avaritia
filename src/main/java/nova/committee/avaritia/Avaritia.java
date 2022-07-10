@@ -21,7 +21,7 @@ import nova.committee.avaritia.init.registry.ModEntities;
  */
 @Mod(Static.MOD_ID)
 public class Avaritia {
-    public static final IProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+    public static IProxy proxy;
 
     public Avaritia() {
         ModConfig.register();
@@ -30,9 +30,8 @@ public class Avaritia {
         bus.register(this);
 
         ModEntities.ENTITIES.register(bus);
+        proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
-
-        proxy.init();
     }
 
     @SubscribeEvent

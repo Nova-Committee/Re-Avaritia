@@ -1,5 +1,9 @@
 package nova.committee.avaritia.init.handler;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +23,7 @@ import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
 import nova.committee.avaritia.init.registry.ModItems;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -135,7 +140,24 @@ public class AbilityHandler {
     }
 
     private static void handleHelmetStateChange(LivingEntity entity, boolean isNew) {
-        //todo, Helmet abilities? Water breathing, NightVision, Auto Eat or No Hunger, No bad effects.
+        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        if (entity instanceof Player player) {
+            if (isNew) {
+                player.setAirSupply(300);
+                player.getFoodData().setFoodLevel(20);
+                player.getFoodData().setSaturation(20f);
+                MobEffectInstance nv = player.getEffect(MobEffects.NIGHT_VISION);
+                if (nv == null) {
+                    nv = new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false);
+                    player.addEffect(nv);
+                }
+                nv.duration = 300;
+                entitiesWithHelmets.add(key);
+            } else {
+                entitiesWithHelmets.remove(key);
+            }
+
+        }
     }
 
     private static void handleChestplateStateChange(LivingEntity entity, boolean isNew) {
@@ -143,6 +165,11 @@ public class AbilityHandler {
         if (entity instanceof Player player) {
             if (isNew) {
                 player.getAbilities().mayfly = true;
+                player.getAbilities().mayfly = true;
+                List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
+                for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
+                    player.removeEffect(potion.getEffect());
+                }
                 entitiesWithFlight.add(key);
             } else {
                 if (!player.isCreative() && entitiesWithFlight.contains(key)) {
@@ -151,25 +178,35 @@ public class AbilityHandler {
                     entitiesWithFlight.remove(key);
                 }
             }
+
         }
     }
 
     private static void handleLeggingsStateChange(LivingEntity entity, boolean isNew) {
+        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
 
+        if (entity instanceof Player player) {
+            if (isNew) {
+                entitiesWithLeggings.add(key);
+            } else {
+                entitiesWithLeggings.remove(key);
+            }
+
+        }
     }
 
     private static void handleBootsStateChange(LivingEntity entity) {
-        String temp_key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
         boolean hasBoots = isPlayerWearing(entity, FEET, item -> item instanceof ArmorInfinityItem);
         if (hasBoots) {
-            entity.maxUpStep = 1.0625F;//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
-            if (!entitiesWithBoots.contains(temp_key)) {
-                entitiesWithBoots.add(temp_key);
+            entity.maxUpStep = 1.08F;//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
+            if (!entitiesWithBoots.contains(key)) {
+                entitiesWithBoots.add(key);
             }
         } else {
-            if (entitiesWithBoots.contains(temp_key)) {
+            if (entitiesWithBoots.contains(key)) {
                 entity.maxUpStep = 0.5F;
-                entitiesWithBoots.remove(temp_key);
+                entitiesWithBoots.remove(key);
             }
         }
     }
@@ -185,7 +222,10 @@ public class AbilityHandler {
     }
 
     private static void tickLeggingsAbilities(LivingEntity entity) {
-
+        if (entity.isOnFire()) {
+            entity.clearFire();
+            entity.fireImmune();
+        }
     }
 
     private static void tickBootsAbilities(LivingEntity entity) {
@@ -194,7 +234,7 @@ public class AbilityHandler {
         if (entity.isOnGround() || flying || swimming) {
             boolean sneaking = entity.isCrouching();
 
-            float speed = 0.15f * (flying ? 1.1f : 1.0f)
+            float speed = 0.1f * (flying ? 1.1f : 1.0f)
                     * (swimming ? 1.2f : 1.0f)
                     * (sneaking ? 0.1f : 1.0f);
 

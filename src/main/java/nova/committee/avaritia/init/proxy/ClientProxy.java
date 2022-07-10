@@ -25,6 +25,17 @@ import nova.committee.avaritia.init.registry.ModMenus;
  */
 public class ClientProxy implements IProxy {
 
+
+    public ClientProxy() {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(this::registerLayer);
+        modBus.addListener(this::clientSetup);
+        modBus.addListener(this::addLayers);
+
+        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+
+    }
+
     public void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         //Register entity rendering handlers
         event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
@@ -55,23 +66,13 @@ public class ClientProxy implements IProxy {
     }
 
 
-    public void onClientSetUpEvent(FMLClientSetupEvent event) {
+    public void clientSetup(FMLClientSetupEvent event) {
         //ClientRegistry.registerKeyBinding(openKey);
         ModMenus.onClientSetup();
         ModEntities.onClientSetup();
         //addTESR(event);
     }
 
-    @Override
-    public void init() {
 
 
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modBus.addListener(this::registerLayer);
-        modBus.addListener(this::onClientSetUpEvent);
-        modBus.addListener(this::addLayers);
-
-        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-
-    }
 }

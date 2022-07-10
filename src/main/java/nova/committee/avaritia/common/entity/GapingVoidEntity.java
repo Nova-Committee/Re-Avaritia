@@ -155,16 +155,17 @@ public class GapingVoidEntity extends Entity {
             double range = 4;
             AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
             List<Entity> nommed = level.getEntitiesOfClass(Entity.class, axisAlignedBB, OMNOM_PREDICATE);
-            for (Entity nommee : nommed) {
-                if (nommee != this) {
-                    if (nommee instanceof EnderDragon dragon) {
-                        dragon.hurt(dragon.head, new DamageSourceInfinitySword(user), 1000.0f);
-                    } else if (nommee instanceof WitherBoss wither) {
-                        wither.setInvulnerableTicks(0);
-                        wither.hurt(new DamageSourceInfinitySword(user), 1000.0f);
-                    } else nommee.hurt(new DamageSourceInfinitySword(user), 1000.0f);
-                }
-            }
+            nommed.stream()
+                    .filter(entity -> entity != this)
+                    .forEach(entity -> {
+                        if (entity instanceof EnderDragon dragon) {
+                            dragon.hurt(dragon.head, new DamageSourceInfinitySword(user), 1000.0f);
+                            dragon.setHealth(0);
+                        } else if (entity instanceof WitherBoss wither) {
+                            wither.setInvulnerableTicks(0);
+                            wither.hurt(new DamageSourceInfinitySword(user), 1000.0f);
+                        } else entity.hurt(new DamageSourceInfinitySword(user), 1000.0f);
+                    });
             remove(RemovalReason.KILLED);
         } else {
             if (age == 0) {

@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.star_fuel.desc"
     },
-    "frame": "goal"
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "star_fuel": {
@@ -18,7 +21,7 @@
       "conditions": {
         "items": [
           {
-            "item": "avaritia:star_fuel"
+            "items": "avaritia:star_fuel"
           }
         ]
       }

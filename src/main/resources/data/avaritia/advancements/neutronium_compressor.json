@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.neutronium_compressor.desc"
     },
-    "frame": "task"
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "neutronium_compressor": {

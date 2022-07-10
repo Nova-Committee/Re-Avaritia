@@ -7,7 +7,7 @@ import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
-import nova.committee.avaritia.common.recipe.CompressorRecipe;
+import nova.committee.avaritia.common.crafting.recipe.CompressorRecipe;
 import nova.committee.avaritia.init.registry.ModRecipeTypes;
 import nova.committee.avaritia.util.RecipeUtil;
 import org.openzen.zencode.java.ZenCodeType;

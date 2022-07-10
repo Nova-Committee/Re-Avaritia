@@ -7,10 +7,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.Static;
+import nova.committee.avaritia.common.crafting.recipe.CompressorRecipe;
+import nova.committee.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import nova.committee.avaritia.common.item.singularity.Singularity;
-import nova.committee.avaritia.common.recipe.CompressorRecipe;
-import nova.committee.avaritia.common.recipe.ShapelessExtremeCraftingRecipe;
-import nova.committee.avaritia.init.ModRecipes;
 import nova.committee.avaritia.init.event.RegisterRecipesEvent;
 import nova.committee.avaritia.util.SingularityUtils;
 
@@ -35,9 +34,6 @@ public class DynamicRecipeHandler {
                 event.register(compressorRecipe);
         }
 
-        ModRecipes.addExtremeCrafts();
-
-        event.register(ModRecipes.infinityCatalyst);
 
 
     }

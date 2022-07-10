@@ -79,10 +79,7 @@ public class InfinityHandler {
 
     public static boolean isInfiniteChestplate(Player player) {
         ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (stack.isEmpty() || !(stack.getItem() instanceof ArmorInfinityItem))
-        	return false;
-
-        return true;
+        return !stack.isEmpty() && stack.getItem() instanceof ArmorInfinityItem;
     }
 
 

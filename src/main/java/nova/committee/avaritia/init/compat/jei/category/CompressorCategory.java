@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import nova.committee.avaritia.Static;
-import nova.committee.avaritia.common.recipe.ICompressorRecipe;
+import nova.committee.avaritia.common.crafting.recipe.ICompressorRecipe;
 import nova.committee.avaritia.init.ModTooltips;
 import nova.committee.avaritia.init.registry.ModBlocks;
 import nova.committee.avaritia.util.lang.Localizable;

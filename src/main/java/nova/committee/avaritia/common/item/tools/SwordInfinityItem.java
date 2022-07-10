@@ -52,6 +52,7 @@ public class SwordInfinityItem extends SwordItem {
 
         if (victim instanceof EnderDragon drageon && player instanceof Player player1) {
             drageon.hurt(drageon.head, new DamageSourceInfinitySword(player1), Float.POSITIVE_INFINITY);
+            drageon.setHealth(0);//fix
         } else if (victim instanceof Player pvp) {
             if (InfinityHandler.isInfinite(pvp)) {
                 victim.hurt(new DamageSourceInfinitySword(player).bypassArmor(), 4.0F);
@@ -64,6 +65,7 @@ public class SwordInfinityItem extends SwordItem {
 
         if(victim instanceof Player victimP && InfinityHandler.isInfinite(victimP)) {
         	victimP.level.explode(player, victimP.getBlockX(), victimP.getBlockY(), victimP.getBlockZ(), 25.0f, Explosion.BlockInteraction.NONE);
+            // 玩家身着无尽甲则只造成爆炸伤害
         	return true;
         }
 

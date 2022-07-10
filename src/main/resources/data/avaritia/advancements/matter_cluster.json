@@ -10,7 +10,10 @@
     "description": {
       "translate": "advancements.avaritia.matter_cluster.desc"
     },
-    "frame": "goal"
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
   },
   "criteria": {
     "matter_cluster": {
