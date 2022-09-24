@@ -26,16 +26,16 @@ import java.util.List;
 public class DynamicRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
-
         for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
+            if (singularity.isRecipeDisabled()) {
+                continue;
+            }
+
             var compressorRecipe = makeSingularityRecipe(singularity);
 
             if (compressorRecipe != null)
                 event.register(compressorRecipe);
         }
-
-
-
     }
 
 

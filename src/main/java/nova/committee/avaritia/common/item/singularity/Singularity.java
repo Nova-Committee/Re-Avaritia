@@ -23,6 +23,7 @@ public class Singularity {
     private final int timeRequired;
     private Ingredient ingredient;
     private boolean enabled = true;
+    private boolean recipeDisabled = false;
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
         this.id = id;
@@ -132,6 +133,14 @@ public class Singularity {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isRecipeDisabled() {
+        return recipeDisabled;
+    }
+
+    public void setRecipeDisabled(boolean recipeDisabled) {
+        this.recipeDisabled = recipeDisabled;
     }
 
     public void write(FriendlyByteBuf buffer) {

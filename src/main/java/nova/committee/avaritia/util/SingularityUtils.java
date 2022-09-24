@@ -54,8 +54,10 @@ public class SingularityUtils {
         }
 
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
+        var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
 
         singularity.setEnabled(enabled);
+        singularity.setRecipeDisabled(recipeDisabled);
 
         return singularity;
     }
