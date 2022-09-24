@@ -14,7 +14,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.PacketDistributor;
-import nova.committee.avaritia.Avaritia;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.item.singularity.Singularity;
 import nova.committee.avaritia.common.net.SyncSingularitiesPacket;
