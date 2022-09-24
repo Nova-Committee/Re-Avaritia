@@ -14,6 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.PacketDistributor;
+import nova.committee.avaritia.Avaritia;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.item.singularity.Singularity;
 import nova.committee.avaritia.common.net.SyncSingularitiesPacket;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  * Date: 2022/4/2 12:35
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber
 public class SingularityRegistryHandler {
     private static final SingularityRegistryHandler INSTANCE = new SingularityRegistryHandler();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
@@ -49,8 +50,8 @@ public class SingularityRegistryHandler {
     }
 
     @SubscribeEvent
-    public void onDatapackSync(OnDatapackSyncEvent event) {
-        var message = new SyncSingularitiesPacket(this.getSingularities());
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        var message = new SyncSingularitiesPacket(SingularityRegistryHandler.getInstance().getSingularities());
         var player = event.getPlayer();
 
         if (player != null) {
