@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Date: 2022/4/2 12:35
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber
 public class SingularityRegistryHandler {
     private static final SingularityRegistryHandler INSTANCE = new SingularityRegistryHandler();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
@@ -49,8 +49,8 @@ public class SingularityRegistryHandler {
     }
 
     @SubscribeEvent
-    public void onDatapackSync(OnDatapackSyncEvent event) {
-        var message = new SyncSingularitiesPacket(this.getSingularities());
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        var message = new SyncSingularitiesPacket(SingularityRegistryHandler.getInstance().getSingularities());
         var player = event.getPlayer();
 
         if (player != null) {
