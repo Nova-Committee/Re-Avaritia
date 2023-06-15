@@ -1,14 +1,14 @@
-modLoader="javafml" #mandatory
-loaderVersion="[40,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
-license="MIT"
+modLoader = "javafml" #mandatory
+loaderVersion = "[44,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+license = "MIT"
 #issueTrackerURL="http://my.issue.tracker/" #optional
 [[mods]] #mandatory
-modId="avaritia" #mandatory
-version="${file.jarVersion}" #mandatory
-displayName="Avaritia-Reforged" #mandatory
+modId = "avaritia" #mandatory
+version = "${file.jarVersion}" #mandatory
+displayName = "Avaritia-Reforged" #mandatory
 #updateJSONURL="http://myurl.me/" #optional
 #displayURL="http://example.com/" #optional
-logoFile="avaritia.png" #optional
+logoFile = "avaritia.png" #optional
 #credits="Thanks for this example mod goes to Java" #optional
 authors="cnlimiter, Asek3, MikhailTapio" #optional
 description='''
@@ -24,6 +24,6 @@ description='''
    modId="minecraft"
    mandatory=true
    # This version range declares a minimum of the current minecraft version up to but not including the next major version
-   versionRange="[1.18.2,1.19)"
-   ordering="NONE"
+versionRange = "[1.19.4,)"
+ordering = "NONE"
    side="BOTH"

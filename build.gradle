@@ -22,7 +22,7 @@ tasks.withType(JavaCompile) {
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.20'
+    mappings channel: 'official', version: "${minecraft_version}"
     //mappings channel: 'parchment', version: '2022.05.02-1.18.2'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -102,12 +102,14 @@ repositories {
 
 dependencies {
 
-    minecraft "net.minecraftforge:forge:${forge_version}"
-    //compileOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+//compileOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
     //runtimeOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
-    //compileOnly fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
-    //compileOnly fg.deobf('curse.maven:jade-324717:3761542')
-    //compileOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193:api')
+    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${crafttweaker_version}")
+    compileOnly fg.deobf('curse.maven:jade-324717:4573193')
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     //compileOnly fg.deobf(fileTree(dir: 'libs', include: ['*.jar']))
     //compileOnly("teamtwilight:twilightforest:4.0.546:universal")
     //implementation fg.deobf('vazkii.botania:Botania:1.18.2-431')
@@ -115,9 +117,6 @@ dependencies {
 //    implementation fg.deobf('top.theillusivec4.curios:curios-forge:1.18.2-5.0.6.3')
     //implementation fg.deobf("curse.maven:projecte-226410:${projecte_id}")
     //runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
-
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 jar {
@@ -140,4 +139,28 @@ tasks.register('srcJar', Jar) {
     from sourceSets.main.allSource
     setArchiveClassifier("sources")
     from file("LICENSE")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = "${project.maven_group}"
+            artifactId = "${project.archives_name}"
+            version = "${project.minecraft_version}" + "-" + "${project.mod_version}"
+        }
+    }
+    repositories {
+        if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
+            maven {
+                name 'release'
+                url = 'https://maven.nova-committee.cn/releases'
+
+                credentials {
+                    username System.getenv('MAVEN_USERNAME')
+                    password System.getenv('MAVEN_PASSWORD')
+                }
+            }
+        }
+    }
 }
