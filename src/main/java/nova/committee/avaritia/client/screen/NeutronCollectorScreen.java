@@ -55,7 +55,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
 
     @Override
     public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrix, mouseX, mouseY, partialTicks);
+        super.render(stack, mouseX, mouseY, partialTicks);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
 
@@ -76,8 +76,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752);
-        stack.drawString(font, this.playerInventoryTitle, 8, 166 - 94, 4210752);
+        stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752, false);
+        stack.drawString(font, this.playerInventoryTitle, 8, 166 - 94, 4210752, false);
     }
 
     @Override

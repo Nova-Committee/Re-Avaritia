@@ -12,6 +12,7 @@ import nova.committee.avaritia.init.proxy.ClientProxy;
 import nova.committee.avaritia.init.proxy.IProxy;
 import nova.committee.avaritia.init.proxy.ServerProxy;
 import nova.committee.avaritia.init.registry.ModEntities;
+import nova.committee.avaritia.util.registry.RegistryUtil;
 
 /**
  * Description:
@@ -25,13 +26,11 @@ public class Avaritia {
 
     public Avaritia() {
         ModConfig.register();
-
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
-
+        RegistryUtil.init(bus);
         ModEntities.ENTITIES.register(bus);
         proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
-
     }
 
     @SubscribeEvent

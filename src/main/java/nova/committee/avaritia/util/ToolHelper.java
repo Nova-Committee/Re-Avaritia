@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.BlockEvent;
 import nova.committee.avaritia.common.item.MatterClusterItem;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModItems;
@@ -104,7 +105,7 @@ public class ToolHelper {
         boolean isTrash = false;
         for (TagKey<Item> id : suspect.getTags().toList()) {
             for (String ore : defaultTrashOres) {
-                if (id.registry().getRegistryName().toString().equals(ore)) {
+                if (id.registry().registry().toString().equals(ore)) {
                     return true;
                 }
             }

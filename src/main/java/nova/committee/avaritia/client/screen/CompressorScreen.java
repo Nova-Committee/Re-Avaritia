@@ -96,8 +96,8 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     @Override
     protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
-        stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752);
-        stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752);
+        stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752, false);
+        stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752, false);
     }
 
     @Override
