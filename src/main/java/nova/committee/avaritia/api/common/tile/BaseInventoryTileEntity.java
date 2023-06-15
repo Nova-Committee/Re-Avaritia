@@ -7,8 +7,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import nova.committee.avaritia.util.item.BaseItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +44,7 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
 
     @Override
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return !this.isRemoved() && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, this.capability) : super.getCapability(cap, side);
+        return !this.isRemoved() && cap == ForgeCapabilities.ITEM_HANDLER ? LazyOptional.empty() : super.getCapability(cap, side);
     }
 
     public boolean isUsableByPlayer(Player player) {

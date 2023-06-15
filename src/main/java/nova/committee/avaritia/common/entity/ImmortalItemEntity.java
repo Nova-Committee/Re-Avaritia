@@ -39,7 +39,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public boolean hurt(DamageSource source, float p_70097_2_) {
-        return source == DamageSource.OUT_OF_WORLD;
+        return source == this.damageSources().fellOutOfWorld();
     }
 
 
@@ -61,7 +61,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public void playerTouch(@NotNull Player pEntity) {
-        if (!this.level.isClientSide) {
+        if (!this.getCommandSenderWorld().isClientSide) {
             if (this.pickupDelay > 0) return;
             ItemStack itemstack = this.getItem();
             Item item = itemstack.getItem();

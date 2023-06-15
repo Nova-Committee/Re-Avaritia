@@ -1,8 +1,6 @@
 package nova.committee.avaritia.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -56,7 +54,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    public void render(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrix, mouseX, mouseY, partialTicks);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
@@ -70,29 +68,26 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
                 tooltip.add(text);
             }
 
-            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
+            stack.renderComponentTooltip(font, tooltip, mouseX, mouseY);
         }
     }
 
     @Override
-    protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        this.font.draw(stack, title, (float) (176 / 2 - this.font.width(title) / 2), 6.0F, 4210752);
-        this.font.draw(stack, this.playerInventoryTitle, 8.0F, 166 - 94.0F, 4210752);
+        stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752);
+        stack.drawString(font, this.playerInventoryTitle, 8, 166 - 94, 4210752);
     }
 
     @Override
-    protected void renderBg(@NotNull PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, BACKGROUND);
+    protected void renderBg(@NotNull GuiGraphics stack, float pPartialTick, int pMouseX, int pMouseY) {
         int i = this.getGuiLeft();
         int j = this.getGuiTop();
-        blit(pPoseStack, i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+        stack.blit(BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(18);
-            this.blit(pPoseStack, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
+            stack.blit(BACKGROUND, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
         }
     }
 

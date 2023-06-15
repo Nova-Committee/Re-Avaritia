@@ -23,12 +23,12 @@ public class RenderHandler {
 
 
     @SubscribeEvent
-    public static void onDrawScreenPre(ScreenEvent.DrawScreenEvent.Pre event) {
+    public static void onDrawScreenPre(ScreenEvent.Render.Pre event) {
         CosmicShaderHelper.inventoryRender = true;
     }
 
     @SubscribeEvent
-    public static void drawScreenPost(ScreenEvent.DrawScreenEvent.Post event) {
+    public static void drawScreenPost(ScreenEvent.Render.Post event) {
         CosmicShaderHelper.inventoryRender = false;
     }
 

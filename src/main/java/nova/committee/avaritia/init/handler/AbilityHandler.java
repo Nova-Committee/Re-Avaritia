@@ -19,7 +19,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.common.item.ArmorInfinityItem;
-import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
+import nova.committee.avaritia.init.registry.ModDamageTypes;
 import nova.committee.avaritia.init.registry.ModItems;
 
 import java.util.HashSet;
@@ -51,18 +51,18 @@ public class AbilityHandler {
     }
 
     @SubscribeEvent
-    public static void updateAbilities(LivingEvent.LivingUpdateEvent event) {
+    public static void updateAbilities(LivingEvent.LivingTickEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
-        LivingEntity entity = event.getEntityLiving();
-        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        LivingEntity entity = event.getEntity();
+        String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
 
-        boolean hasHelmet = isPlayerWearing(event.getEntityLiving(), HEAD, item -> item instanceof ArmorInfinityItem);
-        boolean hasChestplate = isPlayerWearing(event.getEntityLiving(), CHEST, item -> item instanceof ArmorInfinityItem);
-        boolean hasLeggings = isPlayerWearing(event.getEntityLiving(), LEGS, item -> item instanceof ArmorInfinityItem);
-        boolean hasBoots = isPlayerWearing(event.getEntityLiving(), FEET, item -> item instanceof ArmorInfinityItem);
+        boolean hasHelmet = isPlayerWearing(event.getEntity(), HEAD, item -> item instanceof ArmorInfinityItem);
+        boolean hasChestplate = isPlayerWearing(event.getEntity(), CHEST, item -> item instanceof ArmorInfinityItem);
+        boolean hasLeggings = isPlayerWearing(event.getEntity(), LEGS, item -> item instanceof ArmorInfinityItem);
+        boolean hasBoots = isPlayerWearing(event.getEntity(), FEET, item -> item instanceof ArmorInfinityItem);
 
         //Helmet toggle.
         if (hasHelmet) {
@@ -120,7 +120,7 @@ public class AbilityHandler {
     }
 
     private static void stripAbilities(LivingEntity entity) {
-        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
 
         if (entitiesWithHelmets.remove(key)) {
             handleHelmetStateChange(entity, false);
@@ -140,7 +140,7 @@ public class AbilityHandler {
     }
 
     private static void handleHelmetStateChange(LivingEntity entity, boolean isNew) {
-        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
         if (entity instanceof Player player) {
             if (isNew) {
                 player.setAirSupply(300);
@@ -161,7 +161,7 @@ public class AbilityHandler {
     }
 
     private static void handleChestplateStateChange(LivingEntity entity, boolean isNew) {
-        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
         if (entity instanceof Player player) {
             if (isNew) {
                 player.getAbilities().mayfly = true;
@@ -183,7 +183,7 @@ public class AbilityHandler {
     }
 
     private static void handleLeggingsStateChange(LivingEntity entity, boolean isNew) {
-        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
 
         if (entity instanceof Player player) {
             if (isNew) {
@@ -196,7 +196,7 @@ public class AbilityHandler {
     }
 
     private static void handleBootsStateChange(LivingEntity entity) {
-        String key = entity.getEncodeId() + "|" + entity.level.isClientSide;
+        String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
         boolean hasBoots = isPlayerWearing(entity, FEET, item -> item instanceof ArmorInfinityItem);
         if (hasBoots) {
             entity.maxUpStep = 1.08F;//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
@@ -231,7 +231,7 @@ public class AbilityHandler {
     private static void tickBootsAbilities(LivingEntity entity) {
         boolean flying = entity instanceof Player && ((Player) entity).getAbilities().flying;
         boolean swimming = entity.isInWater();
-        if (entity.isOnGround() || flying || swimming) {
+        if (entity.onGround() || flying || swimming) {
             boolean sneaking = entity.isCrouching();
 
             float speed = 0.1f * (flying ? 1.1f : 1.0f)
@@ -269,8 +269,8 @@ public class AbilityHandler {
     //取消身穿无尽套时的伤害
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
-        if (event.getEntityLiving() instanceof Player player) {
-            if (InfinityHandler.isInfinite(player) && !(event.getSource() instanceof DamageSourceInfinitySword)) {
+        if (event.getEntity() instanceof Player player) {
+            if (InfinityHandler.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }
@@ -279,30 +279,30 @@ public class AbilityHandler {
 
     @SubscribeEvent
     public void jumpBoost(LivingEvent.LivingJumpEvent event) {
-        LivingEntity entity = event.getEntityLiving();
-        if (entitiesWithBoots.contains(entity.getEncodeId() + "|" + entity.level.isClientSide)) {
+        LivingEntity entity = event.getEntity();
+        if (entitiesWithBoots.contains(entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide)) {
             entity.setDeltaMovement(0, 2.0f, 0);
         }
     }
 
     @SubscribeEvent
     public void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
-        stripAbilities(event.getPlayer());
+        stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        stripAbilities(event.getPlayer());
+        stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        stripAbilities(event.getPlayer());
+        stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        stripAbilities(event.getPlayer());
+        stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
@@ -314,6 +314,6 @@ public class AbilityHandler {
 
     @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event) {
-        stripAbilities(event.getEntityLiving());
+        stripAbilities(event.getEntity());
     }
 }

@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -43,7 +42,7 @@ public class InfinitatoTile extends BaseTileEntity {
         if (jumpTicks > 0) {
             jumpTicks--;
             if (jumpTicks == 20 || jumpTicks == 0) {
-                level.explode(null, tilePos.getX() + 0.5, tilePos.getY(), tilePos.getZ() + 0.5, 0.0f, Explosion.BlockInteraction.BREAK);
+                level.explode(null, tilePos.getX() + 0.5, tilePos.getY(), tilePos.getZ() + 0.5, 0.0f, Level.ExplosionInteraction.BLOCK);
             }
         }
         if (nextTick > 0)

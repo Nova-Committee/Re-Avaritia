@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.init.registry.ModItems;
 import nova.committee.avaritia.init.registry.ModRecipeTypes;
@@ -67,10 +66,10 @@ public class InfinityCatalystRecipe extends ShapelessExtremeCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.INFINITY_CATALYST;
+        return ModRecipeTypes.INFINITY_SERIALIZER;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<InfinityCatalystRecipe> {
+    public static class Serializer implements RecipeSerializer<InfinityCatalystRecipe> {
         @Override
         public InfinityCatalystRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             return new InfinityCatalystRecipe(recipeId, new ItemStack(ModItems.infinity_catalyst));

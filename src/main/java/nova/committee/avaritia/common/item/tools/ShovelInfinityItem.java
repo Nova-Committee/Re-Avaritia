@@ -18,7 +18,6 @@ import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ToolHelper;
 import nova.committee.avaritia.util.math.RayTracer;
 import org.jetbrains.annotations.Nullable;
@@ -33,11 +32,9 @@ public class ShovelInfinityItem extends ShovelItem {
 
     public ShovelInfinityItem() {
         super(Tier.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .fireResistant());
 
-        setRegistryName("infinity_shovel");
     }
 
     @Override
@@ -73,7 +70,7 @@ public class ShovelInfinityItem extends ShovelItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("destroyer")) {
-            var world = player.level;
+            var world = player.getCommandSenderWorld();
             if (!world.isClientSide) {
                 BlockHitResult traceResult = RayTracer.retrace(player, 10);
                 breakOtherBlock(player, stack, pos, traceResult.getDirection());
@@ -84,7 +81,7 @@ public class ShovelInfinityItem extends ShovelItem {
 
     public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
 
-        var world = player.level;
+        var world = player.getCommandSenderWorld();
         var state = world.getBlockState(pos);
         var mat = state.getMaterial();
         if (!ToolHelper.materialsShovel.contains(mat)) {

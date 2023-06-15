@@ -5,24 +5,22 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.RenderProperties;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import nova.committee.avaritia.util.render.Iterate;
-
-import java.util.Random;
 
 public class PartialItemModelRenderer {
     static PartialItemModelRenderer instance;
     ItemStack stack;
     int overlay;
     PoseStack ms;
-    ItemTransforms.TransformType transformType;
+    ItemDisplayContext transformType;
     MultiBufferSource buffer;
 
     static PartialItemModelRenderer get() {
@@ -31,7 +29,7 @@ public class PartialItemModelRenderer {
         return instance;
     }
 
-    public static PartialItemModelRenderer of(ItemStack stack, ItemTransforms.TransformType transformType,
+    public static PartialItemModelRenderer of(ItemStack stack, ItemDisplayContext transformType,
                                               PoseStack ms, MultiBufferSource buffer, int overlay) {
         PartialItemModelRenderer instance = get();
         instance.stack = stack;
@@ -80,16 +78,16 @@ public class PartialItemModelRenderer {
     private void renderBakedItemModel(BakedModel model, int light, PoseStack ms, VertexConsumer p_229114_6_) {
         ItemRenderer ir = Minecraft.getInstance()
                 .getItemRenderer();
-        Random random = new Random();
-        IModelData data = EmptyModelData.INSTANCE;
+        RandomSource random = RandomSource.create();
+        ModelData data = ModelData.EMPTY;
 
         for (Direction direction : Iterate.directions) {
             random.setSeed(42L);
-            ir.renderQuadList(ms, p_229114_6_, model.getQuads(null, direction, random, data), stack, light,
+            ir.renderQuadList(ms, p_229114_6_, model.getQuads(null, direction, random, data, null), stack, light,
                     overlay);
         }
 
         random.setSeed(42L);
-        ir.renderQuadList(ms, p_229114_6_, model.getQuads(null, null, random, data), stack, light, overlay);
+        ir.renderQuadList(ms, p_229114_6_, model.getQuads(null, null, random, data, null), stack, light, overlay);
     }
 }

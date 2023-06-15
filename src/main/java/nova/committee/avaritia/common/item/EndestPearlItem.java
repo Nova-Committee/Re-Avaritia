@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.DispenserBlock;
 import nova.committee.avaritia.common.entity.EndestPearlEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,8 +29,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EndestPearlItem extends Item {
     public EndestPearlItem() {
-        super(new Properties().tab(ModTab.TAB).stacksTo(16));
-        setRegistryName("endest_pearl");
+        super(new Properties().stacksTo(16));
     }
 
     public static void registerDispenser() {

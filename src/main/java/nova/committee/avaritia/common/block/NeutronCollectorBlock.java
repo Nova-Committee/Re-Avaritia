@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import nova.committee.avaritia.api.common.block.BaseTileEntityBlock;
@@ -37,8 +36,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
 
 
     public NeutronCollectorBlock() {
-        super(Material.METAL, SoundType.METAL, 50f, 2000f);
-        setRegistryName("neutron_collector");
+        super(SoundType.METAL, 50f, 2000f);
 
     }
 
@@ -72,7 +70,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof NeutronCollectorTile compressor) {
-                NetworkHooks.openGui((ServerPlayer) player, compressor, pos);
+                NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
             }
         }
 

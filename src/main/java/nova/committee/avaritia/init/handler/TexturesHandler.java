@@ -38,7 +38,7 @@ public class TexturesHandler {
     }
 
     @SubscribeEvent
-    public static void textureLoad(TextureStitchEvent.Pre event) {
+    public static void textureLoad(TextureStitchEvent event) {
         stitch(event);
         map = event.getAtlas();
 
@@ -67,11 +67,11 @@ public class TexturesHandler {
         };
     }
 
-    private static void stitch(final TextureStitchEvent.Pre evt) {
+    private static void stitch(final TextureStitchEvent evt) {
 
         if (evt.getAtlas().location() == InventoryMenu.BLOCK_ATLAS) {
             for (int i = 0; i < 10; i++) {
-                evt.addSprite(Static.rl("shaders/cosmic_" + i));
+                evt.getAtlas().getSprite(Static.rl("shaders/cosmic_" + i));
             }
 
         }

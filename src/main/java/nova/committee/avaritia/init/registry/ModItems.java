@@ -1,22 +1,17 @@
 package nova.committee.avaritia.init.registry;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
-import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.item.ArmorInfinityItem;
 import nova.committee.avaritia.common.item.EndestPearlItem;
 import nova.committee.avaritia.common.item.MatterClusterItem;
 import nova.committee.avaritia.common.item.resources.ResourceItem;
-import nova.committee.avaritia.common.item.resources.StarFuelItem;
 import nova.committee.avaritia.common.item.singularity.SingularityItem;
 import nova.committee.avaritia.common.item.tools.*;
 import nova.committee.avaritia.init.ModFoods;
+import nova.committee.avaritia.util.registry.RegistryUtil;
 
 /**
  * Description:
@@ -24,100 +19,42 @@ import nova.committee.avaritia.init.ModFoods;
  * Date: 2022/3/31 11:36
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(modid = Static.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModItems {
 
-    //tools
-    public static Item pick_axe;
-    public static Item infinity_shovel;
-    public static Item infinity_axe;
-
-    public static Item infinity_hoe;
-    public static Item matter_cluster;
-
-
-    //weapons
-    public static Item infinity_sword;
-    public static Item skull_sword;
-    public static Item infinity_bow;
-
-
-    //armors
-    public static Item infinity_helmet;
-    public static Item infinity_chestplate;
-    public static Item infinity_pants;
-    public static Item infinity_boots;
-
-
-    public static Item ultimate_stew;
-    public static Item cosmic_meatballs;
-    public static Item endest_pearl;
-
-
-    public static Item diamond_lattice;
-    public static Item crystal_matrix_ingot;
-    public static Item neutron_pile;
-    public static Item neutron_nugget;
-    public static Item neutronium_ingot;
-    public static Item neutronium_gear;
-
-    public static Item infinity_nugget;
-    public static Item infinity_catalyst;
-    public static Item infinity_ingot;
-
-    public static Item star_fuel;
-    public static Item record_fragment;
-
-    public static Item singularity;
-
-
     public static Rarity COSMIC_RARITY = Rarity.create("COSMIC", ChatFormatting.RED);
+    //tools
+    public static Item pick_axe = RegistryUtil.item("infinity_pickaxe", PickaxeInfinityItem::new).get();
+    public static Item infinity_shovel = RegistryUtil.item("infinity_shovel", ShovelInfinityItem::new).get();
+    public static Item infinity_axe = RegistryUtil.item("infinity_axe", AxeInfinityItem::new).get();
+    public static Item infinity_hoe = RegistryUtil.item("infinity_hoe", HoeInfinityItem::new).get();
+    public static Item matter_cluster = RegistryUtil.item("matter_cluster", MatterClusterItem::new).get();
+    //weapons
+    public static Item infinity_sword = RegistryUtil.item("infinity_sword", SwordInfinityItem::new).get();
+    public static Item skull_sword = RegistryUtil.item("skull_fire_sword", SwordSkullsItem::new).get();
+    public static Item infinity_bow = RegistryUtil.item("infinity_bow", BowInfinityItem::new).get();
+    //armors
+    public static Item infinity_helmet = RegistryUtil.item("infinity_helmet", () -> new ArmorInfinityItem(ArmorItem.Type.HELMET)).get();
+    public static Item infinity_chestplate = RegistryUtil.item("infinity_chestplate", () -> new ArmorInfinityItem(ArmorItem.Type.CHESTPLATE)).get();
+    public static Item infinity_pants = RegistryUtil.item("infinity_pants", () -> new ArmorInfinityItem(ArmorItem.Type.LEGGINGS)).get();
+    public static Item infinity_boots = RegistryUtil.item("infinity_boots", () -> new ArmorInfinityItem(ArmorItem.Type.BOOTS)).get();
+    public static Item ultimate_stew = RegistryUtil.item("ultimate_stew", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.ultimate_stew))).get();
+    public static Item cosmic_meatballs = RegistryUtil.item("cosmic_meatballs", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs))).get();
+    public static Item endest_pearl = RegistryUtil.item("endest_pearl", EndestPearlItem::new).get();
+    public static Item diamond_lattice = RegistryUtil.item("diamond_lattice", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", false)).get();
+    public static Item crystal_matrix_ingot = RegistryUtil.item("crystal_matrix_ingot", () -> new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", false)).get();
+    public static Item neutron_pile = RegistryUtil.item("neutron_pile", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_pile", false)).get();
+    public static Item neutron_nugget = RegistryUtil.item("neutron_nugget", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", false)).get();
+    public static Item neutronium_ingot = RegistryUtil.item("neutronium_ingot", () -> new ResourceItem(Rarity.RARE, "neutronium_ingot", false)).get();
+    public static Item neutronium_gear = RegistryUtil.item("neutronium_gear", () -> new ResourceItem(Rarity.EPIC, "neutronium_gear", false)).get();
+    public static Item infinity_nugget = RegistryUtil.item("infinity_nugget", () -> new ResourceItem(Rarity.RARE, "infinity_nugget", false)).get();
+    public static Item infinity_catalyst = RegistryUtil.item("infinity_catalyst", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_catalyst", false)).get();
+    public static Item infinity_ingot = RegistryUtil.item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", false)).get();
+    public static Item star_fuel = RegistryUtil.item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", false)).get();
+    public static Item record_fragment = RegistryUtil.item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", false)).get();
+    public static Item singularity = RegistryUtil.item("singularity", () -> new SingularityItem(properties -> properties)).get();
 
-
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        final IForgeRegistry<Item> registry = event.getRegistry();
-
-        registry.registerAll(
-                pick_axe = new PickaxeInfinityItem(),
-                matter_cluster = new MatterClusterItem(),
-                infinity_shovel = new ShovelInfinityItem(),
-                infinity_hoe = new HoeInfinityItem(),
-                infinity_axe = new AxeInfinityItem(),
-
-                infinity_sword = new SwordInfinityItem(),
-                skull_sword = new SwordSkullsItem(),
-                infinity_bow = new BowInfinityItem(),
-
-                infinity_helmet = new ArmorInfinityItem(EquipmentSlot.HEAD).setRegistryName("infinity_helmet"),
-                infinity_chestplate = new ArmorInfinityItem(EquipmentSlot.CHEST).setRegistryName("infinity_chestplate"),
-                infinity_pants = new ArmorInfinityItem(EquipmentSlot.LEGS).setRegistryName("infinity_pants"),
-                infinity_boots = new ArmorInfinityItem(EquipmentSlot.FEET).setRegistryName("infinity_boots"),
-
-
-                endest_pearl = new EndestPearlItem(),
-
-                star_fuel = new StarFuelItem(Rarity.EPIC, "star_fuel"),
-                ultimate_stew = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)).setRegistryName("ultimate_stew"),
-                cosmic_meatballs = new Item(new Item.Properties().tab(ModTab.TAB).rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)).setRegistryName("cosmic_meatballs"),
-
-                diamond_lattice = new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", false),
-                crystal_matrix_ingot = new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", true),
-
-                neutron_pile = new ResourceItem(Rarity.UNCOMMON, "neutron_pile", true),
-                neutron_nugget = new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", true),
-                neutronium_ingot = new ResourceItem(Rarity.RARE, "neutronium_ingot", true),
-                neutronium_gear = new ResourceItem(Rarity.EPIC, "neutronium_gear", true),
-
-                infinity_nugget = new ResourceItem(Rarity.RARE, "infinity_nugget", true),
-                infinity_catalyst = new ResourceItem(Rarity.EPIC, "infinity_catalyst", true),
-                infinity_ingot = new ResourceItem(COSMIC_RARITY, "infinity_ingot", true),
-
-                record_fragment = new ResourceItem(COSMIC_RARITY, "record_fragment", true),
-                singularity = new SingularityItem(p -> p.tab(ModTab.TAB)).setRegistryName("singularity")
-        );
-
-
+    static {
+        RegistryUtil.BLOCK_ITEMS.forEach(RegistryUtil.ITEMS::register);
     }
 
 

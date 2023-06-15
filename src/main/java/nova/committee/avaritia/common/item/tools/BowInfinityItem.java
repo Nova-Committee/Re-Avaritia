@@ -17,7 +17,6 @@ import nova.committee.avaritia.common.entity.HeavenArrowEntity;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,12 +29,10 @@ import org.jetbrains.annotations.Nullable;
 public class BowInfinityItem extends BowItem {
     public BowInfinityItem() {
         super(new Properties()
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .rarity(ModItems.COSMIC_RARITY)
                 .fireResistant()
         );
-        setRegistryName("infinity_bow");
     }
 
     @Override
@@ -43,8 +40,9 @@ public class BowInfinityItem extends BowItem {
         return false;
     }
 
+
     @Override
-    public int getItemEnchantability(ItemStack stack) {
+    public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
 

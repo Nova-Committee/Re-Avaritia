@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -45,8 +44,7 @@ public class InfinitatoBlock extends BaseTileEntityBlock {
     private static final VoxelShape SHAPE = box(8, 0, 8, 12, 8, 12);
 
     public InfinitatoBlock() {
-        super(Material.CLOTH_DECORATION, SoundType.WOOL, 0.25F, 1F, true);
-        setRegistryName("infinitato");
+        super(SoundType.WOOL, 0.25F, 1F, true);
         registerDefaultState(defaultBlockState()
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
     }

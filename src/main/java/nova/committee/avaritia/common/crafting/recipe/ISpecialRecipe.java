@@ -1,6 +1,7 @@
 package nova.committee.avaritia.common.crafting.recipe;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -11,7 +12,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 public interface ISpecialRecipe extends Recipe<Container> {
     @Override
-    default ItemStack assemble(Container inv) {
+    default ItemStack assemble(Container inv, RegistryAccess access) {
         return this.assemble(new InvWrapper(inv));
     }
 
@@ -47,8 +48,8 @@ public interface ISpecialRecipe extends Recipe<Container> {
 
         for (int i = 0; i < remaining.size(); ++i) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.hasContainerItem()) {
-                remaining.set(i, stack.getContainerItem());
+            if (stack.hasCraftingRemainingItem()) {
+                remaining.set(i, stack.getCraftingRemainingItem());
             }
         }
 

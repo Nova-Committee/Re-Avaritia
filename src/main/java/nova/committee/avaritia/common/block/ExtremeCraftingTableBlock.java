@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import nova.committee.avaritia.api.common.block.BaseTileEntityBlock;
 import nova.committee.avaritia.common.tile.ExtremeCraftingTile;
@@ -26,8 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
 
     public ExtremeCraftingTableBlock() {
-        super(Material.METAL, SoundType.GLASS, 100f, 2000F, true);
-        setRegistryName("extreme_crafting_table");
+        super(SoundType.GLASS, 100f, 2000F, true);
     }
 
     @Override

@@ -2,7 +2,6 @@ package nova.committee.avaritia.common.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +16,6 @@ import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.ModArmorMaterial;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.lang.TextUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,12 +29,11 @@ import java.util.List;
  * Version: 1.0
  */
 public class ArmorInfinityItem extends ArmorItem {
-    public ArmorInfinityItem(EquipmentSlot pSlot) {
+    public ArmorInfinityItem(ArmorItem.Type pSlot) {
         super(
                 ModArmorMaterial.infinite_armor,
                 pSlot,
                 new Properties()
-                        .tab(ModTab.TAB)
                         .fireResistant()
                         .stacksTo(1)
         );
@@ -67,21 +64,21 @@ public class ArmorInfinityItem extends ArmorItem {
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
-        if (slot == EquipmentSlot.HEAD) {
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% NIGHT VISION"));
+        if (type.getSlot() == EquipmentSlot.HEAD) {
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% NIGHT VISION"));
         }
-        if (slot == EquipmentSlot.CHEST) {
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% FLY SPEED"));
+        if (type.getSlot() == EquipmentSlot.CHEST) {
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% FLY SPEED"));
         }
-        if (slot == EquipmentSlot.LEGS) {
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% WALK SPEED"));
+        if (type.getSlot() == EquipmentSlot.LEGS) {
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% WALK SPEED"));
         }
-        if (slot == EquipmentSlot.FEET) {
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% SPEED"));
+        if (type.getSlot() == EquipmentSlot.FEET) {
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% SPEED"));
         }
         super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
     }

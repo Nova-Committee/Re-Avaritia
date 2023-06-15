@@ -1,16 +1,12 @@
 package nova.committee.avaritia.init.registry;
 
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
-import nova.committee.avaritia.Static;
 import nova.committee.avaritia.common.tile.CompressorTileEntity;
 import nova.committee.avaritia.common.tile.ExtremeCraftingTile;
 import nova.committee.avaritia.common.tile.InfinitatoTile;
 import nova.committee.avaritia.common.tile.NeutronCollectorTile;
-import nova.committee.avaritia.util.RegistryUtil;
+import nova.committee.avaritia.util.registry.RegistryUtil;
 
 /**
  * Description:
@@ -18,27 +14,13 @@ import nova.committee.avaritia.util.RegistryUtil;
  * Date: 2022/4/2 9:48
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(modid = Static.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModTileEntities {
 
-    public static BlockEntityType<ExtremeCraftingTile> extreme_crafting_tile;
-    public static BlockEntityType<NeutronCollectorTile> neutron_collector_tile;
-    public static BlockEntityType<CompressorTileEntity> compressor_tile;
+    public static BlockEntityType<ExtremeCraftingTile> extreme_crafting_tile = RegistryUtil.blockEntity("extreme_crafting_tile", ExtremeCraftingTile::new, () -> new Block[]{ModBlocks.extreme_crafting_table}).get();
+    public static BlockEntityType<NeutronCollectorTile> neutron_collector_tile = RegistryUtil.blockEntity("neutron_collector_tile", NeutronCollectorTile::new, () -> new Block[]{ModBlocks.neutron_collector}).get();
+    public static BlockEntityType<CompressorTileEntity> compressor_tile = RegistryUtil.blockEntity("compressor_tile", CompressorTileEntity::new, () -> new Block[]{ModBlocks.compressor}).get();
 
-    public static BlockEntityType<InfinitatoTile> infinitato_tile;
-
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<BlockEntityType<?>> event) {
-        final IForgeRegistry<BlockEntityType<?>> registry = event.getRegistry();
-
-        registry.registerAll(
-                extreme_crafting_tile = RegistryUtil.build(ExtremeCraftingTile::new, "extreme_crafting_tile", ModBlocks.extreme_crafting_table),
-                neutron_collector_tile = RegistryUtil.build(NeutronCollectorTile::new, "neutron_collector_tile", ModBlocks.neutron_collector),
-                compressor_tile = RegistryUtil.build(CompressorTileEntity::new, "compressor_tile", ModBlocks.compressor)
-                //infinitato_tile = RegistryUtil.build(InfinitatoTile::new, "infinitato_tile", ModBlocks.infinitato)
+    public static BlockEntityType<InfinitatoTile> infinitato_tile = RegistryUtil.blockEntity("infinitato_tile", InfinitatoTile::new, () -> new Block[]{ModBlocks.infinitato}).get();
 
 
-        );
-
-    }
 }

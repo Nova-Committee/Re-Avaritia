@@ -1,6 +1,7 @@
 package nova.committee.avaritia.util;
 
 import com.google.common.collect.Sets;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -14,9 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent;
 import nova.committee.avaritia.common.item.MatterClusterItem;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModItems;

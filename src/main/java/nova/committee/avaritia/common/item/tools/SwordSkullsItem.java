@@ -3,7 +3,6 @@ package nova.committee.avaritia.common.item.tools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -14,7 +13,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.registry.ModEntities;
-import nova.committee.avaritia.init.registry.ModTab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,10 +27,8 @@ import java.util.List;
 public class SwordSkullsItem extends SwordItem {
     public SwordSkullsItem() {
         super(Tier.SKULL_SWORD, 0, -2.4f, (new Properties())
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .fireResistant());
-        setRegistryName("skull_fire_sword");
 
     }
 
@@ -44,7 +40,7 @@ public class SwordSkullsItem extends SwordItem {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        tooltip.add(new TranslatableComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip.skullfire_sword.desc")));
+        tooltip.add(Component.translatable(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip.skullfire_sword.desc")));
     }
 
     @Nullable

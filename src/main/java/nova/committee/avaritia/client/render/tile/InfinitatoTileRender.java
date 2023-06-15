@@ -2,18 +2,19 @@ package nova.committee.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -71,7 +72,7 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
                 rotY = 270F;
                 break;
         }
-        ms.mulPose(Vector3f.YN.rotationDegrees(rotY));
+        ms.mulPose(Axis.YN.rotationDegrees(rotY));
 
         float jump = InfinitatoTile.jumpTicks;
         if (jump > 0) {
@@ -83,7 +84,7 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
         float wiggle = (float) Math.sin(jump / 10 * Math.PI) * 0.05F;
 
         ms.translate(wiggle, up, 0F);
-        ms.mulPose(Vector3f.ZP.rotationDegrees(rotZ));
+        ms.mulPose(Axis.ZP.rotationDegrees(rotZ));
 
         boolean render = !(name.equals("mami") || name.equals("soaryn") || name.equals("eloraam") && jump != 0);
         if (render) {
@@ -99,11 +100,11 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
 
 
         ms.pushPose();
-        ms.mulPose(Vector3f.ZP.rotationDegrees(180F));
+        ms.mulPose(Axis.ZP.rotationDegrees(180F));
         ms.popPose();
 
-        ms.mulPose(Vector3f.ZP.rotationDegrees(-rotZ));
-        ms.mulPose(Vector3f.YN.rotationDegrees(-rotY));
+        ms.mulPose(Axis.ZP.rotationDegrees(-rotZ));
+        ms.mulPose(Axis.YN.rotationDegrees(-rotY));
 
         renderName(potato, name, ms, buffers, light);
         ms.popPose();
@@ -124,15 +125,15 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
 
             float opacity = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
             int opacityRGB = (int) (opacity * 255.0F) << 24;
-            mc.font.drawInBatch(potato.name, -halfWidth, 0, 0x20FFFFFF, false, ms.last().pose(), buffers, true, opacityRGB, light);
-            mc.font.drawInBatch(potato.name, -halfWidth, 0, 0xFFFFFFFF, false, ms.last().pose(), buffers, false, 0, light);
+            mc.font.drawInBatch(potato.name, -halfWidth, 0, 0x20FFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.SEE_THROUGH, opacityRGB, light);
+            mc.font.drawInBatch(potato.name, -halfWidth, 0, 0xFFFFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.NORMAL, 0, light);
             if (name.equals("pahimar") || name.equals("soaryn")) {
                 ms.translate(0F, 14F, 0F);
                 String str = name.equals("pahimar") ? "[WIP]" : "(soon)";
                 halfWidth = mc.font.width(str) / 2;
 
-                mc.font.drawInBatch(str, -halfWidth, 0, 0x20FFFFFF, false, ms.last().pose(), buffers, true, opacityRGB, light);
-                mc.font.drawInBatch(str, -halfWidth, 0, 0xFFFFFFFF, false, ms.last().pose(), buffers, true, 0, light);
+                mc.font.drawInBatch(str, -halfWidth, 0, 0x20FFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.SEE_THROUGH, opacityRGB, light);
+                mc.font.drawInBatch(str, -halfWidth, 0, 0xFFFFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.SEE_THROUGH, 0, light);
             }
 
             ms.popPose();
@@ -148,8 +149,8 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
     }
 
     private void renderItem(PoseStack ms, MultiBufferSource buffers, int light, int overlay, ItemStack stack) {
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.HEAD,
-                light, overlay, ms, buffers, 0);
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.HEAD,
+                light, overlay, ms, buffers, null, 0);
     }
 
     private void renderBlock(PoseStack ms, MultiBufferSource buffers, int light, int overlay, Block block) {

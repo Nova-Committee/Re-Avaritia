@@ -2,6 +2,7 @@ package nova.committee.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -14,7 +15,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import nova.committee.avaritia.init.registry.ModRecipeTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,8 +47,9 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return true;
     }
 
+
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess p_267052_) {
         return this.output;
     }
 
@@ -69,12 +70,12 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.COMPRESSOR_RECIPE;
+        return ModRecipeTypes.COMPRESSOR_SERIALIZER;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeTypes.RecipeTypes.COMPRESSOR;
+        return ModRecipeTypes.COMPRESSOR_RECIPE;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public ItemStack assemble(Container inv) {
+    public ItemStack assemble(Container inv, RegistryAccess access) {
         return this.output.copy();
     }
 
@@ -104,7 +105,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return this.inputCount;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<CompressorRecipe> {
+    public static class Serializer implements RecipeSerializer<CompressorRecipe> {
         @Override
         public CompressorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             var input = Ingredient.fromJson(json.getAsJsonObject("ingredient"));

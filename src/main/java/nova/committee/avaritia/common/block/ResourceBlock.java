@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import nova.committee.avaritia.api.common.block.BaseBlock;
 
 /**
@@ -14,9 +13,8 @@ import nova.committee.avaritia.api.common.block.BaseBlock;
  * Version: 1.0
  */
 public class ResourceBlock extends BaseBlock {
-    public ResourceBlock(SoundType soundType, String registryName) {
-        super(Material.METAL, soundType, 25f, 1000f, true);
-        setRegistryName(registryName);
+    public ResourceBlock(SoundType soundType) {
+        super(soundType, 25f, 1000f, true);
     }
 
 

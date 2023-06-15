@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import nova.committee.avaritia.init.registry.ModRecipeTypes;
 
 import java.util.Map;
@@ -68,7 +68,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess p_267052_) {
         return this.output;
     }
 
@@ -78,7 +78,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     }
 
     @Override
-    public ItemStack assemble(Container inv) {
+    public ItemStack assemble(Container inv, RegistryAccess p_267052_) {
         return this.output.copy();
     }
 
@@ -116,12 +116,12 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.SHAPED_EXTREME_CRAFT_RECIPE;
+        return ModRecipeTypes.SHAPED_EXTREME_CRAFT_SERIALIZER;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING;
+        return ModRecipeTypes.EXTREME_CRAFT_RECIPE;
     }
 
     @Override
@@ -173,7 +173,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
         this.transformers = transformers;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ShapedExtremeCraftingRecipe> {
+    public static class Serializer implements RecipeSerializer<ShapedExtremeCraftingRecipe> {
         @Override
         public ShapedExtremeCraftingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             var map = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));

@@ -1,16 +1,17 @@
 package nova.committee.avaritia.common.item.singularity;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import nova.committee.avaritia.Static;
 import nova.committee.avaritia.api.init.iface.IColored;
 import nova.committee.avaritia.init.ModTooltips;
-import nova.committee.avaritia.init.handler.SingularityRegistryHandler;
 import nova.committee.avaritia.util.SingularityUtils;
 import nova.committee.avaritia.util.lang.Localizable;
 import org.jetbrains.annotations.NotNull;
@@ -29,14 +30,14 @@ public class SingularityItem extends Item implements IColored {
         super(properties.apply(new Properties().rarity(Rarity.UNCOMMON)));
     }
 
-    @Override
-    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items) {
-        if (this.allowdedIn(group)) {
-            SingularityRegistryHandler.getInstance().getSingularities().forEach(singularity -> {
-                items.add(SingularityUtils.getItemForSingularity(singularity));
-            });
-        }
-    }
+//    @Override
+//    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items) {
+//        if (this.allowdedIn(group)) {
+//            SingularityRegistryHandler.getInstance().getSingularities().forEach(singularity -> {
+//                items.add(SingularityUtils.getItemForSingularity(singularity));
+//            });
+//        }
+//    }
 
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {

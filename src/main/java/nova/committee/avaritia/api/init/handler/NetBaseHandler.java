@@ -42,7 +42,7 @@ public class NetBaseHandler {
         Objects.requireNonNull(message);
         messageBuilder = messageBuilder.decoder(message::read);
         Objects.requireNonNull(message);
-        messageBuilder.consumer(message::run).add();
+        messageBuilder.consumerNetworkThread(message::run).add();
     }
 
     public <T extends LoginPacket<T>> void register(Class<T> clazz, LoginPacket<T> message) {
@@ -50,7 +50,7 @@ public class NetBaseHandler {
         Objects.requireNonNull(message);
         messageBuilder = messageBuilder.encoder(message::write);
         Objects.requireNonNull(message);
-        messageBuilder.decoder(message::read).consumer((loginMessage, context) -> {
+        messageBuilder.decoder(message::read).consumerNetworkThread((loginMessage, context) -> {
             BiConsumer<T, Supplier<NetworkEvent.Context>> handler;
             if (context.get().getDirection().getReceptionSide().isServer()) {
                 handler = HandshakeHandler.indexFirst((handshake, msg, ctx) -> {

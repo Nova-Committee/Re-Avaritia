@@ -19,7 +19,7 @@ public class StackHelper {
 
     public static ItemStack withSize(ItemStack stack, int size, boolean container) {
         if (size <= 0) {
-            return container && stack.hasContainerItem() ? stack.getContainerItem() : ItemStack.EMPTY;
+            return container && stack.hasCraftingRemainingItem() ? stack.getCraftingRemainingItem() : ItemStack.EMPTY;
         } else {
             stack = stack.copy();
             stack.setCount(size);
@@ -39,12 +39,12 @@ public class StackHelper {
         if (stack1.isEmpty() && stack2.isEmpty()) {
             return true;
         } else {
-            return !stack1.isEmpty() && stack1.sameItem(stack2);
+            return !stack1.isEmpty() && stack1.is(stack2.getItem());
         }
     }
 
     public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2) {
-        return areItemsEqual(stack1, stack2) && ItemStack.tagMatches(stack1, stack2);
+        return areItemsEqual(stack1, stack2) && ItemStack.isSameItemSameTags(stack1, stack2);
     }
 
     public static boolean canCombineStacks(ItemStack stack1, ItemStack stack2) {

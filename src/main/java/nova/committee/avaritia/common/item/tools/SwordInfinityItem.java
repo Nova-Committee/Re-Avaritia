@@ -14,15 +14,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.handler.InfinityHandler;
+import nova.committee.avaritia.init.registry.ModDamageTypes;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,40 +36,38 @@ import java.util.List;
 public class SwordInfinityItem extends SwordItem {
     public SwordInfinityItem() {
         super(Tier.INFINITY_SWORD, 0, -2.8F, (new Properties())
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .fireResistant());
-        setRegistryName("infinity_sword");
     }
 
 
     @Override
     public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity victim, LivingEntity player) {
-        if (player.level.isClientSide) {
+        if (player.getCommandSenderWorld().isClientSide) {
             return true;
         }
 
         if (victim instanceof EnderDragon drageon && player instanceof Player player1) {
-            drageon.hurt(drageon.head, new DamageSourceInfinitySword(player1), Float.POSITIVE_INFINITY);
+            drageon.hurt(drageon.head, ModDamageTypes.causeRandomDamage(player1), Float.POSITIVE_INFINITY);
             drageon.setHealth(0);//fix
         } else if (victim instanceof Player pvp) {
             if (InfinityHandler.isInfinite(pvp)) {
-                victim.hurt(new DamageSourceInfinitySword(player).bypassArmor(), 4.0F);
-            } else victim.hurt(new DamageSourceInfinitySword(player).bypassArmor(), Float.POSITIVE_INFINITY);
+                victim.hurt(ModDamageTypes.causeRandomDamage(player).bypassArmor(), 4.0F);
+            } else victim.hurt(ModDamageTypes.causeRandomDamage(player).bypassArmor(), Float.POSITIVE_INFINITY);
 
-        } else victim.hurt(new DamageSourceInfinitySword(player).bypassArmor(), Float.POSITIVE_INFINITY);
+        } else victim.hurt(ModDamageTypes.causeRandomDamage(player).bypassArmor(), Float.POSITIVE_INFINITY);
 
         victim.lastHurtByPlayerTime = 60;
-        victim.getCombatTracker().recordDamage(new DamageSourceInfinitySword(player), victim.getHealth(), victim.getHealth());
+        victim.getCombatTracker().recordDamage(ModDamageTypes.causeRandomDamage(player), victim.getHealth());
 
         if(victim instanceof Player victimP && InfinityHandler.isInfinite(victimP)) {
-        	victimP.level.explode(player, victimP.getBlockX(), victimP.getBlockY(), victimP.getBlockZ(), 25.0f, Explosion.BlockInteraction.NONE);
+            victimP.getCommandSenderWorld().explode(player, victimP.getBlockX(), victimP.getBlockY(), victimP.getBlockZ(), 25.0f, Level.ExplosionInteraction.BLOCK);
             // 玩家身着无尽甲则只造成爆炸伤害
         	return true;
         }
 
         victim.setHealth(0);
-        victim.die(new DamageSourceInfinitySword(player));
+        victim.die(ModDamageTypes.causeRandomDamage(player));
         return true;
     }
 
@@ -87,10 +84,10 @@ public class SwordInfinityItem extends SwordItem {
     }
 
     protected void attackAOE(Player player, float range, float damage, boolean type) {
-        if (player.level.isClientSide) return;
+        if (player.getCommandSenderWorld().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
-        List<Entity> toAttack = player.getLevel().getEntities(player, aabb);
-        DamageSource src = new DamageSourceInfinitySword(player);
+        List<Entity> toAttack = player.getCommandSenderWorld().getEntities(player, aabb);
+        DamageSource src = ModDamageTypes.causeRandomDamage(player);
         for (Entity entity : toAttack) {
             if (type) {
                 if (entity instanceof LivingEntity) {
@@ -111,11 +108,11 @@ public class SwordInfinityItem extends SwordItem {
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (!entity.level.isClientSide && entity instanceof Player victim) {
+        if (!entity.getCommandSenderWorld().isClientSide && entity instanceof Player victim) {
             if (victim.isCreative() && !victim.isDeadOrDying() && victim.getHealth() > 0 && !InfinityHandler.isInfinite(victim)) {
-                victim.getCombatTracker().recordDamage(new DamageSourceInfinitySword(player), victim.getHealth(), victim.getHealth());
+                victim.getCombatTracker().recordDamage(ModDamageTypes.causeRandomDamage(player), victim.getHealth());
                 victim.setHealth(0);
-                victim.die(new DamageSourceInfinitySword(player));
+                victim.die(ModDamageTypes.causeRandomDamage(player));
                 return true;
             }
         }
@@ -133,7 +130,7 @@ public class SwordInfinityItem extends SwordItem {
     }
 
     @Override
-    public int getItemEnchantability(ItemStack stack) {
+    public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
 

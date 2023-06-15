@@ -19,7 +19,7 @@ public class SimpleCustomRenderer implements IItemRenderProperties {
     }
 
     public static SimpleCustomRenderer create(Item item, CustomRenderedItemModelRenderer<?> renderer) {
-        ModelsHandler.getCustomRenderedItems().register(item.delegate, renderer::createModel);
+        ModelsHandler.getCustomRenderedItems().register(() -> item, renderer::createModel);
         return new SimpleCustomRenderer(renderer);
     }
 

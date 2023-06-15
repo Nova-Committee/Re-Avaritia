@@ -1,9 +1,8 @@
 package nova.committee.avaritia.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -43,11 +42,11 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     }
 
     @Override
-    public void render(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
 
-        super.render(matrix, mouseX, mouseY, partialTicks);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 
         if (mouseX > x + 63 && mouseX < x + 79 && mouseY > y + 35 && mouseY < y + 51) {
@@ -60,12 +59,12 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
                     tooltip.add(this.getMaterialStackDisplayName());
                 }
 
-                var text = new TextComponent(number(this.getMaterialCount()) + " / " + number(this.getMaterialsRequired()));
+                var text = Component.literal(number(this.getMaterialCount()) + " / " + number(this.getMaterialsRequired()));
 
                 tooltip.add(text);
             }
 
-            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
+            guiGraphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
         }
 
 //        if (mouseX > x + 89 && mouseX < x + 110 && mouseY > y + 35 && mouseY < y + 51) {
@@ -93,16 +92,16 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
     }
 
-    @Override
-    protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        var title = this.getTitle().getString();
 
-        this.font.draw(stack, title, (float) (this.imageWidth / 2 - this.font.width(title) / 2), 6.0F, 4210752);
-        this.font.draw(stack, this.playerInventoryTitle, 8.0F, this.imageHeight - 94.0F, 4210752);
+    @Override
+    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
+        var title = this.getTitle().getString();
+        stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752);
+        stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752);
     }
 
     @Override
-    protected void renderBg(@NotNull PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics stack, float partialTicks, int mouseX, int mouseY) {
         this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
 
         int x = this.getGuiLeft();
@@ -111,12 +110,12 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
                 int i2 = this.getMaterialBarScaled(16);
-                this.blit(stack, x + 63, y + 35, 176, 18, i2 + 1, 16);
+                stack.blit(BACKGROUND, x + 63, y + 35, 176, 18, i2 + 1, 16);
             }
 
             if (this.getProgress() > 0 && this.getMaterialCount() >= this.getMaterialsRequired()) {
                 int i2 = this.getProgressBarScaled(22);
-                this.blit(stack, x + 89, y + 35, 176, 0, i2 + 1, 16);
+                stack.blit(BACKGROUND, x + 89, y + 35, 176, 0, i2 + 1, 16);
             }
 
         }
@@ -138,7 +137,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             }
         }
 
-        return new TextComponent("");
+        return Component.literal("");
     }
 
     private CompressorTileEntity getTileEntity() {

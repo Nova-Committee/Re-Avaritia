@@ -1,7 +1,6 @@
 package nova.committee.avaritia.common.block.craft;
 
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
 
 /**
  * Description:
@@ -12,7 +11,7 @@ import net.minecraft.world.level.material.Material;
 public class DoubleCompressedCraftingTableBlock extends AbstractCraftingTable {
 
     public DoubleCompressedCraftingTableBlock() {
-        super(Material.WOOD, SoundType.WOOD, 20F, 500F, true, "double_compressed_crafting_table");
+        super(SoundType.WOOD, 20F, 500F, true, "double_compressed_crafting_table");
     }
 
 }

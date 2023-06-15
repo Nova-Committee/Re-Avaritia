@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import nova.committee.avaritia.api.common.block.BaseTileEntityBlock;
@@ -35,8 +34,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public CompressorBlock() {
-        super(Material.METAL, SoundType.METAL, 50F, 2000F, true);
-        setRegistryName("neutronium_compressor");
+        super(SoundType.METAL, 50F, 2000F, true);
     }
 
     @Nullable
@@ -51,7 +49,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof CompressorTileEntity compressor) {
-                NetworkHooks.openGui((ServerPlayer) player, compressor, pos);
+                NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
             }
         }
 

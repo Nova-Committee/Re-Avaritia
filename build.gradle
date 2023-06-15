@@ -1,41 +1,29 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-        classpath 'org.parchmentmc:librarian:1.+'
-    }
-}
-
 plugins {
     id 'java'
+    id 'idea'
     id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-group = 'nova.committee'
-version = '1.18.2-1.1.1'
+group = project.maven_group
+version = project.mod_version
 
-java {
-    archivesBaseName = 'Avaritia-Reforged-forge'
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
+base {
+    archivesName = project.archives_name
 }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'parchment', version: '2022.05.02-1.18.2'
+    mappings channel: 'official', version: '1.20'
+    //mappings channel: 'parchment', version: '2022.05.02-1.18.2'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -44,8 +32,9 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'avaritia'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            ideaModule rootProject.name != project.name ? "${rootProject.name}.${project.name}.main" : "${project.name}.main"
 
             mods {
                 avaritia {
@@ -58,36 +47,9 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'avaritia'
-
-            mods {
-                avaritia {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        gameTestServer {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'avaritia'
-
-            mods {
-                avaritia {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'avaritia', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            ideaModule rootProject.name != project.name ? "${rootProject.name}.${project.name}.main" : "${project.name}.main"
 
             mods {
                 avaritia {
@@ -140,19 +102,19 @@ repositories {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.31'
+    minecraft "net.minecraftforge:forge:${forge_version}"
     //compileOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
     //runtimeOnly fg.deobf("codechicken:CodeChickenLib:1.18.2-4.1.0.449:universal")
-    compileOnly fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
-    compileOnly fg.deobf('curse.maven:jade-324717:3761542')
-    compileOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193:api')
+    //compileOnly fg.deobf('com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:9.1.116')
+    //compileOnly fg.deobf('curse.maven:jade-324717:3761542')
+    //compileOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193:api')
     //compileOnly fg.deobf(fileTree(dir: 'libs', include: ['*.jar']))
     //compileOnly("teamtwilight:twilightforest:4.0.546:universal")
     //implementation fg.deobf('vazkii.botania:Botania:1.18.2-431')
 //    implementation fg.deobf('vazkii.patchouli:Patchouli:1.18.2-67')
 //    implementation fg.deobf('top.theillusivec4.curios:curios-forge:1.18.2-5.0.6.3')
     //implementation fg.deobf("curse.maven:projecte-226410:${projecte_id}")
-    runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
+    //runtimeOnly fg.deobf('mezz.jei:jei-1.18.2:9.7.0.193')
 
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -160,7 +122,7 @@ dependencies {
 
 jar {
     finalizedBy 'reobfJar'
-    classifier = 'universal'
+    setArchiveClassifier("universal")
     from file("LICENSE")
     manifest {
         attributes 'Specification-Title': archivesBaseName
@@ -173,9 +135,9 @@ jar {
     }
 }
 
-task srcJar(type: Jar) {
+tasks.register('srcJar', Jar) {
     build.dependsOn it
     from sourceSets.main.allSource
-    classifier = 'sources'
+    setArchiveClassifier("sources")
     from file("LICENSE")
 }

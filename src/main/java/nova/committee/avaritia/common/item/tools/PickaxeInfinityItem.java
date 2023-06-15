@@ -23,7 +23,6 @@ import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ToolHelper;
 import nova.committee.avaritia.util.math.RayTracer;
 import org.jetbrains.annotations.NotNull;
@@ -39,11 +38,9 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
     public PickaxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .fireResistant());
 
-        setRegistryName("infinity_pickaxe");
     }
 
     @Override
@@ -63,7 +60,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
     }
 
     @Override
-    public int getItemEnchantability(ItemStack stack) {
+    public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
 
@@ -114,7 +111,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
     public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
 
-        var world = player.level;
+        var world = player.getCommandSenderWorld();
         var state = world.getBlockState(pos);
         var mat = state.getMaterial();
         if (!ToolHelper.materialsPick.contains(mat)) {

@@ -72,7 +72,7 @@ public class GenericIntTrigger implements CriterionTrigger<GenericIntTrigger.Ins
         int value;
 
         Instance(String type, int value) {
-            super(GenericIntTrigger.ID, EntityPredicate.Composite.ANY);
+            super(GenericIntTrigger.ID, EntityPredicate.wrap(EntityPredicate.ANY));
             this.type = type;
             this.value = value;
         }

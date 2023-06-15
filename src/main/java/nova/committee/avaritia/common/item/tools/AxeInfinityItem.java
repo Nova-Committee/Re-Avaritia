@@ -15,7 +15,6 @@ import nova.committee.avaritia.init.config.ModConfig;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ToolHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,11 +30,9 @@ public class AxeInfinityItem extends AxeItem {
 
     public AxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .fireResistant());
 
-        setRegistryName("infinity_axe");
     }
 
     @Override
@@ -55,9 +52,10 @@ public class AxeInfinityItem extends AxeItem {
     }
 
     @Override
-    public int getItemEnchantability(ItemStack stack) {
+    public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
+
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -76,7 +74,7 @@ public class AxeInfinityItem extends AxeItem {
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        if (player.isCrouching() && !player.level.isClientSide) {
+        if (player.isCrouching() && !player.getCommandSenderWorld().isClientSide) {
             breakOtherBlock(player, stack, pos);
         }
         return false;
@@ -86,6 +84,6 @@ public class AxeInfinityItem extends AxeItem {
         if (player.isCrouching()) {
             return;
         }
-        InfinityHandler.startCrawlerTask(player.level, player, stack, pos, ModConfig.SERVER.axeChainCount.get(), false, true, new HashSet<>());
+        InfinityHandler.startCrawlerTask(player.getCommandSenderWorld(), player, stack, pos, ModConfig.SERVER.axeChainCount.get(), false, true, new HashSet<>());
     }
 }

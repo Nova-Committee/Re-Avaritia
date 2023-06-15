@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 
 import java.util.function.Function;
 
@@ -18,16 +17,16 @@ import java.util.function.Function;
  * Version: 1.0
  */
 public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlock {
-    public BaseTileEntityBlock(Material material, Function<Properties, Properties> properties) {
-        super(material, properties);
+    public BaseTileEntityBlock(Function<Properties, Properties> properties) {
+        super(properties);
     }
 
-    public BaseTileEntityBlock(Material material, SoundType sound, float hardness, float resistance) {
-        super(material, sound, hardness, resistance);
+    public BaseTileEntityBlock(SoundType sound, float hardness, float resistance) {
+        super(sound, hardness, resistance);
     }
 
-    public BaseTileEntityBlock(Material material, SoundType sound, float hardness, float resistance, boolean tool) {
-        super(material, sound, hardness, resistance, tool);
+    public BaseTileEntityBlock(SoundType sound, float hardness, float resistance, boolean tool) {
+        super(sound, hardness, resistance, tool);
     }
 
     @SuppressWarnings("unchecked")

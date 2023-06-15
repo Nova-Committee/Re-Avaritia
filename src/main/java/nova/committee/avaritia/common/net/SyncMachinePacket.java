@@ -43,7 +43,7 @@ public class SyncMachinePacket extends IPacket<SyncMachinePacket> {
     	
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
-                NeutronCollectorTile tile = (NeutronCollectorTile) ctx.get().getSender().getLevel().getBlockEntity(pos);
+                NeutronCollectorTile tile = (NeutronCollectorTile) ctx.get().getSender().getCommandSenderWorld().getBlockEntity(pos);
             }
         });
 

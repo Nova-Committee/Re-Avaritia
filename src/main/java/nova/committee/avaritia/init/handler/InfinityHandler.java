@@ -3,8 +3,7 @@ package nova.committee.avaritia.init.handler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -21,14 +20,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -38,7 +36,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -105,7 +103,7 @@ public class InfinityHandler {
     private static boolean isGarbageBlock(Block block) {
         //Static.LOGGER.info(TagCollectionManager.getInstance().getBlocks().getAllTags().keySet());
         for (TagKey<Block> id : block.defaultBlockState().getTags().toList()) {
-            ResourceLocation block_main = id.registry().getRegistryName();
+            ResourceLocation block_main = id.registry().registry();
             String ore = block_main.getPath();
             if (ore.contains("cobblestone") || ore.contains("stone") || ore.contains("netherrack")) {
                 return true;
@@ -126,7 +124,7 @@ public class InfinityHandler {
 
     public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
         if (event.getState().getMaterial() == Material.STONE) {
-            LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerLevel) event.getPlayer().level)).withRandom(event.getPlayer().level.random).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level.getBlockEntity(event.getPos()));
+            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().getCommandSenderWorld())).withRandom(event.getPlayer().getCommandSenderWorld().random).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level.getBlockEntity(event.getPos()));
             List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
             for (ItemStack drop : drops) {
                 if (drop.getItem() != Item.byBlock(event.getState().getBlock()) && !(drop.getItem() instanceof BlockItem)) {
@@ -138,7 +136,7 @@ public class InfinityHandler {
     }
 
     @SubscribeEvent
-    public static void onEntityJoinLevel(EntityJoinWorldEvent event) {
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (doItemCapture) {
             if (event.getEntity() instanceof ItemEntity) {
                 ItemStack stack = ((ItemEntity) event.getEntity()).getItem();
@@ -150,9 +148,9 @@ public class InfinityHandler {
 
 
     @SubscribeEvent
-    public static void onTickEnd(TickEvent.WorldTickEvent event) {
+    public static void onTickEnd(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            DimensionType dim = event.world.dimensionType();
+            DimensionType dim = event.level.dimensionType();
             if (crawlerTasks.containsKey(dim)) {
                 List<AEOCrawlerTask> swappers = crawlerTasks.get(dim);
                 List<AEOCrawlerTask> swappersSafe = new ArrayList<>(swappers);
@@ -168,17 +166,17 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void onPlayerMine(PlayerInteractEvent.LeftClickBlock event) {
-        if (event.getFace() == null || event.getWorld().isClientSide || event.getItemStack().isEmpty() || event.getPlayer().isCreative()) {
+        if (event.getFace() == null || event.getLevel().isClientSide || event.getItemStack().isEmpty() || event.getEntity().isCreative()) {
             return;
         }
-        Level world = event.getWorld();
+        Level world = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (event.getItemStack().getItem() == ModItems.pick_axe) {
             if (state.getDestroySpeed(world, event.getPos()) <= -1 || state.getMaterial() == Material.STONE || state.getMaterial() == Material.METAL) {
                 if (event.getItemStack().getOrCreateTag().getBoolean("hammer")) {
-                    ModItems.pick_axe.onBlockStartBreak(event.getPlayer().getMainHandItem(), event.getPos(), event.getPlayer());
+                    ModItems.pick_axe.onBlockStartBreak(event.getEntity().getMainHandItem(), event.getPos(), event.getEntity());
                 }
             }
 
@@ -201,13 +199,13 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void digging(PlayerEvent.BreakSpeed event) {
-        if (!event.getEntityLiving().getMainHandItem().isEmpty()) {
-            ItemStack held = event.getEntityLiving().getMainHandItem();
+        if (!event.getEntity().getMainHandItem().isEmpty()) {
+            ItemStack held = event.getEntity().getMainHandItem();
             if (held.getItem() == ModItems.pick_axe || held.getItem() == ModItems.infinity_shovel) {
-                if (!event.getEntityLiving().isOnGround()) {
+                if (!event.getEntity().onGround()) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
-                if (!event.getEntityLiving().isInWater() && !EnchantmentHelper.hasAquaAffinity(event.getEntityLiving())) {
+                if (!event.getEntity().isInWater() && !EnchantmentHelper.hasAquaAffinity(event.getEntity())) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
                 if (held.getOrCreateTag().getBoolean("hammer") || held.getOrCreateTag().getBoolean("destroyer")) {
@@ -219,8 +217,8 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void canHarvest(PlayerEvent.HarvestCheck event) {
-        if (!event.getEntityLiving().getMainHandItem().isEmpty()) {
-            ItemStack held = event.getEntityLiving().getMainHandItem();
+        if (!event.getEntity().getMainHandItem().isEmpty()) {
+            ItemStack held = event.getEntity().getMainHandItem();
             if (held.getItem() == ModItems.pick_axe && event.getTargetBlock().getMaterial() == Material.STONE) {
                 if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock())) {
                     event.setResult(Event.Result.ALLOW);
@@ -232,9 +230,9 @@ public class InfinityHandler {
     //合并物质团
     @SubscribeEvent
     public static void clusterClustererererer(EntityItemPickupEvent event) {
-        if (event.getPlayer() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster) {
+        if (event.getEntity() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster) {
             ItemStack stack = event.getItem().getItem();
-            Player player = event.getPlayer();
+            Player player = event.getEntity();
 
             for (ItemStack slot : player.getInventory().items) {
                 if (stack.isEmpty()) {
@@ -249,7 +247,7 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void expCancel(ItemExpireEvent event) {
-        if (event.getEntityItem() instanceof ImmortalItemEntity) {
+        if (event.getEntity() instanceof ImmortalItemEntity) {
             event.setCanceled(true);
         }
     }
@@ -260,17 +258,17 @@ public class InfinityHandler {
         if (event.getItemStack().getItem() instanceof SwordInfinityItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
                 if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.infinity.desc")) || event.getToolTip().get(x).getString().equals(I18n.get("attribute.name.generic.attack_damage"))) {
-                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
+                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 }
             }
         } else if (event.getItemStack().getItem() instanceof ArmorInfinityItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
                 if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.armor.desc"))) {
-                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
+                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 } else if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.armor_toughness.desc"))) {
-                    event.getToolTip().set(x, new TextComponent("+").withStyle(ChatFormatting.BLUE).append(new TextComponent(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(new TranslatableComponent("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
+                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 }
 
@@ -282,7 +280,7 @@ public class InfinityHandler {
     //取消身穿无尽套时受到的所有伤害
     @SubscribeEvent
     public static void onGetHurt(LivingHurtEvent event) {
-        if (!(event.getEntityLiving() instanceof Player player)) {
+        if (!(event.getEntity() instanceof Player player)) {
             return;
         }
         if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.infinity_sword && player.getMainHandItem().useOnRelease()) {
@@ -296,7 +294,7 @@ public class InfinityHandler {
     //取消对无尽套的伤害
     @SubscribeEvent
     public static void onAttacked(LivingAttackEvent event) {
-        if (!(event.getEntityLiving() instanceof Player player)) {
+        if (!(event.getEntity() instanceof Player player)) {
             return;
         }
         if (event.getSource().getEntity() != null && event.getSource().getEntity() instanceof Player) {
@@ -310,7 +308,7 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
-        if (event.isRecentlyHit() && event.getEntityLiving() instanceof Skeleton && event.getSource().getEntity() instanceof Player player) {
+        if (event.isRecentlyHit() && event.getEntity() instanceof Skeleton && event.getSource().getEntity() instanceof Player player) {
             if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.skull_sword) {
                 if (event.getDrops().isEmpty()) {
                     addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
@@ -341,7 +339,7 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void entityItemUnDeath(ItemEvent event) {
-        ItemEntity entityItem = event.getEntityItem();
+        ItemEntity entityItem = event.getEntity();
         Item item = entityItem.getItem().getItem();
         if (item instanceof ArmorInfinityItem || item instanceof AxeInfinityItem || item instanceof BowInfinityItem ||
                 item instanceof HoeInfinityItem || item instanceof ShovelInfinityItem || item instanceof PickaxeInfinityItem ||
@@ -351,7 +349,7 @@ public class InfinityHandler {
     }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {
-        ItemEntity entityitem = new ItemEntity(event.getEntityLiving().level, event.getEntityLiving().getX(), event.getEntityLiving().getY(), event.getEntityLiving().getZ(), drop);
+        ItemEntity entityitem = new ItemEntity(event.getEntity().getCommandSenderWorld(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), drop);
         entityitem.setDefaultPickUpDelay();
         event.getDrops().add(entityitem);
     }

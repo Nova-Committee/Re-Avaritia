@@ -5,12 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,10 +26,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.network.NetworkHooks;
-import nova.committee.avaritia.common.item.tools.DamageSourceInfinitySword;
 import nova.committee.avaritia.init.proxy.ServerProxy;
+import nova.committee.avaritia.init.registry.ModDamageTypes;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModSounds;
 
@@ -71,8 +71,8 @@ public class GapingVoidEntity extends Entity {
         super(p_19870_, p_19871_);
         setSharedFlagOnFire(true);
         noCulling = true;
-        if (level instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level, ServerProxy.avaritiaFakePlayer);
+        if (getCommandSenderWorld() instanceof ServerLevel) {
+            fakePlayer = FakePlayerFactory.get((ServerLevel) getCommandSenderWorld(), ServerProxy.avaritiaFakePlayer);
         }
     }
 
@@ -124,8 +124,8 @@ public class GapingVoidEntity extends Entity {
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         setAge(tag.getInt("age"));
-        if (level instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level, ServerProxy.avaritiaFakePlayer);
+        if (getCommandSenderWorld() instanceof ServerLevel) {
+            fakePlayer = FakePlayerFactory.get((ServerLevel) getCommandSenderWorld(), ServerProxy.avaritiaFakePlayer);
         }
     }
 
@@ -136,7 +136,7 @@ public class GapingVoidEntity extends Entity {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -150,31 +150,31 @@ public class GapingVoidEntity extends Entity {
         BlockPos position = this.getOnPos();
         int age = getAge();
 
-        if (age >= maxLifetime && !level.isClientSide) {
-            level.explode(this, posX, posY, posZ, 6.0f, Explosion.BlockInteraction.BREAK);
-            double range = 4;
+        if (age >= maxLifetime && !getCommandSenderWorld().isClientSide) {
+            getCommandSenderWorld().explode(this, posX, posY, posZ, 6.0f, Level.ExplosionInteraction.BLOCK);
+            int range = 4;
             AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
-            List<Entity> nommed = level.getEntitiesOfClass(Entity.class, axisAlignedBB, OMNOM_PREDICATE);
+            List<Entity> nommed = getCommandSenderWorld().getEntitiesOfClass(Entity.class, axisAlignedBB, OMNOM_PREDICATE);
             nommed.stream()
                     .filter(entity -> entity != this)
                     .forEach(entity -> {
                         if (entity instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, new DamageSourceInfinitySword(user), 1000.0f);
+                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(user), 1000.0f);
                             dragon.setHealth(0);
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            wither.hurt(new DamageSourceInfinitySword(user), 1000.0f);
-                        } else entity.hurt(new DamageSourceInfinitySword(user), 1000.0f);
+                            wither.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
+                        } else entity.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
                     });
             remove(RemovalReason.KILLED);
         } else {
             if (age == 0) {
-                level.playSound(fakePlayer, getX(), getY(), getZ(), ModSounds.GAPING_VOID, SoundSource.HOSTILE, 8.0F, 1.0F);
+                getCommandSenderWorld().playSound(fakePlayer, getX(), getY(), getZ(), ModSounds.GAPING_VOID, SoundSource.HOSTILE, 8.0F, 1.0F);
             }
             setAge(age + 1);
         }
 
-        if (level.isClientSide) {
+        if (getCommandSenderWorld().isClientSide) {
             return;
         }
         if (fakePlayer == null) {
@@ -186,7 +186,7 @@ public class GapingVoidEntity extends Entity {
 
         for (int i = 0; i < 50; i++) {
 
-            level.addParticle(ParticleTypes.PORTAL, position.getX(), position.getY(), position.getZ(), random.nextGaussian() * 3,
+            getCommandSenderWorld().addParticle(ParticleTypes.PORTAL, position.getX(), position.getY(), position.getZ(), random.nextGaussian() * 3,
                     random.nextGaussian() * 3, random.nextGaussian() * 3);
         }
 
@@ -194,10 +194,10 @@ public class GapingVoidEntity extends Entity {
 
         double particlespeed = 4.5;
         double size = getVoidScale(age) * 0.5 - 0.2;
-        double range = size * suckRange;
+        int range = (int) (size * suckRange);
         AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
 
-        List<Entity> sucked = level.getEntitiesOfClass(Entity.class, axisAlignedBB, SUCK_PREDICATE);
+        List<Entity> sucked = getCommandSenderWorld().getEntitiesOfClass(Entity.class, axisAlignedBB, SUCK_PREDICATE);
 
         double radius = getVoidScale(age) * 0.5;
 
@@ -225,9 +225,9 @@ public class GapingVoidEntity extends Entity {
         }
 
         // om nom nom
-        double nomrange = radius * 0.95;
+        int nomrange = (int) (radius * 0.95);
         AABB alignedBB = new AABB(position.offset(-nomrange, -nomrange, -nomrange), position.offset(nomrange, nomrange, nomrange));
-        List<Entity> nommed = level.getEntitiesOfClass(Entity.class, alignedBB, OMNOM_PREDICATE);
+        List<Entity> nommed = getCommandSenderWorld().getEntitiesOfClass(Entity.class, alignedBB, OMNOM_PREDICATE);
 
         for (Entity nommee : nommed) {
             if (nommee != this) {
@@ -238,9 +238,9 @@ public class GapingVoidEntity extends Entity {
 
                 if (len <= nomrange) {
                     if (nommee instanceof EnderDragon dragon) {
-                        dragon.hurt(dragon.head, DamageSource.OUT_OF_WORLD, 5.0f);
+                        dragon.hurt(dragon.head, this.damageSources().fellOutOfWorld(), 5.0f);
                     }
-                    nommee.hurt(DamageSource.OUT_OF_WORLD, 5.0f);
+                    nommee.hurt(this.damageSources().fellOutOfWorld(), 5.0f);
                 }
             }
         }
@@ -256,23 +256,23 @@ public class GapingVoidEntity extends Entity {
                     for (int x = -blockrange; x <= blockrange; x++) {
                         Vec3 pos2 = new Vec3(x, y, z);
                         Vec3 rPos = posFloor.add(pos2);
-                        BlockPos blockPos = new BlockPos(rPos);
+                        BlockPos blockPos = BlockPos.containing(rPos.x, rPos.y, rPos.z);
 
                         if (blockPos.getY() < 0 || blockPos.getY() > 255) {
                             continue;
                         }
 
                         double dist = pos2.lengthSqr();
-                        if (dist <= nomrange && !level.getBlockState(blockPos).isAir()) {
-                            BlockState state = level.getBlockState(blockPos);
-                            BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, blockPos, state, fakePlayer);
+                        if (dist <= nomrange && !getCommandSenderWorld().getBlockState(blockPos).isAir()) {
+                            BlockState state = getCommandSenderWorld().getBlockState(blockPos);
+                            BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(getCommandSenderWorld(), blockPos, state, fakePlayer);
                             MinecraftForge.EVENT_BUS.post(event);
                             if (!event.isCanceled()) {
                                 float resist = state.getBlock().getExplosionResistance();
                                 if (resist <= 10.0) {
-                                    state.getBlock().canDropFromExplosion(state, level, blockPos, new Explosion(level, null, blockPos.getX(),
-                                            blockPos.getY(), blockPos.getZ(), 6.0f, false, Explosion.BlockInteraction.BREAK));
-                                    level.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 2);
+                                    state.getBlock().canDropFromExplosion(state, getCommandSenderWorld(), blockPos, new Explosion(getCommandSenderWorld(), null, blockPos.getX(),
+                                            blockPos.getY(), blockPos.getZ(), 6.0f, false, Explosion.BlockInteraction.DESTROY));
+                                    getCommandSenderWorld().setBlock(blockPos, Blocks.AIR.defaultBlockState(), 2);
                                 }
                             }
                         }

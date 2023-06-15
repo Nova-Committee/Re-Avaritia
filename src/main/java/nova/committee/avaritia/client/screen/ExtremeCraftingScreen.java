@@ -1,6 +1,6 @@
 package nova.committee.avaritia.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,15 +22,15 @@ public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMe
     }
 
     @Override
-    protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        this.font.draw(stack, title, 8.0F, 6.0F, 4210752);
-        this.font.draw(stack, this.playerInventoryTitle, 39.0F, this.imageHeight - 94.0F, 4210752);
+        stack.drawString(font, title, 8, 6, 4210752);
+        stack.drawString(font, this.playerInventoryTitle, 39, this.imageHeight - 94, 4210752);
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics stack, float partialTicks, int mouseX, int mouseY) {
         this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
 
     }

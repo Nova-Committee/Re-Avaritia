@@ -20,7 +20,6 @@ import nova.committee.avaritia.common.entity.ImmortalItemEntity;
 import nova.committee.avaritia.init.handler.InfinityHandler;
 import nova.committee.avaritia.init.registry.ModEntities;
 import nova.committee.avaritia.init.registry.ModItems;
-import nova.committee.avaritia.init.registry.ModTab;
 import nova.committee.avaritia.util.ItemUtil;
 import nova.committee.avaritia.util.ToolHelper;
 import org.jetbrains.annotations.NotNull;
@@ -40,11 +39,9 @@ public class HoeInfinityItem extends HoeItem {
 
     public HoeInfinityItem() {
         super(Tier.INFINITY_HOE, -5, 0f, (new Properties())
-                .tab(ModTab.TAB)
                 .stacksTo(1)
                 .fireResistant());
 
-        setRegistryName("infinity_hoe");
     }
 
     @Override
@@ -58,9 +55,10 @@ public class HoeInfinityItem extends HoeItem {
     }
 
     @Override
-    public int getItemEnchantability(ItemStack stack) {
+    public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
+
 
     @Override
     public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {

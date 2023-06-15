@@ -1,7 +1,7 @@
 package nova.committee.avaritia.init.handler;
 
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import nova.committee.avaritia.api.init.iface.IColored;
@@ -17,10 +17,8 @@ import nova.committee.avaritia.util.ColorUtil;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ColorHandler {
     @SubscribeEvent
-    public static void onItemColors(ColorHandlerEvent.Item event) {
-        var colors = event.getItemColors();
-
-        colors.register(new IColored.ItemColors(), ModItems.singularity);
+    public static void onItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register(new IColored.ItemColors(), ModItems.singularity);
 
     }
 

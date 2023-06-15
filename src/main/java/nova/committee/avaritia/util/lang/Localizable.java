@@ -1,9 +1,8 @@
 package nova.committee.avaritia.util.lang;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Description:
@@ -90,9 +89,9 @@ public class Localizable {
         }
 
         public MutableComponent build() {
-            MutableComponent component = new TranslatableComponent(this.key, this.args);
+            MutableComponent component = Component.translatable(this.key, this.args);
             if (!this.prependText.equals("")) {
-                component = (new TextComponent(this.prependText)).append(component);
+                component = (Component.literal(this.prependText)).append(component);
             }
 
             if (this.color != null) {

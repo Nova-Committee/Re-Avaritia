@@ -37,7 +37,7 @@ public class ExtremeCraftingSlot extends Slot {
 
         NonNullList<ItemStack> remaining;
 
-        remaining = player.level.getRecipeManager().getRemainingItemsFor(ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING, this.matrix, player.level);
+        remaining = player.getCommandSenderWorld().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.RecipeTypes.EXTREME_CRAFTING, this.matrix, player.getCommandSenderWorld());
 
         for (int i = 0; i < remaining.size(); i++) {
             var slotStack = this.matrix.getItem(i);
@@ -51,7 +51,7 @@ public class ExtremeCraftingSlot extends Slot {
             if (!remainingStack.isEmpty()) {
                 if (slotStack.isEmpty()) {
                     this.matrix.setItem(i, remainingStack);
-                } else if (ItemStack.isSame(slotStack, remainingStack) && ItemStack.tagMatches(slotStack, remainingStack)) {
+                } else if (ItemStack.isSameItem(slotStack, remainingStack) && ItemStack.isSameItemSameTags(slotStack, remainingStack)) {
                     remainingStack.grow(slotStack.getCount());
                     this.matrix.setItem(i, remainingStack);
                 } else if (!player.getInventory().add(remainingStack)) {
