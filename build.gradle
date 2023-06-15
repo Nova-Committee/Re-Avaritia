@@ -11,7 +11,7 @@ group = project.maven_group
 version = project.mod_version
 
 base {
-    archivesName = project.archives_name
+    archivesName = project.archives_name + "-" + project.minecraft_version
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
