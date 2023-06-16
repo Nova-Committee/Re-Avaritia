@@ -11,7 +11,6 @@ import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -42,7 +41,7 @@ public class Avaritia {
         ModEntities.ENTITIES.register(bus);
         ModRecipeTypes.RECIPES.register(bus);
         ModRecipeTypes.SERIALIZERS.register(bus);
-        ModTab.REGISTRY.register(bus);
+        ModTab.TABS.register(bus);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             bus.register(new ColorHandler());
@@ -68,7 +67,6 @@ public class Avaritia {
 
     @SubscribeEvent
     public void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        //Register entity rendering handlers
         event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
         event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
 
@@ -82,7 +80,7 @@ public class Avaritia {
 
     @OnlyIn(Dist.CLIENT)
     private void addPlayerLayer(EntityRenderersEvent.AddLayers evt, String skin) {
-        EntityRenderer<? extends Player> renderer = evt.getSkin(skin);
+        EntityRenderer<?> renderer = evt.getSkin(skin);
 
         if (renderer instanceof LivingEntityRenderer livingRenderer) {
             livingRenderer.addLayer(new WingInfinityLayer(livingRenderer));

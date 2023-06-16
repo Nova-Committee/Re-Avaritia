@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.model.WingModel;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
-import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -23,10 +23,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class WingInfinityLayer extends RenderLayer<Player, PlayerModel<Player>> {
+public class WingInfinityLayer extends RenderLayer<Player, HumanoidModel<Player>> {
 
 
-    public WingInfinityLayer(RenderLayerParent<Player, PlayerModel<Player>> pRenderer) {
+    public WingInfinityLayer(RenderLayerParent<Player, HumanoidModel<Player>> pRenderer) {
         super(pRenderer);
     }
 

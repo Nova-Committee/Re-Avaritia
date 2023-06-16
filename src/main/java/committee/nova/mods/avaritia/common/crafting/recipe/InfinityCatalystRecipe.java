@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
@@ -62,6 +63,11 @@ public class InfinityCatalystRecipe extends ShapelessExtremeCraftingRecipe {
         }
 
         return super.getIngredients();
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return ModRecipeTypes.INFINITY_CATALYST_RECIPE.get();
     }
 
     @Override

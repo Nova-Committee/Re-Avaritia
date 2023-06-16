@@ -3,9 +3,11 @@ package committee.nova.mods.avaritia.init.registry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageScaling;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +26,9 @@ import org.jetbrains.annotations.Nullable;
 public class ModDamageTypes {
     static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("infinity"));
 
+    public static void bootstrap(BootstapContext<DamageType> context) {
+        context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
+    }
 
     public static DamageSource source(Level level, ResourceKey<DamageType> id) {
         final Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
