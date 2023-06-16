@@ -84,6 +84,6 @@ public class AxeInfinityItem extends AxeItem {
         if (player.isCrouching()) {
             return;
         }
-        InfinityHandler.startCrawlerTask(player.getCommandSenderWorld(), player, stack, pos, ModConfig.SERVER.axeChainCount.get(), false, true, new HashSet<>());
+        InfinityHandler.startCrawlerTask(player.getCommandSenderWorld(), player, stack, pos, ModConfig.axeChainCount.get(), false, true, new HashSet<>());
     }
 }

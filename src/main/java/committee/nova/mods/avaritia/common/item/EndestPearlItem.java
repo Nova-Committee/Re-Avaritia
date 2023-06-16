@@ -35,7 +35,7 @@ public class EndestPearlItem extends Item {
     public static void registerDispenser() {
         DefaultDispenseItemBehavior defaultdispenseitembehavior = new AbstractProjectileDispenseBehavior() {
             @Override
-            protected Projectile getProjectile(Level worldIn, Position position, ItemStack stackIn) {
+            protected @NotNull Projectile getProjectile(@NotNull Level worldIn, @NotNull Position position, @NotNull ItemStack stackIn) {
                 return Util.make(new EndestPearlEntity(ModEntities.EnderPearl.get(), worldIn), (pearlEntity) -> {
                     pearlEntity.setItem(stackIn);
                     pearlEntity.setPos(position.x(), position.y(), position.z());

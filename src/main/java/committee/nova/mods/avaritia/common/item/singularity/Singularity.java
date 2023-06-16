@@ -36,7 +36,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, ModConfig.SERVER.singularityTimeRequired.get());
+        this(id, name, colors, ingredient, -1, ModConfig.singularityTimeRequired.get());
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
@@ -50,7 +50,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, ModConfig.SERVER.singularityTimeRequired.get());
+        this(id, name, colors, tag, -1, ModConfig.singularityTimeRequired.get());
     }
 
     public static Singularity read(FriendlyByteBuf buffer) {

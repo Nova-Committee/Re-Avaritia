@@ -39,7 +39,7 @@ public class SingularityUtils {
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
 
 
-        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.SERVER.singularityTimeRequired.get());
+        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
 
 
         if (ing == null) {

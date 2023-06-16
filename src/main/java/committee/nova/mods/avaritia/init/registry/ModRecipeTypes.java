@@ -26,7 +26,7 @@ public class ModRecipeTypes {
 
     public static final RegistryObject<RecipeSerializer<?>> INFINITY_SERIALIZER = serializer("infinity_catalyst", InfinityCatalystRecipe.Serializer::new);
     public static final @NotNull RegistryObject<RecipeType<Recipe<Container>>> EXTREME_CRAFT_RECIPE = recipe("extreme_craft_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "extreme_craft_recipe")));
-    public static final @NotNull RegistryObject<RecipeType<Recipe<Container>>> INFINITY_CATALYST = recipe("infinity_catalyst_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "infinity_catalyst_recipe")));
+    //public static final @NotNull RegistryObject<RecipeType<Recipe<Container>>> INFINITY_CATALYST = recipe("infinity_catalyst_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "infinity_catalyst_recipe")));
     public static final RegistryObject<RecipeType<ICompressorRecipe>> COMPRESSOR_RECIPE = recipe("compressor_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "compressor_recipe")));
     public static RegistryObject<RecipeSerializer<?>> SHAPED_EXTREME_CRAFT_SERIALIZER = serializer("shaped_extreme_craft", ShapedExtremeCraftingRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> SHAPELESS_EXTREME_CRAFT_SERIALIZER = serializer("shapeless_extreme_craft", ShapelessExtremeCraftingRecipe.Serializer::new);

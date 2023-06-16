@@ -94,7 +94,7 @@ public class ShovelInfinityItem extends ShovelItem {
 
         var doY = sideHit.getAxis() != Direction.Axis.Y;
 
-        var range = ModConfig.SERVER.shovelBreakRange.get();
+        var range = ModConfig.shovelBreakRange.get();
         var min = new BlockPos(-range, doY ? -1 : -range, -range);
         var max = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 

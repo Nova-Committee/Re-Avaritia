@@ -56,7 +56,7 @@ public class HeavenSubArrowEntity extends Arrow {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putDouble("damage", ModConfig.SERVER.subArrowDamage.get());
+        compound.putDouble("damage", ModConfig.subArrowDamage.get());
 
     }
 

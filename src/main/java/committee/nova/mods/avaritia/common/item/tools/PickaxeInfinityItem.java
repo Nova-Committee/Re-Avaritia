@@ -124,7 +124,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
         var doY = sideHit.getAxis() != Direction.Axis.Y;
 
-        int range = ModConfig.SERVER.pickAxeBreakRange.get();
+        int range = ModConfig.pickAxeBreakRange.get();
         var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
         var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 

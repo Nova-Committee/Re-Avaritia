@@ -76,7 +76,7 @@ public class SwordInfinityItem extends SwordItem {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            attackAOE(player, ModConfig.SERVER.swordAttackRange.get(), ModConfig.SERVER.swordRangeDamage.get(), player.isCrouching() && ModConfig.SERVER.isSwordAttackAnimal.get());
+            attackAOE(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), player.isCrouching() && ModConfig.isSwordAttackAnimal.get());
             player.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
         level.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);

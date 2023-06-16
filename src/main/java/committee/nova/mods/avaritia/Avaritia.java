@@ -33,7 +33,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class Avaritia {
 
     public Avaritia() {
-        ModConfig.register();
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
         ModBlocks.BLOCKS.register(bus);
@@ -48,6 +47,8 @@ public class Avaritia {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             bus.register(new ColorHandler());
         });
+        ModConfig.register();
+
     }
 
     @SubscribeEvent

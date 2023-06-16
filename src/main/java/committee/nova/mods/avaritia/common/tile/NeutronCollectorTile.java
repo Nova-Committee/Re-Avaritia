@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class NeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
 
 
-    public static final int PRODUCTION_TICKS = ModConfig.SERVER.neutronCollectorProductTick.get();
+    public static final int PRODUCTION_TICKS = ModConfig.neutronCollectorProductTick.get();
     private final BaseItemStackHandler inventory;
     private int progress;
 

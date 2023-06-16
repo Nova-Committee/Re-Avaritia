@@ -49,7 +49,7 @@ public class SingularityRegistryHandler {
     }
 
     @SubscribeEvent
-    public static void onDatapackSync(OnDatapackSyncEvent event) {
+    public static void onDataPackSync(OnDatapackSyncEvent event) {
         var message = new SyncSingularitiesPacket(SingularityRegistryHandler.getInstance().getSingularities());
         var player = event.getPlayer();
 
