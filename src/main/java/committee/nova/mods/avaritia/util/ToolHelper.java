@@ -132,7 +132,7 @@ public class ToolHelper {
                 return;
             }
             MapColor material = state.getMapColor(world, pos);
-            if (block == Blocks.GRASS && stack.getItem() == ModItems.pick_axe) {
+            if (block == Blocks.GRASS && stack.getItem() == ModItems.pick_axe.get()) {
                 world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
             }
 

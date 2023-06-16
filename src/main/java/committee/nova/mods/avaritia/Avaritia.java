@@ -1,16 +1,25 @@
 package committee.nova.mods.avaritia;
 
+import committee.nova.mods.avaritia.client.model.GapingVoidModel;
+import committee.nova.mods.avaritia.client.model.WingModel;
+import committee.nova.mods.avaritia.client.render.layer.EyeInfinityLayer;
+import committee.nova.mods.avaritia.client.render.layer.WingInfinityLayer;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.handler.ColorHandler;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
-import committee.nova.mods.avaritia.init.proxy.ClientProxy;
-import committee.nova.mods.avaritia.init.proxy.IProxy;
-import committee.nova.mods.avaritia.init.proxy.ServerProxy;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
-import committee.nova.mods.avaritia.util.registry.RegistryUtil;
+import committee.nova.mods.avaritia.init.registry.*;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -22,22 +31,63 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
  */
 @Mod(Static.MOD_ID)
 public class Avaritia {
-    public static IProxy proxy;
 
     public Avaritia() {
         ModConfig.register();
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
-        RegistryUtil.init(bus);
+        ModBlocks.BLOCKS.register(bus);
+        ModItems.ITEMS.register(bus);
+        ModTileEntities.BLOCK_ENTITIES.register(bus);
+        ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
-        proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+        ModRecipeTypes.RECIPES.register(bus);
+        ModRecipeTypes.SERIALIZERS.register(bus);
+        ModTab.REGISTRY.register(bus);
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            bus.register(new ColorHandler());
+        });
     }
 
     @SubscribeEvent
     public void setup(final FMLCommonSetupEvent event) {
+        MinecraftForge.EVENT_BUS.register(this);
         SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
-        event.enqueueWork(EndestPearlItem::registerDispenser);
+        EndestPearlItem.registerDispenser();
     }
 
+    @SubscribeEvent
+    public void onClientSetup(FMLClientSetupEvent event) {
+        ModEntities.onClientSetup();
+        ModMenus.onClientSetup();
+        ModTileEntities.onClientSetup();
+    }
+
+
+    @SubscribeEvent
+    public void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        //Register entity rendering handlers
+        event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
+        event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
+
+    }
+
+    @SubscribeEvent
+    public void addLayers(EntityRenderersEvent.AddLayers evt) {
+        addPlayerLayer(evt, "default");
+        addPlayerLayer(evt, "slim");
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void addPlayerLayer(EntityRenderersEvent.AddLayers evt, String skin) {
+        EntityRenderer<? extends Player> renderer = evt.getSkin(skin);
+
+        if (renderer instanceof LivingEntityRenderer livingRenderer) {
+            livingRenderer.addLayer(new WingInfinityLayer(livingRenderer));
+            livingRenderer.addLayer(new EyeInfinityLayer(livingRenderer));
+
+        }
+    }
 
 }

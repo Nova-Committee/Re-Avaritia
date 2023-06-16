@@ -70,7 +70,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.COMPRESSOR_SERIALIZER;
+        return ModRecipeTypes.COMPRESSOR_SERIALIZER.get();
     }
 
     @Override

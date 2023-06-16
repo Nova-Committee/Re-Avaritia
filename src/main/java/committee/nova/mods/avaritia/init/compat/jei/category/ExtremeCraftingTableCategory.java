@@ -42,7 +42,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
 
     public ExtremeCraftingTableCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, 190, 163);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.extreme_crafting_table));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.extreme_crafting_table.get()));
         this.shapeless = helper.createDrawable(JeiCompat.ICONS, 17, 0, 19, 15);
     }
 

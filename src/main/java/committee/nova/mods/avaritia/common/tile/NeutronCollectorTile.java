@@ -39,7 +39,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     private SimpleContainerData data = new SimpleContainerData(1);
 
     public NeutronCollectorTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.neutron_collector_tile, pos, state);
+        super(ModTileEntities.neutron_collector_tile.get(), pos, state);
         this.inventory = createInventoryHandler(null);
     }
 
@@ -47,13 +47,13 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
         if (level.isClientSide) return;
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
-            var stack = new ItemStack(ModItems.neutron_pile);
+            var stack = new ItemStack(ModItems.neutron_pile.get());
             tile.progress++;
             tile.data.set(0, tile.progress);
             if (tile.progress >= PRODUCTION_TICKS) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
-                } else if (result.is(ModItems.neutron_pile)) {
+                } else if (result.is(ModItems.neutron_pile.get())) {
                     if (result.getCount() < 64) {
                         tile.inventory.setStackInSlot(0, StackHelper.grow(result, 1));
                     }

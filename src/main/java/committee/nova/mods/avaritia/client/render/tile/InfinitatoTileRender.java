@@ -46,7 +46,7 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
     @Override
     public void render(@Nonnull InfinitatoTile potato, float partialTicks, PoseStack ms, @Nonnull MultiBufferSource buffers, int light, int overlay) {
         if (!Objects.requireNonNull(potato.getLevel()).isLoaded(potato.getBlockPos())
-                || potato.getLevel().getBlockState(potato.getBlockPos()).getBlock() != ModBlocks.infinitato)
+                || potato.getLevel().getBlockState(potato.getBlockPos()).getBlock() != ModBlocks.infinitato.get())
             return;
 
         ms.pushPose();

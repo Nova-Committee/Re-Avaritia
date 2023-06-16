@@ -53,11 +53,11 @@ public class CompressorMenu extends AbstractContainerMenu {
     }
 
     public static CompressorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new CompressorMenu(ModMenus.compressor, windowId, playerInventory, buffer);
+        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, buffer);
     }
 
     public static CompressorMenu create(int windowId, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory, ContainerData data, BlockPos pos) {
-        return new CompressorMenu(ModMenus.compressor, windowId, playerInventory, isUsableByPlayer, inventory, data, pos);
+        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, isUsableByPlayer, inventory, data, pos);
     }
 
     @Override

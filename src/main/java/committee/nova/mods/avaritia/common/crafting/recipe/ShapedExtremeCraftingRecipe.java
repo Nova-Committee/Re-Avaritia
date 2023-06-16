@@ -116,12 +116,12 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.SHAPED_EXTREME_CRAFT_SERIALIZER;
+        return ModRecipeTypes.SHAPED_EXTREME_CRAFT_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeTypes.EXTREME_CRAFT_RECIPE;
+        return ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
 
     @Override

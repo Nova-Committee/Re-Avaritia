@@ -57,7 +57,7 @@ public class JeiCompat implements IModPlugin {
             registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()));
 
             var recipes = Stream.of(1).collect(Collectors.toMap(tier -> tier, tier ->
-                    manager.byType(ModRecipeTypes.EXTREME_CRAFT_RECIPE).values()
+                    manager.byType(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get()).values()
                             .stream()
                             .map(recipe -> (ICraftRecipe) recipe)
                             .collect(Collectors.toList())
@@ -65,8 +65,8 @@ public class JeiCompat implements IModPlugin {
 
             registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(1, new ArrayList<>()));
 
-            registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
-            registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
+            registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.get().asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
+            registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
 
         }
 
@@ -74,14 +74,14 @@ public class JeiCompat implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.compressor), CompressorCategory.RECIPE_TYPE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.extreme_crafting_table), ExtremeCraftingTableCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.compressor.get()), CompressorCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.extreme_crafting_table.get()), ExtremeCraftingTableCategory.RECIPE_TYPE);
 
     }
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(ExtremeCraftingMenu.class, ModMenus.extreme_crafting_table, ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
+        registration.addRecipeTransferHandler(ExtremeCraftingMenu.class, ModMenus.extreme_crafting_table.get(), ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
 
     }
 
@@ -94,7 +94,7 @@ public class JeiCompat implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.registerSubtypeInterpreter(ModItems.singularity, (stack, context) -> {
+        registration.registerSubtypeInterpreter(ModItems.singularity.get(), (stack, context) -> {
             var singularity = SingularityUtils.getSingularity(stack);
             return singularity != null ? singularity.getId().toString() : "";
         });

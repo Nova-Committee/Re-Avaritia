@@ -49,7 +49,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return ModItems.endest_pearl;
+        return ModItems.endest_pearl.get();
     }
 
 

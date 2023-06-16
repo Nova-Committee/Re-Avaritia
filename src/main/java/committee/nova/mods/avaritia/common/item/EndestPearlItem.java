@@ -43,7 +43,7 @@ public class EndestPearlItem extends Item {
             }
         };
 
-        DispenserBlock.registerBehavior(ModItems.endest_pearl, defaultdispenseitembehavior);
+        DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), defaultdispenseitembehavior);
     }
 
     @Override

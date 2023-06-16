@@ -46,12 +46,12 @@ public class InfinityCatalystRecipe extends ShapelessExtremeCraftingRecipe {
 
             // add others
             othersList.add(new ItemStack(Blocks.EMERALD_BLOCK));
-            othersList.add(new ItemStack(ModItems.crystal_matrix_ingot));
-            othersList.add(new ItemStack(ModItems.neutronium_ingot));
-            othersList.add(new ItemStack(ModItems.cosmic_meatballs));
-            othersList.add(new ItemStack(ModItems.ultimate_stew));
-            othersList.add(new ItemStack(ModItems.endest_pearl));
-            othersList.add(new ItemStack(ModItems.record_fragment));
+            othersList.add(new ItemStack(ModItems.crystal_matrix_ingot.get()));
+            othersList.add(new ItemStack(ModItems.neutronium_ingot.get()));
+            othersList.add(new ItemStack(ModItems.cosmic_meatballs.get()));
+            othersList.add(new ItemStack(ModItems.ultimate_stew.get()));
+            othersList.add(new ItemStack(ModItems.endest_pearl.get()));
+            othersList.add(new ItemStack(ModItems.record_fragment.get()));
 
             othersList.stream()
                     .map(Ingredient::of)
@@ -66,18 +66,18 @@ public class InfinityCatalystRecipe extends ShapelessExtremeCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.INFINITY_SERIALIZER;
+        return ModRecipeTypes.INFINITY_SERIALIZER.get();
     }
 
     public static class Serializer implements RecipeSerializer<InfinityCatalystRecipe> {
         @Override
         public InfinityCatalystRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            return new InfinityCatalystRecipe(recipeId, new ItemStack(ModItems.infinity_catalyst));
+            return new InfinityCatalystRecipe(recipeId, new ItemStack(ModItems.infinity_catalyst.get()));
         }
 
         @Override
         public InfinityCatalystRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            return new InfinityCatalystRecipe(recipeId, new ItemStack(ModItems.infinity_catalyst));
+            return new InfinityCatalystRecipe(recipeId, new ItemStack(ModItems.infinity_catalyst.get()));
         }
 
         @Override

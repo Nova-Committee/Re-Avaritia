@@ -28,7 +28,7 @@ public class ModArmorMaterial {
                 p_266655_.put(ArmorItem.Type.CHESTPLATE, 8);
                 p_266655_.put(ArmorItem.Type.HELMET, 3);
             }), 1000,
-                    SoundEvents.ARMOR_EQUIP_DIAMOND, 1.0f, 1.0f, () -> Ingredient.of(ModItems.infinity_ingot));
+                    SoundEvents.ARMOR_EQUIP_DIAMOND, 1.0f, 1.0f, () -> Ingredient.of(ModItems.infinity_ingot.get()));
     private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266653_) -> {
         p_266653_.put(ArmorItem.Type.BOOTS, 13);
         p_266653_.put(ArmorItem.Type.LEGGINGS, 15);

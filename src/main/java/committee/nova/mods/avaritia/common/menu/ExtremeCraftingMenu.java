@@ -67,16 +67,16 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
     }
 
     public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {
-        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table, windowId, playerInventory);
+        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory);
     }
 
     public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory) {
-        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table, windowId, playerInventory, isUsableByPlayer, inventory);
+        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, isUsableByPlayer, inventory);
     }
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE, matrix, this.world);
+        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), matrix, this.world);
 
         if (recipe.isPresent()) {
             var result = recipe.get().assemble(matrix, this.world.registryAccess());

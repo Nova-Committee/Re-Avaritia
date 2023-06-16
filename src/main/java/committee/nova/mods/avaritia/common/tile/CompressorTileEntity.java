@@ -39,7 +39,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     private final SimpleContainerData data = new SimpleContainerData(1);
 
     public CompressorTileEntity(BlockPos pos, BlockState state) {
-        super(ModTileEntities.compressor_tile, pos, state);
+        super(ModTileEntities.compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler(null);
         this.recipeInventory = new BaseItemStackHandler(1);
     }

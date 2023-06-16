@@ -80,12 +80,12 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_collector_tile, NeutronCollectorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), NeutronCollectorTile::tick);
     }
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_collector_tile, NeutronCollectorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), NeutronCollectorTile::tick);
     }
 
     @Override

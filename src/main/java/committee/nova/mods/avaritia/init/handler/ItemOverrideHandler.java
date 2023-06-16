@@ -27,29 +27,29 @@ public class ItemOverrideHandler {
 
     @SubscribeEvent
     public static void init(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> setPropertyOverride(ModItems.pick_axe, Static.rl("hammer"), (itemStack, world, livingEntity, d) -> {
+        event.enqueueWork(() -> setPropertyOverride(ModItems.pick_axe.get(), Static.rl("hammer"), (itemStack, world, livingEntity, d) -> {
             if (itemStack.getItem() instanceof PickaxeInfinityItem)
                 return itemStack.getOrCreateTag().getBoolean("hammer") ? 1 : 0;
             return 0;
         }));
-        event.enqueueWork(() -> setPropertyOverride(ModItems.matter_cluster, Static.rl("cap"), (itemStack, world, livingEntity, d) -> {
+        event.enqueueWork(() -> setPropertyOverride(ModItems.matter_cluster.get(), Static.rl("cap"), (itemStack, world, livingEntity, d) -> {
             return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
         }));
 
-        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_bow, Static.rl("pull"), (itemStack, world, livingEntity, d) -> {
+        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_bow.get(), Static.rl("pull"), (itemStack, world, livingEntity, d) -> {
             if (livingEntity == null) {
                 return 0.0F;
             } else {
                 return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
             }
         }));
-        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_bow, Static.rl("pulling"), (itemStack, world, livingEntity, d) -> {
+        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_bow.get(), Static.rl("pulling"), (itemStack, world, livingEntity, d) -> {
             if (itemStack.getItem() instanceof BowInfinityItem)
                 return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
             return 0;
         }));
 
-        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_shovel, Static.rl("destroyer"), (itemStack, world, livingEntity, d) -> {
+        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_shovel.get(), Static.rl("destroyer"), (itemStack, world, livingEntity, d) -> {
             if (itemStack.getItem() instanceof ShovelInfinityItem)
                 return itemStack.getOrCreateTag().getBoolean("destroyer") ? 1 : 0;
             return 0;

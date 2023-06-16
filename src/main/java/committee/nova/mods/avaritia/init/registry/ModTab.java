@@ -15,11 +15,11 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModTab {
     public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Static.MOD_ID);
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = REGISTRY.register("creative_tab", () -> CreativeModeTab.builder()
-            .icon(() -> ModItems.pick_axe.getDefaultInstance())
+            .icon(() -> ModItems.pick_axe.get().getDefaultInstance())
 
             .build());
 
-    public static CreativeModeTab TAB = CREATIVE_TAB.get();
+    public static RegistryObject<CreativeModeTab> TAB = CREATIVE_TAB;
 
 
 }

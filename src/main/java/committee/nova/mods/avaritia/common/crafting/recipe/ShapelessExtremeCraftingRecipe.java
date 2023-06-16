@@ -67,12 +67,12 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.SHAPELESS_EXTREME_CRAFT_SERIALIZER;
+        return ModRecipeTypes.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeTypes.EXTREME_CRAFT_RECIPE;
+        return ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
 
     @Override

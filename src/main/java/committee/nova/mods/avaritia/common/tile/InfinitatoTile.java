@@ -32,7 +32,7 @@ public class InfinitatoTile extends BaseTileEntity {
     public String name = "";
 
     public InfinitatoTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.infinitato_tile, pos, state);
+        super(ModTileEntities.infinitato_tile.get(), pos, state);
         tilePos = pos;
     }
 

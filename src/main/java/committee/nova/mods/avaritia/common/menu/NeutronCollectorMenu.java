@@ -50,11 +50,11 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
     }
 
     public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector, windowId, playerInventory, buffer);
+        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, buffer);
     }
 
     public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory, ContainerData data, BlockPos pos) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector, windowId, playerInventory, isUsableByPlayer, inventory, data, pos);
+        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, isUsableByPlayer, inventory, data, pos);
     }
 
     @Override

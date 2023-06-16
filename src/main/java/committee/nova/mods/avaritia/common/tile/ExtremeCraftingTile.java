@@ -31,7 +31,7 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
 
 
     public ExtremeCraftingTile(BlockPos p_155229_, BlockState p_155230_) {
-        super(ModTileEntities.extreme_crafting_tile, p_155229_, p_155230_);
+        super(ModTileEntities.extreme_crafting_tile.get(), p_155229_, p_155230_);
         this.inventory = createInventoryHandler(this::markDirtyAndDispatch);
 
     }

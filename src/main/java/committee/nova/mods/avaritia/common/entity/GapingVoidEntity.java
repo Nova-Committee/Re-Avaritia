@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.entity;
 
 import com.google.common.base.Predicate;
-import committee.nova.mods.avaritia.init.proxy.ServerProxy;
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
@@ -72,7 +72,7 @@ public class GapingVoidEntity extends Entity {
         setSharedFlagOnFire(true);
         noCulling = true;
         if (getCommandSenderWorld() instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) getCommandSenderWorld(), ServerProxy.avaritiaFakePlayer);
+            fakePlayer = FakePlayerFactory.get((ServerLevel) getCommandSenderWorld(), Static.avaritiaFakePlayer);
         }
     }
 
@@ -125,7 +125,7 @@ public class GapingVoidEntity extends Entity {
     protected void readAdditionalSaveData(CompoundTag tag) {
         setAge(tag.getInt("age"));
         if (getCommandSenderWorld() instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) getCommandSenderWorld(), ServerProxy.avaritiaFakePlayer);
+            fakePlayer = FakePlayerFactory.get((ServerLevel) getCommandSenderWorld(), Static.avaritiaFakePlayer);
         }
     }
 

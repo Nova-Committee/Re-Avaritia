@@ -37,7 +37,7 @@ public class ExtremeCraftingSlot extends Slot {
 
         NonNullList<ItemStack> remaining;
 
-        remaining = player.getCommandSenderWorld().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE, this.matrix, player.getCommandSenderWorld());
+        remaining = player.getCommandSenderWorld().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), this.matrix, player.getCommandSenderWorld());
 
         for (int i = 0; i < remaining.size(); i++) {
             var slotStack = this.matrix.getItem(i);

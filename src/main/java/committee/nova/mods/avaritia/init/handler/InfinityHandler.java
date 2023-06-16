@@ -173,10 +173,10 @@ public class InfinityHandler {
         Level world = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = world.getBlockState(pos);
-        if (event.getItemStack().getItem() == ModItems.pick_axe) {
+        if (event.getItemStack().getItem() == ModItems.pick_axe.get()) {
             if (state.getDestroySpeed(world, event.getPos()) <= -1 || state.getMapColor(world, pos) == MapColor.STONE || state.getMapColor(world, pos) == MapColor.METAL) {
                 if (event.getItemStack().getOrCreateTag().getBoolean("hammer")) {
-                    ModItems.pick_axe.onBlockStartBreak(event.getEntity().getMainHandItem(), event.getPos(), event.getEntity());
+                    ModItems.pick_axe.get().onBlockStartBreak(event.getEntity().getMainHandItem(), event.getPos(), event.getEntity());
                 }
             }
 
@@ -192,7 +192,7 @@ public class InfinityHandler {
         }
         ItemStack mainHand = event.getPlayer().getMainHandItem();
 
-        if (!mainHand.isEmpty() && mainHand.getItem() == ModItems.pick_axe) {
+        if (!mainHand.isEmpty() && mainHand.getItem() == ModItems.pick_axe.get()) {
             applyLuck(event, 4);
         }
     }
@@ -201,7 +201,7 @@ public class InfinityHandler {
     public static void digging(PlayerEvent.BreakSpeed event) {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
             ItemStack held = event.getEntity().getMainHandItem();
-            if (held.getItem() == ModItems.pick_axe || held.getItem() == ModItems.infinity_shovel) {
+            if (held.getItem() == ModItems.pick_axe.get() || held.getItem() == ModItems.infinity_shovel.get()) {
                 if (!event.getEntity().onGround()) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
@@ -220,7 +220,7 @@ public class InfinityHandler {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
             var level = event.getEntity().level();
             ItemStack held = event.getEntity().getMainHandItem();
-            if (held.getItem() == ModItems.pick_axe && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
+            if (held.getItem() == ModItems.pick_axe.get() && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
                 if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock())) {
                     event.setResult(Event.Result.ALLOW);
                 }
@@ -231,7 +231,7 @@ public class InfinityHandler {
     //合并物质团
     @SubscribeEvent
     public static void clusterClustererererer(EntityItemPickupEvent event) {
-        if (event.getEntity() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster) {
+        if (event.getEntity() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster.get()) {
             ItemStack stack = event.getItem().getItem();
             Player player = event.getEntity();
 
@@ -239,7 +239,7 @@ public class InfinityHandler {
                 if (stack.isEmpty()) {
                     break;
                 }
-                if (slot.getItem() == ModItems.matter_cluster) {
+                if (slot.getItem() == ModItems.matter_cluster.get()) {
                     MatterClusterItem.mergeClusters(stack, slot);
                 }
             }
@@ -284,7 +284,7 @@ public class InfinityHandler {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.infinity_sword && player.getMainHandItem().useOnRelease()) {
+        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.infinity_sword.get() && player.getMainHandItem().useOnRelease()) {
             event.setCanceled(true);
         }
         if (isInfinite(player) && !event.getSource().getMsgId().equals("infinity")) {
@@ -310,7 +310,7 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
         if (event.isRecentlyHit() && event.getEntity() instanceof Skeleton && event.getSource().getEntity() instanceof Player player) {
-            if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.skull_sword) {
+            if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.skull_sword.get()) {
                 if (event.getDrops().isEmpty()) {
                     addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
                 } else {

@@ -94,7 +94,7 @@ public class MatterClusterItem extends Item {
     }
 
     public static ItemStack makeCluster(Map<ItemStackWrapper, Integer> input) {
-        ItemStack cluster = new ItemStack(ModItems.matter_cluster);
+        ItemStack cluster = new ItemStack(ModItems.matter_cluster.get());
         int total = 0;
         for (int num : input.values()) {
             total += num;
