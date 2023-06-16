@@ -110,6 +110,7 @@ dependencies {
     compileOnly fg.deobf('curse.maven:jade-324717:4573193')
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
     //compileOnly fg.deobf(fileTree(dir: 'libs', include: ['*.jar']))
     //compileOnly("teamtwilight:twilightforest:4.0.546:universal")
     //implementation fg.deobf('vazkii.botania:Botania:1.18.2-431')
