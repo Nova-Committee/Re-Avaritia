@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.ModArmorMaterial;
+import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.lang.TextUtil;
@@ -29,7 +29,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class ArmorInfinityItem extends ArmorItem {
-    public ArmorInfinityItem(ArmorItem.Type pSlot) {
+    public ArmorInfinityItem(Type pSlot) {
         super(
                 ModArmorMaterial.infinite_armor,
                 pSlot,

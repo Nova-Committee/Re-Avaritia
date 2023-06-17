@@ -55,7 +55,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
     }
 
     @Override
-    public Rarity getRarity(ItemStack p_77613_1_) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack p_77613_1_) {
         return ModItems.COSMIC_RARITY;
     }
 
@@ -78,7 +78,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             CompoundTag tags = stack.getOrCreateTag();
-            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack) < 10) {
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack) < 10) {
                 stack.enchant(Enchantments.BLOCK_FORTUNE, 10);//FORTUNE X enchantment
             }
             tags.putBoolean("hammer", !tags.getBoolean("hammer"));

@@ -76,14 +76,13 @@ public class GapingVoidEntity extends Entity {
         }
     }
 
-    public static GapingVoidEntity create(Level level) {
-        return new GapingVoidEntity(ModEntities.GapingVoid.get(), level);
+    public GapingVoidEntity(Level level) {
+        this(ModEntities.GAPING_VOID.get(), level);
     }
 
-    public static GapingVoidEntity create(Level level, LivingEntity shooter) {
-        GapingVoidEntity voidEntity = new GapingVoidEntity(ModEntities.GapingVoid.get(), level);
-        voidEntity.setUser(shooter);
-        return voidEntity;
+    public GapingVoidEntity(Level level, LivingEntity shooter) {
+        this(ModEntities.GAPING_VOID.get(), level);
+        this.setUser(shooter);
     }
 
     public void setUser(LivingEntity user) {

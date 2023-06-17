@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/bow",
   "textures": {
-    "layer0": "avaritia:items/tools/infinity_bow/idle"
+    "layer0": "avaritia:item/tools/infinity_bow/idle"
   },
   "overrides": [
     {

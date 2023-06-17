@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.common.tile;
 
-import committee.nova.mods.avaritia.util.item.BaseItemStackHandler;
+import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

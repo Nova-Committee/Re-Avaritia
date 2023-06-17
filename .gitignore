@@ -1,12 +1,23 @@
-.idea
-.gradle
-build
-run
-runServer.launch
-runGameTestServer.launch
-runData.launch
-runClient.launch
-.settings/org.eclipse.jdt.core.prefs
-.settings/org.eclipse.buildship.core.prefs
-.project
+# eclipse
+bin
+*.launch
+.settings
+.metadata
 .classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+run-data

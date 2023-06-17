@@ -39,15 +39,15 @@ public class Localizable {
         return this.defaultColor;
     }
 
-    public Localizable.LocalizableBuilder args(Object... args) {
+    public LocalizableBuilder args(Object... args) {
         return this.builder().args(args);
     }
 
-    public Localizable.LocalizableBuilder color(ChatFormatting color) {
+    public LocalizableBuilder color(ChatFormatting color) {
         return this.builder().color(color);
     }
 
-    public Localizable.LocalizableBuilder prepend(String text) {
+    public LocalizableBuilder prepend(String text) {
         return this.builder().prepend(text);
     }
 
@@ -59,8 +59,8 @@ public class Localizable {
         return this.builder().buildString();
     }
 
-    private Localizable.LocalizableBuilder builder() {
-        return (new Localizable.LocalizableBuilder(this.key)).color(this.defaultColor);
+    private LocalizableBuilder builder() {
+        return (new LocalizableBuilder(this.key)).color(this.defaultColor);
     }
 
     public static class LocalizableBuilder {
@@ -73,17 +73,17 @@ public class Localizable {
             this.key = key;
         }
 
-        public Localizable.LocalizableBuilder args(Object... args) {
+        public LocalizableBuilder args(Object... args) {
             this.args = args;
             return this;
         }
 
-        public Localizable.LocalizableBuilder color(ChatFormatting color) {
+        public LocalizableBuilder color(ChatFormatting color) {
             this.color = color;
             return this;
         }
 
-        public Localizable.LocalizableBuilder prepend(String text) {
+        public LocalizableBuilder prepend(String text) {
             this.prependText = this.prependText + text;
             return this;
         }

@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -67,7 +68,7 @@ public class ModDamageTypes {
         }
 
         @Override
-        public Component getLocalizedDeathMessage(LivingEntity attacked) {
+        public @NotNull Component getLocalizedDeathMessage(LivingEntity attacked) {
             int type = attacked.getRandom().nextInt(3);
             LivingEntity livingentity = attacked.getKillCredit();
             String s = "death.attack." + this.getMsgId() + "." + type;

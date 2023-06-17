@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ItemUtil;
+import committee.nova.mods.avaritia.util.ItemStackUtil;
 import committee.nova.mods.avaritia.util.ToolHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -196,7 +196,7 @@ public class HoeInfinityItem extends HoeItem {
         }
         if (block.equals(Blocks.BEDROCK)) {
             var stack1 = new ItemStack(Blocks.BEDROCK);
-            ItemStack itemStack = ItemUtil.mapEquals(stack1, map);
+            ItemStack itemStack = ItemStackUtil.mapEquals(stack1, map);
             if (!itemStack.isEmpty())
                 map.put(itemStack, map.get(itemStack) + stack1.getCount());
             else map.put(stack1, stack1.getCount());

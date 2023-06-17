@@ -1,6 +1,6 @@
 {
-	"parent": "minecraft:block/cube_all",
+	"parent": "block/cube_all",
 	"textures": {
-		"all": "avaritia:blocks/resource/infinity"
+		"all": "avaritia:block/resource/infinity"
 	}
 }

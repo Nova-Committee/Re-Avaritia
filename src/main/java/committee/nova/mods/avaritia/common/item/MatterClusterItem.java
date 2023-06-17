@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.common.item;
 
+import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolHelper;
-import committee.nova.mods.avaritia.util.item.ItemStackWrapper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -156,8 +156,7 @@ public class MatterClusterItem extends Item {
 
         Map<ItemStackWrapper, Integer> donordata = getClusterData(donor);
         Map<ItemStackWrapper, Integer> recipientdata = getClusterData(recipient);
-        List<Map.Entry<ItemStackWrapper, Integer>> datalist = new ArrayList<>();
-        datalist.addAll(donordata.entrySet());
+        List<Map.Entry<ItemStackWrapper, Integer>> datalist = new ArrayList<>(donordata.entrySet());
 
         while (recipientcount < CAPACITY && donorcount > 0) {
             Map.Entry<ItemStackWrapper, Integer> e = datalist.get(0);

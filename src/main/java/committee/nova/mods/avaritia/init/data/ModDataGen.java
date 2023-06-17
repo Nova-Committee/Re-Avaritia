@@ -1,13 +1,21 @@
 package committee.nova.mods.avaritia.init.data;
 
-import committee.nova.mods.avaritia.init.registry.ModRegistries;
+import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.metadata.PackMetadataGenerator;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Author cnlimiter
@@ -15,11 +23,11 @@ import java.util.concurrent.CompletableFuture;
  * Name ModDataGen
  * Description
  */
-
 public class ModDataGen {
 
 
-    public void gatherData(GatherDataEvent event) {
+    @SubscribeEvent
+    public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> future = event.getLookupProvider();
@@ -27,24 +35,23 @@ public class ModDataGen {
 
         if (event.includeClient()) {
             generator.addProvider(true, new ModBlockStates(output, helper));
-//            generator.addProvider(true, new UGItemModels(output, helper));
-//            generator.addProvider(true, new UGLang(output));
-//            generator.addProvider(true, new UGSoundDefinitions(output, helper));
+//            generator.addProvider(true, new ModItemModels(output, helper));
+//            generator.addProvider(true, new ModLang(output));
+            generator.addProvider(true, new ModSoundDefinitions(output, helper));
         }
         if (event.includeServer()) {
-//            generator.addProvider(true, new UGRecipes(output));
-//            generator.addProvider(true, new UGLootTables(output));
-//            UGBlockTags blockTags = new UGBlockTags(output, future, helper);
-//            generator.addProvider(true, blockTags);
-//            generator.addProvider(true, new UGItemTags(output, future, blockTags.contentsGetter(), helper));
-//            generator.addProvider(true, new UGEntityTags(output, future, helper));
-//            generator.addProvider(true, new UGAdvancements(output, future, helper));
-//            generator.addProvider(true, new UGFluidTags(output, future, helper));
+//            generator.addProvider(true, new ModRecipes(output));
+//            generator.addProvider(true, new ModLootTables(output));
+            ModBlockTags blockTags = new ModBlockTags(output, future, helper);
+            generator.addProvider(true, blockTags);
+            generator.addProvider(true, new ModEntityTags(output, future, helper));
+//            generator.addProvider(true, new ModAdvancements(output, future, helper));
+//            generator.addProvider(true, new ModFluidTags(output, future, helper));
             ModRegistries.addProviders(true, generator, output, future, helper);
-//            generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
-//                    Component.literal("Undergarden resources"),
-//                    DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
-//                    Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));
+            generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
+                    Component.literal("Avaritia Resources"),
+                    DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
+                    Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));
         }
     }
 }

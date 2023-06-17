@@ -1,12 +1,13 @@
 {
-    "parent": "minecraft:block/cube",
-    "textures": {
-        "north": "avaritia:blocks/craft/extreme_side",
-        "east": "avaritia:blocks/craft/extreme_side",
-        "south": "avaritia:blocks/craft/extreme_side",
-        "west": "avaritia:blocks/craft/extreme_side",
-        "up": "avaritia:blocks/craft/extreme_top",
-        "down": "avaritia:blocks/resource/crystal_matrix",
-        "particle": "avaritia:blocks/resource/crystal_matrix"
-    }
+  "render_type": "cutout",
+  "parent": "block/cube",
+  "textures": {
+    "north": "avaritia:block/craft/extreme_side",
+    "east": "avaritia:block/craft/extreme_side",
+    "south": "avaritia:block/craft/extreme_side",
+    "west": "avaritia:block/craft/extreme_side",
+    "up": "avaritia:block/craft/extreme_top",
+    "down": "avaritia:block/resource/crystal_matrix",
+    "particle": "avaritia:block/resource/crystal_matrix"
+  }
 }

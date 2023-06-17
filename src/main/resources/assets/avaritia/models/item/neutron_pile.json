@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:items/resource/neutron_pile"
+    "layer0": "avaritia:item/resource/neutron_pile"
   }
 }

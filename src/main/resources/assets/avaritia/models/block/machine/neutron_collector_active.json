@@ -1,12 +1,13 @@
 {
-	"parent": "minecraft:block/cube",
-    "textures": {
-		"north": "avaritia:blocks/machine/collector/side",
-		"east": "avaritia:blocks/machine/collector/side",
-		"south": "avaritia:blocks/machine/collector/active",
-		"west": "avaritia:blocks/machine/collector/side",
-		"up": "avaritia:blocks/machine/collector/top",
-		"down": "avaritia:blocks/machine/collector/side",
-		"particle": "avaritia:blocks/machine/collector/top"
+  "render_type": "cutout",
+  "parent": "block/cube",
+  "textures": {
+    "north": "avaritia:block/machine/collector/side",
+    "east": "avaritia:block/machine/collector/side",
+    "south": "avaritia:block/machine/collector/active",
+    "west": "avaritia:block/machine/collector/side",
+    "up": "avaritia:block/machine/collector/top",
+    "down": "avaritia:block/machine/collector/side",
+    "particle": "avaritia:block/machine/collector/top"
   }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:items/armor/helmet/layer_0"
+    "layer0": "avaritia:item/armor/helmet/layer_0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:items/resource/star_fuel"
+    "layer0": "avaritia:item/resource/star_fuel"
   }
 }

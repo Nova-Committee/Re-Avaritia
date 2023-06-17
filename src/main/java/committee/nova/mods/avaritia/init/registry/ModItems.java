@@ -1,14 +1,12 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
-import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
-import committee.nova.mods.avaritia.init.ModFoods;
-import committee.nova.mods.avaritia.util.registry.BaseItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
@@ -58,7 +56,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", false));
     public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", false));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", false));
-    public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
+//    public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
 
     static {
         ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);

@@ -1,6 +1,7 @@
 {
-	"parent": "minecraft:block/cube_all",
-	"textures": {
-		"all": "avaritia:blocks/craft/double_compressed"
-	}
+  "render_type": "cutout",
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "avaritia:block/craft/double_compressed"
+  }
 }

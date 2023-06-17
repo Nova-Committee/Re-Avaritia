@@ -35,13 +35,13 @@ public class ResourceItem extends Item {
     }
 
     @Override
-    public @NotNull Rarity getRarity(ItemStack p_41461_) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack p_41461_) {
         return rarity;
     }
 
 
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> components, TooltipFlag p_41424_) {
+    public void appendHoverText(@NotNull ItemStack p_41421_, @Nullable Level p_41422_, @NotNull List<Component> components, @NotNull TooltipFlag p_41424_) {
         if (needsTooltip)
             components.add(Component.literal(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip." + name + ".desc")));
     }

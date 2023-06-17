@@ -1,13 +1,13 @@
 {
   "credit": "Made with Blockbench",
-  "parent": "minecraft:block/cube_all",
+  "parent": "block/cube_all",
   "texture_size": [
     64,
     32
   ],
   "textures": {
-    "0": "avaritia:blocks/compact/infinitato",
-    "particle": "avaritia:blocks/compact/infinitato"
+    "0": "avaritia:block/compact/infinitato",
+    "particle": "avaritia:block/compact/infinitato"
   },
   "elements": [
     {

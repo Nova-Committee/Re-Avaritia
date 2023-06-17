@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "item/handheld",
   "textures": {
-    "layer0": "avaritia:items/tools/infinity_hoe/layer_0"
+    "layer0": "avaritia:item/tools/infinity_hoe/layer_0"
   }
 }

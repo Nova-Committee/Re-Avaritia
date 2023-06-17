@@ -33,7 +33,7 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     public static HeavenArrowEntity create(Level level, LivingEntity shooter) {
-        HeavenArrowEntity entity = new HeavenArrowEntity(ModEntities.HeavenArrow.get(), level);
+        HeavenArrowEntity entity = new HeavenArrowEntity(ModEntities.HEAVEN_ARROW.get(), level);
         entity.setShooter(shooter);
         return entity;
     }

@@ -1,26 +1,25 @@
 package committee.nova.mods.avaritia;
 
-import committee.nova.mods.avaritia.client.model.GapingVoidModel;
-import committee.nova.mods.avaritia.client.model.WingModel;
-import committee.nova.mods.avaritia.client.render.layer.EyeInfinityLayer;
-import committee.nova.mods.avaritia.client.render.layer.WingInfinityLayer;
-import committee.nova.mods.avaritia.common.item.EndestPearlItem;
+import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.handler.ColorHandler;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
-import committee.nova.mods.avaritia.init.registry.*;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+import committee.nova.mods.avaritia.init.data.ModDataGen;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
+import net.minecraft.Util;
+import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -33,60 +32,41 @@ public class Avaritia {
 
     public Avaritia() {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(this::setup);
+        bus.addListener(this::onClientSetup);
+        bus.addListener(ModDataGen::gatherData);
         bus.register(this);
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
-        ModTileEntities.BLOCK_ENTITIES.register(bus);
-        ModMenus.MENUS.register(bus);
+        //ModTileEntities.BLOCK_ENTITIES.register(bus);
+        //ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
-        ModRecipeTypes.RECIPES.register(bus);
-        ModRecipeTypes.SERIALIZERS.register(bus);
-        ModTab.TABS.register(bus);
+        //ModRecipeTypes.RECIPES.register(bus);
+        //ModRecipeTypes.SERIALIZERS.register(bus);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            bus.register(new ColorHandler());
-        });
         ModConfig.register();
 
     }
 
-    @SubscribeEvent
     public void setup(final FMLCommonSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
-        SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
-        EndestPearlItem.registerDispenser();
+        //SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
+        DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
+            protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
+                return Util.make(new EndestPearlEntity(level, position.x(), position.y(), position.z()), (entity) -> entity.setItem(stack));
+            }
+        });
     }
 
-    @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         ModEntities.onClientSetup();
-        ModMenus.onClientSetup();
-        ModTileEntities.onClientSetup();
+        //ModMenus.onClientSetup();
+        //ModTileEntities.onClientSetup();
     }
 
 
-    @SubscribeEvent
-    public void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
-        event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
 
-    }
 
-    @SubscribeEvent
-    public void addLayers(EntityRenderersEvent.AddLayers evt) {
-        addPlayerLayer(evt, "default");
-        addPlayerLayer(evt, "slim");
-    }
 
-    @OnlyIn(Dist.CLIENT)
-    private void addPlayerLayer(EntityRenderersEvent.AddLayers evt, String skin) {
-        EntityRenderer<?> renderer = evt.getSkin(skin);
-
-        if (renderer instanceof LivingEntityRenderer livingRenderer) {
-            livingRenderer.addLayer(new WingInfinityLayer(livingRenderer));
-            livingRenderer.addLayer(new EyeInfinityLayer(livingRenderer));
-
-        }
-    }
 
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:items/foods/cosmic_meatballs/layer_0"
+    "layer0": "avaritia:item/foods/cosmic_meatballs/layer_0"
   }
 }

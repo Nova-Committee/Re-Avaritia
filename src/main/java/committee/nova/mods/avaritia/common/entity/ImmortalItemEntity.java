@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 
 import static net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent;
@@ -24,6 +25,7 @@ public class ImmortalItemEntity extends ItemEntity {
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level p_i50217_2_) {
         super(type, p_i50217_2_);
         this.setPickUpDelay(20);
+
     }
 
     public static ImmortalItemEntity create(EntityType<? extends ItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
@@ -36,15 +38,14 @@ public class ImmortalItemEntity extends ItemEntity {
 
     }
 
-
     @Override
-    public boolean hurt(DamageSource source, float p_70097_2_) {
+    public boolean hurt(@NotNull DamageSource source, float p_70097_2_) {
         return source == this.damageSources().fellOutOfWorld();
     }
 
 
     @Override
-    public void remove(RemovalReason pReason) {
+    public void remove(@NotNull RemovalReason pReason) {
         if (this.getAge() < 2400)
             super.remove(pReason);
     }
@@ -67,7 +68,7 @@ public class ImmortalItemEntity extends ItemEntity {
             Item item = itemstack.getItem();
             int i = itemstack.getCount();
 
-            int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, pEntity);
+            int hook = ForgeEventFactory.onItemPickup(this, pEntity);
             if (hook < 0) return;
 
             ItemStack copy = itemstack.copy();

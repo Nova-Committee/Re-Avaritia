@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.Sets;
+import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.item.ItemStackWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -86,7 +86,7 @@ public class ToolHelper {
     }
 
     public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
-        ItemStack itemStack = ItemUtil.mapEquals(drop, map);
+        ItemStack itemStack = ItemStackUtil.mapEquals(drop, map);
         if (!itemStack.isEmpty())
             map.put(itemStack, map.get(itemStack) + drop.getCount());
         else map.put(drop, drop.getCount());

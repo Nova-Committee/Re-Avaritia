@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "item/handheld",
   "textures": {
-    "layer0": "avaritia:items/tools/infinity_pickaxe/infinity_pickaxe_hammer"
+    "layer0": "avaritia:item/tools/infinity_pickaxe/infinity_pickaxe_hammer"
   }
 }

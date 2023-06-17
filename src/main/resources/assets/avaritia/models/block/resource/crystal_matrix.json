@@ -1,6 +1,6 @@
 {
-	"parent": "minecraft:block/cube_all",
+	"parent": "block/cube_all",
 	"textures": {
-		"all": "avaritia:blocks/resource/crystal_matrix"
+		"all": "avaritia:block/resource/crystal_matrix"
 	}
 }

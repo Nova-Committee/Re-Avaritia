@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:items/matter_cluster/full"
+    "layer0": "avaritia:item/matter_cluster/full"
   }
 }

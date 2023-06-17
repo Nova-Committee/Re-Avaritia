@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:items/resource/record_fragment"
+    "layer0": "avaritia:item/resource/record_fragment"
   }
 }
