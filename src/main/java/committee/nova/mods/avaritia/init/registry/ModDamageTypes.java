@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
+import committee.nova.mods.avaritia.Static;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 
 public class ModDamageTypes {
-    static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("infinity"));
+    public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Static.MOD_ID, "infinity"));
 
     public static void bootstrap(BootstapContext<DamageType> context) {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
@@ -37,11 +38,11 @@ public class ModDamageTypes {
     }
 
     public static DamageSource causeRandomDamage(LivingEntity attacker) {
-        return new DamageSourceRandomMessages(attacker.getCommandSenderWorld().registryAccess().registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(INFINITY), attacker);
+        return new DamageSourceRandomMessages(attacker.getCommandSenderWorld().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 
     public static DamageSource causeDamage(LivingEntity attacker) {
-        return new DamageSource(attacker.getCommandSenderWorld().registryAccess().registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(INFINITY), attacker);
+        return new DamageSource(attacker.getCommandSenderWorld().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {

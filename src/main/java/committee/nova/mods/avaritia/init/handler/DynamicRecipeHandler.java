@@ -24,7 +24,6 @@ import java.util.List;
  * Version: 1.0
  */
 @Mod.EventBusSubscriber
-
 public class DynamicRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {

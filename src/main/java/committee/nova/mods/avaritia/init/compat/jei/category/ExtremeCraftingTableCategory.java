@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecipe> {
 
-    public static final RecipeType<ICraftRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "basic_crafting", ICraftRecipe.class);
+    public static final RecipeType<ICraftRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_craft", ICraftRecipe.class);
     private static final ResourceLocation TEXTURE = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/extreme_jei.png");
 
     private final IDrawable background;
@@ -75,13 +75,6 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
         var output = recipe.getResultItem(level.registryAccess());
 
 
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                int index = 1 + j + (i * 9);
-                builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 1, i * 18 + 1).addIngredients(inputs.get(index));
-            }
-        }
-
         if (recipe instanceof ShapedExtremeCraftingRecipe shaped) {
             int stackIndex = 0;
             int heightOffset = Math.floorDiv(9 - shaped.getHeight(), 2);
@@ -104,6 +97,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
                     }
                 }
             }
+            builder.setShapeless(152, 164);
         }
         builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         builder.moveRecipeTransferButton(170, 100);

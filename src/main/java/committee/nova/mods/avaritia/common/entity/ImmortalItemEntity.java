@@ -72,7 +72,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
             ItemStack copy = itemstack.copy();
             if (this.pickupDelay == 0 &&
-                    (this.getOwner() == null || lifespan - this.getAge() <= 200 || this.getOwner().equals(pEntity.getUUID()))
+                    (this.getOwner() == null || lifespan - this.getAge() <= 200 || this.getOwner().getUUID().equals(pEntity.getUUID()))
                     && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))) {
                 copy.setCount(copy.getCount() - getItem().getCount());
                 firePlayerItemPickupEvent(pEntity, this, copy);

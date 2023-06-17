@@ -11,7 +11,7 @@ import net.minecraft.world.level.material.MapColor;
  */
 public class CompressedCraftingTableBlock extends AbstractCraftingTable {
     public CompressedCraftingTableBlock() {
-        super(MapColor.WOOD, SoundType.WOOD, 5F, 100F, true, "compressed_crafting_table");
+        super(MapColor.WOOD, SoundType.WOOD, 5F, 100F, true);
     }
 
 }

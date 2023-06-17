@@ -27,7 +27,7 @@ public class AbstractCraftingTable extends BaseBlock {
     private static final Component CONTAINER_TITLE = Component.translatable("container.crafting");
 
 
-    public AbstractCraftingTable(MapColor color, SoundType sound, float hardness, float resistance, boolean tool, String name) {
+    public AbstractCraftingTable(MapColor color, SoundType sound, float hardness, float resistance, boolean tool) {
         super(color, sound, hardness, resistance, tool);
     }
 

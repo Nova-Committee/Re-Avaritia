@@ -59,9 +59,9 @@ import java.util.*;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InfinityHandler {
-    private static Map<DimensionType, List<AEOCrawlerTask>> crawlerTasks = new HashMap<>();
+    private static final Map<DimensionType, List<AEOCrawlerTask>> crawlerTasks = new HashMap<>();
     private static boolean doItemCapture = false;
-    private static Set<ItemStack> capturedDrops = new LinkedHashSet<>();
+    private static final Set<ItemStack> capturedDrops = new LinkedHashSet<>();
 
     public static boolean isInfinite(Player player) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
@@ -113,14 +113,14 @@ public class InfinityHandler {
         return false;
     }
 
-    public static AEOCrawlerTask startCrawlerTask(Level world, Player player, ItemStack stack, BlockPos coords, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
+    public static void startCrawlerTask(Level world, Player player, ItemStack stack, BlockPos coords, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
         AEOCrawlerTask swapper = new AEOCrawlerTask(world, player, stack, coords, steps, leaves, force, posChecked);
         DimensionType dim = world.dimensionType();
         if (!crawlerTasks.containsKey(dim)) {
             crawlerTasks.put(dim, new ArrayList<>());
         }
         crawlerTasks.get(dim).add(swapper);
-        return swapper;
+        //return swapper;
     }
 
     public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
@@ -139,8 +139,8 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (doItemCapture) {
-            if (event.getEntity() instanceof ItemEntity) {
-                ItemStack stack = ((ItemEntity) event.getEntity()).getItem();
+            if (event.getEntity() instanceof ItemEntity itemEntity) {
+                ItemStack stack = itemEntity.getItem();
                 capturedDrops.add(stack);
                 event.setCanceled(true);
             }

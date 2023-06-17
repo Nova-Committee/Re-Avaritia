@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.init.compat.jei;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.screen.CompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeCraftingScreen;
-import committee.nova.mods.avaritia.common.crafting.recipe.ICraftRecipe;
 import committee.nova.mods.avaritia.common.menu.ExtremeCraftingMenu;
 import committee.nova.mods.avaritia.init.compat.jei.category.CompressorCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.ExtremeCraftingTableCategory;
@@ -21,10 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Description:
@@ -56,14 +51,7 @@ public class JeiCompat implements IModPlugin {
             var manager = world.getRecipeManager();
             registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()));
 
-            var recipes = Stream.of(1).collect(Collectors.toMap(tier -> tier, tier ->
-                    manager.byType(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get()).values()
-                            .stream()
-                            .map(recipe -> (ICraftRecipe) recipe)
-                            .collect(Collectors.toList())
-            ));
-
-            registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(1, new ArrayList<>()));
+            registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get()));
 
             registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.get().asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
             registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
