@@ -375,7 +375,19 @@ public class ModRecipes extends RecipeProvider {
                 .define('N', ModItems.neutron_ingot.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
-        
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.infinity_ingot.get())
+                .pattern("NNNNNNNNN")
+                .pattern("NCXXCXXCN")
+                .pattern("NXCCXCCXN")
+                .pattern("NCXXCXXCN")
+                .pattern("NNNNNNNNN")
+                .define('N', ModItems.neutron_ingot.get())
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('X', ModItems.infinity_catalyst.get())
+                .showNotification(false)
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
     }
 
     protected static InventoryChangeTrigger.TriggerInstance has(@NotNull TagKey<Item> tagKey) {
