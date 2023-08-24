@@ -1,0 +1,8 @@
+{
+  "type": "avaritia:infinity_catalyst",
+  "conditions": [
+    {
+      "type": "avaritia:infinity_catalyst_recipe"
+    }
+  ]
+}
