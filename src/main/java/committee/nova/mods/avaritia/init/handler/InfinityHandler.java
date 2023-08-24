@@ -173,10 +173,10 @@ public class InfinityHandler {
         Level world = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = world.getBlockState(pos);
-        if (event.getItemStack().getItem() == ModItems.pick_axe.get()) {
+        if (event.getItemStack().getItem() == ModItems.infinity_pickaxe.get()) {
             if (state.getDestroySpeed(world, event.getPos()) <= -1 || state.getMapColor(world, pos) == MapColor.STONE || state.getMapColor(world, pos) == MapColor.METAL) {
                 if (event.getItemStack().getOrCreateTag().getBoolean("hammer")) {
-                    ModItems.pick_axe.get().onBlockStartBreak(event.getEntity().getMainHandItem(), event.getPos(), event.getEntity());
+                    ModItems.infinity_pickaxe.get().onBlockStartBreak(event.getEntity().getMainHandItem(), event.getPos(), event.getEntity());
                 }
             }
 
@@ -192,7 +192,7 @@ public class InfinityHandler {
         }
         ItemStack mainHand = event.getPlayer().getMainHandItem();
 
-        if (!mainHand.isEmpty() && mainHand.getItem() == ModItems.pick_axe.get()) {
+        if (!mainHand.isEmpty() && mainHand.getItem() == ModItems.infinity_pickaxe.get()) {
             applyLuck(event, 4);
         }
     }
@@ -201,7 +201,7 @@ public class InfinityHandler {
     public static void digging(PlayerEvent.BreakSpeed event) {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
             ItemStack held = event.getEntity().getMainHandItem();
-            if (held.getItem() == ModItems.pick_axe.get() || held.getItem() == ModItems.infinity_shovel.get()) {
+            if (held.getItem() == ModItems.infinity_pickaxe.get() || held.getItem() == ModItems.infinity_shovel.get()) {
                 if (!event.getEntity().onGround()) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
@@ -220,7 +220,7 @@ public class InfinityHandler {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
             var level = event.getEntity().level();
             ItemStack held = event.getEntity().getMainHandItem();
-            if (held.getItem() == ModItems.pick_axe.get() && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
+            if (held.getItem() == ModItems.infinity_pickaxe.get() && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
                 if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock())) {
                     event.setResult(Event.Result.ALLOW);
                 }

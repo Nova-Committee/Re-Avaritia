@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.client.render.entity.GapingVoidRender;
+import committee.nova.mods.avaritia.client.render.entity.HeavenArrowRender;
+import committee.nova.mods.avaritia.client.render.entity.HeavenSubArrowRender;
 import committee.nova.mods.avaritia.common.entity.*;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -55,9 +58,9 @@ public class ModEntities {
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);
-//        EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
-//        EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
-//        EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
+        EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
+        EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
+        EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
     }
 
 }

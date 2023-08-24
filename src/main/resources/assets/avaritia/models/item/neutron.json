@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:block/resource/neutronium",
+  "parent": "avaritia:block/resource/neutron",
   "display": {
     "gui": {
       "rotation": [

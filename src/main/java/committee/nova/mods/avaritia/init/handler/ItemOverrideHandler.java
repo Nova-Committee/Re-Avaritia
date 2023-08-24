@@ -27,7 +27,7 @@ public class ItemOverrideHandler {
 
     @SubscribeEvent
     public static void init(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> setPropertyOverride(ModItems.pick_axe.get(), Static.rl("hammer"), (itemStack, world, livingEntity, d) -> {
+        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_pickaxe.get(), Static.rl("hammer"), (itemStack, world, livingEntity, d) -> {
             if (itemStack.getItem() instanceof PickaxeInfinityItem)
                 return itemStack.getOrCreateTag().getBoolean("hammer") ? 1 : 0;
             return 0;

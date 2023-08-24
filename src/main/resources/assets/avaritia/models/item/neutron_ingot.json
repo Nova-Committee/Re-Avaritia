@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/neutronium_ingot"
+    "layer0": "avaritia:item/resource/neutron_ingot"
   }
 }

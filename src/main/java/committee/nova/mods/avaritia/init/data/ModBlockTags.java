@@ -43,7 +43,7 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
         tag(BlockTags.BEACON_BASE_BLOCKS).add(
                 ModBlocks.crystal_matrix.get(),
                 ModBlocks.infinity.get(),
-                ModBlocks.neutronium.get()
+                ModBlocks.neutron.get()
         );
 
     }

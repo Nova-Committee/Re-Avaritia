@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:block/machine/neutronium_compressor",
+  "parent": "avaritia:block/machine/neutron_compressor",
   "display": {
     "gui": {
       "rotation": [

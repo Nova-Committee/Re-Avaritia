@@ -31,14 +31,14 @@ public class ModBlocks {
     public static RegistryObject<Block> compressed_crafting_table = block("compressed_crafting_table", CompressedCraftingTableBlock::new);
     public static RegistryObject<Block> double_compressed_crafting_table = block("double_compressed_crafting_table", DoubleCompressedCraftingTableBlock::new);
 
-    public static RegistryObject<Block> neutronium = block("neutronium", ResourceBlock::new);
+    public static RegistryObject<Block> neutron = block("neutron", ResourceBlock::new);
     public static RegistryObject<Block> infinity = block("infinity", ResourceBlock::new);
     public static RegistryObject<Block> crystal_matrix = block("crystal_matrix", ResourceBlock::new);
 
 
     public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new);
     public static RegistryObject<Block> neutron_collector = block("neutron_collector", NeutronCollectorBlock::new);
-    public static RegistryObject<Block> compressor = block("neutronium_compressor", CompressorBlock::new);
+    public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new);
     //public static RegistryObject<Block> infinitato = block("infinitato", InfinitatoBlock::new);
 
     public static RegistryObject<Block> block(String name, Supplier<Block> block) {

@@ -22,7 +22,7 @@ public class ModCreativeModeTabs {
     private static final List<RegistryObject<Item>> DONT_INCLUDE = List.of();
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tab.Infinity"))
-            .icon(() -> ModItems.pick_axe.get().getDefaultInstance())
+            .icon(() -> ModItems.infinity_pickaxe.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {
                     if (!DONT_INCLUDE.contains(itemRegistryObject)) {

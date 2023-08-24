@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public class ModTileEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Static.MOD_ID);
 
-    public static RegistryObject<BlockEntityType<CompressorTileEntity>> compressor_tile = blockEntity("compressor_tile", CompressorTileEntity::new, () -> new Block[]{ModBlocks.compressor.get()});
+    public static RegistryObject<BlockEntityType<CompressorTileEntity>> compressor_tile = blockEntity("compressor_tile", CompressorTileEntity::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
 
     //public static RegistryObject<BlockEntityType<InfinitatoTile>> infinitato_tile = blockEntity("infinitato_tile", InfinitatoTile::new, () -> new Block[]{ModBlocks.infinitato.get()});
 

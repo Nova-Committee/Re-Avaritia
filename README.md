@@ -4,7 +4,7 @@
 <hr>
 <p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
 <p align="center">
-    <a href="https://www.curseforge.com/minecraft/mc-mods/avaritia-reforged"><img src="https://img.shields.io/badge/Available%20for-MC%201.18.2-c70039" alt="Supported Versions"></a>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/avaritia-reforged"><img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions"></a>
     <a href="https://www.curseforge.com/minecraft/mc-mods/avaritia-reforged">
         <img src="http://cf.way2muchnoise.eu/avaritia-reforged.svg" alt="CurseForge Download">
     </a>
@@ -16,7 +16,7 @@
     <a href="#">简体中文</a>
 </p>
 
-This is a Minecraft 1.18.2 Forge mod.  
+This is a Minecraft 1.20.1 NeoForged mod.  
 This mod adds all from Avaritia.
 
 ## Authors

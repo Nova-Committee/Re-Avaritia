@@ -29,7 +29,7 @@ public class ModItems {
 
     public static Rarity COSMIC_RARITY = Rarity.create("COSMIC", ChatFormatting.RED);
     //tools
-    public static RegistryObject<Item> pick_axe = item("infinity_pickaxe", PickaxeInfinityItem::new);
+    public static RegistryObject<Item> infinity_pickaxe = item("infinity_pickaxe", PickaxeInfinityItem::new);
     public static RegistryObject<Item> infinity_shovel = item("infinity_shovel", ShovelInfinityItem::new);
     public static RegistryObject<Item> infinity_axe = item("infinity_axe", AxeInfinityItem::new);
     public static RegistryObject<Item> infinity_hoe = item("infinity_hoe", HoeInfinityItem::new);
