@@ -41,9 +41,9 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
 //                ModBlocks.neutronium.get(), ModBlocks.infinitato.get()
 //        );
         tag(BlockTags.BEACON_BASE_BLOCKS).add(
-                ModBlocks.CRYSTAL_MATRIX.get(),
-                ModBlocks.INFINITY.get(),
-                ModBlocks.NEUTRONIUM.get()
+                ModBlocks.crystal_matrix.get(),
+                ModBlocks.infinity.get(),
+                ModBlocks.neutronium.get()
         );
 
     }

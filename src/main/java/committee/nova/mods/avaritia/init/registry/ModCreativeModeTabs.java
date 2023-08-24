@@ -3,12 +3,9 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
@@ -20,25 +17,20 @@ import java.util.List;
  * Version: 1.0
  */
 public class ModCreativeModeTabs {
-    private static final List<RegistryObject<Item>> DONT_INCLUDE = List.of();
-    public static final ResourceLocation CREATIVE_MODE_TAB_KEY = Static.rl("tab");
-    public static final RegistryObject<CreativeModeTab> CREATIVE_MODE_TAB = RegistryObject.create(
-            CREATIVE_MODE_TAB_KEY, Registries.CREATIVE_MODE_TAB, Static.MOD_ID
-    );
-    static void register(RegisterEvent.RegisterHelper<CreativeModeTab> helper) {
-        helper.register(CREATIVE_MODE_TAB_KEY, CreativeModeTab.builder()
-                .title(Component.translatable("itemGroup.tab.Infinity"))
-                //.icon(() -> new ItemStack(RegistryItems.FLUX_CORE.get()))
-                .displayItems((parameters, output) -> {
-                    ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {
-                        if (!DONT_INCLUDE.contains(itemRegistryObject)) {
-                            output.accept(itemRegistryObject.get());
-                        }
-                    });
-                })
-                .build());
-    }
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Static.MOD_ID);
 
-    private ModCreativeModeTabs() {}
+    private static final List<RegistryObject<Item>> DONT_INCLUDE = List.of();
+    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.tab.Infinity"))
+            .icon(() -> ModItems.pick_axe.get().getDefaultInstance())
+            .displayItems((parameters, output) -> {
+                ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {
+                    if (!DONT_INCLUDE.contains(itemRegistryObject)) {
+                        output.accept(itemRegistryObject.get());
+                    }
+                });
+            })
+            .build());
+
 
 }

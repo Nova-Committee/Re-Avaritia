@@ -1,5 +1,7 @@
 package committee.nova.mods.avaritia.init.data;
 
+import committee.nova.mods.avaritia.init.data.loot.ModLootTables;
+import committee.nova.mods.avaritia.init.data.recipe.ModRecipes;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -40,8 +42,8 @@ public class ModDataGen {
             generator.addProvider(true, new ModSoundDefinitions(output, helper));
         }
         if (event.includeServer()) {
-//            generator.addProvider(true, new ModRecipes(output));
-//            generator.addProvider(true, new ModLootTables(output));
+            generator.addProvider(true, new ModRecipes(output));
+            generator.addProvider(true, new ModLootTables(output));
             ModBlockTags blockTags = new ModBlockTags(output, future, helper);
             generator.addProvider(true, blockTags);
             generator.addProvider(true, new ModEntityTags(output, future, helper));

@@ -3,10 +3,8 @@ package committee.nova.mods.avaritia;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
+import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.Util;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
@@ -38,11 +36,12 @@ public class Avaritia {
         bus.register(this);
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
-        //ModTileEntities.BLOCK_ENTITIES.register(bus);
-        //ModMenus.MENUS.register(bus);
+        ModTileEntities.BLOCK_ENTITIES.register(bus);
+        ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
-        //ModRecipeTypes.RECIPES.register(bus);
-        //ModRecipeTypes.SERIALIZERS.register(bus);
+        ModRecipeTypes.RECIPES.register(bus);
+        ModRecipeTypes.SERIALIZERS.register(bus);
+        ModCreativeModeTabs.TABS.register(bus);
 
         ModConfig.register();
 
@@ -50,7 +49,7 @@ public class Avaritia {
 
     public void setup(final FMLCommonSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
-        //SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
+        SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
         DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
                 return Util.make(new EndestPearlEntity(level, position.x(), position.y(), position.z()), (entity) -> entity.setItem(stack));
@@ -60,8 +59,8 @@ public class Avaritia {
 
     public void onClientSetup(FMLClientSetupEvent event) {
         ModEntities.onClientSetup();
-        //ModMenus.onClientSetup();
-        //ModTileEntities.onClientSetup();
+        ModMenus.onClientSetup();
+        ModTileEntities.onClientSetup();
     }
 
 

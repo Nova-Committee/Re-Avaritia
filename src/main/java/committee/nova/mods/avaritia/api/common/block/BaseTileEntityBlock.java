@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 
 import java.util.function.Function;
 
@@ -21,8 +22,15 @@ public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlo
         super(properties);
     }
 
+    public BaseTileEntityBlock(MapColor color, SoundType sound, float hardness, float resistance) {
+        super(color, sound, hardness, resistance);
+    }
     public BaseTileEntityBlock(SoundType sound, float hardness, float resistance) {
         super(sound, hardness, resistance);
+    }
+
+    public BaseTileEntityBlock(MapColor color, SoundType sound, float hardness, float resistance, boolean tool) {
+        super(color, sound, hardness, resistance, tool);
     }
 
     public BaseTileEntityBlock(SoundType sound, float hardness, float resistance, boolean tool) {

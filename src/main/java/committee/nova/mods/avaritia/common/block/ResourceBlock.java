@@ -6,6 +6,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 
 /**
  * Name: Avaritia-forge / ResourceBlock
@@ -15,10 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 
 public class ResourceBlock extends BaseBlock {
-    public ResourceBlock(BlockBehaviour.Properties properties) {
-        super(properties);
+    public ResourceBlock() {
+        super(MapColor.METAL, SoundType.METAL, 25f, 1000f);
     }
-
 
     @Override
     public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {

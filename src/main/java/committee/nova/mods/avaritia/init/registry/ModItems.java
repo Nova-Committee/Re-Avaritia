@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
+import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ArmorItem;
@@ -49,14 +50,14 @@ public class ModItems {
     public static RegistryObject<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", false));
     public static RegistryObject<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_pile", false));
     public static RegistryObject<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", false));
-    public static RegistryObject<Item> neutronium_ingot = item("neutronium_ingot", () -> new ResourceItem(Rarity.RARE, "neutronium_ingot", false));
-    public static RegistryObject<Item> neutronium_gear = item("neutronium_gear", () -> new ResourceItem(Rarity.EPIC, "neutronium_gear", false));
+    public static RegistryObject<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(Rarity.RARE, "neutron_ingot", false));
+    public static RegistryObject<Item> neutron_gear = item("neutron_gear", () -> new ResourceItem(Rarity.EPIC, "neutron_gear", false));
     public static RegistryObject<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(Rarity.RARE, "infinity_nugget", false));
     public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_catalyst", false));
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", false));
     public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", false));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", false));
-//    public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
+    public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
 
     static {
         ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);
@@ -69,4 +70,6 @@ public class ModItems {
     public static RegistryObject<Item> item(String name, Supplier<Item> item) {
         return ITEMS.register(name, item);
     }
+
+
 }
