@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item;
 
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolHelper;
@@ -44,6 +45,7 @@ public class MatterClusterItem extends Item {
 
     public MatterClusterItem() {
         super(new Properties()
+                .tab(ModCreativeModeTabs.TAB)
                 .stacksTo(1));
     }
 

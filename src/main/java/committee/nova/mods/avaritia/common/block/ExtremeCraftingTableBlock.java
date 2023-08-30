@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
 
     public ExtremeCraftingTableBlock() {
-        super(MapColor.METAL, SoundType.GLASS, 100f, 2000F, true);
+        super(Material.METAL, SoundType.GLASS, 100f, 2000F, true);
     }
 
     @Override

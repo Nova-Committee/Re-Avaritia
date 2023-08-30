@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.sounds.SoundEvents;
@@ -30,6 +31,7 @@ public class BowInfinityItem extends BowItem {
     public BowInfinityItem() {
         super(new Properties()
                 .stacksTo(1)
+                .tab(ModCreativeModeTabs.TAB)
                 .rarity(ModItems.COSMIC_RARITY)
                 .fireResistant()
         );

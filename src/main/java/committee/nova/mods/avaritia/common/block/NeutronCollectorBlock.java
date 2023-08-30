@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
 
 
     public NeutronCollectorBlock() {
-        super(MapColor.METAL, SoundType.METAL, 50f, 2000f);
+        super(Material.METAL, SoundType.METAL, 50f, 2000f);
 
     }
 

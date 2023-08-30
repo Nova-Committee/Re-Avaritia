@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolHelper;
@@ -31,6 +32,7 @@ public class AxeInfinityItem extends AxeItem {
     public AxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
                 .stacksTo(1)
+                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }

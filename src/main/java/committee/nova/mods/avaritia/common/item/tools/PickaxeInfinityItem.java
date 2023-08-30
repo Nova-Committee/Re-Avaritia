@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolHelper;
@@ -39,6 +40,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
     public PickaxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
                 .stacksTo(1)
+                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }
@@ -113,7 +115,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
         var world = player.getCommandSenderWorld();
         var state = world.getBlockState(pos);
-        var mat = state.getMapColor(world, pos);
+        var mat = state.getMaterial();
         if (!ToolHelper.materialsPick.contains(mat)) {
             return;
         }

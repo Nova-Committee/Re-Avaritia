@@ -4,8 +4,11 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -23,100 +26,101 @@ import java.util.function.Consumer;
  */
 
 public class ModRecipes extends RecipeProvider {
-    public ModRecipes(PackOutput output) {
+    public ModRecipes(DataGenerator output) {
         super(output);
     }
 
     @Override
-    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+        super.buildCraftingRecipes(consumer);
         InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.compressed_crafting_table.get())
+        ShapedRecipeBuilder.shaped(ModBlocks.compressed_crafting_table.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', Items.CRAFTING_TABLE)
-                .showNotification(false)
+                
                 .unlockedBy("", lul).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.crystal_matrix.get())
+        ShapedRecipeBuilder.shaped(ModBlocks.crystal_matrix.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', ModItems.crystal_matrix_ingot.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get())
+        ShapedRecipeBuilder.shaped(ModItems.crystal_matrix_ingot.get())
                 .pattern("xyx")
                 .pattern("xyx")
                 .define('x', ModItems.diamond_lattice.get())
                 .define('y', Items.NETHER_STAR)
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.diamond_lattice.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.diamond_lattice.get())
+        ShapedRecipeBuilder.shaped(ModItems.diamond_lattice.get())
                 .pattern("x x")
                 .pattern(" y ")
                 .pattern("x x")
                 .define('x', Items.DIAMOND)
                 .define('y', Items.NETHERITE_SCRAP)
-                .showNotification(false)
+                
                 .unlockedBy("", lul).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.double_compressed_crafting_table.get())
+        ShapedRecipeBuilder.shaped(ModBlocks.double_compressed_crafting_table.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', ModBlocks.compressed_crafting_table.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModBlocks.compressed_crafting_table.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.extreme_crafting_table.get())
+        ShapedRecipeBuilder.shaped(ModBlocks.extreme_crafting_table.get())
                 .pattern("xxx")
                 .pattern("xyx")
                 .pattern("xxx")
                 .define('x', ModItems.crystal_matrix_ingot.get())
                 .define('y', ModBlocks.double_compressed_crafting_table.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModBlocks.double_compressed_crafting_table.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.infinity.get())
+        ShapedRecipeBuilder.shaped(ModBlocks.infinity.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', ModItems.infinity_ingot.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.neutron.get())
+        ShapedRecipeBuilder.shaped(ModBlocks.neutron.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', ModItems.neutron_ingot.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_ingot.get())
+        ShapedRecipeBuilder.shaped(ModItems.neutron_ingot.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', ModItems.neutron_nugget.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_nugget.get())
+        ShapedRecipeBuilder.shaped(ModItems.neutron_nugget.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', ModItems.neutron_pile.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.neutron_pile.get())).save(consumer);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
+        ShapelessRecipeBuilder.shapeless(ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
                 .unlockedBy("has_item", has(ItemTags.MUSIC_DISCS)).save(consumer);
 
-        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.cosmic_meatballs.get())
+        ModShapelessRecipeBuilder.shapeless(ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)
                 .requires(Items.BEEF)
                 .requires(Items.MUTTON)
@@ -132,7 +136,7 @@ public class ModRecipes extends RecipeProvider {
                 .requires(ModItems.neutron_nugget.get())
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
-        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.ultimate_stew.get())
+        ModShapelessRecipeBuilder.shapeless(ModItems.ultimate_stew.get())
                 .requires(Items.APPLE)
                 .requires(Items.GOLDEN_APPLE)
                 .requires(Items.BREAD)
@@ -149,8 +153,8 @@ public class ModRecipes extends RecipeProvider {
                 .requires(Items.SWEET_BERRIES)
                 .requires(ModItems.neutron_nugget.get())
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
-        
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.endest_pearl.get())
+
+        ModShapedRecipeBuilder.shaped(ModItems.endest_pearl.get())
                 .pattern("   EEE   ")
                 .pattern(" EEPPPEE ")
                 .pattern(" EPPPPPE ")
@@ -166,8 +170,8 @@ public class ModRecipes extends RecipeProvider {
                 .define('N', ModItems.neutron_ingot.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
-        
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_axe.get())
+
+        ModShapedRecipeBuilder.shaped( ModItems.infinity_axe.get())
                 .pattern("   I   ")
                 .pattern("  IIIII")
                 .pattern("  IIXI ")
@@ -183,7 +187,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_hoe.get())
+        ModShapedRecipeBuilder.shaped( ModItems.infinity_hoe.get())
                 .pattern("     N ")
                 .pattern("   IIII")
                 .pattern("  IIIII")
@@ -199,7 +203,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_pickaxe.get())
+        ModShapedRecipeBuilder.shaped( ModItems.infinity_pickaxe.get())
                 .pattern(" IIIIIII ")
                 .pattern("IIIIXIIII")
                 .pattern("II  N  II")
@@ -215,7 +219,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_shovel.get())
+        ModShapedRecipeBuilder.shaped( ModItems.infinity_shovel.get())
                 .pattern("      III")
                 .pattern("     IIXI")
                 .pattern("      III")
@@ -231,7 +235,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.infinity_sword.get())
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_sword.get())
                 .pattern("       II")
                 .pattern("      III")
                 .pattern("     III ")
@@ -248,7 +252,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.infinity_bow.get())
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_bow.get())
                 .pattern("   II")
                 .pattern("  I W")
                 .pattern(" I  W")
@@ -263,8 +267,8 @@ public class ModRecipes extends RecipeProvider {
                 .define('X', ModItems.infinity_catalyst.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
-        
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.infinity_boots.get())
+
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_boots.get())
                 .pattern(" NNN NNN ")
                 .pattern(" NIN NIN ")
                 .pattern(" NIN NIN ")
@@ -276,7 +280,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.infinity_chestplate.get())
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_chestplate.get())
                 .pattern(" NN   NN ")
                 .pattern("NNN   NNN")
                 .pattern("NNN   NNN")
@@ -292,7 +296,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.infinity_helmet.get())
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_helmet.get())
                 .pattern("  NNNNN  ")
                 .pattern(" NIIIIIN ")
                 .pattern(" N XIX N ")
@@ -304,8 +308,8 @@ public class ModRecipes extends RecipeProvider {
                 .define('X', ModItems.infinity_catalyst.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
-        
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.infinity_pants.get())
+
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_pants.get())
                 .pattern("NNNNNNNNN")
                 .pattern("NIIIXIIIN")
                 .pattern("NINNXNNIN")
@@ -321,8 +325,8 @@ public class ModRecipes extends RecipeProvider {
                 .define('X', ModItems.infinity_catalyst.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
-        
-        ModShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.skull_sword.get())
+
+        ModShapedRecipeBuilder.shaped(ModItems.skull_sword.get())
                 .pattern("       IX")
                 .pattern("      IXI")
                 .pattern("     IXI ")
@@ -339,8 +343,8 @@ public class ModRecipes extends RecipeProvider {
                 .define('B', Tags.Items.BONES)
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
-        
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.neutron_collector.get())
+
+        ModShapedRecipeBuilder.shaped(ModBlocks.neutron_collector.get())
                 .pattern("IIQQQQQII")
                 .pattern("I QQQQQ I")
                 .pattern("I  RRR  I")
@@ -357,7 +361,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.neutron_compressor.get())
+        ModShapedRecipeBuilder.shaped(ModBlocks.neutron_compressor.get())
                 .pattern("IIIHHHIII")
                 .pattern("C N   N C")
                 .pattern("I N   N I")
@@ -376,7 +380,7 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.infinity_ingot.get())
+        ModShapedRecipeBuilder.shaped(ModItems.infinity_ingot.get())
                 .pattern("NNNNNNNNN")
                 .pattern("NCXXCXXCN")
                 .pattern("NXCCXCCXN")
@@ -385,9 +389,8 @@ public class ModRecipes extends RecipeProvider {
                 .define('N', ModItems.neutron_ingot.get())
                 .define('C', ModItems.crystal_matrix_ingot.get())
                 .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(false)
+                
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
-
     }
 
     protected static InventoryChangeTrigger.TriggerInstance has(@NotNull TagKey<Item> tagKey) {

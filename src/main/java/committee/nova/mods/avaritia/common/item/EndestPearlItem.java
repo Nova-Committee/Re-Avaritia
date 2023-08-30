@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item;
 
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +22,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EndestPearlItem extends Item {
     public EndestPearlItem() {
-        super(new Properties().stacksTo(16));
+        super(new Properties()
+                .stacksTo(16)
+                .tab(ModCreativeModeTabs.TAB)
+        );
     }
 
 

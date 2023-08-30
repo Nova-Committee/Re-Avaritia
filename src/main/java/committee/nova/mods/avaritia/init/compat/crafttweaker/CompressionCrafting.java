@@ -40,10 +40,6 @@ public class CompressionCrafting {
                 return "Adding Compression Crafting recipe for " + output.getCommandString();
             }
 
-            @Override
-            public String systemName() {
-                return "Avaritia Recipe";
-            }
         });
     }
 
@@ -56,7 +52,7 @@ public class CompressionCrafting {
                 List<ResourceLocation> recipes = RecipeUtil.getRecipes()
                         .getOrDefault(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new HashMap<>())
                         .values().stream()
-                        .filter(r -> r.getResultItem(access).is(stack.getInternal().getItem()))
+                        .filter(r -> r.getResultItem().is(stack.getInternal().getItem()))
                         .map(Recipe::getId)
                         .toList();
 
@@ -70,10 +66,6 @@ public class CompressionCrafting {
                 return "Removing Compression Crafting recipes for " + stack.getCommandString();
             }
 
-            @Override
-            public String systemName() {
-                return "Avaritia Recipe";
-            }
         });
     }
 }

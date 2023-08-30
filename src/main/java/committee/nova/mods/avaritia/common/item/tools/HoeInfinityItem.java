@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
@@ -22,7 +23,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,7 @@ public class HoeInfinityItem extends HoeItem {
     public HoeInfinityItem() {
         super(Tier.INFINITY_HOE, -5, 0f, (new Properties())
                 .stacksTo(1)
+                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }
@@ -156,7 +158,7 @@ public class HoeInfinityItem extends HoeItem {
                         if (world.isEmptyBlock(pos) && !world.isEmptyBlock(pos.below())) {
                             world.setBlock(pos, blockstate, 11);
                         }
-                        if (state.getMapColor(world, pos) == MapColor.WATER || state.getBlock() instanceof LiquidBlockContainer) {
+                        if (state.getMaterial() == Material.WATER || state.getBlock() instanceof LiquidBlockContainer) {
                             world.setBlock(pos, blockstate, 11);
                         }
                     }
@@ -169,7 +171,7 @@ public class HoeInfinityItem extends HoeItem {
                     for (BlockPos pos : allInBoxMutable) {
                         if (!hasBox(pos, inBoxMutable)) { //外壳坐标
                             var state = world.getBlockState(pos);
-                            if (state.getMapColor(world, pos) == MapColor.WATER || state.getBlock() instanceof LiquidBlockContainer)
+                            if (state.getMaterial() == Material.WATER || state.getBlock() instanceof LiquidBlockContainer)
                                 world.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
                         }
                     }

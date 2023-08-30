@@ -68,7 +68,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public ItemStack getResultItem() {
         return this.output;
     }
 
@@ -78,7 +78,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     }
 
     @Override
-    public ItemStack assemble(Container inv, RegistryAccess p_267052_) {
+    public ItemStack assemble(Container inv) {
         return this.output.copy();
     }
 

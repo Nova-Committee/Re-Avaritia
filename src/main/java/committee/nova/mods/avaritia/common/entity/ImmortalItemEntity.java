@@ -40,7 +40,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float p_70097_2_) {
-        return source == this.damageSources().fellOutOfWorld();
+        return source == DamageSource.OUT_OF_WORLD;
     }
 
 
@@ -73,7 +73,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
             ItemStack copy = itemstack.copy();
             if (this.pickupDelay == 0 &&
-                    (this.getOwner() == null || lifespan - this.getAge() <= 200 || this.getOwner().getUUID().equals(pEntity.getUUID()))
+                    (this.getOwner() == null || lifespan - this.getAge() <= 200 || this.getOwner().equals(pEntity.getUUID()))
                     && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))) {
                 copy.setCount(copy.getCount() - getItem().getCount());
                 firePlayerItemPickupEvent(pEntity, this, copy);

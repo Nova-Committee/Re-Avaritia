@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 
 import java.util.Set;
 
@@ -58,7 +58,7 @@ public class AEOCrawlerTask {
             }
             BlockState stepState = world.getBlockState(stepPos);
             Block stepBlock = stepState.getBlock();
-            boolean log = stepState.getMapColor(world, stepPos) == MapColor.WOOD;
+            boolean log = stepState.getMaterial() == Material.WOOD;
             boolean leaf = stepBlock instanceof LeavesBlock;
             if (log || leaf) {
                 int steps = this.steps - 1;

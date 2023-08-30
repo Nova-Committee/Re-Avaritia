@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.container;
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.TransientCraftingContainer;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
  * Date: 2022/4/2 11:09
  * Version: 1.0
  */
-public class ExtremeCraftingContainer extends TransientCraftingContainer {
+public class ExtremeCraftingContainer extends CraftingContainer {
     private final AbstractContainerMenu container;
     private final BaseItemStackHandler inventory;
     private final boolean autoTable;

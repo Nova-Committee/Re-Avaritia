@@ -67,7 +67,7 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
-        var output = recipe.getResultItem(level.registryAccess());
+        var output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.INPUT, 36, 20).addIngredients(inputs.get(0));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 116, 20).addItemStack(output);
 

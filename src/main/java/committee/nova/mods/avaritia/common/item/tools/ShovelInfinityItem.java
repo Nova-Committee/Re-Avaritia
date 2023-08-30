@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolHelper;
@@ -33,6 +34,7 @@ public class ShovelInfinityItem extends ShovelItem {
     public ShovelInfinityItem() {
         super(Tier.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
                 .stacksTo(1)
+                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }
@@ -83,7 +85,7 @@ public class ShovelInfinityItem extends ShovelItem {
 
         var world = player.getCommandSenderWorld();
         var state = world.getBlockState(pos);
-        var mat = state.getMapColor(world, pos);
+        var mat = state.getMaterial();
         if (!ToolHelper.materialsShovel.contains(mat)) {
             return;
         }

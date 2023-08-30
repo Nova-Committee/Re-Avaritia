@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -27,7 +28,7 @@ public class StarFuelItem extends Item {
     public static final int BURN_TIME = Integer.MAX_VALUE;
 
     public StarFuelItem(Rarity rarity) {
-        super(new Properties().stacksTo(1).rarity(rarity));
+        super(new Properties().stacksTo(1).rarity(rarity).tab(ModCreativeModeTabs.TAB));
     }
 
     @OnlyIn(Dist.CLIENT)

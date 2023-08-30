@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,7 @@ public class AbstractCraftingTable extends BaseBlock {
     private static final Component CONTAINER_TITLE = Component.translatable("container.crafting");
 
 
-    public AbstractCraftingTable(MapColor color, SoundType sound, float hardness, float resistance, boolean tool) {
+    public AbstractCraftingTable(Material color, SoundType sound, float hardness, float resistance, boolean tool) {
         super(color, sound, hardness, resistance, tool);
     }
 

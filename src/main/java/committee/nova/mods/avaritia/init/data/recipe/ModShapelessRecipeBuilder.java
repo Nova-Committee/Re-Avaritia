@@ -9,15 +9,11 @@ import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.CraftingRecipeBuilder;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
@@ -37,29 +33,27 @@ import java.util.function.Consumer;
  * Description:
  */
 
-public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
-    private final RecipeCategory category;
+public class ModShapelessRecipeBuilder implements RecipeBuilder {
     private final Item result;
     private final int count;
     private final List<Ingredient> ingredients = Lists.newArrayList();
-    private final Advancement.Builder advancement = Advancement.Builder.recipeAdvancement();
+    private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
 
-    public ModShapelessRecipeBuilder(RecipeCategory p_250837_, @NotNull ItemLike p_251897_, int p_252227_) {
-        this.category = p_250837_;
+    public ModShapelessRecipeBuilder(@NotNull ItemLike p_251897_, int p_252227_) {
         this.result = p_251897_.asItem();
         this.count = p_252227_;
     }
 
-    @Contract("_, _ -> new")
-    public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
-        return new ModShapelessRecipeBuilder(p_250714_, p_249659_, 1);
+    @Contract("_ -> new")
+    public static @NotNull ModShapelessRecipeBuilder shapeless(ItemLike p_249659_) {
+        return new ModShapelessRecipeBuilder(p_249659_, 1);
     }
 
-    @Contract("_, _, _ -> new")
-    public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_) {
-        return new ModShapelessRecipeBuilder(p_252339_, p_250836_, p_249928_);
+    @Contract("_, _ -> new")
+    public static @NotNull ModShapelessRecipeBuilder shapeless(ItemLike p_250836_, int p_249928_) {
+        return new ModShapelessRecipeBuilder(p_250836_, p_249928_);
     }
 
     public ModShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
@@ -111,7 +105,7 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
     public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModShapelessRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        p_126205_.accept(new ModShapelessRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement,new ResourceLocation(p_126206_.getNamespace(), "recipes/" + this.result.getItemCategory().getRecipeFolderName() + "/" + p_126206_.getPath())));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -120,7 +114,7 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
         }
     }
 
-    public static class Result extends CraftingRecipeBuilder.CraftingResult {
+    public static class Result implements FinishedRecipe {
         private final ResourceLocation id;
         private final Item result;
         private final int count;
@@ -129,8 +123,7 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
 
-        public Result(ResourceLocation p_249007_, Item p_248667_, int p_249014_, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
-            super(p_249485_);
+        public Result(ResourceLocation p_249007_, Item p_248667_, int p_249014_, String p_248592_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
             this.id = p_249007_;
             this.result = p_248667_;
             this.count = p_249014_;
@@ -141,7 +134,6 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
         }
 
         public void serializeRecipeData(@NotNull JsonObject p_126230_) {
-            super.serializeRecipeData(p_126230_);
             if (!this.group.isEmpty()) {
                 p_126230_.addProperty("group", this.group);
             }

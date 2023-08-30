@@ -27,8 +27,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -124,8 +124,8 @@ public class InfinityHandler {
     }
 
     public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
-        if (event.getState().getMapColor(event.getLevel(), event.getPos()) == MapColor.STONE) {
-            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().getCommandSenderWorld())).withLuck(event.getPlayer().getCommandSenderWorld().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().getCommandSenderWorld().getBlockEntity(event.getPos()));
+        if (event.getState().getMaterial() == Material.STONE) {
+            LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerLevel) event.getPlayer().getCommandSenderWorld())).withLuck(event.getPlayer().getCommandSenderWorld().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().getCommandSenderWorld().getBlockEntity(event.getPos()));
             List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
             for (ItemStack drop : drops) {
                 if (drop.getItem() != Item.byBlock(event.getState().getBlock()) && !(drop.getItem() instanceof BlockItem)) {
@@ -174,7 +174,7 @@ public class InfinityHandler {
         BlockPos pos = event.getPos();
         BlockState state = world.getBlockState(pos);
         if (event.getItemStack().getItem() == ModItems.infinity_pickaxe.get()) {
-            if (state.getDestroySpeed(world, event.getPos()) <= -1 || state.getMapColor(world, pos) == MapColor.STONE || state.getMapColor(world, pos) == MapColor.METAL) {
+            if (state.getDestroySpeed(world, event.getPos()) <= -1 || state.getMaterial() == Material.STONE || state.getMaterial() == Material.METAL) {
                 if (event.getItemStack().getOrCreateTag().getBoolean("hammer")) {
                     ModItems.infinity_pickaxe.get().onBlockStartBreak(event.getEntity().getMainHandItem(), event.getPos(), event.getEntity());
                 }
@@ -202,7 +202,7 @@ public class InfinityHandler {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
             ItemStack held = event.getEntity().getMainHandItem();
             if (held.getItem() == ModItems.infinity_pickaxe.get() || held.getItem() == ModItems.infinity_shovel.get()) {
-                if (!event.getEntity().onGround()) {
+                if (!event.getEntity().isOnGround()) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
                 if (!event.getEntity().isInWater() && !EnchantmentHelper.hasAquaAffinity(event.getEntity())) {
@@ -218,9 +218,9 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void canHarvest(PlayerEvent.HarvestCheck event) {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
-            var level = event.getEntity().level();
+            var level = event.getEntity().getLevel();
             ItemStack held = event.getEntity().getMainHandItem();
-            if (held.getItem() == ModItems.infinity_pickaxe.get() && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
+            if (held.getItem() == ModItems.infinity_pickaxe.get() && event.getTargetBlock().getMaterial() == Material.STONE) {
                 if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock())) {
                     event.setResult(Event.Result.ALLOW);
                 }

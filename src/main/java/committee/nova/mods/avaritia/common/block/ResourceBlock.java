@@ -4,9 +4,8 @@ import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 
 /**
  * Name: Avaritia-forge / ResourceBlock
@@ -17,7 +16,7 @@ import net.minecraft.world.level.material.MapColor;
 
 public class ResourceBlock extends BaseBlock {
     public ResourceBlock() {
-        super(MapColor.METAL, SoundType.METAL, 25f, 1000f);
+        super(Material.METAL, SoundType.METAL, 25f, 1000f);
     }
 
     @Override

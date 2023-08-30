@@ -10,11 +10,13 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,6 +34,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -135,8 +138,8 @@ public class GapingVoidEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return new  ClientboundAddEntityPacket(this);
     }
 
     @Override
@@ -150,7 +153,7 @@ public class GapingVoidEntity extends Entity {
         int age = getAge();
 
         if (age >= maxLifetime && !getCommandSenderWorld().isClientSide) {
-            getCommandSenderWorld().explode(this, posX, posY, posZ, 6.0f, Level.ExplosionInteraction.BLOCK);
+            getCommandSenderWorld().explode(this, posX, posY, posZ, 6.0f, Explosion.BlockInteraction.NONE);
             int range = 4;
             AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
             List<Entity> nommed = getCommandSenderWorld().getEntitiesOfClass(Entity.class, axisAlignedBB, OMNOM_PREDICATE);
@@ -158,12 +161,12 @@ public class GapingVoidEntity extends Entity {
                     .filter(entity -> entity != this)
                     .forEach(entity -> {
                         if (entity instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(user), 1000.0f);
+                            dragon.hurt(dragon.head, new ModDamageTypes(user), 1000.0f);
                             dragon.setHealth(0);
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            wither.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
-                        } else entity.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
+                            wither.hurt(new ModDamageTypes(user), 1000.0f);
+                        } else entity.hurt(new ModDamageTypes(user), 1000.0f);
                     });
             remove(RemovalReason.KILLED);
         } else {
@@ -237,9 +240,9 @@ public class GapingVoidEntity extends Entity {
 
                 if (len <= nomrange) {
                     if (nommee instanceof EnderDragon dragon) {
-                        dragon.hurt(dragon.head, this.damageSources().fellOutOfWorld(), 5.0f);
+                        dragon.hurt(dragon.head, DamageSource.OUT_OF_WORLD, 5.0f);
                     }
-                    nommee.hurt(this.damageSources().fellOutOfWorld(), 5.0f);
+                    nommee.hurt(DamageSource.OUT_OF_WORLD, 5.0f);
                 }
             }
         }
@@ -255,7 +258,7 @@ public class GapingVoidEntity extends Entity {
                     for (int x = -blockrange; x <= blockrange; x++) {
                         Vec3 pos2 = new Vec3(x, y, z);
                         Vec3 rPos = posFloor.add(pos2);
-                        BlockPos blockPos = BlockPos.containing(rPos.x, rPos.y, rPos.z);
+                        BlockPos blockPos = new BlockPos(rPos);
 
                         if (blockPos.getY() < 0 || blockPos.getY() > 255) {
                             continue;

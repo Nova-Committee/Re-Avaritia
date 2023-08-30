@@ -51,7 +51,7 @@ public class ExtremeCraftingSlot extends Slot {
             if (!remainingStack.isEmpty()) {
                 if (slotStack.isEmpty()) {
                     this.matrix.setItem(i, remainingStack);
-                } else if (ItemStack.isSameItem(slotStack, remainingStack) && ItemStack.isSameItemSameTags(slotStack, remainingStack)) {
+                } else if (ItemStack.isSame(slotStack, remainingStack) && ItemStack.isSameItemSameTags(slotStack, remainingStack)) {
                     remainingStack.grow(slotStack.getCount());
                     this.matrix.setItem(i, remainingStack);
                 } else if (!player.getInventory().add(remainingStack)) {

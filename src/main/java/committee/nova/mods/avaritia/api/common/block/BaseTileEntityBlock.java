@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 
 import java.util.function.Function;
 
@@ -18,24 +18,18 @@ import java.util.function.Function;
  * Version: 1.0
  */
 public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlock {
-    public BaseTileEntityBlock(Function<Properties, Properties> properties) {
-        super(properties);
+    public BaseTileEntityBlock(Material color, Function<Properties, Properties> properties) {
+        super(color, properties);
     }
 
-    public BaseTileEntityBlock(MapColor color, SoundType sound, float hardness, float resistance) {
+    public BaseTileEntityBlock(Material color, SoundType sound, float hardness, float resistance) {
         super(color, sound, hardness, resistance);
     }
-    public BaseTileEntityBlock(SoundType sound, float hardness, float resistance) {
-        super(sound, hardness, resistance);
-    }
 
-    public BaseTileEntityBlock(MapColor color, SoundType sound, float hardness, float resistance, boolean tool) {
+    public BaseTileEntityBlock(Material color, SoundType sound, float hardness, float resistance, boolean tool) {
         super(color, sound, hardness, resistance, tool);
     }
 
-    public BaseTileEntityBlock(SoundType sound, float hardness, float resistance, boolean tool) {
-        super(sound, hardness, resistance, tool);
-    }
 
     @SuppressWarnings("unchecked")
     protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTicker(BlockEntityType<A> typeA, BlockEntityType<E> typeB, BlockEntityTicker<? super E> ticker) {

@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -28,7 +29,7 @@ public class ResourceItem extends Item {
     private final boolean needsTooltip;
 
     public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip) {
-        super(new Properties());
+        super(new Properties().tab(ModCreativeModeTabs.TAB));
         this.rarity = rarity;
         this.name = registryName;
         this.needsTooltip = needsTooltip;

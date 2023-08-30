@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
 
@@ -31,27 +31,27 @@ import java.util.*;
  * Version: 1.0
  */
 public class ToolHelper {
-    public static final Set<MapColor> materialsPick = Sets.newHashSet(MapColor.STONE, MapColor.METAL, MapColor.ICE,
-            //MapColor.GLASS, MapColor.EXPLOSIVE, MapColor.PISTON, MapColor.ICE_SOLID, MapColor.SPONGE, MapColor.SHULKER_SHELL,
-            MapColor.WOOL,
-            //MapColor.PISTON, MapColor.WATER_PLANT,
-            MapColor.GRASS
-            //, MapColor.SCULK
+    public static final Set<Material> materialsPick = Sets.newHashSet(Material.STONE, Material.METAL, Material.ICE,
+            Material.GLASS, Material.EXPLOSIVE, Material.PISTON, Material.ICE_SOLID, Material.SPONGE, Material.SHULKER_SHELL,
+            Material.WOOL,
+            Material.PISTON, Material.WATER_PLANT,
+            Material.GRASS
+            , Material.SCULK
     );
 
-    public static final Set<MapColor> materialsAxe = Sets.newHashSet(MapColor.WOOD,
-            //MapColor.PORTAL, MapColor.WEB,
-            MapColor.PLANT
-            //, MapColor.WATER_PLANT, MapColor.NETHER_WOOD, MapColor.REPLACEABLE_PLANT, MapColor.NETHER_WOOD, MapColor.BAMBOO, MapColor.BAMBOO_SAPLING,
-            //MapColor.LEAVES, MapColor.CACTUS
+    public static final Set<Material> materialsAxe = Sets.newHashSet(Material.WOOD,
+            Material.PORTAL, Material.WEB,
+            Material.PLANT
+            , Material.WATER_PLANT, Material.NETHER_WOOD, Material.REPLACEABLE_PLANT, Material.NETHER_WOOD, Material.BAMBOO, Material.BAMBOO_SAPLING,
+            Material.LEAVES, Material.CACTUS
     );
 
-    public static final Set<MapColor> materialsShovel = Sets.newHashSet(MapColor.SAND, MapColor.DIRT, MapColor.SNOW, MapColor.CLAY, MapColor.GRASS,
-            MapColor.SNOW);
+    public static final Set<Material> materialsShovel = Sets.newHashSet(Material.SAND, Material.DIRT, Material.SNOW, Material.CLAY, Material.GRASS,
+            Material.SNOW);
     public static Set<String> defaultTrashOres = new HashSet<>();//todo, set trash block in gui
 
 
-    public static void aoeBlocks(Player player, ItemStack stack, Level world, BlockPos origin, BlockPos min, BlockPos max, Block target, Set<MapColor> validMaterials, boolean filterTrash) {
+    public static void aoeBlocks(Player player, ItemStack stack, Level world, BlockPos origin, BlockPos min, BlockPos max, Block target, Set<Material> validMaterials, boolean filterTrash) {
 
         InfinityHandler.enableItemCapture();
 
@@ -121,7 +121,7 @@ public class ToolHelper {
         return isTrash;
     }
 
-    public static void removeBlockWithDrops(Player player, ItemStack stack, Level world, BlockPos pos, Block target, Set<MapColor> validMaterials) {
+    public static void removeBlockWithDrops(Player player, ItemStack stack, Level world, BlockPos pos, Block target, Set<Material> validMaterials) {
         if (!world.isLoaded(pos)) {
             return;
         }
@@ -131,7 +131,7 @@ public class ToolHelper {
             if ((target != null && target != state.getBlock()) || state.isAir()) {
                 return;
             }
-            MapColor material = state.getMapColor(world, pos);
+            Material material = state.getMaterial();
             if (block == Blocks.GRASS && stack.getItem() == ModItems.infinity_pickaxe.get()) {
                 world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
             }

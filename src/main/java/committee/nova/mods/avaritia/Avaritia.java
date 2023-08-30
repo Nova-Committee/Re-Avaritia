@@ -41,7 +41,6 @@ public class Avaritia {
         ModEntities.ENTITIES.register(bus);
         ModRecipeTypes.RECIPES.register(bus);
         ModRecipeTypes.SERIALIZERS.register(bus);
-        ModCreativeModeTabs.TABS.register(bus);
 
         ModConfig.register();
 

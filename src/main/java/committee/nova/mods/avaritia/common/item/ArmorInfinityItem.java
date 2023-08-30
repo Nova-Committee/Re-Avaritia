@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
+import committee.nova.mods.avaritia.init.registry.ModCreativeModeTabs;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.lang.TextUtil;
@@ -29,12 +30,13 @@ import java.util.List;
  * Version: 1.0
  */
 public class ArmorInfinityItem extends ArmorItem {
-    public ArmorInfinityItem(Type pSlot) {
+    public ArmorInfinityItem(EquipmentSlot pSlot) {
         super(
                 ModArmorMaterial.infinite_armor,
                 pSlot,
                 new Properties()
                         .fireResistant()
+                        .tab(ModCreativeModeTabs.TAB)
                         .stacksTo(1)
         );
     }
@@ -64,19 +66,19 @@ public class ArmorInfinityItem extends ArmorItem {
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
-        if (type.getSlot() == EquipmentSlot.HEAD) {
+        if (slot == EquipmentSlot.HEAD) {
             tooltip.add(Component.literal(""));
             tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% NIGHT VISION"));
         }
-        if (type.getSlot() == EquipmentSlot.CHEST) {
+        if (slot == EquipmentSlot.CHEST) {
             tooltip.add(Component.literal(""));
             tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% FLY SPEED"));
         }
-        if (type.getSlot() == EquipmentSlot.LEGS) {
+        if (slot == EquipmentSlot.LEGS) {
             tooltip.add(Component.literal(""));
             tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% WALK SPEED"));
         }
-        if (type.getSlot() == EquipmentSlot.FEET) {
+        if (slot == EquipmentSlot.FEET) {
             tooltip.add(Component.literal(""));
             tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% SPEED"));
         }

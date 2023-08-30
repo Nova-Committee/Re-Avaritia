@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.crafting.recipe.ICraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
@@ -17,7 +18,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -72,7 +72,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
-        var output = recipe.getResultItem(level.registryAccess());
+        var output = recipe.getResultItem();
 
 
         if (recipe instanceof ShapedExtremeCraftingRecipe shaped) {
@@ -116,8 +116,8 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
     }
 
     @Override
-    public void draw(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics gfx, double mouseX, double mouseY) {
-        var matrix = gfx.pose();
+    public void draw(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack gfx, double mouseX, double mouseY) {
+        var matrix = gfx;
         matrix.pushPose();
         matrix.scale(0.5F, 0.5F, 0.5F);
 

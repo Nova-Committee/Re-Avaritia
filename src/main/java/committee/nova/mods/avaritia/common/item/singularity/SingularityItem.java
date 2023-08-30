@@ -3,17 +3,16 @@ package committee.nova.mods.avaritia.common.item.singularity;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -34,14 +33,14 @@ public class SingularityItem extends Item implements IColored {
         super(properties.apply(new Properties().rarity(Rarity.UNCOMMON)));
     }
 
-//    @Override
-//    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items) {
-//        if (this.allowdedIn(group)) {
-//            SingularityRegistryHandler.getInstance().getSingularities().forEach(singularity -> {
-//                items.add(SingularityUtils.getItemForSingularity(singularity));
-//            });
-//        }
-//    }
+    @Override
+    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items) {
+        if (this.allowedIn(group)) {
+            SingularityRegistryHandler.getInstance().getSingularities().forEach(singularity -> {
+                items.add(SingularityUtils.getItemForSingularity(singularity));
+            });
+        }
+    }
 
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.block.craft;
 
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 
 /**
  * Description:
@@ -12,7 +12,7 @@ import net.minecraft.world.level.material.MapColor;
 public class DoubleCompressedCraftingTableBlock extends AbstractCraftingTable {
 
     public DoubleCompressedCraftingTableBlock() {
-        super(MapColor.WOOD, SoundType.WOOD, 20F, 500F, true);
+        super(Material.WOOD, SoundType.WOOD, 20F, 500F, true);
     }
 
 }

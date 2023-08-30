@@ -199,13 +199,13 @@ public class AbilityHandler {
         String key = entity.getEncodeId() + "|" + entity.getCommandSenderWorld().isClientSide;
         boolean hasBoots = isPlayerWearing(entity, FEET, item -> item instanceof ArmorInfinityItem);
         if (hasBoots) {
-            entity.setMaxUpStep(1.08F);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
+            entity.maxUpStep = 1.08F;//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
             if (!entitiesWithBoots.contains(key)) {
                 entitiesWithBoots.add(key);
             }
         } else {
             if (entitiesWithBoots.contains(key)) {
-                entity.setMaxUpStep(0.5F);
+                entity.maxUpStep = 0.5F;
                 entitiesWithBoots.remove(key);
             }
         }
@@ -231,7 +231,7 @@ public class AbilityHandler {
     private static void tickBootsAbilities(LivingEntity entity) {
         boolean flying = entity instanceof Player && ((Player) entity).getAbilities().flying;
         boolean swimming = entity.isInWater();
-        if (entity.onGround() || flying || swimming) {
+        if (entity.isOnGround() || flying || swimming) {
             boolean sneaking = entity.isCrouching();
 
             float speed = 0.1f * (flying ? 1.1f : 1.0f)
@@ -270,7 +270,7 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (InfinityHandler.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
+            if (InfinityHandler.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }

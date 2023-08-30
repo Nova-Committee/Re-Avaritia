@@ -33,7 +33,7 @@ public class JadeCompat implements IWailaPlugin {
             var recipe = compressor.getActiveRecipe();
 
             if (recipe != null) {
-                var output = recipe.getResultItem(Objects.requireNonNull(compressor.getLevel()).registryAccess());
+                var output = recipe.getResultItem();
                 tooltip.add(ModTooltips.CRAFTING.args(output.getCount(), output.getHoverName()).build());
             }
         }

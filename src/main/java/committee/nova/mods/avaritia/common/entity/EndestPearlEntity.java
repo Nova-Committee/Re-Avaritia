@@ -9,6 +9,8 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -54,7 +56,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new ClientboundAddEntityPacket(this);
     }
 
     private ParticleOptions getParticle() {
@@ -85,7 +87,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         Entity entity = pos.getEntity();
 
         if (entity != null) {
-            entity.hurt(this.damageSources().thrown(this, getOwner()), 0.0F);
+            entity.hurt(DamageSource.thrown(this, getOwner()), 0.0F);
         }
 
         if (!getCommandSenderWorld().isClientSide) {

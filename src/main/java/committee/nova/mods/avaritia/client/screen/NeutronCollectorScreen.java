@@ -1,11 +1,11 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -54,7 +54,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         super.render(stack, mouseX, mouseY, partialTicks);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
@@ -68,26 +68,26 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
                 tooltip.add(text);
             }
 
-            stack.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+            renderComponentTooltip(stack, tooltip, mouseX, mouseY);
         }
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull PoseStack stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752, false);
-        stack.drawString(font, this.playerInventoryTitle, 8, 166 - 94, 4210752, false);
+        drawString(stack, font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752);
+        drawString(stack, font, this.playerInventoryTitle, 8, 166 - 94, 4210752);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics stack, float pPartialTick, int pMouseX, int pMouseY) {
+    protected void renderBg(@NotNull PoseStack stack, float pPartialTick, int pMouseX, int pMouseY) {
         int i = this.getGuiLeft();
         int j = this.getGuiTop();
-        stack.blit(BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+        blit(stack, i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(18);
-            stack.blit(BACKGROUND, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
+            blit(stack, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
         }
     }
 

@@ -49,7 +49,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
 
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public @NotNull ItemStack getResultItem() {
         return this.output;
     }
 
@@ -59,7 +59,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public @NotNull ResourceLocation getId() {
         return this.recipeId;
     }
 
@@ -69,12 +69,12 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeTypes.COMPRESSOR_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.COMPRESSOR_RECIPE.get();
     }
 
@@ -84,7 +84,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public ItemStack assemble(Container inv, RegistryAccess access) {
+    public @NotNull ItemStack assemble(@NotNull Container inv) {
         return this.output.copy();
     }
 
