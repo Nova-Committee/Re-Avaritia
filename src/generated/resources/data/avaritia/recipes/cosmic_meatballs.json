@@ -1,0 +1,48 @@
+{
+  "type": "avaritia:shapeless_extreme_craft",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:porkchop"
+    },
+    {
+      "item": "minecraft:beef"
+    },
+    {
+      "item": "minecraft:mutton"
+    },
+    {
+      "item": "minecraft:cod"
+    },
+    {
+      "item": "minecraft:salmon"
+    },
+    {
+      "item": "minecraft:tropical_fish"
+    },
+    {
+      "item": "minecraft:pufferfish"
+    },
+    {
+      "item": "minecraft:rabbit"
+    },
+    {
+      "item": "minecraft:chicken"
+    },
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "tag": "forge:eggs"
+    },
+    {
+      "item": "avaritia:neutron_nugget"
+    }
+  ],
+  "result": {
+    "item": "avaritia:cosmic_meatballs"
+  }
+}

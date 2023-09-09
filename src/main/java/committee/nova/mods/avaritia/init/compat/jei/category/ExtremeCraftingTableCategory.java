@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,33 +49,31 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
 
 
     @Override
-    public RecipeType<ICraftRecipe> getRecipeType() {
+    public @NotNull RecipeType<ICraftRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
     @Override
-    public Component getTitle() {
+    public @NotNull Component getTitle() {
         return Localizable.of("jei.category.avaritia.extreme_crafting_table").build();
     }
 
     @Override
-    public IDrawable getBackground() {
+    public @NotNull IDrawable getBackground() {
         return this.background;
     }
 
     @Override
-    public IDrawable getIcon() {
+    public @NotNull IDrawable getIcon() {
         return this.icon;
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, ICraftRecipe recipe, IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ICraftRecipe recipe, @NotNull IFocusGroup focuses) {
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
         var output = recipe.getResultItem();
-
-
         if (recipe instanceof ShapedExtremeCraftingRecipe shaped) {
             int stackIndex = 0;
             int heightOffset = Math.floorDiv(9 - shaped.getHeight(), 2);
@@ -87,7 +86,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
                     stackIndex++;
                 }
             }
-        } else if (recipe instanceof ShapelessExtremeCraftingRecipe) {
+        } else if (recipe instanceof ShapelessExtremeCraftingRecipe ) {
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
                     int index = j + (i * 9);
@@ -99,6 +98,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
             }
             builder.setShapeless(152, 164);
         }
+
         builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         builder.moveRecipeTransferButton(170, 100);
     }

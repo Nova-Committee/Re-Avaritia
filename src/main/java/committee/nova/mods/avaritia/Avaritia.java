@@ -40,7 +40,7 @@ public class Avaritia {
         ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModRecipeTypes.RECIPES.register(bus);
-        ModRecipeTypes.SERIALIZERS.register(bus);
+        ModRecipeSerializers.SERIALIZERS.register(bus);
 
         ModConfig.register();
 

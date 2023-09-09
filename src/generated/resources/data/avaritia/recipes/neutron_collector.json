@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "Q": {
+      "item": "minecraft:quartz_block"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "pattern": [
+    "IIQQQQQII",
+    "I QQQQQ I",
+    "I  RRR  I",
+    "C RRRRR C",
+    "I RRCRR I",
+    "C RRRRR C",
+    "I  RRR  I",
+    "I       I",
+    "IIICICIII"
+  ],
+  "result": {
+    "item": "avaritia:neutron_collector"
+  },
+  "show_notification": true
+}

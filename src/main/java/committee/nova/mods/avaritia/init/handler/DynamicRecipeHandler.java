@@ -5,11 +5,13 @@ import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -37,6 +39,33 @@ public class DynamicRecipeHandler {
             if (compressorRecipe != null)
                 event.register(compressorRecipe);
         }
+
+        //infinity_catalyst
+        NonNullList<ItemStack> catalystIngredients = NonNullList.create();
+
+        SingularityRegistryHandler.getInstance().getSingularities()
+                .stream()
+                .filter(s -> s.getIngredient() != Ingredient.EMPTY)
+                .limit(74)
+                .map(SingularityUtils::getItemForSingularity)
+                .forEach(catalystIngredients::add);
+
+        // add others
+        catalystIngredients.add(new ItemStack(Blocks.EMERALD_BLOCK));
+        catalystIngredients.add(new ItemStack(ModItems.crystal_matrix_ingot.get()));
+        catalystIngredients.add(new ItemStack(ModItems.neutron_ingot.get()));
+        catalystIngredients.add(new ItemStack(ModItems.cosmic_meatballs.get()));
+        catalystIngredients.add(new ItemStack(ModItems.ultimate_stew.get()));
+        catalystIngredients.add(new ItemStack(ModItems.endest_pearl.get()));
+        catalystIngredients.add(new ItemStack(ModItems.record_fragment.get()));
+
+        event.register(addExtremeShapelessRecipe(
+                ModItems.infinity_catalyst.get().getDefaultInstance(),
+                catalystIngredients
+        ));
+
+
+
     }
 
 

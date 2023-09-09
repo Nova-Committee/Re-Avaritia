@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "     N ",
+    "   IIII",
+    "  IIIII",
+    "  I  XI",
+    "     N ",
+    "     N ",
+    "     N ",
+    "     N ",
+    "     N "
+  ],
+  "result": {
+    "item": "avaritia:infinity_hoe"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "   II",
+    "  I W",
+    " I  W",
+    "I   W",
+    "X   W",
+    "I   W",
+    " I  W",
+    "  I W",
+    "   II"
+  ],
+  "result": {
+    "item": "avaritia:infinity_bow"
+  },
+  "show_notification": true
+}

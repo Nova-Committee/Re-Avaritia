@@ -1,0 +1,36 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "tag": "forge:bones"
+    },
+    "D": {
+      "tag": "forge:nether_stars"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "W": {
+      "tag": "minecraft:logs"
+    },
+    "X": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "pattern": [
+    "       IX",
+    "      IXI",
+    "     IXI ",
+    "    IXI  ",
+    " B IXI   ",
+    "  BXI    ",
+    "  WB     ",
+    " W  B    ",
+    "D        "
+  ],
+  "result": {
+    "item": "avaritia:skull_fire_sword"
+  },
+  "show_notification": true
+}

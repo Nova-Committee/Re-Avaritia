@@ -28,14 +28,17 @@ public class InfinityCatalystCondition implements ICondition {
     public static class Serializer implements IConditionSerializer<InfinityCatalystCondition> {
         public static final Serializer INSTANCE = new Serializer();
 
+        @Override
         public void write(JsonObject json, InfinityCatalystCondition value) {
 
         }
 
+        @Override
         public InfinityCatalystCondition read(JsonObject json) {
             return new InfinityCatalystCondition();
         }
 
+        @Override
         public ResourceLocation getID() {
             return InfinityCatalystCondition.ID;
         }

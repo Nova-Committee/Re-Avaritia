@@ -1,8 +1,10 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.util.recipes.IngredientsCache;
+import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.util.recipes.RecipeUtil;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,7 +39,7 @@ public class ResourceReloadHandler {
     private static class RegisterRecipesReloadListener implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            IngredientsCache.getInstance().onResourceManagerReload(manager);
+            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(RecipeUtil.getRecipeManager()));
         }
     }
 }

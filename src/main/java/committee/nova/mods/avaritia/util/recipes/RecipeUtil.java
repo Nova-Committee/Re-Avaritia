@@ -45,14 +45,14 @@ public class RecipeUtil {
 
     public static RecipeManager getRecipeManager() {
         if (recipeManager.recipes instanceof ImmutableMap) {
-            recipeManager.recipes = new HashMap(recipeManager.recipes);
+            recipeManager.recipes = new HashMap<>(recipeManager.recipes);
             recipeManager.recipes.replaceAll((t, v) -> {
-                return new HashMap((Map) recipeManager.recipes.get(t));
+                return new HashMap<>(recipeManager.recipes.get(t));
             });
         }
 
         if (recipeManager.byName instanceof ImmutableMap) {
-            recipeManager.byName = new HashMap(recipeManager.byName);
+            recipeManager.byName = new HashMap<>(recipeManager.byName);
         }
 
         return recipeManager;
@@ -67,7 +67,7 @@ public class RecipeUtil {
     }
 
     public static void addRecipe(Recipe<?> recipe) {
-        ((Map) getRecipeManager().recipes.computeIfAbsent(recipe.getType(), (t) -> new HashMap())).put(recipe.getId(), recipe);
+        getRecipeManager().recipes.computeIfAbsent(recipe.getType(), (t) -> new HashMap<>()).put(recipe.getId(), recipe);
         getRecipeManager().byName.put(recipe.getId(), recipe);
     }
 }

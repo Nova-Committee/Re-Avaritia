@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.data.recipe;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
@@ -156,7 +157,7 @@ public class ModShapelessRecipeBuilder implements RecipeBuilder {
 
         @Override
         public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeTypes.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
+            return ModRecipeSerializers.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
         }
 
         @Override

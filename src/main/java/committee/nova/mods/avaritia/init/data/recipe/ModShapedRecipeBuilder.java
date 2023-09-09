@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
@@ -203,7 +204,7 @@ public class ModShapedRecipeBuilder  implements RecipeBuilder {
 
         @Override
         public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeTypes.SHAPED_EXTREME_CRAFT_SERIALIZER.get();
+            return ModRecipeSerializers.SHAPED_EXTREME_CRAFT_SERIALIZER.get();
         }
 
         @Override
