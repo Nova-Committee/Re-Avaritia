@@ -28,6 +28,5 @@
     "recipes": [
       "avaritia:record_fragment"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

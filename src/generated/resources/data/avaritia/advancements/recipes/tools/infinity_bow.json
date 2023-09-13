@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_sword"
+        "recipe": "avaritia:infinity_bow"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:infinity_sword"
+      "avaritia:infinity_bow"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

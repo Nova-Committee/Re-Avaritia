@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:infinity_catalyst"
+              "avaritia:infinity_ingot"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:neutron_collector"
+        "recipe": "avaritia:infinity_chestplate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:neutron_collector"
+      "avaritia:infinity_chestplate"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

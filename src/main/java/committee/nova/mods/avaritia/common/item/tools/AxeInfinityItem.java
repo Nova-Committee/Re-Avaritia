@@ -32,7 +32,6 @@ public class AxeInfinityItem extends AxeItem {
     public AxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }

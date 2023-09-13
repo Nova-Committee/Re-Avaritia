@@ -31,7 +31,6 @@ public class BowInfinityItem extends BowItem {
     public BowInfinityItem() {
         super(new Properties()
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .rarity(ModItems.COSMIC_RARITY)
                 .fireResistant()
         );

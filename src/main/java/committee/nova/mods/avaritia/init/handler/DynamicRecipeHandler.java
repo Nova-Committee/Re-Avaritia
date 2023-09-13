@@ -75,7 +75,7 @@ public class DynamicRecipeHandler {
             return null;
 
         var id = singularity.getId();
-        var recipeId = new ResourceLocation(Static.MOD_ID, id.getPath() + "_singularity");
+        var recipeId = new ResourceLocation(Static.MOD_ID, id + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();

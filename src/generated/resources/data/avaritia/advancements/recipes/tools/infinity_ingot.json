@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:neutron_nugget"
+              "avaritia:neutron_ingot"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:ultimate_stew"
+        "recipe": "avaritia:infinity_ingot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:ultimate_stew"
+      "avaritia:infinity_ingot"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

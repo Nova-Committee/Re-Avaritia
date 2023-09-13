@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:neutron_ingot"
+              "avaritia:infinity_ingot"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_ingot"
+        "recipe": "avaritia:infinity_helmet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:infinity_ingot"
+      "avaritia:infinity_helmet"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

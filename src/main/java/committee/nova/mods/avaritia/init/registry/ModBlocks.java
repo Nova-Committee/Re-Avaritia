@@ -45,11 +45,11 @@ public class ModBlocks {
     //public static RegistryObject<Block> infinitato = block("infinitato", InfinitatoBlock::new);
 
     public static RegistryObject<Block> block(String name, Supplier<Block> block) {
-        return block(name, block, b -> () -> new BaseBlockItem(b.get(), p -> p.tab(ModCreativeModeTabs.TAB)));
+        return block(name, block, b -> () -> new BaseBlockItem(b.get()));
     }
 
     public static RegistryObject<Block> block(String name, Supplier<Block> block, Rarity rarity) {
-        return block(name, block, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity).tab(ModCreativeModeTabs.TAB)
+        return block(name, block, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity)
         ));
     }
 

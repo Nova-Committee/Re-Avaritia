@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_chestplate"
+        "recipe": "avaritia:infinity_pants"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:infinity_chestplate"
+      "avaritia:infinity_pants"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

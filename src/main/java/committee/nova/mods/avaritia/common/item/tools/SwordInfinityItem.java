@@ -39,7 +39,6 @@ public class SwordInfinityItem extends SwordItem {
     public SwordInfinityItem() {
         super(Tier.INFINITY_SWORD, 0, -2.8F, (new Properties())
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
     }
 
@@ -51,28 +50,28 @@ public class SwordInfinityItem extends SwordItem {
         }
 
         if (victim instanceof EnderDragon dragon && player instanceof Player player1) {
-            dragon.hurt(dragon.head, new ModDamageTypes(player1), Float.POSITIVE_INFINITY);
+            dragon.hurt(dragon.head, player1.damageSources().source(ModDamageTypes.INFINITY, player, victim), Float.POSITIVE_INFINITY);
             dragon.setHealth(0);//fix
         } else if (victim instanceof Player pvp) {
             if (InfinityHandler.isInfinite(pvp)) {
-                victim.hurt(new ModDamageTypes(player).bypassArmor(), 4.0F);
+                pvp.hurt(player.damageSources().source(ModDamageTypes.INFINITY, player, pvp), 4.0F);
             } else
-                victim.hurt(new ModDamageTypes(player).bypassArmor(), Float.POSITIVE_INFINITY);
+                pvp.hurt(player.damageSources().source(ModDamageTypes.INFINITY, player, pvp), Float.POSITIVE_INFINITY);
 
         } else
-            victim.hurt(new ModDamageTypes(player).bypassArmor(), Float.POSITIVE_INFINITY);
+            victim.hurt(player.damageSources().source(ModDamageTypes.INFINITY, player, victim), Float.POSITIVE_INFINITY);
 
         victim.lastHurtByPlayerTime = 60;
-        victim.getCombatTracker().recordDamage(new ModDamageTypes(player), victim.getHealth(), victim.getHealth());
+        victim.getCombatTracker().recordDamage(player.damageSources().source(ModDamageTypes.INFINITY, player, victim), victim.getHealth(), victim.getHealth());
 
         if(victim instanceof Player victimP && InfinityHandler.isInfinite(victimP)) {
-            victimP.getCommandSenderWorld().explode(player, victimP.getBlockX(), victimP.getBlockY(), victimP.getBlockZ(), 25.0f, Explosion.BlockInteraction.NONE);
+            victimP.getCommandSenderWorld().explode(player, victimP.getBlockX(), victimP.getBlockY(), victimP.getBlockZ(), 25.0f, Level.ExplosionInteraction.NONE);
             // 玩家身着无尽甲则只造成爆炸伤害
         	return true;
         }
 
         victim.setHealth(0);
-        victim.die(new ModDamageTypes(player));
+        victim.die(player.damageSources().source(ModDamageTypes.INFINITY, player, victim));
         return true;
     }
 
@@ -92,8 +91,8 @@ public class SwordInfinityItem extends SwordItem {
         if (player.getCommandSenderWorld().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.getCommandSenderWorld().getEntities(player, aabb);
-        DamageSource src = new ModDamageTypes(player);
         for (Entity entity : toAttack) {
+            DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, entity);
             if (type) {
                 if (entity instanceof LivingEntity) {
                     entity.hurt(src, damage);
@@ -115,9 +114,9 @@ public class SwordInfinityItem extends SwordItem {
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (!entity.getCommandSenderWorld().isClientSide && entity instanceof Player victim) {
             if (victim.isCreative() && !victim.isDeadOrDying() && victim.getHealth() > 0 && !InfinityHandler.isInfinite(victim)) {
-                victim.getCombatTracker().recordDamage(new ModDamageTypes(player), victim.getHealth(), victim.getHealth());
+                victim.getCombatTracker().recordDamage(player.damageSources().source(ModDamageTypes.INFINITY, player, victim), victim.getHealth(), victim.getHealth());
                 victim.setHealth(0);
-                victim.die(new ModDamageTypes(player));
+                victim.die(player.damageSources().source(ModDamageTypes.INFINITY, player, victim));
                 return true;
             }
         }

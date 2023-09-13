@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public abstract class IBlockStateProvider extends BlockStateProvider {
 
     public IBlockStateProvider(DataGenerator output, ExistingFileHelper helper) {
-        super(output, Static.MOD_ID, helper);
+        super(output.getPackOutput(), Static.MOD_ID, helper);
     }
 
     protected ResourceLocation texture(String name) {

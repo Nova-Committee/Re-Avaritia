@@ -42,7 +42,6 @@ public class HoeInfinityItem extends HoeItem {
     public HoeInfinityItem() {
         super(Tier.INFINITY_HOE, -5, 0f, (new Properties())
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }

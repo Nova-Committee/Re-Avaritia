@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:infinity_pants"
+        "recipe": "avaritia:skull_fire_sword"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:infinity_pants"
+      "avaritia:skull_fire_sword"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

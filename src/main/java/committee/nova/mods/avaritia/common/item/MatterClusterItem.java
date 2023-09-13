@@ -45,7 +45,6 @@ public class MatterClusterItem extends Item {
 
     public MatterClusterItem() {
         super(new Properties()
-                .tab(ModCreativeModeTabs.TAB)
                 .stacksTo(1));
     }
 

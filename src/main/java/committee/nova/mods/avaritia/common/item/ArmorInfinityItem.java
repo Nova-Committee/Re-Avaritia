@@ -30,13 +30,12 @@ import java.util.List;
  * Version: 1.0
  */
 public class ArmorInfinityItem extends ArmorItem {
-    public ArmorInfinityItem(EquipmentSlot pSlot) {
+    public ArmorInfinityItem(Type pSlot) {
         super(
                 ModArmorMaterial.infinite_armor,
                 pSlot,
                 new Properties()
                         .fireResistant()
-                        .tab(ModCreativeModeTabs.TAB)
                         .stacksTo(1)
         );
     }
@@ -66,21 +65,21 @@ public class ArmorInfinityItem extends ArmorItem {
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
-        if (slot == EquipmentSlot.HEAD) {
+        if (type.getSlot() == EquipmentSlot.HEAD) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% NIGHT VISION"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% NIGHT VISION"));
         }
-        if (slot == EquipmentSlot.CHEST) {
+        if (type.getSlot() == EquipmentSlot.CHEST) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% FLY SPEED"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% FLY SPEED"));
         }
-        if (slot == EquipmentSlot.LEGS) {
+        if (type.getSlot() == EquipmentSlot.LEGS) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% WALK SPEED"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% WALK SPEED"));
         }
-        if (slot == EquipmentSlot.FEET) {
+        if (type.getSlot() == EquipmentSlot.FEET) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% SPEED"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% SPEED"));
         }
         super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
     }

@@ -34,7 +34,6 @@ public class ShovelInfinityItem extends ShovelItem {
     public ShovelInfinityItem() {
         super(Tier.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }

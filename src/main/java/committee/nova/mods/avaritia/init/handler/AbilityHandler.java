@@ -270,7 +270,7 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (InfinityHandler.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes)) {
+            if (InfinityHandler.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }

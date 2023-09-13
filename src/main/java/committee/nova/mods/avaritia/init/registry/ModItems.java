@@ -10,6 +10,7 @@ import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
@@ -39,10 +40,10 @@ public class ModItems {
     public static RegistryObject<Item> skull_sword = item("skull_fire_sword", SwordSkullsItem::new);
     public static RegistryObject<Item> infinity_bow = item("infinity_bow", BowInfinityItem::new);
     //armors
-    public static RegistryObject<Item> infinity_helmet = item("infinity_helmet", () -> new ArmorInfinityItem(EquipmentSlot.HEAD));
-    public static RegistryObject<Item> infinity_chestplate = item("infinity_chestplate", () -> new ArmorInfinityItem(EquipmentSlot.CHEST));
-    public static RegistryObject<Item> infinity_pants = item("infinity_pants", () -> new ArmorInfinityItem(EquipmentSlot.LEGS));
-    public static RegistryObject<Item> infinity_boots = item("infinity_boots", () -> new ArmorInfinityItem(EquipmentSlot.FEET));
+    public static RegistryObject<Item> infinity_helmet = item("infinity_helmet", () -> new ArmorInfinityItem(ArmorItem.Type.HELMET));
+    public static RegistryObject<Item> infinity_chestplate = item("infinity_chestplate", () -> new ArmorInfinityItem(ArmorItem.Type.CHESTPLATE));
+    public static RegistryObject<Item> infinity_pants = item("infinity_pants", () -> new ArmorInfinityItem(ArmorItem.Type.LEGGINGS));
+    public static RegistryObject<Item> infinity_boots = item("infinity_boots", () -> new ArmorInfinityItem(ArmorItem.Type.BOOTS));
     public static RegistryObject<Item> ultimate_stew = item("ultimate_stew", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)));
     public static RegistryObject<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)));
     public static RegistryObject<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
@@ -57,7 +58,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", true));
     public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", true));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
-    public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties.tab(ModCreativeModeTabs.TAB)));
+    public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
 
     static {
         ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);

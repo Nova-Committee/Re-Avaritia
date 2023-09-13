@@ -30,6 +30,5 @@
     "recipes": [
       "avaritia:neutron_nugget"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

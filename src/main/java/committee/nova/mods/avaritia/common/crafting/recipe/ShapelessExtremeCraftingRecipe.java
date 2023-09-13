@@ -46,7 +46,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
     }
 
     @Override
-    public @NotNull ItemStack getResultItem() {
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
         return this.output;
     }
 
@@ -81,7 +81,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull Container inv) {
+    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return this.output.copy();
     }
 

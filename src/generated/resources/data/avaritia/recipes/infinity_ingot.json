@@ -1,6 +1,6 @@
 {
   "type": "avaritia:shaped_extreme_craft",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "C": {
       "item": "avaritia:crystal_matrix_ingot"
@@ -22,5 +22,5 @@
   "result": {
     "item": "avaritia:infinity_ingot"
   },
-  "show_notification": false
+  "show_notification": true
 }

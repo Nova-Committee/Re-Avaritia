@@ -65,8 +65,10 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, ICompressorRecipe recipe, @NotNull IFocusGroup focuses) {
+        var level = Minecraft.getInstance().level;
+        assert level != null;
         var inputs = recipe.getIngredients();
-        var output = recipe.getResultItem();
+        var output = recipe.getResultItem(level.registryAccess());
         builder.addSlot(RecipeIngredientRole.INPUT, 36, 20).addIngredients(inputs.get(0));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 116, 20).addItemStack(output);
 

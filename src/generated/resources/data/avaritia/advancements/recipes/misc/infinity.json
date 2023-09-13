@@ -30,6 +30,5 @@
     "recipes": [
       "avaritia:infinity"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

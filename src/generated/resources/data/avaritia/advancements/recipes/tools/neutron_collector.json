@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:infinity_ingot"
+              "avaritia:infinity_catalyst"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:skull_fire_sword"
+        "recipe": "avaritia:neutron_collector"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:skull_fire_sword"
+      "avaritia:neutron_collector"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

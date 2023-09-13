@@ -40,7 +40,6 @@ public class PickaxeInfinityItem extends PickaxeItem {
     public PickaxeInfinityItem() {
         super(Tier.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }

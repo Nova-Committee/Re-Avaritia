@@ -73,7 +73,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
-        var output = recipe.getResultItem();
+        var output = recipe.getResultItem(level.registryAccess());
         if (recipe instanceof ShapedExtremeCraftingRecipe shaped) {
             int stackIndex = 0;
             int heightOffset = Math.floorDiv(9 - shaped.getHeight(), 2);

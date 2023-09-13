@@ -79,7 +79,7 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
         var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), matrix, this.world);
 
         if (recipe.isPresent()) {
-            var result = recipe.get().assemble(matrix);
+            var result = recipe.get().assemble(matrix, this.world.registryAccess());
             this.result.setItem(0, result);
         } else {
             this.result.setItem(0, ItemStack.EMPTY);

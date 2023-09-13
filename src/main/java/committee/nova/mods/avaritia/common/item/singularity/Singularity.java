@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
  * Version: 1.0
  */
 public class Singularity {
-    private final ResourceLocation id;
+    private final String id;
     private final String name;
     private final int[] colors;
     private final String tag;
@@ -25,7 +25,7 @@ public class Singularity {
     private boolean enabled = true;
     private boolean recipeDisabled = false;
 
-    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
+    public Singularity(String id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = colors;
@@ -35,11 +35,11 @@ public class Singularity {
         this.timeRequired = timeRequired;
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
+    public Singularity(String id, String name, int[] colors, Ingredient ingredient) {
         this(id, name, colors, ingredient, -1, ModConfig.singularityTimeRequired.get());
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
+    public Singularity(String id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = colors;
@@ -49,41 +49,13 @@ public class Singularity {
         this.timeRequired = timeRequired;
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
+    public Singularity(String id, String name, int[] colors, String tag) {
         this(id, name, colors, tag, -1, ModConfig.singularityTimeRequired.get());
     }
 
-    public static Singularity read(FriendlyByteBuf buffer) {
-        var id = buffer.readResourceLocation();
-        var name = buffer.readUtf();
-        int[] colors = buffer.readVarIntArray();
-        var isTagIngredient = buffer.readBoolean();
-        int time = buffer.readVarInt();
 
-        String tag = null;
-        var ingredient = Ingredient.EMPTY;
 
-        if (isTagIngredient) {
-            tag = buffer.readUtf();
-        } else {
-            ingredient = Ingredient.fromNetwork(buffer);
-        }
-
-        int ingredientCount = buffer.readVarInt();
-
-        Singularity singularity;
-        if (isTagIngredient) {
-            singularity = new Singularity(id, name, colors, tag, ingredientCount, time);
-        } else {
-            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, time);
-        }
-
-        singularity.enabled = buffer.readBoolean();
-
-        return singularity;
-    }
-
-    public ResourceLocation getId() {
+    public String getId() {
         return this.id;
     }
 
@@ -143,8 +115,38 @@ public class Singularity {
         this.recipeDisabled = recipeDisabled;
     }
 
+    public static Singularity read(FriendlyByteBuf buffer) {
+        var id = buffer.readUtf();
+        var name = buffer.readUtf();
+        int[] colors = buffer.readVarIntArray();
+        var isTagIngredient = buffer.readBoolean();
+        int time = buffer.readVarInt();
+
+        String tag = null;
+        var ingredient = Ingredient.EMPTY;
+
+        if (isTagIngredient) {
+            tag = buffer.readUtf();
+        } else {
+            ingredient = Ingredient.fromNetwork(buffer);
+        }
+
+        int ingredientCount = buffer.readVarInt();
+
+        Singularity singularity;
+        if (isTagIngredient) {
+            singularity = new Singularity(id, name, colors, tag, ingredientCount, time);
+        } else {
+            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, time);
+        }
+
+        singularity.enabled = buffer.readBoolean();
+        singularity.recipeDisabled = buffer.readBoolean();
+
+        return singularity;
+    }
     public void write(FriendlyByteBuf buffer) {
-        buffer.writeResourceLocation(this.id);
+        buffer.writeUtf(this.id);
         buffer.writeUtf(this.name);
         buffer.writeVarIntArray(this.colors);
         buffer.writeBoolean(this.tag != null);
@@ -157,5 +159,6 @@ public class Singularity {
 
         buffer.writeVarInt(this.getIngredientCount());
         buffer.writeBoolean(this.enabled);
+        buffer.writeBoolean(this.recipeDisabled);
     }
 }

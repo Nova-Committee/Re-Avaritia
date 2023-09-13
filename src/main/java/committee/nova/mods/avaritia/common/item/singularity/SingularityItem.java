@@ -32,16 +32,6 @@ public class SingularityItem extends Item implements IColored {
     public SingularityItem(Function<Properties, Properties> properties) {
         super(properties.apply(new Properties().rarity(Rarity.UNCOMMON)));
     }
-
-    @Override
-    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
-            SingularityRegistryHandler.getInstance().getSingularities().forEach(singularity -> {
-                items.add(SingularityUtils.getItemForSingularity(singularity));
-            });
-        }
-    }
-
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
         var singularity = SingularityUtils.getSingularity(stack);
@@ -55,15 +45,11 @@ public class SingularityItem extends Item implements IColored {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
-            var modid = singularity.getId().getNamespace();
-
-            if (!modid.equals(Static.MOD_ID))
-                tooltip.add(ModTooltips.getAddedByTooltip(modid));
-
+            tooltip.add(ModTooltips.getAddedByTooltip(Static.MOD_ID));
             if (flag.isAdvanced())
                 tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getId()).color(ChatFormatting.DARK_GRAY).build());
         }

@@ -40,7 +40,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float p_70097_2_) {
-        return source == DamageSource.OUT_OF_WORLD;
+        return source == this.damageSources().outOfWorld();
     }
 
 

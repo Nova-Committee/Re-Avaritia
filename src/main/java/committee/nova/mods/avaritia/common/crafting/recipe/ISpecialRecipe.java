@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ISpecialRecipe extends Recipe<Container> {
     @Override
-    default @NotNull ItemStack assemble(@NotNull Container inv) {
+    default @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return this.assemble(new InvWrapper(inv));
     }
 

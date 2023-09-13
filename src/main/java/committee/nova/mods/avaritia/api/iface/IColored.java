@@ -17,7 +17,7 @@ public interface IColored {
         return this.getColor(index);
     }
 
-    public static class ItemBlockColors implements ItemColor {
+    class ItemBlockColors implements ItemColor {
         public ItemBlockColors() {
         }
 
@@ -26,7 +26,7 @@ public interface IColored {
         }
     }
 
-    public static class ItemColors implements ItemColor {
+    class ItemColors implements ItemColor {
         public ItemColors() {
         }
 
@@ -35,7 +35,7 @@ public interface IColored {
         }
     }
 
-    public static class BlockColors implements BlockColor {
+    class BlockColors implements BlockColor {
         public BlockColors() {
         }
 

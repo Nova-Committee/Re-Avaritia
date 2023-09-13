@@ -16,7 +16,7 @@ import net.minecraftforge.common.data.SoundDefinitionsProvider;
 public class ModSoundDefinitions extends SoundDefinitionsProvider {
 
     public ModSoundDefinitions(DataGenerator output, ExistingFileHelper helper) {
-        super(output, Static.MOD_ID, helper);
+        super(output.getPackOutput(), Static.MOD_ID, helper);
     }
 
     @Override

@@ -12,11 +12,14 @@ import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.data.recipes.CraftingRecipeBuilder;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
@@ -38,7 +41,8 @@ import java.util.function.Consumer;
  * Description:
  */
 
-public class ModShapedRecipeBuilder  implements RecipeBuilder {
+public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+    private final RecipeCategory category;
     private final Item result;
     private final int count;
     private final List<String> rows = Lists.newArrayList();
@@ -48,19 +52,20 @@ public class ModShapedRecipeBuilder  implements RecipeBuilder {
     private String group;
     private boolean showNotification = true;
 
-    public ModShapedRecipeBuilder(@NotNull ItemLike p_251475_, int p_248948_) {
+    public ModShapedRecipeBuilder(RecipeCategory p_249996_, @NotNull ItemLike p_251475_, int p_248948_) {
+        this.category = p_249996_;
         this.result = p_251475_.asItem();
         this.count = p_248948_;
     }
 
-    @Contract("_ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(ItemLike p_249747_) {
-        return shaped(p_249747_, 1);
+    @Contract("_, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_250853_, ItemLike p_249747_) {
+        return shaped(p_250853_, p_249747_, 1);
     }
 
-    @Contract("_, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(ItemLike p_250636_, int p_249081_) {
-        return new ModShapedRecipeBuilder( p_250636_, p_249081_);
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_251325_, ItemLike p_250636_, int p_249081_) {
+        return new ModShapedRecipeBuilder(p_251325_, p_250636_, p_249081_);
     }
 
     public ModShapedRecipeBuilder define(Character p_206417_, TagKey<Item> p_206418_) {
@@ -117,9 +122,7 @@ public class ModShapedRecipeBuilder  implements RecipeBuilder {
     public void save(@NotNull Consumer<FinishedRecipe> p_126141_, @NotNull ResourceLocation p_126142_) {
         this.ensureValid(p_126142_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126142_)).rewards(AdvancementRewards.Builder.recipe(p_126142_)).requirements(RequirementsStrategy.OR);
-        if (this.result.getItemCategory() != null) {
-            p_126141_.accept(new Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group, this.rows, this.key, this.advancement, new ResourceLocation(p_126142_.getNamespace(), "recipes/" + this.result.getItemCategory().getRecipeFolderName() + "/" + p_126142_.getPath()), this.showNotification));
-        }
+        p_126141_.accept(new ModShapedRecipeBuilder.Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.rows, this.key, this.advancement, p_126142_.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
 
     private void ensureValid(ResourceLocation p_126144_) {
@@ -150,7 +153,7 @@ public class ModShapedRecipeBuilder  implements RecipeBuilder {
         }
     }
 
-    public static class Result implements FinishedRecipe {
+    public static class Result extends CraftingRecipeBuilder.CraftingResult {
         private final ResourceLocation id;
         private final Item result;
         private final int count;
@@ -161,7 +164,8 @@ public class ModShapedRecipeBuilder  implements RecipeBuilder {
         private final ResourceLocation advancementId;
         private final boolean showNotification;
 
-        public Result(ResourceLocation p_273548_, Item p_273530_, int p_272738_, String p_273549_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
+        public Result(ResourceLocation p_273548_, Item p_273530_, int p_272738_, String p_273549_, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
+            super(p_273500_);
             this.id = p_273548_;
             this.result = p_273530_;
             this.count = p_272738_;
@@ -174,6 +178,7 @@ public class ModShapedRecipeBuilder  implements RecipeBuilder {
         }
 
         public void serializeRecipeData(@NotNull JsonObject p_126167_) {
+            super.serializeRecipeData(p_126167_);
             if (!this.group.isEmpty()) {
                 p_126167_.addProperty("group", this.group);
             }

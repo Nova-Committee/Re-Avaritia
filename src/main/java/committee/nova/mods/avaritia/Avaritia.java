@@ -32,7 +32,9 @@ public class Avaritia {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(this::onClientSetup);
+        bus.addListener(ModCreativeModeTabs::onRegisterCreativeModeTabs);
         bus.addListener(ModDataGen::gatherData);
+
         bus.register(this);
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);

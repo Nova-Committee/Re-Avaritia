@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:neutron_ingot"
+              "avaritia:neutron_nugget"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:endest_pearl"
+        "recipe": "avaritia:cosmic_meatballs"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:endest_pearl"
+      "avaritia:cosmic_meatballs"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

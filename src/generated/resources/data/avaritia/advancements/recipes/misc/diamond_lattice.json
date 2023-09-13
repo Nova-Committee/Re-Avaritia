@@ -30,6 +30,5 @@
     "recipes": [
       "avaritia:diamond_lattice"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

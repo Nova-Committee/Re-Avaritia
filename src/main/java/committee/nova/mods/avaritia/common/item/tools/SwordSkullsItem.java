@@ -29,7 +29,6 @@ public class SwordSkullsItem extends SwordItem {
     public SwordSkullsItem() {
         super(Tier.SKULL_SWORD, 0, -2.4f, (new Properties())
                 .stacksTo(1)
-                .tab(ModCreativeModeTabs.TAB)
                 .fireResistant());
 
     }

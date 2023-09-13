@@ -11,6 +11,6 @@ import net.minecraft.sounds.SoundEvent;
  */
 public class ModSounds {
 
-    public static final SoundEvent GAPING_VOID = new SoundEvent(new ResourceLocation("avaritia:gaping_void"));
+    public static final SoundEvent GAPING_VOID = SoundEvent.createVariableRangeEvent(new ResourceLocation("avaritia:gaping_void"));
 
 }

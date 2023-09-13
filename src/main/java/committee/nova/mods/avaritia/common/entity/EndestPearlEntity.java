@@ -87,7 +87,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         Entity entity = pos.getEntity();
 
         if (entity != null) {
-            entity.hurt(DamageSource.thrown(this, getOwner()), 0.0F);
+            entity.hurt(this.damageSources().thrown(this, getOwner()), 0.0F);
         }
 
         if (!getCommandSenderWorld().isClientSide) {

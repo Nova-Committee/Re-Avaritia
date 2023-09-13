@@ -28,7 +28,7 @@ public class StarFuelItem extends Item {
     public static final int BURN_TIME = Integer.MAX_VALUE;
 
     public StarFuelItem(Rarity rarity) {
-        super(new Properties().stacksTo(1).rarity(rarity).tab(ModCreativeModeTabs.TAB));
+        super(new Properties().stacksTo(1).rarity(rarity));
     }
 
     @OnlyIn(Dist.CLIENT)

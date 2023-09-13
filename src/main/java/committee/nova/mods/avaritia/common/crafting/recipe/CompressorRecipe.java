@@ -49,7 +49,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
 
     @Override
-    public @NotNull ItemStack getResultItem() {
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
         return this.output;
     }
 
@@ -84,7 +84,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull Container inv) {
+    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return this.output.copy();
     }
 

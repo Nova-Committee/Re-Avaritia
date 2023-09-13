@@ -80,6 +80,11 @@ public class ExtremeTableCrafting {
                 return "Adding Shaped Extreme Table Crafting recipe for " + output.getCommandString();
             }
 
+            @Override
+            public String systemName() {
+                return "Adding Shaped recipe";
+            }
+
         });
     }
 
@@ -115,6 +120,11 @@ public class ExtremeTableCrafting {
                 return "Adding Shapeless Extreme Table Crafting recipe for " + output.getCommandString();
             }
 
+            @Override
+            public String systemName() {
+                return "Adding Shapeless recipe";
+            }
+
         });
     }
 
@@ -127,7 +137,7 @@ public class ExtremeTableCrafting {
                 var recipes = RecipeUtil.getRecipes()
                         .getOrDefault(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), new HashMap<>())
                         .values().stream()
-                        .filter(r -> r.getResultItem().is(stack.getInternal().getItem()))
+                        .filter(r -> r.getResultItem(access).is(stack.getInternal().getItem()))
                         .map(Recipe::getId)
                         .toList();
 
@@ -139,6 +149,11 @@ public class ExtremeTableCrafting {
             @Override
             public String describe() {
                 return "Removing Extreme Table Crafting recipes for " + stack.getCommandString();
+            }
+
+            @Override
+            public String systemName() {
+                return "Removing recipes";
             }
 
         });

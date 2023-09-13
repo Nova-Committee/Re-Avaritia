@@ -30,6 +30,5 @@
     "recipes": [
       "avaritia:neutron_ingot"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

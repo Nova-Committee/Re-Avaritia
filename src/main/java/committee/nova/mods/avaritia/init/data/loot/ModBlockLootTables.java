@@ -2,11 +2,13 @@ package committee.nova.mods.avaritia.init.data.loot;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -17,14 +19,13 @@ import java.util.stream.Collectors;
  * Description:
  */
 
-public class ModBlockLootTables extends BlockLoot {
+public class ModBlockLootTables extends BlockLootSubProvider {
 
     protected ModBlockLootTables() {
-        super();
+        super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
     }
-
     @Override
-    protected void addTables() {
+    protected void generate() {
         dropSelf(ModBlocks.neutron.get());
         dropSelf(ModBlocks.infinity.get());
         dropSelf(ModBlocks.crystal_matrix.get());

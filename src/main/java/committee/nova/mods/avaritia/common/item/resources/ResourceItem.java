@@ -29,7 +29,7 @@ public class ResourceItem extends Item {
     private final boolean needsTooltip;
 
     public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip) {
-        super(new Properties().tab(ModCreativeModeTabs.TAB));
+        super(new Properties());
         this.rarity = rarity;
         this.name = registryName;
         this.needsTooltip = needsTooltip;

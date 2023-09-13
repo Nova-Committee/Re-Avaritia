@@ -24,7 +24,6 @@ public class EndestPearlItem extends Item {
     public EndestPearlItem() {
         super(new Properties()
                 .stacksTo(16)
-                .tab(ModCreativeModeTabs.TAB)
         );
     }
 
