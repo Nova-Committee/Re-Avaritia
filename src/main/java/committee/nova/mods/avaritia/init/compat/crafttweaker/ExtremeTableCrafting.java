@@ -82,8 +82,9 @@ public class ExtremeTableCrafting {
 
             @Override
             public String systemName() {
-                return "Avaritia Recipe";
+                return "Adding Shaped recipe";
             }
+
         });
     }
 
@@ -121,8 +122,9 @@ public class ExtremeTableCrafting {
 
             @Override
             public String systemName() {
-                return "Avaritia Recipe";
+                return "Adding Shapeless recipe";
             }
+
         });
     }
 
@@ -133,14 +135,14 @@ public class ExtremeTableCrafting {
             public void apply() {
                 var access = ServerLifecycleHooks.getCurrentServer().registryAccess();
                 var recipes = RecipeUtil.getRecipes()
-                        .getOrDefault(ModRecipeTypes.EXTREME_CRAFT_RECIPE, new HashMap<>())
+                        .getOrDefault(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), new HashMap<>())
                         .values().stream()
                         .filter(r -> r.getResultItem(access).is(stack.getInternal().getItem()))
                         .map(Recipe::getId)
                         .toList();
 
                 recipes.forEach(r -> {
-                    RecipeUtil.getRecipes().get(ModRecipeTypes.EXTREME_CRAFT_RECIPE).remove(r);
+                    RecipeUtil.getRecipes().get(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get()).remove(r);
                 });
             }
 
@@ -151,8 +153,9 @@ public class ExtremeTableCrafting {
 
             @Override
             public String systemName() {
-                return "Avaritia Recipe";
+                return "Removing recipes";
             }
+
         });
     }
 

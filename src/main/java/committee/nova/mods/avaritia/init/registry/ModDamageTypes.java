@@ -18,6 +18,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
 /**
  * Author cnlimiter
  * CreateTime 2023/6/15 0:39
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
  */
 
 public class ModDamageTypes {
+
     public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Static.MOD_ID, "infinity"));
 
     public static void bootstrap(BootstapContext<DamageType> context) {

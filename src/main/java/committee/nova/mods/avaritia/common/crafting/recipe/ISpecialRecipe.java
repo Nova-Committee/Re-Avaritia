@@ -9,10 +9,11 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.RecipeMatcher;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import org.jetbrains.annotations.NotNull;
 
 public interface ISpecialRecipe extends Recipe<Container> {
     @Override
-    default ItemStack assemble(Container inv, RegistryAccess access) {
+    default @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return this.assemble(new InvWrapper(inv));
     }
 

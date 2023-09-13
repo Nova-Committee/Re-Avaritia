@@ -13,6 +13,4 @@ public class ModSounds {
 
     public static final SoundEvent GAPING_VOID = SoundEvent.createVariableRangeEvent(new ResourceLocation("avaritia:gaping_void"));
 
-    public static final SoundEvent botania_doit = SoundEvent.createVariableRangeEvent(new ResourceLocation("botania:doit"));
-
 }

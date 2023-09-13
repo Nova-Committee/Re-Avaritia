@@ -49,8 +49,6 @@ public class ToolHelper {
     public static final Set<MapColor> materialsShovel = Sets.newHashSet(MapColor.SAND, MapColor.DIRT, MapColor.SNOW, MapColor.CLAY, MapColor.GRASS,
             MapColor.SNOW);
     public static Set<String> defaultTrashOres = new HashSet<>();//todo, set trash block in gui
-
-
     public static void aoeBlocks(Player player, ItemStack stack, Level world, BlockPos origin, BlockPos min, BlockPos max, Block target, Set<MapColor> validMaterials, boolean filterTrash) {
 
         InfinityHandler.enableItemCapture();

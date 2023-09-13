@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.RecipeMatcher;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,35 +45,28 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
 
     }
 
-    private static int getTierFromSize(int size) {
-        return size < 10 ? 1
-                : size < 26 ? 2
-                : size < 50 ? 3
-                : 4;
-    }
-
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
         return this.output;
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients() {
+    public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;
     }
 
     @Override
-    public ResourceLocation getId() {
+    public @NotNull ResourceLocation getId() {
         return this.recipeId;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
+    public @NotNull RecipeSerializer<?> getSerializer() {
+        return ModRecipeSerializers.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
 
@@ -86,7 +81,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
     }
 
     @Override
-    public ItemStack assemble(Container inv, RegistryAccess p_267052_) {
+    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return this.output.copy();
     }
 
@@ -110,12 +105,12 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
     }
 
     @Override
-    public boolean matches(Container inv, Level level) {
+    public boolean matches(@NotNull Container inv, @NotNull Level level) {
         return this.matches(new InvWrapper(inv));
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(Container inv) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
         if (this.transformers != null) {
             NonNullList<ItemStack> remaining = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
@@ -135,7 +130,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
 
     public static class Serializer implements RecipeSerializer<ShapelessExtremeCraftingRecipe> {
         @Override
-        public ShapelessExtremeCraftingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public @NotNull ShapelessExtremeCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
             NonNullList<Ingredient> inputs = NonNullList.create();
             var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
 
@@ -149,7 +144,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRec
         }
 
         @Override
-        public ShapelessExtremeCraftingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public ShapelessExtremeCraftingRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
             var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
 

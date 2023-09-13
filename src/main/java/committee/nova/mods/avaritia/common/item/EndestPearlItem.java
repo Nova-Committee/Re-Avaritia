@@ -21,7 +21,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EndestPearlItem extends Item {
     public EndestPearlItem() {
-        super(new Properties().stacksTo(16));
+        super(new Properties()
+                .stacksTo(16)
+        );
     }
 
 

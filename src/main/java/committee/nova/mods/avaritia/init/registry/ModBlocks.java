@@ -2,9 +2,12 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.item.BaseBlockItem;
+import committee.nova.mods.avaritia.common.block.CompressorBlock;
+import committee.nova.mods.avaritia.common.block.ExtremeCraftingTableBlock;
+import committee.nova.mods.avaritia.common.block.NeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
-import committee.nova.mods.avaritia.common.block.craft.*;
-import committee.nova.mods.avaritia.common.block.*;
+import committee.nova.mods.avaritia.common.block.craft.CompressedCraftingTableBlock;
+import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
@@ -46,7 +49,8 @@ public class ModBlocks {
     }
 
     public static RegistryObject<Block> block(String name, Supplier<Block> block, Rarity rarity) {
-        return block(name, block, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity)));
+        return block(name, block, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity)
+        ));
     }
 
     public static RegistryObject<Block> block(String name, Supplier<Block> block, Function<RegistryObject<Block>, Supplier<? extends BlockItem>> item) {

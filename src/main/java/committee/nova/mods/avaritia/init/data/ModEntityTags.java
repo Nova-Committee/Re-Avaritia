@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.init.data;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -21,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModEntityTags extends EntityTypeTagsProvider {
 
-    public ModEntityTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, future, Static.MOD_ID, existingFileHelper);
+    public ModEntityTags(DataGenerator output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
+        super(output.getPackOutput(), future, Static.MOD_ID, existingFileHelper);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ModEntityTags extends EntityTypeTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         //vanilla
         tag(EntityTypeTags.IMPACT_PROJECTILES).add(ModEntities.ENDER_PEARL.get());
     }

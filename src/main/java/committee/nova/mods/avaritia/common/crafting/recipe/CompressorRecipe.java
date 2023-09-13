@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -29,7 +30,6 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     private final NonNullList<Ingredient> inputs;
     private final ItemStack output;
     private final int inputCount;
-
     private final int timeRequire;
 
 
@@ -49,7 +49,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
 
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
         return this.output;
     }
 
@@ -59,7 +59,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public @NotNull ResourceLocation getId() {
         return this.recipeId;
     }
 
@@ -69,12 +69,12 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return ModRecipeTypes.COMPRESSOR_SERIALIZER.get();
+    public @NotNull RecipeSerializer<?> getSerializer() {
+        return ModRecipeSerializers.COMPRESSOR_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.COMPRESSOR_RECIPE.get();
     }
 
@@ -84,7 +84,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public ItemStack assemble(Container inv, RegistryAccess access) {
+    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return this.output.copy();
     }
 
@@ -96,7 +96,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public boolean matches(Container inv, Level level) {
+    public boolean matches(@NotNull Container inv, @NotNull Level level) {
         return this.matches(new InvWrapper(inv));
     }
 
@@ -107,7 +107,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
     public static class Serializer implements RecipeSerializer<CompressorRecipe> {
         @Override
-        public CompressorRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public @NotNull CompressorRecipe fromJson(@NotNull ResourceLocation recipeId, JsonObject json) {
             var input = Ingredient.fromJson(json.getAsJsonObject("ingredient"));
             var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
             int inputCount = GsonHelper.getAsInt(json, "inputCount", 10000);
@@ -116,7 +116,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         }
 
         @Override
-        public CompressorRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public CompressorRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
             var input = Ingredient.fromNetwork(buffer);
             var output = buffer.readItem();
             int inputCount = buffer.readInt();
@@ -126,7 +126,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, CompressorRecipe recipe) {
+        public void toNetwork(@NotNull FriendlyByteBuf buffer, CompressorRecipe recipe) {
             recipe.inputs.get(0).toNetwork(buffer);
             buffer.writeItem(recipe.output);
             buffer.writeInt(recipe.inputCount);

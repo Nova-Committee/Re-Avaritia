@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,27 +44,27 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
 
 
     @Override
-    public RecipeType<ICompressorRecipe> getRecipeType() {
+    public @NotNull RecipeType<ICompressorRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
     @Override
-    public Component getTitle() {
+    public @NotNull Component getTitle() {
         return Localizable.of("jei.category.avaritia.compressor").build();
     }
 
     @Override
-    public IDrawable getBackground() {
+    public @NotNull IDrawable getBackground() {
         return this.background;
     }
 
     @Override
-    public IDrawable getIcon() {
+    public @NotNull IDrawable getIcon() {
         return this.icon;
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, ICompressorRecipe recipe, IFocusGroup focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, ICompressorRecipe recipe, @NotNull IFocusGroup focuses) {
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
@@ -74,7 +75,7 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     }
 
     @Override
-    public List<Component> getTooltipStrings(ICompressorRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public @NotNull List<Component> getTooltipStrings(@NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (mouseX > 62 && mouseX < 77 && mouseY > 21 && mouseY < 36) {
             return Collections.singletonList(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.LIGHT_PURPLE).build());
         }
@@ -82,9 +83,7 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         if (mouseX > 86 && mouseX < 107 && mouseY > 22 && mouseY < 36) {
             return Collections.singletonList(ModTooltips.TIME_CONSUME.args(recipe.getTimeRequire()).color(ChatFormatting.BLUE).build());
         }
-
-
-        return Collections.emptyList();
+        return List.of();
     }
 
 

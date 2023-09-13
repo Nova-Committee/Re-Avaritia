@@ -63,22 +63,22 @@ public class ArmorInfinityItem extends ArmorItem {
 
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> tooltip, @NotNull TooltipFlag pIsAdvanced) {
         if (type.getSlot() == EquipmentSlot.HEAD) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% NIGHT VISION"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% NIGHT VISION"));
         }
         if (type.getSlot() == EquipmentSlot.CHEST) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% FLY SPEED"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% FLY SPEED"));
         }
         if (type.getSlot() == EquipmentSlot.LEGS) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% WALK SPEED"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% WALK SPEED"));
         }
         if (type.getSlot() == EquipmentSlot.FEET) {
             tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + "" + ChatFormatting.BLUE + "% SPEED"));
+            tooltip.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtil.makeSANIC("SANIC") + ChatFormatting.RESET + ChatFormatting.BLUE + "% SPEED"));
         }
         super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
     }

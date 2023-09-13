@@ -14,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Author cnlimiter
- * CreateTime 2023/6/17 17:19
- * Name ModDamageTypeTags
- * Description
+ * Name: Avaritia-forge / ModDamageTypeTags
+ * Author: cnlimiter
+ * CreateTime: 2023/9/10 0:39
+ * Description:
  */
 
 public class ModDamageTypeTags extends TagsProvider<DamageType> {

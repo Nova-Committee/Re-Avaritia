@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -24,32 +24,32 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class WingInfinityLayer extends RenderLayer<Player, HumanoidModel<Player>> {
+public class WingInfinityLayer extends RenderLayer<LivingEntity, HumanoidModel<LivingEntity>> {
 
 
-    public WingInfinityLayer(RenderLayerParent<Player, HumanoidModel<Player>> pRenderer) {
+    public WingInfinityLayer(RenderLayerParent<LivingEntity, HumanoidModel<LivingEntity>> pRenderer) {
         super(pRenderer);
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int pPackedLight, @NotNull Player player, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int pPackedLight, @NotNull LivingEntity livingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 
         var loc = new ResourceLocation(Static.MOD_ID, "textures/models/armor/infinity_armor_wing.png");
 
-        if (InfinityHandler.isInfiniteChestplate(player)) {
+        if (InfinityHandler.isInfiniteChestPlate(livingEntity)) {
             var model = new WingModel(WingModel.createBodyLayer().bakeRoot());
-            if (!player.isInvisible() && player.getAbilities().flying) {
-                VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderType.entityTranslucentCull(loc));
+            if (!livingEntity.isInvisible()) {
+                VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderType.entityCutout(loc));
                 poseStack.pushPose();
-
 
                 poseStack.translate(0, -2.8, 0.325);
                 poseStack.scale(3F, 3F, 3F);
-
                 model.renderToBuffer(poseStack, vertexConsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 
                 poseStack.popPose();
             }
         }
     }
+
+
 }

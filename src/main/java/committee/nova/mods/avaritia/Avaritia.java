@@ -33,6 +33,7 @@ public class Avaritia {
         bus.addListener(this::setup);
         bus.addListener(this::onClientSetup);
         bus.addListener(ModDataGen::gatherData);
+
         bus.register(this);
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
@@ -40,7 +41,7 @@ public class Avaritia {
         ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModRecipeTypes.RECIPES.register(bus);
-        ModRecipeTypes.SERIALIZERS.register(bus);
+        ModRecipeSerializers.SERIALIZERS.register(bus);
         ModCreativeModeTabs.TABS.register(bus);
 
         ModConfig.register();

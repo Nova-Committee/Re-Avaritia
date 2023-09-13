@@ -5,14 +5,16 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.CraftingRecipeBuilder;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -44,7 +46,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     private final int count;
     private final List<String> rows = Lists.newArrayList();
     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
-    private final Advancement.Builder advancement = Advancement.Builder.recipeAdvancement();
+    private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
     private boolean showNotification = true;
@@ -206,7 +208,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
 
         @Override
         public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeTypes.SHAPED_EXTREME_CRAFT_SERIALIZER.get();
+            return ModRecipeSerializers.SHAPED_EXTREME_CRAFT_SERIALIZER.get();
         }
 
         @Override

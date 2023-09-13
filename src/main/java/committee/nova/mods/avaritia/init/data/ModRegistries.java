@@ -14,12 +14,11 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
 /**
- * Author cnlimiter
- * CreateTime 2023/6/16 21:54
- * Name ModRegistries
- * Description
+ * Name: Avaritia-forge / ModRegistries
+ * Author: cnlimiter
+ * CreateTime: 2023/9/10 0:40
+ * Description:
  */
 
 public class ModRegistries extends DatapackBuiltinEntriesProvider {

@@ -42,8 +42,9 @@ public class CompressionCrafting {
 
             @Override
             public String systemName() {
-                return "Avaritia Recipe";
+                return "Adding recipe";
             }
+
         });
     }
 
@@ -72,8 +73,9 @@ public class CompressionCrafting {
 
             @Override
             public String systemName() {
-                return "Avaritia Recipe";
+                return "Removing recipes";
             }
+
         });
     }
 }

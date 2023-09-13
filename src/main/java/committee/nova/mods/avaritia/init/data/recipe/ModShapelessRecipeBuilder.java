@@ -3,13 +3,12 @@ package committee.nova.mods.avaritia.init.data.recipe;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.CraftingRecipeBuilder;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
@@ -42,7 +41,7 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
     private final Item result;
     private final int count;
     private final List<Ingredient> ingredients = Lists.newArrayList();
-    private final Advancement.Builder advancement = Advancement.Builder.recipeAdvancement();
+    private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
 
@@ -164,7 +163,7 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
 
         @Override
         public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeTypes.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
+            return ModRecipeSerializers.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
         }
 
         @Override

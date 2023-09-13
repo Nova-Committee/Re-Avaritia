@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.data.loot;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.packs.VanillaLootTableProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -25,12 +24,12 @@ import java.util.Map;
  */
 
 public class ModLootTables extends LootTableProvider {
-    public ModLootTables(PackOutput output) {
-        super(output, Collections.emptySet(), VanillaLootTableProvider.create(output).getTables());
+    public ModLootTables(DataGenerator output) {
+        super(output.getPackOutput(), Collections.emptySet(), VanillaLootTableProvider.create(output.getPackOutput()).getTables());
     }
 
     @Override
-    public List<SubProviderEntry> getTables() {
+    public @NotNull List<SubProviderEntry> getTables() {
         return ImmutableList.of(
                 new SubProviderEntry(ModBlockLootTables::new, LootContextParamSets.BLOCK)
 //                new SubProviderEntry(ModChestLootTables::new, LootContextParamSets.CHEST),

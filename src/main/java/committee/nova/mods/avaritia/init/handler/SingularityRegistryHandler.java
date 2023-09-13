@@ -90,8 +90,8 @@ public class SingularityRegistryHandler {
                 FileWriter writer = null;
 
                 try {
-                    var file = new File(dir, singularity.getId().getPath() + ".json");
-                    writer = new FileWriter(file);
+                    var file = new File(dir, singularity.getId() + ".json");
+                    writer = new FileWriter(file, StandardCharsets.UTF_8);
 
                     GSON.toJson(json, writer);
                     writer.close();
@@ -156,10 +156,9 @@ public class SingularityRegistryHandler {
             Singularity singularity = null;
 
             try {
-                var parser = new JsonParser();
                 reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
                 var name = file.getName().replace(".json", "");
-                json = parser.parse(reader).getAsJsonObject();
+                json = JsonParser.parseReader(reader).getAsJsonObject();
 
                 singularity = SingularityUtils.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
 

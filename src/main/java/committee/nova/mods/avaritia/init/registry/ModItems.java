@@ -46,17 +46,17 @@ public class ModItems {
     public static RegistryObject<Item> ultimate_stew = item("ultimate_stew", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)));
     public static RegistryObject<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)));
     public static RegistryObject<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
-    public static RegistryObject<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", false));
-    public static RegistryObject<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", false));
-    public static RegistryObject<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_pile", false));
-    public static RegistryObject<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", false));
-    public static RegistryObject<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(Rarity.RARE, "neutron_ingot", false));
-    public static RegistryObject<Item> neutron_gear = item("neutron_gear", () -> new ResourceItem(Rarity.EPIC, "neutron_gear", false));
-    public static RegistryObject<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(Rarity.RARE, "infinity_nugget", false));
-    public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_catalyst", false));
-    public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", false));
-    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", false));
-    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", false));
+    public static RegistryObject<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
+    public static RegistryObject<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", true));
+    public static RegistryObject<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_pile", true));
+    public static RegistryObject<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", true));
+    public static RegistryObject<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(Rarity.RARE, "neutron_ingot", true));
+    public static RegistryObject<Item> neutron_gear = item("neutron_gear", () -> new ResourceItem(Rarity.EPIC, "neutron_gear", true));
+    public static RegistryObject<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(Rarity.RARE, "infinity_nugget", true));
+    public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_catalyst", true));
+    public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", true));
+    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", true));
+    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
 
     static {

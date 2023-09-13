@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -43,7 +44,7 @@ public class SyncMachinePacket extends IPacket<SyncMachinePacket> {
     	
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
-                NeutronCollectorTile tile = (NeutronCollectorTile) ctx.get().getSender().getCommandSenderWorld().getBlockEntity(pos);
+                NeutronCollectorTile tile = (NeutronCollectorTile) Objects.requireNonNull(ctx.get().getSender()).getCommandSenderWorld().getBlockEntity(pos);
             }
         });
 

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.data;
 
 import committee.nova.mods.avaritia.api.init.data.IBlockStateProvider;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class ModBlockStates extends IBlockStateProvider {
-    public ModBlockStates(PackOutput output, ExistingFileHelper helper) {
+    public ModBlockStates(DataGenerator output, ExistingFileHelper helper) {
         super(output, helper);
     }
 

@@ -24,7 +24,6 @@ public class ModBlockLootTables extends BlockLootSubProvider {
     protected ModBlockLootTables() {
         super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
     }
-
     @Override
     protected void generate() {
         dropSelf(ModBlocks.neutron.get());
@@ -35,7 +34,6 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         dropSelf(ModBlocks.double_compressed_crafting_table.get());
         dropSelf(ModBlocks.extreme_crafting_table.get());
         dropSelf(ModBlocks.neutron_collector.get());
-
     }
 
     @Override

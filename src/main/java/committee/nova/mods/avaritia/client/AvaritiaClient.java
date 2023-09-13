@@ -11,7 +11,6 @@ import committee.nova.mods.avaritia.util.ColorUtil;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -35,13 +34,6 @@ public class AvaritiaClient {
     }
 
     @SubscribeEvent
-    public static void addLayers(EntityRenderersEvent.AddLayers evt) {
-        addPlayerLayer(evt, "default");
-        addPlayerLayer(evt, "slim");
-    }
-
-
-    @SubscribeEvent
     public static void onItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(new IColored.ItemColors(), ModItems.singularity.get());
     }
@@ -57,14 +49,16 @@ public class AvaritiaClient {
         return ColorUtil.hsbToRGB(hue, 1, 1);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    private static void addPlayerLayer(EntityRenderersEvent.AddLayers evt, String skin) {
-        EntityRenderer<?> renderer = evt.getSkin(skin);
+    @SubscribeEvent
+    public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
+        event.getSkins().forEach(skin -> {
+            EntityRenderer<?> renderer = event.getSkin(skin);
+            if (renderer != null && renderer instanceof LivingEntityRenderer livingRender){
+                livingRender.addLayer(new WingInfinityLayer(livingRender));
+                livingRender.addLayer(new EyeInfinityLayer(livingRender));
+            }
+        });
 
-        if (renderer instanceof LivingEntityRenderer livingRenderer) {
-            livingRenderer.addLayer(new WingInfinityLayer(livingRenderer));
-            livingRenderer.addLayer(new EyeInfinityLayer(livingRenderer));
 
-        }
     }
 }

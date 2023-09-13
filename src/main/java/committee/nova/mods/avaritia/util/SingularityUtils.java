@@ -25,7 +25,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 public class SingularityUtils {
     public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
         if (!CraftingHelper.processConditions(json, "conditions", context)) {
-            Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met", id);
+            Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
             return null;
         }
         var name = GsonHelper.getAsString(json, "name");
@@ -38,15 +38,12 @@ public class SingularityUtils {
         Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
 
-
         var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
-
 
         if (ing == null) {
             singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
         } else if (ing.has("tag")) {
             var tag = ing.get("tag").getAsString();
-
             singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
         } else {
             var ingredient = Ingredient.fromJson(json.get("ingredient"));
@@ -99,10 +96,9 @@ public class SingularityUtils {
         }
 
         json.add("ingredient", ingredient);
+        json.addProperty("enabled", singularity.isEnabled());
+        json.addProperty("recipeDisabled", singularity.isRecipeDisabled());
 
-        if (!singularity.isEnabled()) {
-            json.addProperty("enabled", false);
-        }
 
         return json;
     }

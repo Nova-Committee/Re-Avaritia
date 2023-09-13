@@ -78,9 +78,6 @@ public class PickaxeInfinityItem extends PickaxeItem {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             CompoundTag tags = stack.getOrCreateTag();
-            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack) < 10) {
-                stack.enchant(Enchantments.BLOCK_FORTUNE, 10);//FORTUNE X enchantment
-            }
             tags.putBoolean("hammer", !tags.getBoolean("hammer"));
             player.setMainArm(HumanoidArm.RIGHT);
             return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
