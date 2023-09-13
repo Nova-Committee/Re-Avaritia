@@ -42,7 +42,7 @@ public class SingularityRegistryHandler {
     private static final SingularityRegistryHandler INSTANCE = new SingularityRegistryHandler();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
-    private final Map<String, Singularity> singularities = new LinkedHashMap<>();
+    private final Map<ResourceLocation, Singularity> singularities = new LinkedHashMap<>();
 
     public static SingularityRegistryHandler getInstance() {
         return INSTANCE;
@@ -108,7 +108,7 @@ public class SingularityRegistryHandler {
         return Lists.newArrayList(this.singularities.values());
     }
 
-    public Singularity getSingularityById(String id) {
+    public Singularity getSingularityById(ResourceLocation id) {
         return this.singularities.get(id);
     }
 
@@ -160,7 +160,7 @@ public class SingularityRegistryHandler {
                 var name = file.getName().replace(".json", "");
                 json = JsonParser.parseReader(reader).getAsJsonObject();
 
-                singularity = SingularityUtils.loadFromJson(name, json, context);
+                singularity = SingularityUtils.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
 
                 reader.close();
             } catch (Exception e) {

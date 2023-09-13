@@ -49,7 +49,11 @@ public class SingularityItem extends Item implements IColored {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
-            tooltip.add(ModTooltips.getAddedByTooltip(Static.MOD_ID));
+            var modid = singularity.getId().getNamespace();
+
+            if (!modid.equals(Static.MOD_ID))
+                tooltip.add(ModTooltips.getAddedByTooltip(modid));
+
             if (flag.isAdvanced())
                 tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getId()).color(ChatFormatting.DARK_GRAY).build());
         }

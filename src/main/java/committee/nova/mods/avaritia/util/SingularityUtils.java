@@ -23,7 +23,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
  * Version: 1.0
  */
 public class SingularityUtils {
-    public static Singularity loadFromJson(String id, JsonObject json, ICondition.IContext context) {
+    public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
         if (!CraftingHelper.processConditions(json, "conditions", context)) {
             Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
             return null;
@@ -106,7 +106,7 @@ public class SingularityUtils {
     public static CompoundTag makeTag(Singularity singularity) {
         var nbt = new CompoundTag();
 
-        nbt.putString("Id", singularity.getId());
+        nbt.putString("Id", singularity.getId().toString());
 
         return nbt;
     }
@@ -123,7 +123,7 @@ public class SingularityUtils {
     public static Singularity getSingularity(ItemStack stack) {
         var id = NBTUtil.getString(stack, "Id");
         if (!id.isEmpty()) {
-            return SingularityRegistryHandler.getInstance().getSingularityById(id);
+            return SingularityRegistryHandler.getInstance().getSingularityById(ResourceLocation.tryParse(id));
         }
 
         return null;

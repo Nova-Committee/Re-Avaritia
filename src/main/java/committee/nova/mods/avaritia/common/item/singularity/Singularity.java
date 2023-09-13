@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
  * Version: 1.0
  */
 public class Singularity {
-    private final String id;
+    private final ResourceLocation id;
     private final String name;
     private final int[] colors;
     private final String tag;
@@ -25,7 +25,7 @@ public class Singularity {
     private boolean enabled = true;
     private boolean recipeDisabled = false;
 
-    public Singularity(String id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
+    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = colors;
@@ -35,11 +35,11 @@ public class Singularity {
         this.timeRequired = timeRequired;
     }
 
-    public Singularity(String id, String name, int[] colors, Ingredient ingredient) {
+    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
         this(id, name, colors, ingredient, -1, ModConfig.singularityTimeRequired.get());
     }
 
-    public Singularity(String id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
+    public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = colors;
@@ -49,13 +49,13 @@ public class Singularity {
         this.timeRequired = timeRequired;
     }
 
-    public Singularity(String id, String name, int[] colors, String tag) {
+    public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
         this(id, name, colors, tag, -1, ModConfig.singularityTimeRequired.get());
     }
 
 
 
-    public String getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 
@@ -116,11 +116,11 @@ public class Singularity {
     }
 
     public static Singularity read(FriendlyByteBuf buffer) {
-        var id = buffer.readUtf();
+        var id = buffer.readResourceLocation();
         var name = buffer.readUtf();
         int[] colors = buffer.readVarIntArray();
         var isTagIngredient = buffer.readBoolean();
-        int time = buffer.readVarInt();
+        int timeRequired = buffer.readVarInt();
 
         String tag = null;
         var ingredient = Ingredient.EMPTY;
@@ -133,12 +133,8 @@ public class Singularity {
 
         int ingredientCount = buffer.readVarInt();
 
-        Singularity singularity;
-        if (isTagIngredient) {
-            singularity = new Singularity(id, name, colors, tag, ingredientCount, time);
-        } else {
-            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, time);
-        }
+        Singularity singularity = isTagIngredient ? new Singularity(id, name, colors, tag, ingredientCount, timeRequired)
+                : new Singularity(id, name, colors, ingredient, ingredientCount, timeRequired);
 
         singularity.enabled = buffer.readBoolean();
         singularity.recipeDisabled = buffer.readBoolean();
@@ -146,10 +142,11 @@ public class Singularity {
         return singularity;
     }
     public void write(FriendlyByteBuf buffer) {
-        buffer.writeUtf(this.id);
+        buffer.writeResourceLocation(this.id);
         buffer.writeUtf(this.name);
         buffer.writeVarIntArray(this.colors);
         buffer.writeBoolean(this.tag != null);
+        buffer.writeVarInt(this.timeRequired);
 
         if (this.tag != null) {
             buffer.writeUtf(this.tag);
