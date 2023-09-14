@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * Description
  */
 
-public class ModDamageTypes  extends EntityDamageSource {
+public class ModDamageTypes extends EntityDamageSource {
     public ModDamageTypes(Entity source) {
         super("infinity", source);
         bypassArmor();

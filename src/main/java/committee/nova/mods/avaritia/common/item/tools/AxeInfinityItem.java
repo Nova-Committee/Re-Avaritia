@@ -17,6 +17,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -49,7 +50,7 @@ public class AxeInfinityItem extends AxeItem {
     }
 
     @Override
-    public Rarity getRarity(ItemStack p_77613_1_) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack p_77613_1_) {
         return ModItems.COSMIC_RARITY;
     }
 
@@ -60,7 +61,7 @@ public class AxeInfinityItem extends AxeItem {
 
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             player.swing(hand);

@@ -82,6 +82,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
 
     @Override
     protected void renderBg(@NotNull PoseStack stack, float pPartialTick, int pMouseX, int pMouseY) {
+        this.renderDefaultBg(stack, pPartialTick, pMouseX, pMouseY);
         int i = this.getGuiLeft();
         int j = this.getGuiTop();
         blit(stack, i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);

@@ -31,16 +31,14 @@ public class ModRecipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-        super.buildCraftingRecipes(consumer);
+    protected void buildCraftingRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
         InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
         ShapedRecipeBuilder.shaped(ModBlocks.compressed_crafting_table.get())
                 .pattern("xxx")
                 .pattern("xxx")
                 .pattern("xxx")
                 .define('x', Items.CRAFTING_TABLE)
-                
-                .unlockedBy("", lul).save(consumer);
+                .unlockedBy("has_item", has(Items.CRAFTING_TABLE)).save(consumer);
 
         ShapedRecipeBuilder.shaped(ModBlocks.crystal_matrix.get())
                 .pattern("xxx")
