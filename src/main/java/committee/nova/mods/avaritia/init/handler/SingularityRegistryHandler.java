@@ -85,12 +85,13 @@ public class SingularityRegistryHandler {
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
 
         if (!dir.exists() && dir.mkdirs()) {
+            Static.LOGGER.warn("Could not find default singularities,try to generate!");
             for (var singularity : ModSingularities.getDefaults()) {
                 var json = SingularityUtils.writeToJson(singularity);
                 FileWriter writer = null;
 
                 try {
-                    var file = new File(dir, singularity.getId() + ".json");
+                    var file = new File(dir, singularity.getId().getPath() + ".json");
                     writer = new FileWriter(file, StandardCharsets.UTF_8);
 
                     GSON.toJson(json, writer);
