@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Example Issue / 议题实例
+    url: https://github.com/Nova-Committee/Avaritia-Reforge/issues/99
+    about: You can refer to this example issue to fill in your issue.
+  - name: Latest Builds / 最新构建
+    url: https://github.com/Nova-Committee/Avaritia-Reforge/actions
+    about: You can find the latest build JAR files at GitHub Actions.
