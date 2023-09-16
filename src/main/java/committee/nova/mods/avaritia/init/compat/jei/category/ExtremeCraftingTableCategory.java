@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.crafting.recipe.ICraftRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ICraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.init.compat.jei.JeiCompat;

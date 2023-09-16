@@ -75,7 +75,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("xxx")
                 .pattern("xyx")
                 .pattern("xxx")
-                .define('x', ModItems.crystal_matrix_ingot.get())
+                .define('x', ModBlocks.crystal_matrix.get())
                 .define('y', ModBlocks.double_compressed_crafting_table.get())
                 
                 .unlockedBy("has_item", has(ModBlocks.double_compressed_crafting_table.get())).save(consumer);
@@ -149,6 +149,16 @@ public class ModRecipes extends RecipeProvider {
                 .requires(Items.SWEET_BERRIES)
                 .requires(ModItems.neutron_nugget.get())
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
+
+        ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_catalyst.get())
+                .requires(Items.EMERALD_BLOCK)
+                .requires(ModItems.crystal_matrix_ingot.get())
+                .requires(ModItems.neutron_ingot.get())
+                .requires(ModItems.cosmic_meatballs.get())
+                .requires(ModItems.ultimate_stew.get())
+                .requires(ModItems.endest_pearl.get())
+                .requires(ModItems.record_fragment.get())
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.endest_pearl.get())
                 .pattern("   EEE   ")

@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.api.common.crafting.ICraftRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
@@ -33,7 +35,7 @@ import java.util.function.Function;
  */
 public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe {
     private final ResourceLocation recipeId;
-    private final NonNullList<Ingredient> inputs;
+    public final NonNullList<Ingredient> inputs;
     private final ItemStack output;
     private Map<Integer, Function<ItemStack, ItemStack>> transformers;
 

@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.crafting.recipe.ICompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ICraftRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ICraftRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;

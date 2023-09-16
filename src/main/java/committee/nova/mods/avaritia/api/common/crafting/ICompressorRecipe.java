@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.crafting.recipe;
+package committee.nova.mods.avaritia.api.common.crafting;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;

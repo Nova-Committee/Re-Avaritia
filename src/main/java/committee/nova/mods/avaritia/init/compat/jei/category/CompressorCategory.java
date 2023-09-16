@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.crafting.recipe.ICompressorRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.lang.Localizable;
