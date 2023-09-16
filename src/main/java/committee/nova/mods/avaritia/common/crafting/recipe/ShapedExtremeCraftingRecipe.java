@@ -104,27 +104,27 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     }
 
     @Override
-    public boolean matches(Container inv, Level level) {
+    public boolean matches(@NotNull Container inv, @NotNull Level level) {
         return this.matches(new InvWrapper(inv));
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients() {
+    public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;
     }
 
     @Override
-    public ResourceLocation getId() {
+    public @NotNull ResourceLocation getId() {
         return this.recipeId;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.SHAPED_EXTREME_CRAFT_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
 
@@ -134,7 +134,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(Container inv) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
         if (this.transformers != null) {
             var remaining = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
@@ -179,7 +179,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
 
     public static class Serializer implements RecipeSerializer<ShapedExtremeCraftingRecipe> {
         @Override
-        public ShapedExtremeCraftingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public @NotNull ShapedExtremeCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
             var map = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
             var pattern = ShapedRecipe.shrink(ShapedExtremeCraftingRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
             int width = pattern[0].length();
@@ -191,7 +191,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe, ICraftRecipe
         }
 
         @Override
-        public ShapedExtremeCraftingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public ShapedExtremeCraftingRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int width = buffer.readVarInt();
             int height = buffer.readVarInt();
             var inputs = NonNullList.withSize(width * height, Ingredient.EMPTY);

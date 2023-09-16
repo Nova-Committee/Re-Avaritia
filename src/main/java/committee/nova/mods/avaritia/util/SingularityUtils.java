@@ -4,10 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -15,6 +17,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description:
@@ -127,5 +134,29 @@ public class SingularityUtils {
         }
 
         return null;
+    }
+
+
+    @ApiStatus.Experimental
+    public static ShapelessExtremeCraftingRecipe addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
+        List<ItemStack> arraylist = new ArrayList<>();
+
+        for (ItemStack stack : ingredients) {
+            if (stack != null) {
+                arraylist.add(stack.copy());
+            } else {
+                throw new RuntimeException("Invalid shapeless recipes!");
+            }
+        }
+
+        return new ShapelessExtremeCraftingRecipe(ForgeRegistries.ITEMS.getKey(result.getItem()), getList(arraylist), result);
+    }
+
+    private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        for (ItemStack stack : arrayList) {
+            ingredients.add(Ingredient.of(stack));
+        }
+        return ingredients;
     }
 }

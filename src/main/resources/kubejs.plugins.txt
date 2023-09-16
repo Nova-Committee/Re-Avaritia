@@ -1,0 +1,1 @@
+committee.nova.mods.avaritia.init.compact.kubejs.KubeJSAvaritiaPlugin
