@@ -1,28 +1,23 @@
 <p align="center">
-    <img class="circle" src="https://s2.loli.net/2022/05/22/VcARrbQdT5tjJiM.png" alt="title">  
+    <img width="200" src="web/avaritia.png" alt="title">  
 </p>
 <hr>
 <p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
 <p align="center">
-    <a href="https://www.curseforge.com/minecraft/mc-mods/avaritia-reforged"><img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions"></a>
     <a href="https://www.curseforge.com/minecraft/mc-mods/avaritia-reforged">
-        <img src="http://cf.way2muchnoise.eu/avaritia-reforged.svg" alt="CurseForge Download">
+        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions">
+    </a>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/avaritia-reforged">
+        <img src="https://cf.way2muchnoise.eu/avaritia-reforged.svg" alt="CurseForge Download">
     </a>
     <img src="https://img.shields.io/badge/license-MIT%2FCC%20BY--NC--SA%204.0-green" alt="License">
 </p>
 
 <p align="center">
-    <a href="#">English</a> | 
-    <a href="#">简体中文</a>
+    <a href="README.md">English</a> | 
+    <a href="README_CN.md">简体中文</a>
 </p>
 
-<style type="text/css">
-.circle{
-    width: 250px;
-    border-radius: 10%;
-    border: 5px solid rosybrown;
-}
-</style>
 
 
 
@@ -31,11 +26,11 @@
 * <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
 * This mod is <span style="color: #ff6600;">unofficial</span> and have bugs!
 
-## ✏️Authors
+## **✏️Authors:**
 
 - Programmer: `cnlimiter` `Asek3` `MikhailTapio`
 
-##  🔒License
+## **🔒License:**
 
 - Code: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -46,8 +41,8 @@
 * [AvaritiaLite](https://www.curseforge.com/minecraft/mc-mods/avaritia-lite)
 
 ## **❗Attention:**
-* You&nbsp;<span style="color: #00ff00;"><strong>DEFINITELY CAN</strong></span>&nbsp;add the mod to your modpack.</li>
-* Recipe viewing is supported via JEI.&nbsp;
+* You&nbsp;<span style="color: #00ff00;"> **DEFINITELY CAN** </span>&nbsp;add the mod to your modpack.
+* Recipe viewing is supported via JEI.
 * You can add&nbsp;singularity by using json!
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
