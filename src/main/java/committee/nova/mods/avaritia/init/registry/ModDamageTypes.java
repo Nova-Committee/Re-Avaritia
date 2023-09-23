@@ -40,7 +40,7 @@ public class ModDamageTypes {
         return new DamageSource(damage);
     }
 
-    public static DamageSource causeRandomDamage(LivingEntity attacker) {
+    public static DamageSource causeRandomDamage(Entity attacker) {
         return new DamageSourceRandomMessages(attacker.getCommandSenderWorld().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 

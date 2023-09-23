@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.init.data;
 
-import committee.nova.mods.avaritia.init.data.loot.ModLootTables;
-import committee.nova.mods.avaritia.init.data.recipe.ModRecipes;
+import committee.nova.mods.avaritia.init.data.provider.loot.ModLootTables;
+import committee.nova.mods.avaritia.init.data.provider.*;
+import committee.nova.mods.avaritia.init.data.provider.recipe.ModRecipes;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -32,11 +33,11 @@ public class ModDataGen {
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper helper = event.getExistingFileHelper();
-        PackOutput output = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> future = event.getLookupProvider();
 
         if (event.includeClient()) {
             generator.addProvider(true, new ModBlockStates(generator, helper));
+            generator.addProvider(true, new ModSpriteSource(generator, helper));
 //            generator.addProvider(true, new ModItemModels(output, helper));
 //            generator.addProvider(true, new ModLang(output));
             generator.addProvider(true, new ModSoundDefinitions(generator, helper));
@@ -49,8 +50,8 @@ public class ModDataGen {
 //            generator.addProvider(true, new ModAdvancements(output, future, helper));
 //            generator.addProvider(true, new ModFluidTags(output, future, helper));
 
-            ModRegistries.addProviders(true, generator, output, future, helper);
-            generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
+            ModRegistries.addProviders(true, generator, future, helper);
+            generator.addProvider(true, new PackMetadataGenerator(generator.getPackOutput()).add(PackMetadataSection.TYPE, new PackMetadataSection(
                     Component.literal("Avaritia Resources"),
                     DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                     Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));

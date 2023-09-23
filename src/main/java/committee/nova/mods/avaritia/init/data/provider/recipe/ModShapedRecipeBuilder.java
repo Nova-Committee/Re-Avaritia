@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data.recipe;
+package committee.nova.mods.avaritia.init.data.provider.recipe;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

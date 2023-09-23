@@ -1,10 +1,11 @@
-package committee.nova.mods.avaritia.common.entity;
+package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,43 +47,16 @@ public class HeavenArrowEntity extends Arrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
-        var pos = new BlockPos(entity.getBlockX(), entity.getBlockY(), entity.getBlockZ());
         var randy = getCommandSenderWorld().random;
         
         if (entity instanceof LivingEntity living) {
-        	
-            for (int i = 0; i < 30; i++) {
-                double angle = randy.nextDouble() * 2 * Math.PI;
-                double dist = randy.nextGaussian() * 0.5;
-
-                double x = Math.sin(angle) * dist + pos.getX();
-                double z = Math.cos(angle) * dist + pos.getZ();
-                double y = pos.getY() + 25.0;
-
-                double dangle = randy.nextDouble() * 2 * Math.PI;
-                double ddist = randy.nextDouble() * 0.35;
-                double dx = Math.sin(dangle) * ddist;
-                double dz = Math.cos(dangle) * ddist;
-
-                HeavenSubArrowEntity subArrow = HeavenSubArrowEntity.create(getCommandSenderWorld(), x, y, z);
-                if (shooter != null) subArrow.setOwner(shooter);
-                subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
-                subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
-                subArrow.setCritArrow(true);
-                subArrow.pickup = pickup;
-
-                getCommandSenderWorld().addFreshEntity(subArrow);
-            }
-            
+            var pos = living.getOnPos();
+            barrage(randy, pos);
             this.remove(RemovalReason.KILLED);
         }
     }
 
-    @Override
-    protected void onHitBlock(@NotNull BlockHitResult result) {
-        super.onHitBlock(result);
-        var pos = result.getBlockPos();
-        var randy = getCommandSenderWorld().random;
+    private void barrage(RandomSource randy, BlockPos pos) {
         for (int i = 0; i < 30; i++) {
             double angle = randy.nextDouble() * 2 * Math.PI;
             double dist = randy.nextGaussian() * 0.5;
@@ -105,6 +79,14 @@ public class HeavenArrowEntity extends Arrow {
 
             getCommandSenderWorld().addFreshEntity(subArrow);
         }
+    }
+
+    @Override
+    protected void onHitBlock(@NotNull BlockHitResult result) {
+        super.onHitBlock(result);
+        var pos = result.getBlockPos();
+        var randy = getCommandSenderWorld().random;
+        barrage(randy, pos);
         remove(RemovalReason.KILLED);
     }
 

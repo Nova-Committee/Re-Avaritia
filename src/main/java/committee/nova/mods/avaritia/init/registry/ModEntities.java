@@ -4,7 +4,11 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.render.entity.GapingVoidRender;
 import committee.nova.mods.avaritia.client.render.entity.HeavenArrowRender;
 import committee.nova.mods.avaritia.client.render.entity.HeavenSubArrowRender;
+import committee.nova.mods.avaritia.client.render.entity.TracerArrowRender;
 import committee.nova.mods.avaritia.common.entity.*;
+import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -41,18 +45,28 @@ public class ModEntities {
     public static final RegistryObject<EntityType<HeavenArrowEntity>> HEAVEN_ARROW = ENTITIES.register("heaven_arrow",
             () -> EntityType.Builder.<HeavenArrowEntity>of(HeavenArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
-                    .clientTrackingRange(32)
-                    .updateInterval(1)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Static.MOD_ID, "heaven_arrow").toString()));
 
     public static final RegistryObject<EntityType<HeavenSubArrowEntity>> HEAVEN_SUB_ARROW = ENTITIES.register("heaven_sub_arrow",
             () -> EntityType.Builder.<HeavenSubArrowEntity>of(HeavenSubArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
-                    .clientTrackingRange(32)
-                    .updateInterval(2)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Static.MOD_ID, "heaven_sub_arrow").toString()));
+
+    public static final RegistryObject<EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
+            () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(2)
+                    .updateInterval(20)
+                    .fireImmune()
+                    .noSummon()
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(new ResourceLocation(Static.MOD_ID, "trace_arrow").toString()));
 
 
     @OnlyIn(Dist.CLIENT)
@@ -61,6 +75,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
+        EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
     }
 
 }

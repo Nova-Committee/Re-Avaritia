@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data.loot;
+package committee.nova.mods.avaritia.init.data.provider.loot;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.data.DataGenerator;

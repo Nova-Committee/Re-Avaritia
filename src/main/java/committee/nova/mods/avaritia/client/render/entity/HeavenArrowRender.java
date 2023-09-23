@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.entity.HeavenArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;

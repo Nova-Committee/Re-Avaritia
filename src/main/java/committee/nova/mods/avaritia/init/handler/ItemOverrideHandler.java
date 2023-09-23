@@ -35,7 +35,11 @@ public class ItemOverrideHandler {
         event.enqueueWork(() -> setPropertyOverride(ModItems.matter_cluster.get(), Static.rl("cap"), (itemStack, world, livingEntity, d) -> {
             return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
         }));
-
+        event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_bow.get(), Static.rl("tracer"), (itemStack, world, livingEntity, d) -> {
+            if (itemStack.getItem() instanceof BowInfinityItem)
+                return itemStack.getOrCreateTag().getBoolean("tracer") ? 1 : 0;
+            return 0;
+        }));
         event.enqueueWork(() -> setPropertyOverride(ModItems.infinity_bow.get(), Static.rl("pull"), (itemStack, world, livingEntity, d) -> {
             if (livingEntity == null) {
                 return 0.0F;

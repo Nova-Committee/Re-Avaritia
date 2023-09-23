@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data.recipe;
+package committee.nova.mods.avaritia.init.data.provider.recipe;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * Description:
  */
 
-public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final Item result;
     private final int count;
@@ -45,31 +45,31 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
     @Nullable
     private String group;
 
-    public ModCatalystRecipeBuilder(RecipeCategory p_250837_, @NotNull ItemLike p_251897_, int p_252227_) {
+    public ModShapelessRecipeBuilder(RecipeCategory p_250837_, @NotNull ItemLike p_251897_, int p_252227_) {
         this.category = p_250837_;
         this.result = p_251897_.asItem();
         this.count = p_252227_;
     }
 
     @Contract("_, _ -> new")
-    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
-        return new ModCatalystRecipeBuilder(p_250714_, p_249659_, 1);
+    public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
+        return new ModShapelessRecipeBuilder(p_250714_, p_249659_, 1);
     }
 
     @Contract("_, _, _ -> new")
-    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_) {
-        return new ModCatalystRecipeBuilder(p_252339_, p_250836_, p_249928_);
+    public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_) {
+        return new ModShapelessRecipeBuilder(p_252339_, p_250836_, p_249928_);
     }
 
-    public ModCatalystRecipeBuilder requires(TagKey<Item> p_206420_) {
+    public ModShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
         return this.requires(Ingredient.of(p_206420_));
     }
 
-    public ModCatalystRecipeBuilder requires(ItemLike p_126210_) {
+    public ModShapelessRecipeBuilder requires(ItemLike p_126210_) {
         return this.requires(p_126210_, 1);
     }
 
-    public ModCatalystRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
+    public ModShapelessRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
         for(int i = 0; i < p_126213_; ++i) {
             this.requires(Ingredient.of(p_126212_));
         }
@@ -77,11 +77,11 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
         return this;
     }
 
-    public ModCatalystRecipeBuilder requires(Ingredient p_126185_) {
+    public ModShapelessRecipeBuilder requires(Ingredient p_126185_) {
         return this.requires(p_126185_, 1);
     }
 
-    public ModCatalystRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
+    public ModShapelessRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
         for(int i = 0; i < p_126188_; ++i) {
             this.ingredients.add(p_126187_);
         }
@@ -90,13 +90,13 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
     }
 
     @Override
-    public @NotNull ModCatalystRecipeBuilder unlockedBy(@NotNull String p_126197_, @NotNull CriterionTriggerInstance p_126198_) {
+    public @NotNull ModShapelessRecipeBuilder unlockedBy(@NotNull String p_126197_, @NotNull CriterionTriggerInstance p_126198_) {
         this.advancement.addCriterion(p_126197_, p_126198_);
         return this;
     }
 
     @Override
-    public @NotNull ModCatalystRecipeBuilder group(@Nullable String p_126195_) {
+    public @NotNull ModShapelessRecipeBuilder group(@Nullable String p_126195_) {
         this.group = p_126195_;
         return this;
     }
@@ -110,7 +110,7 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
     public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModCatalystRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        p_126205_.accept(new ModShapelessRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -119,7 +119,7 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
         }
     }
 
-    public static class Result extends CraftingResult {
+    public static class Result extends CraftingRecipeBuilder.CraftingResult {
         private final ResourceLocation id;
         private final Item result;
         private final int count;
@@ -163,7 +163,7 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
 
         @Override
         public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeSerializers.INFINITY_SERIALIZER.get();
+            return ModRecipeSerializers.SHAPELESS_EXTREME_CRAFT_SERIALIZER.get();
         }
 
         @Override

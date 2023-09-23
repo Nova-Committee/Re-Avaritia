@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data;
+package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.api.init.data.IBlockStateProvider;
 import net.minecraft.data.DataGenerator;

@@ -23,6 +23,12 @@
         "avaritia:pull": 0.9
       },
       "model": "avaritia:item/infinity_bow_pulling_2"
+    },
+    {
+      "predicate": {
+        "avaritia:tracer": 1
+      },
+      "model": "avaritia:item/infinity_bow_tracer"
     }
   ]
 }

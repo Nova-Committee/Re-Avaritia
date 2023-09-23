@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.entity;
+package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;

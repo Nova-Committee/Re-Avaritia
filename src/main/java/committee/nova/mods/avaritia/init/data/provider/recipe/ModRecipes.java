@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data.recipe;
+package committee.nova.mods.avaritia.init.data.provider.recipe;
 
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -115,6 +115,18 @@ public class ModRecipes extends RecipeProvider {
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
                 .unlockedBy("has_item", has(ItemTags.MUSIC_DISCS)).save(consumer);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.neutron_ingot.get(), 9)
+                .requires(ModBlocks.neutron.get())
+                .unlockedBy("has_item", has(ModBlocks.neutron.get())).save(consumer);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_ingot.get(), 9)
+                .requires(ModBlocks.infinity.get())
+                .unlockedBy("has_item", has(ModBlocks.infinity.get())).save(consumer);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), 9)
+                .requires(ModBlocks.crystal_matrix.get())
+                .unlockedBy("has_item", has(ModBlocks.crystal_matrix.get())).save(consumer);
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)
@@ -270,7 +282,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("   II")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('W', ItemTags.WOOL)
-                .define('X', ModItems.infinity_catalyst.get())
+                .define('X', ModBlocks.crystal_matrix.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
@@ -298,7 +310,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("  NNNNN  ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
+                .define('X', ModBlocks.crystal_matrix.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 

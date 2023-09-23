@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data;
+package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;

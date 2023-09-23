@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data.loot;
+package committee.nova.mods.avaritia.init.data.provider.loot;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
