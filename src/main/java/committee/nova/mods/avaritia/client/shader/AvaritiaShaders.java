@@ -70,7 +70,7 @@ public class AvaritiaShaders {
         if (event.phase != TickEvent.Phase.START) return;
         renderFrame = event.renderTickTime;
         for (int i = 0; i < 10; ++i) {
-            TextureAtlasSprite sprite = SPRITE_HELPER.sprites.get(new ResourceLocation(Static.MOD_ID, "cosmic_" + i));
+            TextureAtlasSprite sprite = SPRITE_HELPER.sprites.getSprite(new ResourceLocation(Static.MOD_ID, "cosmic_" + i));
             AvaritiaShaders.COSMIC_UVS[i * 4] = sprite.getU0();
             AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = sprite.getV0();
             AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = sprite.getU1();
@@ -88,8 +88,6 @@ public class AvaritiaShaders {
 
 
     static {
-        COSMIC_RENDER_TYPE = RenderType.create(new ResourceLocation(Static.MOD_ID , "cosmic").toString() , DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> {
-            return cosmicShader;
-        })).setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShard.LIGHTMAP).setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED).createCompositeState(true));
+        COSMIC_RENDER_TYPE = RenderType.create(new ResourceLocation(Static.MOD_ID , "cosmic").toString() , DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader)).setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShard.LIGHTMAP).setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED).createCompositeState(true));
     }
 }

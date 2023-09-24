@@ -1,24 +1,22 @@
 package committee.nova.mods.avaritia.client;
 
-import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IColored;
+import committee.nova.mods.avaritia.client.model.CosmicModelLoader;
 import committee.nova.mods.avaritia.client.model.GapingVoidModel;
-import committee.nova.mods.avaritia.client.model.HaloItemModelLoader;
+import committee.nova.mods.avaritia.client.model.HaloModelLoader;
 import committee.nova.mods.avaritia.client.model.WingModel;
 import committee.nova.mods.avaritia.client.render.layer.EyeInfinityLayer;
 import committee.nova.mods.avaritia.client.render.layer.WingInfinityLayer;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ColorUtil;
+import committee.nova.mods.avaritia.util.client.color.ColorUtil;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * Author cnlimiter
@@ -27,23 +25,33 @@ import net.minecraftforge.fml.common.Mod;
  * Description
  */
 
-@Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class AvaritiaClient {
-    @SubscribeEvent
-    public static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+    public static void init(){
+        var eventbus = FMLJavaModLoadingContext.get().getModEventBus();
+        var forgeBus = MinecraftForge.EVENT_BUS;
+        eventbus.addListener(AvaritiaClient::registerEntityLayerDefinitions);
+        eventbus.addListener(AvaritiaClient::onItemColors);
+        eventbus.addListener(AvaritiaClient::registerOverlays);
+        eventbus.addListener(AvaritiaClient::addPlayerLayer);
+        eventbus.addListener(AvaritiaClient::registerLoaders);
+    }
+    private static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
         event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
 
     }
 
-    @SubscribeEvent
-    public static void onItemColors(RegisterColorHandlersEvent.Item event) {
+    private static void onItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(new IColored.ItemColors(), ModItems.singularity.get());
     }
 
-    @SubscribeEvent
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
+    private static void registerOverlays(RegisterGuiOverlaysEvent event) {
 
+    }
+
+    private static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
+        event.register("cosmic", CosmicModelLoader.INSTANCE);
+        event.register("halo", HaloModelLoader.INSTANCE);
     }
 
     private static int getCurrentRainbowColor() {
@@ -51,8 +59,7 @@ public class AvaritiaClient {
         return ColorUtil.hsbToRGB(hue, 1, 1);
     }
 
-    @SubscribeEvent
-    public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
+    private static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
         event.getSkins().forEach(skin -> {
             EntityRenderer<?> renderer = event.getSkin(skin);
             if (renderer != null && renderer instanceof LivingEntityRenderer livingRender){

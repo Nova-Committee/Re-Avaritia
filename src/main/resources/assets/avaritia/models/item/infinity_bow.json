@@ -1,7 +1,8 @@
 {
   "parent": "minecraft:item/bow",
   "textures": {
-    "layer0": "avaritia:item/tools/infinity_bow/idle"
+    "layer0": "avaritia:item/tools/infinity_bow/idle",
+    "mask": "avaritia:item/tools/infinity_bow/idle_mask"
   },
   "overrides": [
     {
@@ -30,5 +31,9 @@
       },
       "model": "avaritia:item/infinity_bow_tracer"
     }
-  ]
+  ],
+  "loader": "avaritia:cosmic",
+  "cosmic": {
+    "mask": "#mask"
+  }
 }

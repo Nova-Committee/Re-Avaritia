@@ -2,14 +2,13 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "avaritia:item/resource/infinity_ingot",
-    "layer2": "avaritia:item/misc/halo"
+    "halo": "avaritia:item/misc/halo"
   },
-  "loader": "forge:item_layers",
-  "forge_data": {
-    "layers": {
-      "2": {
-        "color": "FF000000"
-      }
-    }
+  "loader": "avaritia:halo",
+  "halo": {
+    "texture": "#halo",
+    "color": -16777216,
+    "size": 10,
+    "pulse": true
   }
 }

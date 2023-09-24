@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia;
 
+import committee.nova.mods.avaritia.client.AvaritiaClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -47,7 +48,7 @@ public class Avaritia {
 
         AvaritiaShaders.init();
         ModConfig.register();
-
+        AvaritiaClient.init();
     }
 
     public void setup(final FMLCommonSetupEvent event) {

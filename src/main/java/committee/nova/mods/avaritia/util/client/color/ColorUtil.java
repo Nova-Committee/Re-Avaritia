@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.util;
+package committee.nova.mods.avaritia.util.client.color;
 
 /**
  * Description:
