@@ -24,6 +24,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -82,7 +83,7 @@ public class SingularityRegistryHandler {
     }
 
     public void writeDefaultSingularityFiles() {
-        var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
+        var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia" + File.separator + "singularities").toFile();
 
         if (!dir.exists() && dir.mkdirs()) {
             Static.LOGGER.warn("Could not find default singularities,try to generate!");
