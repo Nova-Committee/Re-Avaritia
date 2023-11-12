@@ -44,7 +44,10 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
 
     @Override
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return !this.isRemoved() && cap == ForgeCapabilities.ITEM_HANDLER ? LazyOptional.empty() : super.getCapability(cap, side);
+        if (!this.isRemoved() && cap == ForgeCapabilities.ITEM_HANDLER) {
+            return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, this.capability);
+        }
+        return super.getCapability(cap, side);
     }
 
     public boolean isUsableByPlayer(Player player) {

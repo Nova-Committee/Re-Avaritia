@@ -3,12 +3,5 @@
   "textures": {
     "layer0": "avaritia:item/resource/infinity_ingot",
     "halo": "avaritia:item/misc/halo"
-  },
-  "loader": "avaritia:halo",
-  "halo": {
-    "texture": "#halo",
-    "color": -16777216,
-    "size": 10,
-    "pulse": true
   }
 }
