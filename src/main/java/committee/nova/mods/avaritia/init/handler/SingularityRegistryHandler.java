@@ -82,7 +82,7 @@ public class SingularityRegistryHandler {
     }
 
     public void writeDefaultSingularityFiles() {
-        var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
+        var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia" + File.separator + "singularities").toFile();
 
         if (!dir.exists() && dir.mkdirs()) {
             for (var singularity : ModSingularities.getDefaults()) {

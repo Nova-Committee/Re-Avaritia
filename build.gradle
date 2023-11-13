@@ -119,18 +119,8 @@ repositories {
     maven { url = 'https://maven.blamejared.com' }
     maven { url = 'https://maven.theillusivec4.top/' }
     maven { url = 'https://maven.melanx.de/' }
-    maven {
-        url = "https://maven.architectury.dev"
-        content {
-            includeGroup "me.shedaniel"
-        }
-    }
-    maven {
-        url = "https://maven.saps.dev/minecraft"
-        content {
-            includeGroup "dev.latvian.mods"
-        }
-    }
+    maven { url = "https://maven.architectury.dev" }
+    maven { url = "https://maven.saps.dev/minecraft" }
     maven {
         name = 'Twilight Forest'
         url = 'https://modmaven.dev/'
@@ -159,7 +149,9 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
-
+    compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    compileOnly fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
+    compileOnly fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
@@ -177,11 +169,18 @@ dependencies {
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
 tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
-            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
-            neo_version         : neo_version, neo_version_range: neo_version_range,
+            minecraft_version   : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version         : neo_version,
+            neo_version_range   : neo_version_range,
             loader_version_range: loader_version_range,
-            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors         : mod_authors, mod_description: mod_description, pack_format_number: pack_format_number,
+            mod_id              : mod_id,
+            mod_name            : mod_name,
+            mod_license         : mod_license,
+            mod_version         : mod_version,
+            mod_authors         : mod_authors,
+            mod_description     : mod_description,
+            pack_format_number  : pack_format_number,
     ]
     inputs.properties replaceProperties
 
