@@ -33,7 +33,7 @@ public class AvaritiaClient {
         eventbus.addListener(AvaritiaClient::onItemColors);
         eventbus.addListener(AvaritiaClient::registerOverlays);
         eventbus.addListener(AvaritiaClient::addPlayerLayer);
-        eventbus.addListener(AvaritiaClient::registerLoaders);
+        //eventbus.addListener(AvaritiaClient::registerLoaders);
     }
     private static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);

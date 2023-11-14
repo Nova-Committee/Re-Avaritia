@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.client.AvaritiaClient;
-import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
@@ -46,7 +45,7 @@ public class Avaritia {
         ModRecipeSerializers.SERIALIZERS.register(bus);
         ModCreativeModeTabs.TABS.register(bus);
 
-        AvaritiaShaders.init();
+        //AvaritiaShaders.init();
         ModConfig.register();
         AvaritiaClient.init();
     }
