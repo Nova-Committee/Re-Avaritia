@@ -1,21 +1,33 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.api.common.crafting.ICraftRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.RecipeMatcher;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Name: Avaritia-forge / InfinityCatalystRecipe
@@ -24,10 +36,25 @@ import org.jetbrains.annotations.NotNull;
  * Description:
  */
 
-public class InfinityCatalystCraftRecipe extends ShapelessExtremeCraftingRecipe{
+public class InfinityCatalystCraftRecipe implements ISpecialRecipe, ICraftRecipe {
     private boolean ingredientsLoaded = false;
+    private final ResourceLocation recipeId;
+    public final NonNullList<Ingredient> inputs;
+    private Map<Integer, Function<ItemStack, ItemStack>> transformers;
+
     public InfinityCatalystCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs) {
-        super(recipeId, inputs, new ItemStack(ModItems.infinity_catalyst.get()));
+        this.recipeId = recipeId;
+        this.inputs = inputs;
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= this.inputs.size();
+    }
+
+    @Override
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess pRegistryAccess) {
+        return new ItemStack(ModItems.infinity_catalyst.get());
     }
 
     @Override
@@ -39,22 +66,72 @@ public class InfinityCatalystCraftRecipe extends ShapelessExtremeCraftingRecipe{
                     .limit(74)
                     .map(SingularityUtils::getItemForSingularity)
                     .map(Ingredient::of)
-                    .forEach(super.getIngredients()::add);
-
+                    .forEach(this.inputs::add);
             this.ingredientsLoaded = true;
         }
-        return super.getIngredients();
+
+        return this.inputs;
+    }
+
+    @Override
+    public @NotNull ResourceLocation getId() {
+        return this.recipeId;
     }
 
     @Override
     public @NotNull RecipeType<?> getType() {
-        return ModRecipeTypes.INFINITY_CATALYST_RECIPE.get();
+        return ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
 
     @Override
+    public ItemStack assemble(IItemHandler var1) {
+        return new ItemStack(ModItems.infinity_catalyst.get());
+    }
+
+    @Override
+    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
+        return new ItemStack(ModItems.infinity_catalyst.get());
+    }
+    @Override
     public boolean matches(IItemHandler inventory) {
-        var ingredients = this.getIngredients();
-        return !ingredients.isEmpty() && super.matches(inventory);
+        List<ItemStack> inputs = new ArrayList<>();
+        int matched = 0;
+
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            var stack = inventory.getStackInSlot(i);
+
+            if (!stack.isEmpty()) {
+                inputs.add(stack);
+
+                matched++;
+            }
+        }
+
+        return matched == this.inputs.size() && RecipeMatcher.findMatches(inputs, this.inputs) != null;
+    }
+
+    @Override
+    public boolean matches(@NotNull Container inv, @NotNull Level level) {
+        return this.matches(new InvWrapper(inv));
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
+        if (this.transformers != null) {
+            NonNullList<ItemStack> remaining = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
+
+            this.transformers.forEach((i, stack) -> {
+                remaining.set(i, stack.apply(inv.getItem(i)));
+            });
+
+            return remaining;
+        }
+
+        return ISpecialRecipe.super.getRemainingItems(inv);
+    }
+
+    public void setTransformers(Map<Integer, Function<ItemStack, ItemStack>> transformers) {
+        this.transformers = transformers;
     }
 
     @Override

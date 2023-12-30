@@ -1,5 +1,5 @@
 {
-  "parent": "item/bow",
+  "parent": "minecraft:item/bow",
   "textures": {
     "layer0": "avaritia:item/tools/infinity_bow/pull_1"
   }

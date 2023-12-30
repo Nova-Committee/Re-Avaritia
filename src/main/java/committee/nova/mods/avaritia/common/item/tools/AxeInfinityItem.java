@@ -40,6 +40,11 @@ public class AxeInfinityItem extends AxeItem {
         return false;
     }
 
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
     @Nullable
     @Override
     public Entity createEntity(Level level, Entity location, ItemStack stack) {

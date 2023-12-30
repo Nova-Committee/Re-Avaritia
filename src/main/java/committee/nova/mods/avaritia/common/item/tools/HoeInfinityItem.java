@@ -204,6 +204,10 @@ public class HoeInfinityItem extends HoeItem {
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
     }
 
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
 
     @Nullable
     @Override

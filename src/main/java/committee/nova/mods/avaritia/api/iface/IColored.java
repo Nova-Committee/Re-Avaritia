@@ -21,6 +21,7 @@ public interface IColored {
         public ItemBlockColors() {
         }
 
+        @Override
         public int getColor(ItemStack stack, int index) {
             return ((IColored) Block.byItem(stack.getItem())).getColor(index, stack);
         }
@@ -30,6 +31,7 @@ public interface IColored {
         public ItemColors() {
         }
 
+        @Override
         public int getColor(ItemStack stack, int index) {
             return ((IColored) stack.getItem()).getColor(index, stack);
         }
@@ -39,6 +41,7 @@ public interface IColored {
         public BlockColors() {
         }
 
+        @Override
         public int getColor(BlockState state, BlockAndTintGetter level, BlockPos pos, int index) {
             return ((IColored) state.getBlock()).getColor(index);
         }

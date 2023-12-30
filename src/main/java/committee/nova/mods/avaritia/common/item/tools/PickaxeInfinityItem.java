@@ -48,6 +48,11 @@ public class PickaxeInfinityItem extends PickaxeItem {
         return false;
     }
 
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
     @Nullable
     @Override
     public Entity createEntity(Level level, Entity location, ItemStack stack) {

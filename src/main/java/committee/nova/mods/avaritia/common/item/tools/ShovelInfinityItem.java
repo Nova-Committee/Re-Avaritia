@@ -48,6 +48,17 @@ public class ShovelInfinityItem extends ShovelItem {
     }
 
     @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+    }
+
+    @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         if (stack.getTag() != null && stack.getTag().getBoolean("destroyer")) {
             return 5.0F;
@@ -102,11 +113,6 @@ public class ShovelInfinityItem extends ShovelItem {
 
     }
 
-    @Nullable
-    @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
-    }
 
 
 }

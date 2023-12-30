@@ -70,6 +70,11 @@ public class SingularityItem extends Item implements IColored {
         return i == 0 ? singularity.getUnderlayColor() : i == 1 ? singularity.getOverlayColor() : -1;
     }
 
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
     @Nullable
     @Override
     public Entity createEntity(Level level, Entity location, ItemStack stack) {

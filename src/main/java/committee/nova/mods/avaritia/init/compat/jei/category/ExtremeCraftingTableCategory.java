@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.crafting.ICraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.init.compat.jei.JeiCompat;
@@ -18,9 +19,11 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -86,25 +89,31 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
                     stackIndex++;
                 }
             }
-        } else if (recipe instanceof ShapelessExtremeCraftingRecipe ) {
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    int index = j + (i * 9);
-
-                    if (index < inputs.size()) {
-                        builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 1, i * 18 + 1).addIngredients(inputs.get(index));
-                    }
-                }
-            }
-            builder.setShapeless(152, 164);
+        } else if (recipe instanceof ShapelessExtremeCraftingRecipe) {
+            shapelessRecipe(builder, inputs);
+        } else if (recipe instanceof InfinityCatalystCraftRecipe) {
+            shapelessRecipe(builder, inputs);
         }
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         builder.moveRecipeTransferButton(170, 100);
     }
 
+    private void shapelessRecipe(@NotNull IRecipeLayoutBuilder builder, NonNullList<Ingredient> inputs) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                int index = j + (i * 9);
+
+                if (index < inputs.size()) {
+                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 1, i * 18 + 1).addIngredients(inputs.get(index));
+                }
+            }
+        }
+        builder.setShapeless(175, 140);
+    }
+
     @Override
-    public List<Component> getTooltipStrings(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public @NotNull List<Component> getTooltipStrings(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         var shapeless = recipe instanceof ShapelessExtremeCraftingRecipe;
         int sX = (shapeless ? 340 : 306) / 2, sY = 200 / 2;
 
@@ -115,19 +124,19 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
         return Collections.emptyList();
     }
 
-    @Override
-    public void draw(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics gfx, double mouseX, double mouseY) {
-        var matrix = gfx.pose();
-        matrix.pushPose();
-        matrix.scale(0.5F, 0.5F, 0.5F);
-
-        var shapeless = recipe instanceof ShapelessExtremeCraftingRecipe;
-
-        if (shapeless)
-            this.shapeless.draw(gfx, 306, 329);
-
-        matrix.popPose();
-    }
+//    @Override
+//    public void draw(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics gfx, double mouseX, double mouseY) {
+//        var matrix = gfx.pose();
+//        matrix.pushPose();
+//        matrix.scale(0.5F, 0.5F, 0.5F);
+//
+//        var shapeless = recipe instanceof ShapelessExtremeCraftingRecipe || recipe instanceof InfinityCatalystCraftRecipe;
+//
+//        if (shapeless)
+//            this.shapeless.draw(gfx, 170, 50);
+//
+//        matrix.popPose();
+//    }
 
 
 }

@@ -1,5 +1,5 @@
 {
-  "parent": "item/generated",
+  "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "avaritia:item/resource/singularity",
     "layer1": "avaritia:item/resource/singularity_overlay"

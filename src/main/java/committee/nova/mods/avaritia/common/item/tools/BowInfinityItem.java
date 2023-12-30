@@ -57,6 +57,11 @@ public class BowInfinityItem extends BowItem {
     }
 
     @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
+    @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         if (entity.getAge() >= 0) {
             entity.setExtendedLifetime();

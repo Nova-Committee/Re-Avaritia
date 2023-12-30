@@ -83,6 +83,11 @@ public class ArmorInfinityItem extends ArmorItem {
         super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
     }
 
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
     @Nullable
     @Override
     public Entity createEntity(Level level, Entity location, ItemStack stack) {

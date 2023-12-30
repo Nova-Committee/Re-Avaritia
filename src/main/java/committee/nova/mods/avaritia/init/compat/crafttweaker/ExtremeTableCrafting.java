@@ -6,6 +6,7 @@ import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
+import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -123,6 +124,46 @@ public class ExtremeTableCrafting {
             @Override
             public String systemName() {
                 return "Adding Shapeless recipe";
+            }
+
+        });
+    }
+
+    @ZenCodeType.Method
+    public static void addCatalyst(String id, IIngredient[] inputs) {
+
+        CraftTweakerAPI.apply(new IRuntimeAction() {
+            @Override
+            public void apply() {
+                Map<Integer, Function<ItemStack, ItemStack>> transformers = new HashMap<>();
+
+                for (int i = 0; i < inputs.length; i++) {
+                    var iing = inputs[i];
+                    var ing = iing.asVanillaIngredient();
+
+                    if (ing != Ingredient.EMPTY) {
+                        transformers.put(i, stack -> {
+                            var istack = iing.getRemainingItem(new MCItemStack(stack));
+                            return istack.getInternal();
+                        });
+                    }
+                }
+
+                var recipe = new InfinityCatalystCraftRecipe(new ResourceLocation("crafttweaker", id), toIngredientsList(inputs));
+
+                recipe.setTransformers(transformers);
+
+                RecipeUtil.addRecipe(recipe);
+            }
+
+            @Override
+            public String describe() {
+                return "Adding Shapeless Extreme Table Crafting recipe for Infinity Catalyst";
+            }
+
+            @Override
+            public String systemName() {
+                return "Adding Shapeless recipe for Infinity Catalyst";
             }
 
         });

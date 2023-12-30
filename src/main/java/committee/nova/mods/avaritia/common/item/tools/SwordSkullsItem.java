@@ -43,6 +43,11 @@ public class SwordSkullsItem extends SwordItem {
         tooltip.add(Component.translatable(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip.skullfire_sword.desc")));
     }
 
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
+
     @Nullable
     @Override
     public Entity createEntity(Level level, Entity location, ItemStack stack) {
