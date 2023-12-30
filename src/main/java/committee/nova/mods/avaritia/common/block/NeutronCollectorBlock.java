@@ -34,8 +34,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NeutronCollectorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    private static final BooleanProperty ACTIVE = BooleanProperty.create("active");
-
 
     public NeutronCollectorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50f, 2000f);

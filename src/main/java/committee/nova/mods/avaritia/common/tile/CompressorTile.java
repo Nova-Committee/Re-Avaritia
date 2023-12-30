@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTileEntity extends BaseInventoryTileEntity implements MenuProvider {
+public class CompressorTile extends BaseInventoryTileEntity implements MenuProvider {
     private final BaseItemStackHandler inventory;
     private final BaseItemStackHandler recipeInventory;
     private CompressorRecipe recipe;
@@ -38,7 +38,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     private boolean ejecting = false;
     private final SimpleContainerData data = new SimpleContainerData(1);
 
-    public CompressorTileEntity(BlockPos pos, BlockState state) {
+    public CompressorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler(null);
         this.recipeInventory = new BaseItemStackHandler(1);
@@ -53,8 +53,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
         return inventory;
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, CompressorTileEntity tile) {
-        var mark = false;
+    public static void tick(Level level, BlockPos pos, BlockState state, CompressorTile tile) {
         var output = tile.inventory.getStackInSlot(0);
         var input = tile.inventory.getStackInSlot(1);
 
@@ -68,7 +67,8 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
             if (!input.isEmpty()) {
                 if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
                     tile.materialStack = input.copy();
-                    mark = true;
+
+                    tile.setChangedFast();
                 }
 
                 if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount()) {
@@ -81,8 +81,8 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
                         input.shrink(consumeAmount);
                         tile.materialCount += consumeAmount;
 
-                        if (!mark)
-                            mark = true;
+                        tile.setChangedFast();
+
                     }
                 }
             }
@@ -102,8 +102,8 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
                             if (tile.materialCount <= 0) {
                                 tile.materialStack = ItemStack.EMPTY;
                             }
-                            if (!mark)
-                                mark = true;
+
+                            tile.setChangedFast();
                         }
                     }
                 }
@@ -126,17 +126,14 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
                         if (tile.progress > 0)
                             tile.progress = 0;
 
-                        if (!mark)
-                            mark = true;
+                        tile.setChangedFast();
                     }
                 }
             }
         }
 
 
-        if (mark) {
-            tile.markDirtyAndDispatch();
-        }
+        tile.dispatchIfChanged();
     }
 
     @Override
@@ -170,7 +167,7 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return CompressorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, data, this.getBlockPos());
+        return CompressorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
     }
 
     public ItemStack getMaterialStack() {
@@ -192,8 +189,12 @@ public class CompressorTileEntity extends BaseInventoryTileEntity implements Men
     public void toggleEjecting() {
         if (this.materialCount > 0) {
             this.ejecting = !this.ejecting;
-            this.markDirtyAndDispatch();
+            this.setChangedAndDispatch();
         }
+    }
+
+    public int getProgress() {
+        return this.progress;
     }
 
     public boolean hasRecipe() {

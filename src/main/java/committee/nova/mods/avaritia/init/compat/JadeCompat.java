@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.compat;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.block.CompressorBlock;
-import committee.nova.mods.avaritia.common.tile.CompressorTileEntity;
+import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +30,7 @@ public class JadeCompat implements IWailaPlugin {
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             var level = Minecraft.getInstance().level;
             assert level != null;
-            var compressor = (CompressorTileEntity) accessor.getBlockEntity();
+            var compressor = (CompressorTile) accessor.getBlockEntity();
             var recipe = compressor.getActiveRecipe();
 
             if (recipe != null) {

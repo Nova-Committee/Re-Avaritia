@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,6 +13,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +44,11 @@ public class InfinityCatalystCraftRecipe extends ShapelessExtremeCraftingRecipe{
             this.ingredientsLoaded = true;
         }
         return super.getIngredients();
+    }
+
+    @Override
+    public @NotNull RecipeType<?> getType() {
+        return ModRecipeTypes.INFINITY_CATALYST_RECIPE.get();
     }
 
     @Override

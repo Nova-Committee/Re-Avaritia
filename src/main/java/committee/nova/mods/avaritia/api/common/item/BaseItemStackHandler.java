@@ -49,7 +49,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
     }
 
     public int getSlotLimit(int slot) {
-        return this.slotSizeMap.containsKey(slot) ? (Integer) this.slotSizeMap.get(slot) : this.maxStackSize;
+        return this.slotSizeMap.containsKey(slot) ? this.slotSizeMap.get(slot) : this.maxStackSize;
     }
 
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {

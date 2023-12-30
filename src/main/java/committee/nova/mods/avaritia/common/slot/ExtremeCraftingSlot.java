@@ -32,9 +32,6 @@ public class ExtremeCraftingSlot extends Slot {
 
     @Override
     public void onTake(Player player, ItemStack stack) {
-        boolean isVanilla = false;
-
-
         NonNullList<ItemStack> remaining;
 
         remaining = player.getCommandSenderWorld().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), this.matrix, player.getCommandSenderWorld());

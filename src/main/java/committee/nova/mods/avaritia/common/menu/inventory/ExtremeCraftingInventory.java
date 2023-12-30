@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.container;
+package committee.nova.mods.avaritia.common.menu.inventory;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import net.minecraft.world.entity.player.Player;
@@ -12,16 +12,16 @@ import net.minecraft.world.item.ItemStack;
  * Date: 2022/4/2 11:09
  * Version: 1.0
  */
-public class ExtremeCraftingContainer extends TransientCraftingContainer {
+public class ExtremeCraftingInventory extends TransientCraftingContainer {
     private final AbstractContainerMenu container;
     private final BaseItemStackHandler inventory;
     private final boolean autoTable;
 
-    public ExtremeCraftingContainer(AbstractContainerMenu container, BaseItemStackHandler inventory, int size) {
+    public ExtremeCraftingInventory(AbstractContainerMenu container, BaseItemStackHandler inventory, int size) {
         this(container, inventory, size, false);
     }
 
-    public ExtremeCraftingContainer(AbstractContainerMenu container, BaseItemStackHandler inventory, int size, boolean autoTable) {
+    public ExtremeCraftingInventory(AbstractContainerMenu container, BaseItemStackHandler inventory, int size, boolean autoTable) {
         super(container, size, size);
         this.container = container;
         this.inventory = inventory;

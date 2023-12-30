@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.block;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.CompressorTileEntity;
+import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,7 +41,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new CompressorTileEntity(pos, state);
+        return new CompressorTile(pos, state);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof CompressorTileEntity compressor) {
+            if (tile instanceof CompressorTile compressor) {
                 NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
             }
         }
@@ -62,7 +62,7 @@ public class CompressorBlock extends BaseTileEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof CompressorTileEntity compressor) {
+            if (tile instanceof CompressorTile compressor) {
                 Containers.dropContents(level, pos, compressor.getInventory().getStacks());
             }
         }
@@ -103,11 +103,11 @@ public class CompressorBlock extends BaseTileEntityBlock {
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.compressor_tile.get(), CompressorTileEntity::tick);
+        return createTicker(type, ModTileEntities.compressor_tile.get(), CompressorTile::tick);
     }
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.compressor_tile.get(), CompressorTileEntity::tick);
+        return createTicker(type, ModTileEntities.compressor_tile.get(), CompressorTile::tick);
     }
 }

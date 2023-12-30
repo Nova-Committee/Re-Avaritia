@@ -30,10 +30,14 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     private final BaseItemStackHandler inventory;
 
 
-    public ExtremeCraftingTile(BlockPos p_155229_, BlockState p_155230_) {
-        super(ModTileEntities.extreme_crafting_tile.get(), p_155229_, p_155230_);
-        this.inventory = createInventoryHandler(this::markDirtyAndDispatch);
+    public ExtremeCraftingTile(BlockPos pos, BlockState blockState) {
+        super(ModTileEntities.extreme_crafting_tile.get(), pos, blockState);
+        this.inventory = createInventoryHandler(this::setChangedAndDispatch);
 
+    }
+
+    public static BaseItemStackHandler createInventoryHandler() {
+        return createInventoryHandler(null);
     }
 
     public static BaseItemStackHandler createInventoryHandler(Runnable onContentsChanged) {
@@ -53,7 +57,7 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
-        return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this::isUsableByPlayer, this.inventory);
+        return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this.inventory, this.getBlockPos());
     }
 
     @Override

@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber
 public class ModRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Static.MOD_ID);
-    public static final RegistryObject<RecipeSerializer<?>> INFINITY_SERIALIZER = serializer("infinity_catalyst_craft", InfinityCatalystCraftRecipe.Serializer::new);
+    public static RegistryObject<RecipeSerializer<?>> INFINITY_SERIALIZER = serializer("infinity_catalyst_craft", InfinityCatalystCraftRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> SHAPED_EXTREME_CRAFT_SERIALIZER = serializer("shaped_extreme_craft", ShapedExtremeCraftingRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> SHAPELESS_EXTREME_CRAFT_SERIALIZER = serializer("shapeless_extreme_craft", ShapelessExtremeCraftingRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> COMPRESSOR_SERIALIZER = serializer("compressor", CompressorRecipe.Serializer::new);

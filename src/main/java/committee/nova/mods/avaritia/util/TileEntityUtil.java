@@ -19,21 +19,22 @@ import java.util.List;
 public class TileEntityUtil {
 
     public static void dispatchToNearbyPlayers(BlockEntity tile) {
-        Level level = tile.getLevel();
-        if (level != null) {
-            Packet<ClientGamePacketListener> packet = tile.getUpdatePacket();
-            if (packet != null) {
-                List<? extends Player> players = level.players();
-                BlockPos pos = tile.getBlockPos();
+        var level = tile.getLevel();
+        if (level == null)
+            return;
 
-                for (Player player : players) {
-                    if (player instanceof ServerPlayer mPlayer) {
-                        if (isPlayerNearby(mPlayer.getX(), mPlayer.getZ(), (double) pos.getX() + 0.5D, (double) pos.getZ() + 0.5D)) {
-                            mPlayer.connection.send(packet);
-                        }
-                    }
+        var packet = tile.getUpdatePacket();
+        if (packet == null)
+            return;
+
+        var players = level.players();
+        var pos = tile.getBlockPos();
+
+        for (var player : players) {
+            if (player instanceof ServerPlayer mPlayer) {
+                if (isPlayerNearby(mPlayer.getX(), mPlayer.getZ(), pos.getX() + 0.5, pos.getZ() + 0.5)) {
+                    mPlayer.connection.send(packet);
                 }
-
             }
         }
     }

@@ -16,10 +16,8 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
  * Description
  */
 
-public interface CompressRecipeSchema {
+public interface InfinityCatalystRecipeSchema {
     RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.INPUT_ARRAY.key("ingredients");
     RecipeKey<OutputItem> OUTPUT = ItemComponents.OUTPUT.key("result");
-    RecipeKey<Long> COMPRESS_TIME = TimeComponent.TICKS.key("timeRequired").optional(240L);
-    RecipeKey<Integer> MATERIAL_COUNT = NumberComponent.INT.key("materialCount").optional(1000);
-    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS, OUTPUT, MATERIAL_COUNT, COMPRESS_TIME);
+    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS, OUTPUT);
 }

@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class BaseTileEntity extends BlockEntity {
+    private boolean isChanged = false;
+
     public BaseTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
@@ -30,8 +32,29 @@ public class BaseTileEntity extends BlockEntity {
         return this.saveWithFullMetadata();
     }
 
-    public void markDirtyAndDispatch() {
+    @Override
+    public void setChanged() {
         super.setChanged();
+        this.isChanged = true;
+    }
+
+    public void setChangedFast() {
+        if (this.level != null) {
+            this.level.blockEntityChanged(this.getBlockPos());
+            this.isChanged = true;
+        }
+    }
+
+    public void setChangedAndDispatch() {
+        this.setChanged();
         TileEntityUtil.dispatchToNearbyPlayers(this);
+        this.isChanged = false;
+    }
+
+    public void dispatchIfChanged() {
+        if (this.isChanged) {
+            TileEntityUtil.dispatchToNearbyPlayers(this);
+            this.isChanged = false;
+        }
     }
 }

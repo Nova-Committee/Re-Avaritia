@@ -34,9 +34,6 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     @Override
     protected void init() {
         super.init();
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
-        var pos = this.getMenu().getPos();
         this.tile = this.getTileEntity();
     }
 
@@ -44,7 +41,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         var level = this.getMinecraft().level;
 
         if (level != null) {
-            var tile = level.getBlockEntity(this.getMenu().getPos());
+            var tile = level.getBlockEntity(this.getMenu().getBlockPos());
 
             if (tile instanceof NeutronCollectorTile compressor)
                 return compressor;
@@ -95,7 +92,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         if (this.tile == null)
             return 0;
 
-        return this.menu.getProgress();
+        return this.tile.getProgress();
     }
 
     public int getTimeRequired() {

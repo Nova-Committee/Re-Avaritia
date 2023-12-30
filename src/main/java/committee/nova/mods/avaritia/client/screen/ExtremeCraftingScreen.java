@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -30,8 +31,7 @@ public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMe
     }
 
     @Override
-    protected void renderBg(GuiGraphics stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics stack, float partialTicks, int mouseX, int mouseY) {
         this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
-
     }
 }

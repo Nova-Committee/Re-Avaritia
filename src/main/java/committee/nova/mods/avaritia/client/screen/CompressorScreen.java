@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
-import committee.nova.mods.avaritia.common.tile.CompressorTileEntity;
+import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
-    private CompressorTileEntity tile;
+    private CompressorTile tile;
 
     public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 176, 166, 256, 256);
@@ -33,11 +33,6 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     @Override
     public void init() {
         super.init();
-
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
-        var pos = this.getMenu().getPos();
-
         this.tile = this.getTileEntity();
     }
 
@@ -128,9 +123,9 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
         if (level != null) {
             var container = this.getMenu();
-            var tile = level.getBlockEntity(container.getPos());
+            var tile = level.getBlockEntity(container.getBlockPos());
 
-            if (tile instanceof CompressorTileEntity compressor) {
+            if (tile instanceof CompressorTile compressor) {
                 var materialStack = compressor.getMaterialStack();
 
                 return materialStack.getHoverName();
@@ -140,13 +135,13 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         return Component.literal("");
     }
 
-    private CompressorTileEntity getTileEntity() {
+    private CompressorTile getTileEntity() {
         var level = this.getMinecraft().level;
 
         if (level != null) {
-            var tile = level.getBlockEntity(this.getMenu().getPos());
+            var tile = level.getBlockEntity(this.getMenu().getBlockPos());
 
-            if (tile instanceof CompressorTileEntity compressor)
+            if (tile instanceof CompressorTile compressor)
                 return compressor;
         }
 
@@ -179,7 +174,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         if (this.tile == null)
             return 0;
 
-        return this.menu.getProgress();
+        return this.tile.getProgress();
     }
 
     public int getMaterialCount() {

@@ -36,7 +36,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     private final BaseItemStackHandler inventory;
     private int progress;
 
-    private SimpleContainerData data = new SimpleContainerData(1);
+    private final SimpleContainerData data = new SimpleContainerData(1);
 
     public NeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile.get(), pos, state);
@@ -59,7 +59,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
                     }
                 }
                 tile.progress = 0;
-                tile.markDirtyAndDispatch();
+                tile.setChangedAndDispatch();
             }
         }
 
@@ -102,7 +102,12 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return NeutronCollectorMenu.create(windowId, playerInventory, this::isUsableByPlayer, this.inventory, data, this.getBlockPos());
+        return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
     }
+
+    public int getProgress() {
+        return this.progress;
+    }
+
 
 }

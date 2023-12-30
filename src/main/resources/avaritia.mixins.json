@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "committee.nova.mods.avaritia.init.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "avaritia.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

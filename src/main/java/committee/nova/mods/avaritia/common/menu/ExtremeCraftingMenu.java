@@ -1,11 +1,13 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
-import committee.nova.mods.avaritia.common.container.ExtremeCraftingContainer;
+import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
+import committee.nova.mods.avaritia.common.menu.inventory.ExtremeCraftingInventory;
 import committee.nova.mods.avaritia.common.slot.ExtremeCraftingSlot;
 import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,23 +28,29 @@ import java.util.function.Function;
  * Date: 2022/2/19 19:42
  * Version: 1.0
  */
-public class ExtremeCraftingMenu extends AbstractContainerMenu {
-
-    private final Function<Player, Boolean> isUsableByPlayer;
+public class ExtremeCraftingMenu extends BaseMenu {
     private final Level world;
     private final Container result;
 
-    private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory) {
-        this(type, id, playerInventory, p -> false, ExtremeCraftingTile.createInventoryHandler(null));
+    public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {
+        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, buf);
     }
 
-    private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory) {
-        super(type, id);
-        this.isUsableByPlayer = isUsableByPlayer;
-        this.world = playerInventory.player.getCommandSenderWorld();
+    public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, inventory, pos);
+    }
+
+
+    private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf) {
+        this(type, id, playerInventory, ExtremeCraftingTile.createInventoryHandler(), buf.readBlockPos());
+    }
+
+    private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+        super(type, id, pos);
+        this.world = playerInventory.player.level();
         this.result = new ResultContainer();
 
-        var matrix = new ExtremeCraftingContainer(this, inventory, 9);
+        var matrix = new ExtremeCraftingInventory(this, inventory, 9);
 
         this.addSlot(new ExtremeCraftingSlot(this, matrix, this.result, 0, 206, 89));
 
@@ -66,13 +74,7 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
         this.slotsChanged(matrix);
     }
 
-    public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {
-        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory);
-    }
 
-    public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory) {
-        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, isUsableByPlayer, inventory);
-    }
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
@@ -86,11 +88,6 @@ public class ExtremeCraftingMenu extends AbstractContainerMenu {
         }
 
         super.slotsChanged(matrix);
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return this.isUsableByPlayer.apply(player);
     }
 
     @Override

@@ -296,7 +296,7 @@ public class TraceArrowEntity extends AbstractArrow {
         }
 
         if (this.isCritArrow()) {
-            long j = (long)this.random.nextInt(i / 2 + 2);
+            long j = this.random.nextInt(i / 2 + 2);
             i = (int)Math.min(j + (long)i, 2147483647L);
         }
 

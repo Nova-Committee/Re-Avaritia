@@ -1,9 +1,10 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
+import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
 import committee.nova.mods.avaritia.api.common.slot.BaseItemStackHandlerSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
-import committee.nova.mods.avaritia.common.tile.CompressorTileEntity;
+import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,20 +22,21 @@ import java.util.function.Function;
  * Date: 2022/4/2 18:09
  * Version: 1.0
  */
-public class CompressorMenu extends AbstractContainerMenu {
-    private final Function<Player, Boolean> isUsableByPlayer;
-    private final ContainerData data;
-    private final BlockPos pos;
-
-    private CompressorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(type, id, playerInventory, p -> false, CompressorTileEntity.createInventoryHandler(null), new SimpleContainerData(10), buffer.readBlockPos());
+public class CompressorMenu extends BaseMenu {
+    public static CompressorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
+        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, buffer);
     }
 
-    private CompressorMenu(MenuType<?> type, int id, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory, ContainerData data, BlockPos pos) {
-        super(type, id);
-        this.isUsableByPlayer = isUsableByPlayer;
-        this.data = data;
-        this.pos = pos;
+    public static CompressorMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, inventory, pos);
+    }
+
+    private CompressorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(type, id, playerInventory, CompressorTile.createInventoryHandler(null), buffer.readBlockPos());
+    }
+
+    private CompressorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+        super(type, id, pos);
 
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
         this.addSlot(new BaseItemStackHandlerSlot(inventory, 1, 39, 35));
@@ -48,16 +50,6 @@ public class CompressorMenu extends AbstractContainerMenu {
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
-
-        this.addDataSlots(data);
-    }
-
-    public static CompressorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, buffer);
-    }
-
-    public static CompressorMenu create(int windowId, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory, ContainerData data, BlockPos pos) {
-        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, isUsableByPlayer, inventory, data, pos);
     }
 
     @Override
@@ -102,18 +94,5 @@ public class CompressorMenu extends AbstractContainerMenu {
         }
 
         return itemstack;
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return this.isUsableByPlayer.apply(player);
-    }
-
-    public BlockPos getPos() {
-        return this.pos;
-    }
-
-    public int getProgress() {
-        return data.get(0);
     }
 }

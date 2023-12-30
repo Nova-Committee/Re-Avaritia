@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
+import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -20,20 +21,21 @@ import java.util.function.Function;
  * Date: 2022/4/2 15:13
  * Version: 1.0
  */
-public class NeutronCollectorMenu extends AbstractContainerMenu {
-    private final Function<Player, Boolean> isUsableByPlayer;
-    private final ContainerData data;
-    private final BlockPos pos;
-
-    private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(type, id, playerInventory, p -> false, NeutronCollectorTile.createInventoryHandler(null), new SimpleContainerData(10), buffer.readBlockPos());
+public class NeutronCollectorMenu extends BaseMenu {
+    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
+        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, buffer);
     }
 
-    protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory, ContainerData data, BlockPos pos) {
-        super(type, id);
-        this.isUsableByPlayer = isUsableByPlayer;
-        this.data = data;
-        this.pos = pos;
+    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, inventory, pos);
+    }
+
+    private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(type, id, playerInventory, NeutronCollectorTile.createInventoryHandler(null), buffer.readBlockPos());
+    }
+
+    protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+        super(type, id, pos);
         this.addSlot(new OutputSlot(inventory, 0, 80, 32));
 
         for (int i = 0; i < 3; i++) {
@@ -45,26 +47,8 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
-
-        this.addDataSlots(data);
     }
 
-    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, buffer);
-    }
-
-    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, Function<Player, Boolean> isUsableByPlayer, BaseItemStackHandler inventory, ContainerData data, BlockPos pos) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, isUsableByPlayer, inventory, data, pos);
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return this.isUsableByPlayer.apply(player);
-    }
-
-    public BlockPos getPos() {
-        return this.pos;
-    }
 
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
@@ -107,9 +91,5 @@ public class NeutronCollectorMenu extends AbstractContainerMenu {
         }
 
         return itemstack;
-    }
-
-    public int getProgress() {
-        return data.get(0);
     }
 }

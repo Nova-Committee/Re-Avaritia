@@ -22,10 +22,12 @@ public class BaseItemStackHandlerSlot extends SlotItemHandler {
         this.index = index;
     }
 
+    @Override
     public boolean mayPickup(Player player) {
         return !this.inventory.extractItemSuper(this.index, 1, true).isEmpty();
     }
 
+    @Override
     public @NotNull ItemStack remove(int amount) {
         return this.inventory.extractItemSuper(this.index, amount, false);
     }

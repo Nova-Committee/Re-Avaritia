@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.block;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,8 +36,10 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof ExtremeCraftingTile table)
-                player.openMenu(table);
+            if (tile instanceof ExtremeCraftingTile table){
+                NetworkHooks.openScreen((ServerPlayer) player, table, pos);
+            }
+
         }
 
         return InteractionResult.SUCCESS;
@@ -64,4 +68,5 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
     public @NotNull RenderShape getRenderShape(@NotNull BlockState p_49232_) {
         return RenderShape.MODEL;
     }
+
 }
