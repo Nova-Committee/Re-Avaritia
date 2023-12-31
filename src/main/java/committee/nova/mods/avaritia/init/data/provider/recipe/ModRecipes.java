@@ -112,6 +112,19 @@ public class ModRecipes extends RecipeProvider {
                 
                 .unlockedBy("has_item", has(ModItems.neutron_pile.get())).save(consumer);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.endless_cake.get())
+                .pattern("aaa")
+                .pattern("bcb")
+                .pattern("ded")
+                .define('a', Items.MILK_BUCKET)
+                .define('b', Items.SUGAR)
+                .define('c', Items.DRAGON_EGG)
+                .define('d', Tags.Items.CROPS_WHEAT)
+                .define('e', ModItems.infinity_ingot.get())
+
+                .unlockedBy("has_item", has(Items.DRAGON_EGG)).save(consumer);
+
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
                 .save(consumer);

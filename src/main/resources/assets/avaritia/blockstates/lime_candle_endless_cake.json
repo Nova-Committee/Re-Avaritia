@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "avaritia:block/cake/lime_candle_endless_cake"
+    },
+    "lit=true": {
+      "model": "avaritia:block/cake/lime_candle_endless_cake_lit"
+    }
+  }
+}
