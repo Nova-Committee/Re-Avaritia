@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
+import committee.nova.mods.avaritia.common.item.resources.StarFuelItem;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
@@ -45,6 +46,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_boots = item("infinity_boots", () -> new ArmorInfinityItem(ArmorItem.Type.BOOTS));
     public static RegistryObject<Item> ultimate_stew = item("ultimate_stew", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)));
     public static RegistryObject<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)));
+    //resource
     public static RegistryObject<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
     public static RegistryObject<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
     public static RegistryObject<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(Rarity.RARE, "crystal_matrix_ingot", true));
@@ -55,7 +57,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(Rarity.RARE, "infinity_nugget", true));
     public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_catalyst", true));
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", true));
-    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.EPIC, "star_fuel", true));
+    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new StarFuelItem(Rarity.EPIC));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
 
