@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ToolHelper;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import committee.nova.mods.avaritia.util.math.RayTracer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,8 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -113,10 +111,10 @@ public class PickaxeInfinityItem extends PickaxeItem {
 
     public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
 
-        var world = player.getCommandSenderWorld();
+        var world = player.level();
         var state = world.getBlockState(pos);
         var mat = state.getMapColor(world, pos);
-        if (!ToolHelper.materialsPick.contains(mat)) {
+        if (!ToolUtil.materialsPick.contains(mat)) {
             return;
         }
 
@@ -130,7 +128,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
         var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
         var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolHelper.aoeBlocks(player, stack, world, pos, minOffset, maxOffset, null, ToolHelper.materialsPick, false);
+        ToolUtil.aoeBlocks(player, stack, world, pos, minOffset, maxOffset, null, ToolUtil.materialsPick, false);
 
     }
 

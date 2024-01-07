@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.event;
 
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
-import committee.nova.mods.avaritia.util.ToolHelper;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +20,7 @@ import java.util.Set;
  * Date: 2022/3/31 22:55
  * Version: 1.0
  */
-public class AEOCrawlerTask {
+public class MatterCollectEvent {
     final Level world;
     final Player player;
     final ItemStack stack;
@@ -30,7 +30,7 @@ public class AEOCrawlerTask {
     final boolean force;
     final Set<BlockPos> posChecked;
 
-    public AEOCrawlerTask(Level world, Player player, ItemStack stack, BlockPos origin, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
+    public MatterCollectEvent(Level world, Player player, ItemStack stack, BlockPos origin, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
         this.world = world;
         this.player = player;
         this.stack = stack;
@@ -47,7 +47,7 @@ public class AEOCrawlerTask {
         if (!force && originState.isAir()) {
             return;
         }
-        ToolHelper.removeBlockWithDrops(player, stack, world, origin, null, ToolHelper.materialsAxe);
+        ToolUtil.removeBlockWithDrops(player, stack, world, origin, null, ToolUtil.materialsAxe);
         if (steps == 0) {
             return;
         }

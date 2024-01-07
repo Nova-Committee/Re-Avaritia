@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
-import committee.nova.mods.avaritia.util.ToolHelper;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -84,23 +84,23 @@ public class HoeInfinityItem extends HoeItem {
                 //harvest
                 if (block instanceof CropBlock) { //common
                     if (block instanceof BeetrootBlock ? state.getValue(BeetrootBlock.AGE) >= 3 : state.getValue(CropBlock.AGE) >= 7) {
-                        ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                        ToolUtil.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
                         pLevel.setBlock(pos, state.setValue(block instanceof BeetrootBlock ? BeetrootBlock.AGE : CropBlock.AGE, 0), 11);
                     }
                 }
                 if (block instanceof CocoaBlock) { //coca
                     if (state.getValue(CocoaBlock.AGE) >= 2) {
-                        ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                        ToolUtil.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
                         pLevel.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), 11);
                     }
                 }
                 if (block instanceof StemGrownBlock) { //pumpkin
-                    ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                    ToolUtil.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
                     pLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
                 }
                 if (block instanceof SweetBerryBushBlock) { //SweetBerry
                     if (state.getValue(SweetBerryBushBlock.AGE) >= 3) {
-                        ToolHelper.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
+                        ToolUtil.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
                         pLevel.setBlock(pos, state.setValue(SweetBerryBushBlock.AGE, 0), 11);
                     }
                 }
@@ -112,7 +112,7 @@ public class HoeInfinityItem extends HoeItem {
             }
             InfinityHandler.stopItemCapture();
             Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
-            ToolHelper.spawnClusters(pLevel, pPlayer, map.keySet());
+            ToolUtil.spawnClusters(pLevel, pPlayer, map.keySet());
             pPlayer.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
         pLevel.playSound(pPlayer, pPlayer.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
@@ -162,7 +162,7 @@ public class HoeInfinityItem extends HoeItem {
                     }
                     InfinityHandler.stopItemCapture();
                     Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
-                    ToolHelper.spawnClusters(world, playerentity, map.keySet());
+                    ToolUtil.spawnClusters(world, playerentity, map.keySet());
 
                     Iterable<BlockPos> inBoxMutable = BlockPos.betweenClosed(minPos, maxPos.offset(0, 3, 0));
                     Iterable<BlockPos> allInBoxMutable = BlockPos.betweenClosed(minPos.offset(-1, 0, -1), maxPos.offset(1, 4, 1));
@@ -200,7 +200,7 @@ public class HoeInfinityItem extends HoeItem {
             if (!itemStack.isEmpty())
                 map.put(itemStack, map.get(itemStack) + stack1.getCount());
             else map.put(stack1, stack1.getCount());
-        } else ToolHelper.putMapDrops(world, pos, player, new ItemStack(this), map);
+        } else ToolUtil.putMapDrops(world, pos, player, new ItemStack(this), map);
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
     }
 

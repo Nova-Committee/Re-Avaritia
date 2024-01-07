@@ -39,7 +39,7 @@ public class RayTracer {
         Vec3 startVec = getStartVec(player);
         Vec3 endVec = getEndVec(player, reach);
         ClipContext rayTraceContext = new ClipContext(startVec, endVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
-        return player.getCommandSenderWorld().clip(rayTraceContext);
+        return player.level().clip(rayTraceContext);
     }
 
 }

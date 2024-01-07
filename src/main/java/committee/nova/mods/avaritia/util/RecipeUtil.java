@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.util.recipes;
+package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.resources.ResourceLocation;

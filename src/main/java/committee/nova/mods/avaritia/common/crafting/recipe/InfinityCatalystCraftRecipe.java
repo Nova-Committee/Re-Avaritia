@@ -7,7 +7,7 @@ import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import committee.nova.mods.avaritia.util.SingularityUtils;
+import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -64,7 +64,7 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe, ICraftRecipe
                     .stream()
                     .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                     .limit(74)
-                    .map(SingularityUtils::getItemForSingularity)
+                    .map(SingularityUtil::getItemForSingularity)
                     .map(Ingredient::of)
                     .forEach(this.inputs::add);
             this.ingredientsLoaded = true;

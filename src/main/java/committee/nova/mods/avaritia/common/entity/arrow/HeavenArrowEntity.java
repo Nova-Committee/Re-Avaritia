@@ -47,7 +47,7 @@ public class HeavenArrowEntity extends Arrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
-        var randy = getCommandSenderWorld().random;
+        var randy = level().random;
         
         if (entity instanceof LivingEntity living) {
             var pos = living.getOnPos();
@@ -70,14 +70,14 @@ public class HeavenArrowEntity extends Arrow {
             double dx = Math.sin(dangle) * ddist;
             double dz = Math.cos(dangle) * ddist;
 
-            HeavenSubArrowEntity subArrow = HeavenSubArrowEntity.create(getCommandSenderWorld(), x, y, z);
+            HeavenSubArrowEntity subArrow = HeavenSubArrowEntity.create(level(), x, y, z);
             if (shooter != null) subArrow.setOwner(shooter);
             subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
             subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
             subArrow.setCritArrow(true);
             subArrow.pickup = pickup;
 
-            getCommandSenderWorld().addFreshEntity(subArrow);
+            level().addFreshEntity(subArrow);
         }
     }
 
@@ -85,7 +85,7 @@ public class HeavenArrowEntity extends Arrow {
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         var pos = result.getBlockPos();
-        var randy = getCommandSenderWorld().random;
+        var randy = level().random;
         barrage(randy, pos);
         remove(RemovalReason.KILLED);
     }

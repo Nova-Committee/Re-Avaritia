@@ -4,8 +4,10 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
-import committee.nova.mods.avaritia.init.event.AEOCrawlerTask;
+import committee.nova.mods.avaritia.init.event.MatterCollectEvent;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.AbilityUtil;
 import committee.nova.mods.avaritia.util.lang.TextUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -60,28 +62,14 @@ import java.util.*;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InfinityHandler {
-    private static final Map<DimensionType, List<AEOCrawlerTask>> crawlerTasks = new HashMap<>();
+    private static final Map<DimensionType, List<MatterCollectEvent>> crawlerTasks = new HashMap<>();
     private static boolean doItemCapture = false;
     private static final Set<ItemStack> capturedDrops = new LinkedHashSet<>();
-
-    public static boolean isInfinite(LivingEntity player) {
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() != EquipmentSlot.Type.ARMOR) {
-                continue;
-            }
-            ItemStack stack = player.getItemBySlot(slot);
-            if (stack.isEmpty() || !(stack.getItem() instanceof ArmorInfinityItem)) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     public static boolean isInfiniteChestPlate(LivingEntity player) {
         ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
         return !stack.isEmpty() && stack.getItem() instanceof ArmorInfinityItem;
     }
-
 
     public static void enableItemCapture() {
         doItemCapture = true;
@@ -115,7 +103,7 @@ public class InfinityHandler {
     }
 
     public static void startCrawlerTask(Level world, Player player, ItemStack stack, BlockPos coords, int steps, boolean leaves, boolean force, Set<BlockPos> posChecked) {
-        AEOCrawlerTask swapper = new AEOCrawlerTask(world, player, stack, coords, steps, leaves, force, posChecked);
+        MatterCollectEvent swapper = new MatterCollectEvent(world, player, stack, coords, steps, leaves, force, posChecked);
         DimensionType dim = world.dimensionType();
         if (!crawlerTasks.containsKey(dim)) {
             crawlerTasks.put(dim, new ArrayList<>());
@@ -126,7 +114,7 @@ public class InfinityHandler {
 
     public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
         if (event.getState().getMapColor(event.getLevel(), event.getPos()) == MapColor.STONE) {
-            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().getCommandSenderWorld())).withLuck(event.getPlayer().getCommandSenderWorld().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().getCommandSenderWorld().getBlockEntity(event.getPos()));
+            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().level())).withLuck(event.getPlayer().level().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level().getBlockEntity(event.getPos()));
             List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
             for (ItemStack drop : drops) {
                 if (drop.getItem() != Item.byBlock(event.getState().getBlock()) && !(drop.getItem() instanceof BlockItem)) {
@@ -154,10 +142,10 @@ public class InfinityHandler {
         if (event.phase == TickEvent.Phase.END) {
             DimensionType dim = event.level.dimensionType();
             if (crawlerTasks.containsKey(dim)) {
-                List<AEOCrawlerTask> swappers = crawlerTasks.get(dim);
-                List<AEOCrawlerTask> swappersSafe = new ArrayList<>(swappers);
+                List<MatterCollectEvent> swappers = crawlerTasks.get(dim);
+                List<MatterCollectEvent> swappersSafe = new ArrayList<>(swappers);
                 swappers.clear();
-                for (AEOCrawlerTask s : swappersSafe) {
+                for (MatterCollectEvent s : swappersSafe) {
                     if (s != null) {
                         s.tick();
                     }
@@ -231,7 +219,7 @@ public class InfinityHandler {
 
     //合并物质团
     @SubscribeEvent
-    public static void clusterClustererererer(EntityItemPickupEvent event) {
+    public static void clusterCluster(EntityItemPickupEvent event) {
         if (event.getEntity() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster.get()) {
             ItemStack stack = event.getItem().getItem();
             Player player = event.getEntity();
@@ -288,7 +276,7 @@ public class InfinityHandler {
         if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.infinity_sword.get() && player.getMainHandItem().useOnRelease()) {
             event.setCanceled(true);
         }
-        if (isInfinite(player) && !event.getSource().getMsgId().equals("infinity")) {
+        if (AbilityUtil.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
     }
@@ -302,7 +290,7 @@ public class InfinityHandler {
         if (event.getSource().getEntity() != null && event.getSource().getEntity() instanceof Player) {
             return;
         }
-        if (isInfinite(player) && !event.getSource().getMsgId().equals("infinity")) {
+        if (AbilityUtil.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
     }
@@ -351,9 +339,9 @@ public class InfinityHandler {
     }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {
-        ItemEntity entityitem = new ItemEntity(event.getEntity().getCommandSenderWorld(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), drop);
-        entityitem.setDefaultPickUpDelay();
-        event.getDrops().add(entityitem);
+        ItemEntity entity = new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), drop);
+        entity.setDefaultPickUpDelay();
+        event.getDrops().add(entity);
     }
 
 }

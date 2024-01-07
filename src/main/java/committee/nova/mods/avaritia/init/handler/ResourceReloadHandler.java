@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
-import committee.nova.mods.avaritia.util.recipes.RecipeUtil;
+import committee.nova.mods.avaritia.util.RecipeUtil;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.common.MinecraftForge;

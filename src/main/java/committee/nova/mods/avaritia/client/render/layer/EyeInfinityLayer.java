@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.render.layer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.init.handler.InfinityHandler;
+import committee.nova.mods.avaritia.util.AbilityUtil;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -34,7 +34,7 @@ public class EyeInfinityLayer extends EyesLayer<LivingEntity, HumanoidModel<Livi
     @Override
     public void render(@NotNull PoseStack pMatrixStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, @NotNull LivingEntity pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         VertexConsumer consumer = pBuffer.getBuffer(this.renderType());
-        if (InfinityHandler.isInfinite(pLivingEntity))
+        if (AbilityUtil.isInfinite(pLivingEntity))
             this.getParentModel().renderToBuffer(pMatrixStack, consumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 

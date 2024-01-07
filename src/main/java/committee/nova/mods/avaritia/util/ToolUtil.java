@@ -30,7 +30,7 @@ import java.util.*;
  * Date: 2022/3/31 10:50
  * Version: 1.0
  */
-public class ToolHelper {
+public class ToolUtil {
     public static final Set<MapColor> materialsPick = Sets.newHashSet(MapColor.STONE, MapColor.METAL, MapColor.ICE,
             //MapColor.GLASS, MapColor.EXPLOSIVE, MapColor.PISTON, MapColor.ICE_SOLID, MapColor.SPONGE, MapColor.SHULKER_SHELL,
             MapColor.WOOL,

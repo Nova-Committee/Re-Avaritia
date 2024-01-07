@@ -1,20 +1,18 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
-import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
-import committee.nova.mods.avaritia.util.SingularityUtils;
+import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
@@ -447,7 +445,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('B', ModItems.neutron_ingot.get())
                 .define('C', ModItems.neutron_gear.get())
                 .define('X', ModBlocks.denser_neutron_collector.get())
-                .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE).getItem())
+                .define('Y', SingularityUtil.getItemForSingularity(ModSingularities.REDSTONE))
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModBlocks.denser_neutron_collector.get())).save(consumer);
 

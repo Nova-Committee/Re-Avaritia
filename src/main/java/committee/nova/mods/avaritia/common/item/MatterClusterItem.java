@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ToolHelper;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -49,7 +49,7 @@ public class MatterClusterItem extends Item {
     }
 
     public static List<ItemStack> makeClusters(Set<ItemStack> input) {
-        Map<ItemStackWrapper, Integer> items = ToolHelper.collateMatterCluster(input);
+        Map<ItemStackWrapper, Integer> items = ToolUtil.collateMatterCluster(input);
         List<ItemStack> clusters = new ArrayList<>();
         List<Map.Entry<ItemStackWrapper, Integer>> itemlist = new ArrayList<>(items.entrySet());
 
@@ -223,7 +223,7 @@ public class MatterClusterItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         Vec3 pos = player.position();
         if (!world.isClientSide) {
-            List<ItemStack> drops = ToolHelper.collateMatterClusterContents(Objects.requireNonNull(MatterClusterItem.getClusterData(stack)));
+            List<ItemStack> drops = ToolUtil.collateMatterClusterContents(Objects.requireNonNull(MatterClusterItem.getClusterData(stack)));
 
             for (ItemStack drop : drops) {
                 Containers.dropItemStack(world, pos.x, pos.y, pos.z, drop);

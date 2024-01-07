@@ -18,10 +18,12 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +75,10 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
 
     public ModShapedRecipeBuilder define(Character p_126128_, ItemLike p_126129_) {
         return this.define(p_126128_, Ingredient.of(p_126129_));
+    }
+
+    public ModShapedRecipeBuilder define(Character p_126128_, ItemStack p_126129_) {
+        return this.define(p_126128_, StrictNBTIngredient.of(p_126129_));
     }
 
     public ModShapedRecipeBuilder define(Character p_126125_, Ingredient p_126126_) {

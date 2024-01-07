@@ -44,7 +44,7 @@ public class SyncMachinePacket extends IPacket<SyncMachinePacket> {
     	
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
-                AbsNeutronCollectorTile tile = (AbsNeutronCollectorTile) Objects.requireNonNull(ctx.get().getSender()).getCommandSenderWorld().getBlockEntity(pos);
+                AbsNeutronCollectorTile tile = (AbsNeutronCollectorTile) Objects.requireNonNull(ctx.get().getSender()).level().getBlockEntity(pos);
             }
         });
 

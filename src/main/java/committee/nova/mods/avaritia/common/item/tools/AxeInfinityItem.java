@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ToolHelper;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -72,14 +72,14 @@ public class AxeInfinityItem extends AxeItem {
             var min = new BlockPos(-range, -3, -range);
             var max = new BlockPos(range, range * 2 - 3, range);
 
-            ToolHelper.aoeBlocks(player, stack, level, player.getOnPos(), min, max, null, ToolHelper.materialsAxe, false);
+            ToolUtil.aoeBlocks(player, stack, level, player.getOnPos(), min, max, null, ToolUtil.materialsAxe, false);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        if (player.isCrouching() && !player.getCommandSenderWorld().isClientSide) {
+        if (player.isCrouching() && !player.level().isClientSide) {
             breakOtherBlock(player, stack, pos);
         }
         return false;
@@ -89,6 +89,6 @@ public class AxeInfinityItem extends AxeItem {
         if (player.isCrouching()) {
             return;
         }
-        InfinityHandler.startCrawlerTask(player.getCommandSenderWorld(), player, stack, pos, ModConfig.axeChainCount.get(), false, true, new HashSet<>());
+        InfinityHandler.startCrawlerTask(player.level(), player, stack, pos, ModConfig.axeChainCount.get(), false, true, new HashSet<>());
     }
 }

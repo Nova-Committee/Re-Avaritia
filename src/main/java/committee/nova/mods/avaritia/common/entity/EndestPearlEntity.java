@@ -73,7 +73,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             ParticleOptions particleoptions = this.getParticle();
 
             for (int i = 0; i < 8; ++i) {
-                this.getCommandSenderWorld().addParticle(particleoptions, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(particleoptions, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
 
@@ -88,12 +88,12 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             entity.hurt(this.damageSources().thrown(this, getOwner()), 0.0F);
         }
 
-        if (!getCommandSenderWorld().isClientSide) {
+        if (!level().isClientSide) {
             GapingVoidEntity ent;
             if (shooter != null) {
-                ent = new GapingVoidEntity(getCommandSenderWorld(), shooter);
+                ent = new GapingVoidEntity(level(), shooter);
 
-            } else ent = new GapingVoidEntity(getCommandSenderWorld());
+            } else ent = new GapingVoidEntity(level());
 
             Direction dir = entity.getDirection();
             Vec3 offset = Vec3.ZERO;
@@ -104,7 +104,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
                 ent.setUser(shooter);
             }
             ent.moveTo(entity.getX() + offset.x * 0.25, entity.getY() + offset.y * 0.25, entity.getZ() + offset.z * 0.25, entity.getYRot(), 0.0F);
-            getCommandSenderWorld().addFreshEntity(ent);
+            level().addFreshEntity(ent);
 
             remove(RemovalReason.KILLED);
         }
@@ -115,13 +115,13 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         super.onHitBlock(result);
         BlockPos pos = result.getBlockPos();
 
-        if (!getCommandSenderWorld().isClientSide) {
+        if (!level().isClientSide) {
 
             GapingVoidEntity ent;
             if (shooter != null) {
-                ent = new GapingVoidEntity(getCommandSenderWorld(), shooter);
+                ent = new GapingVoidEntity(level(), shooter);
 
-            } else ent = new GapingVoidEntity(getCommandSenderWorld());
+            } else ent = new GapingVoidEntity(level());
             Direction dir = result.getDirection();
             Vec3 offset = Vec3.ZERO;
             if (dir != null) {
@@ -131,7 +131,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
                 ent.setUser(shooter);
             }
             ent.moveTo(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25, getYRot(), 0.0F);
-            getCommandSenderWorld().addFreshEntity(ent);
+            level().addFreshEntity(ent);
 
 
             remove(RemovalReason.KILLED);

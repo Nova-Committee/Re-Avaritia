@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ToolHelper;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import committee.nova.mods.avaritia.util.math.RayTracer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -81,7 +81,7 @@ public class ShovelInfinityItem extends ShovelItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("destroyer")) {
-            var world = player.getCommandSenderWorld();
+            var world = player.level();
             if (!world.isClientSide) {
                 BlockHitResult traceResult = RayTracer.retrace(player, 10);
                 breakOtherBlock(player, stack, pos, traceResult.getDirection());
@@ -92,10 +92,10 @@ public class ShovelInfinityItem extends ShovelItem {
 
     public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
 
-        var world = player.getCommandSenderWorld();
+        var world = player.level();
         var state = world.getBlockState(pos);
         var mat = state.getMapColor(world, pos);
-        if (!ToolHelper.materialsShovel.contains(mat)) {
+        if (!ToolUtil.materialsShovel.contains(mat)) {
             return;
         }
 
@@ -109,7 +109,7 @@ public class ShovelInfinityItem extends ShovelItem {
         var min = new BlockPos(-range, doY ? -1 : -range, -range);
         var max = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolHelper.aoeBlocks(player, stack, world, pos, min, max, null, ToolHelper.materialsShovel, false);
+        ToolUtil.aoeBlocks(player, stack, world, pos, min, max, null, ToolUtil.materialsShovel, false);
 
     }
 

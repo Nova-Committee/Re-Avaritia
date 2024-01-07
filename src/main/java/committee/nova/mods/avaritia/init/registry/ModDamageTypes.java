@@ -41,11 +41,11 @@ public class ModDamageTypes {
     }
 
     public static DamageSource causeRandomDamage(Entity attacker) {
-        return new DamageSourceRandomMessages(attacker.getCommandSenderWorld().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
+        return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 
     public static DamageSource causeDamage(LivingEntity attacker) {
-        return new DamageSource(attacker.getCommandSenderWorld().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
+        return new DamageSource(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {
