@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:block/machine/collector/neutron_collector",
+  "parent": "avaritia:block/machine/collector/denser_neutron_collector",
   "display": {
     "gui": {
       "rotation": [

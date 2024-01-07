@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.api.common.net.IPacket;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.collector.AbsNeutronCollectorTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -44,7 +44,7 @@ public class SyncMachinePacket extends IPacket<SyncMachinePacket> {
     	
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
-                NeutronCollectorTile tile = (NeutronCollectorTile) Objects.requireNonNull(ctx.get().getSender()).getCommandSenderWorld().getBlockEntity(pos);
+                AbsNeutronCollectorTile tile = (AbsNeutronCollectorTile) Objects.requireNonNull(ctx.get().getSender()).getCommandSenderWorld().getBlockEntity(pos);
             }
         });
 

@@ -1,11 +1,8 @@
-package committee.nova.mods.avaritia.common.tile;
+package committee.nova.mods.avaritia.common.tile.collector;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
-import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
@@ -16,8 +13,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -29,30 +28,36 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 13:55
  * Version: 1.0
  */
-public class NeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
-    private final int production_ticks;
+public abstract class AbsNeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
+
+
     public final BaseItemStackHandler inventory;
     private int progress;
+    private int production_ticks;
+    private Item production;
+    private String name;
 
     public SimpleContainerData data = new SimpleContainerData(1);
 
-    public NeutronCollectorTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.neutron_collector_tile.get(), pos, state);
-        this.production_ticks = ModConfig.neutronCollectorProductTick.get();
+    public AbsNeutronCollectorTile(BlockEntityType<?> entityType, BlockPos pos, BlockState state, Item production, int production_ticks, String name) {
+        super(entityType, pos, state);
+        this.production_ticks = production_ticks;
+        this.production = production;
+        this.name = name;
         this.inventory = createInventoryHandler(null);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, NeutronCollectorTile tile) {
+    public static void tick(Level level, BlockPos pos, BlockState state, AbsNeutronCollectorTile tile) {
         if (level.isClientSide) return;
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
-            var stack = new ItemStack(ModItems.neutron_pile.get());
+            var stack = new ItemStack(tile.production);
             tile.progress++;
             tile.data.set(0, tile.progress);
             if (tile.progress >= tile.production_ticks) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
-                } else if (result.is(ModItems.neutron_pile.get())) {
+                } else if (result.is(tile.production)) {
                     if (result.getCount() < 64) {
                         tile.inventory.setStackInSlot(0, ItemStackUtil.grow(result, 1));
                     }
@@ -95,7 +100,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("container.neutron_collector").build();
+        return Localizable.of("container." + name).build();
     }
 
     @Nullable
@@ -106,5 +111,9 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
 
     public int getProductionTicks() {
         return production_ticks;
+    }
+
+    public Item getProduction() {
+        return production;
     }
 }

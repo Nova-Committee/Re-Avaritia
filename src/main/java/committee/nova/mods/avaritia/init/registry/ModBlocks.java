@@ -4,10 +4,13 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.item.BaseBlockItem;
 import committee.nova.mods.avaritia.common.block.CompressorBlock;
 import committee.nova.mods.avaritia.common.block.ExtremeCraftingTableBlock;
-import committee.nova.mods.avaritia.common.block.NeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
+import committee.nova.mods.avaritia.common.block.collector.DefaultNeutronCollectorBlock;
+import committee.nova.mods.avaritia.common.block.collector.DenseNeutronCollectorBlock;
+import committee.nova.mods.avaritia.common.block.collector.DenserNeutronCollectorBlock;
+import committee.nova.mods.avaritia.common.block.collector.DensestNeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
 import net.minecraft.world.item.BlockItem;
@@ -47,7 +50,10 @@ public class ModBlocks {
 
     //MACHINE
     public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new);
-    public static RegistryObject<Block> neutron_collector = block("neutron_collector", NeutronCollectorBlock::new);
+    public static RegistryObject<Block> neutron_collector = block("neutron_collector", DefaultNeutronCollectorBlock::new);
+    public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", DenseNeutronCollectorBlock::new);
+    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", DenserNeutronCollectorBlock::new);
+    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", DensestNeutronCollectorBlock::new);
     public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new);
     //public static RegistryObject<Block> infinitato = block("infinitato", InfinitatoBlock::new);
 

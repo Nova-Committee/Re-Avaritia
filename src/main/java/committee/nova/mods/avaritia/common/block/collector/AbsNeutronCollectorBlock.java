@@ -1,8 +1,7 @@
-package committee.nova.mods.avaritia.common.block;
+package committee.nova.mods.avaritia.common.block.collector;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
-import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.common.tile.collector.AbsNeutronCollectorTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
@@ -18,13 +17,11 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
@@ -32,19 +29,15 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 12:07
  * Version: 1.0
  */
-public class NeutronCollectorBlock extends BaseTileEntityBlock {
+public abstract class AbsNeutronCollectorBlock extends BaseTileEntityBlock {
+
+
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
-    public NeutronCollectorBlock() {
+    public AbsNeutronCollectorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50f, 2000f);
-
     }
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new NeutronCollectorTile(pos, state);
-    }
 
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState p_49232_) {
@@ -56,7 +49,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof NeutronCollectorTile compressor) {
+            if (tile instanceof AbsNeutronCollectorTile compressor) {
                 Containers.dropContents(level, pos, compressor.getInventory().getStacks());
             }
         }
@@ -69,7 +62,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof NeutronCollectorTile compressor) {
+            if (tile instanceof AbsNeutronCollectorTile compressor) {
                 NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
             }
         }
@@ -77,15 +70,6 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), NeutronCollectorTile::tick);
-    }
-
-    @Override
-    protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), NeutronCollectorTile::tick);
-    }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {

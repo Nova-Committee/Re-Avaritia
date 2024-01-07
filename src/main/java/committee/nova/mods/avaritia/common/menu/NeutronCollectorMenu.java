@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.menu;
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.collector.AbsNeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,8 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Function;
 
 /**
  * Description:
@@ -34,7 +32,7 @@ public class NeutronCollectorMenu extends BaseMenu {
     }
 
     private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer, ContainerData data) {
-        this(type, id, playerInventory, NeutronCollectorTile.createInventoryHandler(null), buffer.readBlockPos(), data);
+        this(type, id, playerInventory, AbsNeutronCollectorTile.createInventoryHandler(null), buffer.readBlockPos(), data);
     }
 
     protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos, ContainerData data) {

@@ -1,0 +1,13 @@
+{
+  "render_type": "cutout",
+  "parent": "block/cube",
+  "textures": {
+    "north": "avaritia:block/machine/collector/collector_side",
+    "east": "avaritia:block/machine/collector/collector_side",
+    "south": "avaritia:block/machine/collector/collector_front",
+    "west": "avaritia:block/machine/collector/collector_side",
+    "up": "avaritia:block/machine/collector/collector_top",
+    "down": "avaritia:block/machine/collector/collector_side",
+    "particle": "avaritia:block/machine/collector/collector_top"
+  }
+}
