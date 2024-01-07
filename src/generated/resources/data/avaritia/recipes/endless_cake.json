@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:milk_bucket"
+    },
+    "b": {
+      "item": "minecraft:sugar"
+    },
+    "c": {
+      "item": "minecraft:dragon_egg"
+    },
+    "d": {
+      "tag": "forge:crops/wheat"
+    },
+    "e": {
+      "item": "avaritia:infinity_ingot"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "bcb",
+    "ded"
+  ],
+  "result": {
+    "item": "avaritia:endless_cake"
+  },
+  "show_notification": true
+}

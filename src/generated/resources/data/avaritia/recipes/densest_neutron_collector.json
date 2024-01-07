@@ -1,0 +1,36 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:redstone_block"
+    },
+    "B": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "C": {
+      "item": "avaritia:neutron_gear"
+    },
+    "X": {
+      "item": "avaritia:denser_neutron_collector"
+    },
+    "Y": {
+      "item": "avaritia:singularity"
+    }
+  },
+  "pattern": [
+    "CC     CC",
+    "C  BBB  C",
+    "  AAAAA  ",
+    " BAXXXAB ",
+    " BAXYXAB ",
+    " BAXXXAB ",
+    "  AAAAA  ",
+    "C  BBB  C",
+    "CC     CC"
+  ],
+  "result": {
+    "item": "avaritia:densest_neutron_collector"
+  },
+  "show_notification": true
+}

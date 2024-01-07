@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:record_fragment"
+              "avaritia:neutron_gear"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:record_fragment"
+        "recipe": "avaritia:dense_neutron_collector"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:record_fragment"
+      "avaritia:dense_neutron_collector"
     ]
   },
   "sends_telemetry_event": false

@@ -7,6 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.fml.ModLoader;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 /**
  * Description:
@@ -36,7 +38,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, ModConfig.singularityTimeRequired.get());
+        this(id, name, colors, ingredient, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
@@ -50,7 +52,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, ModConfig.singularityTimeRequired.get());
+        this(id, name, colors, tag, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
     }
 
 

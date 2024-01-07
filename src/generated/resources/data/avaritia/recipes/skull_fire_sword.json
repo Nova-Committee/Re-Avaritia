@@ -5,11 +5,11 @@
     "B": {
       "tag": "forge:bones"
     },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
     "D": {
       "tag": "forge:nether_stars"
-    },
-    "I": {
-      "item": "avaritia:infinity_ingot"
     },
     "W": {
       "tag": "minecraft:logs"
@@ -19,12 +19,12 @@
     }
   },
   "pattern": [
-    "       IX",
-    "      IXI",
-    "     IXI ",
-    "    IXI  ",
-    " B IXI   ",
-    "  BXI    ",
+    "       CX",
+    "      CXC",
+    "     CXC ",
+    "    CXC  ",
+    " B CXC   ",
+    "  BXC    ",
     "  WB     ",
     " W  B    ",
     "D        "

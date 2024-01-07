@@ -48,7 +48,6 @@ public class ModConfig {
 
     public static void register() {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, COMMON);
-
     }
 
 

@@ -1,10 +1,14 @@
 package committee.nova.mods.avaritia.init.data.provider.loot;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
+import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CakeBlock;
+import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,14 +30,9 @@ public class ModBlockLootTables extends BlockLootSubProvider {
     }
     @Override
     protected void generate() {
-        dropSelf(ModBlocks.neutron.get());
-        dropSelf(ModBlocks.infinity.get());
-        dropSelf(ModBlocks.crystal_matrix.get());
-        dropSelf(ModBlocks.neutron_compressor.get());
-        dropSelf(ModBlocks.compressed_crafting_table.get());
-        dropSelf(ModBlocks.double_compressed_crafting_table.get());
-        dropSelf(ModBlocks.extreme_crafting_table.get());
-        dropSelf(ModBlocks.neutron_collector.get());
+        for (var block : ModBlocks.BLOCKS.getEntries()){
+            dropSelf(block.get());
+        }
     }
 
     @Override

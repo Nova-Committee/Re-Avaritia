@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:record_fragment"
+              "minecraft:dragon_egg"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:record_fragment"
+        "recipe": "avaritia:endless_cake"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:record_fragment"
+      "avaritia:endless_cake"
     ]
   },
   "sends_telemetry_event": false

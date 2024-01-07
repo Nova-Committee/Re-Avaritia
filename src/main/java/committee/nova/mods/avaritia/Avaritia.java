@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 public class Avaritia {
 
     public Avaritia() {
+        ModConfig.register();
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(this::onClientSetup);
@@ -45,7 +46,6 @@ public class Avaritia {
         ModCreativeModeTabs.TABS.register(bus);
 
         //AvaritiaShaders.init();
-        ModConfig.register();
     }
 
     public void setup(final FMLCommonSetupEvent event) {

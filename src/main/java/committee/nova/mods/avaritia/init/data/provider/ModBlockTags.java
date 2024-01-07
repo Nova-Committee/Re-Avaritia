@@ -47,5 +47,10 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.neutron.get()
         );
 
+        tag(BlockTags.PORTALS).add(
+                ModBlocks.infinity.get(),
+                ModBlocks.neutron.get()
+        );
+
     }
 }

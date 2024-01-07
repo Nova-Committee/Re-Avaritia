@@ -1,11 +1,16 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
+import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModSingularities;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -121,25 +126,41 @@ public class ModRecipes extends RecipeProvider {
                 .define('c', Items.DRAGON_EGG)
                 .define('d', Tags.Items.CROPS_WHEAT)
                 .define('e', ModItems.infinity_ingot.get())
-
                 .unlockedBy("has_item", has(Items.DRAGON_EGG)).save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.dense_neutron_collector.get())
+                .pattern("aaa")
+                .pattern("aga")
+                .pattern("aaa")
+                .define('a', ModBlocks.neutron_collector.get())
+                .define('g', ModItems.neutron_gear.get())
+                .unlockedBy("has_item", has(ModItems.neutron_gear.get())).save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.denser_neutron_collector.get())
+                .pattern("aaa")
+                .pattern("aga")
+                .pattern("aaa")
+                .define('a', ModBlocks.dense_neutron_collector.get())
+                .define('g', ModItems.neutron_gear.get())
+                .unlockedBy("has_item", has(ModItems.neutron_gear.get())).save(consumer);
 
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
+                .unlockedBy("has_item", has(ModItems.record_fragment.get()))
                 .save(consumer);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.neutron_ingot.get(), 9)
-                .requires(ModBlocks.neutron.get())
-                .save(consumer);
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_ingot.get(), 9)
-                .requires(ModBlocks.infinity.get())
-                .save(consumer);
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), 9)
-                .requires(ModBlocks.crystal_matrix.get())
-                .save(consumer);
+//        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.neutron_ingot.get(), 9)
+//                .requires(ModBlocks.neutron.get())
+//                .save(consumer);
+//
+//        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_ingot.get(), 9)
+//                .requires(ModBlocks.infinity.get())
+//                .save(consumer);
+//
+//        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), 9)
+//                .requires(ModBlocks.crystal_matrix.get())
+//                .save(consumer);
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)
@@ -410,6 +431,25 @@ public class ModRecipes extends RecipeProvider {
                 .define('N', ModItems.neutron_ingot.get())
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.densest_neutron_collector.get())
+                .pattern("CC     CC")
+                .pattern("C  BBB  C")
+                .pattern("  AAAAA  ")
+                .pattern(" BAXXXAB ")
+                .pattern(" BAXYXAB ")
+                .pattern(" BAXXXAB ")
+                .pattern("  AAAAA  ")
+                .pattern("C  BBB  C")
+                .pattern("CC     CC")
+                .define('A', Items.REDSTONE_BLOCK)
+                .define('B', ModItems.neutron_ingot.get())
+                .define('C', ModItems.neutron_gear.get())
+                .define('X', ModBlocks.denser_neutron_collector.get())
+                .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE).getItem())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.denser_neutron_collector.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_ingot.get())
                 .pattern("NNNNNNNNN")

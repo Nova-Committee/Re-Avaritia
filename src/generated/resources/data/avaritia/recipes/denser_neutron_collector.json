@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "avaritia:dense_neutron_collector"
+    },
+    "g": {
+      "item": "avaritia:neutron_gear"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "aga",
+    "aaa"
+  ],
+  "result": {
+    "item": "avaritia:denser_neutron_collector"
+  },
+  "show_notification": true
+}

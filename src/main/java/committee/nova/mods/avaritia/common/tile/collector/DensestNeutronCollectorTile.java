@@ -14,6 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 public class DensestNeutronCollectorTile extends AbsNeutronCollectorTile {
 
     public DensestNeutronCollectorTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.densest_neutron_collector_tile.get(), pos, state, ModItems.infinity_ingot.get(), 200, "densest_neutron_collector");
+        super(ModTileEntities.densest_neutron_collector_tile.get(), pos, state, ModItems.neutron_ingot.get(), 200, "densest_neutron_collector");
     }
 }
