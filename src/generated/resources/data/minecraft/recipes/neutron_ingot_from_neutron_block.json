@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "neutron_ingot",
+  "ingredients": [
+    {
+      "item": "avaritia:neutron"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "avaritia:neutron_ingot"
+  }
+}

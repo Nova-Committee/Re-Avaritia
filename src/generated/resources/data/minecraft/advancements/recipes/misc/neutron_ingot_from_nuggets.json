@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_item": {
+    "has_neutron_nugget": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:compressed_crafting_table"
+              "avaritia:neutron_nugget"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:double_compressed_crafting_table"
+        "recipe": "minecraft:neutron_ingot_from_nuggets"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_item",
+      "has_neutron_nugget",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "avaritia:double_compressed_crafting_table"
+      "minecraft:neutron_ingot_from_nuggets"
     ]
   },
   "sends_telemetry_event": false

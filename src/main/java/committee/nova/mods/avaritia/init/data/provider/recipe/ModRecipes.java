@@ -13,6 +13,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,21 +34,25 @@ public class ModRecipes extends RecipeProvider {
     @Override
     protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
         InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.compressed_crafting_table.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', Items.CRAFTING_TABLE)
-                
-                .unlockedBy("", lul).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.crystal_matrix.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', ModItems.crystal_matrix_ingot.get())
-                
-                .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
+        nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.MISC, ModItems.neutron_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.neutron.get(), "neutron_ingot_from_neutron_block", "neutron_ingot");
+        nineBlockStorageRecipesWithCustomPacking(consumer, RecipeCategory.MISC, ModItems.neutron_nugget.get(), RecipeCategory.MISC, ModItems.neutron_ingot.get(), "neutron_ingot_from_nuggets", "neutron_ingot");
+        nineBlockStorageRecipesWithCustomPacking(consumer, RecipeCategory.MISC, ModItems.neutron_pile.get(), RecipeCategory.MISC, ModItems.neutron_nugget.get(), "neutron_pile_from_ingots", "neutron_pile");
+        nineBlockStorageRecipes(consumer, RecipeCategory.MISC, ModItems.infinity_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.infinity.get());
+        nineBlockStorageRecipes(consumer, RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.crystal_matrix.get());
+        nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.double_compressed_crafting_table.get(),
+                "compressed_crafting_table_from_double_compressed_crafting_table", "compressed_crafting_table");
+        nineBlockStorageRecipesWithCustomPacking(consumer, RecipeCategory.BUILDING_BLOCKS, Blocks.CRAFTING_TABLE, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(),
+                "crafting_table_from_compressed_crafting_table", "crafting_table");
+
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.diamond_lattice.get())
+                .pattern("x x")
+                .pattern(" y ")
+                .pattern("x x")
+                .define('x', Items.DIAMOND)
+                .define('y', Items.NETHERITE_SCRAP)
+                .unlockedBy("", lul).save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get())
                 .pattern("xyx")
@@ -57,63 +62,13 @@ public class ModRecipes extends RecipeProvider {
                 
                 .unlockedBy("has_item", has(ModItems.diamond_lattice.get())).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.diamond_lattice.get())
-                .pattern("x x")
-                .pattern(" y ")
-                .pattern("x x")
-                .define('x', Items.DIAMOND)
-                .define('y', Items.NETHERITE_SCRAP)
-                
-                .unlockedBy("", lul).save(consumer);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.double_compressed_crafting_table.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', ModBlocks.compressed_crafting_table.get())
-                
-                .unlockedBy("has_item", has(ModBlocks.compressed_crafting_table.get())).save(consumer);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.extreme_crafting_table.get())
                 .pattern("xxx")
                 .pattern("xyx")
                 .pattern("xxx")
                 .define('x', ModBlocks.crystal_matrix.get())
                 .define('y', ModBlocks.double_compressed_crafting_table.get())
-                
-                .unlockedBy("has_item", has(ModBlocks.double_compressed_crafting_table.get())).save(consumer);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.infinity.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', ModItems.infinity_ingot.get())
-                
-                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.neutron.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', ModItems.neutron_ingot.get())
-                
-                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_ingot.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', ModItems.neutron_nugget.get())
-                
-                .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_nugget.get())
-                .pattern("xxx")
-                .pattern("xxx")
-                .pattern("xxx")
-                .define('x', ModItems.neutron_pile.get())
-                
-                .unlockedBy("has_item", has(ModItems.neutron_pile.get())).save(consumer);
+                .unlockedBy("has_block", has(ModBlocks.double_compressed_crafting_table.get())).save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.endless_cake.get())
                 .pattern("aaa")
@@ -148,17 +103,8 @@ public class ModRecipes extends RecipeProvider {
                 .unlockedBy("has_item", has(ModItems.record_fragment.get()))
                 .save(consumer);
 
-//        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.neutron_ingot.get(), 9)
-//                .requires(ModBlocks.neutron.get())
-//                .save(consumer);
-//
-//        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_ingot.get(), 9)
-//                .requires(ModBlocks.infinity.get())
-//                .save(consumer);
-//
-//        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), 9)
-//                .requires(ModBlocks.crystal_matrix.get())
-//                .save(consumer);
+
+
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)

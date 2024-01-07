@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_item": {
+    "has_crystal_matrix": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:neutron_nugget"
+              "avaritia:crystal_matrix"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:neutron_ingot"
+        "recipe": "minecraft:crystal_matrix_ingot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_item",
+      "has_crystal_matrix",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "avaritia:neutron_ingot"
+      "minecraft:crystal_matrix_ingot"
     ]
   },
   "sends_telemetry_event": false

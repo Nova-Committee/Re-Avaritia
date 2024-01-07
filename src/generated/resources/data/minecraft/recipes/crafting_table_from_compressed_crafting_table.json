@@ -1,15 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "building",
+  "group": "crafting_table",
   "key": {
-    "x": {
+    "#": {
       "item": "minecraft:crafting_table"
     }
   },
   "pattern": [
-    "xxx",
-    "xxx",
-    "xxx"
+    "###",
+    "###",
+    "###"
   ],
   "result": {
     "item": "avaritia:compressed_crafting_table"

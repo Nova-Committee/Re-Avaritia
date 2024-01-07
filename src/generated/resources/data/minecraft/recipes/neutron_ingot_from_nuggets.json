@@ -1,18 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
+  "group": "neutron_ingot",
   "key": {
-    "x": {
-      "item": "avaritia:crystal_matrix_ingot"
+    "#": {
+      "item": "avaritia:neutron_nugget"
     }
   },
   "pattern": [
-    "xxx",
-    "xxx",
-    "xxx"
+    "###",
+    "###",
+    "###"
   ],
   "result": {
-    "item": "avaritia:crystal_matrix"
+    "item": "avaritia:neutron_ingot"
   },
   "show_notification": true
 }

@@ -1,15 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "building",
   "key": {
-    "x": {
+    "#": {
       "item": "avaritia:neutron_ingot"
     }
   },
   "pattern": [
-    "xxx",
-    "xxx",
-    "xxx"
+    "###",
+    "###",
+    "###"
   ],
   "result": {
     "item": "avaritia:neutron"

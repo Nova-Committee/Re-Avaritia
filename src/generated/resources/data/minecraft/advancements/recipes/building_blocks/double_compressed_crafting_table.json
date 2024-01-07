@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_item": {
+    "has_compressed_crafting_table": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:crystal_matrix_ingot"
+              "avaritia:compressed_crafting_table"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:crystal_matrix"
+        "recipe": "minecraft:double_compressed_crafting_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_item",
+      "has_compressed_crafting_table",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "avaritia:crystal_matrix"
+      "minecraft:double_compressed_crafting_table"
     ]
   },
   "sends_telemetry_event": false
