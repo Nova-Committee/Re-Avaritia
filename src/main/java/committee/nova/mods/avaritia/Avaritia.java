@@ -34,7 +34,7 @@ public class Avaritia {
         bus.addListener(this::onClientSetup);
         bus.addListener(ModDataGen::gatherData);
 
-        bus.register(this);
+        //bus.register(this);
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
         ModTileEntities.BLOCK_ENTITIES.register(bus);

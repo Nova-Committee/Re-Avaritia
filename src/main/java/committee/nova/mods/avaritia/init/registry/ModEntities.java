@@ -10,6 +10,7 @@ import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -71,6 +72,7 @@ public class ModEntities {
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
+        EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);
         EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);
         EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);

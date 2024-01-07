@@ -24,7 +24,8 @@ public class ImmortalItemEntity extends ItemEntity {
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level p_i50217_2_) {
         super(type, p_i50217_2_);
-        this.setPickUpDelay(20);
+        this.setDefaultPickUpDelay();
+        this.lifespan = 3600;
 
     }
 
@@ -46,7 +47,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public void remove(@NotNull RemovalReason pReason) {
-        if (this.getAge() < 2400)
+        if (this.getAge() >= lifespan)
             super.remove(pReason);
     }
 
@@ -62,32 +63,35 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public void playerTouch(@NotNull Player pEntity) {
-        if (!this.getCommandSenderWorld().isClientSide) {
+
+        if (!this.level().isClientSide) {
             if (this.pickupDelay > 0) return;
             ItemStack itemstack = this.getItem();
             Item item = itemstack.getItem();
             int i = itemstack.getCount();
-
-            int hook = ForgeEventFactory.onItemPickup(this, pEntity);
+            int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, pEntity);
             if (hook < 0) return;
-
             ItemStack copy = itemstack.copy();
-            if (this.pickupDelay == 0 &&
-                    (this.getOwner() == null || lifespan - this.getAge() <= 200 || this.getOwner().getUUID().equals(pEntity.getUUID()))
-                    && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))) {
-                copy.setCount(copy.getCount() - getItem().getCount());
-                firePlayerItemPickupEvent(pEntity, this, copy);
+            if (this.pickupDelay == 0
+                    && (this.getOwner() == null || lifespan - this.getAge() <= 300 || this.getOwner().getUUID().equals(pEntity.getUUID()))
+                    && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))
+            ) {
+                i = copy.getCount() - itemstack.getCount();
+                copy.setCount(i);
+                net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent(pEntity, this, copy);
                 pEntity.take(this, i);
                 if (itemstack.isEmpty()) {
-                    this.age = 2400;
-                    this.remove(RemovalReason.KILLED);
+                    this.age = 3600;
+                    this.discard();
                     itemstack.setCount(i);
                 }
 
                 pEntity.awardStat(Stats.ITEM_PICKED_UP.get(item), i);
                 pEntity.onItemPickup(this);
             }
+
         }
+
     }
 
 

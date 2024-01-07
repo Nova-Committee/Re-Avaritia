@@ -22,20 +22,24 @@ import java.util.function.Function;
  * Version: 1.0
  */
 public class NeutronCollectorMenu extends BaseMenu {
+    private final ContainerData data;
+
+
     public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, buffer);
+        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, buffer, new SimpleContainerData(10));
     }
 
-    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, inventory, pos);
+    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos, ContainerData data) {
+        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, inventory, pos, data);
     }
 
-    private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(type, id, playerInventory, NeutronCollectorTile.createInventoryHandler(null), buffer.readBlockPos());
+    private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer, ContainerData data) {
+        this(type, id, playerInventory, NeutronCollectorTile.createInventoryHandler(null), buffer.readBlockPos(), data);
     }
 
-    protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
+    protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos, ContainerData data) {
         super(type, id, pos);
+        this.data = data;
         this.addSlot(new OutputSlot(inventory, 0, 80, 32));
 
         for (int i = 0; i < 3; i++) {
@@ -47,6 +51,7 @@ public class NeutronCollectorMenu extends BaseMenu {
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
+        this.addDataSlots(data);
     }
 
 
@@ -91,5 +96,9 @@ public class NeutronCollectorMenu extends BaseMenu {
         }
 
         return itemstack;
+    }
+
+    public int getProgress() {
+        return data.get(0);
     }
 }

@@ -30,16 +30,15 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class NeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
-
-
-    public static final int PRODUCTION_TICKS = ModConfig.neutronCollectorProductTick.get();
-    private final BaseItemStackHandler inventory;
+    private final int production_ticks;
+    public final BaseItemStackHandler inventory;
     private int progress;
 
-    private final SimpleContainerData data = new SimpleContainerData(1);
+    public SimpleContainerData data = new SimpleContainerData(1);
 
     public NeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile.get(), pos, state);
+        this.production_ticks = ModConfig.neutronCollectorProductTick.get();
         this.inventory = createInventoryHandler(null);
     }
 
@@ -50,7 +49,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
             var stack = new ItemStack(ModItems.neutron_pile.get());
             tile.progress++;
             tile.data.set(0, tile.progress);
-            if (tile.progress >= PRODUCTION_TICKS) {
+            if (tile.progress >= tile.production_ticks) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
                 } else if (result.is(ModItems.neutron_pile.get())) {
@@ -102,12 +101,10 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements Men
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
+        return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos(), data);
     }
 
-    public int getProgress() {
-        return this.progress;
+    public int getProductionTicks() {
+        return production_ticks;
     }
-
-
 }

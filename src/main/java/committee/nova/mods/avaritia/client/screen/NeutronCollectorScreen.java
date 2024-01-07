@@ -92,14 +92,14 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         if (this.tile == null)
             return 0;
 
-        return this.tile.getProgress();
+        return this.menu.getProgress();//data by menu
     }
 
     public int getTimeRequired() {
         if (this.tile == null)
             return 0;
 
-        return NeutronCollectorTile.PRODUCTION_TICKS;
+        return this.tile.getProductionTicks();// final data will not use menu
     }
 
     public int getProgressBarScaled(int pixels) {

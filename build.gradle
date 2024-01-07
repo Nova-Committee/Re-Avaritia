@@ -28,7 +28,7 @@ minecraft {
 
     runs {
         client {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run/client')
             property 'forge.logging.console.level', 'debug'
             property 'mixin.debug.export', 'true'
             property 'mixin.env.remapRefMap', 'true'
@@ -52,7 +52,7 @@ minecraft {
         }
 
         server {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run/server')
             property 'forge.logging.console.level', 'debug'
             property 'mixin.debug.export', 'true'
             property 'mixin.env.remapRefMap', 'true'
@@ -67,7 +67,7 @@ minecraft {
         }
 
         data {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run/data')
             property 'forge.logging.console.level', 'debug'
             property 'mixin.debug.export', 'true'
             property 'mixin.env.remapRefMap', 'true'
