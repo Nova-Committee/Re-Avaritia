@@ -19,9 +19,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.openzen.zencode.java.ZenCodeType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -205,5 +203,4 @@ public class ExtremeTableCrafting {
                 .map(IIngredient::asVanillaIngredient)
                 .collect(Collectors.toCollection(NonNullList::create));
     }
-
 }

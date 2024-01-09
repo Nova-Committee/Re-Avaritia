@@ -140,7 +140,7 @@ public class ModRecipes extends RecipeProvider {
                 .requires(ModItems.neutron_nugget.get())
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
-        ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_catalyst.get())
+        ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
                 .requires(Items.EMERALD_BLOCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())

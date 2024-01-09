@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.data.provider.recipe;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
@@ -38,28 +39,20 @@ import java.util.function.Consumer;
 
 public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
-    private final Item result;
-    private final int count;
     private final List<Ingredient> ingredients = Lists.newArrayList();
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
 
-    public ModCatalystRecipeBuilder(RecipeCategory p_250837_, @NotNull ItemLike p_251897_, int p_252227_) {
+    public ModCatalystRecipeBuilder(RecipeCategory p_250837_) {
         this.category = p_250837_;
-        this.result = p_251897_.asItem();
-        this.count = p_252227_;
     }
 
-    @Contract("_, _ -> new")
-    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
-        return new ModCatalystRecipeBuilder(p_250714_, p_249659_, 1);
+    @Contract("_ -> new")
+    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory p_250714_) {
+        return new ModCatalystRecipeBuilder(p_250714_);
     }
 
-    @Contract("_, _, _ -> new")
-    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_) {
-        return new ModCatalystRecipeBuilder(p_252339_, p_250836_, p_249928_);
-    }
 
     public ModCatalystRecipeBuilder requires(TagKey<Item> p_206420_) {
         return this.requires(Ingredient.of(p_206420_));
@@ -103,14 +96,14 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
 
     @Override
     public @NotNull Item getResult() {
-        return this.result;
+        return ModItems.infinity_catalyst.get();
     }
 
     @Override
     public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModCatalystRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        p_126205_.accept(new ModCatalystRecipeBuilder.Result(p_126206_, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -121,18 +114,14 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
 
     public static class Result extends CraftingResult {
         private final ResourceLocation id;
-        private final Item result;
-        private final int count;
         private final String group;
         private final List<Ingredient> ingredients;
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
 
-        public Result(ResourceLocation p_249007_, Item p_248667_, int p_249014_, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
+        public Result(ResourceLocation p_249007_, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
             super(p_249485_);
             this.id = p_249007_;
-            this.result = p_248667_;
-            this.count = p_249014_;
             this.group = p_248592_;
             this.ingredients = p_252312_;
             this.advancement = p_249909_;
@@ -152,13 +141,6 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
             }
 
             p_126230_.add("ingredients", jsonarray);
-            JsonObject jsonobject = new JsonObject();
-            jsonobject.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
-            if (this.count > 1) {
-                jsonobject.addProperty("count", this.count);
-            }
-
-            p_126230_.add("result", jsonobject);
         }
 
         @Override

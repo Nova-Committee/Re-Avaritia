@@ -23,10 +23,9 @@ public interface ISpecialRecipe extends Recipe<Container> {
     }
 
     @Override
-    default NonNullList<ItemStack> getRemainingItems(Container inv) {
+    default @NotNull NonNullList<ItemStack> getRemainingItems(Container inv) {
         return this.getRemainingItems(new InvWrapper(inv));
     }
-
 
     ItemStack assemble(IItemHandler var1);
 

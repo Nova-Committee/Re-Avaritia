@@ -45,6 +45,7 @@ public class ModDataGen {
         if (event.includeServer()) {
             generator.addProvider(true, new ModRecipes(generator));
             generator.addProvider(true, new ModLootTables(generator));
+            generator.addProvider(true, new ModItemTags(generator, future, helper));
             generator.addProvider(true, new ModBlockTags(generator, future, helper));
             generator.addProvider(true, new ModEntityTags(generator, future, helper));
 //            generator.addProvider(true, new ModAdvancements(output, future, helper));

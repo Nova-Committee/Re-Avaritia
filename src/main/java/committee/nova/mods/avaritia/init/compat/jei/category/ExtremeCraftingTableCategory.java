@@ -1,12 +1,12 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.api.common.crafting.ICraftRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
-import committee.nova.mods.avaritia.init.compat.jei.JeiCompat;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -18,7 +18,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,24 +34,22 @@ import java.util.List;
  * Date: 2022/5/16 23:46
  * Version: 1.0
  */
-public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecipe> {
+public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRecipe> {
 
-    public static final RecipeType<ICraftRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_craft", ICraftRecipe.class);
+    public static final RecipeType<ISpecialRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_craft", ISpecialRecipe.class);
     private static final ResourceLocation TEXTURE = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/extreme_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
-    private final IDrawable shapeless;
 
     public ExtremeCraftingTableCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, 190, 163);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.extreme_crafting_table.get()));
-        this.shapeless = helper.createDrawable(JeiCompat.ICONS, 17, 0, 19, 15);
     }
 
 
     @Override
-    public @NotNull RecipeType<ICraftRecipe> getRecipeType() {
+    public @NotNull RecipeType<ISpecialRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
@@ -72,7 +69,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ICraftRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ISpecialRecipe recipe, @NotNull IFocusGroup focuses) {
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
@@ -85,17 +82,17 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
             for (int i = heightOffset; i < shaped.getHeight() + heightOffset; i++) {
                 for (int j = widthOffset; j < shaped.getWidth() + widthOffset; j++) {
                     builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 1, i * 18 + 1).addIngredients(inputs.get(stackIndex));
-
                     stackIndex++;
                 }
             }
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         } else if (recipe instanceof ShapelessExtremeCraftingRecipe) {
             shapelessRecipe(builder, inputs);
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         } else if (recipe instanceof InfinityCatalystCraftRecipe) {
             shapelessRecipe(builder, inputs);
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(new ItemStack(ModItems.infinity_catalyst.get()));
         }
-
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         builder.moveRecipeTransferButton(170, 100);
     }
 
@@ -113,7 +110,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
     }
 
     @Override
-    public @NotNull List<Component> getTooltipStrings(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public @NotNull List<Component> getTooltipStrings(@NotNull ISpecialRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         var shapeless = recipe instanceof ShapelessExtremeCraftingRecipe;
         int sX = (shapeless ? 340 : 306) / 2, sY = 200 / 2;
 
@@ -123,20 +120,5 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ICraftRecip
 
         return Collections.emptyList();
     }
-
-//    @Override
-//    public void draw(ICraftRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics gfx, double mouseX, double mouseY) {
-//        var matrix = gfx.pose();
-//        matrix.pushPose();
-//        matrix.scale(0.5F, 0.5F, 0.5F);
-//
-//        var shapeless = recipe instanceof ShapelessExtremeCraftingRecipe || recipe instanceof InfinityCatalystCraftRecipe;
-//
-//        if (shapeless)
-//            this.shapeless.draw(gfx, 170, 50);
-//
-//        matrix.popPose();
-//    }
-
 
 }
