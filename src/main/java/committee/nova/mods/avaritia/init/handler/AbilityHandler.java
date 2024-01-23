@@ -71,10 +71,10 @@ public class AbilityHandler {
                 if (hasChest) {
                     handleChestStateChange(entity);
                 } else  {
-                    if (!entity.isCreative()) {
-                        entity.getAbilities().mayfly = false;
-                        entity.getAbilities().flying = false;
-                    }
+//                    if (!entity.isCreative()) {
+//                        entity.getAbilities().mayfly = false;
+//                        entity.getAbilities().flying = false;
+//                    }
                     entitiesWithChest.remove(key);
                 }
             } else {
@@ -96,7 +96,6 @@ public class AbilityHandler {
             if (entitiesWithBoots.contains(key)) {
                 if (hasBoots) {
                     handleBootsStateChange(entity);
-                    entitiesWithBoots.add(key);
                 } else  {
                     entity.setMaxUpStep(0.5F);
                     entitiesWithBoots.remove(key);
@@ -144,7 +143,7 @@ public class AbilityHandler {
     private static void handleChestStateChange(LivingEntity entity) {
         if (entity instanceof Player player) {
                 player.getAbilities().mayfly = true;
-                player.getAbilities().mayfly = true;
+                player.getAbilities().flying = true;
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
                     player.removeEffect(potion.getEffect());
