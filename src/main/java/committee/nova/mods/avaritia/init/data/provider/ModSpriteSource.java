@@ -3,8 +3,8 @@ package committee.nova.mods.avaritia.init.data.provider;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.SpriteSourceProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SpriteSourceProvider;
 
 /**
  * Name: Avaritia-forge / ModSpriteSource

@@ -1,12 +1,8 @@
 plugins {
-    id 'eclipse'
     id 'idea'
     id 'java-library'
     id 'maven-publish'
-    id "me.shedaniel.unified-publishing" version "0.1.+"
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'net.neoforged.gradle.userdev' version '7.0.80'
 }
 
 version = mc_version + "-" + mod_version
@@ -19,79 +15,47 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
-
-minecraft {
-    mappings channel: "parchment", version: "2023.09.03-1.20.1"
-    //mappings channel: 'official', version: mc_version
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        client {
-            workingDirectory project.file('run/client')
-            property 'forge.logging.console.level', 'debug'
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            if (project.hasProperty('mc_uuid')) {
-                args '--uuid', project.getProperty('mc_uuid')
-            }
-            if (project.hasProperty('mc_username')) {
-                args '--username', project.getProperty('mc_username')
-            }
-            if (project.hasProperty('mc_accessToken')) {
-                args '--accessToken', project.getProperty('mc_accessToken')
-            }
-            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run/server')
-            property 'forge.logging.console.level', 'debug'
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run/data')
-            property 'forge.logging.console.level', 'debug'
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            args '-mixin.config=' + project.getProperty('mod_id') + '.mixins.json'
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
+runs {
+    configureEach {
+        // "SCAN": For mods scan.
+        // "REGISTRIES": For firing of registry events.
+        // "REGISTRYDUMP": For getting the contents of all registries.
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+        modSource project.sourceSets.main
     }
 
+    client {
+        if (project.hasProperty('mc_uuid')) {
+            programArguments.add '--uuid', project.getProperty('mc_uuid')
+        }
+        if (project.hasProperty('mc_username')) {
+            programArguments.add '--username', project.getProperty('mc_username')
+        }
+        if (project.hasProperty('mc_accessToken')) {
+            programArguments.add '--accessToken', project.getProperty('mc_accessToken')
+        }
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+
+    }
+
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        programArgument '--nogui'
+    }
+
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    data {
+        workingDirectory project.file('run/data')
+        programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-    debug.export = true
-}
 
 repositories {
     mavenLocal()
@@ -114,29 +78,28 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${neo_version}"
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+    implementation "net.neoforged:neoforge:${neo_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+    compileOnly ("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+    compileOnly ("mezz.jei:jei-${mc_version}-neoforge-api:${jei_version}")
+    runtimeOnly ("mezz.jei:jei-${mc_version}-neoforge:${jei_version}")
 
-    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}")
-    compileOnly fg.deobf("curse.maven:jade-324717:${jade_id}")
+    compileOnly ("com.blamejared.crafttweaker:CraftTweaker-neoforge-${mc_version}:${crafttweaker_version}")
+    compileOnly files("libs/Jade-1.20.4-neoforge-13.2.2-api.jar")
 
-    compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api"))
-    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}"))
+    compileOnly ("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
+    runtimeOnly ("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
-    compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
-    compileOnly fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
-    compileOnly fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+    compileOnly ("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
+    compileOnly ("dev.latvian.mods:rhino-neoforge:${rhino_version}")
+    compileOnly ("dev.architectury:architectury-neoforge:${architectury_version}")
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
 def replaceProperties = [
         minecraft_version: mc_version, mc_range: mc_range,
-        forge_version    : "${mc_version}-${neo_version}", forge_version_range: neo_range,
-        loader_range     : loader_range, neo_range     : neo_range,
+        neo_version      : neo_version, neo_range: neo_range,
+        loader_range     : loader_range,
         mod_id           : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
         issue_tracker    : issue_tracker,
         mod_authors      : mod_authors, mod_description: mod_description
@@ -145,28 +108,10 @@ def replaceProperties = [
 
 tasks.withType(ProcessResources).configureEach {
     inputs.properties replaceProperties
-    replaceProperties.put 'project', project
 
     filesMatching(resourceTargets) {
         expand replaceProperties + [project: project]
     }
-}
-
-tasks.named('jar', Jar).configure {
-
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-
-    finalizedBy 'reobfJar'
 }
 
 publishing {
@@ -196,39 +141,3 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-Xlint:-removal")
 }
 
-unifiedPublishing {
-    project {
-        displayName = mod_name
-        version = mc_version + "-" + mod_version // Optional, Inferred from project by default
-        changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
-        releaseType = release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20", "1.20.1"]
-        gameLoaders = ["forge"]
-
-        mainPublication tasks.jar // Declares the publicated jar
-        //secondaryPublications.builtBy(tasks.apiJar)
-
-        if (System.getenv('CURSE_TOKEN') != null){
-            curseforge {
-              token = System.getenv("CURSE_TOKEN")
-              id = "623969" // Required, must be a string, ID of CurseForge project
-//
-////            relations { // Optional, Inferred from the relations above by default
-////                optional "jei"
-////            }
-            }
-        }
-
-
-
-        modrinth {
-            token = System.getenv("MODRINTH_TOKEN")
-            id = "QeB3NRC5" // Required, must be a string, ID of Modrinth project
-            displayName = mod_name
-
-//            relations { // Optional, Inferred from the relations above by default
-//                optional "jei"
-//            }
-        }
-    }
-}

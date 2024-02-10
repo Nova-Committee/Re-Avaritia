@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.common.crafting.condition;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 /**
  * Description:
@@ -14,33 +14,17 @@ import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
  */
 public class InfinityCatalystCondition implements ICondition {
     private static final ResourceLocation ID = new ResourceLocation(Static.MOD_ID, "infinity_catalyst_recipe");
+    public static final InfinityCatalystCondition INSTANCE = new InfinityCatalystCondition();
 
-    @Override
-    public ResourceLocation getID() {
-        return ID;
-    }
+    public static final Codec<InfinityCatalystCondition> CODEC = MapCodec.unit(INSTANCE).stable().codec();
 
     @Override
     public boolean test(IContext context) {
         return true;
     }
 
-    public static class Serializer implements IConditionSerializer<InfinityCatalystCondition> {
-        public static final Serializer INSTANCE = new Serializer();
-
-        @Override
-        public void write(JsonObject json, InfinityCatalystCondition value) {
-
-        }
-
-        @Override
-        public InfinityCatalystCondition read(JsonObject json) {
-            return new InfinityCatalystCondition();
-        }
-
-        @Override
-        public ResourceLocation getID() {
-            return InfinityCatalystCondition.ID;
-        }
+    @Override
+    public Codec<? extends ICondition> codec() {
+        return CODEC;
     }
 }

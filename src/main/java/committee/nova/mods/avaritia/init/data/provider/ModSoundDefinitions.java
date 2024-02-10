@@ -3,8 +3,8 @@ package committee.nova.mods.avaritia.init.data.provider;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
 /**
  * Author cnlimiter

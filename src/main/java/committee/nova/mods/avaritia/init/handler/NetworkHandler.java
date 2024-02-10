@@ -4,9 +4,9 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.init.handler.NetBaseHandler;
 import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 /**
  * Description:

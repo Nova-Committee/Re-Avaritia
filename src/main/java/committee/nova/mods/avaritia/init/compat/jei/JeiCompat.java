@@ -82,7 +82,7 @@ public class JeiCompat implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
-        ModItems.singularity.ifPresent(item -> {
+        ModItems.singularity.asOptional().ifPresent(item -> {
             registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, (stack, context) -> {
                 var singularity = SingularityUtil.getSingularity(stack);
                 return singularity != null ? singularity.getId().toString() : "";

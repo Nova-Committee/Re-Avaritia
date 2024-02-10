@@ -20,6 +20,9 @@ import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
 import java.util.*;
 import java.util.function.Function;
@@ -62,7 +65,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloMode
         }
     }
 
-    public static class HaloModelGeometry implements IUnbakedGeometry<HaloModelGeometry>{
+    public static class HaloModelGeometry implements IUnbakedGeometry<HaloModelGeometry> {
         private static final RandomSource RANDOM = RandomSource.create();
         private final BlockModel baseModel;
         private final IntList layerColors;

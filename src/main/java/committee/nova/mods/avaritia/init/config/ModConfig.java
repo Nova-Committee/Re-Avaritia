@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Description:
@@ -11,24 +11,24 @@ import net.minecraftforge.fml.ModLoadingContext;
  */
 public class ModConfig {
 
-    public static final ForgeConfigSpec COMMON;
+    public static final ModConfigSpec COMMON;
 
-    public static final ForgeConfigSpec.DoubleValue foodTime; //foodTime
-    public static final ForgeConfigSpec.BooleanValue isKeepStone;
-    public static final ForgeConfigSpec.BooleanValue isMergeMatterCluster;
-    public static final ForgeConfigSpec.IntValue swordRangeDamage;
-    public static final ForgeConfigSpec.IntValue swordAttackRange;
-    public static final ForgeConfigSpec.BooleanValue isSwordAttackAnimal;
-    public static final ForgeConfigSpec.IntValue subArrowDamage;
-    public static final ForgeConfigSpec.IntValue axeChainCount;
-    public static final ForgeConfigSpec.IntValue pickAxeBreakRange;
-    public static final ForgeConfigSpec.IntValue shovelBreakRange;
-    public static final ForgeConfigSpec.IntValue neutronCollectorProductTick;
-    public static final ForgeConfigSpec.IntValue singularityTimeRequired;
+    public static final ModConfigSpec.DoubleValue foodTime; //foodTime
+    public static final ModConfigSpec.BooleanValue isKeepStone;
+    public static final ModConfigSpec.BooleanValue isMergeMatterCluster;
+    public static final ModConfigSpec.IntValue swordRangeDamage;
+    public static final ModConfigSpec.IntValue swordAttackRange;
+    public static final ModConfigSpec.BooleanValue isSwordAttackAnimal;
+    public static final ModConfigSpec.IntValue subArrowDamage;
+    public static final ModConfigSpec.IntValue axeChainCount;
+    public static final ModConfigSpec.IntValue pickAxeBreakRange;
+    public static final ModConfigSpec.IntValue shovelBreakRange;
+    public static final ModConfigSpec.IntValue neutronCollectorProductTick;
+    public static final ModConfigSpec.IntValue singularityTimeRequired;
 
     //SERVER
     static {
-        final var common = new ForgeConfigSpec.Builder();
+        final var common = new ModConfigSpec.Builder();
         common.comment("Avaritia Base Config").push("general");
         isKeepStone = buildBoolean(common, "Is Stone", false, "Does the super mode of endless tools retain stone and soil");
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", false, "Whether to merge matter cluster");
@@ -47,19 +47,19 @@ public class ModConfig {
     }
 
     public static void register() {
-        ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, COMMON);
+        ModLoadingContext.get().registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, COMMON);
     }
 
 
-    private static ForgeConfigSpec.BooleanValue buildBoolean(ForgeConfigSpec.Builder builder, String name, boolean defaultValue, String comment) {
+    private static ModConfigSpec.BooleanValue buildBoolean(ModConfigSpec.Builder builder, String name, boolean defaultValue, String comment) {
         return builder.comment(comment).translation(name).define(name, defaultValue);
     }
 
-    private static ForgeConfigSpec.IntValue buildInt(ForgeConfigSpec.Builder builder, String name, int defaultValue, int min, int max, String comment) {
+    private static ModConfigSpec.IntValue buildInt(ModConfigSpec.Builder builder, String name, int defaultValue, int min, int max, String comment) {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
 
-    private static ForgeConfigSpec.DoubleValue buildDouble(ForgeConfigSpec.Builder builder, String name, double defaultValue, double min, double max, String comment) {
+    private static ModConfigSpec.DoubleValue buildDouble(ModConfigSpec.Builder builder, String name, double defaultValue, double min, double max, String comment) {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
 

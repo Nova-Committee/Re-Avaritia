@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
@@ -9,16 +11,15 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -60,7 +61,6 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return this.inputs;
     }
 
-    @Override
     public @NotNull ResourceLocation getId() {
         return this.recipeId;
     }
@@ -125,6 +125,27 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
             int timeCost = buffer.readInt();
 
             return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
+        }
+        public static final Codec<CompressorRecipe> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                                ResourceLocation.CODEC.fieldOf("id").forGetter(compressorRecipe -> compressorRecipe.recipeId),
+                                Ingredient.LIST_CODEC.fieldOf("ingredient").forGetter(compressorRecipe -> compressorRecipe.inputs),
+                                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(compressorRecipe -> compressorRecipe.output),
+                                ExtraCodecs.strictOptionalField(Codec.INT, "inputCount", 10000).forGetter(compressorRecipe -> compressorRecipe.inputCount),
+                                ExtraCodecs.strictOptionalField(Codec.INT, "timeCost", 240).forGetter(compressorRecipe -> compressorRecipe.timeRequire)
+                        )
+                        .apply(instance, CompressorRecipe::new)
+        );
+
+
+        @Override
+        public Codec<CompressorRecipe> codec() {
+            return null;
+        }
+
+        @Override
+        public CompressorRecipe fromNetwork(FriendlyByteBuf pBuffer) {
+            return null;
         }
 
         @Override

@@ -12,6 +12,9 @@ import net.minecraft.util.GsonHelper;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
 import java.util.function.Function;
 
@@ -40,7 +43,7 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
         }
     }
 
-    public static class CosmicGeometry implements IUnbakedGeometry<CosmicGeometry>{
+    public static class CosmicGeometry implements IUnbakedGeometry<CosmicGeometry> {
         private final BlockModel baseModel;
         private final String maskTexture;
 

@@ -12,11 +12,10 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,9 +27,8 @@ import org.jetbrains.annotations.NotNull;
 @Mod(Static.MOD_ID)
 public class Avaritia {
 
-    public Avaritia() {
+    public Avaritia(IEventBus bus) {
         ModConfig.register();
-        var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(this::onClientSetup);
         bus.addListener(ModDataGen::gatherData);
@@ -49,7 +47,6 @@ public class Avaritia {
     }
 
     public void setup(final FMLCommonSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(this);
         SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
         DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {

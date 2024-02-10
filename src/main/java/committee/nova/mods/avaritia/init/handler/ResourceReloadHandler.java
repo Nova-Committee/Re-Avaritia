@@ -4,11 +4,11 @@ import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.util.RecipeUtil;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,14 +32,14 @@ public class ResourceReloadHandler {
     private record SingularityResourceReload(ICondition.IContext context) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            SingularityRegistryHandler.getInstance().onResourceManagerReload(context);
+            SingularityRegistryHandler.getInstance().onResourceManagerReload();
         }
     }
 
     private static class RegisterRecipesReloadListener implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(RecipeUtil.getRecipeManager()));
+            NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(RecipeUtil.getRecipeManager()));
         }
     }
 }

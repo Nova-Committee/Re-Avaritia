@@ -6,9 +6,8 @@ import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class ModCreativeModeTabs{
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Static.MOD_ID);
-    private static final List<RegistryObject<Item>> DONT_INCLUDE = List.of();
+    private static final List<DeferredRegister.Items> DONT_INCLUDE = List.of();
 
-    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tab.Infinity"))
             .icon(() -> ModItems.infinity_pickaxe.get().getDefaultInstance())
             .displayItems((parameters, output) -> {

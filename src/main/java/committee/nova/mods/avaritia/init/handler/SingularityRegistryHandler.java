@@ -13,12 +13,11 @@ import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
@@ -60,11 +59,11 @@ public class SingularityRegistryHandler {
         }
     }
 
-    public void onResourceManagerReload(ICondition.IContext context) {
-        this.loadSingularities(context);
+    public void onResourceManagerReload() {
+        this.loadSingularities();
     }
 
-    public void loadSingularities(ICondition.IContext context) {
+    public void loadSingularities() {
         var stopwatch = Stopwatch.createStarted();
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
 
@@ -73,7 +72,7 @@ public class SingularityRegistryHandler {
         this.singularities.clear();
 
         if (!dir.mkdirs() && dir.isDirectory()) {
-            this.loadFiles(dir, context);
+            this.loadFiles(dir);
         }
 
         stopwatch.stop();
@@ -146,7 +145,7 @@ public class SingularityRegistryHandler {
         Static.LOGGER.info("Loaded {} singularities from the server", singularities.size());
     }
 
-    private void loadFiles(File dir, ICondition.IContext context) {
+    private void loadFiles(File dir) {
         var files = dir.listFiles((FileFilter) FileFilterUtils.suffixFileFilter(".json"));
         if (files == null)
             return;
@@ -161,7 +160,7 @@ public class SingularityRegistryHandler {
                 var name = file.getName().replace(".json", "");
                 json = JsonParser.parseReader(reader).getAsJsonObject();
 
-                singularity = SingularityUtil.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
+                singularity = SingularityUtil.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json);
 
                 reader.close();
             } catch (Exception e) {

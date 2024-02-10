@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.util;
 import com.google.common.collect.ImmutableMap;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,11 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -94,7 +100,7 @@ public class RecipeUtil {
             }
         }
 
-        return new ShapelessExtremeCraftingRecipe(ForgeRegistries.ITEMS.getKey(result.getItem()), getList(arraylist), result);
+        return new ShapelessExtremeCraftingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), getList(arraylist), result);
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {

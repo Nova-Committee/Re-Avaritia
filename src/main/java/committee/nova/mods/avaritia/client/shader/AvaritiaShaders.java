@@ -10,10 +10,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -39,12 +39,11 @@ public class AvaritiaShaders {
     public static Uniform cosmicUVs;
     public static RenderType COSMIC_RENDER_TYPE;
 
-    public static void init() {
-        var eventbus = FMLJavaModLoadingContext.get().getModEventBus();
+    public static void init(IEventBus eventbus) {
         SPRITE_HELPER = new SpriteRegistryHelper(eventbus);
         eventbus.addListener(AvaritiaShaders::onRegisterShaders);
-        MinecraftForge.EVENT_BUS.addListener(AvaritiaShaders::onRenderTick);
-        MinecraftForge.EVENT_BUS.addListener(AvaritiaShaders::clientTick);
+        NeoForge.EVENT_BUS.addListener(AvaritiaShaders::onRenderTick);
+        NeoForge.EVENT_BUS.addListener(AvaritiaShaders::clientTick);
     }
 
     private static void onRegisterShaders(RegisterShadersEvent event){

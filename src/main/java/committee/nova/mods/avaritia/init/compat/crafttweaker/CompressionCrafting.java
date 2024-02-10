@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.HashMap;
