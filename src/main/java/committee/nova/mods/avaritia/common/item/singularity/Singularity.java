@@ -1,14 +1,20 @@
 package committee.nova.mods.avaritia.common.item.singularity;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.lang.Localizable;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
+
+import java.util.UUID;
 
 /**
  * Description:
@@ -38,7 +44,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
+        this(id, name, colors, ingredient, -1, FMLEnvironment.production ? ModConfig.singularityTimeRequired.get() : 240);
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
@@ -52,7 +58,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
+        this(id, name, colors, tag, -1, FMLEnvironment.production ? ModConfig.singularityTimeRequired.get() : 240);
     }
 
 

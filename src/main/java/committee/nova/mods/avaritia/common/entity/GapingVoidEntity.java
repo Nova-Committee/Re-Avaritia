@@ -10,6 +10,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,11 +28,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -135,8 +136,8 @@ public class GapingVoidEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return new ClientboundAddEntityPacket(this);
     }
 
     @Override
@@ -152,7 +153,7 @@ public class GapingVoidEntity extends Entity {
         if (age >= maxLifetime && !level().isClientSide) {
             level().explode(this, posX, posY, posZ, 6.0f, Level.ExplosionInteraction.BLOCK);
             int range = 4;
-            AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
+            AABB axisAlignedBB = AABB.encapsulatingFullBlocks(position.offset(-range, -range, -range), position.offset(range, range, range));
             List<Entity> nommed = level().getEntitiesOfClass(Entity.class, axisAlignedBB, OMNOM_PREDICATE);
             nommed.stream()
                     .filter(entity -> entity != this)
@@ -194,7 +195,7 @@ public class GapingVoidEntity extends Entity {
         double particlespeed = 4.5;
         double size = getVoidScale(age) * 0.5 - 0.2;
         int range = (int) (size * suckRange);
-        AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
+        AABB axisAlignedBB = AABB.encapsulatingFullBlocks(position.offset(-range, -range, -range), position.offset(range, range, range));
 
         List<Entity> sucked = level().getEntitiesOfClass(Entity.class, axisAlignedBB, SUCK_PREDICATE);
 
@@ -225,7 +226,7 @@ public class GapingVoidEntity extends Entity {
 
         // om nom nom
         int nomrange = (int) (radius * 0.95);
-        AABB alignedBB = new AABB(position.offset(-nomrange, -nomrange, -nomrange), position.offset(nomrange, nomrange, nomrange));
+        AABB alignedBB = AABB.encapsulatingFullBlocks(position.offset(-nomrange, -nomrange, -nomrange), position.offset(nomrange, nomrange, nomrange));
         List<Entity> nommed = level().getEntitiesOfClass(Entity.class, alignedBB, OMNOM_PREDICATE);
 
         for (Entity nommee : nommed) {
@@ -265,7 +266,7 @@ public class GapingVoidEntity extends Entity {
                         if (dist <= nomrange && !level().getBlockState(blockPos).isAir()) {
                             BlockState state = level().getBlockState(blockPos);
                             BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level(), blockPos, state, fakePlayer);
-                            MinecraftForge.EVENT_BUS.post(event);
+                            NeoForge.EVENT_BUS.post(event);
                             if (!event.isCanceled()) {
                                 float resist = state.getBlock().getExplosionResistance();
                                 if (resist <= 10.0) {

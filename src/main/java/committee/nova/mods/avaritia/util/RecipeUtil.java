@@ -5,18 +5,8 @@ import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraft
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.crafting.*;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -71,37 +61,34 @@ public class RecipeUtil {
         return recipeManager;
     }
 
-    public static Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> getRecipes() {
+    public static Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> getRecipes() {
         return getRecipeManager().recipes;
     }
 
-    public static <C extends Container, T extends Recipe<C>> Map<ResourceLocation, T> getRecipes(RecipeType<T> type) {
-        return getRecipeManager().byType(type);
-    }
 
-    public static void addRecipe(Recipe<?> recipe) {
-        getRecipeManager().recipes.computeIfAbsent(recipe.getType(), (t) -> new HashMap<>()).put(recipe.getId(), recipe);
-        getRecipeManager().byName.put(recipe.getId(), recipe);
+    public static void addRecipe(RecipeHolder<?> recipe) {
+        getRecipeManager().recipes.computeIfAbsent(recipe.value().getType(), (t) -> new HashMap<>()).put(recipe.id(), recipe);
+        getRecipeManager().byName.put(recipe.id(), recipe);
     }
 
     public static Recipe<?> getRecipe(ResourceLocation name) {
-       return getRecipeManager().byName.get(name);
+       return getRecipeManager().byName.get(name).value();
     }
 
-    @ApiStatus.Experimental
-    public static ShapelessExtremeCraftingRecipe addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
-        List<ItemStack> arraylist = new ArrayList<>();
-
-        for (ItemStack stack : ingredients) {
-            if (stack != null) {
-                arraylist.add(stack.copy());
-            } else {
-                throw new RuntimeException("Invalid shapeless recipes!");
-            }
-        }
-
-        return new ShapelessExtremeCraftingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), getList(arraylist), result);
-    }
+//    @ApiStatus.Experimental
+//    public static ShapelessExtremeCraftingRecipe addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
+//        List<ItemStack> arraylist = new ArrayList<>();
+//
+//        for (ItemStack stack : ingredients) {
+//            if (stack != null) {
+//                arraylist.add(stack.copy());
+//            } else {
+//                throw new RuntimeException("Invalid shapeless recipes!");
+//            }
+//        }
+//
+//        return new ShapelessExtremeCraftingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), getList(arraylist), result);
+//    }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {
         NonNullList<Ingredient> ingredients = NonNullList.create();

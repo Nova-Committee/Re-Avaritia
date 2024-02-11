@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -63,7 +62,7 @@ public abstract class AbsNeutronCollectorBlock extends BaseTileEntityBlock {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof AbsNeutronCollectorTile compressor) {
-                NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
+                player.openMenu(compressor, pos);
             }
         }
 

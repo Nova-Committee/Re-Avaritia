@@ -5,6 +5,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,9 +18,9 @@ import net.minecraft.world.item.ItemStack;
 public class ExtremeCraftingSlot extends Slot {
 
     private final AbstractContainerMenu container;
-    private final Container matrix;
+    private final CraftingContainer matrix;
 
-    public ExtremeCraftingSlot(AbstractContainerMenu container, Container matrix, Container inventory, int index, int xPosition, int yPosition) {
+    public ExtremeCraftingSlot(AbstractContainerMenu container, CraftingContainer matrix, Container inventory, int index, int xPosition, int yPosition) {
         super(inventory, index, xPosition, yPosition);
         this.container = container;
         this.matrix = matrix;

@@ -9,6 +9,8 @@ import committee.nova.mods.avaritia.util.RecipeUtil;
 import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 
@@ -30,8 +32,8 @@ public class DynamicRecipeHandler {
                 .limit(81)
                 .map(SingularityUtil::getItemForSingularity)
                 .map(Ingredient::of)
-                .forEach(infinity_catalyst.inputs::add);
-        event.register(new InfinityCatalystCraftRecipe(Static.rl("infinity_catalyst"), infinity_catalyst.inputs));
+                .forEach(infinity_catalyst.ingredients::add);
+        event.register(new RecipeHolder<>(Static.rl("infinity_catalyst"), new InfinityCatalystCraftRecipe("catalyst", infinity_catalyst.ingredients)));
 
         for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
             if (singularity.isRecipeDisabled()) {
@@ -46,7 +48,7 @@ public class DynamicRecipeHandler {
     }
 
 
-    private static CompressorRecipe makeSingularityRecipe(Singularity singularity) {
+    private static RecipeHolder<CompressorRecipe> makeSingularityRecipe(Singularity singularity) {
         var ingredient = singularity.getIngredient();
         if (ingredient == Ingredient.EMPTY)
             return null;
@@ -57,7 +59,7 @@ public class DynamicRecipeHandler {
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();
 
-        return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
+        return new RecipeHolder<>(recipeId, new CompressorRecipe("singularity", ingredient, output, ingredientCount, timeRequired));
     }
 
 }

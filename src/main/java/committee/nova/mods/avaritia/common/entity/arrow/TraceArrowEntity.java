@@ -2,8 +2,10 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -13,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -47,9 +50,7 @@ import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -75,7 +76,7 @@ public class TraceArrowEntity extends AbstractArrow {
     private final Entity owner = this.getOwner() == null ? this : this.getOwner();
 
     public TraceArrowEntity(EntityType<? extends AbstractArrow> entityType, Level world) {
-        super(entityType, world);
+        super(entityType, world, Items.ARROW.getDefaultInstance());
         this.potion = Potions.EMPTY;
         this.effects = Sets.newHashSet();
         this.homingTarget = null;
@@ -84,7 +85,7 @@ public class TraceArrowEntity extends AbstractArrow {
     }
 
     public TraceArrowEntity(Level world, double xPos, double yPos, double zPos) {
-        super(ModEntities.TRACE_ARROW.get(), xPos, yPos, zPos, world);
+        super(ModEntities.TRACE_ARROW.get(), xPos, yPos, zPos, world, Items.ARROW.getDefaultInstance());
         this.potion = Potions.EMPTY;
         this.effects = Sets.newHashSet();
         this.homingTarget = null;
@@ -93,7 +94,7 @@ public class TraceArrowEntity extends AbstractArrow {
     }
 
     public TraceArrowEntity(Level world, LivingEntity shooter) {
-        super(ModEntities.TRACE_ARROW.get(), shooter, world);
+        super(ModEntities.TRACE_ARROW.get(), shooter, world, Items.ARROW.getDefaultInstance());
         this.potion = Potions.EMPTY;
         this.effects = Sets.newHashSet();
         this.homingTarget = null;
@@ -215,7 +216,7 @@ public class TraceArrowEntity extends AbstractArrow {
                     }
                 }
 
-                if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS && !flag && !ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+                if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS && !flag && !EventHooks.onProjectileImpact(this, raytraceresult)) {
                     this.onHit(raytraceresult);
                     this.hasImpulse = true;
                 }
@@ -403,7 +404,7 @@ public class TraceArrowEntity extends AbstractArrow {
             }
         }
 
-        if (projectileAntiImmuneEntities.contains(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(target.getType())).toString())) {
+        if (projectileAntiImmuneEntities.contains(Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType())).toString())) {
             damagesource = ModDamageTypes.causeRandomDamage(owner);
         }
 
@@ -608,7 +609,7 @@ public class TraceArrowEntity extends AbstractArrow {
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new ClientboundAddEntityPacket(this);
     }
 
     @Override

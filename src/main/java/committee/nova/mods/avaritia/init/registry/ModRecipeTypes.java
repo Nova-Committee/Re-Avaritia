@@ -3,6 +3,8 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -23,14 +25,18 @@ import java.util.function.Supplier;
 public class ModRecipeTypes {
     public static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(Registries.RECIPE_TYPE, Static.MOD_ID);
 
-    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ISpecialRecipe>> EXTREME_CRAFT_RECIPE = recipe("extreme_craft_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "extreme_craft_recipe")));
-    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ICompressorRecipe>> COMPRESSOR_RECIPE = recipe("compressor_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "compressor_recipe")));
+    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ISpecialRecipe>> EXTREME_CRAFT_RECIPE = RECIPES.register("extreme_craft_recipe", () -> new RecipeType<>() {
+        @Override
+        public String toString() {
+            return "extreme_craft_recipe";
+        }
+    });
+    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ICompressorRecipe>> COMPRESSOR_RECIPE = RECIPES.register("compressor_recipe", () -> new RecipeType<>() {
+        @Override
+        public String toString() {
+            return "compressor_recipe";
+        }
+    });
 
-
-
-
-    public static <T extends Recipe<Container>> DeferredHolder<RecipeType<?>,RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
-        return RECIPES.register(name, type);
-    }
 
 }

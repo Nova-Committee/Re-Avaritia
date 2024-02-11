@@ -13,9 +13,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 8:44
  * Version: 1.0
  */
-public class ExtremeCraftingTile extends BaseInventoryTileEntity implements MenuProvider {
+public class ExtremeCraftingTile extends BaseInventoryTileEntity{
 
     private final BaseItemStackHandler inventory;
 
@@ -50,19 +47,13 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     }
 
     @Override
-    public @NotNull Component getDisplayName() {
+    protected Component getDefaultName() {
         return Localizable.of("container.extreme_crafting_table").build();
     }
 
-    @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
-        return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this.inventory, this.getBlockPos());
-    }
-
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return !this.remove && cap == ForgeCapabilities.ITEM_HANDLER ? LazyOptional.empty() : super.getCapability(cap, side);
+    protected AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory) {
+        return ExtremeCraftingMenu.create(pContainerId, pInventory, this.inventory, this.getBlockPos());
     }
 
 

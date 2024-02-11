@@ -26,8 +26,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +95,7 @@ public class BowInfinityItem extends BowItem {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         //无限箭矢
         var itemstack = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
+        InteractionResultHolder<ItemStack> ret = EventHooks.onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
         if (player.isCrouching()) {
             CompoundTag tags = itemstack.getOrCreateTag();
@@ -115,7 +114,7 @@ public class BowInfinityItem extends BowItem {
                 AbstractArrow arrowEntity;
                 ItemStack ammoStack = player.getProjectile(stack);
                 int drawTime = this.getUseDuration(stack) - timeLeft;
-                drawTime = ForgeEventFactory.onArrowLoose(stack, level, player, drawTime, true);
+                drawTime = EventHooks.onArrowLoose(stack, level, player, drawTime, true);
                 if (drawTime < 0) {
                     return;
                 }
@@ -130,7 +129,7 @@ public class BowInfinityItem extends BowItem {
 
                     if ((double)powerForTime >= 0.1D) {
                         ArrowItem arrowitem = (ArrowItem)(ammoStack.getItem() instanceof ArrowItem ? ammoStack.getItem() : Items.ARROW);
-                        arrowEntity = this.customArrow(arrowitem.createArrow(level, ammoStack, entity));
+                        arrowEntity = this.customArrow(arrowitem.createArrow(level, ammoStack, entity), ammoStack);
                         if (arrowEntity instanceof Arrow arrow2) {
                             arrow2.setEffectsFromItem(ammoStack);
                         } else if (arrowEntity instanceof TraceArrowEntity infinityArrow) {

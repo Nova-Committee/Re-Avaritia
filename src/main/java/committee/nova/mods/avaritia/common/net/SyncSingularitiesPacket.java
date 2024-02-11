@@ -1,13 +1,17 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.net.IPacket;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Description:
@@ -15,7 +19,8 @@ import java.util.function.Supplier;
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public class SyncSingularitiesPacket extends IPacket<SyncSingularitiesPacket> {
+public class SyncSingularitiesPacket implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(Static.MOD_ID, "sync_singularities");
 
     private List<Singularity> singularities;
 
@@ -30,27 +35,20 @@ public class SyncSingularitiesPacket extends IPacket<SyncSingularitiesPacket> {
         return this.singularities;
     }
 
-
     @Override
-    public SyncSingularitiesPacket read(FriendlyByteBuf buf) {
-        var singularities = SingularityRegistryHandler.getInstance().readFromBuffer(buf);
-
-        return new SyncSingularitiesPacket(singularities);
+    public @NotNull ResourceLocation id() {
+        return ID;
     }
 
     @Override
-    public void write(SyncSingularitiesPacket msg, FriendlyByteBuf buf) {
-        SingularityRegistryHandler.getInstance().writeToBuffer(buf);
+    public void write(@NotNull FriendlyByteBuf pBuffer) {
+        SingularityRegistryHandler.getInstance().writeToBuffer(pBuffer);
     }
 
-    @Override
-    public void run(SyncSingularitiesPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide().isServer())
-            return;
-        ctx.get().enqueueWork(() -> {
+    public static void run(SyncSingularitiesPacket msg, IPayloadContext ctx) {
+        ctx.workHandler().execute(() -> {
             SingularityRegistryHandler.getInstance().loadSingularities(msg);
         });
-
-        ctx.get().setPacketHandled(true);
     }
+
 }

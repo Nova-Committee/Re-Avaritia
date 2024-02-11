@@ -4,22 +4,21 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.util.SingularityUtil;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Name: Avaritia-forge / ModRecipes
@@ -29,13 +28,13 @@ import java.util.function.Consumer;
  */
 
 public class ModRecipes extends RecipeProvider {
-    public ModRecipes(DataGenerator output) {
-        super(output.getPackOutput());
+    public ModRecipes(DataGenerator output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output.getPackOutput(), lookupProvider);
     }
 
     @Override
-    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
-        InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
+    protected void buildRecipes(@NotNull RecipeOutput consumer) {
+        Criterion<InventoryChangeTrigger.TriggerInstance> lul = has(Items.AIR);
 
         nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.MISC, ModItems.neutron_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.neutron.get(), "neutron_ingot_from_neutron_block", "neutron_ingot");
         nineBlockStorageRecipesWithCustomPacking(consumer, RecipeCategory.MISC, ModItems.neutron_nugget.get(), RecipeCategory.MISC, ModItems.neutron_ingot.get(), "neutron_ingot_from_nuggets", "neutron_ingot");
@@ -166,7 +165,6 @@ public class ModRecipes extends RecipeProvider {
                 .define('P', Tags.Items.ENDER_PEARLS)
                 .define('S', Tags.Items.NETHER_STARS)
                 .define('N', ModItems.neutron_ingot.get())
-                .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_axe.get())
@@ -181,8 +179,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("    N  ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_hoe.get())
@@ -197,8 +194,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("     N ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_pickaxe.get())
@@ -213,8 +209,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("    N    ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_shovel.get())
@@ -229,8 +224,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("N        ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_sword.get())
@@ -246,8 +240,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
                 .define('C', ModItems.crystal_matrix_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_bow.get())
@@ -262,8 +255,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("   II")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('W', ItemTags.WOOL)
-                .define('X', ModBlocks.crystal_matrix.get())
-                .showNotification(true)
+                .define('X', ModBlocks.crystal_matrix.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_boots.get())
@@ -274,8 +266,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("NIIN NIIN")
                 .pattern("NNNN NNNN")
                 .define('I', ModItems.infinity_ingot.get())
-                .define('N', ModItems.neutron_ingot.get())
-                .showNotification(true)
+                .define('N', ModItems.neutron_ingot.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_chestplate.get())
@@ -290,8 +281,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("  NNNNN  ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModBlocks.crystal_matrix.get())
-                .showNotification(true)
+                .define('X', ModBlocks.crystal_matrix.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_helmet.get())
@@ -303,8 +293,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern(" NI I IN ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_pants.get())
@@ -320,8 +309,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
                 .define('C', ModItems.crystal_matrix_ingot.get())
-                .define('X', ModItems.infinity_catalyst.get())
-                .showNotification(true)
+                .define('X', ModItems.infinity_catalyst.get()) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.skull_sword.get())
@@ -338,8 +326,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('W', ItemTags.LOGS)
                 .define('D', Tags.Items.NETHER_STARS)
                 .define('X', Items.BLAZE_POWDER)
-                .define('B', Tags.Items.BONES)
-                .showNotification(true)
+                .define('B', Tags.Items.BONES) 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.neutron_collector.get())
@@ -355,8 +342,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('I', Items.IRON_BLOCK)
                 .define('R', Items.REDSTONE_BLOCK)
                 .define('C', ModItems.crystal_matrix_ingot.get())
-                .define('Q', Items.QUARTZ_BLOCK)
-                .showNotification(true)
+                .define('Q', Items.QUARTZ_BLOCK) 
                 .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.neutron_compressor.get())
@@ -374,8 +360,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('C', ModItems.crystal_matrix_ingot.get())
                 .define('O', ModBlocks.neutron.get())
                 .define('H', Items.HOPPER)
-                .define('N', ModItems.neutron_ingot.get())
-                .showNotification(true)
+                .define('N', ModItems.neutron_ingot.get()) 
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
 
@@ -394,7 +379,6 @@ public class ModRecipes extends RecipeProvider {
                 .define('C', ModItems.neutron_gear.get())
                 .define('X', ModBlocks.denser_neutron_collector.get())
                 .define('Y', SingularityUtil.getItemForSingularity(ModSingularities.REDSTONE))
-                .showNotification(true)
                 .unlockedBy("has_item", has(ModBlocks.denser_neutron_collector.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_ingot.get())
@@ -410,7 +394,8 @@ public class ModRecipes extends RecipeProvider {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
     }
 
-    protected static InventoryChangeTrigger.TriggerInstance has(@NotNull TagKey<Item> tagKey) {
+
+    protected static Criterion<InventoryChangeTrigger.TriggerInstance> has(@NotNull TagKey<Item> tagKey) {
         return inventoryTrigger(ItemPredicate.Builder.item().of(tagKey).build());
     }
 }

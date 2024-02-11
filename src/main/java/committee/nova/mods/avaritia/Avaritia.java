@@ -55,7 +55,7 @@ public class Avaritia {
         });
     }
 
-    public void onClientSetup(FMLClientSetupEvent event) {
+    public void onClientSetup(final FMLClientSetupEvent event) {
         ModEntities.onClientSetup();
         ModMenus.onClientSetup();
         ModTileEntities.onClientSetup();

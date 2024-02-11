@@ -10,7 +10,7 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -32,8 +32,8 @@ public class CompressionCrafting {
         CraftTweakerAPI.apply(new IRuntimeAction() {
             @Override
             public void apply() {
-                CompressorRecipe recipe = new CompressorRecipe(new ResourceLocation("crafttweaker", id), input.asVanillaIngredient(), output.getInternal(), inputCount, timecost);
-                RecipeUtil.addRecipe(recipe);
+                CompressorRecipe recipe = new CompressorRecipe("compressor", input.asVanillaIngredient(), output.getInternal(), inputCount, timecost);
+                RecipeUtil.addRecipe(new RecipeHolder<>(new ResourceLocation("crafttweaker", id), recipe));
             }
 
             @Override
@@ -58,8 +58,9 @@ public class CompressionCrafting {
                 List<ResourceLocation> recipes = RecipeUtil.getRecipes()
                         .getOrDefault(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new HashMap<>())
                         .values().stream()
-                        .filter(r -> r.getResultItem(access).is(stack.getInternal().getItem()))
-                        .map(Recipe::getId)
+
+                        .filter(r -> r.value().getResultItem(access).is(stack.getInternal().getItem()))
+                        .map(RecipeHolder::id)
                         .toList();
 
                 recipes.forEach(r -> {

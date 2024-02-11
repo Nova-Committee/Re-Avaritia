@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTile extends BaseInventoryTileEntity implements MenuProvider {
+public class CompressorTile extends BaseInventoryTileEntity {
     private final BaseItemStackHandler inventory;
     private final BaseItemStackHandler recipeInventory;
     private CompressorRecipe recipe;
@@ -59,8 +60,8 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
 
         tile.recipeInventory.setStackInSlot(0, tile.materialStack);
 
-        if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory)) {
-            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+        if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
+            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null).value();
         }
 
         if (!level.isClientSide()) {
@@ -92,7 +93,7 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
                     tile.progress++;
                     tile.data.set(0, tile.progress);
                     if (tile.progress >= tile.recipe.getTimeRequire()) {
-                        var result = tile.recipe.assemble(tile.inventory);
+                        var result = tile.recipe.assemble(tile.inventory.toIInventory(), (RegistryAccess) level);
 
                         if (ItemStackUtil.canCombineStacks(result, output)) {
                             tile.updateResult(result);
@@ -154,19 +155,19 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
     public void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("MaterialCount", this.materialCount);
-        tag.put("MaterialStack", this.materialStack.serializeNBT());
+        tag.put("MaterialStack", this.materialStack.getOrCreateTag());
         tag.putInt("Progress", this.progress);
         tag.putBoolean("Ejecting", this.ejecting);
     }
 
     @Override
-    public @NotNull Component getDisplayName() {
+    protected Component getDefaultName() {
         return Localizable.of("container.compressor").build();
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory) {
         return CompressorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
     }
 

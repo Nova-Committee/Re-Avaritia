@@ -17,9 +17,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,48 +27,22 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 17:40
  * Version: 1.0
  */
-public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
-    private final ResourceLocation recipeId;
-    private final NonNullList<Ingredient> inputs;
+public class CompressorRecipe implements ICompressorRecipe {
+    private final String group;
+    private final Ingredient inputs;
     private final ItemStack output;
     private final int inputCount;
     private final int timeRequire;
 
 
-    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeRequire) {
-        this.recipeId = recipeId;
-        this.inputs = NonNullList.of(Ingredient.EMPTY, input);
+    public CompressorRecipe(String group, Ingredient input, ItemStack output, int inputCount, int timeRequire) {
+        this.group = group;
+        this.inputs = input;
         this.output = output;
         this.inputCount = inputCount;
         this.timeRequire = timeRequire;
 
     }
-
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
-    }
-
-
-    @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
-        return this.output;
-    }
-
-    @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
-        return this.inputs;
-    }
-
-    public @NotNull ResourceLocation getId() {
-        return this.recipeId;
-    }
-
-    @Override
-    public int getTimeRequire() {
-        return timeRequire;
-    }
-
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.COMPRESSOR_SERIALIZER.get();
@@ -81,9 +54,26 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public ItemStack assemble(IItemHandler inventory) {
-        return this.output.copy();
+    public @NotNull String getGroup() {
+        return group;
     }
+
+    @Override
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
+        return this.output;
+    }
+
+    @Override
+    public @NotNull NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(Ingredient.EMPTY, this.inputs);
+    }
+
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return true;
+    }
+
 
     @Override
     public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
@@ -91,15 +81,10 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     }
 
     @Override
-    public boolean matches(IItemHandler inventory) {
-        var input = inventory.getStackInSlot(0);
-
-        return this.inputs.get(0).test(input);
-    }
-
-    @Override
     public boolean matches(@NotNull Container inv, @NotNull Level level) {
-        return this.matches(new InvWrapper(inv));
+        var inventory = new InvWrapper(inv);
+        var input = inventory.getStackInSlot(0);
+        return this.inputs.test(input);
     }
 
     @Override
@@ -107,29 +92,17 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return this.inputCount;
     }
 
+    @Override
+    public int getTimeRequire() {
+        return timeRequire;
+    }
+
+
     public static class Serializer implements RecipeSerializer<CompressorRecipe> {
-        @Override
-        public @NotNull CompressorRecipe fromJson(@NotNull ResourceLocation recipeId, JsonObject json) {
-            var input = Ingredient.fromJson(json.getAsJsonObject("ingredient"));
-            var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int inputCount = GsonHelper.getAsInt(json, "inputCount", 10000);
-            int timeCost = GsonHelper.getAsInt(json, "timeCost");
-            return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
-        }
-
-        @Override
-        public CompressorRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            var input = Ingredient.fromNetwork(buffer);
-            var output = buffer.readItem();
-            int inputCount = buffer.readInt();
-            int timeCost = buffer.readInt();
-
-            return new CompressorRecipe(recipeId, input, output, inputCount, timeCost);
-        }
         public static final Codec<CompressorRecipe> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
-                                ResourceLocation.CODEC.fieldOf("id").forGetter(compressorRecipe -> compressorRecipe.recipeId),
-                                Ingredient.LIST_CODEC.fieldOf("ingredient").forGetter(compressorRecipe -> compressorRecipe.inputs),
+                                Codec.STRING.fieldOf("group").forGetter(compressorRecipe -> compressorRecipe.group),
+                                Ingredient.CODEC.fieldOf("ingredient").forGetter(compressorRecipe -> compressorRecipe.inputs),
                                 ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(compressorRecipe -> compressorRecipe.output),
                                 ExtraCodecs.strictOptionalField(Codec.INT, "inputCount", 10000).forGetter(compressorRecipe -> compressorRecipe.inputCount),
                                 ExtraCodecs.strictOptionalField(Codec.INT, "timeCost", 240).forGetter(compressorRecipe -> compressorRecipe.timeRequire)
@@ -139,22 +112,28 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
 
         @Override
-        public Codec<CompressorRecipe> codec() {
-            return null;
+        public @NotNull Codec<CompressorRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public CompressorRecipe fromNetwork(FriendlyByteBuf pBuffer) {
-            return null;
+        public @NotNull CompressorRecipe fromNetwork(@NotNull FriendlyByteBuf pBuffer) {
+            var group = pBuffer.readUtf();
+            var input = Ingredient.fromNetwork(pBuffer);
+            var output = pBuffer.readItem();
+            int inputCount = pBuffer.readInt();
+            int timeCost = pBuffer.readInt();
+
+            return new CompressorRecipe(group, input, output, inputCount, timeCost);
         }
 
         @Override
         public void toNetwork(@NotNull FriendlyByteBuf buffer, CompressorRecipe recipe) {
-            recipe.inputs.get(0).toNetwork(buffer);
+            buffer.writeUtf(recipe.group);
+            recipe.inputs.toNetwork(buffer);
             buffer.writeItem(recipe.output);
             buffer.writeInt(recipe.inputCount);
             buffer.writeInt(recipe.timeRequire);
-
 
         }
     }

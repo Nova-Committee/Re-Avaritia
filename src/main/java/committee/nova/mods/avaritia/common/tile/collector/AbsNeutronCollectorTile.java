@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,15 +97,14 @@ public abstract class AbsNeutronCollectorTile extends BaseInventoryTileEntity im
         return inventory.getStackInSlot(0).isEmpty() || inventory.getStackInSlot(0).getCount() < 64;
     }
 
-
     @Override
-    public @NotNull Component getDisplayName() {
+    protected Component getDefaultName() {
         return Localizable.of("container." + name).build();
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory) {
         return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos(), data);
     }
 

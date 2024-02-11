@@ -39,13 +39,13 @@ public class ModDataGen {
 
         if (event.includeClient()) {
             generator.addProvider(true, new ModBlockStates(generator, helper));
-            generator.addProvider(true, new ModSpriteSource(generator, helper));
+            generator.addProvider(true, new ModSpriteSource(generator, future, helper));
 //            generator.addProvider(true, new ModItemModels(output, helper));
 //            generator.addProvider(true, new ModLang(output));
             generator.addProvider(true, new ModSoundDefinitions(generator, helper));
         }
         if (event.includeServer()) {
-            generator.addProvider(true, new ModRecipes(generator));
+            generator.addProvider(true, new ModRecipes(generator, future));
             generator.addProvider(true, new ModLootTables(generator));
             generator.addProvider(true, new ModItemTags(generator, future, helper));
             generator.addProvider(true, new ModBlockTags(generator, future, helper));
@@ -56,7 +56,7 @@ public class ModDataGen {
 
             generator.addProvider(true, new PackMetadataGenerator(generator.getPackOutput())
                     .add(PackMetadataSection.TYPE, new PackMetadataSection(
-                            Component.translatable("Avaritia Resources"),
+                            Component.literal("Avaritia Resources"),
                             DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
                             Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         }

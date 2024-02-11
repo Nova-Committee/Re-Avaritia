@@ -94,7 +94,7 @@ public class HoeInfinityItem extends HoeItem {
                         pLevel.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), 11);
                     }
                 }
-                if (block instanceof StemGrownBlock) { //pumpkin
+                if (block instanceof PumpkinBlock) { //pumpkin
                     ToolUtil.putMapDrops(pLevel, pos, pPlayer, new ItemStack(this), map);
                     pLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
                 }
@@ -105,7 +105,7 @@ public class HoeInfinityItem extends HoeItem {
                     }
                 }
                 //grow
-                if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock) && bonemealableBlock.isValidBonemealTarget(pLevel, pos, state, true)) {
+                if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock) && bonemealableBlock.isValidBonemealTarget(pLevel, pos, state)) {
                     for (int i = 0; i < 3; i++)
                         bonemealableBlock.isBonemealSuccess(pLevel, pLevel.random, pos, state);
                 }
@@ -125,7 +125,7 @@ public class HoeInfinityItem extends HoeItem {
         var world = context.getLevel();
         var blockpos = context.getClickedPos();
         var block1 = world.getBlockState(blockpos).getBlock();
-//        int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(context);
+//        int hook = EventHooks.onHoeUse(context);
 //        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) && (block1 instanceof GrassBlock
                 || block1.equals(Blocks.DIRT) || block1.equals(Blocks.COARSE_DIRT))) {

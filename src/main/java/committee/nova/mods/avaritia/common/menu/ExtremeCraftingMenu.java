@@ -12,15 +12,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Function;
 
 /**
  * Description:
@@ -78,10 +76,10 @@ public class ExtremeCraftingMenu extends BaseMenu {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), matrix, this.world);
+        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), (CraftingContainer)matrix, this.world);
 
         if (recipe.isPresent()) {
-            var result = recipe.get().assemble(matrix, this.world.registryAccess());
+            var result = recipe.get().value().assemble((CraftingContainer)matrix, this.world.registryAccess());
             this.result.setItem(0, result);
         } else {
             this.result.setItem(0, ItemStack.EMPTY);

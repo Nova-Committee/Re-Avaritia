@@ -88,7 +88,7 @@ public class Vector3 implements Copyable<Vector3> {
     }
 
     public static Vector3 fromEntityCenter(Entity e) {
-        return new Vector3(e.position()).add(0, e.getMyRidingOffset() + e.getBbHeight() / 2, 0);
+        return new Vector3(e.position()).add(0, e.getMyRidingOffset(e) + e.getBbHeight() / 2, 0);
     }
 
     public static Vector3 fromTile(BlockEntity tile) {

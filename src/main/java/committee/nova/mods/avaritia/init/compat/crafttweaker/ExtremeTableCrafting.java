@@ -16,11 +16,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.openzen.zencode.java.ZenCodeType;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -67,12 +71,13 @@ public class ExtremeTableCrafting {
                         }
                     }
                 }
+                ShapedRecipePattern pattern = new ShapedRecipePattern(width, height, ingredients, Optional.empty());
 
-                var recipe = new ShapedExtremeCraftingRecipe(new ResourceLocation("crafttweaker", id), width, height, ingredients, output.getInternal());
+                var recipe = new ShapedExtremeCraftingRecipe("extreme", pattern, output.getInternal());
 
                 recipe.setTransformers(transformers);
 
-                RecipeUtil.addRecipe(recipe);
+                RecipeUtil.addRecipe(new RecipeHolder<>(new ResourceLocation("crafttweaker", id), recipe));
             }
 
             @Override
@@ -108,11 +113,11 @@ public class ExtremeTableCrafting {
                     }
                 }
 
-                var recipe = new ShapelessExtremeCraftingRecipe(new ResourceLocation("crafttweaker", id), toIngredientsList(inputs), output.getInternal());
+                var recipe = new ShapelessExtremeCraftingRecipe("extreme", toIngredientsList(inputs), output.getInternal());
 
                 recipe.setTransformers(transformers);
 
-                RecipeUtil.addRecipe(recipe);
+                RecipeUtil.addRecipe(new RecipeHolder<>(new ResourceLocation("crafttweaker", id), recipe));
             }
 
             @Override
@@ -148,11 +153,11 @@ public class ExtremeTableCrafting {
                     }
                 }
 
-                var recipe = new InfinityCatalystCraftRecipe(new ResourceLocation("crafttweaker", id), toIngredientsList(inputs));
+                var recipe = new InfinityCatalystCraftRecipe("catalyst", toIngredientsList(inputs));
 
                 recipe.setTransformers(transformers);
 
-                RecipeUtil.addRecipe(recipe);
+                RecipeUtil.addRecipe(new RecipeHolder<>(new ResourceLocation("crafttweaker", id), recipe));
             }
 
             @Override
@@ -177,8 +182,8 @@ public class ExtremeTableCrafting {
                 var recipes = RecipeUtil.getRecipes()
                         .getOrDefault(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), new HashMap<>())
                         .values().stream()
-                        .filter(r -> r.getResultItem(access).is(stack.getInternal().getItem()))
-                        .map(Recipe::getId)
+                        .filter(r -> r.value().getResultItem(access).is(stack.getInternal().getItem()))
+                        .map(RecipeHolder::id   )
                         .toList();
 
                 recipes.forEach(r -> {

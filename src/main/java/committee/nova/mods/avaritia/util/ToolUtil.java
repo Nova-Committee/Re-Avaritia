@@ -19,8 +19,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.level.BlockEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import java.util.*;
 
@@ -130,7 +130,7 @@ public class ToolUtil {
                 return;
             }
             MapColor material = state.getMapColor(world, pos);
-            if (block == Blocks.GRASS && stack.getItem() == ModItems.infinity_pickaxe.get()) {
+            if (block == Blocks.GRASS_BLOCK && stack.getItem() == ModItems.infinity_pickaxe.get()) {
                 world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
             }
 
@@ -139,7 +139,7 @@ public class ToolUtil {
                 return;
             }
             BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, player);
-            MinecraftForge.EVENT_BUS.post(event);
+            NeoForge.EVENT_BUS.post(event);
 
             if (!event.isCanceled()) {
                 if (!player.isCreative()) {//not creative

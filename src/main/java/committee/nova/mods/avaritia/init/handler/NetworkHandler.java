@@ -1,12 +1,11 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.api.init.handler.NetBaseHandler;
 import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
 /**
  * Description:
@@ -16,11 +15,18 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
-    public static final NetBaseHandler INSTANCE = new NetBaseHandler(new ResourceLocation(Static.MOD_ID, "main"));
+
+
+    private static final String PROTOCOL_VERSION = Integer.toString(1);
 
     @SubscribeEvent
-    public static void init(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> INSTANCE.register(SyncSingularitiesPacket.class, new SyncSingularitiesPacket()));
+    public static void registerHandler(RegisterPayloadHandlerEvent event) {
+        registerPackets(event.registrar(Static.MOD_ID).versioned(PROTOCOL_VERSION));
+    }
+
+    public static void registerPackets(IPayloadRegistrar registrar) {
+        registrar.common(SyncSingularitiesPacket.ID, buf -> new SyncSingularitiesPacket(SingularityRegistryHandler.getInstance().readFromBuffer(buf)), handler -> handler.server(SyncSingularitiesPacket::run));
 
     }
+
 }

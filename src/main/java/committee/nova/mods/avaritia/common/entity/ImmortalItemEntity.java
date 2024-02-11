@@ -7,11 +7,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
-import static net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent;
 
 /**
  * Description:
@@ -56,8 +56,9 @@ public class ImmortalItemEntity extends ItemEntity {
         return true;
     }
 
+
     @Override
-    public boolean ignoreExplosion() {
+    public boolean ignoreExplosion(@NotNull Explosion pExplosion) {
         return true;
     }
 
@@ -69,7 +70,7 @@ public class ImmortalItemEntity extends ItemEntity {
             ItemStack itemstack = this.getItem();
             Item item = itemstack.getItem();
             int i = itemstack.getCount();
-            int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, pEntity);
+            int hook = EventHooks.onItemPickup(this, pEntity);
             if (hook < 0) return;
             ItemStack copy = itemstack.copy();
             if (this.pickupDelay == 0
@@ -78,7 +79,7 @@ public class ImmortalItemEntity extends ItemEntity {
             ) {
                 i = copy.getCount() - itemstack.getCount();
                 copy.setCount(i);
-                net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent(pEntity, this, copy);
+                EventHooks.firePlayerItemPickupEvent(pEntity, this, copy);
                 pEntity.take(this, i);
                 if (itemstack.isEmpty()) {
                     this.age = 3600;

@@ -18,8 +18,15 @@ import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description:
@@ -49,9 +56,10 @@ public class JeiCompat implements IModPlugin {
         var world = Minecraft.getInstance().level;
         if (world != null) {
             var manager = world.getRecipeManager();
-            registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()));
-
-            registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get()));
+            registration.addRecipes(CompressorCategory.RECIPE_TYPE,
+                    getRecipe(manager, ModRecipeTypes.COMPRESSOR_RECIPE.get()));
+            registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE,
+                    getRecipe(manager, ModRecipeTypes.EXTREME_CRAFT_RECIPE.get()));
 
             registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.get().asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
             registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
@@ -88,5 +96,14 @@ public class JeiCompat implements IModPlugin {
                 return singularity != null ? singularity.getId().toString() : "";
             });
         });
+    }
+
+
+    public <C extends Container, T extends Recipe<C>> List<T> getRecipe(RecipeManager manager, RecipeType<T> recipeType){
+        List<T> list = new ArrayList<>();
+        manager.getAllRecipesFor(recipeType).forEach(tRecipeHolder -> {
+            list.add(tRecipeHolder.value());
+        });
+        return list;
     }
 }
