@@ -10,6 +10,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
+import net.minecraft.nbt.Tag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -82,6 +83,22 @@ public class ModRecipes extends RecipeProvider {
                 .define('e', ModItems.infinity_ingot.get())
                 .unlockedBy("has_item", has(Items.DRAGON_EGG)).save(consumer);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
+                .pattern(" n ")
+                .pattern("ncn")
+                .pattern(" n ")
+                .define('n', ModItems.neutron_ingot.get())
+                .define('c', ModItems.crystal_matrix_ingot.get())
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.star_fuel.get())
+                .pattern("ccc")
+                .pattern("cxc")
+                .pattern("ccc")
+                .define('c', Tags.Items.ORES_COAL)
+                .define('x', ModItems.infinity_catalyst.get())
+                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.dense_neutron_collector.get())
                 .pattern("aaa")
                 .pattern("aga")
@@ -98,14 +115,14 @@ public class ModRecipes extends RecipeProvider {
                 .define('g', ModItems.neutron_gear.get())
                 .unlockedBy("has_item", has(ModItems.neutron_gear.get())).save(consumer);
 
-
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get()))
                 .save(consumer);
 
-
-
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_nugget.get(), 9)
+                .requires(ModItems.infinity_ingot.asItem())
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)
