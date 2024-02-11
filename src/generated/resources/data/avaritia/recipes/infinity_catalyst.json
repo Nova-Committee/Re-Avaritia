@@ -1,6 +1,5 @@
 {
   "type": "avaritia:infinity_catalyst_craft",
-  "category": "misc",
   "ingredients": [
     {
       "item": "minecraft:emerald_block"

@@ -1,6 +1,5 @@
 {
   "type": "avaritia:shaped_extreme_craft",
-  "category": "equipment",
   "key": {
     "I": {
       "item": "avaritia:infinity_ingot"
@@ -19,6 +18,5 @@
   ],
   "result": {
     "item": "avaritia:infinity_boots"
-  },
-  "show_notification": true
+  }
 }

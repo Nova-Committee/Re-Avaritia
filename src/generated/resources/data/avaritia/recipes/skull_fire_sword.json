@@ -1,6 +1,5 @@
 {
   "type": "avaritia:shaped_extreme_craft",
-  "category": "equipment",
   "key": {
     "B": {
       "tag": "forge:bones"
@@ -31,6 +30,5 @@
   ],
   "result": {
     "item": "avaritia:skull_fire_sword"
-  },
-  "show_notification": true
+  }
 }

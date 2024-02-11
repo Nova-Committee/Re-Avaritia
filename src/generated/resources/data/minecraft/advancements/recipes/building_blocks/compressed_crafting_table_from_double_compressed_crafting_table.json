@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_double_compressed_crafting_table",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_double_compressed_crafting_table"
     ]
   ],
   "rewards": {
     "recipes": [
       "minecraft:compressed_crafting_table_from_double_compressed_crafting_table"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

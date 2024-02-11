@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_crystal_matrix",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_crystal_matrix"
     ]
   ],
   "rewards": {
     "recipes": [
       "minecraft:crystal_matrix_ingot"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

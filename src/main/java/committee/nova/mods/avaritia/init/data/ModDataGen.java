@@ -52,7 +52,7 @@ public class ModDataGen {
             generator.addProvider(true, new ModEntityTags(generator, future, helper));
 //            generator.addProvider(true, new ModAdvancements(output, future, helper));
 //            generator.addProvider(true, new ModFluidTags(output, future, helper));
-            generator.addProvider(true, bindRegistries(UpdateOneTwentyOneRecipeProvider::new, future));
+            //generator.addProvider(true, bindRegistries(UpdateOneTwentyOneRecipeProvider::new, future));
 
             generator.addProvider(true, new PackMetadataGenerator(generator.getPackOutput())
                     .add(PackMetadataSection.TYPE, new PackMetadataSection(

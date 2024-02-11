@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_neutron_pile",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_neutron_pile"
     ]
   ],
   "rewards": {
     "recipes": [
       "minecraft:neutron_pile_from_ingots"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

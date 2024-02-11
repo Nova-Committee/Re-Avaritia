@@ -1,6 +1,5 @@
 {
   "type": "avaritia:shaped_extreme_craft",
-  "category": "equipment",
   "key": {
     "A": {
       "item": "minecraft:redstone_block"
@@ -15,10 +14,7 @@
       "item": "avaritia:denser_neutron_collector"
     },
     "Y": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "avaritia:singularity",
-      "nbt": "{Id:\"avaritia:redstone\"}"
+      "item": "avaritia:singularity"
     }
   },
   "pattern": [
@@ -34,6 +30,5 @@
   ],
   "result": {
     "item": "avaritia:densest_neutron_collector"
-  },
-  "show_notification": true
+  }
 }

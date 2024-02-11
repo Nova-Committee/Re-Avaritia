@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_neutron",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_neutron"
     ]
   ],
   "rewards": {
     "recipes": [
       "minecraft:neutron_ingot_from_neutron_block"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

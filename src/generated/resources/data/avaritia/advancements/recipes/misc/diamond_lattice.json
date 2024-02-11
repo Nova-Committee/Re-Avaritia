@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "",
-      "has_the_recipe"
+      "has_the_recipe",
+      ""
     ]
   ],
   "rewards": {
     "recipes": [
       "avaritia:diamond_lattice"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

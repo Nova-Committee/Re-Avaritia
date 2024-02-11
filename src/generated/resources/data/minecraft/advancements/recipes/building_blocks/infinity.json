@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_infinity_ingot",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_infinity_ingot"
     ]
   ],
   "rewards": {
     "recipes": [
       "minecraft:infinity"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

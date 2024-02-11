@@ -1,6 +1,5 @@
 {
   "type": "avaritia:shaped_extreme_craft",
-  "category": "equipment",
   "key": {
     "C": {
       "item": "avaritia:crystal_matrix_ingot"
@@ -28,6 +27,5 @@
   ],
   "result": {
     "item": "avaritia:neutron_collector"
-  },
-  "show_notification": true
+  }
 }

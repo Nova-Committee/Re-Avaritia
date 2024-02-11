@@ -1,6 +1,5 @@
 {
   "type": "avaritia:shaped_extreme_craft",
-  "category": "equipment",
   "key": {
     "C": {
       "item": "avaritia:crystal_matrix_ingot"
@@ -34,6 +33,5 @@
   ],
   "result": {
     "item": "avaritia:neutron_compressor"
-  },
-  "show_notification": true
+  }
 }

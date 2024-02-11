@@ -328,14 +328,16 @@ public class InfinityHandler {
     }
 
     @SubscribeEvent
-    public static void entityItemUnDeath(ItemEvent event) {
-        ItemEntity entityItem = event.getEntity();
-        Item item = entityItem.getItem().getItem();
-        if (item instanceof ArmorInfinityItem || item instanceof AxeInfinityItem || item instanceof BowInfinityItem ||
-                item instanceof HoeInfinityItem || item instanceof ShovelInfinityItem || item instanceof PickaxeInfinityItem ||
-                item instanceof SwordInfinityItem) {
-            entityItem.setInvulnerable(true);
+    public static void entityItemUnDeath(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof ItemEntity entityItem){
+            Item item = entityItem.getItem().getItem();
+            if (item instanceof ArmorInfinityItem || item instanceof AxeInfinityItem || item instanceof BowInfinityItem ||
+                    item instanceof HoeInfinityItem || item instanceof ShovelInfinityItem || item instanceof PickaxeInfinityItem ||
+                    item instanceof SwordInfinityItem) {
+                entityItem.setInvulnerable(true);
+            }
         }
+
     }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {
