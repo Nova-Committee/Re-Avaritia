@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -19,12 +20,12 @@ public class InfinityCatalystCondition implements ICondition {
     public static final Codec<InfinityCatalystCondition> CODEC = MapCodec.unit(INSTANCE).stable().codec();
 
     @Override
-    public boolean test(IContext context) {
+    public boolean test(@NotNull IContext context) {
         return true;
     }
 
     @Override
-    public Codec<? extends ICondition> codec() {
+    public @NotNull Codec<? extends ICondition> codec() {
         return CODEC;
     }
 }

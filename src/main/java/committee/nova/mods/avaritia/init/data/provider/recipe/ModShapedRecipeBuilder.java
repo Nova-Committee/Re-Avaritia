@@ -68,7 +68,7 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     }
 
     public ModShapedRecipeBuilder define(Character pSymbol, ItemStack pItem) {
-        return this.define(pSymbol, NBTIngredient.of(pItem));
+        return this.define(pSymbol, NBTIngredient.of(true, pItem));
     }
 
     public ModShapedRecipeBuilder define(Character pSymbol, Ingredient pIngredient) {

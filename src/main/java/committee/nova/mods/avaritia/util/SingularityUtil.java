@@ -86,10 +86,10 @@ public class SingularityUtil {
             var main = new JsonObject();
 
             var sub = new JsonObject();
-            main.addProperty("type", "forge:not");
+            main.addProperty("type", "neoforge:not");
 
             sub.addProperty("tag", singularity.getTag());
-            sub.addProperty("type", "forge:tag_empty");
+            sub.addProperty("type", "neoforge:tag_empty");
 
             main.add("value", sub);
             array.add(main);
