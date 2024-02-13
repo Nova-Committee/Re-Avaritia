@@ -1,10 +1,10 @@
-package committee.nova.mods.avaritia.init.data.provider;
+package committee.nova.mods.avaritia.init.data.provider.tags;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -21,10 +21,10 @@ import java.util.concurrent.CompletableFuture;
  * Description
  */
 
-public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
+public class ModBlockTagProvider extends IntrinsicHolderTagsProvider<Block> {
 
-    public ModBlockTags(DataGenerator output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output.getPackOutput(), Registries.BLOCK, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
+    public ModBlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
+        super(output, Registries.BLOCK, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
     }
 
     @Override

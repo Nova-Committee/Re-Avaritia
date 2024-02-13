@@ -8,9 +8,7 @@ import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageScaling;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -28,54 +26,24 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModDamageTypes {
 
-    public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Static.MOD_ID, "infinity"));
+    public static final ResourceKey<DamageType> INFINITY = createKey("infinity_damage");
 
-    public static void bootstrap(BootstapContext<DamageType> context) {
-        context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
+    public static void createDamageTypes(BootstapContext<DamageType> context) {
+        context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F, DamageEffects.HURT, RANDOM_MSG));
     }
 
-    public static DamageSource source(Level level, ResourceKey<DamageType> id) {
-        final Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        final Holder.Reference<DamageType> damage = registry.getHolderOrThrow(id);
-        return new DamageSource(damage);
+    private static ResourceKey<DamageType> createKey(String name) {
+        return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Static.MOD_ID, name));
     }
 
-    public static DamageSource causeRandomDamage(Entity attacker) {
-        return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
-    }
+    public static final DeathMessageType RANDOM_MSG = DeathMessageType.create("RANDOM_MSG", Static.rl("random_infinity").toString(),
+            (entity, lastEntry, sigFall) -> {
+                DamageSource dmgSrc = lastEntry.source();
+                int type = entity.getRandom().nextInt(3);
+                LivingEntity livingentity = entity.getKillCredit();
+                String s = "death.attack." + dmgSrc.getMsgId() + "." + type;
+                String s1 = "death.attack." + dmgSrc.getMsgId() + ".player." + type;
+                return livingentity != null ? Component.translatable(s1, entity.getDisplayName(), livingentity.getDisplayName()) : Component.translatable(s, entity.getDisplayName());
+            });
 
-    public static DamageSource causeDamage(LivingEntity attacker) {
-        return new DamageSource(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
-    }
-
-    public static class DamageSourceRandomMessages extends DamageSource {
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity1, @Nullable Entity entity2, @Nullable Vec3 from) {
-            super(damageTypeHolder, entity1, entity2, from);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity1, @Nullable Entity entity2) {
-            super(damageTypeHolder, entity1, entity2);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, Vec3 from) {
-            super(damageTypeHolder, from);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity) {
-            super(damageTypeHolder, entity);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> p_270475_) {
-            super(p_270475_);
-        }
-
-        @Override
-        public @NotNull Component getLocalizedDeathMessage(LivingEntity attacked) {
-            int type = attacked.getRandom().nextInt(3);
-            LivingEntity livingentity = attacked.getKillCredit();
-            String s = "death.attack." + this.getMsgId() + "." + type;
-            String s1 = s + ".player";
-            return livingentity != null ? Component.translatable(s1, attacked.getDisplayName(), livingentity.getDisplayName()) : Component.translatable(s, attacked.getDisplayName());
-        }
-    }
 }

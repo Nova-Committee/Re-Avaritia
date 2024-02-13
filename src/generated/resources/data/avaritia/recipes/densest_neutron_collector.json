@@ -14,7 +14,10 @@
       "item": "avaritia:denser_neutron_collector"
     },
     "Y": {
-      "item": "avaritia:singularity"
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "avaritia:singularity",
+      "nbt": "{Id:\"avaritia:redstone\"}"
     }
   },
   "pattern": [

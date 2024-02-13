@@ -176,9 +176,6 @@ public class InfinityHandler {
     //给稿子添加时运
     @SubscribeEvent
     public static void handleExtraLuck(BlockEvent.BreakEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
         ItemStack mainHand = event.getPlayer().getMainHandItem();
 
         if (!mainHand.isEmpty() && mainHand.getItem() == ModItems.infinity_pickaxe.get()) {
@@ -220,7 +217,7 @@ public class InfinityHandler {
     //合并物质团
     @SubscribeEvent
     public static void clusterCluster(EntityItemPickupEvent event) {
-        if (event.getEntity() != null && event.getItem().getItem().getItem() == ModItems.matter_cluster.get()) {
+        if (event.getItem().getItem().getItem() == ModItems.matter_cluster.get()) {
             ItemStack stack = event.getItem().getItem();
             Player player = event.getEntity();
 

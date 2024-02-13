@@ -13,7 +13,9 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,14 +124,14 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
                                         .listOf()
                                         .fieldOf("ingredients")
                                         .flatXmap(
-                                                p_301021_ -> {
-                                                    Ingredient[] aingredient = p_301021_
+                                                list -> {
+                                                    Ingredient[] aingredient = list
                                                             .toArray(Ingredient[]::new); //Forge skip the empty check and immediatly create the array.
                                                     if (aingredient.length == 0) {
                                                         return DataResult.error(() -> "No ingredients for shapeless recipe");
                                                     } else {
-                                                        return aingredient.length > ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()
-                                                                ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()))
+                                                        return aingredient.length > ShapedExtremePattern.getMaxHeight() * ShapedExtremePattern.getMaxWidth()
+                                                                ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedExtremePattern.getMaxHeight() * ShapedExtremePattern.getMaxWidth()))
                                                                 : DataResult.success(NonNullList.of(Ingredient.EMPTY, aingredient));
                                                     }
                                                 },

@@ -8,9 +8,11 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremePattern;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.RecipeUtil;
+import committee.nova.mods.avaritia.util.math.NoNullList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -71,7 +73,7 @@ public class ExtremeTableCrafting {
                         }
                     }
                 }
-                ShapedRecipePattern pattern = new ShapedRecipePattern(width, height, ingredients, Optional.empty());
+                ShapedExtremePattern pattern = new ShapedExtremePattern(width, height, ingredients, Optional.empty());
 
                 var recipe = new ShapedExtremeCraftingRecipe("extreme", pattern, output.getInternal());
 
@@ -113,7 +115,7 @@ public class ExtremeTableCrafting {
                     }
                 }
 
-                var recipe = new ShapelessExtremeCraftingRecipe("extreme", toIngredientsList(inputs), output.getInternal());
+                var recipe = new ShapelessExtremeCraftingRecipe("extreme", toIngredientsNonNullList(inputs), output.getInternal());
 
                 recipe.setTransformers(transformers);
 
@@ -153,7 +155,7 @@ public class ExtremeTableCrafting {
                     }
                 }
 
-                var recipe = new InfinityCatalystCraftRecipe("catalyst", toIngredientsList(inputs));
+                var recipe = new InfinityCatalystCraftRecipe("catalyst", toIngredientsNonNullList(inputs));
 
                 recipe.setTransformers(transformers);
 
@@ -204,7 +206,13 @@ public class ExtremeTableCrafting {
         });
     }
 
-    private static NonNullList<Ingredient> toIngredientsList(IIngredient... ingredients) {
+    private static NoNullList<Ingredient> toIngredientsNoNullList(IIngredient... ingredients) {
+        return Arrays.stream(ingredients)
+                .map(IIngredient::asVanillaIngredient)
+                .collect(Collectors.toCollection(NoNullList::create));
+    }
+
+    private static NonNullList<Ingredient> toIngredientsNonNullList(IIngredient... ingredients) {
         return Arrays.stream(ingredients)
                 .map(IIngredient::asVanillaIngredient)
                 .collect(Collectors.toCollection(NonNullList::create));

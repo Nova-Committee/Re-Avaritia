@@ -42,6 +42,7 @@ public class Avaritia {
         ModRecipeTypes.RECIPES.register(bus);
         ModRecipeSerializers.SERIALIZERS.register(bus);
         ModCreativeModeTabs.TABS.register(bus);
+        ModAttachments.ATTACHMENT_TYPES.register(bus);
 
         //AvaritiaShaders.init();
     }

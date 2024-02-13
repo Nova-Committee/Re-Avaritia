@@ -2,10 +2,8 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.*;
+import committee.nova.mods.avaritia.util.DamageUtil;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -72,7 +70,6 @@ public class TraceArrowEntity extends AbstractArrow {
     private int homingTime;
     private static final EntityDataAccessor<Integer> SPECTRAL_TIME;
     private static final EntityDataAccessor<Integer> JUMP_COUNT;
-    private static final List<String> projectileAntiImmuneEntities;
     private final Entity owner = this.getOwner() == null ? this : this.getOwner();
 
     public TraceArrowEntity(EntityType<? extends AbstractArrow> entityType, Level world) {
@@ -302,10 +299,9 @@ public class TraceArrowEntity extends AbstractArrow {
         }
 
         Entity owner = this.getOwner() == null ? this : this.getOwner();
-        DamageSource damagesource = this.getDamageSource(entity);
-        boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
+        boolean isEnderMan = entity.getType() == EntityType.ENDERMAN;
         int k = entity.getRemainingFireTicks();
-        if (this.isOnFire() && !isEnderman) {
+        if (this.isOnFire() && !isEnderMan) {
             entity.setSecondsOnFire(5);
         }
 
@@ -317,7 +313,7 @@ public class TraceArrowEntity extends AbstractArrow {
             }
         }
 
-        if (entity.hurt(damagesource, (float)i)) {
+        if (DamageUtil.hurtModded(entity, ModDamageSources::infinity,i)) {
             if (entity instanceof LivingEntity livingentity) {
                 if (!this.level().isClientSide && this.getPierceLevel() <= 0) {
                     livingentity.setArrowCount(livingentity.getArrowCount() + 1);
@@ -344,11 +340,11 @@ public class TraceArrowEntity extends AbstractArrow {
                     this.piercedAndKilledEntities.add(livingentity);
                 }
 
-                if (!this.level().isClientSide && owner instanceof ServerPlayer serverplayerentity) {
+                if (!this.level().isClientSide && owner instanceof ServerPlayer serverPlayer) {
                     if (this.piercedAndKilledEntities != null && this.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverplayerentity, this.piercedAndKilledEntities);
+                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, this.piercedAndKilledEntities);
                     } else if (!entity.isAlive() && this.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverplayerentity, Arrays.asList(entity));
+                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, Arrays.asList(entity));
                     }
                 }
             }
@@ -390,25 +386,6 @@ public class TraceArrowEntity extends AbstractArrow {
         this.playSound(this.getHitGroundSoundEvent(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
         this.seekNextTarget();
         this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ARROW_HIT, SoundSource.PLAYERS, 4.0F, 1.0F);
-    }
-
-    private DamageSource getDamageSource(Entity target) {
-        Entity owner = this.getOwner();
-        DamageSource damagesource;
-        if (owner == null) {
-            damagesource = target.damageSources().arrow(this, this);
-        } else {
-            damagesource = target.damageSources().arrow(this, owner);
-            if (owner instanceof LivingEntity) {
-                ((LivingEntity)owner).setLastHurtMob(target);
-            }
-        }
-
-        if (projectileAntiImmuneEntities.contains(Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType())).toString())) {
-            damagesource = ModDamageTypes.causeRandomDamage(owner);
-        }
-
-        return damagesource;
     }
 
     public void setEffectsFromItem(ItemStack p_184555_1_) {
@@ -687,6 +664,5 @@ public class TraceArrowEntity extends AbstractArrow {
         ID_EFFECT_COLOR = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
         SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
         JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-        projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
     }
 }

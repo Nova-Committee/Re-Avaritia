@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraft
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import committee.nova.mods.avaritia.util.math.NoNullList;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.core.NonNullList;
@@ -81,23 +82,23 @@ public class ModCatalystRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
-    public ModCatalystRecipeBuilder unlockedBy(String pName, Criterion<?> pCriterion) {
+    public @NotNull ModCatalystRecipeBuilder unlockedBy(@NotNull String pName, @NotNull Criterion<?> pCriterion) {
         this.criteria.put(pName, pCriterion);
         return this;
     }
 
-    public ModCatalystRecipeBuilder group(@Nullable String pGroupName) {
+    public @NotNull ModCatalystRecipeBuilder group(@Nullable String pGroupName) {
         this.group = pGroupName;
         return this;
     }
 
     @Override
-    public Item getResult() {
+    public @NotNull Item getResult() {
        return ModItems.infinity_catalyst.get();
     }
 
     @Override
-    public void save(RecipeOutput pRecipeOutput, ResourceLocation pId) {
+    public void save(RecipeOutput pRecipeOutput, @NotNull ResourceLocation pId) {
         this.ensureValid(pId);
         Advancement.Builder advancement$builder = pRecipeOutput.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId))

@@ -1,17 +1,15 @@
-package committee.nova.mods.avaritia.init.data.provider;
+package committee.nova.mods.avaritia.init.data.provider.tags;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
-import net.minecraft.world.item.Item;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -21,10 +19,10 @@ import java.util.concurrent.CompletableFuture;
  * Description
  */
 
-public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
+public class ModItemTagProvider extends ItemTagsProvider {
 
-    public ModItemTags(DataGenerator output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output.getPackOutput(), Registries.ITEM, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
+    public ModItemTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagsProvider, ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, blockTagsProvider, Static.MOD_ID, existingFileHelper);
     }
 
     @Override

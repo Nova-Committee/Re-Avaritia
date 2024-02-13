@@ -1,9 +1,10 @@
-package committee.nova.mods.avaritia.init.data.provider;
+package committee.nova.mods.avaritia.init.data.provider.tags;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.tags.EntityTypeTags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -19,10 +20,10 @@ import java.util.concurrent.CompletableFuture;
  * Description
  */
 
-public class ModEntityTags extends EntityTypeTagsProvider {
+public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
-    public ModEntityTags(DataGenerator output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output.getPackOutput(), future, Static.MOD_ID, existingFileHelper);
+    public ModEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
+        super(output, future, Static.MOD_ID, existingFileHelper);
     }
 
     @Override

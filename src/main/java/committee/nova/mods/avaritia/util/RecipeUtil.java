@@ -36,7 +36,6 @@ public class RecipeUtil {
     @SubscribeEvent(
             priority = EventPriority.HIGHEST
     )
-
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
         recipeManager = event.getServerResources().getRecipeManager();
     }
@@ -75,20 +74,20 @@ public class RecipeUtil {
        return getRecipeManager().byName.get(name).value();
     }
 
-//    @ApiStatus.Experimental
-//    public static ShapelessExtremeCraftingRecipe addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
-//        List<ItemStack> arraylist = new ArrayList<>();
-//
-//        for (ItemStack stack : ingredients) {
-//            if (stack != null) {
-//                arraylist.add(stack.copy());
-//            } else {
-//                throw new RuntimeException("Invalid shapeless recipes!");
-//            }
-//        }
-//
-//        return new ShapelessExtremeCraftingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), getList(arraylist), result);
-//    }
+    @ApiStatus.Experimental
+    public static RecipeHolder<ShapelessExtremeCraftingRecipe> addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
+        List<ItemStack> arraylist = new ArrayList<>();
+
+        for (ItemStack stack : ingredients) {
+            if (stack != null) {
+                arraylist.add(stack.copy());
+            } else {
+                throw new RuntimeException("Invalid shapeless recipes!");
+            }
+        }
+
+        return new RecipeHolder<>(BuiltInRegistries.ITEM.getKey(result.getItem()), new ShapelessExtremeCraftingRecipe("", getList(arraylist), result));
+    }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {
         NonNullList<Ingredient> ingredients = NonNullList.create();

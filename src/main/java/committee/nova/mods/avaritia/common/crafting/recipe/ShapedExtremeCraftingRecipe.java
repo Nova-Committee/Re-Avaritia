@@ -11,7 +11,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,12 +27,12 @@ import java.util.function.Function;
  * Version: 1.0
  */
 public class ShapedExtremeCraftingRecipe implements ISpecialRecipe {
-    final ShapedRecipePattern pattern;
+    final ShapedExtremePattern pattern;
     final ItemStack result;
     final String group;
     private Map<Integer, Function<ItemStack, ItemStack>> transformers;
 
-    public ShapedExtremeCraftingRecipe(String group, ShapedRecipePattern pattern, ItemStack result) {
+    public ShapedExtremeCraftingRecipe(String group, ShapedExtremePattern pattern, ItemStack result) {
         this.pattern = pattern;
         this.result = result;
         this.group = group;
@@ -88,11 +90,11 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe {
     }
 
     public int getWidth() {
-        return 9;
+        return this.pattern.width();
     }
 
     public int getHeight() {
-        return 9;
+        return this.pattern.height();
     }
 
 
@@ -119,12 +121,12 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe {
 
     public static class Serializer implements RecipeSerializer<ShapedExtremeCraftingRecipe> {
         public static final Codec<ShapedExtremeCraftingRecipe> CODEC = RecordCodecBuilder.create(
-                p_311728_ -> p_311728_.group(
-                                ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_311729_ -> p_311729_.group),
-                                ShapedRecipePattern.MAP_CODEC.forGetter(p_311733_ -> p_311733_.pattern),
-                                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(p_311730_ -> p_311730_.result)
+                recipeInstance -> recipeInstance.group(
+                                ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+                                ShapedExtremePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
+                                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
                         )
-                        .apply(p_311728_, ShapedExtremeCraftingRecipe::new)
+                        .apply(recipeInstance, ShapedExtremeCraftingRecipe::new)
         );
 
         @Override
@@ -135,9 +137,9 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe {
         @Override
         public @NotNull ShapedExtremeCraftingRecipe fromNetwork(FriendlyByteBuf pBuffer) {
             String s = pBuffer.readUtf();
-            ShapedRecipePattern shapedrecipepattern = ShapedRecipePattern.fromNetwork(pBuffer);
+            ShapedExtremePattern shaped = ShapedExtremePattern.fromNetwork(pBuffer);
             ItemStack itemstack = pBuffer.readItem();
-            return new ShapedExtremeCraftingRecipe(s, shapedrecipepattern, itemstack);
+            return new ShapedExtremeCraftingRecipe(s, shaped, itemstack);
         }
 
         @Override

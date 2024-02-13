@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.data.provider;
+package committee.nova.mods.avaritia.init.data.provider.tags;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
@@ -20,9 +20,9 @@ import java.util.concurrent.CompletableFuture;
  * Description:
  */
 
-public class ModDamageTypeTags extends TagsProvider<DamageType> {
+public class ModDamageTypeProvider extends TagsProvider<DamageType> {
 
-    public ModDamageTypeTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
+    public ModDamageTypeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
         super(output, Registries.DAMAGE_TYPE, future, Static.MOD_ID, helper);
     }
 

@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.data.provider.recipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremePattern;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.NBTIngredient;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
@@ -89,24 +91,24 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
         }
     }
 
-    public ModShapedRecipeBuilder unlockedBy(String pName, Criterion<?> pCriterion) {
+    public @NotNull ModShapedRecipeBuilder unlockedBy(@NotNull String pName, @NotNull Criterion<?> pCriterion) {
         this.criteria.put(pName, pCriterion);
         return this;
     }
 
-    public ModShapedRecipeBuilder group(@Nullable String pGroupName) {
+    public @NotNull ModShapedRecipeBuilder group(@Nullable String pGroupName) {
         this.group = pGroupName;
         return this;
     }
 
     @Override
-    public Item getResult() {
+    public @NotNull Item getResult() {
         return this.result;
     }
 
     @Override
     public void save(RecipeOutput pRecipeOutput, ResourceLocation pId) {
-        ShapedRecipePattern shapedrecipepattern = this.ensureValid(pId);
+        ShapedExtremePattern shapedrecipepattern = this.ensureValid(pId);
         Advancement.Builder advancement$builder = pRecipeOutput.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId))
                 .rewards(AdvancementRewards.Builder.recipe(pId))
@@ -120,11 +122,11 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
         pRecipeOutput.accept(pId, shapedrecipe, advancement$builder.build(pId.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
-    private ShapedRecipePattern ensureValid(ResourceLocation pLocation) {
+    private ShapedExtremePattern ensureValid(ResourceLocation pLocation) {
         if (this.criteria.isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + pLocation);
         } else {
-            return ShapedRecipePattern.of(this.key, this.rows);
+            return ShapedExtremePattern.of(this.key, this.rows);
         }
     }
 }

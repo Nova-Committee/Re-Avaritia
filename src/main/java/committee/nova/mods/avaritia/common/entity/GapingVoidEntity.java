@@ -2,9 +2,10 @@ package committee.nova.mods.avaritia.common.entity;
 
 import com.google.common.base.Predicate;
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import committee.nova.mods.avaritia.init.registry.ModDamageSources;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
+import committee.nova.mods.avaritia.util.DamageUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +17,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -159,12 +161,12 @@ public class GapingVoidEntity extends Entity {
                     .filter(entity -> entity != this)
                     .forEach(entity -> {
                         if (entity instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(user), 1000.0f);
+                            DamageUtil.hurtModded(dragon, ModDamageSources::infinity,1000.0f);
                             dragon.setHealth(0);
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            wither.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
-                        } else entity.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
+                            DamageUtil.hurtModded(wither, ModDamageSources::infinity,1000.0f);
+                        } else DamageUtil.hurtModded(entity, ModDamageSources::infinity,1000.0f);
                     });
             remove(RemovalReason.KILLED);
         } else {
@@ -238,7 +240,7 @@ public class GapingVoidEntity extends Entity {
 
                 if (len <= nomrange) {
                     if (nommee instanceof EnderDragon dragon) {
-                        dragon.hurt(dragon.head, this.damageSources().fellOutOfWorld(), 5.0f);
+                        DamageUtil.hurtVanilla(dragon.head, DamageSources::fellOutOfWorld,5.0f);
                     }
                     nommee.hurt(this.damageSources().fellOutOfWorld(), 5.0f);
                 }
@@ -249,11 +251,11 @@ public class GapingVoidEntity extends Entity {
         if (age % 10 == 0) {
             Vec3 posFloor = this.position();
 
-            int blockrange = (int) Math.round(nomrange);
+            int block_range = Math.round(nomrange);
 
-            for (int y = -blockrange; y <= blockrange; y++) {
-                for (int z = -blockrange; z <= blockrange; z++) {
-                    for (int x = -blockrange; x <= blockrange; x++) {
+            for (int y = -block_range; y <= block_range; y++) {
+                for (int z = -block_range; z <= block_range; z++) {
+                    for (int x = -block_range; x <= block_range; x++) {
                         Vec3 pos2 = new Vec3(x, y, z);
                         Vec3 rPos = posFloor.add(pos2);
                         BlockPos blockPos = BlockPos.containing(rPos.x, rPos.y, rPos.z);

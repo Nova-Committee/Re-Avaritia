@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.handler;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
+import committee.nova.mods.avaritia.init.registry.ModDamageSources;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.AbilityUtil;
@@ -71,10 +72,10 @@ public class AbilityHandler {
                 if (hasChest) {
                     handleChestStateChange(entity);
                 } else  {
-//                    if (!entity.isCreative()) {
-//                        entity.getAbilities().mayfly = false;
-//                        entity.getAbilities().flying = false;
-//                    }
+                    if (!entity.isCreative()) {
+                        entity.getAbilities().mayfly = false;
+                        entity.getAbilities().flying = false;
+                    }
                     entitiesWithChest.remove(key);
                 }
             } else {
@@ -143,7 +144,7 @@ public class AbilityHandler {
     private static void handleChestStateChange(LivingEntity entity) {
         if (entity instanceof Player player) {
                 player.getAbilities().mayfly = true;
-                player.getAbilities().flying = true;
+//                player.getAbilities().flying = true;
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
                     player.removeEffect(potion.getEffect());
@@ -210,7 +211,7 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (AbilityUtil.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
+            if (AbilityUtil.isInfinite(player) && !(event.getSource().is(ModDamageTypes.INFINITY))) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }
@@ -246,12 +247,12 @@ public class AbilityHandler {
         stripAbilities(event.getEntity());
     }
 
-    @SubscribeEvent
-    public static void entityConstructEvent(EntityEvent.EntityConstructing event) {
-        if (event.getEntity() instanceof Player entity) {
-            stripAbilities(entity);
-        }
-    }
+//    @SubscribeEvent
+//    public static void entityConstructEvent(PlayerEvent.EntityConstructing event) {
+//        if (event.getEntity() instanceof Player entity) {
+//            stripAbilities(entity);
+//        }
+//    }
 
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {

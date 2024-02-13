@@ -14,6 +14,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 
+import java.util.List;
+
 /**
  * Description:
  * Author: cnlimiter
@@ -25,15 +27,17 @@ public class DynamicRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
 
-        var infinity_catalyst = (InfinityCatalystCraftRecipe) RecipeUtil.getRecipe(Static.rl("infinity_catalyst"));
-        SingularityRegistryHandler.getInstance().getSingularities()
-                .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .limit(81)
-                .map(SingularityUtil::getItemForSingularity)
-                .map(Ingredient::of)
-                .forEach(infinity_catalyst.ingredients::add);
-        event.register(new RecipeHolder<>(Static.rl("infinity_catalyst"), new InfinityCatalystCraftRecipe("catalyst", infinity_catalyst.ingredients)));
+//        var infinity_catalyst = (InfinityCatalystCraftRecipe) RecipeUtil.getRecipe(Static.rl("infinity_catalyst"));
+//        SingularityRegistryHandler.getInstance().getSingularities()
+//                .stream()
+//                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+//                .limit(81)
+//                .map(SingularityUtil::getItemForSingularity)
+//                .map(Ingredient::of)
+//                .forEach(ingredient -> {
+//                    infinity_catalyst.ingredients.add(ingredient);
+//                });
+//        event.register(new RecipeHolder<>(Static.rl("infinity_catalyst"), new InfinityCatalystCraftRecipe("catalyst", infinity_catalyst.ingredients)));
 
         for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
             if (singularity.isRecipeDisabled()) {
