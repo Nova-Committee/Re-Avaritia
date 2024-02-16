@@ -74,7 +74,7 @@ public class ModDamageTypes {
             int type = attacked.getRandom().nextInt(3);
             LivingEntity livingentity = attacked.getKillCredit();
             String s = "death.attack." + this.getMsgId() + "." + type;
-            String s1 = s + ".player";
+            String s1 = "death.attack." + this.getMsgId() + ".player." + type;
             return livingentity != null ? Component.translatable(s1, attacked.getDisplayName(), livingentity.getDisplayName()) : Component.translatable(s, attacked.getDisplayName());
         }
     }

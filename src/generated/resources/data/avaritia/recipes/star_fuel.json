@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "tag": "forge:ores/coal"
+    },
+    "x": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "ccc",
+    "cxc",
+    "ccc"
+  ],
+  "result": {
+    "item": "avaritia:star_fuel"
+  },
+  "show_notification": true
+}

@@ -71,10 +71,10 @@ public class AbilityHandler {
                 if (hasChest) {
                     handleChestStateChange(entity);
                 } else  {
-//                    if (!entity.isCreative()) {
-//                        entity.getAbilities().mayfly = false;
-//                        entity.getAbilities().flying = false;
-//                    }
+                    if (!entity.isCreative()) {
+                        entity.getAbilities().mayfly = false;
+                        entity.getAbilities().flying = false;
+                    }
                     entitiesWithChest.remove(key);
                 }
             } else {
@@ -143,7 +143,6 @@ public class AbilityHandler {
     private static void handleChestStateChange(LivingEntity entity) {
         if (entity instanceof Player player) {
                 player.getAbilities().mayfly = true;
-                player.getAbilities().flying = true;
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
                     player.removeEffect(potion.getEffect());
@@ -220,41 +219,41 @@ public class AbilityHandler {
 
     //跳跃增强
     @SubscribeEvent
-    public void jumpBoost(LivingEvent.LivingJumpEvent event) {
+    public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + entity.level().isClientSide))
             player.setDeltaMovement(0, 2.0f, 0);
     }
 
     @SubscribeEvent
-    public void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
+    public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
-    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         stripAbilities(event.getEntity());
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         stripAbilities(event.getEntity());
     }
 
-    @SubscribeEvent
-    public void entityConstructEvent(EntityEvent.EntityConstructing event) {
-        if (event.getEntity() instanceof Player entity) {
-            stripAbilities(entity);
-        }
-    }
+//    @SubscribeEvent
+//    public static void entityConstructEvent(EntityEvent.EntityConstructing event) {
+//        if (event.getEntity() instanceof Player entity) {
+//            stripAbilities(entity);
+//        }
+//    }
 
     @SubscribeEvent
-    public void onEntityDeath(LivingDeathEvent event) {
+    public static void onEntityDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player entity) {
             stripAbilities(entity);
         }

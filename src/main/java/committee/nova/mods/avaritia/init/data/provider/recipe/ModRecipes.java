@@ -59,7 +59,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("xyx")
                 .define('x', ModItems.diamond_lattice.get())
                 .define('y', Items.NETHER_STAR)
-                
+
                 .unlockedBy("has_item", has(ModItems.diamond_lattice.get())).save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.extreme_crafting_table.get())
@@ -80,6 +80,22 @@ public class ModRecipes extends RecipeProvider {
                 .define('d', Tags.Items.CROPS_WHEAT)
                 .define('e', ModItems.infinity_ingot.get())
                 .unlockedBy("has_item", has(Items.DRAGON_EGG)).save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
+                .pattern(" n ")
+                .pattern("ncn")
+                .pattern(" n ")
+                .define('n', ModItems.neutron_ingot.get())
+                .define('c', ModItems.crystal_matrix_ingot.get())
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.star_fuel.get())
+                .pattern("ccc")
+                .pattern("cxc")
+                .pattern("ccc")
+                .define('c', Tags.Items.ORES_COAL)
+                .define('x', ModItems.infinity_catalyst.get())
+                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.dense_neutron_collector.get())
                 .pattern("aaa")
@@ -103,7 +119,9 @@ public class ModRecipes extends RecipeProvider {
                 .unlockedBy("has_item", has(ModItems.record_fragment.get()))
                 .save(consumer);
 
-
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.infinity_nugget.get(), 9)
+                .requires(ModItems.infinity_ingot.get())
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
@@ -404,7 +422,7 @@ public class ModRecipes extends RecipeProvider {
                 .define('N', ModItems.neutron_ingot.get())
                 .define('C', ModItems.crystal_matrix_ingot.get())
                 .define('X', ModItems.infinity_catalyst.get())
-                
+
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
     }
 
