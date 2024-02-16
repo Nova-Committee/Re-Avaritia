@@ -16,8 +16,12 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.crafting.CraftingHelper;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -78,23 +82,12 @@ public class SingularityUtil {
 
         JsonElement ingredient;
         if (singularity.getTag() != null) {
+            var tagEmpty = new TagEmptyCondition(singularity.getTag());
+            var notCondition = new NotCondition(tagEmpty);
             var obj = new JsonObject();
             obj.addProperty("tag", singularity.getTag());
             ingredient = obj;
-
-            var array = new JsonArray();
-            var main = new JsonObject();
-
-            var sub = new JsonObject();
-            main.addProperty("type", "neoforge:not");
-
-            sub.addProperty("tag", singularity.getTag());
-            sub.addProperty("type", "neoforge:tag_empty");
-
-            main.add("value", sub);
-            array.add(main);
-            json.add("conditions", array);
-
+            ICondition.writeConditions(JsonOps.INSTANCE, json, List.of(notCondition));
         } else {
             ingredient = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, singularity.getIngredient()).result().orElse(null);
         }
