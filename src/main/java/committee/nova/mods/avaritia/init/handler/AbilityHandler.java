@@ -72,7 +72,7 @@ public class AbilityHandler {
                 if (hasChest) {
                     handleChestStateChange(entity);
                 } else  {
-                    if (!entity.isCreative()) {
+                    if (!entity.isCreative() && !entity.isSpectator()){
                         entity.getAbilities().mayfly = false;
                         entity.getAbilities().flying = false;
                     }
@@ -115,8 +115,10 @@ public class AbilityHandler {
         }
 
         if (entitiesWithChest.remove(key)) {
-            entity.getAbilities().mayfly = false;
-            entity.getAbilities().flying = false;
+            if (!entity.isCreative() && !entity.isSpectator()){
+                entity.getAbilities().mayfly = false;
+                entity.getAbilities().flying = false;
+            }
         }
 
         if (entitiesWithLeggings.remove(key)) {
@@ -224,7 +226,7 @@ public class AbilityHandler {
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + entity.level().isClientSide))
-            player.setDeltaMovement(0, 2.0f, 0);
+            player.setDeltaMovement(0, 0.65f, 0);
     }
 
     @SubscribeEvent
@@ -246,13 +248,6 @@ public class AbilityHandler {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         stripAbilities(event.getEntity());
     }
-
-//    @SubscribeEvent
-//    public static void entityConstructEvent(PlayerEvent.EntityConstructing event) {
-//        if (event.getEntity() instanceof Player entity) {
-//            stripAbilities(entity);
-//        }
-//    }
 
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
