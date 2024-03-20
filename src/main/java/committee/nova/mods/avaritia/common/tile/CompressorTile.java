@@ -61,7 +61,8 @@ public class CompressorTile extends BaseInventoryTileEntity {
         tile.recipeInventory.setStackInSlot(0, tile.materialStack);
 
         if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
-            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null).value();
+            var recipeHolder = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level);
+            recipeHolder.ifPresent(iCompressorRecipeRecipeHolder -> tile.recipe = (CompressorRecipe) iCompressorRecipeRecipeHolder.value());
         }
 
         if (!level.isClientSide()) {
