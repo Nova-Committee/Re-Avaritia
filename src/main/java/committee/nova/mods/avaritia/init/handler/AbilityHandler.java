@@ -56,52 +56,50 @@ public class AbilityHandler {
             boolean hasLeggings = isPlayerWearing(event.getEntity(), LEGS, item -> item instanceof ArmorInfinityItem);
             boolean hasBoots = isPlayerWearing(event.getEntity(), FEET, item -> item instanceof ArmorInfinityItem);
 
-            if (entitiesWithHelmets.contains(key)) {
-                if (hasHelmet) {
+
+            if (hasHelmet) {
+                if (entitiesWithHelmets.contains(key)) {
                     handleHelmetStateChange(entity);
                 } else {
-                    entitiesWithHelmets.remove(key);
+                    entitiesWithHelmets.add(key);
                 }
             } else {
-                entitiesWithHelmets.add(key);
+                entitiesWithHelmets.remove(key);
             }
 
-
-            if (entitiesWithChest.contains(key)) {
-                if (hasChest) {
+            if (hasChest) {
+                if (entitiesWithChest.contains(key)) {
                     handleChestStateChange(entity);
-                } else  {
-                    if (!entity.isCreative() && !entity.isSpectator()){
-                        entity.getAbilities().mayfly = false;
-                        entity.getAbilities().flying = false;
-                    }
-                    entitiesWithChest.remove(key);
+                } else {
+                    entitiesWithChest.add(key);
                 }
-            } else {
-                entitiesWithChest.add(key);
+            } else  {
+                if (!entity.isCreative() && !entity.isSpectator()){
+                    entity.getAbilities().mayfly = false;
+                    entity.getAbilities().flying = false;
+                }
+                entitiesWithChest.remove(key);
             }
 
-
-            if (entitiesWithLeggings.contains(key)) {
-                if (hasLeggings) {
+            if (hasLeggings) {
+                if (entitiesWithLeggings.contains(key)) {
                     handleLeggingsStateChange(entity);
-                } else  {
-                    entitiesWithLeggings.remove(key);
+                } else {
+                    entitiesWithLeggings.add(key);
                 }
             } else {
-                entitiesWithLeggings.add(key);
+                entitiesWithLeggings.remove(key);
             }
 
-
-            if (entitiesWithBoots.contains(key)) {
-                if (hasBoots) {
+            if (hasBoots) {
+                if (entitiesWithBoots.contains(key)) {
                     handleBootsStateChange(entity);
-                } else  {
-                    entity.setMaxUpStep(0.5F);
-                    entitiesWithBoots.remove(key);
+                } else {
+                    entitiesWithBoots.add(key);
                 }
-            } else {
-                entitiesWithBoots.add(key);
+            } else  {
+                entity.setMaxUpStep(0.5F);
+                entitiesWithBoots.remove(key);
             }
 
         }
