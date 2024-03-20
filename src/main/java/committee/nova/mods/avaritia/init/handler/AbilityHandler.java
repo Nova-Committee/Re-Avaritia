@@ -224,7 +224,7 @@ public class AbilityHandler {
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + entity.level().isClientSide))
-            player.setDeltaMovement(0, 0.65f, 0);
+            player.setDeltaMovement(0, 0.55f, 0);
     }
 
     @SubscribeEvent
