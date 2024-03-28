@@ -51,13 +51,13 @@ public class AbilityUtil {
         }
     }
 
-    public static void attackAOE(Player player, float range, float damage, boolean type) {
+    public static void attackAOE(Player player, float range, float damage, boolean hurtLiving) {
         if (player.level().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
         for (var entity : toAttack) {
-            if (type) {
+            if (hurtLiving) {
                 if (entity instanceof LivingEntity livingEntity) {
                     livingEntity.hurt(src, damage);
                 }

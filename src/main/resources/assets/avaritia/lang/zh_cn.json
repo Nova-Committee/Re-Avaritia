@@ -42,6 +42,7 @@
   "tooltip.neutron_gear.desc": "科技复兴的秘密...",
   "tooltip.infinity_nugget.desc": "圣灵的眼泪...",
   "tooltip.diamond_lattice.desc": "致密材料...",
+  "tooltip.infinity_totem.desc": "永恒守护...",
   "tooltip.infinity": "无限",
   "tooltip.infinity.desc": "攻击伤害",
   "tooltip.armor.desc": "盔甲",
@@ -161,5 +162,6 @@
   "advancements.avaritia.singularity.title": "挖矿工艺",
   "advancements.avaritia.singularity.desc": "压缩矿物获取任意奇点",
   "advancements.avaritia.star_fuel.title": "恒星能源",
-  "advancements.avaritia.star_fuel.desc": "获取恒星燃料"
+  "advancements.avaritia.star_fuel.desc": "获取恒星燃料",
+  "attribute.name.generic.walking_speed": "移动速度"
 }

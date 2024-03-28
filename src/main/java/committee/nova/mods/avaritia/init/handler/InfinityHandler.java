@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
+import committee.nova.mods.avaritia.common.net.TotemPacket;
 import committee.nova.mods.avaritia.init.event.MatterCollectEvent;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -15,7 +16,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -41,6 +46,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -51,6 +57,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.*;
 
@@ -266,6 +273,39 @@ public class InfinityHandler {
         }
     }
 
+    //取消身穿无尽套时的伤害
+    @SubscribeEvent
+    public static void onDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            if (AbilityUtil.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
+                event.setCanceled(true);
+                player.setHealth(player.getMaxHealth());
+            }
+            ItemStack totem = getPlayerBagItem(player);
+            if (!totem.isEmpty()){
+                NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new TotemPacket(totem, player));
+
+                player.removeAllEffects();
+                int damage = totem.getUseDuration();
+                if (damage == 9){ //最后一次
+                    player.setHealth(player.getMaxHealth());
+                    player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
+                    AbilityUtil.attackAOE(player, 8, 1000.0f, false);
+                    player.displayClientMessage(Component.translatable("endless.text.msg.totem_break"), false);
+                }else {
+                    player.setHealth(10.0F);
+                }
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2600, 4));
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 1));
+                player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 700, 2));
+                player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1100, 0));
+//                player.world.setEntityState(player, (byte)35);
+                totem.hurtAndBreak(1, player, e -> e.swing(InteractionHand.MAIN_HAND));
+                event.setCanceled(true);
+            }
+        }
+    }
 
     //取消身穿无尽套时受到的所有伤害
     @SubscribeEvent
@@ -344,4 +384,25 @@ public class InfinityHandler {
         event.getDrops().add(entity);
     }
 
+    /**
+     * 获取玩家背包中的图腾
+     * @param player 玩家
+     * @return 图腾
+     */
+    private static ItemStack getPlayerBagItem(Player player){
+        ItemStack mainHandItem = player.getMainHandItem();
+        if (mainHandItem.getItem() == ModItems.infinity_totem.get()){
+            return mainHandItem;
+        }
+        ItemStack offhand = player.getOffhandItem();
+        if (offhand.getItem() == ModItems.infinity_totem.get()){
+            return offhand;
+        }
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.getItem() == ModItems.infinity_totem.get())
+                return stack;
+        }
+
+        return ItemStack.EMPTY;
+    }
 }

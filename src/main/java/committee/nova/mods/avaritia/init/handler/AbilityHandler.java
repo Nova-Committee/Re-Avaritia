@@ -186,19 +186,6 @@ public class AbilityHandler {
         }
     }
 
-
-    //取消身穿无尽套时的伤害
-    @SubscribeEvent
-    public static void onDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            if (AbilityUtil.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
-                event.setCanceled(true);
-                player.setHealth(player.getMaxHealth());
-            }
-        }
-    }
-
-
     //跳跃增强
     @SubscribeEvent
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {

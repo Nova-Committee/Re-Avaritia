@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.handler;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.init.handler.NetBaseHandler;
 import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
+import committee.nova.mods.avaritia.common.net.TotemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +22,7 @@ public class NetworkHandler {
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> INSTANCE.register(SyncSingularitiesPacket.class, new SyncSingularitiesPacket()));
+        event.enqueueWork(() -> INSTANCE.register(TotemPacket.class, new TotemPacket()));
 
     }
 }

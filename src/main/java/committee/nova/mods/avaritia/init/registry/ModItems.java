@@ -57,9 +57,12 @@ public class ModItems {
     public static RegistryObject<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(Rarity.RARE, "infinity_nugget", true));
     public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_catalyst", true));
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", true));
-    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new StarFuelItem(Rarity.EPIC));
-    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
+
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
+
+    public static RegistryObject<Item> infinity_totem = item("infinity_totem", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true));
+    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
+    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
 
     static {
         ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);

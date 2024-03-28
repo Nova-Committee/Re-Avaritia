@@ -42,6 +42,7 @@
   "tooltip.neutron_gear.desc": "The secret of the tech renaissance...",
   "tooltip.infinity_nugget.desc": "Angel's tears...",
   "tooltip.diamond_lattice.desc": "Dense material...",
+  "tooltip.infinity_totem.desc": "Eternal Guardian...",
   "tooltip.infinity": "Infinity",
   "tooltip.infinity.desc": "Attack Damage",
   "tooltip.armor.desc": "Armor",
@@ -161,5 +162,6 @@
   "advancements.avaritia.singularity.title": "Mining Craft",
   "advancements.avaritia.singularity.desc": "Compress minerals to get singularity",
   "advancements.avaritia.star_fuel.title": "Stellar Energy",
-  "advancements.avaritia.star_fuel.desc": "Get stellar fuel"
+  "advancements.avaritia.star_fuel.desc": "Get stellar fuel",
+  "attribute.name.generic.walking_speed": "WALKING SPEED"
 }
