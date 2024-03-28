@@ -27,15 +27,19 @@ public class ResourceItem extends Item {
     private final String name;
     private final boolean needsTooltip;
 
-    public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip) {
-        super(new Properties());
+    public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip){
+        this(rarity, registryName, needsTooltip, new Properties());
+    }
+
+    public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip, Properties properties) {
+        super(properties);
         this.rarity = rarity;
         this.name = registryName;
         this.needsTooltip = needsTooltip;
     }
 
     @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack p_41461_) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
         return rarity;
     }
 

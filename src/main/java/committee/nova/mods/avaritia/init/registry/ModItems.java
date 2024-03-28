@@ -60,7 +60,9 @@ public class ModItems {
 
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
 
-    public static RegistryObject<Item> infinity_totem = item("infinity_totem", () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true));
+    public static RegistryObject<Item> infinity_totem = item("infinity_totem",
+            () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true,
+                    new Item.Properties().stacksTo(1).durability(99)));
     public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
 

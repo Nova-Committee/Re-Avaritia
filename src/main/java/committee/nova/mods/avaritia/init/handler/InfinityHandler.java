@@ -276,14 +276,14 @@ public class InfinityHandler {
     //取消身穿无尽套时的伤害
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player) {
+        if (event.getEntity() instanceof ServerPlayer player) {
             if (AbilityUtil.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }
             ItemStack totem = getPlayerBagItem(player);
             if (!totem.isEmpty()){
-                NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new TotemPacket(totem, player));
+                NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new TotemPacket(totem, player.getId()));
 
                 player.removeAllEffects();
                 int damage = totem.getUseDuration();
@@ -292,7 +292,7 @@ public class InfinityHandler {
                     player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
                     AbilityUtil.attackAOE(player, 8, 1000.0f, false);
-                    player.displayClientMessage(Component.translatable("endless.text.msg.totem_break"), false);
+                    player.displayClientMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
                 }else {
                     player.setHealth(10.0F);
                 }
@@ -300,7 +300,6 @@ public class InfinityHandler {
                 player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 1));
                 player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 700, 2));
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1100, 0));
-//                player.world.setEntityState(player, (byte)35);
                 totem.hurtAndBreak(1, player, e -> e.swing(InteractionHand.MAIN_HAND));
                 event.setCanceled(true);
             }

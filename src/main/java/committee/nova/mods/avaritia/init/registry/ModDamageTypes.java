@@ -34,18 +34,8 @@ public class ModDamageTypes {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
     }
 
-    public static DamageSource source(Level level, ResourceKey<DamageType> id) {
-        final Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        final Holder.Reference<DamageType> damage = registry.getHolderOrThrow(id);
-        return new DamageSource(damage);
-    }
-
     public static DamageSource causeRandomDamage(Entity attacker) {
         return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
-    }
-
-    public static DamageSource causeDamage(LivingEntity attacker) {
-        return new DamageSource(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {

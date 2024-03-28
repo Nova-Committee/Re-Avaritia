@@ -424,6 +424,23 @@ public class ModRecipes extends RecipeProvider {
                 .define('X', ModItems.infinity_catalyst.get())
 
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_totem.get())
+                .pattern("   NNN   ")
+                .pattern("  NIIIN  ")
+                .pattern("  NYIYN  ")
+                .pattern("CCCIIICCC")
+                .pattern(" CCIIICC ")
+                .pattern("  NIIIN  ")
+                .pattern("  NNNNN  ")
+                .pattern("   CCC   ")
+                .pattern("    C    ")
+                .define('N', ModItems.neutron_ingot.get())
+                .define('I', ModItems.infinity_nugget.get())
+                .define('Y', Items.TOTEM_OF_UNDYING)
+                .define('C', ModItems.crystal_matrix_ingot.get())
+
+                .unlockedBy("has_item", has(Items.TOTEM_OF_UNDYING)).save(consumer);
     }
 
     protected static InventoryChangeTrigger.TriggerInstance has(@NotNull TagKey<Item> tagKey) {

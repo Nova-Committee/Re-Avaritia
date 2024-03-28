@@ -54,9 +54,9 @@ public class SingularityRegistryHandler {
         var player = event.getPlayer();
 
         if (player != null) {
-            NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
         } else {
-            NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
         }
     }
 

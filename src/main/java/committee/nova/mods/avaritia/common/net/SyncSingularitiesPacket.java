@@ -15,13 +15,9 @@ import java.util.function.Supplier;
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public class SyncSingularitiesPacket extends IPacket<SyncSingularitiesPacket> {
+public class SyncSingularitiesPacket{
 
-    private List<Singularity> singularities;
-
-    public SyncSingularitiesPacket() {
-    }
-
+    private final List<Singularity> singularities;
     public SyncSingularitiesPacket(List<Singularity> singularities) {
         this.singularities = singularities;
     }
@@ -31,22 +27,15 @@ public class SyncSingularitiesPacket extends IPacket<SyncSingularitiesPacket> {
     }
 
 
-    @Override
-    public SyncSingularitiesPacket read(FriendlyByteBuf buf) {
-        var singularities = SingularityRegistryHandler.getInstance().readFromBuffer(buf);
-
-        return new SyncSingularitiesPacket(singularities);
+    public SyncSingularitiesPacket(FriendlyByteBuf buf) {
+        this.singularities = SingularityRegistryHandler.getInstance().readFromBuffer(buf);
     }
 
-    @Override
-    public void write(SyncSingularitiesPacket msg, FriendlyByteBuf buf) {
+    public static void write(SyncSingularitiesPacket msg, FriendlyByteBuf buf) {
         SingularityRegistryHandler.getInstance().writeToBuffer(buf);
     }
 
-    @Override
-    public void run(SyncSingularitiesPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide().isServer())
-            return;
+    public static void run(SyncSingularitiesPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             SingularityRegistryHandler.getInstance().loadSingularities(msg);
         });

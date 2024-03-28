@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public class NetBaseHandler {
     private final SimpleChannel channel;
-    private int id = 0;
+    public int id = 0;
 
     public NetBaseHandler(ResourceLocation id) {
         this.channel = NetworkRegistry.newSimpleChannel(id, () -> {
