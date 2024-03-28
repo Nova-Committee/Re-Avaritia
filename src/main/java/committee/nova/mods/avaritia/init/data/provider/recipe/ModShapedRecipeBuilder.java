@@ -127,7 +127,9 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     public void save(@NotNull Consumer<FinishedRecipe> p_126141_, @NotNull ResourceLocation p_126142_) {
         this.ensureValid(p_126142_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126142_)).rewards(AdvancementRewards.Builder.recipe(p_126142_)).requirements(RequirementsStrategy.OR);
-        p_126141_.accept(new ModShapedRecipeBuilder.Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.rows, this.key, this.advancement, p_126142_.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
+        p_126141_.accept(new ModShapedRecipeBuilder.Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group,
+                determineBookCategory(this.category), this.rows, this.key, this.advancement,
+                p_126142_.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
 
     private void ensureValid(ResourceLocation p_126144_) {
