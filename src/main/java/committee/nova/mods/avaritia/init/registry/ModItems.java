@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
@@ -64,11 +65,7 @@ public class ModItems {
             () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true,
                     new Item.Properties().stacksTo(1).durability(999)));
     public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
-    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(COSMIC_RARITY, "record_fragment", true));
-
-    static {
-        ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);
-    }
+    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(Rarity.EPIC, "record_fragment", true));
 
     public static RegistryObject<Item> item(String name) {
         return item(name, BaseItem::new);

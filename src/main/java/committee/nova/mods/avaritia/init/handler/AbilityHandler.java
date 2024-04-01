@@ -149,18 +149,18 @@ public class AbilityHandler {
                     if (player.zza > 0f) {
                         player.moveRelative(speed, new Vec3(0, 0, 1));
                     } else if (player.zza < 0f) {
-                        player.moveRelative(-speed * 0.3f, new Vec3(0, 0, 1));
+                        player.moveRelative(-speed * 0.25f, new Vec3(0, 0, 1));
                     }
 
                     if (player.xxa != 0f) {
-                        player.moveRelative(speed * 0.5f * Math.signum(player.xxa), new Vec3(1, 0, 0));
+                        player.moveRelative(speed * 0.45f * Math.signum(player.xxa), new Vec3(1, 0, 0));
                     }
                 }
             } else {
                 entitiesWithBoots.add(key);
             }
         } else  {
-            player.setMaxUpStep(0.5F);
+            player.setMaxUpStep(0.6F);
             entitiesWithBoots.remove(key);
         }
     }

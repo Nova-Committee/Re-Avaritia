@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.util.java.TriFunction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,14 +14,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Description:
@@ -34,7 +35,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
     private final ItemStack output;
     private final int width;
     private final int height;
-    private Map<Integer, Function<ItemStack, ItemStack>> transformers;
+    private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
 
     public ShapedExtremeCraftingRecipe(ResourceLocation recipeId, int width, int height, NonNullList<Ingredient> inputs, ItemStack output) {
         this.recipeId = recipeId;
@@ -130,18 +131,44 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inventory) {
         if (this.transformers != null) {
-            var remaining = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
+            var remaining = NonNullList.withSize(inventory.getSlots(), ItemStack.EMPTY);
+            int size = (int) Math.sqrt(inventory.getSlots());
 
-            this.transformers.forEach((i, stack) -> {
-                remaining.set(i, stack.apply(inv.getItem(i)));
-            });
+            for (int i = 0; i <= size - this.width; i++) {
+                for (int j = 0; j <= size - this.height; j++) {
+                    if (this.checkMatch(inventory, i, j, true)) {
+                        for (int k = 0; k < this.height; k++) {
+                            for (int l = 0; l < this.width; l++) {
+                                int index = (this.width - 1 - l) + i + (k + j) * size;
+                                var stack = inventory.getStackInSlot(index);
+
+                                remaining.set(index, this.transformers.apply(l, k, stack));
+                            }
+                        }
+
+                        break;
+                    }
+
+                    if (this.checkMatch(inventory, i, j, false)) {
+                        for (int k = 0; k < this.height; k++) {
+                            for (int l = 0; l < this.width; l++) {
+                                int index = l + i + (k + j) * size;
+                                var stack = inventory.getStackInSlot(index);
+
+                                remaining.set(index, this.transformers.apply(l, k, stack));
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
 
             return remaining;
         }
-
-        return ISpecialRecipe.super.getRemainingItems(inv);
+        return ISpecialRecipe.super.getRemainingItems(inventory);
     }
 
 
@@ -169,7 +196,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
         return true;
     }
 
-    public void setTransformers(Map<Integer, Function<ItemStack, ItemStack>> transformers) {
+    public void setTransformers(TriFunction<Integer, Integer, ItemStack, ItemStack> transformers) {
         this.transformers = transformers;
     }
 

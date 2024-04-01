@@ -14,6 +14,7 @@ import committee.nova.mods.avaritia.common.block.collector.DensestNeutronCollect
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -39,8 +40,6 @@ import static net.minecraft.world.item.Rarity.RARE;
  */
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Static.MOD_ID);
-    public static final Map<String, Supplier<BlockItem>> BLOCK_ITEMS = new LinkedHashMap<>();
-
 
     //CRAFTING
     public static RegistryObject<Block> compressed_crafting_table = block("compressed_crafting_table", CompressedCraftingTableBlock::new, Rarity.UNCOMMON);
@@ -55,8 +54,8 @@ public class ModBlocks {
     public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new, RARE);
     public static RegistryObject<Block> neutron_collector = block("neutron_collector", DefaultNeutronCollectorBlock::new, Rarity.RARE);
     public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", DenseNeutronCollectorBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", DenserNeutronCollectorBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", DensestNeutronCollectorBlock::new, Rarity.RARE);
+    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", DenserNeutronCollectorBlock::new, Rarity.EPIC);
+    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", DensestNeutronCollectorBlock::new, COSMIC_RARITY);
     public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new, Rarity.RARE);
     //public static RegistryObject<Block> infinitato = block("infinitato", InfinitatoBlock::new);
 
@@ -85,17 +84,9 @@ public class ModBlocks {
         return BLOCKS.register(name, block);
     }
 
-    public static RegistryObject<Block> block(String name, Supplier<Block> block) {
-        return block(name, block, b -> () -> new BaseBlockItem(b.get()));
-    }
-
     public static RegistryObject<Block> block(String name, Supplier<Block> block, Rarity rarity) {
-        return block(name, block, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity)));
-    }
-
-    public static RegistryObject<Block> block(String name, Supplier<Block> block, Function<RegistryObject<Block>, Supplier<? extends BlockItem>> item) {
         var reg = BLOCKS.register(name, block);
-        BLOCK_ITEMS.put(name, () -> item.apply(reg).get());
+        ModItems.item(name, () -> new BlockItem(reg.get(), new Item.Properties().rarity(rarity)));
         return reg;
     }
 }

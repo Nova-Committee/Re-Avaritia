@@ -24,6 +24,7 @@ public class ModSingularities {
     public static final Singularity GOLD = new Singularity(new ResourceLocation(Static.MOD_ID, "gold"), "singularity.avaritia.gold", new int[]{0xFDF55F, 0xD98E04}, Ingredient.of(Items.GOLD_INGOT));
     public static final Singularity DIAMOND = new Singularity(new ResourceLocation(Static.MOD_ID, "diamond"), "singularity.avaritia.diamond", new int[]{0xA6FCE9, 0x1AACA8}, Ingredient.of(Items.DIAMOND));
     public static final Singularity EMERALD = new Singularity(new ResourceLocation(Static.MOD_ID, "emerald"), "singularity.avaritia.emerald", new int[]{0x7DF8AC, 0x008E1A}, Ingredient.of(Items.EMERALD));
+    public static final Singularity NETHERITE = new Singularity(new ResourceLocation(Static.MOD_ID, "netherite"), "singularity.avaritia.netherite", new int[]{0x443a3b, 0x1a1616}, Ingredient.of(Items.NETHERITE_INGOT));
 
     public static final Singularity ALUMINUM = new Singularity(new ResourceLocation(Static.MOD_ID, "aluminum"), "singularity.avaritia.aluminum", new int[]{0xCACCDA, 0x9A9CA6}, "forge:ingots/aluminum");
     public static final Singularity TIN = new Singularity(new ResourceLocation(Static.MOD_ID, "tin"), "singularity.avaritia.tin", new int[]{0xA0BEBD, 0x527889}, "forge:ingots/tin");
@@ -46,6 +47,8 @@ public class ModSingularities {
                 GOLD,
                 DIAMOND,
                 EMERALD,
+                NETHERITE,
+
                 ALUMINUM,
                 COPPER,
                 TIN,

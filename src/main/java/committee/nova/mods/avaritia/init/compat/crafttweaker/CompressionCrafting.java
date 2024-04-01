@@ -1,15 +1,22 @@
 package committee.nova.mods.avaritia.init.compat.crafttweaker;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
+import com.blamejared.crafttweaker.api.CraftTweakerConstants;
 import com.blamejared.crafttweaker.api.action.base.IRuntimeAction;
+import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
+import com.blamejared.crafttweaker.api.action.recipe.ActionRemoveRecipe;
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
+import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.RecipeUtil;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -24,58 +31,23 @@ import java.util.List;
  */
 @ZenCodeType.Name("mods.avaritia.CompressionCrafting")
 @ZenRegister
-public class CompressionCrafting {
+public class CompressionCrafting implements IRecipeManager<ICompressorRecipe> {
+    private static final CompressionCrafting INSTANCE = new CompressionCrafting();
 
+    @Override
+    public RecipeType<ICompressorRecipe> getRecipeType() {
+        return ModRecipeTypes.COMPRESSOR_RECIPE.get();
+    }
     @ZenCodeType.Method
-    public static void addRecipe(String id, IIngredient input, IItemStack output, int inputCount, int timecost) {
-        CraftTweakerAPI.apply(new IRuntimeAction() {
-            @Override
-            public void apply() {
-                CompressorRecipe recipe = new CompressorRecipe(new ResourceLocation("crafttweaker", id), input.asVanillaIngredient(), output.getInternal(), inputCount, timecost);
-                RecipeUtil.addRecipe(recipe);
-            }
+    public static void addRecipe(String name, IIngredient input, IItemStack output, int inputCount, int timeCost) {
+        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
+        var recipe = new CompressorRecipe(id, input.asVanillaIngredient(), output.getInternal(), inputCount, timeCost);
 
-            @Override
-            public String describe() {
-                return "Adding Compression Crafting recipe for " + output.getCommandString();
-            }
-
-            @Override
-            public String systemName() {
-                return "Adding recipe";
-            }
-
-        });
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
     }
 
     @ZenCodeType.Method
     public static void remove(IItemStack stack) {
-        CraftTweakerAPI.apply(new IRuntimeAction() {
-            @Override
-            public void apply() {
-                var access = ServerLifecycleHooks.getCurrentServer().registryAccess();
-                List<ResourceLocation> recipes = RecipeUtil.getRecipes()
-                        .getOrDefault(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new HashMap<>())
-                        .values().stream()
-                        .filter(r -> r.getResultItem(access).is(stack.getInternal().getItem()))
-                        .map(Recipe::getId)
-                        .toList();
-
-                recipes.forEach(r -> {
-                    RecipeUtil.getRecipes().get(ModRecipeTypes.COMPRESSOR_RECIPE.get()).remove(r);
-                });
-            }
-
-            @Override
-            public String describe() {
-                return "Removing Compression Crafting recipes for " + stack.getCommandString();
-            }
-
-            @Override
-            public String systemName() {
-                return "Removing recipes";
-            }
-
-        });
+        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(INSTANCE, recipe -> recipe.getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
     }
 }

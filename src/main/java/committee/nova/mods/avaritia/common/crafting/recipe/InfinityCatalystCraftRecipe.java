@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -37,7 +38,7 @@ import java.util.function.Function;
 public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
     private final ResourceLocation recipeId;
     public NonNullList<Ingredient> inputs;
-    private Map<Integer, Function<ItemStack, ItemStack>> transformers;
+    private BiFunction<Integer, ItemStack, ItemStack> transformers;
 
     public InfinityCatalystCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs) {
         this.recipeId = recipeId;
@@ -108,21 +109,34 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
+        var remaining = ISpecialRecipe.super.getRemainingItems(inv);
+
         if (this.transformers != null) {
-            NonNullList<ItemStack> remaining = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
+            var used = new boolean[remaining.size()];
 
-            this.transformers.forEach((i, stack) -> {
-                remaining.set(i, stack.apply(inv.getItem(i)));
-            });
+            for (int i = 0; i < remaining.size(); i++) {
+                var stack = inv.getStackInSlot(i);
 
-            return remaining;
+                for (int j = 0; j < this.inputs.size(); j++) {
+                    var input = this.inputs.get(j);
+
+                    if (!used[j] && input.test(stack)) {
+                        var ingredient = this.transformers.apply(j, stack);
+
+                        used[j] = true;
+                        remaining.set(i, ingredient);
+
+                        break;
+                    }
+                }
+            }
         }
 
-        return ISpecialRecipe.super.getRemainingItems(inv);
+        return remaining;
     }
 
-    public void setTransformers(Map<Integer, Function<ItemStack, ItemStack>> transformers) {
+    public void setTransformers(BiFunction<Integer, ItemStack, ItemStack> transformers) {
         this.transformers = transformers;
     }
 
