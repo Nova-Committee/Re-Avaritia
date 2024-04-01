@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -27,8 +28,8 @@ import java.util.function.Consumer;
  */
 
 public class ModRecipes extends RecipeProvider {
-    public ModRecipes(DataGenerator output) {
-        super(output.getPackOutput());
+    public ModRecipes(PackOutput output) {
+        super(output);
     }
 
     @Override

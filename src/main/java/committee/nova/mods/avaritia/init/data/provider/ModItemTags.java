@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.util.SingularityUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
@@ -28,8 +29,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
 
-    public ModItemTags(DataGenerator output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output.getPackOutput(), Registries.ITEM, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
+    public ModItemTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
+        super(output, Registries.ITEM, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
     }
 
     @Override

@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.data.provider;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SpriteSourceProvider;
 
@@ -14,8 +15,8 @@ import net.minecraftforge.common.data.SpriteSourceProvider;
  */
 
 public class ModSpriteSource extends SpriteSourceProvider {
-    public ModSpriteSource(DataGenerator generator, ExistingFileHelper fileHelper) {
-        super(generator.getPackOutput(), fileHelper, Static.MOD_ID);
+    public ModSpriteSource(PackOutput output, ExistingFileHelper fileHelper) {
+        super(output, fileHelper, Static.MOD_ID);
     }
 
     @Override

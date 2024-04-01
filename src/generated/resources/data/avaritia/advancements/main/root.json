@@ -1,0 +1,38 @@
+{
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:diamond_lattice"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "avaritia:textures/blocks/resource/neutronium.png",
+    "description": {
+      "translate": "advancements.avaritia.diamond_lattice.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "avaritia:diamond_lattice"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.avaritia.diamond_lattice.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

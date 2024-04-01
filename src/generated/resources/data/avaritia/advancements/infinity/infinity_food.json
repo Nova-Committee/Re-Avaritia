@@ -1,0 +1,47 @@
+{
+  "parent": "avaritia:infinity/infinity_ingot",
+  "criteria": {
+    "food0": {
+      "conditions": {
+        "item": {
+          "items": [
+            "avaritia:ultimate_stew"
+          ]
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "food1": {
+      "conditions": {
+        "item": {
+          "items": [
+            "avaritia:cosmic_meatballs"
+          ]
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.infinity_food.desc"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:ultimate_stew"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.infinity_food.title"
+    }
+  },
+  "requirements": [
+    [
+      "food0",
+      "food1"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

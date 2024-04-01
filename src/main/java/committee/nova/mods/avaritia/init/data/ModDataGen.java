@@ -32,27 +32,28 @@ public class ModDataGen {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
         ExistingFileHelper helper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> future = event.getLookupProvider();
 
         if (event.includeClient()) {
-            generator.addProvider(true, new ModBlockStates(generator, helper));
-            generator.addProvider(true, new ModSpriteSource(generator, helper));
+            generator.addProvider(true, new ModBlockStates(output, helper));
+            generator.addProvider(true, new ModSpriteSource(output, helper));
 //            generator.addProvider(true, new ModItemModels(output, helper));
 //            generator.addProvider(true, new ModLang(output));
-            generator.addProvider(true, new ModSoundDefinitions(generator, helper));
+            generator.addProvider(true, new ModSoundDefinitions(output, helper));
         }
         if (event.includeServer()) {
-            generator.addProvider(true, new ModRecipes(generator));
-            generator.addProvider(true, new ModLootTables(generator));
-            generator.addProvider(true, new ModItemTags(generator, future, helper));
-            generator.addProvider(true, new ModBlockTags(generator, future, helper));
-            generator.addProvider(true, new ModEntityTags(generator, future, helper));
-//            generator.addProvider(true, new ModAdvancements(output, future, helper));
+            generator.addProvider(true, new ModRecipes(output));
+            generator.addProvider(true, new ModLootTables(output));
+            generator.addProvider(true, new ModItemTags(output, future, helper));
+            generator.addProvider(true, new ModBlockTags(output, future, helper));
+            generator.addProvider(true, new ModEntityTags(output, future, helper));
+            generator.addProvider(true, new ModAdvancements(output, future, helper));
 //            generator.addProvider(true, new ModFluidTags(output, future, helper));
 
             ModRegistries.addProviders(true, generator, future, helper);
-            generator.addProvider(true, new PackMetadataGenerator(generator.getPackOutput()).add(PackMetadataSection.TYPE, new PackMetadataSection(
+            generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
                     Component.literal("Avaritia Resources"),
                     DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                     Arrays.stream(PackType.values()).collect(Collectors.toMap(Function.identity(), DetectedVersion.BUILT_IN::getPackVersion)))));
