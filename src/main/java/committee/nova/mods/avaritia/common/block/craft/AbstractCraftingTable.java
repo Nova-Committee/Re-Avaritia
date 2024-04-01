@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.block.craft;
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -31,8 +32,9 @@ public class AbstractCraftingTable extends BaseBlock {
         super(color, sound, hardness, resistance, tool);
     }
 
-    public static MenuProvider getCrafterContainerElement(Player player, Level world, BlockPos pos) {
-        return new SimpleMenuProvider((p_52229_, p_52230_, p_52231_) -> new CraftingMenu(0, player.getInventory(), ContainerLevelAccess.create(world, pos)) {
+    @Override
+    public MenuProvider getMenuProvider(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos) {
+        return new SimpleMenuProvider((i, inventory, player) -> new CraftingMenu(i, inventory, ContainerLevelAccess.create(pLevel, pPos)){
             @Override
             public boolean stillValid(@NotNull Player playerIn) {
                 return true;
@@ -45,7 +47,8 @@ public class AbstractCraftingTable extends BaseBlock {
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
-            pPlayer.openMenu(getCrafterContainerElement(pPlayer, pLevel, pPos));
+            pPlayer.openMenu(pState.getMenuProvider(pLevel, pPos));
+            pPlayer.awardStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
             return InteractionResult.CONSUME;
         }
     }
