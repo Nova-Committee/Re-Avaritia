@@ -34,13 +34,15 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
 
 
     @Override
-    protected void addTags(HolderLookup.Provider p_256380_) {
-//        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.compressed_crafting_table.get(),
-//                ModBlocks.compressor.get(), ModBlocks.crystal_matrix.get(),
-//                ModBlocks.infinity.get(), ModBlocks.double_compressed_crafting_table.get(),
-//                ModBlocks.extreme_crafting_table.get(), ModBlocks.neutron_collector.get(),
-//                ModBlocks.neutronium.get(), ModBlocks.infinitato.get()
-//        );
+    protected void addTags(HolderLookup.@NotNull Provider pProvider) {
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
+                ModBlocks.compressed_crafting_table.get(), ModBlocks.double_compressed_crafting_table.get(), ModBlocks.extreme_crafting_table.get(),
+                ModBlocks.crystal_matrix.get(), ModBlocks.infinity.get(), ModBlocks.neutron.get(),
+                ModBlocks.neutron_collector.get(), ModBlocks.dense_neutron_collector.get(),
+                ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
+                ModBlocks.neutron_compressor.get()
+        );
+        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.endless_cake.get());
         tag(BlockTags.BEACON_BASE_BLOCKS).add(
                 ModBlocks.crystal_matrix.get(),
                 ModBlocks.infinity.get(),
