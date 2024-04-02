@@ -51,9 +51,7 @@ public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
                 double trans = (1.0D - scale) / 2.0D;
                 pStack.translate(trans, trans, 0.0D);
                 pStack.scale((float)scale, (float)scale, 1.0001F);
-                this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true, (e) -> {
-                    return new AlphaOverrideVertexConsumer(e, 0.6000000238418579D);
-                });
+                this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true, (e) -> new AlphaOverrideVertexConsumer(e, 0.6000000238418579D));
                 pStack.popPose();
             }
         }
@@ -93,10 +91,10 @@ public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
         Quad quad = new Quad();
         quad.reset(CachedFormat.BLOCK);
         quad.setTexture(sprite);
-        putVertex(quad.vertices[0], max, max, 0.0D, (double)maxU, (double)minV);
-        putVertex(quad.vertices[1], min, max, 0.0D, (double)minU, (double)minV);
-        putVertex(quad.vertices[2], min, min, 0.0D, (double)minU, (double)maxV);
-        putVertex(quad.vertices[3], max, min, 0.0D, (double)maxU, (double)maxV);
+        putVertex(quad.vertices[0], max, max, 0.0D, maxU, minV);
+        putVertex(quad.vertices[1], min, max, 0.0D, minU, minV);
+        putVertex(quad.vertices[2], min, min, 0.0D, minU, maxV);
+        putVertex(quad.vertices[3], max, min, 0.0D, maxU, maxV);
 
         for(int i = 0; i < 4; ++i) {
             System.arraycopy(colors, 0, quad.vertices[i].color, 0, 4);

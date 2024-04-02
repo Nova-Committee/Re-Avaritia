@@ -56,10 +56,5 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
             return new CosmicBakeModel(baseBakedModel, spriteGetter.apply(maskMaterial));
         }
 
-
-        @Override
-        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
-            this.baseModel.resolveParents(modelGetter);
-        }
     }
 }

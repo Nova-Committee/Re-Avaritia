@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia;
 
+import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
@@ -12,7 +13,9 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -35,7 +38,6 @@ public class Avaritia {
         bus.addListener(this::onClientSetup);
         bus.addListener(ModDataGen::gatherData);
 
-        //bus.register(this);
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
         ModTileEntities.BLOCK_ENTITIES.register(bus);
@@ -45,7 +47,7 @@ public class Avaritia {
         ModRecipeSerializers.SERIALIZERS.register(bus);
         ModCreativeModeTabs.TABS.register(bus);
 
-        //AvaritiaShaders.init();
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> AvaritiaShaders::init);
     }
 
     public void setup(final FMLCommonSetupEvent event) {

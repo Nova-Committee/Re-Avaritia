@@ -1,9 +1,7 @@
 package committee.nova.mods.avaritia.client.model;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.model.IItemRenderer;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
@@ -12,8 +10,6 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -59,12 +55,10 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
         this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
-        if (source instanceof MultiBufferSource.BufferSource) {
-            MultiBufferSource.BufferSource bs = (MultiBufferSource.BufferSource)source;
+        if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }
 
-        RenderType cosmicRenderType = RenderType.create("avaritia:cosmic", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader)).setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShard.LIGHTMAP).setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED).createCompositeState(true));
         float yaw = 0.0F;
         float pitch = 0.0F;
         float scale = 1.0F;
@@ -84,7 +78,7 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        VertexConsumer cons = source.getBuffer(cosmicRenderType);
+        VertexConsumer cons = source.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
         itemRenderer.renderQuadList(pStack, cons, this.maskQuads, stack, packedLight, packedOverlay);
     }
 

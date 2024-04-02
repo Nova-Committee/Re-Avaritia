@@ -136,11 +136,11 @@ public class AbilityHandler {
     private static void handleBootsStateChange(Player player, String key, boolean hasBoots) {
         if (hasBoots) {
             if (entitiesWithBoots.contains(key)) {
-                player.setMaxUpStep(1.25F);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
+                player.setMaxUpStep(1.0625F);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
                 boolean flying = player.getAbilities().flying;
                 boolean swimming = player.isInWater();
+                boolean sneaking = player.isCrouching();
                 if (player.onGround() || flying || swimming) {
-                    boolean sneaking = player.isCrouching();
 
                     float speed = 0.1f * (flying ? 1.1f : 1.0f)
                             * (swimming ? 1.2f : 1.0f)
@@ -190,8 +190,8 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + entity.level().isClientSide))
-            player.setDeltaMovement(0, 0.55f, 0);
+        if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + player.level().isClientSide))
+            player.setDeltaMovement(0, 0.45f, 0);
     }
 
     @SubscribeEvent

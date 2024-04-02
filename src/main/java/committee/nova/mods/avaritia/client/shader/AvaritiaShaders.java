@@ -4,7 +4,7 @@ import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.util.client.SpriteRegistryHelper;
+import committee.nova.mods.avaritia.init.handler.SpriteRegistryHandler;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.io.IOException;
@@ -27,7 +28,6 @@ import java.util.Objects;
 
 public class AvaritiaShaders {
     private static final float[] COSMIC_UVS = new float[40];
-    private static SpriteRegistryHelper SPRITE_HELPER;
     private static int renderTime;
     private static float renderFrame;
     public static ShaderInstance cosmicShader;
@@ -37,17 +37,25 @@ public class AvaritiaShaders {
     public static Uniform cosmicExternalScale;
     public static Uniform cosmicOpacity;
     public static Uniform cosmicUVs;
-    public static RenderType COSMIC_RENDER_TYPE;
+    public static RenderType COSMIC_RENDER_TYPE = RenderType.create(new ResourceLocation(Static.MOD_ID , "cosmic").toString(),
+            DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
+            RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader))
+                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .createCompositeState(true)
+    );
 
     public static void init() {
         var eventbus = FMLJavaModLoadingContext.get().getModEventBus();
-        SPRITE_HELPER = new SpriteRegistryHelper(eventbus);
         eventbus.addListener(AvaritiaShaders::onRegisterShaders);
         MinecraftForge.EVENT_BUS.addListener(AvaritiaShaders::onRenderTick);
         MinecraftForge.EVENT_BUS.addListener(AvaritiaShaders::clientTick);
+        MinecraftForge.EVENT_BUS.addListener(AvaritiaShaders::renderTick);
     }
 
-    private static void onRegisterShaders(RegisterShadersEvent event){
+    public static void onRegisterShaders(RegisterShadersEvent event){
         try {
             event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Static.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK), e -> {
                 cosmicShader = e;
@@ -66,28 +74,29 @@ public class AvaritiaShaders {
 
     }
 
-    private static void onRenderTick(TickEvent.RenderTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) return;
-        renderFrame = event.renderTickTime;
-        for (int i = 0; i < 10; ++i) {
-            TextureAtlasSprite sprite = SPRITE_HELPER.sprites.getSprite(new ResourceLocation(Static.MOD_ID, "cosmic_" + i));
-            AvaritiaShaders.COSMIC_UVS[i * 4] = sprite.getU0();
-            AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = sprite.getV0();
-            AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = sprite.getU1();
-            AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = sprite.getV1();
+    public static void onRenderTick(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            for (int i = 0; i < 10; ++i) {
+                TextureAtlasSprite sprite = SpriteRegistryHandler.sprites.getSprite(new ResourceLocation(Static.MOD_ID, "cosmic_" + i));
+                AvaritiaShaders.COSMIC_UVS[i * 4] = sprite.getU0();
+                AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = sprite.getV0();
+                AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = sprite.getU1();
+                AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = sprite.getV1();
+            }
+            if (cosmicUVs != null) cosmicUVs.set(COSMIC_UVS);
         }
-        if (cosmicUVs != null) cosmicUVs.set(COSMIC_UVS);
     }
 
 
-    private static void clientTick(TickEvent.ClientTickEvent event) {
+    public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             ++renderTime;
         }
     }
 
-
-    static {
-        COSMIC_RENDER_TYPE = RenderType.create(new ResourceLocation(Static.MOD_ID , "cosmic").toString() , DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader)).setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShard.LIGHTMAP).setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED).createCompositeState(true));
+    public static void renderTick(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            renderFrame = event.renderTickTime;
+        }
     }
 }

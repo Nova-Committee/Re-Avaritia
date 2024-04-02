@@ -86,6 +86,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloMode
             Material haloMaterial = context.getMaterial(texture);
             return new HaloBakedModel(tintLayers(bakedBaseModel, this.layerColors), spriteGetter.apply(haloMaterial), this.color, this.size, this.pulse);
         }
+
         private static BakedModel tintLayers(BakedModel model, IntList layerColors) {
             if (layerColors.isEmpty()) {
                 return model;
@@ -126,15 +127,11 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloMode
                     float g = (float)(tint >> 8 & 255) / 255.0F;
                     float b = (float)(tint & 255) / 255.0F;
                     Quad.Vertex[] var8 = newQuad.vertices;
-                    int var9 = var8.length;
-
                     for (Quad.Vertex v : var8) {
-                        float[] var10000 = v.color;
-                        var10000[0] *= r;
-                        var10000 = v.color;
-                        var10000[1] *= g;
-                        var10000 = v.color;
-                        var10000[2] *= b;
+                        float[] color1 = v.color;
+                        color1[0] *= r;
+                        color1[1] *= g;
+                        color1[2] *= b;
                     }
 
                     newQuad.tintIndex = -1;
