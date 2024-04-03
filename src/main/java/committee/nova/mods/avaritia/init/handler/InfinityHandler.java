@@ -25,6 +25,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -337,17 +338,19 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
-        if (event.isRecentlyHit() && event.getEntity() instanceof Skeleton && event.getSource().getEntity() instanceof Player player) {
-            if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() == ModItems.skull_sword.get()) {
+        if (event.isRecentlyHit() &&
+                event.getEntity() instanceof WitherSkeleton witherSkeleton
+                && event.getSource().getEntity() instanceof Player player
+        ) {
+            if (player.getMainHandItem().is(ModItems.skull_sword.get()) || player.getOffhandItem().is(ModItems.skull_sword.get())) {
                 if (event.getDrops().isEmpty()) {
                     addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
                 } else {
                     int skulls = 0;
 
-                    for (int i = 0; i < event.getDrops().size(); i++) {
-                        ItemEntity drop = event.getDrops().iterator().next();
+                    for (var drop : event.getDrops()){
                         ItemStack stack = drop.getItem();
-                        if (stack.getItem() == Items.WITHER_SKELETON_SKULL) {
+                        if (stack.is(Items.WITHER_SKELETON_SKULL)) {
                             if (stack.getDamageValue() == 1) {
                                 skulls++;
                             } else if (stack.getDamageValue() == 0) {
