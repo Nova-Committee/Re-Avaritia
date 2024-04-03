@@ -20,6 +20,7 @@ import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -43,7 +44,7 @@ public class ShovelInfinityItem extends ShovelItem {
     }
 
     @Override
-    public Rarity getRarity(ItemStack pStack) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
         return ModItems.COSMIC_RARITY;
     }
 
@@ -59,7 +60,7 @@ public class ShovelInfinityItem extends ShovelItem {
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
+    public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
         if (stack.getTag() != null && stack.getTag().getBoolean("destroyer")) {
             return 5.0F;
         }
@@ -67,52 +68,22 @@ public class ShovelInfinityItem extends ShovelItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             CompoundTag tags = stack.getOrCreateTag();
             tags.putBoolean("destroyer", !tags.getBoolean("destroyer"));
-            player.setMainArm(HumanoidArm.RIGHT);
+            player.swing(hand);
             return InteractionResultHolder.success(stack);
         }
-        return InteractionResultHolder.pass(stack);
+        return super.use(pLevel, player, hand);
     }
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("destroyer")) {
-            var world = player.level();
-            if (!world.isClientSide) {
-                BlockHitResult traceResult = RayTracer.retrace(player, 10);
-                breakOtherBlock(player, stack, pos, traceResult.getDirection());
-            }
+            ToolUtil.breakRangeBlocks(player, stack, pos, ModConfig.shovelBreakRange.get(), ToolUtil.materialsShovel);
         }
         return false;
     }
-
-    public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
-
-        var world = player.level();
-        var state = world.getBlockState(pos);
-        var mat = state.getMapColor(world, pos);
-        if (!ToolUtil.materialsShovel.contains(mat)) {
-            return;
-        }
-
-        if (state.isAir()) {
-            return;
-        }
-
-        var doY = sideHit.getAxis() != Direction.Axis.Y;
-
-        var range = ModConfig.shovelBreakRange.get();
-        var min = new BlockPos(-range, doY ? -1 : -range, -range);
-        var max = new BlockPos(range, doY ? range * 2 - 2 : range, range);
-
-        ToolUtil.aoeBlocks(player, stack, world, pos, min, max, null, ToolUtil.materialsShovel, false);
-
-    }
-
-
-
 }

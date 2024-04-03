@@ -58,7 +58,7 @@ public class PickaxeInfinityItem extends PickaxeItem {
     }
 
     @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack p_77613_1_) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
         return ModItems.COSMIC_RARITY;
     }
 
@@ -82,8 +82,8 @@ public class PickaxeInfinityItem extends PickaxeItem {
         if (player.isCrouching()) {
             CompoundTag tags = stack.getOrCreateTag();
             tags.putBoolean("hammer", !tags.getBoolean("hammer"));
-            player.setMainArm(HumanoidArm.RIGHT);
-            return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
+            player.swing(hand);
+            return InteractionResultHolder.success(stack);
         }
         return super.use(world, player, hand);
     }
@@ -103,34 +103,9 @@ public class PickaxeInfinityItem extends PickaxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
-            BlockHitResult traceResult = RayTracer.retrace(player, 10);
-            breakOtherBlock(player, stack, pos, traceResult.getDirection());
+            ToolUtil.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtil.materialsPick);
         }
         return false;
     }
-
-    public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos, Direction sideHit) {
-
-        var world = player.level();
-        var state = world.getBlockState(pos);
-        var mat = state.getMapColor(world, pos);
-        if (!ToolUtil.materialsPick.contains(mat)) {
-            return;
-        }
-
-        if (state.isAir()) {
-            return;
-        }
-
-        var doY = sideHit.getAxis() != Direction.Axis.Y;
-
-        int range = ModConfig.pickAxeBreakRange.get();
-        var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
-        var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
-
-        ToolUtil.aoeBlocks(player, stack, world, pos, minOffset, maxOffset, null, ToolUtil.materialsPick, false);
-
-    }
-
 
 }

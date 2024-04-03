@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
+import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
@@ -77,7 +78,7 @@ public class HoeInfinityItem extends HoeItem {
             BlockPos minPos = blockPos.offset(-rang, -height, -rang);
             BlockPos maxPos = blockPos.offset(rang, height, rang);
             Map<ItemStack, Integer> map = new HashMap<>();
-            InfinityHandler.enableItemCapture();
+            ItemCaptureHandler.enableItemCapture(true);
             for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
                 BlockState state = pLevel.getBlockState(pos);
                 Block block = state.getBlock();
@@ -110,8 +111,8 @@ public class HoeInfinityItem extends HoeItem {
                         bonemealableBlock.isBonemealSuccess(pLevel, pLevel.random, pos, state);
                 }
             }
-            InfinityHandler.stopItemCapture();
-            Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
+            ItemCaptureHandler.enableItemCapture(false);
+            Set<ItemStack> drops = ItemCaptureHandler.getCapturedDrops();
             ToolUtil.spawnClusters(pLevel, pPlayer, map.keySet());
             pPlayer.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
@@ -137,7 +138,7 @@ public class HoeInfinityItem extends HoeItem {
                 var minPos = blockpos.offset(-rang, 0, -rang);
                 var maxPos = blockpos.offset(rang, 0, rang);
                 if (playerentity.isCrouching()) {
-                    InfinityHandler.enableItemCapture();
+                    ItemCaptureHandler.enableItemCapture(true);
                     Map<ItemStack, Integer> map = new HashMap<>();
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
@@ -160,8 +161,8 @@ public class HoeInfinityItem extends HoeItem {
                             world.setBlock(pos, blockstate, 11);
                         }
                     }
-                    InfinityHandler.stopItemCapture();
-                    Set<ItemStack> drops = InfinityHandler.getCapturedDrops();
+                    ItemCaptureHandler.enableItemCapture(false);
+                    Set<ItemStack> drops = ItemCaptureHandler.getCapturedDrops();
                     ToolUtil.spawnClusters(world, playerentity, map.keySet());
 
                     Iterable<BlockPos> inBoxMutable = BlockPos.betweenClosed(minPos, maxPos.offset(0, 3, 0));

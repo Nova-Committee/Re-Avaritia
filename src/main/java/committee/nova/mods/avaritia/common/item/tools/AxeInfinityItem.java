@@ -16,6 +16,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -52,7 +53,7 @@ public class AxeInfinityItem extends AxeItem {
     }
 
     @Override
-    public Rarity getRarity(ItemStack p_77613_1_) {
+    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
         return ModItems.COSMIC_RARITY;
     }
 
@@ -63,32 +64,21 @@ public class AxeInfinityItem extends AxeItem {
 
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             player.swing(hand);
-
-            int range = 13;
-            var min = new BlockPos(-range, -3, -range);
-            var max = new BlockPos(range, range * 2 - 3, range);
-
-            ToolUtil.aoeBlocks(player, stack, level, player.getOnPos(), min, max, null, ToolUtil.materialsAxe, false);
+            return InteractionResultHolder.success(stack);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        return super.use(pLevel, player, hand);
     }
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (player.isCrouching() && !player.level().isClientSide) {
-            breakOtherBlock(player, stack, pos);
+            ToolUtil.breakRangeBlocks(player, stack, pos, 13, ToolUtil.materialsAxe);
         }
         return false;
     }
 
-    public void breakOtherBlock(Player player, ItemStack stack, BlockPos pos) {
-        if (player.isCrouching()) {
-            return;
-        }
-        InfinityHandler.startCrawlerTask(player.level(), player, stack, pos, ModConfig.axeChainCount.get(), false, true, new HashSet<>());
-    }
 }

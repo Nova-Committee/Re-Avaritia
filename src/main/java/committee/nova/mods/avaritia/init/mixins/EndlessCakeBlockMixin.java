@@ -21,14 +21,14 @@ import java.util.Map;
  */
 
 @Mixin(CandleCakeBlock.class)
-public class EndlessCakeBlockMixin {
+public abstract class EndlessCakeBlockMixin {
 
     @Shadow @Final private static Map<Block, CandleCakeBlock> BY_CANDLE;
 
     @Inject( method = "<init>", at = @At(value = "TAIL"))
     private void after(Block pCandleBlock, BlockBehaviour.Properties pProperties, CallbackInfo ci) {
         //noinspection ConstantConditions
-        if ((Object)this instanceof EndlessCandleCakeBlock block)
+        if (pCandleBlock instanceof EndlessCandleCakeBlock block)
             BY_CANDLE.put(pCandleBlock, block);
     }
 }
