@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.AbilityUtil;
 import committee.nova.mods.avaritia.util.PlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -156,6 +157,12 @@ public class AbilityHandler {
                         player.moveRelative(speed * 0.45f * Math.signum(player.xxa), new Vec3(1, 0, 0));
                     }
                 }
+
+                if (player.isSprinting()) {
+                    float f = player.getYRot() * ((float)Math.PI / 180F);
+                    player.setDeltaMovement(player.getDeltaMovement().add(-Mth.sin(f) * 0.2F, 0.0D, Mth.cos(f) * 0.2F));
+                }
+
             } else {
                 entitiesWithBoots.add(key);
             }
@@ -225,16 +232,10 @@ public class AbilityHandler {
 
     private static void stripAbilities(Player player) {
         String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
-
         entitiesWithHelmets.remove(key);
-
         entitiesWithFlight.remove(key);
-
         entitiesWithLeggings.remove(key);
-
-        if (entitiesWithBoots.remove(key)) {
-            player.setMaxUpStep(0.5F);
-        }
+        entitiesWithBoots.remove(key);
     }
 
 
