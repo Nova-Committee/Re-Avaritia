@@ -1,15 +1,13 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.client.render.entity.GapingVoidRender;
-import committee.nova.mods.avaritia.client.render.entity.HeavenArrowRender;
-import committee.nova.mods.avaritia.client.render.entity.HeavenSubArrowRender;
-import committee.nova.mods.avaritia.client.render.entity.TracerArrowRender;
+import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.IronGolemRenderer;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -69,6 +67,13 @@ public class ModEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Static.MOD_ID, "trace_arrow").toString()));
 
+    public static final RegistryObject<EntityType<InfinityGolem>> INFINITY_GOLEM = ENTITIES.register("infinity_golem",
+            () -> EntityType.Builder.<InfinityGolem>of(InfinityGolem::new, MobCategory.MISC)
+                    .sized(1.4F, 2.7F)
+                    .clientTrackingRange(10)
+                    .fireImmune()
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(new ResourceLocation(Static.MOD_ID, "infinity_golem").toString()));
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
@@ -78,6 +83,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
+        EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRenderer::new);
     }
 
 }

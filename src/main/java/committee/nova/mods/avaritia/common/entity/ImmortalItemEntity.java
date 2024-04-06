@@ -22,15 +22,15 @@ import static net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEve
 public class ImmortalItemEntity extends ItemEntity {
 
 
-    public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level p_i50217_2_) {
-        super(type, p_i50217_2_);
+    public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
+        super(type, level);
         this.setDefaultPickUpDelay();
         this.lifespan = 3600;
 
     }
 
-    public static ImmortalItemEntity create(EntityType<? extends ItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
-        ImmortalItemEntity entity = (ImmortalItemEntity) type.create(level);
+    public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
+        ImmortalItemEntity entity = type.create(level);
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);

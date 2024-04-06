@@ -98,6 +98,7 @@
   "item.avaritia.star_fuel": "Звёздное топливо",
   "item.avaritia.ultimate_stew": "Максимальное рагу",
   "item.avaritia.infinity_totem": "Infinity Totem",
+  "item.avaritia.infinity_horse_armor": "Infinity Horse Armor",
   "itemGroup.tab.Infinity": "Avaritia: Reforge",
   "jei.category.avaritia.compressor": "Компрессор нейтрония",
   "jei.category.avaritia.extreme_crafting_table": "Экстремальный крафт",
@@ -166,5 +167,6 @@
   "tooltip.record_fragment.desc": "Кто-то любит верить в чистоту музыки~",
   "tooltip.skullfire_sword.desc": "Обжигает скелетов и обезглавливает их.",
   "tooltip.star_fuel.desc": "Топливо для звёзд.",
-  "tooltip.infinity_totem.desc": "Eternal Guardian..."
+  "tooltip.infinity_totem.desc": "Eternal Guardian...",
+  "tooltip.infinity_horse_armor.desc": "Full power..."
 }

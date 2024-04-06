@@ -2,12 +2,12 @@
   "render_type": "cutout",
   "parent": "block/cube",
   "textures": {
-    "north": "avaritia:block/craft/extreme_side",
-    "east": "avaritia:block/craft/extreme_side",
-    "south": "avaritia:block/craft/extreme_side",
-    "west": "avaritia:block/craft/extreme_side",
-    "up": "avaritia:block/craft/extreme_top",
-    "down": "avaritia:block/resource/crystal_matrix",
-    "particle": "avaritia:block/resource/crystal_matrix"
+    "north": "avaritia:block/machine/craft/extreme_side",
+    "east": "avaritia:block/machine/craft/extreme_side",
+    "south": "avaritia:block/machine/craft/extreme_side",
+    "west": "avaritia:block/machine/craft/extreme_side",
+    "up": "avaritia:block/machine/craft/extreme_top",
+    "down": "avaritia:block/machine/resource/crystal_matrix",
+    "particle": "avaritia:block/machine/resource/crystal_matrix"
   }
 }

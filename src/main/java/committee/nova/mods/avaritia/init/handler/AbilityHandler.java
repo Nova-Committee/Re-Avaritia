@@ -172,27 +172,6 @@ public class AbilityHandler {
         }
     }
 
-    //特殊效果（附魔）
-    @SubscribeEvent
-    public static void opTool(PlayerEvent.ItemCraftedEvent event) {
-        ItemStack stack = event.getCrafting();
-        if (stack.getItem().equals(ModItems.infinity_sword.get())) {
-            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.MOB_LOOTING, stack) < 10) {
-                stack.enchant(Enchantments.MOB_LOOTING, 10);
-            }
-        }
-        if (stack.getItem().equals(ModItems.infinity_pickaxe.get())) {
-            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack) < 10) {
-                stack.enchant(Enchantments.BLOCK_FORTUNE, 10);
-            }
-        }
-        if (stack.getItem().equals(ModItems.infinity_bow.get())) {
-            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.INFINITY_ARROWS, stack) < 10) {
-                stack.enchant(Enchantments.INFINITY_ARROWS, 10);
-            }
-        }
-    }
-
     //跳跃增强
     @SubscribeEvent
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {

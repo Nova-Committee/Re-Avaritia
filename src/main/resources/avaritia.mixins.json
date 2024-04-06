@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "avaritia.refmap.json",
   "mixins": [
-    "EndlessCakeBlockMixin"
+    "EndlessCakeBlockMixin",
+    "FrostWalkerEnchantmentMixin"
   ],
   "client": [
     "ItemRendererMixin"

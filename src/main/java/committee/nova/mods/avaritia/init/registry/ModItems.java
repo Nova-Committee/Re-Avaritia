@@ -64,8 +64,20 @@ public class ModItems {
     public static RegistryObject<Item> infinity_totem = item("infinity_totem",
             () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true,
                     new Item.Properties().stacksTo(1).durability(999)));
+    public static RegistryObject<Item> infinity_horse_armor = item("infinity_horse_armor",
+            () -> new InfinityHorseArmorItem(
+                    new Item.Properties().stacksTo(1).rarity(COSMIC_RARITY)
+                            .fireResistant().setNoRepair()
+            ));
+
     public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(Rarity.EPIC, "record_fragment", true));
+
+
+
+
+
+
 
     public static RegistryObject<Item> item(String name) {
         return item(name, BaseItem::new);

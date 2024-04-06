@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.common.net.TotemPacket;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.AbilityUtil;
+import committee.nova.mods.avaritia.util.ToolUtil;
 import committee.nova.mods.avaritia.util.lang.TextUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -68,7 +70,7 @@ public class InfinityHandler {
     }
 
     public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
-        if (event.getState().getMapColor(event.getLevel(), event.getPos()) == MapColor.STONE) {
+        if (ToolUtil.canUseTool(event.getState(), ToolUtil.materialsPick)) {
             LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().level())).withLuck(event.getPlayer().level().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level().getBlockEntity(event.getPos()));
             List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
             for (ItemStack drop : drops) {
@@ -77,6 +79,38 @@ public class InfinityHandler {
                 }
             }
 
+        }
+    }
+
+    //特殊效果（附魔）
+    @SubscribeEvent
+    public static void opTool(PlayerEvent.ItemCraftedEvent event) {
+        ItemStack stack = event.getCrafting();
+        if (stack.is(ModItems.infinity_sword.get())) {
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.MOB_LOOTING, stack) < 10) {
+                stack.enchant(Enchantments.MOB_LOOTING, 10);
+            }
+        }
+        if (stack.is(ModItems.infinity_pickaxe.get())) {
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack) < 10) {
+                stack.enchant(Enchantments.BLOCK_FORTUNE, 10);
+            }
+        }
+        if (stack.is(ModItems.infinity_bow.get())) {
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.INFINITY_ARROWS, stack) < 10) {
+                stack.enchant(Enchantments.INFINITY_ARROWS, 10);
+            }
+        }
+        if (stack.is(ModItems.infinity_horse_armor.get())) {
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FROST_WALKER, stack) < 10) {
+                stack.enchant(Enchantments.FROST_WALKER, 10);
+            }
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, stack) < 10) {
+                stack.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 10);
+            }
+            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FALL_PROTECTION, stack) < 10) {
+                stack.enchant(Enchantments.FALL_PROTECTION, 10);
+            }
         }
     }
 
