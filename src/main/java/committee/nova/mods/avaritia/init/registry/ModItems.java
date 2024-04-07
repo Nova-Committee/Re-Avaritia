@@ -6,12 +6,10 @@ import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
-import committee.nova.mods.avaritia.common.item.resources.StarFuelItem;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
@@ -31,15 +29,15 @@ public class ModItems {
 
     public static Rarity COSMIC_RARITY = Rarity.create("COSMIC", ChatFormatting.RED);
     //tools
-    public static RegistryObject<Item> infinity_pickaxe = item("infinity_pickaxe", PickaxeInfinityItem::new);
-    public static RegistryObject<Item> infinity_shovel = item("infinity_shovel", ShovelInfinityItem::new);
-    public static RegistryObject<Item> infinity_axe = item("infinity_axe", AxeInfinityItem::new);
-    public static RegistryObject<Item> infinity_hoe = item("infinity_hoe", HoeInfinityItem::new);
+    public static RegistryObject<Item> infinity_pickaxe = item("infinity_pickaxe", InfinityPickaxeItem::new);
+    public static RegistryObject<Item> infinity_shovel = item("infinity_shovel", InfinityShovelItem::new);
+    public static RegistryObject<Item> infinity_axe = item("infinity_axe", InfinityAxeItem::new);
+    public static RegistryObject<Item> infinity_hoe = item("infinity_hoe", InfinityHoeItem::new);
     public static RegistryObject<Item> matter_cluster = item("matter_cluster", MatterClusterItem::new);
     //weapons
-    public static RegistryObject<Item> infinity_sword = item("infinity_sword", SwordInfinityItem::new);
-    public static RegistryObject<Item> skull_sword = item("skull_fire_sword", SwordSkullsItem::new);
-    public static RegistryObject<Item> infinity_bow = item("infinity_bow", BowInfinityItem::new);
+    public static RegistryObject<Item> infinity_sword = item("infinity_sword", InfinitySwordItem::new);
+    public static RegistryObject<Item> skull_sword = item("skull_fire_sword", SkullsSwordItem::new);
+    public static RegistryObject<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     //armors
     public static RegistryObject<Item> infinity_helmet = item("infinity_helmet", () -> new ArmorInfinityItem(ArmorItem.Type.HELMET));
     public static RegistryObject<Item> infinity_chestplate = item("infinity_chestplate", () -> new ArmorInfinityItem(ArmorItem.Type.CHESTPLATE));

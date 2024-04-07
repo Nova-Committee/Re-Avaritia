@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -37,9 +36,9 @@ import java.util.Set;
  * Date: 2022/5/15 16:47
  * Version: 1.0
  */
-public class HoeInfinityItem extends HoeItem {
+public class InfinityHoeItem extends HoeItem {
 
-    public HoeInfinityItem() {
+    public InfinityHoeItem() {
         super(Tier.INFINITY_HOE, -5, 0f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());

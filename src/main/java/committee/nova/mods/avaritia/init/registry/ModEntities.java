@@ -60,7 +60,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
             () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
-                    .clientTrackingRange(2)
+                    .clientTrackingRange(4)
                     .updateInterval(20)
                     .fireImmune()
                     .noSummon()

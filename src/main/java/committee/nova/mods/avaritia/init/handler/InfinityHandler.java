@@ -205,7 +205,7 @@ public class InfinityHandler {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
-        if (event.getItemStack().getItem() instanceof SwordInfinityItem) {
+        if (event.getItemStack().getItem() instanceof InfinitySwordItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
                 if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.infinity.desc")) || event.getToolTip().get(x).getString().equals(I18n.get("attribute.name.generic.attack_damage"))) {
                     event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
@@ -279,9 +279,6 @@ public class InfinityHandler {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        if (event.getSource().getEntity() != null && event.getSource().getEntity() instanceof Player) {
-            return;
-        }
         if (AbilityUtil.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
@@ -325,9 +322,9 @@ public class InfinityHandler {
     public static void entityItemUnDeath(ItemEvent event) {
         ItemEntity entityItem = event.getEntity();
         Item item = entityItem.getItem().getItem();
-        if (item instanceof ArmorInfinityItem || item instanceof AxeInfinityItem || item instanceof BowInfinityItem ||
-                item instanceof HoeInfinityItem || item instanceof ShovelInfinityItem || item instanceof PickaxeInfinityItem ||
-                item instanceof SwordInfinityItem) {
+        if (item instanceof ArmorInfinityItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
+                item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
+                item instanceof InfinitySwordItem) {
             entityItem.setInvulnerable(true);
         }
     }

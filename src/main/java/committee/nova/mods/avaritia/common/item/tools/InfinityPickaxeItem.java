@@ -2,35 +2,35 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.handler.InfinityHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashSet;
 
 /**
  * Description:
  * Author: cnlimiter
- * Date: 2022/5/15 17:11
+ * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class AxeInfinityItem extends AxeItem {
+public class InfinityPickaxeItem extends PickaxeItem {
 
-    public AxeInfinityItem() {
-        super(Tier.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
+    public InfinityPickaxeItem() {
+        super(Tier.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 
@@ -64,19 +64,41 @@ public class AxeInfinityItem extends AxeItem {
 
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            player.swing(hand);
-            return InteractionResultHolder.success(stack);
+    public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
+        if (stack.getOrCreateTag().getBoolean("hammer")) {
+            return 5.0F;
         }
-        return super.use(pLevel, player, hand);
+        return Math.max(super.getDestroySpeed(stack, state), 6.0F);
     }
 
     @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isCrouching()) {
+            CompoundTag tags = stack.getOrCreateTag();
+            tags.putBoolean("hammer", !tags.getBoolean("hammer"));
+            player.swing(hand);
+            return InteractionResultHolder.success(stack);
+        }
+        return super.use(world, player, hand);
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack stack, @NotNull LivingEntity victim, @NotNull LivingEntity player) {
+        if (stack.getOrCreateTag().getBoolean("hammer")) {
+            if (!(victim instanceof Player)) {
+                int i = 10;
+                victim.setDeltaMovement(-Mth.sin(player.yBodyRot * (float) Math.PI / 180.0F) * i * 0.5F, 2.0D, Mth.cos(player.yBodyRot * (float) Math.PI / 180.0F) * i * 0.5F);
+            }
+        }
+        return true;
+    }
+
+
+    @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        if (player.isCrouching() && !player.level().isClientSide) {
-            ToolUtil.breakRangeBlocks(player, stack, pos, 13, ToolUtil.materialsAxe);
+        if (stack.getOrCreateTag().getBoolean("hammer")) {
+            ToolUtil.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtil.materialsPick);
         }
         return false;
     }

@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class SwordInfinityItem extends SwordItem {
-    public SwordInfinityItem() {
+public class InfinitySwordItem extends SwordItem {
+    public InfinitySwordItem() {
         super(Tier.INFINITY_SWORD, 0, -2.8F, (new Properties())
                 .stacksTo(1)
                 .fireResistant());

@@ -62,16 +62,16 @@ import java.util.*;
  */
 
 public class TraceArrowEntity extends AbstractArrow {
-    private static final EntityDataAccessor<Integer> ID_EFFECT_COLOR;
+    private static final EntityDataAccessor<Integer> ID_EFFECT_COLOR = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);;
+    private static final EntityDataAccessor<Integer> JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private Potion potion;
     private final Set<MobEffectInstance> effects;
     private boolean fixedColor;
     private LivingEntity homingTarget;
     private Vec3 seekOrigin;
     private int homingTime;
-    private static final EntityDataAccessor<Integer> SPECTRAL_TIME;
-    private static final EntityDataAccessor<Integer> JUMP_COUNT;
-    private static final List<String> projectileAntiImmuneEntities;
+    private static final List<String> projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
     private final Entity owner = this.getOwner() == null ? this : this.getOwner();
 
     public TraceArrowEntity(EntityType<? extends AbstractArrow> entityType, Level world) {
@@ -682,10 +682,4 @@ public class TraceArrowEntity extends AbstractArrow {
         }
     }
 
-    static {
-        ID_EFFECT_COLOR = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-        SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-        JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-        projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
-    }
 }

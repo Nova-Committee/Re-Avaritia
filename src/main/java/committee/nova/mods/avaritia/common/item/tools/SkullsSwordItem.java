@@ -24,8 +24,8 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class SwordSkullsItem extends SwordItem {
-    public SwordSkullsItem() {
+public class SkullsSwordItem extends SwordItem {
+    public SkullsSwordItem() {
         super(Tier.SKULL_SWORD, 0, -2.4f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());

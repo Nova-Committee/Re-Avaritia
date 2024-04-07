@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;
@@ -31,10 +32,9 @@ import org.jetbrains.annotations.NotNull;
 public class EndestPearlEntity extends ThrowableItemProjectile {
     private LivingEntity shooter;
 
-    public EndestPearlEntity(EntityType<? extends ThrowableItemProjectile> p_37442_, Level p_37443_) {
-        super(p_37442_, p_37443_);
+    public EndestPearlEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level level) {
+        super(entityType, level);
     }
-
 
     public EndestPearlEntity(Level level, double x, double y, double z) {
         this(ModEntities.ENDER_PEARL.get(), level);
@@ -47,13 +47,13 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.endest_pearl.get();
     }
 
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -65,7 +65,6 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     public void setShooter(LivingEntity shooter) {
         this.shooter = shooter;
     }
-
 
     @Override
     public void handleEntityEvent(byte pId) {
@@ -92,7 +91,6 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             GapingVoidEntity ent;
             if (shooter != null) {
                 ent = new GapingVoidEntity(level(), shooter);
-
             } else ent = new GapingVoidEntity(level());
 
             Direction dir = entity.getDirection();
@@ -132,7 +130,6 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             }
             ent.moveTo(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25, getYRot(), 0.0F);
             level().addFreshEntity(ent);
-
 
             remove(RemovalReason.KILLED);
         }

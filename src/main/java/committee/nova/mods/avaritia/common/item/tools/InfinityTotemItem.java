@@ -10,9 +10,9 @@ import net.minecraft.world.item.Rarity;
  * @Description:
  */
 
-public class TotemInfinityItem extends Item {
+public class InfinityTotemItem extends Item {
 
-    public TotemInfinityItem() {
+    public InfinityTotemItem() {
         super(new Properties()
                 .stacksTo(1)
                 .rarity(Rarity.EPIC)

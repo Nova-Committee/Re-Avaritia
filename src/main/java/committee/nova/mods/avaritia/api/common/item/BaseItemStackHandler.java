@@ -28,7 +28,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
     private int[] outputSlots;
 
     public BaseItemStackHandler(int size) {
-        this(size, (Runnable) null);
+        this(size, null);
     }
 
     public BaseItemStackHandler(int size, Runnable onContentsChanged) {
