@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class HeavenSubArrowEntity extends Arrow {
 
-    public HeavenSubArrowEntity(EntityType<? extends Arrow> p_36858_, Level p_36859_) {
-        super(p_36858_, p_36859_);
+    public HeavenSubArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
+        super(entityType, level);
     }
 
     public static HeavenSubArrowEntity create(Level level, double x, double y, double z) {
@@ -49,15 +49,13 @@ public class HeavenSubArrowEntity extends Arrow {
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setBaseDamage(compound.getDouble("damage"));
-
+        this.setBaseDamage(compound.contains("damage") ? compound.getDouble("damage") : ModConfig.subArrowDamage.get());
     }
 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putDouble("damage", ModConfig.subArrowDamage.get());
-
     }
 
     @Override

@@ -28,8 +28,8 @@ public class HeavenArrowEntity extends Arrow {
 
     private LivingEntity shooter;
 
-    public HeavenArrowEntity(EntityType<? extends Arrow> p_36858_, Level p_36859_) {
-        super(p_36858_, p_36859_);
+    public HeavenArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
+        super(entityType, level);
 
     }
 
@@ -57,13 +57,13 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     private void barrage(RandomSource randy, BlockPos pos) {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 30; i++) {//30支箭
             double angle = randy.nextDouble() * 2 * Math.PI;
             double dist = randy.nextGaussian() * 0.5;
 
             double x = Math.sin(angle) * dist + pos.getX();
             double z = Math.cos(angle) * dist + pos.getZ();
-            double y = pos.getY() + 25.0;
+            double y = pos.getY() + 25.0;//高度25
 
             double dangle = randy.nextDouble() * 2 * Math.PI;
             double ddist = randy.nextDouble() * 0.35;
@@ -74,7 +74,7 @@ public class HeavenArrowEntity extends Arrow {
             if (shooter != null) subArrow.setOwner(shooter);
             subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
             subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
-            subArrow.setCritArrow(true);
+            subArrow.setCritArrow(true);//子箭必定暴击
             subArrow.pickup = pickup;
 
             level().addFreshEntity(subArrow);
@@ -87,7 +87,7 @@ public class HeavenArrowEntity extends Arrow {
         var pos = result.getBlockPos();
         var randy = level().random;
         barrage(randy, pos);
-        remove(RemovalReason.KILLED);
+        this.remove(RemovalReason.KILLED);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class HeavenArrowEntity extends Arrow {
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setBaseDamage(compound.getDouble("damage"));
+        this.setBaseDamage(compound.contains("damage") ? compound.getDouble("damage") : Float.POSITIVE_INFINITY);
     }
 
 
