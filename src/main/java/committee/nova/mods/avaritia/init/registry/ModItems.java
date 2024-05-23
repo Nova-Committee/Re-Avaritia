@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
+import com.chocohead.mm.api.ClassTinkerers;
 import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
@@ -26,8 +27,7 @@ import java.util.function.Supplier;
 public class ModItems {
     public static final RegistryHolder<Item> ITEMS = FabricRegistry.INSTANCE.createItemRegistryHolder();
     public static void init() {}
-
-    public static Rarity COSMIC_RARITY = Rarity.create("COSMIC", ChatFormatting.RED);
+    public static final Rarity COSMIC_RARITY = ClassTinkerers.getEnum(Rarity.class, "COSMIC");
     //tools
     public static Supplier<Item> infinity_pickaxe = item("infinity_pickaxe", InfinityPickaxeItem::new);
     public static Supplier<Item> infinity_shovel = item("infinity_shovel", InfinityShovelItem::new);
@@ -65,7 +65,7 @@ public class ModItems {
     public static Supplier<Item> infinity_horse_armor = item("infinity_horse_armor",
             () -> new InfinityHorseArmorItem(
                     new FabricItemSettings().stacksTo(1).rarity(COSMIC_RARITY)
-                            .fireResistant().setNoRepair()
+                            .fireResistant()
             ));
 
     public static Supplier<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));

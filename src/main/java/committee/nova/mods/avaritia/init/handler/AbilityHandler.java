@@ -4,7 +4,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.util.PlayerUtil;
-import io.github.fabricators_of_create.porting_lib.entity.events.EntityEventFactory;
 import io.github.fabricators_of_create.porting_lib.entity.events.LivingDeathEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.LivingEntityEvents;
 import io.github.fabricators_of_create.porting_lib.entity.events.PlayerEvents;
@@ -16,11 +15,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 

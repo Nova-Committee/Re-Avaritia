@@ -15,7 +15,7 @@ import java.util.UUID;
  * Version: 1.0
  */
 public class Static {
-    public static final String MOD_ID = "assets/avaritia";
+    public static final String MOD_ID = "avaritia";
 
     public static final Logger LOGGER = LogManager.getLogger();
 

@@ -1,19 +1,12 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.common.crafting.condition.InfinityCatalystCondition;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.util.registry.FabricRegistry;
 import committee.nova.mods.avaritia.util.registry.RegistryHolder;
-import io.github.fabricators_of_create.porting_lib.data.ConditionalRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.function.Supplier;
 
@@ -36,11 +29,11 @@ public class ModRecipeSerializers {
         return SERIALIZERS.register(name, serializer);
     }
 
-    @SubscribeEvent
-    public static void registerRecipeSerializers(RegisterEvent event){
-        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)){
-            ConditionalRecipe.register(InfinityCatalystCondition.Serializer.INSTANCE);
-        }
-    }
+//    @SubscribeEvent
+//    public static void registerRecipeSerializers(RegisterEvent event){
+//        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)){
+//            ConditionalRecipe.register(InfinityCatalystCondition.Serializer.INSTANCE);
+//        }
+//    }
 
 }

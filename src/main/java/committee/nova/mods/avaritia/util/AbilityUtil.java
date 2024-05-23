@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 public class AbilityUtil {
     public static void sweepAttack(Level level, LivingEntity livingEntity, LivingEntity victim) {
         if (livingEntity instanceof Player player){
-            for(LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {
+            for(LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, victim.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
                 double entityReachSq = Mth.square(player.getEntityReach()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
                 if (!player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && player.distanceToSqr(livingentity) < entityReachSq) {
                     livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float)Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float)Math.PI / 180F)));

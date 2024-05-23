@@ -102,7 +102,7 @@ public abstract class AbsNeutronCollectorTile extends InventoryTileEntity implem
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, data);
+        return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, data, this.getBlockPos());
     }
 
     public int getProductionTicks() {

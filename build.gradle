@@ -52,6 +52,11 @@ dependencies {
     modImplementation(include("io.github.fabricators_of_create.Porting-Lib:transfer:2.3.4+1.20.1"))
     modImplementation(include("io.github.fabricators_of_create.Porting-Lib:base:2.3.4+1.20.1"))
     modImplementation(include("io.github.fabricators_of_create.Porting-Lib:attributes:2.3.4+1.20.1"))
+    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:asm:2.3.4+1.20.1"))
+    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:data:2.3.4+1.20.1"))
+    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:tool_actions:2.3.4+1.20.1"))
+    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:tags:2.3.4+1.20.1"))
+    modImplementation(include("com.github.Chocohead:Fabric-ASM:v2.3"))
 
 
     modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.config_version}"

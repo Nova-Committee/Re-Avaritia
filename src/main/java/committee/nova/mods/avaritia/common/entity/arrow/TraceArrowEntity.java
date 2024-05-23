@@ -403,7 +403,7 @@ public class TraceArrowEntity extends AbstractArrow {
         }
 
         if (projectileAntiImmuneEntities.contains(Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType())).toString())) {
-            damagesource = ModDamageTypes.causeRandomDamage(owner);
+            damagesource = ModDamageTypes.infinity(level(), owner);
         }
 
         return damagesource;

@@ -1,5 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.api.init.event.EntityItemPickupEvent;
+import committee.nova.mods.avaritia.api.init.event.PlayerHarvestCheckEvent;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
@@ -10,6 +12,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.AbilityUtil;
 import committee.nova.mods.avaritia.util.ToolUtil;
 import committee.nova.mods.avaritia.util.lang.TextUtil;
+import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.*;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import io.github.fabricators_of_create.porting_lib.event.common.BlockEvents;
@@ -25,7 +28,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,24 +46,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.entity.item.ItemEvent;
-import net.minecraftforge.event.entity.item.ItemExpireEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,6 +68,8 @@ public class InfinityHandler {
         onTooltip();
         handleExtraLuck();
         digging();
+        canHarvest();
+        entityItemUnDeath();
     }
 
     public static void clientInit(){
@@ -203,51 +189,58 @@ public class InfinityHandler {
         });
     }
 
-    public static void canHarvest(PlayerEvents.HarvestCheck event) {
-        if (!event.getEntity().getMainHandItem().isEmpty()) {
-            var level = event.getEntity().level();
-            ItemStack held = event.getEntity().getMainHandItem();
-            if (held.is(ModItems.infinity_pickaxe.get()) && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
-                if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock().defaultBlockState())) {
-                    event.setResult(Event.Result.ALLOW);
+    public static void canHarvest() {
+        PlayerHarvestCheckEvent.HARVEST_CHECK.register(event -> {
+            if (!event.getEntity().getMainHandItem().isEmpty()) {
+                var level = event.getEntity().level();
+                ItemStack held = event.getEntity().getMainHandItem();
+                if (held.is(ModItems.infinity_pickaxe.get()) && event.getTargetBlock().getMapColor(level, BlockPos.ZERO) == MapColor.STONE) {
+                    if (held.getOrCreateTag().getBoolean("destroyer") && isGarbageBlock(event.getTargetBlock().getBlock().defaultBlockState())) {
+                        event.setResult(BaseEvent.Result.ALLOW);
+                    }
                 }
             }
-        }
+        });
     }
 
     //合并物质团
-    public static void clusterCluster(EntityItemPickupEvent event) {
+    public static void clusterCluster() {
+        EntityItemPickupEvent.ENTITY_ITEM_PICKUP.register(event -> {
+            if (event.getEntity() != null && event.getItem().getItem().is(ModItems.matter_cluster.get())) {
+                ItemStack stack = event.getItem().getItem();
+                Player player = event.getEntity();
 
-        if (event.getEntity() != null && event.getItem().getItem().is(ModItems.matter_cluster.get())) {
-            ItemStack stack = event.getItem().getItem();
-            Player player = event.getEntity();
-
-            for (ItemStack slot : player.getInventory().items) {
-                if (stack.isEmpty()) {
-                    break;
-                }
-                if (slot.is(ModItems.matter_cluster.get())) {
-                    MatterClusterItem.mergeClusters(stack, slot);
+                for (ItemStack slot : player.getInventory().items) {
+                    if (stack.isEmpty()) {
+                        break;
+                    }
+                    if (slot.is(ModItems.matter_cluster.get())) {
+                        MatterClusterItem.mergeClusters(stack, slot);
+                    }
                 }
             }
-        }
+            return true;
+        });
     }
 
-    public static void expCancel(ItemExpireEvent event) {
-        
-        if (event.getEntity() instanceof ImmortalItemEntity) {
-            event.setCanceled(true);
-        }
-    }
+    public static void entityItemUnDeath() {
+        EntityEvents.ON_JOIN_WORLD.register((entity, world, loadedFromDisk) -> {
+            if (entity instanceof ItemEntity entityItem) {
+                Item item = entityItem.getItem().getItem();
+                if (item instanceof ArmorInfinityItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
+                        item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
+                        item instanceof InfinitySwordItem) {
+                    entityItem.setInvulnerable(true);
+                    return false;
+                }
+            }
+            if (entity instanceof ImmortalItemEntity immortalItem) {
+                immortalItem.age = Integer.MAX_VALUE;
+                return false;
+            }
+            return true;
+        });
 
-    public static void entityItemUnDeath(ItemEvent event) {
-        ItemEntity entityItem = event.getEntity();
-        Item item = entityItem.getItem().getItem();
-        if (item instanceof ArmorInfinityItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
-                item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
-                item instanceof InfinitySwordItem) {
-            entityItem.setInvulnerable(true);
-        }
     }
 
 

@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.*;
 import committee.nova.mods.avaritia.init.registry.*;
+import committee.nova.mods.avaritia.util.RecipeUtil;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -27,6 +28,7 @@ public class Avaritia implements ModInitializer {
 			Static.SERVER = server;
 		});
 
+		RecipeUtil.init();
 		AbilityHandler.init();
 		InfinityHandler.init();
 		DynamicRecipeHandler.init();

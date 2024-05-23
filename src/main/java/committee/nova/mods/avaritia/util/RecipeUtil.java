@@ -13,12 +13,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -36,7 +30,9 @@ import java.util.Map;
 public class RecipeUtil {
     private static RecipeManager recipeManager;
 
-    public RecipeUtil() {
+    public static void init() {
+        onAddReloadListeners();
+        onRecipesUpdated();
     }
 
     public static void onAddReloadListeners() {

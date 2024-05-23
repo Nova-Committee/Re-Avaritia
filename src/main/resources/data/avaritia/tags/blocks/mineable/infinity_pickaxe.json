@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "#minecraft:mineable/shovel",
-    "#minecraft:mineable/pickaxe",
-    "minecraft:bedrock"
-  ]
-}

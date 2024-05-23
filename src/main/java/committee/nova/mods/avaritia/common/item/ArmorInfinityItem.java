@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.lang.TextUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -33,11 +34,13 @@ public class ArmorInfinityItem extends ArmorItem {
         super(
                 ModArmorMaterial.infinite_armor,
                 pSlot,
-                new Properties()
+                new FabricItemSettings()
                         .fireResistant()
                         .stacksTo(1)
         );
     }
+
+
 
 
 //    @Override

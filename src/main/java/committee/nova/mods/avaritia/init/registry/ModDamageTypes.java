@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.network.chat.Component;
@@ -12,6 +13,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,8 +35,27 @@ public class ModDamageTypes {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
     }
 
-    public static DamageSource causeRandomDamage(Entity attacker) {
-        return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
+    public static DamageSource infinity(Level level) {
+        return source(INFINITY, level);
+    }
+
+    public static DamageSource infinity(Level level, Entity entity) {
+        return source(INFINITY, level, entity);
+    }
+
+    private static DamageSource source(ResourceKey<DamageType> key, LevelReader level) {
+        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+        return new DamageSourceRandomMessages(registry.getHolderOrThrow(key));
+    }
+
+    private static DamageSource source(ResourceKey<DamageType> key, LevelReader level, @Nullable Entity entity) {
+        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+        return new DamageSourceRandomMessages(registry.getHolderOrThrow(key), entity);
+    }
+
+    private static DamageSource source(ResourceKey<DamageType> key, LevelReader level, @Nullable Entity causingEntity, @Nullable Entity directEntity) {
+        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+        return new DamageSourceRandomMessages(registry.getHolderOrThrow(key), causingEntity, directEntity);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {

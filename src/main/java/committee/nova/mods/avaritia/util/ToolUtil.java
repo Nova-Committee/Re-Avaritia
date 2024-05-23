@@ -7,8 +7,13 @@ import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.math.RayTracer;
+import dev.architectury.event.events.common.BlockEvent;
+import io.github.fabricators_of_create.porting_lib.event.common.BlockEvents;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import io.github.fabricators_of_create.porting_lib.util.PortingHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -25,10 +30,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -145,7 +146,7 @@ public class ToolUtil {
     private static boolean isTrash(ItemStack suspect) {
         boolean isTrash = false;
             for (String ore : defaultTrashOres) {
-                if (suspect.is(ForgeRegistries.ITEMS.getValue(new ResourceLocation(ore)))) {
+                if (suspect.is(BuiltInRegistries.ITEM.get(new ResourceLocation(ore)))) {
                     return true;
                 }
             }
@@ -165,18 +166,18 @@ public class ToolUtil {
         }
 
         //if material contains
-        if (!block.canHarvestBlock(state, world, pos, player) || !ToolUtil.canUseTool(state, validMaterials)) {
+        if (!PortingHooks.isCorrectToolForDrops(state, player) || !ToolUtil.canUseTool(state, validMaterials)) {
             return;
         }
 
-        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, player);
-        MinecraftForge.EVENT_BUS.post(event);
+        BlockEvents.BreakEvent event = new BlockEvents.BreakEvent(world, pos, state, player);
+        event.sendEvent();
 
         if (!event.isCanceled()) {
             if (!player.isCreative()) {//not creative
                 BlockEntity tile = world.getBlockEntity(pos);
                 block.playerWillDestroy(world, pos, state, player);
-                if (block.onDestroyedByPlayer(state, world, pos, player, true, world.getFluidState(pos))) {
+                if (world.setBlock(pos, world.getFluidState(pos).createLegacyBlock(), 3)) {
                     block.playerDestroy(world, player, pos, state, tile, stack);
                 }
             } else {

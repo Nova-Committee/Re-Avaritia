@@ -7,14 +7,17 @@ import committee.nova.mods.avaritia.client.model.WingModel;
 import committee.nova.mods.avaritia.util.ToolUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,16 +27,15 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @Environment(EnvType.CLIENT)
-public class WingInfinityLayer extends RenderLayer<LivingEntity, HumanoidModel<LivingEntity>> {
+public class WingInfinityLayer <T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
 
-    public WingInfinityLayer(RenderLayerParent<LivingEntity, HumanoidModel<LivingEntity>> pRenderer) {
-        super(pRenderer);
+    public WingInfinityLayer(RenderLayerParent<T, M> renderLayerParent) {
+        super(renderLayerParent);
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int pPackedLight, @NotNull LivingEntity livingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-
+    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int pPackedLight, T livingEntity, float f, float g, float h, float j, float k, float l) {
         var loc = new ResourceLocation(Static.MOD_ID, "textures/models/armor/infinity_armor_wing.png");
 
         if (ToolUtil.isInfiniteChest(livingEntity)) {
@@ -50,6 +52,4 @@ public class WingInfinityLayer extends RenderLayer<LivingEntity, HumanoidModel<L
             }
         }
     }
-
-
 }

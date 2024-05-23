@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
+import committee.nova.mods.avaritia.api.init.event.ModEventFactory;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
@@ -15,6 +16,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -23,7 +25,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,13 +58,15 @@ public class InfinityCrossBowItem extends CrossbowItem {
         return true;
     }
 
-//    @Override
-//    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-//        if (entity.getAge() >= 0) {
-//            entity.setExtendedLifetime();
-//        }
-//        return super.onEntityItemUpdate(stack, entity);
-//    }
+    @Override
+    public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int i, boolean bl) {
+        if (entity instanceof ItemEntity itemEntity) {
+            if (itemEntity.getAge() >= 0) {
+                itemEntity.setExtendedLifetime();
+            }
+        }
+        super.inventoryTick(itemStack, level, entity, i, bl);
+    }
 
     @Override
     public boolean isEnchantable(@NotNull ItemStack pStack) {
@@ -91,7 +94,7 @@ public class InfinityCrossBowItem extends CrossbowItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
+        InteractionResultHolder<ItemStack> ret = ModEventFactory.onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
         player.startUsingItem(hand);
         return InteractionResultHolder.success(itemstack);
@@ -101,7 +104,7 @@ public class InfinityCrossBowItem extends CrossbowItem {
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
         if (entity instanceof Player player) {
             int drawTime = this.getUseDuration(stack) - timeLeft;
-            drawTime = ForgeEventFactory.onArrowLoose(stack, level, player, drawTime, true);
+            drawTime = ModEventFactory.onArrowLoose(stack, level, player, drawTime, true);
             if (drawTime < 0) {
                 return;
             }

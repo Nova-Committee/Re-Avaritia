@@ -1,10 +1,13 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
+import committee.nova.mods.avaritia.api.init.event.ModEventFactory;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import io.github.fabricators_of_create.porting_lib.item.DamageableItem;
+import io.github.fabricators_of_create.porting_lib.item.XpRepairItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,7 +30,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem {
+public class InfinityBowItem extends BowItem{
     public InfinityBowItem() {
         super(new Properties()
                 .stacksTo(1)
@@ -46,10 +48,11 @@ public class InfinityBowItem extends BowItem {
         );
     }
 
-    @Override
-    public boolean isDamageable(ItemStack stack) {
-        return false;
-    }
+//    @Override
+//    public boolean isDamageable(ItemStack stack) {
+//        return false;
+//    }
+
 
     @Override
     public boolean canBeHurtBy(@NotNull DamageSource source) {
@@ -62,14 +65,14 @@ public class InfinityBowItem extends BowItem {
     }
 
     @Override
-    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (entity.getAge() >= 0) {
-            entity.setExtendedLifetime();
+    public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int i, boolean bl) {
+        if (entity instanceof ItemEntity itemEntity) {
+            if (itemEntity.getAge() >= 0) {
+                itemEntity.setExtendedLifetime();
+            }
         }
-        return super.onEntityItemUpdate(stack, entity);
+        super.inventoryTick(itemStack, level, entity, i, bl);
     }
-
-
 
     @Override
     public boolean isEnchantable(@NotNull ItemStack pStack) {
@@ -97,7 +100,7 @@ public class InfinityBowItem extends BowItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
+        InteractionResultHolder<ItemStack> ret = ModEventFactory.onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
         if (player.isCrouching()) {
             CompoundTag tags = itemstack.getOrCreateTag();
@@ -114,7 +117,7 @@ public class InfinityBowItem extends BowItem {
         if (!level.isClientSide) {
             if (entity instanceof Player player) {
                 int drawTime = this.getUseDuration(stack) - timeLeft;
-                drawTime = ForgeEventFactory.onArrowLoose(stack, level, player, drawTime, true);
+                drawTime = ModEventFactory.onArrowLoose(stack, level, player, drawTime, true);
                 if (drawTime < 0) {
                     return;
                 }

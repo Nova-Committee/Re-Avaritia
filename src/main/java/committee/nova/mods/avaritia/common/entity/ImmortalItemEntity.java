@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
+import committee.nova.mods.avaritia.api.init.event.ModEventFactory;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -22,8 +23,7 @@ public class ImmortalItemEntity extends ItemEntity {
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
         this.setDefaultPickUpDelay();
-        this.lifespan = 3600;
-
+        setLifeSpan(3600);
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
@@ -44,7 +44,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public void remove(@NotNull RemovalReason pReason) {
-        if (this.getAge() >= lifespan)
+        if (this.getAge() >= getLifeSpan())
             super.remove(pReason);
     }
 
@@ -66,16 +66,15 @@ public class ImmortalItemEntity extends ItemEntity {
             ItemStack itemstack = this.getItem();
             Item item = itemstack.getItem();
             int i = itemstack.getCount();
-            int hook = ForgeEventFactory.onItemPickup(this, pEntity);
+            int hook = ModEventFactory.onItemPickup(this, pEntity);
             if (hook < 0) return;
             ItemStack copy = itemstack.copy();
             if (this.pickupDelay == 0
-                    && (this.getOwner() == null || lifespan - this.getAge() <= 300 || this.getOwner().getUUID().equals(pEntity.getUUID()))
+                    && (this.getOwner() == null || getLifeSpan() - this.getAge() <= 300 || this.getOwner().getUUID().equals(pEntity.getUUID()))
                     && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))
             ) {
                 i = copy.getCount() - itemstack.getCount();
                 copy.setCount(i);
-                net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent(pEntity, this, copy);
                 pEntity.take(this, i);
                 if (itemstack.isEmpty()) {
                     this.age = 3600;
@@ -90,6 +89,4 @@ public class ImmortalItemEntity extends ItemEntity {
         }
 
     }
-
-
 }

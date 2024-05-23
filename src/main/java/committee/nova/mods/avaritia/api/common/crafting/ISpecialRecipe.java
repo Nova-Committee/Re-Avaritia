@@ -30,7 +30,7 @@ public interface ISpecialRecipe extends Recipe<Container> {
     ItemStack assemble(ItemStackHandler var1);
 
     default boolean matches(ItemStackHandler inventory) {
-        return this.matches(inventory, 0, inventory.getSlots());
+        return this.matches(inventory, 0, inventory.getSlotCount());
     }
 
     default boolean matches(ItemStackHandler inventory, int startIndex, int endIndex) {

@@ -171,7 +171,7 @@ public class CompressorTile extends InventoryTileEntity implements MenuProvider 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return CompressorMenu.create(windowId, playerInventory, this.inventory);
+        return CompressorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
     }
 
     public boolean hasMaterialStack() {

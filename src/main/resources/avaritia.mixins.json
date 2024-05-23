@@ -4,6 +4,10 @@
   "package": "committee.nova.mods.avaritia.init.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BowItemMixin",
+    "CrossBowItemMixin",
+    "ItemEntityMixin",
+    "PlayerMixin"
   ],
   "client": [
   ],

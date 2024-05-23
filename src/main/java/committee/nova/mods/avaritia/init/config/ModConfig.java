@@ -2,10 +2,7 @@ package committee.nova.mods.avaritia.init.config;
 
 import committee.nova.mods.avaritia.Static;
 import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
-import io.github.fabricators_of_create.porting_lib.config.ConfigRegistry;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
 
 /**
  * Description:
