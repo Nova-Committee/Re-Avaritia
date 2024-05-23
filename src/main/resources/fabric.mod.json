@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "avaritia",
+  "version": "${version}",
+  "name": "Avaritia",
+  "description": "",
+  "authors": [
+    "cnlimiter"
+  ],
+  "contact": {
+    "repo": "https://github.com/Nova-Committee/Avaritia"
+  },
+  "license": "MIT",
+  "icon": "assets/avaritia/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "committee.nova.mods.avaritia.client.AvaritiaClient"
+    ],
+    "main": [
+      "committee.nova.mods.avaritia.Avaritia"
+    ]
+  },
+  "mixins": [
+    "avaritia.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

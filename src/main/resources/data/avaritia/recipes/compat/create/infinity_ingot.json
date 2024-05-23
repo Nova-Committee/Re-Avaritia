@@ -1,0 +1,34 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "NNNNNNNNN",
+    "NCXXCXXCN",
+    "NXCCXCCXN",
+    "NCXXCXXCN",
+    "NNNNNNNNN"
+  ],
+  "key": {
+    "N": {
+      "item": "avaritia:neutronium_ingot"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "result": {
+    "item": "avaritia:infinity_ingot",
+    "count": 1
+  },
+  "acceptMirrored": false
+}

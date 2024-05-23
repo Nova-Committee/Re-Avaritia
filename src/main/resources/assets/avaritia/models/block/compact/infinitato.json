@@ -1,0 +1,82 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "block/cube_all",
+  "texture_size": [
+    64,
+    32
+  ],
+  "textures": {
+    "0": "avaritia:block/compact/infinitato",
+    "particle": "avaritia:block/compact/infinitato"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            4,
+            8,
+            10
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            4,
+            4,
+            6,
+            10
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            2,
+            4,
+            4,
+            10
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            0,
+            4,
+            2,
+            10
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            2,
+            0,
+            4,
+            4
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            4,
+            0,
+            6,
+            4
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

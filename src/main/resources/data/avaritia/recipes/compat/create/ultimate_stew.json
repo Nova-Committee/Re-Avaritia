@@ -1,0 +1,43 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "AAMMPPCCR",
+    "RBBN     "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:apple"
+    },
+    "M": {
+      "item": "minecraft:melon"
+    },
+    "P": {
+      "item": "minecraft:pumpkin"
+    },
+    "C": {
+      "item": "minecraft:cactus"
+    },
+    "R": {
+      "item": "minecraft:red_mushroom"
+    },
+    "B": {
+      "item": "minecraft:brown_mushroom"
+    },
+    "N": {
+      "item": "avaritia:pile_of_neutrons"
+    }
+  },
+  "result": {
+    "item": "avaritia:ultimate_stew",
+    "count": 4
+  },
+  "acceptMirrored": false
+}

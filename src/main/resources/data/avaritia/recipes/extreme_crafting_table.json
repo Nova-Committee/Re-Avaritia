@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "avaritia:extreme_crafting_table"
+  },
+  "pattern": [
+    "III",
+    "ICI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "C": {
+      "item": "avaritia:compressed_crafting_table"
+    }
+  }
+}

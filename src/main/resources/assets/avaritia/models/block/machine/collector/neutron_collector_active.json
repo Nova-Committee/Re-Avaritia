@@ -1,0 +1,13 @@
+{
+  "render_type": "cutout",
+  "parent": "block/cube",
+  "textures": {
+    "north": "avaritia:block/machine/collector/neutron_side",
+    "east": "avaritia:block/machine/collector/neutron_side",
+    "south": "avaritia:block/machine/collector/neutron_active",
+    "west": "avaritia:block/machine/collector/neutron_side",
+    "up": "avaritia:block/machine/collector/neutron_top",
+    "down": "avaritia:block/machine/collector/neutron_side",
+    "particle": "avaritia:block/machine/collector/neutron_top"
+  }
+}

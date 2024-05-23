@@ -1,0 +1,29 @@
+{
+  "type": "avaritia:shaped",
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "X": {
+      "item": "avaritia:crystal_matrix_block"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "pattern": [
+    "   II    ",
+    "  I W    ",
+    " I  W    ",
+    "I   W    ",
+    "X   W    ",
+    "I   W    ",
+    " I  W    ",
+    "  I W    ",
+    "   II    "
+  ],
+  "result": {
+    "count": 1,
+    "item": "avaritia:infinity_bow"
+  }
+}

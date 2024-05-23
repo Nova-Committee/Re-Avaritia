@@ -1,0 +1,46 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "CCPPRRSSH",
+    "HBBMMN   "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cod"
+    },
+    "P": {
+      "item": "minecraft:porkchop"
+    },
+    "R": {
+      "item": "minecraft:rabbit"
+    },
+    "S": {
+      "item": "minecraft:salmon"
+    },
+    "H": {
+      "item": "minecraft:chicken"
+    },
+    "B": {
+      "item": "minecraft:beef"
+    },
+    "M": {
+      "item": "minecraft:mutton"
+    },
+    "N": {
+      "item": "avaritia:pile_of_neutrons"
+    }
+  },
+  "result": {
+    "item": "avaritia:cosmic_meatballs",
+    "count": 2
+  },
+  "acceptMirrored": false
+}

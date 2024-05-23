@@ -1,0 +1,41 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "   EEE   ",
+    " EEPPPEE ",
+    " EPPPPPE ",
+    "EPPPNPPPE",
+    "EPPNSNPPE",
+    "EPPPNPPPE",
+    " EPPPPPE ",
+    " EEPPPEE ",
+    "   EEE   "
+  ],
+  "key": {
+    "N": {
+      "item": "avaritia:neutronium_ingot"
+    },
+    "E": {
+      "tag": "c:end_stones"
+    },
+    "S": {
+      "tag": "c:nether_stars"
+    },
+    "P": {
+      "tag": "c:ender_pearls"
+    }
+  },
+  "result": {
+    "item": "avaritia:endest_pearl",
+    "count": 1
+  },
+  "acceptMirrored": false
+}

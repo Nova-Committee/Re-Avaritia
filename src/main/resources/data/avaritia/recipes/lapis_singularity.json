@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "input": {
+    "tag": "c:lapis_blocks"
+  },
+  "cost": 200,
+  "output": {
+    "item": "avaritia:lapis_singularity",
+    "count": 1
+  }
+}

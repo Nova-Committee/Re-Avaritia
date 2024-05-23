@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "avaritia:item/matter_cluster/empty"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "avaritia:cap": 1
+      },
+      "model": "avaritia:item/matter_cluster_full"
+    }
+  ]
+}

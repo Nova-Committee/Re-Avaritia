@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "avaritia:block/compact/infinitato",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "avaritia:block/compact/infinitato"
+    },
+    "facing=west": {
+      "model": "avaritia:block/compact/infinitato",
+      "y": 90
+    },
+    "facing=east": {
+      "model": "avaritia:block/compact/infinitato",
+      "y": 270
+    }
+  }
+}

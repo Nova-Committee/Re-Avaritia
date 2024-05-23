@@ -1,0 +1,7 @@
+{
+  "render_type": "cutout",
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "avaritia:block/machine/craft/double_compressed"
+  }
+}

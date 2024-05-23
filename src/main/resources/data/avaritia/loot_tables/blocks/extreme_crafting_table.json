@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "Matrix",
+                  "target": "BlockEntityTag.Matrix",
+                  "op": "replace"
+                },
+                {
+                  "source": "Result",
+                  "target": "BlockEntityTag.Result",
+                  "op": "replace"
+                }
+              ]
+            }
+          ],
+          "name": "avaritia:extreme_crafting_table"
+        }
+      ]
+    }
+  ]
+}

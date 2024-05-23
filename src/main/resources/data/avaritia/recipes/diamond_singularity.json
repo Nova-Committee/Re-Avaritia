@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "input": {
+    "tag": "c:diamond_blocks"
+  },
+  "cost": 300,
+  "output": {
+    "item": "avaritia:diamond_singularity",
+    "count": 1
+  }
+}

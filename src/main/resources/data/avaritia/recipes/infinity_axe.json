@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped",
+  "key": {
+    "N": {
+      "item": "avaritia:neutronium_ingot"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    }
+  },
+  "pattern": [
+    "   I     ",
+    "  IIIII  ",
+    "   IIII  ",
+    "     IN  ",
+    "      N  ",
+    "      N  ",
+    "      N  ",
+    "      N  ",
+    "      N  "
+  ],
+  "result": {
+    "item": "avaritia:infinity_axe"
+  }
+}

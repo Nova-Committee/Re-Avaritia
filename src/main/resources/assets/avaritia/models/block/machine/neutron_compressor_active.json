@@ -1,0 +1,13 @@
+{
+  "render_type": "cutout",
+  "parent": "block/cube",
+  "textures": {
+    "north": "avaritia:block/machine/compressor/side",
+    "east": "avaritia:block/machine/compressor/side",
+    "south": "avaritia:block/machine/compressor/active",
+    "west": "avaritia:block/machine/compressor/side",
+    "up": "avaritia:block/machine/compressor/top",
+    "down": "avaritia:block/machine/compressor/side",
+    "particle": "avaritia:block/machine/compressor/top"
+  }
+}

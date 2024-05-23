@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "input": {
+    "tag": "c:netherite_blocks"
+  },
+  "cost": 100,
+  "output": {
+    "item": "avaritia:netherite_singularity",
+    "count": 1
+  }
+}

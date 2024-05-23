@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "input": {
+    "tag": "c:copper_blocks"
+  },
+  "cost": 400,
+  "output": {
+    "item": "avaritia:copper_singularity",
+    "count": 1
+  }
+}

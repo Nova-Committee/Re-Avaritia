@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "avaritia:neutronium_block",
+    "avaritia:infinity_block",
+    "avaritia:extreme_crafting_table",
+    "avaritia:crystal_matrix_block"
+  ]
+}

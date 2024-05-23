@@ -1,0 +1,20 @@
+accessWidener	v1	named
+accessible method net/minecraft/world/item/crafting/ShapedRecipe keyFromJson (Lcom/google/gson/JsonObject;)Ljava/util/Map;
+accessible method net/minecraft/world/item/crafting/ShapedRecipe shrink ([Ljava/lang/String;)[Ljava/lang/String;
+accessible method net/minecraft/world/item/crafting/ShapedRecipe dissolvePattern ([Ljava/lang/String;Ljava/util/Map;II)Lnet/minecraft/core/NonNullList;
+accessible field net/minecraft/world/entity/projectile/AbstractArrow piercedAndKilledEntities Ljava/util/List;
+accessible field net/minecraft/world/entity/projectile/Projectile leftOwner Z
+accessible field net/minecraft/world/entity/projectile/AbstractArrow lastState Lnet/minecraft/world/level/block/state/BlockState;
+accessible field net/minecraft/world/entity/projectile/AbstractArrow piercingIgnoreEntityIds Lit/unimi/dsi/fastutil/ints/IntOpenHashSet;
+accessible field net/minecraft/world/entity/projectile/AbstractArrow knockback I
+accessible method net/minecraft/world/entity/projectile/AbstractArrow shouldFall ()Z
+accessible method net/minecraft/world/entity/projectile/AbstractArrow startFalling ()V
+accessible method net/minecraft/world/entity/projectile/Projectile checkLeftOwner ()Z
+accessible field net/minecraft/world/entity/projectile/SpectralArrow duration I
+accessible field net/minecraft/world/entity/LivingEntity lastHurtByPlayerTime I
+accessible field net/minecraft/world/entity/item/ItemEntity pickupDelay I
+accessible field net/minecraft/world/entity/item/ItemEntity age I
+accessible field net/minecraft/world/item/crafting/RecipeManager recipes Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/RecipeManager byName Ljava/util/Map;
+accessible method net/minecraft/world/item/crafting/RecipeManager byType (Lnet/minecraft/world/item/crafting/RecipeType;)Ljava/util/Map;
+accessible field net/minecraft/world/effect/MobEffectInstance duration I

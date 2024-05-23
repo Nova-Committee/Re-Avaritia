@@ -1,0 +1,34 @@
+{
+  "type": "avaritia:shaped",
+  "key": {
+    "B": {
+      "tag": "c:bones"
+    },
+    "D": {
+      "tag": "c:nether_stars"
+    },
+    "I": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "X": {
+      "item": "minecraft:blaze_powder"
+    },
+    "W": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "pattern": [
+    "       IX",
+    "      IXI",
+    "     IXI ",
+    "    IXI  ",
+    " B IXI   ",
+    "  BXI    ",
+    "  WB     ",
+    " W  B    ",
+    "D        "
+  ],
+  "result": {
+    "item": "avaritia:skullfire_sword"
+  }
+}
