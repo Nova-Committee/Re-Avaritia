@@ -7,7 +7,8 @@
     "BowItemMixin",
     "CrossBowItemMixin",
     "ItemEntityMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ReloadableResourcesMixin"
   ],
   "client": [
   ],

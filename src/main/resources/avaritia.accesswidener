@@ -18,3 +18,4 @@ accessible field net/minecraft/world/item/crafting/RecipeManager recipes Ljava/u
 accessible field net/minecraft/world/item/crafting/RecipeManager byName Ljava/util/Map;
 accessible method net/minecraft/world/item/crafting/RecipeManager byType (Lnet/minecraft/world/item/crafting/RecipeType;)Ljava/util/Map;
 accessible field net/minecraft/world/effect/MobEffectInstance duration I
+accessible field net/minecraft/server/ReloadableServerResources commandBuildContext Lnet/minecraft/commands/CommandBuildContext$Configurable;

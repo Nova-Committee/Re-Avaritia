@@ -39,7 +39,7 @@ public abstract class PlayerMixin extends LivingEntity {
             method = "hasCorrectToolForDrops",
             at = @At(value = "HEAD"),
             cancellable = true)
-    private void placeNewPlayer(BlockState blockState, CallbackInfoReturnable<Boolean> cir) {
+    private void placeNewPlayer1(BlockState blockState, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(ModEventFactory.doPlayerHarvestCheck(player, blockState, !blockState.requiresCorrectToolForDrops() || this.inventory.getSelected().isCorrectToolForDrops(blockState)));
         cir.cancel();
     }

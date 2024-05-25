@@ -1,0 +1,39 @@
+{
+  "parent": "avaritia:main/extreme_crafting_table",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:skull_fire_sword"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.skull_sword.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:skull_fire_sword",
+      "nbt": "{Damage:0}"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.skull_sword.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

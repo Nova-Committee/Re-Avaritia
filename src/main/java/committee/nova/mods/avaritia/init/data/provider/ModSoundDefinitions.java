@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
 import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
 import io.github.fabricators_of_create.porting_lib.data.SoundDefinitionsProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.data.PackOutput;
 
 /**
@@ -15,7 +16,7 @@ import net.minecraft.data.PackOutput;
 
 public class ModSoundDefinitions extends SoundDefinitionsProvider {
 
-    public ModSoundDefinitions(PackOutput output, ExistingFileHelper helper) {
+    public ModSoundDefinitions(FabricDataOutput output, ExistingFileHelper helper) {
         super(output, Static.MOD_ID, helper);
     }
 

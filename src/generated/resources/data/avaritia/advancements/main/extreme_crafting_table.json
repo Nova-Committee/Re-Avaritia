@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:main/neutron_pile",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:extreme_crafting_table"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.extreme_crafting_table.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:extreme_crafting_table"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.extreme_crafting_table.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

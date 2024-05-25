@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -80,20 +81,19 @@ public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlo
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
-        if (!level.isClientSide()) {
+        if (!level.isClientSide) {
             MenuProvider container = this.getMenuProvider(level.getBlockState(pos), level, pos);
             if (container != null && player instanceof ServerPlayer serverPlayer) {
                 NetworkHooks.openScreen(serverPlayer, container, pos);
             }
         }
-
         return InteractionResult.SUCCESS;
     }
 
     @Override
     @Nullable
     @Deprecated
-    public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
+    public MenuProvider getMenuProvider(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos) {
         BlockEntity be = worldIn.getBlockEntity(pos);
         return be instanceof MenuProvider ? (MenuProvider) be : null;
     }

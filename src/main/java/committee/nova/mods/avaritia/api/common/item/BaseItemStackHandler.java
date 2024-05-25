@@ -8,25 +8,20 @@ package committee.nova.mods.avaritia.api.common.item;
  */
 
 import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
-import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandler;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandlerContainer;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
-public class BaseItemStackHandler extends ItemStackHandler {
+public class BaseItemStackHandler extends ItemStackHandlerContainer {
     private final Runnable onContentsChanged;
     private final Map<Integer, Integer> slotSizeMap;
     @Setter
@@ -150,11 +145,6 @@ public class BaseItemStackHandler extends ItemStackHandler {
 
     public void addSlotLimit(int slot, int size) {
         this.slotSizeMap.put(slot, size);
-    }
-
-    public Container toIInventory() {
-        List<ItemStack> stacks = this.getSlots().stream().map(StorageView::getResource).map(ItemVariant::toStack).collect(Collectors.toList());
-        return new SimpleContainer(stacks.toArray(new ItemStack[0]));
     }
 
     public BaseItemStackHandler copy() {

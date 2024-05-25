@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,20 +23,13 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class CompressorMenu extends BaseMenu<CompressorTile> {
-    public static CompressorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, buffer);
+
+    public CompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(id, playerInventory, CompressorTile.createInventoryHandler(null), getTileEntityFromBuf(buffer, CompressorTile.class));
     }
 
-    public static CompressorMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
-        return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, inventory, pos);
-    }
-
-    private CompressorMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(type, id, playerInventory, CompressorTile.createInventoryHandler(null), buffer.readBlockPos());
-    }
-
-    private CompressorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
-        super(type, id, pos);
+    public CompressorMenu(int id, Inventory playerInventory, BaseItemStackHandler inventory, CompressorTile blockEntity) {
+        super(ModMenus.compressor.get(), id, blockEntity);
 
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
         this.addSlot(new BaseItemStackHandlerSlot(inventory, 1, 39, 35));

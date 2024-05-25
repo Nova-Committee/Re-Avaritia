@@ -1,15 +1,14 @@
 package committee.nova.mods.avaritia.init.registry;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.util.SingularityUtil;
 import committee.nova.mods.avaritia.util.registry.FabricRegistry;
-import committee.nova.mods.avaritia.util.registry.RegistryHolder;
+import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Description:
@@ -18,11 +17,13 @@ import java.util.function.Supplier;
  * Version: 1.0
  */
 public class ModCreativeModeTabs{
-    public static void init() {}
-    public static final RegistryHolder<CreativeModeTab> TABS = FabricRegistry.INSTANCE.createCreativeTabRegistryHolder();
-    private static final List<Supplier<Item>> DONT_INCLUDE = List.of();
+    public static final LazyRegistrar<CreativeModeTab> TABS = LazyRegistrar.create(BuiltInRegistries.CREATIVE_MODE_TAB, Static.MOD_ID);
+    public static void init() {
+        Static.LOGGER.info("Registering Mod Tabs...");
+        TABS.register();
+    }
 
-    public static final Supplier<CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> FabricRegistry.INSTANCE.createTabBuilder()
+    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> FabricRegistry.INSTANCE.createTabBuilder()
             .title(Component.translatable("itemGroup.tab.Infinity"))
             .icon(() -> ModItems.infinity_pickaxe.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
@@ -31,10 +32,8 @@ public class ModCreativeModeTabs{
                         output.accept(SingularityUtil.getItemForSingularity(singularity));
                     }
                 }
-                ModItems.ITEMS.listAll().forEach(itemSupplier -> {
-                    if (!DONT_INCLUDE.contains(itemSupplier)) {
-                        output.accept(itemSupplier.get());
-                    }
+                ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {
+                    output.accept(itemRegistryObject.get());
                 });
             })
             .build());

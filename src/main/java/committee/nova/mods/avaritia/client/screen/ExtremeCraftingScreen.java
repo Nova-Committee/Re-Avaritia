@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/extreme_crafting_gui.png");
+    public static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/extreme_crafting_gui.png");
 
     public ExtremeCraftingScreen(ExtremeCraftingMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 234, 278, 512, 512);

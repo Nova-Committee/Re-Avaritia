@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.util.registry;
 
 import committee.nova.mods.avaritia.Static;
+import io.github.fabricators_of_create.porting_lib.item.api.itemgroup.PortingLibCreativeTab;
 import net.fabricmc.fabric.impl.itemgroup.FabricItemGroupBuilderImpl;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -55,6 +56,6 @@ public class FabricRegistry {
     }
 
     public CreativeModeTab.Builder createTabBuilder() {
-        return new FabricItemGroupBuilderImpl();
+        return new PortingLibCreativeTab.PortingLibCreativeTabBuilder();
     }
 }

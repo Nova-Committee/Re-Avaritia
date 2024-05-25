@@ -69,9 +69,7 @@ public class AbilityHandler {
     }
 
     public static void onPlayerLoggedIn() {
-        PlayerEvents.LOGGED_IN.register(player -> {
-            stripAbilities(player);
-        });
+        PlayerEvents.LOGGED_IN.register(AbilityHandler::stripAbilities);
     }
 
     public static void updateAbilities() {

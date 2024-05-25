@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "E": {
+      "tag": "c:end_stones"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "P": {
+      "tag": "c:ender_pearls"
+    },
+    "S": {
+      "tag": "c:nether_stars"
+    }
+  },
+  "pattern": [
+    "   EEE   ",
+    " EEPPPEE ",
+    " EPPPPPE ",
+    "EPPPNPPPE",
+    "EPPNSNPPE",
+    "EPPPNPPPE",
+    " EPPPPPE ",
+    " EEPPPEE ",
+    "   EEE   "
+  ],
+  "result": {
+    "item": "avaritia:endest_pearl"
+  },
+  "show_notification": true
+}

@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.NotNull;
 
 import static io.github.fabricators_of_create.porting_lib.data.ConditionalRecipe.Serializer.processConditions;
 
@@ -24,7 +25,7 @@ import static io.github.fabricators_of_create.porting_lib.data.ConditionalRecipe
  */
 public class SingularityUtil {
     public static Singularity loadFromJson(ResourceLocation id, JsonObject json) {
-        if (!processConditions(GsonHelper.getAsJsonArray(json, "conditions"))) {
+        if (json.has("fabric:load_conditions") && !processConditions(GsonHelper.getAsJsonArray(json, "fabric:load_conditions"))) {
             Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
             return null;
         }
@@ -74,22 +75,11 @@ public class SingularityUtil {
 
         JsonElement ingredient;
         if (singularity.getTag() != null) {
-            var obj = new JsonObject();
-            obj.addProperty("tag", singularity.getTag());
-            ingredient = obj;
+            var tag = new JsonObject();
+            tag.addProperty("tag", singularity.getTag());
+            ingredient = tag;
 
-            var array = new JsonArray();
-            var main = new JsonObject();
-
-            var sub = new JsonObject();
-            main.addProperty("type", "forge:not");
-
-            sub.addProperty("tag", singularity.getTag());
-            sub.addProperty("type", "forge:tag_empty");
-
-            main.add("value", sub);
-            array.add(main);
-            json.add("conditions", array);
+            json.add("fabric:load_conditions", writeConditions(singularity));
 
         } else {
             ingredient = singularity.getIngredient().toJson();
@@ -101,6 +91,25 @@ public class SingularityUtil {
 
 
         return json;
+    }
+
+    private static @NotNull JsonArray writeConditions(Singularity singularity) {
+        var load_conditions = new JsonArray();
+        var condition = new JsonObject();
+
+        condition.addProperty("condition", "fabric:not");
+
+        var value_condition = new JsonObject();
+        value_condition.addProperty("condition", "fabric:item_tags_populated");
+
+        var value_tag = new JsonArray();
+        value_tag.add(singularity.getTag());
+
+        value_condition.add("values", value_tag);
+
+        condition.add("value", value_condition);
+        load_conditions.add(condition);
+        return load_conditions;
     }
 
     public static CompoundTag makeTag(Singularity singularity) {

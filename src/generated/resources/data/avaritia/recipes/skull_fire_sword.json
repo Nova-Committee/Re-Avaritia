@@ -1,0 +1,36 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "tag": "c:bones"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "D": {
+      "tag": "c:nether_stars"
+    },
+    "W": {
+      "tag": "minecraft:logs"
+    },
+    "X": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "pattern": [
+    "       CX",
+    "      CXC",
+    "     CXC ",
+    "    CXC  ",
+    " B CXC   ",
+    "  BXC    ",
+    "  WB     ",
+    " W  B    ",
+    "D        "
+  ],
+  "result": {
+    "item": "avaritia:skull_fire_sword"
+  },
+  "show_notification": true
+}

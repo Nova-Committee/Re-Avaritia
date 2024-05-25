@@ -14,11 +14,13 @@ import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.ConsumeItemTrigger;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -31,7 +33,7 @@ import java.util.function.Consumer;
  */
 public class ModAdvancements extends FabricAdvancementProvider {
 
-    public ModAdvancements(FabricDataOutput output) {
+    public ModAdvancements(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> future) {
         super(output);
     }
 

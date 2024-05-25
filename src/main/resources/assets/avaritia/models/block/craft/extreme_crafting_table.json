@@ -7,7 +7,7 @@
     "south": "avaritia:block/machine/craft/extreme_side",
     "west": "avaritia:block/machine/craft/extreme_side",
     "up": "avaritia:block/machine/craft/extreme_top",
-    "down": "avaritia:block/machine/resource/crystal_matrix",
-    "particle": "avaritia:block/machine/resource/crystal_matrix"
+    "down": "avaritia:block/resource/crystal_matrix",
+    "particle": "avaritia:block/resource/crystal_matrix"
   }
 }

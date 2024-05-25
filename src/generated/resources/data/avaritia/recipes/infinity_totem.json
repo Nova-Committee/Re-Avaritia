@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "avaritia:infinity_nugget"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "Y": {
+      "item": "minecraft:totem_of_undying"
+    }
+  },
+  "pattern": [
+    "   NNN   ",
+    "  NIIIN  ",
+    "  NYIYN  ",
+    "CCCIIICCC",
+    " CCIIICC ",
+    "  NIIIN  ",
+    "  NNNNN  ",
+    "   CCC   ",
+    "    C    "
+  ],
+  "result": {
+    "item": "avaritia:infinity_totem"
+  },
+  "show_notification": true
+}

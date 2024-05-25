@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.math.RayTracer;
-import dev.architectury.event.events.common.BlockEvent;
 import io.github.fabricators_of_create.porting_lib.event.common.BlockEvents;
 import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import io.github.fabricators_of_create.porting_lib.util.PortingHooks;
@@ -51,7 +50,7 @@ public class ToolUtil {
     public static final Set<TagKey<Block>> materialsAxe = Sets.newHashSet(
             BlockTags.MINEABLE_WITH_AXE,
             BlockTags.FALL_DAMAGE_RESETTING,
-            BlockTags.LEAVES
+            BlockTags.LEAVES, BlockTags.LOGS
     );
 
     public static final Set<TagKey<Block>> materialsShovel = Sets.newHashSet(
@@ -68,11 +67,11 @@ public class ToolUtil {
         BlockHitResult traceResult = RayTracer.retrace(player, range);
         var world = player.level();
         var state = world.getBlockState(pos);
-        if (!ToolUtil.canUseTool(state, keySets)) {
+        if (state.isAir()) {
             return;
         }
 
-        if (state.isAir()) {
+        if (!ToolUtil.canUseTool(state, keySets)) {
             return;
         }
 
@@ -154,12 +153,11 @@ public class ToolUtil {
     }
 
     public static void removeBlockWithDrops(Level world, Player player, BlockPos pos, ItemStack stack, Set<TagKey<Block>> validMaterials) {
-        if (!world.isLoaded(pos)) {
-            return;
-        }
+        if (world.isClientSide) return;
+        if (!world.isLoaded(pos)) return;
+
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if (world.isClientSide) return;
 
         if (state.is(Blocks.GRASS) && stack.is(ModItems.infinity_pickaxe.get())) {
             world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
@@ -177,7 +175,7 @@ public class ToolUtil {
             if (!player.isCreative()) {//not creative
                 BlockEntity tile = world.getBlockEntity(pos);
                 block.playerWillDestroy(world, pos, state, player);
-                if (world.setBlock(pos, world.getFluidState(pos).createLegacyBlock(), 3)) {
+                if (state.onDestroyedByPlayer(world, pos, player, true, world.getFluidState(pos))) {
                     block.playerDestroy(world, player, pos, state, tile, stack);
                 }
             } else {

@@ -25,7 +25,7 @@
 // * Description:
 // */
 //
-//public class ModLootTables extends SimpleFabricLootTableProvider {
+//public class ModLootTables extends ModdedLootTableProvider {
 //    public ModLootTables(PackOutput output) {
 //        super(output, Collections.emptySet(), VanillaLootTableProvider.create(output).getTables());
 //    }

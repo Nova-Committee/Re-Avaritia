@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "avaritia:compressed_crafting_table",
+    "avaritia:double_compressed_crafting_table",
+    "avaritia:extreme_crafting_table",
+    "avaritia:crystal_matrix",
+    "avaritia:infinity",
+    "avaritia:neutron",
+    "avaritia:neutron_collector",
+    "avaritia:dense_neutron_collector",
+    "avaritia:denser_neutron_collector",
+    "avaritia:densest_neutron_collector",
+    "avaritia:neutron_compressor"
+  ]
+}

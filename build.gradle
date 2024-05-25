@@ -23,45 +23,111 @@ repositories {
     maven { url = "https://maven.terraformersmc.com/" } // Mod Menu, Trinkets
     maven { url = "https://squiddev.cc/maven" } // CC:T
     maven { url = "https://modmaven.dev" } // Botania
+    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
+    maven {
+        url = 'https://maven.blamejared.com'
+        name = 'BlameJared Maven'
+    }
     maven { // Reach Entity Attributes
         url = "https://maven.jamieswhiteshirt.com/libs-release"
         content { includeGroup("com.jamieswhiteshirt") }
     }
-    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
+    maven {
+        url = "https://www.cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
+    maven {
+        url = "https://maven.architectury.dev"  // Shedaniel's maven (Architectury API)
+        content { includeGroup "dev.architectury" }
+    }
+    maven {
+        url = "https://maven.saps.dev/releases"  // saps.dev Maven (KubeJS and Rhino)
+        content { includeGroup "dev.latvian.mods" }
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir("src/generated/resources")
+            exclude("src/generated/resources/.cache")
+        }
+    }
 }
 
 loom {
-    if(file("src/main/resources/avaritia.accesswidener").exists()){
-        accessWidenerPath.set(file("src/main/resources/avaritia.accesswidener"))
+    if(file("src/main/resources/${mod_id}.accesswidener").exists()){
+        accessWidenerPath.set(file("src/main/resources/${mod_id}.accesswidener"))
+    }
+    runs {
+        configureEach {
+            vmArg "-XX:+AllowEnhancedClassRedefinition"
+            vmArg "-XX:+IgnoreUnrecognizedVMOptions"
+        }
+
+        client {
+            runDir "run/client"
+        }
+
+        datagen {
+            client()
+
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}"
+            vmArg "-Dfabric-api.datagen.modid=${mod_id}"
+            // from ae2
+            property "porting_lib.datagen.existing_resources", file("src/main/resources").absolutePath
+
+            runDir "run/datagen"
+        }
+
+        server {
+            runDir "run/server"
+        }
+
+        gametestServer {
+            server()
+            name "Headlesss GameTests"
+            vmArg "-Dfabric-api.gametest"
+            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/junit.xml"
+            runDir "run/gametest"
+        }
     }
 }
 
 dependencies {
     // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    minecraft "com.mojang:minecraft:$minecraft_version"
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc:fabric-loader:$loader_version"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_version"
 
     //modImplementation "io.github.moremcmeta:moremcmeta-fabric:${project.moremcmeta_version}"
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$config_version"
 
-
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${rei_version}"
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rei_version}"
-    modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:transfer:2.3.4+1.20.1"))
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:base:2.3.4+1.20.1"))
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:attributes:2.3.4+1.20.1"))
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:asm:2.3.4+1.20.1"))
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:data:2.3.4+1.20.1"))
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:tool_actions:2.3.4+1.20.1"))
-    modImplementation(include("io.github.fabricators_of_create.Porting-Lib:tags:2.3.4+1.20.1"))
+    for (String module in port_lib_modules.split(",")) {
+        modImplementation(include("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version+$minecraft_version"))
+    }
     modImplementation(include("com.github.Chocohead:Fabric-ASM:v2.3"))
 
 
-    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.config_version}"
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version"){
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:$rei_version") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:$rei_version") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    modCompileOnly("com.blamejared.crafttweaker:CraftTweaker-fabric-$minecraft_version:$crafttweaker_version")
+    modCompileOnly("curse.maven:jade-324717:$jade_id")
+    modCompileOnly("dev.latvian.mods:kubejs-fabric:$kubejs_version")
+
+    modCompileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
+    modCompileOnly "mezz.jei:jei-$minecraft_version-fabric-api:$jei_version"
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -83,10 +149,6 @@ processResources {
 
 def targetJavaVersion = 17
 tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release = targetJavaVersion
@@ -99,9 +161,6 @@ java {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
     archivesBaseName = project.archives_base_name
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
 }
 
@@ -111,19 +170,12 @@ jar {
     }
 }
 
-// configure the maven publication
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
     }
 }

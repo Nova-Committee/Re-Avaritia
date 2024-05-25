@@ -1,14 +1,20 @@
 package committee.nova.mods.avaritia.api.common.menu;
 
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
+import committee.nova.mods.avaritia.util.TileEntityUtil;
+import io.github.fabricators_of_create.porting_lib.util.EnvExecutor;
 import lombok.Getter;
+import net.fabricmc.api.EnvType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,23 +26,22 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class BaseMenu<T extends BaseTileEntity> extends AbstractContainerMenu {
 
-    @Getter
-    private final BlockPos blockPos;
     public static final int PLAYERSIZE = 4 * 9;
     protected Player playerEntity;
     protected Inventory playerInventory;
     protected int startInv = 0;
     protected int endInv = 17; //must be set by extending class
+    @Getter
+    private final T tileEntity;
 
-
-    protected BaseMenu(@Nullable MenuType<?> pMenuType, int pContainerId, BlockPos pos) {
+    protected BaseMenu(@Nullable MenuType<?> pMenuType, int pContainerId, T tileEntity) {
         super(pMenuType, pContainerId);
-        this.blockPos = pos;
+        this.tileEntity = tileEntity;
     }
 
     @Override
     public boolean stillValid(@NotNull Player pPlayer) {
-        return false;
+        return true;
     }
 
     @Override
@@ -97,6 +102,14 @@ public abstract class BaseMenu<T extends BaseTileEntity> extends AbstractContain
         // Hotbar
         topRow += 58;
         addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+    }
+
+    @Nullable
+    public static <TILE extends BlockEntity> TILE getTileEntityFromBuf(@Nullable FriendlyByteBuf buf, Class<TILE> type) {
+        if (buf == null) {
+            return null;
+        }
+        return EnvExecutor.callWhenOn(EnvType.CLIENT, () -> () -> TileEntityUtil.get(type, Minecraft.getInstance().level, buf.readBlockPos()).orElse(null));
     }
 
 }

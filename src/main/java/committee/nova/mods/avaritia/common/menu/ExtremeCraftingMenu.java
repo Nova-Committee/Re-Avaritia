@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
 import committee.nova.mods.avaritia.common.menu.inventory.ExtremeCraftingInventory;
 import committee.nova.mods.avaritia.common.slot.ExtremeCraftingSlot;
+import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -29,21 +30,12 @@ public class ExtremeCraftingMenu extends BaseMenu<ExtremeCraftingTile> {
     private final Level world;
     private final Container result;
 
-    public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, buffer);
+    public ExtremeCraftingMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(id, playerInventory, ExtremeCraftingTile.createInventoryHandler(), getTileEntityFromBuf(buffer, ExtremeCraftingTile.class));
     }
 
-    public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
-        return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, inventory, pos);
-    }
-
-
-    private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(type, id, playerInventory, ExtremeCraftingTile.createInventoryHandler(), buffer.readBlockPos());
-    }
-
-    private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
-        super(type, id, pos);
+    public ExtremeCraftingMenu(int id, Inventory playerInventory, BaseItemStackHandler inventory, ExtremeCraftingTile tile) {
+        super(ModMenus.extreme_crafting_table.get(), id, tile);
         this.world = playerInventory.player.level();
         this.result = new ResultContainer();
 

@@ -1,7 +1,11 @@
 package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.ImmutableMap;
+import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.api.init.event.AddReloadListenerEvent;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
+import io.github.fabricators_of_create.porting_lib.entity.events.OnDatapackSyncCallback;
+import io.github.fabricators_of_create.porting_lib.event.common.AddPackFindersCallback;
 import io.github.fabricators_of_create.porting_lib.event.common.RecipesUpdatedCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.NonNullList;
@@ -30,14 +34,18 @@ import java.util.Map;
 public class RecipeUtil {
     private static RecipeManager recipeManager;
 
+    public static void setRecipeManager(RecipeManager recipeManager) {
+        RecipeUtil.recipeManager = recipeManager;
+    }
+
     public static void init() {
         onAddReloadListeners();
         onRecipesUpdated();
     }
 
     public static void onAddReloadListeners() {
-        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
-            recipeManager = player.server.getRecipeManager();
+        AddReloadListenerEvent.RELOAD.register((event) -> {
+            recipeManager = event.getServerResources().getRecipeManager();
         });
     }
 
@@ -69,6 +77,11 @@ public class RecipeUtil {
     public static void addRecipe(Recipe<?> recipe) {
         getRecipeManager().recipes.computeIfAbsent(recipe.getType(), (t) -> new HashMap<>()).put(recipe.getId(), recipe);
         getRecipeManager().byName.put(recipe.getId(), recipe);
+    }
+
+    public static void addRecipe(RecipeManager manager, Recipe<?> recipe) {
+        manager.recipes.computeIfAbsent(recipe.getType(), (t) -> new HashMap<>()).put(recipe.getId(), recipe);
+        manager.byName.put(recipe.getId(), recipe);
     }
 
     public static Recipe<?> getRecipe(ResourceLocation name) {

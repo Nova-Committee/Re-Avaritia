@@ -6,10 +6,10 @@ import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,12 +28,13 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 13:55
  * Version: 1.0
  */
-public abstract class AbsNeutronCollectorTile extends InventoryTileEntity implements MenuProvider {
+public abstract class AbsNeutronCollectorTile extends InventoryTileEntity{
 
 
     public final BaseItemStackHandler inventory;
     private int progress;
     private int production_ticks;
+    @Getter
     private Item production;
     private String name;
 
@@ -102,14 +103,10 @@ public abstract class AbsNeutronCollectorTile extends InventoryTileEntity implem
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, data, this.getBlockPos());
+        return new NeutronCollectorMenu(windowId, playerInventory, this.inventory, data, this);
     }
 
     public int getProductionTicks() {
         return production_ticks;
-    }
-
-    public Item getProduction() {
-        return production;
     }
 }

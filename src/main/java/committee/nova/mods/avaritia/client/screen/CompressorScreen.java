@@ -23,7 +23,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
+    public static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
     private CompressorTile tile;
 
     public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
@@ -61,30 +61,6 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
             guiGraphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
         }
-
-//        if (mouseX > x + 89 && mouseX < x + 110 && mouseY > y + 35 && mouseY < y + 51) {
-//            List<Component> tooltip = new ArrayList<>();
-//
-//            if (this.getProgress() < 1) {
-//                tooltip.add(ModTooltips.PROGRESS_EMPTY.color(ChatFormatting.WHITE).build());
-//            } else {
-//
-//                var text = new TextComponent(number(this.getProgress()) + " / " + number(this.getTimeRequired()));
-//
-//                tooltip.add(text);
-//            }
-//
-//            this.renderComponentTooltip(matrix, tooltip, mouseX, mouseY);
-//        }
-
-//        if (mouseX > x + 68 && mouseX < x + 79 && mouseY > y + 28 && mouseY < y + 39) {
-//            if (this.isEjecting()) {
-//                this.renderTooltip(matrix, ModTooltips.EJECTING.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
-//            } else {
-//                this.renderTooltip(matrix, ModTooltips.EJECT.color(ChatFormatting.WHITE).build(), mouseX, mouseY);
-//            }
-//        }
-
     }
 
 
@@ -123,7 +99,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
         if (level != null) {
             var container = this.getMenu();
-            var tile = level.getBlockEntity(container.getBlockPos());
+            var tile = level.getBlockEntity(container.getTileEntity().getBlockPos());
 
             if (tile instanceof CompressorTile compressor) {
                 var materialStack = compressor.getMaterialStack();
@@ -139,7 +115,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         var level = this.minecraft.level;
 
         if (level != null) {
-            var tile = level.getBlockEntity(this.getMenu().getBlockPos());
+            var tile = level.getBlockEntity(this.getMenu().getTileEntity().getBlockPos());
 
             if (tile instanceof CompressorTile compressor)
                 return compressor;

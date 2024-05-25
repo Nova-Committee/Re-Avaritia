@@ -1,8 +1,13 @@
 package committee.nova.mods.avaritia.api.common.tile;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
+import dev.architectury.registry.menu.ExtendedMenuProvider;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 13:59
  * Version: 1.0
  */
-public abstract class InventoryTileEntity extends BaseTileEntity {
+public abstract class InventoryTileEntity extends BaseTileEntity implements MenuProvider {
 
     public InventoryTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);

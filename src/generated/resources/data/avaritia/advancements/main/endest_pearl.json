@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:main/neutron_ingot",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:endest_pearl"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.endest_pearl.desc"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:endest_pearl"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.endest_pearl.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

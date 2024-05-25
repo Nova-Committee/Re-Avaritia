@@ -5,8 +5,10 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.util.SingularityUtil;
 import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -26,7 +29,7 @@ import java.util.function.Consumer;
  */
 
 public class ModRecipes extends RecipeProvider {
-    public ModRecipes(PackOutput output) {
+    public ModRecipes(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> future) {
         super(output);
     }
 
@@ -185,15 +188,15 @@ public class ModRecipes extends RecipeProvider {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_axe.get())
-                .pattern("   I   ")
-                .pattern("  IIIII")
-                .pattern("  IIXI ")
-                .pattern("   IN  ")
-                .pattern("    N  ")
-                .pattern("    N  ")
-                .pattern("    N  ")
-                .pattern("    N  ")
-                .pattern("    N  ")
+                .pattern("        I")
+                .pattern("   IIIII ")
+                .pattern("   IIXI  ")
+                .pattern("    IN   ")
+                .pattern("    N    ")
+                .pattern("   N     ")
+                .pattern("  N      ")
+                .pattern(" N       ")
+                .pattern("N        ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
                 .define('X', ModItems.infinity_catalyst.get())
@@ -201,15 +204,15 @@ public class ModRecipes extends RecipeProvider {
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_hoe.get())
-                .pattern("     N ")
-                .pattern("   IIII")
-                .pattern("  IIIII")
-                .pattern("  I  XI")
-                .pattern("     N ")
-                .pattern("     N ")
-                .pattern("     N ")
-                .pattern("     N ")
-                .pattern("     N ")
+                .pattern("        N")
+                .pattern("     IIII ")
+                .pattern("   IIIII ")
+                .pattern("  II XI  ")
+                .pattern("    N    ")
+                .pattern("   N     ")
+                .pattern("  N      ")
+                .pattern(" N       ")
+                .pattern("N        ")
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
                 .define('X', ModItems.infinity_catalyst.get())

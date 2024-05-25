@@ -45,7 +45,6 @@ public class SingularityRegistryHandler {
     }
 
     public static void init(){
-        onResourceManagerReload();
         onDataPackSync();
     }
 
@@ -62,14 +61,12 @@ public class SingularityRegistryHandler {
 
     }
 
-    public static void onResourceManagerReload() {
-        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
-            (new SingularityRegistryHandler()).loadSingularities();
-        });
+    public void onResourceManagerReload() {
+        this.loadSingularities();
     }
 
     private void loadSingularities() {
-        var stopwatch = Stopwatch.createStarted();
+        //var stopwatch = Stopwatch.createStarted();
         var dir = FabricLoader.getInstance().getConfigDir().resolve("avaritia/singularities/").toFile();
 
         this.writeDefaultSingularityFiles();
@@ -80,9 +77,9 @@ public class SingularityRegistryHandler {
             this.loadFiles(dir);
         }
 
-        stopwatch.stop();
+        //stopwatch.stop();
 
-        Static.LOGGER.info("Loaded {} singularity type(s) in {} ms", this.singularities.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        Static.LOGGER.info("Loaded {} singularity type(s)", this.singularities.size());
     }
 
     public void writeDefaultSingularityFiles() {

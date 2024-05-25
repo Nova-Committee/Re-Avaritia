@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "neutron_ingot",
+  "key": {
+    "#": {
+      "item": "avaritia:neutron_nugget"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "item": "avaritia:neutron_ingot"
+  },
+  "show_notification": true
+}

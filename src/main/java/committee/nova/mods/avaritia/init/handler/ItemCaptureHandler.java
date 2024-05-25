@@ -38,10 +38,10 @@ public class ItemCaptureHandler {
                 if (entity instanceof ItemEntity itemEntity) {
                     ItemStack stack = itemEntity.getItem();
                     capturedDrops.add(stack);
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }));
 
     }

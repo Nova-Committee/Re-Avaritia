@@ -39,7 +39,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         var level = this.minecraft.level;
 
         if (level != null) {
-            var tile = level.getBlockEntity(this.getMenu().getBlockPos());
+            var tile = level.getBlockEntity(this.getMenu().getTileEntity().getBlockPos());
 
             if (tile instanceof AbsNeutronCollectorTile compressor)
                 return compressor;

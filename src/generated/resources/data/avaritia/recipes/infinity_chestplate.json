@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:crystal_matrix"
+    }
+  },
+  "pattern": [
+    " NN   NN ",
+    "NNN   NNN",
+    "NNN   NNN",
+    " NIIIIIN ",
+    " NIIXIIN ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    "  NNNNN  "
+  ],
+  "result": {
+    "item": "avaritia:infinity_chestplate"
+  },
+  "show_notification": true
+}

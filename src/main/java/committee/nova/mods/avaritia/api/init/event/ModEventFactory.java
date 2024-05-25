@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.api.init.event;
 
 import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -10,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * ModEventFactory
@@ -63,5 +68,12 @@ public class ModEventFactory {
         if (event.sendEvent2())
             return -1;
         return event.getCharge();
+    }
+
+    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess)
+    {
+        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
+        event.sendEvent();
+        return event.getListeners();
     }
 }

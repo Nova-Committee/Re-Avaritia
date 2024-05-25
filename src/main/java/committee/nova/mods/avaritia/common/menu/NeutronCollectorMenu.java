@@ -5,7 +5,6 @@ import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.common.tile.collector.AbsNeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,21 +24,12 @@ import org.jetbrains.annotations.NotNull;
 public class NeutronCollectorMenu extends BaseMenu<AbsNeutronCollectorTile> {
     private final ContainerData data;
 
-
-    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, new SimpleContainerData(10), buffer);
+    public NeutronCollectorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(id, playerInventory, AbsNeutronCollectorTile.createInventoryHandler(null), new SimpleContainerData(10), getTileEntityFromBuf(buffer, AbsNeutronCollectorTile.class));
     }
 
-    public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, SlottedStackStorage inventory, ContainerData data, BlockPos pos) {
-        return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, inventory, data, pos);
-    }
-
-    private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, ContainerData data, FriendlyByteBuf buffer) {
-        this(type, id, playerInventory, AbsNeutronCollectorTile.createInventoryHandler(null), data, buffer.readBlockPos());
-    }
-
-    protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, SlottedStackStorage inventory, ContainerData data, BlockPos pos) {
-        super(type, id, pos);
+    public NeutronCollectorMenu(int id, Inventory playerInventory, SlottedStackStorage inventory, ContainerData data, AbsNeutronCollectorTile tile) {
+        super(ModMenus.neutron_collector.get(), id, tile);
         this.data = data;
         this.addSlot(new OutputSlot(inventory, 0, 80, 32));
 

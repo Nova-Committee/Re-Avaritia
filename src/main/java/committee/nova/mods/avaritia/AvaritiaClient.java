@@ -1,10 +1,12 @@
 package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.api.iface.IColored;
+import committee.nova.mods.avaritia.client.model.GapingVoidModel;
 import committee.nova.mods.avaritia.client.model.WingModel;
 import committee.nova.mods.avaritia.client.render.layer.EyeInfinityLayer;
 import committee.nova.mods.avaritia.client.render.layer.WingInfinityLayer;
 import committee.nova.mods.avaritia.init.handler.InfinityHandler;
+import committee.nova.mods.avaritia.init.handler.ItemOverrideHandler;
 import committee.nova.mods.avaritia.init.registry.*;
 import io.github.fabricators_of_create.porting_lib.event.client.ColorHandlersCallback;
 import net.fabricmc.api.ClientModInitializer;
@@ -19,14 +21,14 @@ public class AvaritiaClient implements ClientModInitializer {
         ModEntities.onClientSetup();
         ModTileEntities.onClientSetup();
         InfinityHandler.clientInit();
+        ItemOverrideHandler.init();
 
         ColorHandlersCallback.ITEM.register((itemColors, blockColors) -> {
             itemColors.register(new IColored.ItemColors(), ModItems.singularity.get());
         });
 
-        //ModModelsPredicateProviders.registerProviders();
         EntityModelLayerRegistry.registerModelLayer(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
-        EntityModelLayerRegistry.registerModelLayer(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
+        EntityModelLayerRegistry.registerModelLayer(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
 
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
             if(entityRenderer instanceof PlayerRenderer playerEntityRenderer) {

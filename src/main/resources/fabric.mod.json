@@ -22,6 +22,15 @@
     ],
     "fabric-datagen": [
       "committee.nova.mods.avaritia.AvaritiaDataGen"
+    ],
+    "mm:early_risers": [
+      "committee.nova.mods.avaritia.util.ASMUtil"
+    ],
+    "rei_client": [
+      "committee.nova.mods.avaritia.init.compact.rei.ClientREIPlugin"
+    ],
+    "rei_common": [
+      "committee.nova.mods.avaritia.init.compact.rei.ServerREIPlugin"
     ]
   },
   "mixins": [
@@ -33,9 +42,6 @@
     "fabric": "*",
     "minecraft": "${minecraft_version}"
   },
-  "mm:early_risers": [
-    "committee.nova.mods.avaritia.util.ASMUtil"
-  ],
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/class_1542": ["committee/nova/mods/avaritia/init/iface/ILifeSpan"]

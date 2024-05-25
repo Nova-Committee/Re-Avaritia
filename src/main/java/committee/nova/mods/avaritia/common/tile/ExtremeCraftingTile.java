@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.menu.ExtremeCraftingMenu;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 8:44
  * Version: 1.0
  */
-public class ExtremeCraftingTile extends InventoryTileEntity implements MenuProvider {
+public class ExtremeCraftingTile extends InventoryTileEntity{
 
     private final BaseItemStackHandler inventory;
 
@@ -53,7 +54,7 @@ public class ExtremeCraftingTile extends InventoryTileEntity implements MenuProv
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
-        return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this.inventory, this.getBlockPos());
+        return new ExtremeCraftingMenu(p_createMenu_1_, p_createMenu_2_, this.inventory, this);
     }
 
 //    @Override

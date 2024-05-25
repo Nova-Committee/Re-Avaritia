@@ -8,9 +8,11 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.ItemStackUtil;
 import committee.nova.mods.avaritia.util.lang.Localizable;
+import dev.architectury.registry.menu.ExtendedMenuProvider;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTile extends InventoryTileEntity implements MenuProvider {
+public class CompressorTile extends InventoryTileEntity{
     private final BaseItemStackHandler inventory;
     private final BaseItemStackHandler recipeInventory;
     private CompressorRecipe recipe;
@@ -37,6 +39,7 @@ public class CompressorTile extends InventoryTileEntity implements MenuProvider 
     private ItemStack materialStack = ItemStack.EMPTY;
     @Getter
     private int materialCount;
+    @Getter
     private int progress;
     @Getter
     private boolean ejecting = false;
@@ -64,7 +67,7 @@ public class CompressorTile extends InventoryTileEntity implements MenuProvider 
         tile.recipeInventory.setStackInSlot(0, tile.materialStack);
 
         if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory)) {
-            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+            tile.recipe = (CompressorRecipe) level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory, level).orElse(null);
         }
 
         if (!level.isClientSide()) {
@@ -171,7 +174,7 @@ public class CompressorTile extends InventoryTileEntity implements MenuProvider 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return CompressorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
+        return new CompressorMenu(windowId, playerInventory, this.inventory, this);
     }
 
     public boolean hasMaterialStack() {
@@ -183,10 +186,6 @@ public class CompressorTile extends InventoryTileEntity implements MenuProvider 
             this.ejecting = !this.ejecting;
             this.setChangedAndDispatch();
         }
-    }
-
-    public int getProgress() {
-        return this.progress;
     }
 
     public boolean hasRecipe() {
