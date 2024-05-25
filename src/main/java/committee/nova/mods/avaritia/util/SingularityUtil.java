@@ -16,6 +16,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 
 import static io.github.fabricators_of_create.porting_lib.data.ConditionalRecipe.Serializer.processConditions;
+import static net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions.objectMatchesConditions;
 
 /**
  * Description:
@@ -25,7 +26,7 @@ import static io.github.fabricators_of_create.porting_lib.data.ConditionalRecipe
  */
 public class SingularityUtil {
     public static Singularity loadFromJson(ResourceLocation id, JsonObject json) {
-        if (json.has("fabric:load_conditions") && !processConditions(GsonHelper.getAsJsonArray(json, "fabric:load_conditions"))) {
+        if (!objectMatchesConditions(json)) {
             Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
             return null;
         }

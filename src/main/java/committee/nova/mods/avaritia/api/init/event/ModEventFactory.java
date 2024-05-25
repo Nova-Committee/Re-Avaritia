@@ -58,7 +58,7 @@ public class ModEventFactory {
     {
         ArrowNockEvent event = new ArrowNockEvent(player, item, hand, level, hasAmmo);
         if (event.sendEvent2())
-            return new InteractionResultHolder<ItemStack>(InteractionResult.FAIL, item);
+            return new InteractionResultHolder<>(InteractionResult.FAIL, item);
         return event.getAction();
     }
 
@@ -70,9 +70,9 @@ public class ModEventFactory {
         return event.getCharge();
     }
 
-    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess)
+    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources)
     {
-        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
+        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources);
         event.sendEvent();
         return event.getListeners();
     }

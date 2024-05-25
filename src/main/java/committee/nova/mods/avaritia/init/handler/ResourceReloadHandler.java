@@ -21,8 +21,6 @@ public class ResourceReloadHandler {
             event.addListener(new SingularityResourceReload());
             event.addListener(new RegisterRecipesReloadListener());
         });
-        //ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SingularityResourceReload());
-        //ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new RegisterRecipesReload());
     }
 
 

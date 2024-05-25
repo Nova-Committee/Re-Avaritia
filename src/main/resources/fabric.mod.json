@@ -3,14 +3,15 @@
   "id": "avaritia",
   "version": "${version}",
   "name": "Avaritia",
-  "description": "",
+  "description": "${mod_description}",
   "authors": [
-    "cnlimiter"
+    "${mod_authors}"
   ],
   "contact": {
-    "repo": "https://github.com/Nova-Committee/Avaritia"
+    "repo": "https://github.com/Nova-Committee/Re-Avaritia",
+    "issues": "${issue_tracker}"
   },
-  "license": "MIT",
+  "license": "${mod_license}",
   "icon": "logo.png",
   "environment": "*",
   "entrypoints": {
@@ -40,7 +41,8 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+    "forgeconfigapiport": ">=${config_version}"
   },
   "custom": {
     "loom:injected_interfaces": {

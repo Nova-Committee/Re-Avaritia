@@ -1,23 +1,21 @@
 package committee.nova.mods.avaritia.init.mixin;
 
 import committee.nova.mods.avaritia.api.init.event.ModEventFactory;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleReloadInstance;
-import net.minecraft.util.Unit;
 import net.minecraft.world.flag.FeatureFlagSet;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -33,23 +31,24 @@ import java.util.concurrent.Executor;
 @Mixin(ReloadableServerResources.class)
 public abstract class ReloadableResourcesMixin {
 
-    @Shadow @Final private static CompletableFuture<Unit> DATA_RELOAD_INITIAL_TASK;
+    @Unique
+    private static ReloadableServerResources avaritia$currentResources;
 
-    @Shadow @Final private static Logger LOGGER;
+    @Inject(method = "loadResources", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/SimpleReloadInstance;create(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/util/List;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/concurrent/CompletableFuture;Z)Lnet/minecraft/server/packs/resources/ReloadInstance;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void avaritia$storeCurrentResources(ResourceManager resourceManager, RegistryAccess.Frozen frozen, FeatureFlagSet featureFlagSet, Commands.CommandSelection commandSelection, int i, Executor executor, Executor executor2, CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir, ReloadableServerResources reloadableServerResources) {
 
-    @Inject(
-            method = "loadResources",
-            at = @At(value = "HEAD"),
-            cancellable = true)
-    private static void loadResources1(ResourceManager pResourceManager, RegistryAccess.Frozen pRegistryAccess, FeatureFlagSet pEnabledFeatures, Commands.CommandSelection pCommandSelection, int pFunctionCompilationLevel, Executor pBackgroundExecutor, Executor pGameExecutor, CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir){
-        ReloadableServerResources reloadableserverresources = new ReloadableServerResources(pRegistryAccess, pEnabledFeatures, pCommandSelection, pFunctionCompilationLevel);
-        List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-        listeners.addAll(ModEventFactory.onResourceReload(reloadableserverresources, pRegistryAccess));
-        cir.setReturnValue(SimpleReloadInstance.create(pResourceManager, listeners, pBackgroundExecutor, pGameExecutor, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()).done().whenComplete((p_214309_, p_214310_) -> {
-            reloadableserverresources.commandBuildContext.missingTagAccessPolicy(CommandBuildContext.MissingTagAccessPolicy.FAIL);
-        }).thenApply((p_214306_) -> {
-            return reloadableserverresources;
-        }));
-        cir.cancel();
+        avaritia$currentResources = reloadableServerResources;
     }
+
+    @ModifyArg(method = "loadResources", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/SimpleReloadInstance;create(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/util/List;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/concurrent/CompletableFuture;Z)Lnet/minecraft/server/packs/resources/ReloadInstance;"))
+    private static List<PreparableReloadListener> avaritia$addReloadListener(List<PreparableReloadListener> value) {
+        ArrayList<PreparableReloadListener> listeners = new ArrayList<>(value);
+        listeners.addAll(ModEventFactory.onResourceReload(avaritia$currentResources));
+        return listeners;
+    }
+    @Inject(method = "loadResources", at = @At(value = "TAIL"))
+    private static void avaritia$disposeCurrentResources(ResourceManager resourceManager, RegistryAccess.Frozen frozen, FeatureFlagSet featureFlagSet, Commands.CommandSelection commandSelection, int i, Executor executor, Executor executor2, CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir) {
+        avaritia$currentResources = null;
+    }
+
 }

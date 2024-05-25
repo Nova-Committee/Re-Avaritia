@@ -4,7 +4,7 @@ plugins {
 }
 
 version = project.mod_version
-group = project.maven_group
+group = project.mod_group_id
 
 repositories {
     maven { url = "https://maven.quiltmc.org/repository/release" } // QM
@@ -135,15 +135,22 @@ dependencies {
 }
 
 processResources {
-    inputs.property "version", project.version
-    inputs.property "minecraft_version", project.minecraft_version
-    inputs.property "loader_version", project.loader_version
+    Map<String, Object> properties = [
+            "version": version,
+            "minecraft_version": minecraft_version,
+            "loader_version": loader_version,
+            "mod_license": mod_license,
+            "mod_authors": mod_authors,
+            "mod_description": mod_description,
+            "issue_tracker": issue_tracker,
+            "config_version": config_version
+    ]
+    properties.forEach((k, v) -> inputs.property(k, v))
+
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version,
-                "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+        expand properties
     }
 }
 
@@ -160,13 +167,13 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archives_base_name
+    archivesBaseName = project.mod_name + "-" + project.minecraft_version
     withSourcesJar()
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${project.mod_id}"}
     }
 }
 

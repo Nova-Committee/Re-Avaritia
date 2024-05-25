@@ -5,11 +5,13 @@ import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
 import lombok.Getter;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +40,10 @@ public class AddReloadListenerEvent extends BaseEvent {
     private final List<PreparableReloadListener> listeners = new ArrayList<>();
     @Getter
     private final ReloadableServerResources serverResources;
-    private final RegistryAccess registryAccess;
 
-    public AddReloadListenerEvent(ReloadableServerResources serverResources, RegistryAccess registryAccess)
+    public AddReloadListenerEvent(ReloadableServerResources serverResources)
     {
         this.serverResources = serverResources;
-        this.registryAccess = registryAccess;
     }
 
     public void addListener(PreparableReloadListener listener)
@@ -56,23 +56,17 @@ public class AddReloadListenerEvent extends BaseEvent {
         return ImmutableList.copyOf(listeners);
     }
 
-    public RegistryAccess getRegistryAccess()
-    {
-        return registryAccess;
-    }
 
-    private static class WrappedStateAwareListener implements PreparableReloadListener {
-        private final PreparableReloadListener wrapped;
-
-        private WrappedStateAwareListener(final PreparableReloadListener wrapped) {
-            this.wrapped = wrapped;
-        }
+    private record WrappedStateAwareListener(PreparableReloadListener wrapped) implements PreparableReloadListener {
 
         @Override
-        public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller preparationsProfiler, final ProfilerFiller reloadProfiler, final Executor backgroundExecutor, final Executor gameExecutor) {
-                return wrapped.reload(stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            public @NotNull CompletableFuture<Void> reload(final @NotNull PreparationBarrier stage, final @NotNull ResourceManager resourceManager,
+                                                           final @NotNull ProfilerFiller preparationsProfiler, final @NotNull ProfilerFiller reloadProfiler,
+                                                           final @NotNull Executor backgroundExecutor, final @NotNull Executor gameExecutor) {
+                if (FabricLoader.getInstance().isModLoaded("avaritia")) return wrapped.reload(stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+                else return CompletableFuture.completedFuture(null);
+            }
         }
-    }
 
     @Override
     public void sendEvent() {
