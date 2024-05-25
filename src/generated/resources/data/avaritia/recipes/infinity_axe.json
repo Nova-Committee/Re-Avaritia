@@ -13,15 +13,15 @@
     }
   },
   "pattern": [
-    "   I   ",
-    "  IIIII",
-    "  IIXI ",
-    "   IN  ",
-    "    N  ",
-    "    N  ",
-    "    N  ",
-    "    N  ",
-    "    N  "
+    "        I",
+    "   IIIII ",
+    "   IIXI  ",
+    "    IN   ",
+    "    N    ",
+    "   N     ",
+    "  N      ",
+    " N       ",
+    "N        "
   ],
   "result": {
     "item": "avaritia:infinity_axe"
