@@ -79,7 +79,7 @@ public class AbilityHandler {
             flightInfo.wasFlyingGameMode = isFlyingGameMode;
             flightInfo.wasFlying = player.getAbilities().flying;
             flightInfo.wasFlyingAllowed = player.getAbilities().mayfly;
-            if (player.getAbilities().flying && hasChest){
+            if (hasChest){
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
                     player.removeEffect(potion.getEffect());
