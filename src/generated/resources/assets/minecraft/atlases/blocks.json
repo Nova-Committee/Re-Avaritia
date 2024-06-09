@@ -2,8 +2,8 @@
   "sources": [
     {
       "type": "minecraft:directory",
-      "prefix": "",
-      "source": "shader"
+      "prefix": "misc/",
+      "source": "misc"
     }
   ]
 }

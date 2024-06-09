@@ -8,7 +8,6 @@
     "FrostWalkerEnchantmentMixin"
   ],
   "client": [
-    "ItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

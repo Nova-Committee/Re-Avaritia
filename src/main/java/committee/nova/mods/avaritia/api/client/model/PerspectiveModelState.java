@@ -8,13 +8,14 @@ import net.minecraft.world.item.ItemDisplayContext;
 import java.util.Map;
 
 /**
- * Name: Avaritia-forge / PerspectiveModelStat
- * Author: cnlimiter
- * CreateTime: 2023/9/24 5:08
- * Description:
+ * A simple {@link ModelState} implementation which
+ * is composed of multiple {@link Transformation}s.
+ * <p>
+ * Created by covers1624 on 9/7/22.
+ * @see committee.nova.mods.avaritia.util.client.TransformUtils
  */
-
 public class PerspectiveModelState implements ModelState {
+
     public static final PerspectiveModelState IDENTITY = new PerspectiveModelState(ImmutableMap.of());
 
     private final Map<ItemDisplayContext, Transformation> transforms;
@@ -29,8 +30,8 @@ public class PerspectiveModelState implements ModelState {
         this.isUvLocked = isUvLocked;
     }
 
-    public Transformation getTransform(ItemDisplayContext type) {
-        return transforms.getOrDefault(type, Transformation.identity());
+    public Transformation getTransform(ItemDisplayContext context) {
+        return transforms.getOrDefault(context, Transformation.identity());
     }
 
     @Override

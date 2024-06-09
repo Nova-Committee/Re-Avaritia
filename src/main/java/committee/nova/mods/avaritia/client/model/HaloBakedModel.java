@@ -1,24 +1,29 @@
 package committee.nova.mods.avaritia.client.model;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import committee.nova.mods.avaritia.api.client.model.AlphaOverrideVertexConsumer;
-import committee.nova.mods.avaritia.api.client.model.IItemRenderer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
-import committee.nova.mods.avaritia.api.client.model.WrappedItemModel;
-import committee.nova.mods.avaritia.api.client.render.CachedFormat;
-import committee.nova.mods.avaritia.api.client.render.Quad;
-import committee.nova.mods.avaritia.util.client.color.ColourARGB;
+import committee.nova.mods.avaritia.api.client.model.Quad;
+import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
+import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
+import committee.nova.mods.avaritia.api.client.render.item.IItemRenderer;
+import committee.nova.mods.avaritia.util.client.TransformUtils;
+import committee.nova.mods.avaritia.util.client.colour.ColourARGB;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -30,12 +35,13 @@ import java.util.Random;
  */
 
 public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
-    private static final Random RANDOM = new Random();
+    private final Random RANDOM;
     private final BakedQuad haloQuad;
     private final boolean pulse;
 
     public HaloBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, int color, int size, boolean pulse) {
         super(wrapped);
+        this.RANDOM = new Random();
         this.haloQuad = generateHaloQuad(sprite, size, color);
         this.pulse = pulse;
     }
@@ -43,8 +49,8 @@ public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
         if (transformType == ItemDisplayContext.GUI) {
-            ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            itemRenderer.renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), ItemStack.EMPTY, packedLight, packedOverlay);
+            Minecraft.getInstance().getItemRenderer()
+                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad),  ItemStack.EMPTY, packedLight, packedOverlay);
             if (this.pulse) {
                 pStack.pushPose();
                 double scale = RANDOM.nextDouble() * 0.15D + 0.95D;
@@ -61,7 +67,7 @@ public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
 
     @Override
     public PerspectiveModelState getModelState() {
-        return (PerspectiveModelState) this.parentState;
+        return TransformUtils.DEFAULT_ITEM;
     }
 
     @Override

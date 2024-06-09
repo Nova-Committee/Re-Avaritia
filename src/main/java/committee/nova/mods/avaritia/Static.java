@@ -24,7 +24,7 @@ public class Static {
     }
 
     public static final GameProfile avaritiaFakePlayer = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
-
+    public static final ResourceLocation ICON_ATLAS_INFO = rl("cosmic_icons");
     public static boolean isLoad(String name) {
         return ModList.get().isLoaded(name);
     }

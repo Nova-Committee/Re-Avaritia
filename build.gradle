@@ -94,6 +94,7 @@ mixin {
 }
 
 repositories {
+    mavenCentral()
     mavenLocal()
     maven { url = "https://maven.covers1624.net/" }
     maven { url = 'https://maven.blamejared.com' }
@@ -101,6 +102,7 @@ repositories {
     maven { url = 'https://maven.melanx.de/' }
     maven { url = "https://maven.architectury.dev" }
     maven { url = "https://maven.saps.dev/minecraft" }
+    maven { url = 'https://www.jitpack.io' }
     maven {
         name = 'Twilight Forest'
         url = 'https://modmaven.dev/'
@@ -130,6 +132,11 @@ dependencies {
     compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     compileOnly fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
     compileOnly fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.6"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
+        jarJar.ranged(it, "[0.3.6,)")
+    }
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']

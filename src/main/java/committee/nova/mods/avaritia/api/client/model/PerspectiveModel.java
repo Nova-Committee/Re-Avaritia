@@ -2,8 +2,7 @@ package committee.nova.mods.avaritia.api.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
-import committee.nova.mods.avaritia.util.client.TransformUtil;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import committee.nova.mods.avaritia.util.client.TransformUtils;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.NotNull;
@@ -11,21 +10,28 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 /**
- * Name: Avaritia-forge / PerspectiveModel
- * Author: cnlimiter
- * CreateTime: 2023/9/24 5:08
- * Description:
+ * A simple {@link BakedModel} implementation, with automatic handling of
+ * {@link PerspectiveModelState}s.
+ * <p>
+ * Created by covers1624 on 9/7/22.
+ *
+ * @see TransformUtils
  */
+public interface PerspectiveModel extends BakedModel {
 
-public interface PerspectiveModel extends BakedModel{
+    /**
+     * The {@link PerspectiveModelState} for this model.
+     *
+     * @return The state or {@code null} for vanilla behaviour.
+     */
     @Nullable
     PerspectiveModelState getModelState();
 
     @Override
-    default @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack pStack, boolean leftFlip) {
+    default @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext context, @NotNull PoseStack pStack, boolean leftFlip) {
         PerspectiveModelState modelState = getModelState();
         if (modelState != null) {
-            Transformation transform = getModelState().getTransform(transformType);
+            Transformation transform = getModelState().getTransform(context);
 
             Vector3f trans = transform.getTranslation();
             pStack.translate(trans.x(), trans.y(), trans.z());
@@ -38,10 +44,10 @@ public interface PerspectiveModel extends BakedModel{
             pStack.mulPose(transform.getRightRotation());
 
             if (leftFlip) {
-                TransformUtil.applyLeftyFlip(pStack);
+                TransformUtils.applyLeftyFlip(pStack);
             }
             return this;
         }
-        return BakedModel.super.applyTransform(transformType, pStack, leftFlip);
+        return BakedModel.super.applyTransform(context, pStack, leftFlip);
     }
 }

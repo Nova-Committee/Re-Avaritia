@@ -1,21 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
-  "loader": "forge:item_layers",
   "textures": {
     "layer0": "avaritia:item/tools/infinity_sword/layer_0",
     "layer1": "avaritia:item/tools/infinity_sword/layer_1"
-  },
-  "render_types": {
-    "minecraft:translucent": [
-      0
-    ]
-  },
-  "forge_data": {
-    "layers": {
-      "0": {
-        "block_light": 15,
-        "sky_light": 15
-      }
-    }
   }
 }

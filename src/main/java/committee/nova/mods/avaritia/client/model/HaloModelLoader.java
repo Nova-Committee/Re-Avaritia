@@ -1,9 +1,12 @@
 package committee.nova.mods.avaritia.client.model;
 
 import com.google.gson.*;
-import committee.nova.mods.avaritia.api.client.render.CachedFormat;
-import committee.nova.mods.avaritia.api.client.render.Quad;
-import committee.nova.mods.avaritia.util.client.render.VertexUtil;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import committee.nova.mods.avaritia.api.client.model.CachedFormat;
+import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
+import committee.nova.mods.avaritia.api.client.model.Quad;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -15,13 +18,15 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.RenderTypeGroup;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 /**
@@ -31,47 +36,48 @@ import java.util.function.Function;
  * Description:
  */
 
-public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloModelGeometry> {
+public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItemModelGeometry> {
 
     public static final HaloModelLoader INSTANCE = new HaloModelLoader();
 
     @Override
-    public HaloModelGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException {
-        JsonObject haloObj = modelContents.getAsJsonObject("halo");
-        if (haloObj == null) {
+    public HaloItemModelGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException {
+        final JsonObject halo = modelContents.getAsJsonObject("halo");
+        if (halo == null) {
             throw new IllegalStateException("Missing 'halo' object.");
-        } else {
-            IntList layerColors = new IntArrayList();
-            JsonArray layerColorsArr = modelContents.getAsJsonArray("layerColors");
-            if (layerColorsArr != null) {
-
-                for (JsonElement jsonElement : layerColorsArr) {
-                    layerColors.add(jsonElement.getAsInt());
-                }
-            }
-
-            String texture = GsonHelper.getAsString(haloObj, "texture");
-            int color = GsonHelper.getAsInt(haloObj, "color");
-            int size = GsonHelper.getAsInt(haloObj, "size");
-            boolean pulse = GsonHelper.getAsBoolean(haloObj, "pulse");
-            JsonObject clean = modelContents.deepCopy();
-            clean.remove("halo");
-            clean.remove("loader");
-            BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
-            return new HaloModelLoader.HaloModelGeometry(baseModel, layerColors, texture, color, size, pulse);
         }
+        final IntArrayList layerColors = new IntArrayList();
+        final JsonArray layerColorsArr = modelContents.getAsJsonArray("layerColors");
+        if (layerColorsArr != null) {
+            for (final JsonElement jsonElement : layerColorsArr) {
+                layerColors.add(jsonElement.getAsInt());
+            }
+        }
+        final String texture = GsonHelper.getAsString(halo, "texture");
+        final int color = GsonHelper.getAsInt(halo, "color");
+        final int size = GsonHelper.getAsInt(halo, "size");
+        final boolean pulse = GsonHelper.getAsBoolean(halo, "pulse");
+        final JsonObject clean = modelContents.getAsJsonObject();
+        clean.remove("halo");
+        clean.remove("loader");
+        final BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
+        return new HaloItemModelGeometry(baseModel, layerColors, texture, color, size, pulse);
     }
 
-    public static class HaloModelGeometry implements IUnbakedGeometry<HaloModelGeometry>{
-        private static final RandomSource RANDOM = RandomSource.create();
+
+    public static class HaloItemModelGeometry implements IUnbakedGeometry<HaloItemModelGeometry>
+    {
         private final BlockModel baseModel;
         private final IntList layerColors;
         private final String texture;
         private final int color;
         private final int size;
         private final boolean pulse;
+        private static final ConcurrentMap<Pair<VertexFormat, VertexFormat>, int[]> formatMaps = new ConcurrentHashMap<>();;
+        private static final int[] DEFAULT_MAPPING = generateMapping(DefaultVertexFormat.BLOCK, DefaultVertexFormat.BLOCK);
 
-        public HaloModelGeometry(BlockModel baseModel, IntList layerColors, String texture, int color, int size, boolean pulse) {
+
+        public HaloItemModelGeometry(final BlockModel baseModel, final IntList layerColors, final String texture, final int color, final int size, final boolean pulse) {
             this.baseModel = baseModel;
             this.layerColors = layerColors;
             this.texture = texture;
@@ -81,67 +87,152 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloMode
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-            BakedModel bakedBaseModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, false);
-            Material haloMaterial = context.getMaterial(texture);
-            return new HaloBakedModel(tintLayers(bakedBaseModel, this.layerColors), spriteGetter.apply(haloMaterial), this.color, this.size, this.pulse);
+        public BakedModel bake(final IGeometryBakingContext owner, final ModelBaker bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
+            Material particleLocation = owner.getMaterial(this.texture);
+            TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
+            final BakedModel bakedBaseModel = this.baseModel.bake(bakery, this.baseModel, spriteGetter, modelTransform, modelLocation, false);
+            return new HaloBakedModel(tintLayers(bakedBaseModel, this.layerColors), particle, this.color, this.size, this.pulse);
         }
 
-        private static BakedModel tintLayers(BakedModel model, IntList layerColors) {
+        private static BakedModel tintLayers(final BakedModel model, final IntList layerColors) {
             if (layerColors.isEmpty()) {
                 return model;
-            } else {
-                Map<Direction, List<BakedQuad>> faceQuads = new HashMap<>();
-                Direction[] var3 = Direction.values();
-
-                for (Direction face : var3) {
-                    faceQuads.put(face, transformQuads(model.getQuads(null, face, RANDOM), layerColors));
-                }
-
-                List<BakedQuad> unculled = transformQuads(model.getQuads(null, null, RANDOM), layerColors);
-                return new SimpleBakedModel(unculled, faceQuads, model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), ItemOverrides.EMPTY);
             }
+            final Map<Direction, List<BakedQuad>> faceQuads = new HashMap<>();
+            for (final Direction face : Direction.values()) {
+                faceQuads.put(face, transformQuads(model.getQuads(null, face, RandomSource.create()), layerColors));
+            }
+            final List<BakedQuad> unculled = transformQuads(model.getQuads(null, null, RandomSource.create()), layerColors);
+            return new SimpleBakedModel(unculled, faceQuads, model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), ItemOverrides.EMPTY , RenderTypeGroup.EMPTY);
         }
 
-        private static List<BakedQuad> transformQuads(List<BakedQuad> quads, IntList layerColors) {
-            List<BakedQuad> newQuads = new ArrayList<>(quads.size());
-
-            for (BakedQuad quad : quads) {
+        static List<BakedQuad> transformQuads(final List<BakedQuad> quads, final IntList layerColors) {
+            final ArrayList<BakedQuad> newQuads = new ArrayList<>(quads.size());
+            for (final BakedQuad quad : quads) {
                 newQuads.add(transformQuad(quad, layerColors));
             }
-
             return newQuads;
         }
 
-        private static BakedQuad transformQuad(BakedQuad quad, IntList layerColors) {
-            int tintIndex = quad.getTintIndex();
-            if (tintIndex != -1 && tintIndex < layerColors.size()) {
-                int tint = layerColors.getInt(tintIndex);
-                if (tint == -1) {
-                    return quad;
-                } else {
-                    Quad newQuad = new Quad();
-                    newQuad.reset(CachedFormat.BLOCK);
-                    VertexUtil.putBakedQuad(newQuad, quad);
-                    float r = (float)(tint >> 16 & 255) / 255.0F;
-                    float g = (float)(tint >> 8 & 255) / 255.0F;
-                    float b = (float)(tint & 255) / 255.0F;
-                    Quad.Vertex[] var8 = newQuad.vertices;
-                    for (Quad.Vertex v : var8) {
-                        float[] color1 = v.color;
-                        color1[0] *= r;
-                        color1[1] *= g;
-                        color1[2] *= b;
-                    }
+        public static int[] mapFormats(final VertexFormat from, final VertexFormat to) {
+            if (from.equals(DefaultVertexFormat.BLOCK) && to.equals(DefaultVertexFormat.BLOCK)) {
+                return HaloItemModelGeometry.DEFAULT_MAPPING;
+            }
+            return HaloItemModelGeometry.formatMaps.computeIfAbsent(Pair.of(from, to), pair -> generateMapping(pair.getLeft(), pair.getRight()));
+        }
 
-                    newQuad.tintIndex = -1;
-                    return newQuad.bake();
+        public static void unpack(final int[] from, final float[] to, final VertexFormat formatFrom, final int v, final int e) {
+            final int length = Math.min(4, to.length);
+            final VertexFormatElement element = formatFrom.getElements().get(e);
+            final int vertexStart = v * formatFrom.getVertexSize() + formatFrom.getOffset(e);
+            final int count = element.getElementCount();
+            final VertexFormatElement.Type type = element.getType();
+            final VertexFormatElement.Usage usage = element.getUsage();
+            final int size = type.getSize();
+            final int mask = (256 << 8 * (size - 1)) - 1;
+            for (int i = 0; i < length; ++i) {
+                if (i < count) {
+                    final int pos = vertexStart + size * i;
+                    final int index = pos >> 2;
+                    final int offset = pos & 0x3;
+                    int bits = from[index];
+                    bits >>>= offset * 8;
+                    if ((pos + size - 1) / 4 != index) {
+                        bits |= from[index + 1] << (4 - offset) * 8;
+                    }
+                    bits &= mask;
+                    if (type == VertexFormatElement.Type.FLOAT) {
+                        to[i] = Float.intBitsToFloat(bits);
+                    }
+                    else if (type == VertexFormatElement.Type.UBYTE || type == VertexFormatElement.Type.USHORT) {
+                        to[i] = bits / (float)mask;
+                    }
+                    else if (type == VertexFormatElement.Type.UINT) {
+                        to[i] = (float)(((long)bits & 0xFFFFFFFFL) / 4.294967295E9);
+                    }
+                    else if (type == VertexFormatElement.Type.BYTE) {
+                        to[i] = (byte)bits / (float)(mask >> 1);
+                    }
+                    else if (type == VertexFormatElement.Type.SHORT) {
+                        to[i] = (short)bits / (float)(mask >> 1);
+                    }
+                    else if (type == VertexFormatElement.Type.INT) {
+                        to[i] = (float)(((long)bits & 0xFFFFFFFFL) / 2.147483647E9);
+                    }
                 }
-            } else {
-                return quad;
+                else {
+                    to[i] = ((i == 3 && usage == VertexFormatElement.Usage.POSITION) ? 1.0f : 0.0f);
+                }
             }
         }
 
+        private static int[] generateMapping(final VertexFormat from, final VertexFormat to) {
+            final int fromCount = from.getElements().size();
+            final int toCount = to.getElements().size();
+            final int[] eMap = new int[fromCount];
+            for (int e = 0; e < fromCount; ++e) {
+                final VertexFormatElement expected = from.getElements().get(e);
+                int e2;
+                for (e2 = 0; e2 < toCount; ++e2) {
+                    final VertexFormatElement current = to.getElements().get(e2);
+                    if (expected.getUsage() == current.getUsage() && expected.getIndex() == current.getIndex()) {
+                        break;
+                    }
+                }
+                eMap[e] = e2;
+            }
+            return eMap;
+        }
+
+        public static void putBakedQuad(final IVertexConsumer consumer, final BakedQuad quad) {
+            consumer.setTexture(quad.getSprite());
+            consumer.setQuadOrientation(quad.getDirection());
+            if (quad.isTinted()) {
+                consumer.setQuadTint(quad.getTintIndex());
+            }
+            consumer.setApplyDiffuseLighting(quad.isShade());
+            final float[] data = new float[4];
+            final VertexFormat formatFrom = consumer.getVertexFormat();
+            final VertexFormat formatTo = DefaultVertexFormat.BLOCK;
+            final int countFrom = formatFrom.getElements().size();
+            final int countTo = formatTo.getElements().size();
+            final int[] eMap = mapFormats(formatFrom, formatTo);
+            for (int v = 0; v < 4; ++v) {
+                for (int e = 0; e < countFrom; ++e) {
+                    if (eMap[e] != countTo) {
+                        unpack(quad.getVertices(), data, formatTo, v, eMap[e]);
+                        consumer.put(e, data);
+                    }
+                    else {
+                        consumer.put(e);
+                    }
+                }
+            }
+        }
+
+        static BakedQuad transformQuad(final BakedQuad quad, final IntList layerColors) {
+            final int tintIndex = quad.getTintIndex();
+            if (tintIndex == -1 || tintIndex >= layerColors.size()) {
+                return quad;
+            }
+            final int tint = layerColors.getInt(tintIndex);
+            if (tint == -1) {
+                return quad;
+            }
+            final Quad newQuad = new Quad();
+            newQuad.reset(CachedFormat.BLOCK);
+            putBakedQuad(newQuad, quad);
+            final float r = (tint >> 16 & 255) / 255.0f;
+            final float g = (tint >> 8 & 255) / 255.0f;
+            final float b = (tint & 255) / 255.0f;
+            for (final Quad.Vertex v : newQuad.vertices) {
+                v.color[0] *= r;
+                v.color[1] *= g;
+                v.color[2] *= b;
+            }
+            newQuad.tintIndex = -1;
+            return newQuad.bake();
+        }
 
     }
 }
