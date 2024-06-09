@@ -49,7 +49,10 @@ public class ToolUtils {
             BlockTags.MINEABLE_WITH_PICKAXE,
             Tags.Blocks.STONE, Tags.Blocks.STORAGE_BLOCKS,
             Tags.Blocks.GLASS, Tags.Blocks.ORES,
-            BlockTags.SCULK_REPLACEABLE_WORLD_GEN
+            BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
+            Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE,
+            Tags.Blocks.COBBLESTONE_DEEPSLATE
+
     );
 
     public static final Set<TagKey<Block>> materialsAxe = Sets.newHashSet(
