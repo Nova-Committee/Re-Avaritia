@@ -134,8 +134,15 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
     private LayerDefinition rebuildWings() {
         final MeshDefinition m = new MeshDefinition();
         final PartDefinition p = m.getRoot();
-        p.addOrReplaceChild("bipedRightWing", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(0.0f, -11.6f, 0.0f, 0.0f, 32.0f, 32.0f, new CubeDeformation(0.0f)), PartPose.offsetAndRotation(-1.5f, 0.0f, 2.0f, 0.0f, 1.2566371f, 0.0f));
-        p.addOrReplaceChild("bipedLeftWing", CubeListBuilder.create().texOffs(0, 0).addBox(0.0f, -11.6f, 0.0f, 0.0f, 32.0f, 32.0f, new CubeDeformation(0.0f)), PartPose.offsetAndRotation(1.5f, 0.0f, 2.0f, 0.0f, -1.2566371f, 0.0f));
+        p.addOrReplaceChild("bipedRightWing",
+                CubeListBuilder.create()
+                        .texOffs(0, 0).mirror()
+                        .addBox(0.0f, -11.6f, 0.0f, 0.0f, 32.0f, 32.0f, new CubeDeformation(0.0f)),
+                PartPose.offsetAndRotation(-1.5f, 0.0f, 2.0f, 0.0f, 1.2566371f, 0.0f));
+        p.addOrReplaceChild("bipedLeftWing",
+                CubeListBuilder.create().texOffs(0, 0)
+                        .addBox(0.0f, -11.6f, 0.0f, 0.0f, 32.0f, 32.0f, new CubeDeformation(0.0f)),
+                PartPose.offsetAndRotation(1.5f, 0.0f, 2.0f, 0.0f, -1.2566371f, 0.0f));
         return LayerDefinition.create(m, 64, 64);
     }
 
@@ -171,8 +178,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         AvaritiaShaders.cosmicOpacity2.set(0.2f);
         if (AvaritiaShaders.inventoryRender) {
             AvaritiaShaders.cosmicExternalScale.set(25.0f);
-        }
-        else {
+        } else {
             AvaritiaShaders.cosmicExternalScale.set(1.0f);
             AvaritiaShaders.cosmicYaw.set((float)(this.mc.player.getYRot() * 2.0f * 3.141592653589793 / 360.0));
             AvaritiaShaders.cosmicPitch.set(-(float)(this.mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0));
@@ -191,7 +197,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         if (InfinityArmorModel.modelRender && !InfinityArmorModel.player) {
             this.bodyPartsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, InfinityArmorModel::mask2), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
         }
-        this.bodyParts().forEach(t -> t.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+       // this.bodyParts().forEach(t -> t.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
         this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(this.glow(this.eyeTex)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float)(pulse_mag_sqr * 0.5)));
         pPoseStack.popPose();
         pPoseStack.pushPose();
@@ -214,7 +220,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             pPoseStack.scale(f2, f2, f2);
             pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
             model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(this.wingTex)), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-            model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            //model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(this.glow(this.wingGlowTex)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float)(pulse_mag_sqr * 0.5));
             pPoseStack.popPose();
         }

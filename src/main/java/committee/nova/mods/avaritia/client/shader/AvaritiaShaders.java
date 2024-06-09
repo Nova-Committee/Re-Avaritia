@@ -40,7 +40,6 @@ public class AvaritiaShaders {
 
     public static CCShaderInstance cosmicShader;
     public static CCShaderInstance cosmicShader2;
-    public static CCShaderInstance cosmicShader3;
 
     public static CCUniform cosmicTime;
     public static CCUniform cosmicYaw;
@@ -118,7 +117,6 @@ public class AvaritiaShaders {
             if (cosmicUVs2 != null) {
                 cosmicUVs2.set(COSMIC_UVS);
             }
-            if (cosmicUVs != null) cosmicUVs.set(COSMIC_UVS);
         }
     }
 

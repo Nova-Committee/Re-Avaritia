@@ -2,14 +2,9 @@ package committee.nova.mods.avaritia.init.mixins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.MatrixUtil;
 import committee.nova.mods.avaritia.api.client.render.item.IItemRenderer;
-import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
