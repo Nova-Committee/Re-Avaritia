@@ -35,6 +35,11 @@ public class InfinitySwordItem extends SwordItem {
     }
 
     @Override
+    public boolean isFoil(@NotNull ItemStack pStack) {
+        return false;
+    }
+
+    @Override
     public boolean hasCustomEntity(ItemStack stack) {
         return true;
     }

@@ -44,7 +44,10 @@ public class InfinityHoeItem extends HoeItem {
                 .fireResistant());
 
     }
-
+    @Override
+    public boolean isFoil(@NotNull ItemStack pStack) {
+        return false;
+    }
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;

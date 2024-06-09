@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -51,15 +52,15 @@ public class AbilityUtils {
         }
     }
 
-    public static void attackAOE(Player player, float range, float damage, boolean hurtLiving) {
+    public static void attackAOE(Player player, float range, float damage, boolean hurtAnimal) {
         if (player.level().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
         for (var entity : toAttack) {
-            if (hurtLiving) {
-                if (entity instanceof LivingEntity livingEntity) {
-                    livingEntity.hurt(src, damage);
+            if (hurtAnimal) {
+                if (entity instanceof Animal animal) {
+                    animal.hurt(src, damage);
                 }
             } else if (entity instanceof Mob) {
 

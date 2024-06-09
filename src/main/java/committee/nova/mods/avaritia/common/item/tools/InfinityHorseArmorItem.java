@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,7 +25,10 @@ public class InfinityHorseArmorItem extends HorseArmorItem {
     public InfinityHorseArmorItem(Properties pProperties) {
         super(Integer.MAX_VALUE, new ResourceLocation(Static.MOD_ID, TEX_PATH), pProperties);
     }
-
+    @Override
+    public boolean isFoil(@NotNull ItemStack pStack) {
+        return false;
+    }
     @Override
     public boolean hasCustomEntity(ItemStack stack) {
         return true;
