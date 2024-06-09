@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.util.client.VertexUtils;
 import committee.nova.mods.avaritia.util.math.InterpHelper;
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 import committee.nova.mods.avaritia.util.vec.Cuboid6;
 import committee.nova.mods.avaritia.util.vec.Vector3;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -175,9 +175,9 @@ public class Quad implements IVertexProducer, IVertexConsumer {
     public void clamp(Cuboid6 cuboid) {
         for (Vertex vertex : vertices) {
             float[] vec = vertex.vec;
-            vec[0] = (float) MathUtil.clip(vec[0], cuboid.min.x, cuboid.max.x);
-            vec[1] = (float) MathUtil.clip(vec[1], cuboid.min.y, cuboid.max.y);
-            vec[2] = (float) MathUtil.clip(vec[2], cuboid.min.z, cuboid.max.z);
+            vec[0] = (float) MathUtils.clip(vec[0], cuboid.min.x, cuboid.max.x);
+            vec[1] = (float) MathUtils.clip(vec[1], cuboid.min.y, cuboid.max.y);
+            vec[2] = (float) MathUtils.clip(vec[2], cuboid.min.z, cuboid.max.z);
         }
         calculateOrientation(true);
     }

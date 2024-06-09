@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.util.vec.uv;
 
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -47,7 +47,7 @@ public class UVTranslation extends UVTransformation {
 
     @Override
     public boolean isRedundant() {
-        return MathUtil.between(-1E-5, du, 1E-5) && MathUtil.between(-1E-5, dv, 1E-5);
+        return MathUtils.between(-1E-5, du, 1E-5) && MathUtils.between(-1E-5, dv, 1E-5);
     }
 
     @Override

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
-import committee.nova.mods.avaritia.util.SingularityUtil;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,7 +28,7 @@ public class ModCreativeModeTabs{
             .displayItems((parameters, output) -> {
                 for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
                     if (singularity.isEnabled()) {
-                        output.accept(SingularityUtil.getItemForSingularity(singularity));
+                        output.accept(SingularityUtils.getItemForSingularity(singularity));
                     }
                 }
                 ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {

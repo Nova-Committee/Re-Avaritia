@@ -2,19 +2,16 @@ package committee.nova.mods.avaritia.client;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IColored;
-import committee.nova.mods.avaritia.client.model.CosmicModelLoader;
-import committee.nova.mods.avaritia.client.model.GapingVoidModel;
-import committee.nova.mods.avaritia.client.model.HaloModelLoader;
-import committee.nova.mods.avaritia.client.model.WingModel;
-import committee.nova.mods.avaritia.client.render.layer.EyeInfinityLayer;
-import committee.nova.mods.avaritia.client.render.layer.WingInfinityLayer;
+import committee.nova.mods.avaritia.client.model.*;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
-import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -47,8 +44,7 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
-        event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
-
+        //event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -69,14 +65,12 @@ public class AvaritiaClient {
 
     @SubscribeEvent
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
-        event.getSkins().forEach(skin -> {
-            EntityRenderer<?> renderer = event.getSkin(skin);
-            if (renderer != null && renderer instanceof LivingEntityRenderer livingRender){
-                livingRender.addLayer(new WingInfinityLayer(livingRender));
-                livingRender.addLayer(new EyeInfinityLayer(livingRender));
-            }
-        });
+        addLayer(event, "default");
+        addLayer(event, "slim");
+    }
 
-
+    private static void addLayer(final EntityRenderersEvent.AddLayers e, final String s) {
+        final LivingEntityRenderer entityRenderer = e.getSkin(s);
+        entityRenderer.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>)entityRenderer));
     }
 }

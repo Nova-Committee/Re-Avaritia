@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.tile.collector;
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
-import committee.nova.mods.avaritia.util.ItemStackUtil;
+import committee.nova.mods.avaritia.util.ItemStackUtils;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -59,7 +59,7 @@ public abstract class AbsNeutronCollectorTile extends BaseInventoryTileEntity im
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
                 } else if (result.is(tile.production)) {
                     if (result.getCount() < 64) {
-                        tile.inventory.setStackInSlot(0, ItemStackUtil.grow(result, 1));
+                        tile.inventory.setStackInSlot(0, ItemStackUtils.grow(result, 1));
                     }
                 }
                 tile.progress = 0;

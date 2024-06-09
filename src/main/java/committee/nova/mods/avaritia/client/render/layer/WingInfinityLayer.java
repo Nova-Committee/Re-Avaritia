@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.model.WingModel;
-import committee.nova.mods.avaritia.util.ToolUtil;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -36,7 +36,7 @@ public class WingInfinityLayer extends RenderLayer<LivingEntity, HumanoidModel<L
 
         var loc = new ResourceLocation(Static.MOD_ID, "textures/models/armor/infinity_armor_wing.png");
 
-        if (ToolUtil.isInfiniteChest(livingEntity)) {
+        if (ToolUtils.isInfiniteChest(livingEntity)) {
             var model = new WingModel(WingModel.createBodyLayer().bakeRoot());
             if (!livingEntity.isInvisible()) {
                 VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderType.entityCutout(loc));

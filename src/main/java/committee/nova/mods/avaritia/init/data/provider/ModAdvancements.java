@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.init.registry.ModTags;
-import committee.nova.mods.avaritia.util.SingularityUtil;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.RequirementsStrategy;
@@ -108,7 +108,7 @@ public class ModAdvancements extends ForgeAdvancementProvider {
                     .requirements(RequirementsStrategy.OR)
                     .save(consumer, Static.MOD_ID + ":main/neutron_compressor");
             Advancement singularity = Advancement.Builder.advancement()
-                    .display(SingularityUtil.getItemForSingularity(ModSingularities.REDSTONE), Component.translatable("advancements.avaritia.singularity.title"), Component.translatable("advancements.avaritia.singularity.desc"), null, FrameType.GOAL, true, true, true)
+                    .display(SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE), Component.translatable("advancements.avaritia.singularity.title"), Component.translatable("advancements.avaritia.singularity.desc"), null, FrameType.GOAL, true, true, true)
                     .parent(neutron_compressor)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(ModTags.SINGULARITY).build()))
                     .requirements(RequirementsStrategy.OR)

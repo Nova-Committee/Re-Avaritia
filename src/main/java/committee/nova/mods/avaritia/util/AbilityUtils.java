@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.util;
 
-import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
+import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -31,7 +31,7 @@ import java.util.function.Predicate;
  * @Description:
  */
 
-public class AbilityUtil {
+public class AbilityUtils {
     public static void sweepAttack(Level level, LivingEntity livingEntity, LivingEntity victim) {
         if (livingEntity instanceof Player player){
             for(LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {
@@ -85,7 +85,7 @@ public class AbilityUtil {
                 continue;
             }
             ItemStack stack = player.getItemBySlot(slot);
-            if (stack.isEmpty() || !(stack.getItem() instanceof ArmorInfinityItem)) {
+            if (stack.isEmpty() || !(stack.getItem() instanceof InfinityArmorItem)) {
                 return false;
             }
         }

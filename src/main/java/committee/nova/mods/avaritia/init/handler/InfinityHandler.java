@@ -1,15 +1,15 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
+import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import committee.nova.mods.avaritia.common.net.TotemPacket;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.AbilityUtil;
-import committee.nova.mods.avaritia.util.ToolUtil;
-import committee.nova.mods.avaritia.util.lang.TextUtil;
+import committee.nova.mods.avaritia.util.AbilityUtils;
+import committee.nova.mods.avaritia.util.ToolUtils;
+import committee.nova.mods.avaritia.util.lang.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -70,7 +70,7 @@ public class InfinityHandler {
     }
 
     public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
-        if (ToolUtil.canUseTool(event.getState(), ToolUtil.materialsPick)) {
+        if (ToolUtils.canUseTool(event.getState(), ToolUtils.materialsPick)) {
             LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().level())).withLuck(event.getPlayer().level().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level().getBlockEntity(event.getPos()));
             List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
             for (ItemStack drop : drops) {
@@ -208,17 +208,17 @@ public class InfinityHandler {
         if (event.getItemStack().getItem() instanceof InfinitySwordItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
                 if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.infinity.desc")) || event.getToolTip().get(x).getString().equals(I18n.get("attribute.name.generic.attack_damage"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
+                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 }
             }
-        } else if (event.getItemStack().getItem() instanceof ArmorInfinityItem) {
+        } else if (event.getItemStack().getItem() instanceof InfinityArmorItem) {
             for (int x = 0; x < event.getToolTip().size(); x++) {
                 if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.armor.desc"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
+                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 } else if (event.getToolTip().get(x).getString().contains(I18n.get("tooltip.armor_toughness.desc"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtil.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
+                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
                     return;
                 }
 
@@ -230,7 +230,7 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            if (AbilityUtil.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
+            if (AbilityUtils.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }
@@ -244,7 +244,7 @@ public class InfinityHandler {
                     player.setHealth(player.getMaxHealth());
                     player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
-                    AbilityUtil.attackAOE(player, 8, 1000.0f, false);
+                    AbilityUtils.attackAOE(player, 8, 1000.0f, false);
                     player.displayClientMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
                 }else {
                     player.setHealth(10.0F);
@@ -268,7 +268,7 @@ public class InfinityHandler {
         if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().is(ModItems.infinity_sword.get()) && player.getMainHandItem().useOnRelease()) {
             event.setCanceled(true);
         }
-        if (AbilityUtil.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
+        if (AbilityUtils.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
     }
@@ -279,7 +279,7 @@ public class InfinityHandler {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        if (AbilityUtil.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
+        if (AbilityUtils.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
     }
@@ -322,7 +322,7 @@ public class InfinityHandler {
     public static void entityItemUnDeath(ItemEvent event) {
         ItemEntity entityItem = event.getEntity();
         Item item = entityItem.getItem().getItem();
-        if (item instanceof ArmorInfinityItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
+        if (item instanceof InfinityArmorItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
                 item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
                 item instanceof InfinitySwordItem) {
             entityItem.setInvulnerable(true);

@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ToolUtil;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -98,7 +98,7 @@ public class InfinityPickaxeItem extends PickaxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
-            ToolUtil.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtil.materialsPick);
+            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
         }
         return false;
     }

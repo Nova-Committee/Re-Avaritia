@@ -10,7 +10,7 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import committee.nova.mods.avaritia.util.SingularityUtil;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -84,7 +84,7 @@ public class JeiCompat implements IModPlugin {
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         ModItems.singularity.ifPresent(item -> {
             registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, (stack, context) -> {
-                var singularity = SingularityUtil.getSingularity(stack);
+                var singularity = SingularityUtils.getSingularity(stack);
                 return singularity != null ? singularity.getId().toString() : "";
             });
         });

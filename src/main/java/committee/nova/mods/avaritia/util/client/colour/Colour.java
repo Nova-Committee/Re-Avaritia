@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.util.client.colour;
 
 import committee.nova.mods.avaritia.util.java.Copyable;
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 
 import static java.lang.Math.max;
 
@@ -79,9 +79,9 @@ public abstract class Colour implements Copyable<Colour> {
     }
 
     public Colour multiplyC(double d) {
-        r = (byte) MathUtil.clip((r & 0xFF) * d, 0, 255);
-        g = (byte) MathUtil.clip((g & 0xFF) * d, 0, 255);
-        b = (byte) MathUtil.clip((b & 0xFF) * d, 0, 255);
+        r = (byte) MathUtils.clip((r & 0xFF) * d, 0, 255);
+        g = (byte) MathUtils.clip((g & 0xFF) * d, 0, 255);
+        b = (byte) MathUtils.clip((b & 0xFF) * d, 0, 255);
 
         return this;
     }

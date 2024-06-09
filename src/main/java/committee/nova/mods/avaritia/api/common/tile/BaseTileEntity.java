@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.common.tile;
 
-import committee.nova.mods.avaritia.util.TileEntityUtil;
+import committee.nova.mods.avaritia.util.TileEntityUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -47,13 +47,13 @@ public class BaseTileEntity extends BlockEntity {
 
     public void setChangedAndDispatch() {
         this.setChanged();
-        TileEntityUtil.dispatchToNearbyPlayers(this);
+        TileEntityUtils.dispatchToNearbyPlayers(this);
         this.isChanged = false;
     }
 
     public void dispatchIfChanged() {
         if (this.isChanged) {
-            TileEntityUtil.dispatchToNearbyPlayers(this);
+            TileEntityUtils.dispatchToNearbyPlayers(this);
             this.isChanged = false;
         }
     }

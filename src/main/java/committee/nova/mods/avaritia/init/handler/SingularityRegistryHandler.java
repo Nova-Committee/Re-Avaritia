@@ -10,7 +10,7 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
-import committee.nova.mods.avaritia.util.SingularityUtil;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -87,7 +87,7 @@ public class SingularityRegistryHandler {
         if (!dir.exists() && dir.mkdirs()) {
             Static.LOGGER.warn("Could not find default singularities,try to generate!");
             for (var singularity : ModSingularities.getDefaults()) {
-                var json = SingularityUtil.writeToJson(singularity);
+                var json = SingularityUtils.writeToJson(singularity);
                 FileWriter writer = null;
 
                 try {
@@ -161,7 +161,7 @@ public class SingularityRegistryHandler {
                 var name = file.getName().replace(".json", "");
                 json = JsonParser.parseReader(reader).getAsJsonObject();
 
-                singularity = SingularityUtil.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
+                singularity = SingularityUtils.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
 
                 reader.close();
             } catch (Exception e) {

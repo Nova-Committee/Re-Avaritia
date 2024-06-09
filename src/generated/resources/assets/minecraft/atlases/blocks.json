@@ -4,6 +4,11 @@
       "type": "minecraft:directory",
       "prefix": "misc/",
       "source": "misc"
+    },
+    {
+      "type": "minecraft:directory",
+      "prefix": "models/",
+      "source": "models"
     }
   ]
 }

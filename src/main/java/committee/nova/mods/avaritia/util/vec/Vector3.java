@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.util.vec;
 
 import committee.nova.mods.avaritia.util.java.Copyable;
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -116,7 +116,7 @@ public class Vector3 implements Copyable<Vector3> {
     }
 
     public BlockPos pos() {
-        return new BlockPos(MathUtil.floor(x), MathUtil.floor(y), MathUtil.floor(z));
+        return new BlockPos(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(z));
     }
 
     public CompoundTag writeToNBT(CompoundTag tag) {
@@ -251,16 +251,16 @@ public class Vector3 implements Copyable<Vector3> {
     }
 
     public Vector3 floor() {
-        x = MathUtil.floor(x);
-        y = MathUtil.floor(y);
-        z = MathUtil.floor(z);
+        x = MathUtils.floor(x);
+        y = MathUtils.floor(y);
+        z = MathUtils.floor(z);
         return this;
     }
 
     public Vector3 ceil() {
-        x = MathUtil.ceil(x);
-        y = MathUtil.ceil(y);
-        z = MathUtil.ceil(z);
+        x = MathUtils.ceil(x);
+        y = MathUtils.ceil(y);
+        z = MathUtils.ceil(z);
         return this;
     }
 
@@ -403,11 +403,11 @@ public class Vector3 implements Copyable<Vector3> {
         }
 
         double d = (px - x) / dx;
-        if (MathUtil.between(-1E-5, d, 1E-5)) {
+        if (MathUtils.between(-1E-5, d, 1E-5)) {
             return this;
         }
 
-        if (!MathUtil.between(0, d, 1)) {
+        if (!MathUtils.between(0, d, 1)) {
             return null;
         }
 
@@ -428,11 +428,11 @@ public class Vector3 implements Copyable<Vector3> {
         }
 
         double d = (py - y) / dy;
-        if (MathUtil.between(-1E-5, d, 1E-5)) {
+        if (MathUtils.between(-1E-5, d, 1E-5)) {
             return this;
         }
 
-        if (!MathUtil.between(0, d, 1)) {
+        if (!MathUtils.between(0, d, 1)) {
             return null;
         }
 
@@ -453,11 +453,11 @@ public class Vector3 implements Copyable<Vector3> {
         }
 
         double d = (pz - z) / dz;
-        if (MathUtil.between(-1E-5, d, 1E-5)) {
+        if (MathUtils.between(-1E-5, d, 1E-5)) {
             return this;
         }
 
-        if (!MathUtil.between(0, d, 1)) {
+        if (!MathUtils.between(0, d, 1)) {
             return null;
         }
 
@@ -529,7 +529,7 @@ public class Vector3 implements Copyable<Vector3> {
      * @return true if this is equal to v within +-1E-5
      */
     public boolean equalsT(Vector3 v) {
-        return MathUtil.between(x - 1E-5, v.x, x + 1E-5) && MathUtil.between(y - 1E-5, v.y, y + 1E-5) && MathUtil.between(z - 1E-5, v.z, z + 1E-5);
+        return MathUtils.between(x - 1E-5, v.x, x + 1E-5) && MathUtils.between(y - 1E-5, v.y, y + 1E-5) && MathUtils.between(z - 1E-5, v.z, z + 1E-5);
     }
 
     @Override

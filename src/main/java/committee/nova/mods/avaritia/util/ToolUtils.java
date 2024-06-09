@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
-import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
+import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Date: 2022/3/31 10:50
  * Version: 1.0
  */
-public class ToolUtil {
+public class ToolUtils {
     public static final Set<TagKey<Block>> materialsPick = Sets.newHashSet(
             BlockTags.MINEABLE_WITH_PICKAXE,
             Tags.Blocks.STONE, Tags.Blocks.STORAGE_BLOCKS,
@@ -67,7 +67,7 @@ public class ToolUtil {
         BlockHitResult traceResult = RayTracer.retrace(player, range);
         var world = player.level();
         var state = world.getBlockState(pos);
-        if (!ToolUtil.canUseTool(state, keySets)) {
+        if (!ToolUtils.canUseTool(state, keySets)) {
             return;
         }
 
@@ -80,7 +80,7 @@ public class ToolUtil {
         var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
         var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolUtil.breakBlocks(world, player, stack, pos, minOffset, maxOffset, keySets, false);
+        ToolUtils.breakBlocks(world, player, stack, pos, minOffset, maxOffset, keySets, false);
     }
 
 
@@ -120,7 +120,7 @@ public class ToolUtil {
     }
 
     public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
-        ItemStack itemStack = ItemStackUtil.mapEquals(drop, map);
+        ItemStack itemStack = ItemStackUtils.mapEquals(drop, map);
         if (!itemStack.isEmpty())
             map.put(itemStack, map.get(itemStack) + drop.getCount());
         else map.put(drop, drop.getCount());
@@ -165,7 +165,7 @@ public class ToolUtil {
         }
 
         //if material contains
-        if (!block.canHarvestBlock(state, world, pos, player) || !ToolUtil.canUseTool(state, validMaterials)) {
+        if (!block.canHarvestBlock(state, world, pos, player) || !ToolUtils.canUseTool(state, validMaterials)) {
             return;
         }
 
@@ -236,6 +236,6 @@ public class ToolUtil {
 
     public static boolean isInfiniteChest(LivingEntity player) {
         ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
-        return !stack.isEmpty() && stack.getItem() instanceof ArmorInfinityItem;
+        return !stack.isEmpty() && stack.getItem() instanceof InfinityArmorItem;
     }
 }

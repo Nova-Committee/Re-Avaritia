@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.util.vec;
 
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -305,7 +305,7 @@ public class Rotation extends Transformation {
 
     @Override
     public boolean isRedundant() {
-        return MathUtil.between(-1E-5, angle, 1E-5);
+        return MathUtils.between(-1E-5, angle, 1E-5);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.util.vec.uv;
 
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -48,7 +48,7 @@ public class UVRotation extends UVTransformation {
 
     @Override
     public boolean isRedundant() {
-        return MathUtil.between(-1E-5, angle, 1E-5);
+        return MathUtils.between(-1E-5, angle, 1E-5);
     }
 
     @Override

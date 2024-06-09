@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.util.client.colour;
 
 import committee.nova.mods.avaritia.util.client.TextureUtils;
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.image.BufferedImage;
@@ -29,7 +29,7 @@ public class CustomGradient {
     }
 
     public int getColourI(double position) {
-        int off = (int) MathUtil.clip(gradient.length * position, 0, gradient.length - 1);
+        int off = (int) MathUtils.clip(gradient.length * position, 0, gradient.length - 1);
         return gradient[off];
     }
 }

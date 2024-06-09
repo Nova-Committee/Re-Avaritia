@@ -71,12 +71,11 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
-        float scale = 1.0f;
-        if (transformType != ItemDisplayContext.GUI) {
-            yaw = (float)((double)(mc.player.getYRot() * 2.0F) * 3.141592653589793D / 360.0D);
-            pitch = -((float)((double)(mc.player.getXRot() * 2.0F) * 3.141592653589793D / 360.0D));
-        } else {
-            scale = 25.0F;
+        float scale = 25.0f;
+        if (!AvaritiaShaders.inventoryRender) {
+            yaw = (float)(mc.player.getYRot() * 2.0f * 3.141592653589793 / 360.0);
+            pitch = -(float)(mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0);
+            scale = 1.0f;
         }
         if (AvaritiaShaders.cosmicOpacity != null) {
             AvaritiaShaders.cosmicOpacity.set(1.0F);

@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
-import committee.nova.mods.avaritia.util.ItemStackUtil;
+import committee.nova.mods.avaritia.util.ItemStackUtils;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -72,7 +72,7 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
                 }
 
                 if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount()) {
-                    if (ItemStackUtil.areStacksEqual(input, tile.materialStack)) {
+                    if (ItemStackUtils.areStacksEqual(input, tile.materialStack)) {
                         int consumeAmount = input.getCount();
 
                         consumeAmount = Math.min(consumeAmount, tile.recipe.getInputCount() - tile.materialCount);
@@ -94,7 +94,7 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
                     if (tile.progress >= tile.recipe.getTimeRequire()) {
                         var result = tile.recipe.assemble(tile.inventory);
 
-                        if (ItemStackUtil.canCombineStacks(result, output)) {
+                        if (ItemStackUtils.canCombineStacks(result, output)) {
                             tile.updateResult(result);
                             tile.progress = 0;
                             tile.materialCount -= tile.recipe.getInputCount();
@@ -110,10 +110,10 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
             }
 
             if (tile.ejecting) {
-                if (tile.materialCount > 0 && !tile.materialStack.isEmpty() && (output.isEmpty() || ItemStackUtil.areStacksEqual(tile.materialStack, output))) {
+                if (tile.materialCount > 0 && !tile.materialStack.isEmpty() && (output.isEmpty() || ItemStackUtils.areStacksEqual(tile.materialStack, output))) {
                     int addCount = Math.min(tile.materialCount, tile.materialStack.getMaxStackSize() - output.getCount());
                     if (addCount > 0) {
-                        var toAdd = ItemStackUtil.withSize(tile.materialStack, addCount, false);
+                        var toAdd = ItemStackUtils.withSize(tile.materialStack, addCount, false);
 
                         tile.updateResult(toAdd);
                         tile.materialCount -= addCount;
@@ -225,7 +225,7 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
         if (result.isEmpty()) {
             this.inventory.setStackInSlot(0, stack);
         } else {
-            this.inventory.setStackInSlot(0, ItemStackUtil.grow(result, stack.getCount()));
+            this.inventory.setStackInSlot(0, ItemStackUtils.grow(result, stack.getCount()));
         }
     }
 }

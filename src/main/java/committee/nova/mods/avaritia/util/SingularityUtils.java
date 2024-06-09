@@ -22,7 +22,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
  * Date: 2022/4/2 12:39
  * Version: 1.0
  */
-public class SingularityUtil {
+public class SingularityUtils {
     public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
         if (!CraftingHelper.processConditions(json, "conditions", context)) {
             Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
@@ -121,7 +121,7 @@ public class SingularityUtil {
     }
 
     public static Singularity getSingularity(ItemStack stack) {
-        var id = NBTUtil.getString(stack, "Id");
+        var id = NBTUtils.getString(stack, "Id");
         if (!id.isEmpty()) {
             return SingularityRegistryHandler.getInstance().getSingularityById(ResourceLocation.tryParse(id));
         }

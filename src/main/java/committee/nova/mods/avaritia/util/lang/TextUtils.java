@@ -11,7 +11,7 @@ import static net.minecraft.ChatFormatting.*;
  * Date: 2022/4/21 15:33
  * Version: 1.0
  */
-public class TextUtil {
+public class TextUtils {
 
     private static final ChatFormatting[] fabulousness = new ChatFormatting[]{RED, GOLD, YELLOW, GREEN, AQUA, BLUE, LIGHT_PURPLE};
     private static final ChatFormatting[] sanic = new ChatFormatting[]{BLUE, BLUE, BLUE, BLUE, WHITE, BLUE, WHITE, WHITE, BLUE, WHITE, WHITE, BLUE, RED, WHITE, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY, GRAY};

@@ -13,8 +13,8 @@ import java.util.Set;
  * Date: 2022/4/2 14:18
  * Version: 1.0
  */
-public class ItemStackUtil {
-    public ItemStackUtil() {
+public class ItemStackUtils {
+    public ItemStackUtils() {
     }
 
     public static ItemStack mapEquals(ItemStack stack, Map<ItemStack, Integer> map) {
@@ -74,8 +74,8 @@ public class ItemStackUtil {
         } else if (stack1.hasTag() && !stack2.hasTag()) {
             return false;
         } else {
-            Set<String> stack1Keys = NBTUtil.getTagCompound(stack1).getAllKeys();
-            Set<String> stack2Keys = NBTUtil.getTagCompound(stack2).getAllKeys();
+            Set<String> stack1Keys = NBTUtils.getTagCompound(stack1).getAllKeys();
+            Set<String> stack2Keys = NBTUtils.getTagCompound(stack2).getAllKeys();
             Iterator<String> iterator = stack1Keys.iterator();
 
             String key;
@@ -88,7 +88,7 @@ public class ItemStackUtil {
                 if (!stack2Keys.contains(key)) {
                     return false;
                 }
-            } while (NbtUtils.compareNbt(NBTUtil.getTag(stack1, key), NBTUtil.getTag(stack2, key), true));
+            } while (NbtUtils.compareNbt(NBTUtils.getTag(stack1, key), NBTUtils.getTag(stack2, key), true));
 
             return false;
         }

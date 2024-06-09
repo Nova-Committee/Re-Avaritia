@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
  * @description
  * @date 2024/3/28 12:58
  */
-public class PlayerUtil {
+public class PlayerUtils {
     public static boolean isPlayingMode(Player player) {
         return !player.isCreative() && !player.isSpectator();
     }

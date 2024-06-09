@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
-import committee.nova.mods.avaritia.util.math.MathUtil;
+import committee.nova.mods.avaritia.util.math.MathUtils;
 import committee.nova.mods.avaritia.util.vec.Vector3;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -131,7 +131,7 @@ public class TransformUtils {
     public static Transformation create(Vector3f transform, Vector3f rotation, Vector3f scale) {
         return new Transformation(
                 transform,
-                new Quaternionf().rotationXYZ((float) (rotation.x() * MathUtil.torad), (float) (rotation.y() * MathUtil.torad), (float) (rotation.z() * MathUtil.torad)),
+                new Quaternionf().rotationXYZ((float) (rotation.x() * MathUtils.torad), (float) (rotation.y() * MathUtils.torad), (float) (rotation.z() * MathUtils.torad)),
                 scale,
                 null
         );

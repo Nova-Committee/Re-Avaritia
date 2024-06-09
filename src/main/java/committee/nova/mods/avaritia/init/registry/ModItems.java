@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.item.BaseItem;
-import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
+import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
@@ -39,10 +39,10 @@ public class ModItems {
     public static RegistryObject<Item> skull_sword = item("skull_fire_sword", SkullsSwordItem::new);
     public static RegistryObject<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     //armors
-    public static RegistryObject<Item> infinity_helmet = item("infinity_helmet", () -> new ArmorInfinityItem(ArmorItem.Type.HELMET));
-    public static RegistryObject<Item> infinity_chestplate = item("infinity_chestplate", () -> new ArmorInfinityItem(ArmorItem.Type.CHESTPLATE));
-    public static RegistryObject<Item> infinity_pants = item("infinity_pants", () -> new ArmorInfinityItem(ArmorItem.Type.LEGGINGS));
-    public static RegistryObject<Item> infinity_boots = item("infinity_boots", () -> new ArmorInfinityItem(ArmorItem.Type.BOOTS));
+    public static RegistryObject<Item> infinity_helmet = item("infinity_helmet", () -> new InfinityArmorItem(ArmorItem.Type.HELMET));
+    public static RegistryObject<Item> infinity_chestplate = item("infinity_chestplate", () -> new InfinityArmorItem(ArmorItem.Type.CHESTPLATE));
+    public static RegistryObject<Item> infinity_pants = item("infinity_pants", () -> new InfinityArmorItem(ArmorItem.Type.LEGGINGS));
+    public static RegistryObject<Item> infinity_boots = item("infinity_boots", () -> new InfinityArmorItem(ArmorItem.Type.BOOTS));
     public static RegistryObject<Item> ultimate_stew = item("ultimate_stew", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.ultimate_stew)));
     public static RegistryObject<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new Item(new Item.Properties().rarity(Rarity.EPIC).food(ModFoods.cosmic_meatballs)));
     //resource

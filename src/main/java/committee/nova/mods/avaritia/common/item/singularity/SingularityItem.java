@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import committee.nova.mods.avaritia.util.SingularityUtil;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,7 @@ public class SingularityItem extends Item implements IColored {
     }
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
-        var singularity = SingularityUtil.getSingularity(stack);
+        var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity == null) {
             return Localizable.of(this.getDescriptionId(stack)).args("NULL").build();
@@ -47,7 +47,7 @@ public class SingularityItem extends Item implements IColored {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(@NotNull ItemStack stack, Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
-        var singularity = SingularityUtil.getSingularity(stack);
+        var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
             var modid = singularity.getId().getNamespace();
@@ -62,7 +62,7 @@ public class SingularityItem extends Item implements IColored {
 
     @Override
     public int getColor(int i, ItemStack stack) {
-        var singularity = SingularityUtil.getSingularity(stack);
+        var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity == null)
             return -1;

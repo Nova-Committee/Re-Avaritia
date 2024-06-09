@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
  * Date: 2022/4/2 12:40
  * Version: 1.0
  */
-public class NBTUtil {
+public class NBTUtils {
     public static String getString(ItemStack stack, String key) {
         return stack.hasTag() ? getTagCompound(stack).getString(key) : "";
     }

@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.ToolUtil;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -71,7 +71,7 @@ public class InfinityAxeItem extends AxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (player.isCrouching() && !player.level().isClientSide) {
-            ToolUtil.breakRangeBlocks(player, stack, pos, 13, ToolUtil.materialsAxe);
+            ToolUtils.breakRangeBlocks(player, stack, pos, 13, ToolUtils.materialsAxe);
         }
         return false;
     }

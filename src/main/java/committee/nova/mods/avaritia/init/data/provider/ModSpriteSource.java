@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
-import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SpriteSourceProvider;
@@ -24,5 +23,6 @@ public class ModSpriteSource extends SpriteSourceProvider {
     @Override
     protected void addSources() {
         atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new DirectoryLister("misc", "misc/"));
+        atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new DirectoryLister("models", "models/"));
     }
 }

@@ -2,20 +2,14 @@ package committee.nova.mods.avaritia.init.handler;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import committee.nova.mods.avaritia.common.item.ArmorInfinityItem;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.AbilityUtil;
-import committee.nova.mods.avaritia.util.PlayerUtil;
+import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
+import committee.nova.mods.avaritia.util.PlayerUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -25,7 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
-import static committee.nova.mods.avaritia.util.AbilityUtil.isPlayerWearing;
+import static committee.nova.mods.avaritia.util.AbilityUtils.isPlayerWearing;
 import static net.minecraft.world.entity.EquipmentSlot.*;
 
 /**
@@ -48,10 +42,10 @@ public class AbilityHandler {
         if (event.getEntity() instanceof Player player) {
             String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
 
-            boolean hasHelmet = isPlayerWearing(event.getEntity(), HEAD, item -> item instanceof ArmorInfinityItem);
-            boolean hasChest = isPlayerWearing(event.getEntity(), CHEST, item -> item instanceof ArmorInfinityItem);
-            boolean hasLeggings = isPlayerWearing(event.getEntity(), LEGS, item -> item instanceof ArmorInfinityItem);
-            boolean hasBoots = isPlayerWearing(event.getEntity(), FEET, item -> item instanceof ArmorInfinityItem);
+            boolean hasHelmet = isPlayerWearing(event.getEntity(), HEAD, item -> item instanceof InfinityArmorItem);
+            boolean hasChest = isPlayerWearing(event.getEntity(), CHEST, item -> item instanceof InfinityArmorItem);
+            boolean hasLeggings = isPlayerWearing(event.getEntity(), LEGS, item -> item instanceof InfinityArmorItem);
+            boolean hasBoots = isPlayerWearing(event.getEntity(), FEET, item -> item instanceof InfinityArmorItem);
 
 
             handleHelmetStateChange(player, key, hasHelmet);
@@ -63,7 +57,7 @@ public class AbilityHandler {
     }
 
     private static void handleChestStateChange(Player player, String key, boolean hasChest) {
-        boolean isFlyingGameMode = !PlayerUtil.isPlayingMode(player);
+        boolean isFlyingGameMode = !PlayerUtils.isPlayingMode(player);
         FlightInfo flightInfo = entitiesWithFlight.computeIfAbsent(key, uuid -> new FlightInfo());
         if (isFlyingGameMode || hasChest) {
             if (!flightInfo.hadFlightItem) {

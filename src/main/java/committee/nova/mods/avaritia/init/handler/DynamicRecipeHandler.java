@@ -5,9 +5,8 @@ import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.RecipeUtil;
-import committee.nova.mods.avaritia.util.SingularityUtil;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,7 +28,7 @@ public class DynamicRecipeHandler {
                 .stream()
                 .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                 .limit(81)
-                .map(SingularityUtil::getItemForSingularity)
+                .map(SingularityUtils::getItemForSingularity)
                 .map(Ingredient::of)
                 .forEach(infinity_catalyst.inputs::add);
         event.register(new InfinityCatalystCraftRecipe(Static.rl("infinity_catalyst"), infinity_catalyst.inputs));
@@ -54,7 +53,7 @@ public class DynamicRecipeHandler {
 
         var id = singularity.getId();
         var recipeId = new ResourceLocation(Static.MOD_ID, id.getPath() + "_singularity");
-        var output = SingularityUtil.getItemForSingularity(singularity);
+        var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();
 

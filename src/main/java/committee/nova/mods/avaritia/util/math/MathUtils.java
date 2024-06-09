@@ -10,7 +10,7 @@ import net.minecraft.core.Vec3i;
  * Date: 2022/5/15 9:32
  * Version: 1.0
  */
-public class MathUtil {
+public class MathUtils {
     public static final double phi = 1.618033988749894;
     public static final double pi = Math.PI;
     public static final double todeg = 57.29577951308232;
