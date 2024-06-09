@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -43,50 +44,13 @@ public class HeavenArrowEntity extends Arrow {
         this.shooter = shooter;
     }
 
-    @Override
-    protected void onHitEntity(@NotNull EntityHitResult result) {
-        super.onHitEntity(result);
-        Entity entity = result.getEntity();
-        var randy = level().random;
-        
-        if (entity instanceof LivingEntity living) {
-            var pos = living.getOnPos();
-            barrage(randy, pos);
-            this.remove(RemovalReason.KILLED);
-        }
-    }
-
-    private void barrage(RandomSource randy, BlockPos pos) {
-        for (int i = 0; i < 30; i++) {//30支箭
-            double angle = randy.nextDouble() * 2 * Math.PI;
-            double dist = randy.nextGaussian() * 0.5;
-
-            double x = Math.sin(angle) * dist + pos.getX();
-            double z = Math.cos(angle) * dist + pos.getZ();
-            double y = pos.getY() + 25.0;//高度25
-
-            double dangle = randy.nextDouble() * 2 * Math.PI;
-            double ddist = randy.nextDouble() * 0.35;
-            double dx = Math.sin(dangle) * ddist;
-            double dz = Math.cos(dangle) * ddist;
-
-            HeavenSubArrowEntity subArrow = HeavenSubArrowEntity.create(level(), x, y, z);
-            if (shooter != null) subArrow.setOwner(shooter);
-            subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
-            subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
-            subArrow.setCritArrow(true);//子箭必定暴击
-            subArrow.pickup = pickup;
-
-            level().addFreshEntity(subArrow);
-        }
-    }
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         var pos = result.getBlockPos();
         var randy = level().random;
-        barrage(randy, pos);
+        ToolUtils.arrowBarrage(shooter, level(), piercedAndKilledEntities, pickup, randy, pos);
         this.remove(RemovalReason.KILLED);
     }
 

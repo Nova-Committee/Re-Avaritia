@@ -1,15 +1,17 @@
 package committee.nova.mods.avaritia.common.entity.arrow;
 
-import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
-import net.minecraft.nbt.CompoundTag;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,27 +47,25 @@ public class HeavenSubArrowEntity extends Arrow {
         return new ItemStack(Items.ARROW);
     }
 
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setBaseDamage(compound.contains("damage") ? compound.getDouble("damage") : ModConfig.subArrowDamage.get());
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putDouble("damage", ModConfig.subArrowDamage.get());
-    }
-
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
-
-
     @Override
     protected float getWaterInertia() {
         return 0.99F;
+    }
+
+    @Override
+    protected void onHitEntity(@NotNull EntityHitResult result) {
+        super.onHitEntity(result);
+        Entity entity = result.getEntity();
+        var randy = level().random;
+
+        if (entity instanceof LivingEntity living) {
+            var pos = living.getOnPos();
+            ToolUtils.arrowBarrage(getOwner(), level(), piercedAndKilledEntities, pickup, randy, pos);
+            this.remove(RemovalReason.KILLED);
+        }
     }
 }

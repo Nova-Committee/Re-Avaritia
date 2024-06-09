@@ -2,8 +2,10 @@ package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
+import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.math.RayTracer;
@@ -14,10 +16,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -237,5 +242,32 @@ public class ToolUtils {
     public static boolean isInfiniteChest(LivingEntity player) {
         ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
         return !stack.isEmpty() && stack.getItem() instanceof InfinityArmorItem;
+    }
+
+
+    public static void arrowBarrage(Entity shooter, Level level, List<Entity> piercedAndKilledEntities, AbstractArrow.Pickup pickup, RandomSource randy, BlockPos pos) {
+        for (int i = 0; i < 30; i++) {//30支箭
+            double angle = randy.nextDouble() * 2 * Math.PI;
+            double dist = randy.nextGaussian() * 0.5;
+
+            double x = Math.sin(angle) * dist + pos.getX();
+            double z = Math.cos(angle) * dist + pos.getZ();
+            double y = pos.getY() + 25.0;//高度25
+
+            double dangle = randy.nextDouble() * 2 * Math.PI;
+            double ddist = randy.nextDouble() * 0.35;
+            double dx = Math.sin(dangle) * ddist;
+            double dz = Math.cos(dangle) * ddist;
+
+            HeavenSubArrowEntity subArrow = HeavenSubArrowEntity.create(level, x, y, z);
+            if (shooter != null) subArrow.setOwner(shooter);
+            subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
+            subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
+            subArrow.setCritArrow(true);//子箭必定暴击
+            subArrow.setBaseDamage(ModConfig.subArrowDamage.get());
+            subArrow.pickup = pickup;
+
+            level.addFreshEntity(subArrow);
+        }
     }
 }
