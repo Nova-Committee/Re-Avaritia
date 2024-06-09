@@ -37,6 +37,11 @@ public class InfinityPickaxeItem extends PickaxeItem {
     }
 
     @Override
+    public boolean isFoil(@NotNull ItemStack pStack) {
+        return false;
+    }
+
+    @Override
     public boolean isDamageable(ItemStack stack) {
         return false;
     }

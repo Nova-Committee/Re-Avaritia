@@ -31,6 +31,10 @@ public class SkullsSwordItem extends SwordItem {
                 .fireResistant());
 
     }
+    @Override
+    public boolean isFoil(@NotNull ItemStack pStack) {
+        return false;
+    }
 
     @Override
     public @NotNull Rarity getRarity(@NotNull ItemStack stack) {

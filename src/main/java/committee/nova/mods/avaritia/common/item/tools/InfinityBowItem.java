@@ -45,7 +45,10 @@ public class InfinityBowItem extends BowItem {
                 .fireResistant()
         );
     }
-
+    @Override
+    public boolean isFoil(@NotNull ItemStack pStack) {
+        return false;
+    }
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;

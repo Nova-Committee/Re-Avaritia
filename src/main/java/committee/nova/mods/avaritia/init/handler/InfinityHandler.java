@@ -69,18 +69,18 @@ public class InfinityHandler {
         return state.is(Tags.Blocks.COBBLESTONE) || state.is(Tags.Blocks.STONE) || state.is(Tags.Blocks.NETHERRACK);
     }
 
-    public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
-        if (ToolUtils.canUseTool(event.getState(), ToolUtils.materialsPick)) {
-            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().level())).withLuck(event.getPlayer().level().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level().getBlockEntity(event.getPos()));
-            List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
-            for (ItemStack drop : drops) {
-                if (!drop.is(event.getState().getBlock().asItem()) && !(drop.getItem() instanceof BlockItem)) {
-                    drop.setCount(Math.min(drop.getCount() * multiplier, drop.getMaxStackSize()));
-                }
-            }
-
-        }
-    }
+//    public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
+//        if (ToolUtils.canUseTool(event.getState(), ToolUtils.materialsPick)) {
+//            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().level())).withLuck(event.getPlayer().level().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level().getBlockEntity(event.getPos()));
+//            List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
+//            for (ItemStack drop : drops) {
+//                if (!drop.is(event.getState().getBlock().asItem()) && !(drop.getItem() instanceof BlockItem)) {
+//                    drop.setCount(Math.min(drop.getCount() * multiplier, drop.getMaxStackSize()));
+//                }
+//            }
+//
+//        }
+//    }
 
     //特殊效果（附魔）
     @SubscribeEvent
@@ -133,18 +133,18 @@ public class InfinityHandler {
 
     }
 
-    //给稿子添加时运
-    @SubscribeEvent
-    public static void handleExtraLuck(BlockEvent.BreakEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
-        ItemStack mainHand = event.getPlayer().getMainHandItem();
-
-        if (!mainHand.isEmpty() && mainHand.is(ModItems.infinity_pickaxe.get())) {
-            applyLuck(event, 4);
-        }
-    }
+//    //给稿子添加时运
+//    @SubscribeEvent
+//    public static void handleExtraLuck(BlockEvent.BreakEvent event) {
+//        if (event.getPlayer() == null) {
+//            return;
+//        }
+//        ItemStack mainHand = event.getPlayer().getMainHandItem();
+//
+//        if (!mainHand.isEmpty() && mainHand.is(ModItems.infinity_pickaxe.get())) {
+//            applyLuck(event, 4);
+//        }
+//    }
 
     @SubscribeEvent
     public static void digging(PlayerEvent.BreakSpeed event) {
