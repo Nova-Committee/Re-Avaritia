@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.api.client.model.bakedmodels;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.util.client.TransformUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -45,7 +46,7 @@ public abstract class WrappedItemModel implements BakedModel {
 
     private final ItemOverrides overrideList = new ItemOverrides() {
         @Override
-        public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
+        public BakedModel resolve(@NotNull BakedModel originalModel, @NotNull ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
             WrappedItemModel.this.entity = entity;
             WrappedItemModel.this.world = world == null ? entity == null ? null : (ClientLevel) entity.level() : null;
             return originalModel;
@@ -58,23 +59,38 @@ public abstract class WrappedItemModel implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand) {
+    public @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, @NotNull RandomSource rand) {
         return Collections.emptyList();
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon() {
+    public @NotNull TextureAtlasSprite getParticleIcon() {
         return wrapped.getParticleIcon();
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return wrapped.getParticleIcon(data);
     }
 
     @Override
-    public ItemOverrides getOverrides() {
+    public @NotNull ItemOverrides getOverrides() {
         return overrideList;
+    }
+
+    @Override
+    public boolean useAmbientOcclusion() {
+        return this.wrapped.useAmbientOcclusion();
+    }
+
+    @Override
+    public boolean isGui3d() {
+        return this.wrapped.isGui3d();
+    }
+
+    @Override
+    public boolean usesBlockLight() {
+        return this.wrapped.usesBlockLight();
     }
 
     /**

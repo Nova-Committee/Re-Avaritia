@@ -15,6 +15,8 @@ import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -46,29 +48,18 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
     public static class CosmicGeometry implements IUnbakedGeometry<CosmicGeometry>{
         private final BlockModel baseModel;
         private final String maskTexture;
+        Material maskMaterial;
 
-        public CosmicGeometry(BlockModel baseModel, String maskTexture) {
+        public CosmicGeometry(final BlockModel baseModel, final String maskTexture) {
             this.baseModel = baseModel;
             this.maskTexture = maskTexture;
         }
 
         @Override
         public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-            Material maskMaterial = context.getMaterial(maskTexture);
-            ImmutableList.Builder<Material> builder = ImmutableList.builder();
-            for (int i = 0; context.hasMaterial("layer" + i); i++)
-            {
-                builder.add(context.getMaterial("layer" + i));
-            }
-            builder.add(maskMaterial);
-            ImmutableList<Material> textures = builder.build();
-            TextureAtlasSprite particle = spriteGetter.apply(
-                    context.hasMaterial("particle") ? context.getMaterial("particle") : textures.get(0)
-            );
-
-
             BakedModel baseBakedModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, true);
-            return new CosmicBakeModel(baseBakedModel, particle);
+            this.maskMaterial = context.getMaterial(this.maskTexture);
+            return new CosmicBakeModel(baseBakedModel, spriteGetter.apply(this.maskMaterial));
         }
 
         @Override

@@ -2,6 +2,11 @@
   "parent": "minecraft:item/handheld",
   "textures": {
     "layer0": "avaritia:item/tools/infinity_sword/layer_0",
-    "layer1": "avaritia:item/tools/infinity_sword/layer_1"
+    "layer1": "avaritia:item/tools/infinity_sword/layer_1",
+    "mask": "avaritia:item/tools/infinity_sword/mask"
+  },
+  "loader": "avaritia:cosmic",
+  "cosmic": {
+    "mask": "#mask"
   }
 }

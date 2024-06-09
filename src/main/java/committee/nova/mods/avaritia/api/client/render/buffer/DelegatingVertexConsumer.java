@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.buffer;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A simple {@link VertexConsumer} implementation which forwards to a delegate.
@@ -24,37 +25,37 @@ public abstract class DelegatingVertexConsumer implements ISpriteAwareVertexCons
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public @NotNull VertexConsumer vertex(double x, double y, double z) {
         delegate.vertex(x, y, z);
         return this;
     }
 
     @Override
-    public VertexConsumer color(int r, int g, int b, int a) {
+    public @NotNull VertexConsumer color(int r, int g, int b, int a) {
         delegate.color(r, g, b, a);
         return this;
     }
 
     @Override
-    public VertexConsumer uv(float u, float v) {
+    public @NotNull VertexConsumer uv(float u, float v) {
         delegate.uv(u, v);
         return this;
     }
 
     @Override
-    public VertexConsumer overlayCoords(int u, int v) {
+    public @NotNull VertexConsumer overlayCoords(int u, int v) {
         delegate.overlayCoords(u, v);
         return this;
     }
 
     @Override
-    public VertexConsumer uv2(int u, int v) {
+    public @NotNull VertexConsumer uv2(int u, int v) {
         delegate.uv2(u, v);
         return this;
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z) {
+    public @NotNull VertexConsumer normal(float x, float y, float z) {
         delegate.normal(x, y, z);
         return this;
     }

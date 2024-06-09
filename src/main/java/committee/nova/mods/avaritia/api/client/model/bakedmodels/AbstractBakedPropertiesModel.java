@@ -120,7 +120,7 @@ public abstract class AbstractBakedPropertiesModel implements PerspectiveModel, 
     }
 
     @Override
-    public @NotNull BakedModel applyTransform(ItemDisplayContext context, PoseStack pStack, boolean leftFlip) {
+    public @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext context, @NotNull PoseStack pStack, boolean leftFlip) {
         return PerspectiveModel.super.applyTransform(context, pStack, leftFlip);
     }
 }

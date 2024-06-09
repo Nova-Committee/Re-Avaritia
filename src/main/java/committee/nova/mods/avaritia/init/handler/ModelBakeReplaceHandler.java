@@ -36,7 +36,7 @@ public class ModelBakeReplaceHandler {
             throw new RuntimeException("Tried to replaceObsidian Hidden twice");
         } else {
             InfinitySwordBakeModel obsidianWrenchBakedModel = new InfinitySwordBakeModel(existingModel);
-            event.getModels().replace(location, obsidianWrenchBakedModel);
+            //event.getModels().replace(location, obsidianWrenchBakedModel);
         }
     }
 }

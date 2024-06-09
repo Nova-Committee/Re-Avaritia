@@ -2,7 +2,7 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "avaritia:item/resource/infinity_ingot",
-    "halo": "avaritia:item/misc/halo"
+    "halo": "avaritia:misc/halo"
   },
   "loader": "avaritia:halo",
   "halo": {

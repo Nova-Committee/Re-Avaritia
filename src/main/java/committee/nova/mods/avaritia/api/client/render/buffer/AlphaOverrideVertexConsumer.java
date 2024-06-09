@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.api.client.render.buffer;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by covers1624 on 29/3/22.
@@ -19,7 +20,7 @@ public class AlphaOverrideVertexConsumer extends DelegatingVertexConsumer {
     }
 
     @Override
-    public VertexConsumer color(int r, int g, int b, int a) {
+    public @NotNull VertexConsumer color(int r, int g, int b, int a) {
         return super.color(r, g, b, alpha);
     }
 }

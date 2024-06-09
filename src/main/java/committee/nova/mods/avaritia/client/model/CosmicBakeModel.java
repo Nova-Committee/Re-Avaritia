@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.api.client.model.ItemQuadBakery;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.item.IItemRenderer;
@@ -18,7 +19,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +39,6 @@ import java.util.Map;
 
 public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
     private final List<BakedQuad> maskQuads;
-    public static final SimpleModelState IDENTITY = new SimpleModelState(Transformation.identity());
     private final ItemOverrides overrideList = new ItemOverrides() {
         public BakedModel resolve(@NotNull BakedModel originalModel, @NotNull ItemStack stack, @javax.annotation.Nullable ClientLevel world, @javax.annotation.Nullable LivingEntity entity, int seed) {
             CosmicBakeModel.this.entity = entity;
@@ -47,12 +46,11 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
             return CosmicBakeModel.this.wrapped.getOverrides().resolve(originalModel, stack, world, entity, seed);
         }
     };
-    private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-    private static final FaceBakery FACE_BAKERY = new FaceBakery();
 
-    public CosmicBakeModel(BakedModel wrapped, TextureAtlasSprite maskSprite) {
+
+    public CosmicBakeModel(final BakedModel wrapped, final TextureAtlasSprite maskSprite) {
         super(wrapped);
-        this.maskQuads = bakeItem(maskSprite);
+        this.maskQuads = ItemQuadBakery.bakeItem(maskSprite);
     }
 
     @Override
@@ -81,14 +79,16 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
             scale = 25.0F;
         }
         if (AvaritiaShaders.cosmicOpacity != null) {
-            AvaritiaShaders.cosmicOpacity.glUniform1f(1.0F);
+            AvaritiaShaders.cosmicOpacity.set(1.0F);
         }
-        AvaritiaShaders.cosmicYaw.glUniform1f(yaw);
-        AvaritiaShaders.cosmicPitch.glUniform1f(pitch);
-        AvaritiaShaders.cosmicExternalScale.glUniform1f(scale);
+        AvaritiaShaders.cosmicYaw.set(yaw);
+        AvaritiaShaders.cosmicPitch.set(pitch);
+        AvaritiaShaders.cosmicExternalScale.set(scale);
         final ItemRenderer itemRenderer = mc.getItemRenderer();
         final VertexConsumer cons = source.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
-        itemRenderer.renderQuadList(pStack, cons, maskQuads, stack, light, overlay);
+        //this.renderWrapped(stack, pStack, source, light, overlay, true, vertexConsumer -> cons);
+        itemRenderer.renderQuadList(pStack, cons, this.maskQuads, stack, light, overlay);
+        //itemRenderer.renderModelLists(wrapped, stack, light, overlay, pStack, cons);
     }
 
 
@@ -98,44 +98,8 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
     }
 
     @Override
-    public boolean useAmbientOcclusion() {
-        return this.wrapped.useAmbientOcclusion();
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return this.wrapped.isGui3d();
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return this.wrapped.usesBlockLight();
-    }
-
-    @Override
     public @NotNull ItemOverrides getOverrides() {
         return this.overrideList;
     }
 
-    private static List<BakedQuad> bakeItem(TextureAtlasSprite... sprites) {
-        return bakeItem(Transformation.identity(), sprites);
-    }
-
-    private static List<BakedQuad> bakeItem(Transformation state, TextureAtlasSprite... sprites) {
-        List<BakedQuad> quads = new LinkedList<>();
-
-        for(int i = 0; i < sprites.length; ++i) {
-            TextureAtlasSprite sprite = sprites[i];
-            List<BlockElement> unbaked = ITEM_MODEL_GENERATOR.processFrames(i, "layer" + i, sprite.contents());
-
-            for (BlockElement element : unbaked) {
-
-                for (Map.Entry<Direction, BlockElementFace> directionBlockElementFaceEntry : element.faces.entrySet()) {
-                    quads.add(FACE_BAKERY.bakeQuad(element.from, element.to, directionBlockElementFaceEntry.getValue(), sprite, directionBlockElementFaceEntry.getKey(), IDENTITY, element.rotation, element.shade, Static.rl( "dynamic")));
-                }
-            }
-        }
-
-        return quads;
-    }
 }

@@ -14,6 +14,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,9 +35,9 @@ public interface IItemRenderer extends PerspectiveModel {
 
     //Useless methods for IItemRenderer.
     //@formatter:off
-    @Override default List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand) { return Collections.emptyList(); }
+    @Override default @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand) { return Collections.emptyList(); }
     @Override default boolean isCustomRenderer() { return true; }
-    @Override default TextureAtlasSprite getParticleIcon() { return TextureUtils.getMissingSprite(); }
+    @Override default @NotNull TextureAtlasSprite getParticleIcon() { return TextureUtils.getMissingSprite(); }
     @Override default ItemOverrides getOverrides() { return ItemOverrides.EMPTY; }
     //@formatter:on
 }

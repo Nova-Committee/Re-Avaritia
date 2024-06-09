@@ -4,11 +4,13 @@ import com.google.gson.*;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.Quad;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -18,6 +20,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.RenderTypeGroup;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
@@ -88,10 +91,19 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
 
         @Override
         public BakedModel bake(final IGeometryBakingContext owner, final ModelBaker bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
-            Material particleLocation = owner.getMaterial(this.texture);
-            TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
             final BakedModel bakedBaseModel = this.baseModel.bake(bakery, this.baseModel, spriteGetter, modelTransform, modelLocation, false);
-            return new HaloBakedModel(tintLayers(bakedBaseModel, this.layerColors), particle, this.color, this.size, this.pulse);
+            //Static.LOGGER.info("test0"+ this.texture);
+            Material particleLocation = this.baseModel.getMaterial(this.texture);
+            TextureAtlasSprite particle =
+                    spriteGetter.apply(particleLocation);
+            //Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "misc/halo"));
+            //Static.LOGGER.info("test1"+ particle.toString());
+            return new HaloBakedModel(tintLayers(bakedBaseModel, layerColors), particle, this.color, this.size, this.pulse);
+        }
+
+        @Override
+        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+            this.baseModel.resolveParents(modelGetter);
         }
 
         private static BakedModel tintLayers(final BakedModel model, final IntList layerColors) {
