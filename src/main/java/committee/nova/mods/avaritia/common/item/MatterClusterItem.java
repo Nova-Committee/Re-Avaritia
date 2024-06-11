@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.Entity;
@@ -46,7 +47,7 @@ public class MatterClusterItem extends Item {
     }
 
     public static int getClusterSize(ItemStack cluster) {
-        if (cluster.hasTag() || !cluster.getOrCreateTag().contains("items", 9)) {
+        if (cluster.hasTag() || !cluster.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
             return Arrays.stream(readClusterInventory(cluster).items).mapToInt(ItemStack::getCount).sum();
         }
         return 0;
@@ -129,7 +130,7 @@ public class MatterClusterItem extends Item {
     private static SimpleContainer readClusterInventory(ItemStack cluster) {
         SimpleContainer clusterInventory = new SimpleContainer(512);
         if (cluster.hasTag()) {
-            readItemStacksFromTag(clusterInventory.items, cluster.getOrCreateTag().getList("items", 10));
+            readItemStacksFromTag(clusterInventory.items, cluster.getOrCreateTag().getList("items", Tag.TAG_COMPOUND));
         }
         return clusterInventory;
     }
@@ -153,10 +154,10 @@ public class MatterClusterItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        if (stack.hasTag() || !stack.getOrCreateTag().contains("items", 9)) {
+        if (stack.hasTag() || !stack.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
             SimpleContainer inventory = readClusterInventory(stack);
             int total = Arrays.stream(inventory.items).mapToInt(ItemStack::getCount).sum();
-            tooltip.add(Component.translatable("tooltip.matter_cluster.counter", total, Math.max(total, 4096)));
+            tooltip.add(Component.translatable("tooltip.matter_cluster.counter", total, Math.max(total, CAPACITY)));
             tooltip.add(Component.literal(""));
             if (Screen.hasShiftDown()) {
                 Object2IntMap<Item> itemCounts = new Object2IntOpenHashMap<>();

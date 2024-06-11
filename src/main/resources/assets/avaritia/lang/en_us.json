@@ -39,7 +39,7 @@
   "tooltip.skullfire_sword.desc": "Beheads skeletons and scorches them black.",
   "tooltip.matter_cluster.desc": "Use to deconstruct.",
   "tooltip.matter_cluster.desc2": "Hold SHIFT for contents.",
-  "tooltip.matter_cluster.counter": "items",
+  "tooltip.matter_cluster.counter": "%s / %s items",
   "tooltip.star_fuel.desc": "A fuel for the stars.",
   "tooltip.neutron_gear.desc": "The secret of the tech renaissance...",
   "tooltip.infinity_nugget.desc": "Angel's tears...",

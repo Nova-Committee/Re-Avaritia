@@ -157,7 +157,7 @@
   "tooltip.infinity_catalyst.desc": "Всё в одном и одно во всём.",
   "tooltip.infinity_ingot.desc": "Вся мощь вселенной в твоей руке.",
   "tooltip.infinity_nugget.desc": "Слёзы ангела...",
-  "tooltip.matter_cluster.counter": "предметы",
+  "tooltip.matter_cluster.counter": "%s / %s предметы",
   "tooltip.matter_cluster.desc": "ПКМ для разрушения.",
   "tooltip.matter_cluster.desc2": "Зажмите SHIFT для подробностей.",
   "tooltip.neutron_gear.desc": "Секрет технического возрождения...",
