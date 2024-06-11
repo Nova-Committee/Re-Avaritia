@@ -170,8 +170,8 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + player.level().isClientSide) && player.isSprinting())
-            player.setDeltaMovement(player.getDeltaMovement().add(0f, 0.35f, 0f));
+        if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + player.level().isClientSide))
+            player.setDeltaMovement(player.getDeltaMovement().add(0f, 0.405f, 0f));
     }
 
     @SubscribeEvent

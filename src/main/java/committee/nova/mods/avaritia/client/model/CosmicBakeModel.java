@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.item.IItemRenderer;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
+import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.client.TransformUtils;
 import net.minecraft.client.Minecraft;
@@ -77,7 +78,9 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
             pitch = -(float)(mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0);
             scale = 1.0f;
         }
-        if (AvaritiaShaders.cosmicOpacity != null) {
+        if (stack.getItem() == ModItems.matter_cluster.get()) {
+            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float)MatterClusterItem.CAPACITY);
+        } else {
             AvaritiaShaders.cosmicOpacity.set(1.0F);
         }
         AvaritiaShaders.cosmicYaw.set(yaw);

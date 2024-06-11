@@ -8,21 +8,20 @@ import committee.nova.mods.avaritia.common.net.TotemPacket;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.AbilityUtils;
-import committee.nova.mods.avaritia.util.ToolUtils;
 import committee.nova.mods.avaritia.util.lang.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,9 +30,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.Tags;
@@ -47,13 +43,10 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
-
-import java.util.List;
 
 /**
  * Description:
@@ -69,18 +62,6 @@ public class InfinityHandler {
         return state.is(Tags.Blocks.COBBLESTONE) || state.is(Tags.Blocks.STONE) || state.is(Tags.Blocks.NETHERRACK);
     }
 
-//    public static void applyLuck(BlockEvent.BreakEvent event, int multiplier) {
-//        if (ToolUtils.canUseTool(event.getState(), ToolUtils.materialsPick)) {
-//            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) event.getPlayer().level())).withLuck(event.getPlayer().level().random.nextFloat()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(event.getPos())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, event.getPlayer().level().getBlockEntity(event.getPos()));
-//            List<ItemStack> drops = event.getState().getDrops(lootcontext$builder);
-//            for (ItemStack drop : drops) {
-//                if (!drop.is(event.getState().getBlock().asItem()) && !(drop.getItem() instanceof BlockItem)) {
-//                    drop.setCount(Math.min(drop.getCount() * multiplier, drop.getMaxStackSize()));
-//                }
-//            }
-//
-//        }
-//    }
 
     //特殊效果（附魔）
     @SubscribeEvent
@@ -133,19 +114,6 @@ public class InfinityHandler {
 
     }
 
-//    //给稿子添加时运
-//    @SubscribeEvent
-//    public static void handleExtraLuck(BlockEvent.BreakEvent event) {
-//        if (event.getPlayer() == null) {
-//            return;
-//        }
-//        ItemStack mainHand = event.getPlayer().getMainHandItem();
-//
-//        if (!mainHand.isEmpty() && mainHand.is(ModItems.infinity_pickaxe.get())) {
-//            applyLuck(event, 4);
-//        }
-//    }
-
     @SubscribeEvent
     public static void digging(PlayerEvent.BreakSpeed event) {
         if (!event.getEntity().getMainHandItem().isEmpty()) {
@@ -182,6 +150,7 @@ public class InfinityHandler {
     public static void clusterCluster(EntityItemPickupEvent event) {
         if (event.getEntity() != null && event.getItem().getItem().is(ModItems.matter_cluster.get())) {
             ItemStack stack = event.getItem().getItem();
+            boolean mergedAny = false;
             Player player = event.getEntity();
 
             for (ItemStack slot : player.getInventory().items) {
@@ -189,8 +158,12 @@ public class InfinityHandler {
                     break;
                 }
                 if (slot.is(ModItems.matter_cluster.get())) {
-                    MatterClusterItem.mergeClusters(stack, slot);
+                    mergedAny |= MatterClusterItem.mergeClusters(stack, slot);
                 }
+            }
+
+            if (mergedAny) {
+                player.level().playSound(null, player, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, (player.level().random.nextFloat() - player.level().random.nextFloat()) * 1.4F + 2.0F);
             }
         }
     }
@@ -234,7 +207,7 @@ public class InfinityHandler {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }
-            ItemStack totem = getPlayerBagItem(player);
+            ItemStack totem = getPlayerTotemItem(player);
             if (!totem.isEmpty()){
                 NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new TotemPacket(totem, player.getId()));
 
@@ -340,7 +313,7 @@ public class InfinityHandler {
      * @param player 玩家
      * @return 图腾
      */
-    private static ItemStack getPlayerBagItem(Player player){
+    private static ItemStack getPlayerTotemItem(Player player){
         ItemStack mainHandItem = player.getMainHandItem();
         if (mainHandItem.is(ModItems.infinity_totem.get())){
             return mainHandItem;

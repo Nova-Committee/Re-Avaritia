@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.util;
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
-import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
@@ -19,8 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -128,7 +125,7 @@ public class ToolUtils {
     }
 
     public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
-        ItemStack itemStack = ItemStackUtils.mapEquals(drop, map);
+        ItemStack itemStack = ItemUtils.mapEquals(drop, map);
         if (!itemStack.isEmpty())
             map.put(itemStack, map.get(itemStack) + drop.getCount());
         else map.put(drop, drop.getCount());
@@ -240,11 +237,6 @@ public class ToolUtils {
         }
 
         return counts;
-    }
-
-    public static boolean isInfiniteChest(LivingEntity player) {
-        ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
-        return !stack.isEmpty() && stack.getItem() instanceof InfinityArmorItem;
     }
 
 

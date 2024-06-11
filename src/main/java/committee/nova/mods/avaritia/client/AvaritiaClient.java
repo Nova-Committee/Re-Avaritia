@@ -44,7 +44,6 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(GapingVoidModel.LAYER_LOCATION, GapingVoidModel::createBodyLayer);
-        //event.registerLayerDefinition(WingModel.LAYER_LOCATION, WingModel::createBodyLayer);
     }
 
     @SubscribeEvent

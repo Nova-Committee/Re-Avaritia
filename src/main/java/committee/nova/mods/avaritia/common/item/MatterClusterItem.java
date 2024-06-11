@@ -1,25 +1,28 @@
 package committee.nova.mods.avaritia.common.item;
 
+import committee.nova.mods.avaritia.api.common.container.SimpleContainer;
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.ContainerUtils;
+import committee.nova.mods.avaritia.util.ItemUtils;
 import committee.nova.mods.avaritia.util.ToolUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -35,12 +38,6 @@ import java.util.*;
  */
 public class MatterClusterItem extends Item {
 
-    public static final String MAINTAG = "clusteritems";
-    public static final String LISTTAG = "items";
-    public static final String ITEMTAG = "item";
-    public static final String COUNTTAG = "count";
-    public static final String MAINCOUNTTAG = "total";
-
     public static int CAPACITY = 64 * 64;
 
     public MatterClusterItem() {
@@ -48,190 +45,148 @@ public class MatterClusterItem extends Item {
                 .stacksTo(1));
     }
 
-    public static List<ItemStack> makeClusters(Set<ItemStack> input) {
-        Map<ItemStackWrapper, Integer> items = ToolUtils.collateMatterCluster(input);
-        List<ItemStack> clusters = new ArrayList<>();
-        List<Map.Entry<ItemStackWrapper, Integer>> itemlist = new ArrayList<>(items.entrySet());
-
-        int currentTotal = 0;
-        Map<ItemStackWrapper, Integer> currentItems = new HashMap<>();
-
-        while (!itemlist.isEmpty()) {
-            Map.Entry<ItemStackWrapper, Integer> e = itemlist.get(0);
-            ItemStackWrapper wrap = e.getKey();
-            int wrapcount = e.getValue();
-
-            int count = Math.min(CAPACITY - currentTotal, wrapcount);
-
-            if (!currentItems.containsKey(e.getKey())) {
-                currentItems.put(wrap, count);
-            } else {
-                currentItems.put(wrap, currentItems.get(wrap) + count);
-            }
-            currentTotal += count;
-
-            e.setValue(wrapcount - count);
-            if (e.getValue() == 0) {
-                itemlist.remove(0);
-            }
-
-            if (currentTotal == CAPACITY) {
-                ItemStack cluster = makeCluster(currentItems);
-
-                clusters.add(cluster);
-
-                currentTotal = 0;
-                currentItems = new HashMap<>();
-            }
+    public static int getClusterSize(ItemStack cluster) {
+        if (cluster.hasTag() || !cluster.getOrCreateTag().contains("items", 9)) {
+            return Arrays.stream(readClusterInventory(cluster).items).mapToInt(ItemStack::getCount).sum();
         }
+        return 0;
+    }
 
-        if (currentTotal > 0) {
-            ItemStack cluster = makeCluster(currentItems);
+    public static List<ItemStack> makeClusters(Collection<ItemStack> input) {
+        LinkedList<ItemStack> clusters = new LinkedList<>();
+        LinkedList<ItemStack> stacks = new LinkedList<>(input);
 
-            clusters.add(cluster);
+        while(!stacks.isEmpty()) {
+            SimpleContainer clusterInventory = new SimpleContainer(512);
+            int totalInserted = 0;
+
+            ItemStack cluster;
+            while(!stacks.isEmpty() && totalInserted < CAPACITY) {
+                cluster = stacks.poll();
+                int remainder = ContainerUtils.insertItem(clusterInventory, cluster, false);
+                totalInserted += cluster.getCount() - remainder;
+                if (remainder > 0) {
+                    cluster.setCount(remainder);
+                    stacks.add(cluster);
+                    break;
+                }
+            }
+
+            if (totalInserted > 0) {
+                cluster = new ItemStack(ModItems.matter_cluster.get());
+                writeClusterInventory(cluster, clusterInventory);
+                clusters.add(cluster);
+            }
         }
 
         return clusters;
     }
 
-    public static ItemStack makeCluster(Map<ItemStackWrapper, Integer> input) {
-        ItemStack cluster = new ItemStack(ModItems.matter_cluster.get());
-        int total = 0;
-        for (int num : input.values()) {
-            total += num;
-        }
-        setClusterData(cluster, input, total);
-        return cluster;
-    }
-
-    public static Map<ItemStackWrapper, Integer> getClusterData(ItemStack cluster) {
-        if (!cluster.hasTag() || !cluster.getOrCreateTag().contains(MAINTAG)) {
-            return null;
-        }
-        CompoundTag tag = cluster.getOrCreateTag().getCompound(MAINTAG);
-        ListTag list = tag.getList(LISTTAG, 10);
-        Map<ItemStackWrapper, Integer> data = new HashMap<>();
-
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            ItemStackWrapper wrap = new ItemStackWrapper(ItemStack.of(entry.getCompound(ITEMTAG)));
-            int count = entry.getInt(COUNTTAG);
-            data.put(wrap, count);
-        }
-        return data;
-    }
-
-    public static int getClusterSize(ItemStack cluster) {
-        if (!cluster.hasTag() || !cluster.getOrCreateTag().contains(MAINTAG)) {
-            return 0;
-        }
-        return cluster.getOrCreateTag().getCompound(MAINTAG).getInt(MAINCOUNTTAG);
-    }
-
-    public static void setClusterData(ItemStack stack, Map<ItemStackWrapper, Integer> data, int count) {
-        if (!stack.hasTag()) {
-            stack.setTag(new CompoundTag());
-        }
-
-        CompoundTag clustertag = new CompoundTag();
-        ListTag list = new ListTag();
-
-        for (Map.Entry<ItemStackWrapper, Integer> entry : data.entrySet()) {
-            CompoundTag itemtag = new CompoundTag();
-            itemtag.put(ITEMTAG, entry.getKey().stack.save(new CompoundTag()));
-            itemtag.putInt(COUNTTAG, entry.getValue());
-            list.add(itemtag);
-        }
-        clustertag.put(LISTTAG, list);
-        clustertag.putInt(MAINCOUNTTAG, count);
-        stack.getOrCreateTag().put(MAINTAG, clustertag);
-    }
-
-    public static void mergeClusters(ItemStack donor, ItemStack recipient) {
-        int donorcount = getClusterSize(donor);
-        int recipientcount = getClusterSize(recipient);
-
-        if (donorcount == 0 || donorcount == CAPACITY || recipientcount == CAPACITY) {
-            return;
-        }
-
-        Map<ItemStackWrapper, Integer> donordata = getClusterData(donor);
-        Map<ItemStackWrapper, Integer> recipientdata = getClusterData(recipient);
-        List<Map.Entry<ItemStackWrapper, Integer>> datalist = new ArrayList<>(donordata.entrySet());
-
-        while (recipientcount < CAPACITY && donorcount > 0) {
-            Map.Entry<ItemStackWrapper, Integer> e = datalist.get(0);
-            ItemStackWrapper wrap = e.getKey();
-            int wrapcount = e.getValue();
-
-            int count = Math.min(CAPACITY - recipientcount, wrapcount);
-
-            if (!recipientdata.containsKey(wrap)) {
-                recipientdata.put(wrap, count);
-            } else {
-                recipientdata.put(wrap, recipientdata.get(wrap) + count);
-            }
-
-            donorcount -= count;
-            recipientcount += count;
-
-            if (wrapcount - count > 0) {
-                e.setValue(wrapcount - count);
-            } else {
-                donordata.remove(wrap);
-                datalist.remove(0);
-            }
-        }
-        setClusterData(recipient, recipientdata, recipientcount);
-
-        if (donorcount > 0) {
-            setClusterData(donor, donordata, donorcount);
+    public static boolean mergeClusters(ItemStack donor, ItemStack recipient) {
+        SimpleContainer receivingInv = readClusterInventory(recipient);
+        int recipientCount = Arrays.stream(receivingInv.items).mapToInt(ItemStack::getCount).sum();
+        if (recipientCount >= CAPACITY) {
+            return false;
         } else {
-            donor.setTag(null);
-            donor.setCount(0);
+            boolean mergedAny = false;
+            SimpleContainer donorInv = readClusterInventory(donor);
+            for (ItemStack stack : donorInv.items) {
+                if (stack.isEmpty()) {
+                    break;
+                }
+
+                int remainder = ContainerUtils.insertItem(receivingInv, stack, false);
+                if (remainder <= stack.getCount()) {
+                    mergedAny = true;
+                }
+
+                recipientCount += stack.getCount() - remainder;
+                stack.setCount(remainder);
+                if (recipientCount >= CAPACITY) {
+                    break;
+                }
+            }
+
+            writeClusterInventory(recipient, receivingInv);
+            int donorRemaining = Arrays.stream(donorInv.items).mapToInt(ItemStack::getCount).sum();
+            if (donorRemaining == 0) {
+                donor.setTag(null);
+                donor.setCount(0);
+            } else {
+                writeClusterInventory(donor, donorInv);
+            }
+
+            return mergedAny;
+        }
+    }
+
+
+    private static void writeClusterInventory(ItemStack cluster, SimpleContainer clusterContents) {
+        CompoundTag nbt = cluster.getOrCreateTag();
+        nbt.put("items", writeItemStacksToTag(clusterContents.items));
+    }
+
+    private static SimpleContainer readClusterInventory(ItemStack cluster) {
+        SimpleContainer clusterInventory = new SimpleContainer(512);
+        if (cluster.hasTag()) {
+            readItemStacksFromTag(clusterInventory.items, cluster.getOrCreateTag().getList("items", 10));
+        }
+        return clusterInventory;
+    }
+
+
+    private static ListTag writeItemStacksToTag(ItemStack[] items) {
+        ListTag tagList = new ListTag();
+        for (ItemStack item : items) {
+            if (!item.isEmpty()) {
+                tagList.add(item.save(new CompoundTag()));
+            }
+        }
+        return tagList;
+    }
+
+    private static void readItemStacksFromTag(ItemStack[] items, ListTag tagList) {
+        for(int i = 0; i < tagList.size(); ++i) {
+            items[i] = ItemStack.of(tagList.getCompound(i));
         }
     }
 
     @Override
     public void appendHoverText(ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        if (!stack.hasTag() || !stack.getOrCreateTag().contains(MAINTAG)) {
-            return;
-        }
-        CompoundTag clustertag = stack.getOrCreateTag().getCompound(MAINTAG);
+        if (stack.hasTag() || !stack.getOrCreateTag().contains("items", 9)) {
+            SimpleContainer inventory = readClusterInventory(stack);
+            int total = Arrays.stream(inventory.items).mapToInt(ItemStack::getCount).sum();
+            tooltip.add(Component.translatable("tooltip.matter_cluster.counter", total, Math.max(total, 4096)));
+            tooltip.add(Component.literal(""));
+            if (Screen.hasShiftDown()) {
+                Object2IntMap<Item> itemCounts = new Object2IntOpenHashMap<>();
+                for (ItemStack item : inventory.items) {
+                    if (item.isEmpty()) {
+                        break;
+                    }
+                    itemCounts.put(item.getItem(), item.getCount() + itemCounts.getOrDefault(item.getItem(), 0));
+                }
 
-        tooltip.add(Component.literal(clustertag.getInt(MAINCOUNTTAG) + "/" + CAPACITY + " " + I18n.get("tooltip.matter_cluster.counter")));
-        tooltip.add(Component.literal(""));
-
-        if (Screen.hasShiftDown()) {
-            ListTag list = clustertag.getList(LISTTAG, 10);
-            for (int i = 0; i < list.size(); i++) {
-                CompoundTag tag = list.getCompound(i);
-                ItemStack countstack = ItemStack.of(tag.getCompound(ITEMTAG));
-                int count = tag.getInt(COUNTTAG);
-
-                tooltip.add(Component.literal(countstack.getItem().getRarity(countstack).color + countstack.getDisplayName().getString() + ChatFormatting.GRAY + " x " + count));
+                itemCounts.forEach((itemx, count) -> {
+                    tooltip.add((Component.translatable(itemx.getDescriptionId())).withStyle(itemx.getRarity(new ItemStack(itemx)).getStyleModifier()).append((Component.literal(" x " + count)).withStyle(ChatFormatting.GRAY)));
+                });
+            } else {
+                tooltip.add((Component.translatable("tooltip.matter_cluster.desc")).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.add((Component.translatable("tooltip.matter_cluster.desc2")).withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
             }
-        } else {
-            tooltip.add(Component.literal(ChatFormatting.DARK_GRAY + I18n.get("tooltip.matter_cluster.desc")));
-            tooltip.add(Component.literal(ChatFormatting.DARK_GRAY.toString() + ChatFormatting.ITALIC + I18n.get("tooltip.matter_cluster.desc2")));
-        }
 
+        }
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        Vec3 pos = player.position();
-        if (!world.isClientSide) {
-            List<ItemStack> drops = ToolUtils.collateMatterClusterContents(Objects.requireNonNull(MatterClusterItem.getClusterData(stack)));
-
-            for (ItemStack drop : drops) {
-                Containers.dropItemStack(world, pos.x, pos.y, pos.z, drop);
-            }
+        if (!level.isClientSide) {
+            ItemUtils.dropInventory(level, player.blockPosition(), readClusterInventory(stack));
         }
 
-        stack.setCount(0);
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+        player.setItemInHand(hand, ItemStack.EMPTY);
+        return InteractionResultHolder.success(ItemStack.EMPTY);
     }
 
     @Override
