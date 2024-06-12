@@ -81,7 +81,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
 
             for (int i = heightOffset; i < shaped.getHeight() + heightOffset; i++) {
                 for (int j = widthOffset; j < shaped.getWidth() + widthOffset; j++) {
-                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 1, i * 18 + 1).addIngredients(inputs.get(stackIndex));
+                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2).addIngredients(inputs.get(stackIndex));
                     stackIndex++;
                 }
             }
@@ -102,7 +102,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
                 int index = j + (i * 9);
 
                 if (index < inputs.size()) {
-                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 1, i * 18 + 1).addIngredients(inputs.get(index));
+                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2).addIngredients(inputs.get(index));
                 }
             }
         }

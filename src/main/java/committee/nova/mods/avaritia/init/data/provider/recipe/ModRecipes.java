@@ -92,7 +92,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("ccc")
                 .pattern("cxc")
                 .pattern("ccc")
-                .define('c', Tags.Items.ORES_COAL)
+                .define('c', Tags.Items.STORAGE_BLOCKS_COAL)
                 .define('x', ModItems.infinity_catalyst.get())
                 .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer);
 

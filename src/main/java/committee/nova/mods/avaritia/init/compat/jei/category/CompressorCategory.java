@@ -69,8 +69,8 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         assert level != null;
         var inputs = recipe.getIngredients();
         var output = recipe.getResultItem(level.registryAccess());
-        builder.addSlot(RecipeIngredientRole.INPUT, 36, 20).addIngredients(inputs.get(0));
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 116, 20).addItemStack(output);
+        builder.addSlot(RecipeIngredientRole.INPUT, 37, 21).addIngredients(inputs.get(0));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 117, 21).addItemStack(output);
 
     }
 

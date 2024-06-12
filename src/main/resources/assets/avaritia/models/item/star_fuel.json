@@ -8,7 +8,7 @@
   "halo": {
     "texture": "#halo",
     "color": -16777216,
-    "size": 8,
+    "size": 6,
     "pulse": false
   }
 }
