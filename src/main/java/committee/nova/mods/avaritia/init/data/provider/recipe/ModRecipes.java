@@ -182,6 +182,9 @@ public class ModRecipes extends RecipeProvider {
                 .group("eternal_singularity")
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Static.rl("infinity_catalyst_eternal"));
 
+        ModEternalRecipeBuilder.shapeless(RecipeCategory.MISC)
+                .unlockedBy("has_item", has(ModItems.singularity.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.endest_pearl.get())
                 .pattern("   EEE   ")
                 .pattern(" EEPPPEE ")

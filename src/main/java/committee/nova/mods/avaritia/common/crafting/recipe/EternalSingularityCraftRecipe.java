@@ -37,19 +37,15 @@ import java.util.function.BiFunction;
 public class EternalSingularityCraftRecipe implements ISpecialRecipe{
     private static boolean ingredientsLoaded = false;
     private final ResourceLocation recipeId;
-    private final String group;
-    public NonNullList<Ingredient> inputs;
+    public NonNullList<Ingredient> inputs = NonNullList.create();
     private BiFunction<Integer, ItemStack, ItemStack> transformers;
 
-    public EternalSingularityCraftRecipe(ResourceLocation recipeId, String pGroup, NonNullList<Ingredient> inputs) {
+    public EternalSingularityCraftRecipe(ResourceLocation recipeId) {
         this.recipeId = recipeId;
-        this.group = pGroup;
-        this.inputs = inputs;
     }
 
-    @Override
-    public @NotNull String getGroup() {
-        return this.group;
+    public static void invalidate() {
+        ingredientsLoaded = false;
     }
 
     @Override
@@ -106,6 +102,7 @@ public class EternalSingularityCraftRecipe implements ISpecialRecipe{
     }
     @Override
     public boolean matches(IItemHandler inventory) {
+        var ingredients = this.getIngredients();
         List<ItemStack> inputs = new ArrayList<>();
         int matched = 0;
 
@@ -119,7 +116,7 @@ public class EternalSingularityCraftRecipe implements ISpecialRecipe{
             }
         }
 
-        return matched == this.inputs.size() && RecipeMatcher.findMatches(inputs, this.inputs) != null;
+        return !ingredients.isEmpty() &&  matched == this.inputs.size() && RecipeMatcher.findMatches(inputs, this.inputs) != null;
     }
 
     @Override
@@ -162,34 +159,15 @@ public class EternalSingularityCraftRecipe implements ISpecialRecipe{
     public static class Serializer implements RecipeSerializer<EternalSingularityCraftRecipe> {
         @Override
         public @NotNull EternalSingularityCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            String s = GsonHelper.getAsString(json, "group", "");
-            NonNullList<Ingredient> inputs = NonNullList.create();
-            var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
-            for (int i = 0; i < ingredients.size(); i++) {
-                inputs.add(Ingredient.fromJson(ingredients.get(i)));
-            }
-            return new EternalSingularityCraftRecipe(recipeId, s, inputs);
+            return new EternalSingularityCraftRecipe(recipeId);
         }
 
         @Override
         public EternalSingularityCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            String s = buffer.readUtf();
-            int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
-
-            for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.fromNetwork(buffer));
-            }
-            return new EternalSingularityCraftRecipe(recipeId, s, inputs);
+            return new EternalSingularityCraftRecipe(recipeId);
         }
 
         @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull EternalSingularityCraftRecipe recipe) {
-            buffer.writeUtf(recipe.group);
-            buffer.writeVarInt(recipe.inputs.size());
-            for (var ingredient : recipe.inputs) {
-                ingredient.toNetwork(buffer);
-            }
-        }
+        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull EternalSingularityCraftRecipe recipe) {}
     }
 }

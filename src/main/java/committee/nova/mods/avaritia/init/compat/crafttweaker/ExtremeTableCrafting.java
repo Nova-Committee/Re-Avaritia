@@ -87,16 +87,6 @@ public class ExtremeTableCrafting implements IRecipeManager<ISpecialRecipe> {
     }
 
     @ZenCodeType.Method
-    public static void addEternal(String name, IIngredient[] inputs) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new EternalSingularityCraftRecipe(id, "", toIngredientsList(inputs));
-
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
-
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
-    }
-
-    @ZenCodeType.Method
     public static void remove(IItemStack stack) {
         CraftTweakerAPI.apply(new ActionRemoveRecipe<>(INSTANCE, recipe -> recipe.getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
     }

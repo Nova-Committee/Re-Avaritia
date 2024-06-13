@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
@@ -142,6 +143,7 @@ public class SingularityRegistryHandler {
 
         this.singularities.clear();
         this.singularities.putAll(singularities);
+        EternalSingularityCraftRecipe.invalidate();
 
         Static.LOGGER.info("Loaded {} singularities from the server", singularities.size());
     }
