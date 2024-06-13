@@ -20,6 +20,6 @@ public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
         event.register(ModRecipeSerializers.SHAPED_EXTREME_CRAFT_SERIALIZER.getId(), ShapedRecipeSchema.SCHEMA);
         event.register(ModRecipeSerializers.SHAPELESS_EXTREME_CRAFT_SERIALIZER.getId(), ShapelessRecipeSchema.SCHEMA);
         event.register(ModRecipeSerializers.COMPRESSOR_SERIALIZER.getId(), CompressRecipeSchema.SCHEMA);
-        event.register(ModRecipeSerializers.INFINITY_SERIALIZER.getId(), InfinityCatalystRecipeSchema.SCHEMA);
+        event.register(ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.getId(), InfinityCatalystRecipeSchema.SCHEMA);
     }
 }

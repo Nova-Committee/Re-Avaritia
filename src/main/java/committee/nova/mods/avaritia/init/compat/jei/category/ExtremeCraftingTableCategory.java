@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
@@ -92,6 +93,9 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
         } else if (recipe instanceof InfinityCatalystCraftRecipe) {
             shapelessRecipe(builder, inputs);
             builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(new ItemStack(ModItems.infinity_catalyst.get()));
+        } else if (recipe instanceof EternalSingularityCraftRecipe) {
+            shapelessRecipe(builder, inputs);
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(new ItemStack(ModItems.eternal_singularity.get()));
         }
         builder.moveRecipeTransferButton(170, 100);
     }

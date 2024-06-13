@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "c": {
-      "tag": "forge:ores/coal"
+      "tag": "forge:storage_blocks/coal"
     },
     "x": {
       "item": "avaritia:infinity_catalyst"

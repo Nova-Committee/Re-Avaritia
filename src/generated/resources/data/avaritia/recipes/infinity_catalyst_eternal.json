@@ -1,7 +1,7 @@
 {
   "type": "avaritia:infinity_catalyst_craft",
   "category": "misc",
-  "group": "default",
+  "group": "eternal_singularity",
   "ingredients": [
     {
       "item": "minecraft:emerald_block"
@@ -23,6 +23,9 @@
     },
     {
       "item": "avaritia:record_fragment"
+    },
+    {
+      "item": "avaritia:eternal_singularity"
     }
   ]
 }

@@ -2,15 +2,21 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.RecipeUtil;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -22,16 +28,20 @@ import net.minecraftforge.fml.common.Mod;
 public class DynamicRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
+        List<Singularity> allSingularities = SingularityRegistryHandler.getInstance().getSingularities();
 
         var infinity_catalyst = (InfinityCatalystCraftRecipe) RecipeUtil.getRecipe(Static.rl("infinity_catalyst"));
-        SingularityRegistryHandler.getInstance().getSingularities()
-                .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .limit(81)
-                .map(SingularityUtils::getItemForSingularity)
-                .map(Ingredient::of)
-                .forEach(infinity_catalyst.inputs::add);
-        event.register(new InfinityCatalystCraftRecipe(Static.rl("infinity_catalyst"), infinity_catalyst.inputs));
+
+        if (infinity_catalyst.getGroup().equals("default")){
+            allSingularities.stream()
+                    .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                    .limit(81)
+                    .map(SingularityUtils::getItemForSingularity)
+                    .map(Ingredient::of)
+                    .forEach(infinity_catalyst.inputs::add);
+
+            event.register(new InfinityCatalystCraftRecipe(Static.rl("infinity_catalyst"), "default", infinity_catalyst.inputs));
+        }
 
         for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
             if (singularity.isRecipeDisabled()) {

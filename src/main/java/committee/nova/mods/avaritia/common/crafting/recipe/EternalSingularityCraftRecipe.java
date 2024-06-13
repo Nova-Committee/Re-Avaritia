@@ -2,9 +2,11 @@ package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,13 +34,14 @@ import java.util.function.BiFunction;
  * Description:
  */
 
-public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
+public class EternalSingularityCraftRecipe implements ISpecialRecipe{
+    private static boolean ingredientsLoaded = false;
     private final ResourceLocation recipeId;
     private final String group;
     public NonNullList<Ingredient> inputs;
     private BiFunction<Integer, ItemStack, ItemStack> transformers;
 
-    public InfinityCatalystCraftRecipe(ResourceLocation recipeId, String pGroup, NonNullList<Ingredient> inputs) {
+    public EternalSingularityCraftRecipe(ResourceLocation recipeId, String pGroup, NonNullList<Ingredient> inputs) {
         this.recipeId = recipeId;
         this.group = pGroup;
         this.inputs = inputs;
@@ -56,11 +59,24 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
 
     @Override
     public @NotNull ItemStack getResultItem(@NotNull RegistryAccess pRegistryAccess) {
-        return new ItemStack(ModItems.infinity_catalyst.get());
+        return new ItemStack(ModItems.eternal_singularity.get());
     }
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
+        if (!ingredientsLoaded) {
+            inputs.clear();
+
+            SingularityRegistryHandler.getInstance().getSingularities()
+                    .stream()
+                    .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                    .limit(81)
+                    .map(SingularityUtils::getItemForSingularity)
+                    .map(Ingredient::of)
+                    .forEach(inputs::add);
+
+            ingredientsLoaded = true;
+        }
         return this.inputs;
     }
 
@@ -71,7 +87,7 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
 
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
+        return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
     }
 
     @Override
@@ -81,12 +97,12 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
 
     @Override
     public ItemStack assemble(IItemHandler var1) {
-        return new ItemStack(ModItems.infinity_catalyst.get());
+        return new ItemStack(ModItems.eternal_singularity.get());
     }
 
     @Override
     public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
-        return new ItemStack(ModItems.infinity_catalyst.get());
+        return new ItemStack(ModItems.eternal_singularity.get());
     }
     @Override
     public boolean matches(IItemHandler inventory) {
@@ -143,20 +159,20 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
         this.transformers = transformers;
     }
 
-    public static class Serializer implements RecipeSerializer<InfinityCatalystCraftRecipe> {
+    public static class Serializer implements RecipeSerializer<EternalSingularityCraftRecipe> {
         @Override
-        public @NotNull InfinityCatalystCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
+        public @NotNull EternalSingularityCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
             String s = GsonHelper.getAsString(json, "group", "");
             NonNullList<Ingredient> inputs = NonNullList.create();
             var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
             for (int i = 0; i < ingredients.size(); i++) {
                 inputs.add(Ingredient.fromJson(ingredients.get(i)));
             }
-            return new InfinityCatalystCraftRecipe(recipeId, s, inputs);
+            return new EternalSingularityCraftRecipe(recipeId, s, inputs);
         }
 
         @Override
-        public InfinityCatalystCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
+        public EternalSingularityCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
             String s = buffer.readUtf();
             int size = buffer.readVarInt();
             var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
@@ -164,11 +180,11 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
             for (int i = 0; i < size; ++i) {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
-            return new InfinityCatalystCraftRecipe(recipeId, s, inputs);
+            return new EternalSingularityCraftRecipe(recipeId, s, inputs);
         }
 
         @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull InfinityCatalystCraftRecipe recipe) {
+        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull EternalSingularityCraftRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeVarInt(recipe.inputs.size());
             for (var ingredient : recipe.inputs) {

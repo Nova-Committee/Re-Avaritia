@@ -58,6 +58,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", true));
 
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
+    public static RegistryObject<Item> eternal_singularity = item("eternal_singularity", () -> new SingularityItem(properties -> properties));
 
     public static RegistryObject<Item> infinity_totem = item("infinity_totem",
             () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true,

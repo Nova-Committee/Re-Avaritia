@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.util.client.ColorUtils;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -49,6 +50,10 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void onItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(new IColored.ItemColors(), ModItems.singularity.get());
+        event.register(
+                (stack, index) -> getCurrentRainbowColor(),
+                ModItems.eternal_singularity.get()
+        );
     }
 
     @SubscribeEvent
@@ -71,5 +76,10 @@ public class AvaritiaClient {
     private static void addLayer(final EntityRenderersEvent.AddLayers e, final String s) {
         final LivingEntityRenderer entityRenderer = e.getSkin(s);
         entityRenderer.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>)entityRenderer));
+    }
+
+    public static int getCurrentRainbowColor() {
+        var hue = (System.currentTimeMillis() % 18000) / 18000F;
+        return ColorUtils.HSBToRGB(hue, 1, 1);
     }
 }

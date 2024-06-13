@@ -35,31 +35,32 @@ import java.util.function.Consumer;
  * Description:
  */
 
-public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final List<Ingredient> ingredients = Lists.newArrayList();
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
 
-    public ModCatalystRecipeBuilder(RecipeCategory p_250837_) {
+    public ModEternalRecipeBuilder(RecipeCategory p_250837_) {
         this.category = p_250837_;
     }
 
     @Contract("_ -> new")
-    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory p_250714_) {
-        return new ModCatalystRecipeBuilder(p_250714_);
+    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory p_250714_) {
+        return new ModEternalRecipeBuilder(p_250714_);
     }
 
-    public ModCatalystRecipeBuilder requires(TagKey<Item> p_206420_) {
+
+    public ModEternalRecipeBuilder requires(TagKey<Item> p_206420_) {
         return this.requires(Ingredient.of(p_206420_));
     }
 
-    public ModCatalystRecipeBuilder requires(ItemLike p_126210_) {
+    public ModEternalRecipeBuilder requires(ItemLike p_126210_) {
         return this.requires(p_126210_, 1);
     }
 
-    public ModCatalystRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
+    public ModEternalRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
         for(int i = 0; i < p_126213_; ++i) {
             this.requires(Ingredient.of(p_126212_));
         }
@@ -67,11 +68,11 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
         return this;
     }
 
-    public ModCatalystRecipeBuilder requires(Ingredient p_126185_) {
+    public ModEternalRecipeBuilder requires(Ingredient p_126185_) {
         return this.requires(p_126185_, 1);
     }
 
-    public ModCatalystRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
+    public ModEternalRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
         for(int i = 0; i < p_126188_; ++i) {
             this.ingredients.add(p_126187_);
         }
@@ -80,27 +81,27 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
     }
 
     @Override
-    public @NotNull ModCatalystRecipeBuilder unlockedBy(@NotNull String p_126197_, @NotNull CriterionTriggerInstance p_126198_) {
+    public @NotNull ModEternalRecipeBuilder unlockedBy(@NotNull String p_126197_, @NotNull CriterionTriggerInstance p_126198_) {
         this.advancement.addCriterion(p_126197_, p_126198_);
         return this;
     }
 
     @Override
-    public @NotNull ModCatalystRecipeBuilder group(@Nullable String p_126195_) {
+    public @NotNull ModEternalRecipeBuilder group(@Nullable String p_126195_) {
         this.group = p_126195_;
         return this;
     }
 
     @Override
     public @NotNull Item getResult() {
-        return ModItems.infinity_catalyst.get();
+        return ModItems.eternal_singularity.get();
     }
 
     @Override
     public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModCatalystRecipeBuilder.Result(p_126206_, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        p_126205_.accept(new ModEternalRecipeBuilder.Result(p_126206_, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -142,7 +143,7 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
 
         @Override
         public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
+            return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
         }
 
         @Override

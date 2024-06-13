@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
@@ -8,6 +9,7 @@ import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -165,7 +167,20 @@ public class ModRecipes extends RecipeProvider {
                 .requires(ModItems.ultimate_stew.get())
                 .requires(ModItems.endest_pearl.get())
                 .requires(ModItems.record_fragment.get())
+                .group("default")
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
+        ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
+                .requires(Items.EMERALD_BLOCK)
+                .requires(ModItems.crystal_matrix_ingot.get())
+                .requires(ModItems.neutron_ingot.get())
+                .requires(ModItems.cosmic_meatballs.get())
+                .requires(ModItems.ultimate_stew.get())
+                .requires(ModItems.endest_pearl.get())
+                .requires(ModItems.record_fragment.get())
+                .requires(ModItems.eternal_singularity.get())
+                .group("eternal_singularity")
+                .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Static.rl("infinity_catalyst_eternal"));
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.endest_pearl.get())
                 .pattern("   EEE   ")
