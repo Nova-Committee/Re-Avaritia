@@ -2,8 +2,6 @@ package committee.nova.mods.avaritia.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Transformation;
-import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.model.ItemQuadBakery;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
@@ -16,20 +14,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.*;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.SimpleModelState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Name: Avaritia-forge / CosmicbakeModel
@@ -86,11 +79,10 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
-        final ItemRenderer itemRenderer = mc.getItemRenderer();
         final VertexConsumer cons = source.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
-        //this.renderWrapped(stack, pStack, source, light, overlay, true, vertexConsumer -> cons);
-        itemRenderer.renderQuadList(pStack, cons, this.maskQuads, stack, light, overlay);
+        mc.getItemRenderer().renderQuadList(pStack, cons, this.maskQuads, stack, light, overlay);
         //itemRenderer.renderModelLists(wrapped, stack, light, overlay, pStack, cons);
+        //this.renderWrapped(stack, pStack, source, light, overlay, true, vertexConsumer -> cons);
     }
 
 

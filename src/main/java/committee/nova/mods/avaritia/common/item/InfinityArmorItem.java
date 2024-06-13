@@ -113,7 +113,10 @@ public class InfinityArmorItem extends ArmorItem {
         consumer.accept(new IClientItemExtensions() {
             @Override
             public @NotNull HumanoidModel<Player> getHumanoidArmorModel(LivingEntity entityLiving, ItemStack itemstack, EquipmentSlot armorSlot, HumanoidModel _deafult) {
-                InfinityArmorModel model = armorSlot == EquipmentSlot.LEGS ? new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, true).getRoot().bake(64, 64)) : new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, false).getRoot().bake(64, 64));
+                InfinityArmorModel model =
+                        armorSlot == EquipmentSlot.LEGS
+                                ? new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, true).getRoot().bake(64, 64))
+                                : new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, false).getRoot().bake(64, 64));
                 model.update(entityLiving, itemstack, armorSlot);
                 return model;
             }

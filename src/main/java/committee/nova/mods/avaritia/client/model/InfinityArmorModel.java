@@ -50,16 +50,14 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
     private static boolean playerFlying;
     private static boolean player;
     private static boolean legs = true;
-    private Minecraft mc;
-    private MultiBufferSource bufferSource;
-    private Random random;
-    private HumanoidModel<Player> humanoidModel;
-    private ModelPart bipedLeftWing;
-    private ModelPart bipedRightWing;
+    private final Minecraft mc;
+    private final MultiBufferSource bufferSource;
+    private final Random random;
+    private final HumanoidModel<Player> humanoidModel;
 
     public static TextureAtlasSprite MASK = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask"));
-    public static TextureAtlasSprite MASK_INV = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask"));
-    public static TextureAtlasSprite WING = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask"));
+    public static TextureAtlasSprite MASK_INV = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask_inv"));
+    public static TextureAtlasSprite WING = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask_wings"));
 
 
 
@@ -93,8 +91,10 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         return RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0, RenderType.CompositeState.builder()
                 .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader))
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY).setLightmapState(RenderType.LIGHTMAP)
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE).setCullState(RenderType.NO_CULL)
+                .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                .setLightmapState(RenderType.LIGHTMAP)
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                .setCullState(RenderType.NO_CULL)
                 .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
                 .createCompositeState(true));
     }
@@ -104,7 +104,8 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
                 .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader2))
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
                 .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-                .setLightmapState(RenderType.LIGHTMAP).setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                .setLightmapState(RenderType.LIGHTMAP)
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .setCullState(RenderType.NO_CULL)
                 .createCompositeState(true));
     }
@@ -148,10 +149,10 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
 
     private void renderToBufferWing(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
         final ModelPart h = this.rebuildWings().bakeRoot();
-        this.bipedRightWing = h.getChild("bipedRightWing");
-        this.bipedLeftWing = h.getChild("bipedLeftWing");
-        this.bipedRightWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-        this.bipedLeftWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        ModelPart bipedRightWing = h.getChild("bipedRightWing");
+        ModelPart bipedLeftWing = h.getChild("bipedLeftWing");
+        bipedRightWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        bipedLeftWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
     }
 
     @Override
@@ -234,10 +235,10 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         final ItemStack chest = e.getItemBySlot(EquipmentSlot.CHEST);
         final ItemStack leg = e.getItemBySlot(EquipmentSlot.LEGS);
         final ItemStack foot = e.getItemBySlot(EquipmentSlot.FEET);
-        final boolean hasHat = hats != null && hats.getItem() == ModItems.infinity_helmet.get();
-        final boolean hasChest = chest != null && chest.getItem() == ModItems.infinity_chestplate.get();
-        final boolean hasLeg = leg != null && leg.getItem() == ModItems.infinity_pants.get();
-        final boolean hasFoot = foot != null && foot.getItem() == ModItems.infinity_boots.get();
+        final boolean hasHat = hats.getItem() == ModItems.infinity_helmet.get();
+        final boolean hasChest = chest.getItem() == ModItems.infinity_chestplate.get();
+        final boolean hasLeg = leg.getItem() == ModItems.infinity_pants.get();
+        final boolean hasFoot = foot.getItem() == ModItems.infinity_boots.get();
         if (hasHat && hasChest && hasLeg && hasFoot) {
             InfinityArmorModel.modelRender = true;
         }
