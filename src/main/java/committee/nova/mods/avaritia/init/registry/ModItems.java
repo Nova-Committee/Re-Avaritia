@@ -62,6 +62,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_totem = item("infinity_totem",
             () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true,
                     new Item.Properties().stacksTo(1).durability(999)));
+
     public static RegistryObject<Item> infinity_horse_armor = item("infinity_horse_armor",
             () -> new InfinityHorseArmorItem(
                     new Item.Properties().stacksTo(1).rarity(COSMIC_RARITY)

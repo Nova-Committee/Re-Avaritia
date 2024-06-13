@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
@@ -47,6 +48,9 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+import top.theillusivec4.curios.api.CuriosApi;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Description:
@@ -314,19 +318,30 @@ public class InfinityHandler {
      * @return 图腾
      */
     private static ItemStack getPlayerTotemItem(Player player){
+        AtomicReference<ItemStack> totemItem = new AtomicReference<>(ItemStack.EMPTY);;
         ItemStack mainHandItem = player.getMainHandItem();
         if (mainHandItem.is(ModItems.infinity_totem.get())){
-            return mainHandItem;
+            totemItem.set(mainHandItem);
         }
         ItemStack offhand = player.getOffhandItem();
         if (offhand.is(ModItems.infinity_totem.get())){
-            return offhand;
+            totemItem.set(offhand);
         }
         for (ItemStack stack : player.getInventory().items) {
             if (stack.is(ModItems.infinity_totem.get()))
-                return stack;
+                totemItem.set(stack);
         }
 
-        return ItemStack.EMPTY;
+        if (Static.isLoad("curios") && Static.isLoad("charmofundying")){
+            CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
+                curiosInventory.getStacksHandler("charm").ifPresent(slotInventory -> {
+                    if (slotInventory.getStacks().getStackInSlot(0).is(ModItems.infinity_totem.get())){
+                        totemItem.set(slotInventory.getStacks().getStackInSlot(0));
+                    }
+                });
+            });
+        }
+
+        return totemItem.get();
     }
 }

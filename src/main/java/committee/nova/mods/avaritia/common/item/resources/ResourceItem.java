@@ -56,9 +56,4 @@ public class ResourceItem extends Item {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
-//    @Override
-//    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-//        consumer.accept(SimpleCustomRenderer.create(this, new PerspectiveItemRender(name)));
-//    }
-
 }
