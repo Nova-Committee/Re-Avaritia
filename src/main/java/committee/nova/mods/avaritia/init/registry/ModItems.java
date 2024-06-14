@@ -5,7 +5,10 @@ import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
+import committee.nova.mods.avaritia.common.item.resources.InfinityTotemItem;
+import committee.nova.mods.avaritia.common.item.resources.NeutronGearItem;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
+import committee.nova.mods.avaritia.common.item.resources.StarFuelItem;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
@@ -52,17 +55,17 @@ public class ModItems {
     public static RegistryObject<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_pile", true));
     public static RegistryObject<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(Rarity.UNCOMMON, "neutron_nugget", true));
     public static RegistryObject<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(Rarity.RARE, "neutron_ingot", true));
-    public static RegistryObject<Item> neutron_gear = item("neutron_gear", () -> new ResourceItem(Rarity.RARE, "neutron_gear", true));
+    public static RegistryObject<Item> neutron_gear = item("neutron_gear", NeutronGearItem::new);
     public static RegistryObject<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(Rarity.EPIC, "infinity_nugget", true));
     public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(Rarity.EPIC, "infinity_catalyst", true));
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(COSMIC_RARITY, "infinity_ingot", true));
 
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
     public static RegistryObject<Item> eternal_singularity = item("eternal_singularity", () -> new SingularityItem(properties -> properties));
+    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(Rarity.EPIC, "record_fragment", true));
 
-    public static RegistryObject<Item> infinity_totem = item("infinity_totem",
-            () -> new ResourceItem(Rarity.UNCOMMON, "infinity_totem", true,
-                    new Item.Properties().stacksTo(1).durability(999)));
+    public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
+    public static RegistryObject<Item> star_fuel = item("star_fuel", StarFuelItem::new);
 
     public static RegistryObject<Item> infinity_horse_armor = item("infinity_horse_armor",
             () -> new InfinityHorseArmorItem(
@@ -70,8 +73,6 @@ public class ModItems {
                             .fireResistant().setNoRepair()
             ));
 
-    public static RegistryObject<Item> star_fuel = item("star_fuel", () -> new ResourceItem(Rarity.UNCOMMON, "diamond_lattice", true));
-    public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(Rarity.EPIC, "record_fragment", true));
 
 
 

@@ -203,9 +203,9 @@ public class ModRecipes extends RecipeProvider {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_axe.get())
-                .pattern("        I")
+                .pattern("        N")
                 .pattern("   IIIII ")
-                .pattern("   IIXI  ")
+                .pattern("   IIIX  ")
                 .pattern("    IN   ")
                 .pattern("    N    ")
                 .pattern("   N     ")
@@ -222,7 +222,7 @@ public class ModRecipes extends RecipeProvider {
                 .pattern("        N")
                 .pattern("     IIII")
                 .pattern("   IIIII ")
-                .pattern("  II XI  ")
+                .pattern("     XI  ")
                 .pattern("    N    ")
                 .pattern("   N     ")
                 .pattern("  N      ")
