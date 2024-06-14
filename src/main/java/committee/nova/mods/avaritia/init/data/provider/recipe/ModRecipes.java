@@ -375,6 +375,22 @@ public class ModRecipes extends RecipeProvider {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.crystal_pickaxe.get())
+                .pattern(" CCCWCCC ")
+                .pattern("CWWWWWWWC")
+                .pattern("CW  N  WC")
+                .pattern("    N    ")
+                .pattern("    N    ")
+                .pattern("    N    ")
+                .pattern("    N    ")
+                .pattern("    N    ")
+                .pattern("    N    ")
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('W', ModBlocks.crystal_matrix.get())
+                .define('N', ModBlocks.neutron.get())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.neutron_collector.get())
                 .pattern("IIQQQQQII")
                 .pattern("I QQQQQ I")

@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/tools/infinity_shovel/shovel"
+    "layer0": "avaritia:item/tools/infinity_shovel/layer_0"
   },
   "overrides": [
     {

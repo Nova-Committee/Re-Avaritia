@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/tools/infinity_pickaxe/infinity_pickaxe"
+    "layer0": "avaritia:item/tools/infinity_pickaxe/layer_0"
   },
   "overrides": [
     {

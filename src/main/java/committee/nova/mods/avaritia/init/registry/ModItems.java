@@ -37,6 +37,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_axe = item("infinity_axe", InfinityAxeItem::new);
     public static RegistryObject<Item> infinity_hoe = item("infinity_hoe", InfinityHoeItem::new);
     public static RegistryObject<Item> matter_cluster = item("matter_cluster", MatterClusterItem::new);
+    public static RegistryObject<Item> crystal_pickaxe = item("crystal_pickaxe", CrystalPickaxeItem::new);
     //weapons
     public static RegistryObject<Item> infinity_sword = item("infinity_sword", InfinitySwordItem::new);
     public static RegistryObject<Item> skull_sword = item("skull_fire_sword", SkullsSwordItem::new);

@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_extreme_craft",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron"
+    },
+    "W": {
+      "item": "avaritia:crystal_matrix"
+    }
+  },
+  "pattern": [
+    " CCCWCCC ",
+    "CWWWWWWWC",
+    "CW  N  WC",
+    "    N    ",
+    "    N    ",
+    "    N    ",
+    "    N    ",
+    "    N    ",
+    "    N    "
+  ],
+  "result": {
+    "item": "avaritia:crystal_pickaxe"
+  },
+  "show_notification": true
+}

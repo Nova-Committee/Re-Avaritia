@@ -2,10 +2,15 @@ package committee.nova.mods.avaritia.util;
 
 import committee.nova.mods.avaritia.util.vec.Vector3;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -164,6 +169,23 @@ public class ItemUtils {
             if (!stack.isEmpty() && stack.getCount() > 0) {
                 dropItem(world, pos, stack);
             }
+        }
+    }
+    public static void removeEnchant(ItemStack stack, Enchantment pEnchantment) {
+        if (!stack.getOrCreateTag().contains("Enchantments", Tag.TAG_LIST)) {
+            stack.getOrCreateTag().put("Enchantments", new ListTag());
+        }
+
+        ListTag listtag = stack.getOrCreateTag().getList("Enchantments", Tag.TAG_COMPOUND);
+        listtag.stream().filter(tag -> {
+            CompoundTag compoundtag = (CompoundTag) tag;
+            return Enchantment.byId(compoundtag.getShort("id")) == pEnchantment;
+        }).forEach(listtag::remove);
+    }
+
+    public static void clearEnchants(ItemStack stack) {
+        if (stack.getOrCreateTag().contains("Enchantments", Tag.TAG_LIST)) {
+            stack.getOrCreateTag().remove("Enchantments");
         }
     }
 }
