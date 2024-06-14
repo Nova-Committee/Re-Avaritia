@@ -127,7 +127,7 @@ public class Quad implements IVertexProducer, IVertexConsumer {
     @Override
     public void pipe(IVertexConsumer consumer) {
         if (consumer instanceof IVertexConsumer) {
-            ((IVertexConsumer) consumer).put(this);
+            consumer.put(this);
         } else {
             consumer.setQuadTint(tintIndex);
             consumer.setQuadOrientation(orientation);

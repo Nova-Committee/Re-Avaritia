@@ -29,13 +29,13 @@ import java.util.Random;
  */
 
 public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
-    private final Random RANDOM;
+    private final Random random;
     private final BakedQuad haloQuad;
     private final boolean pulse;
 
     public HaloBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, int color, int size, boolean pulse) {
         super(wrapped);
-        this.RANDOM = new Random();
+        this.random = new Random();
         this.haloQuad = generateHaloQuad(sprite, size, color);
         this.pulse = pulse;
     }
@@ -44,10 +44,10 @@ public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
         if (transformType == ItemDisplayContext.GUI) {
             Minecraft.getInstance().getItemRenderer()
-                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad),  stack, packedLight, packedOverlay);
+                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
             if (this.pulse) {
                 pStack.pushPose();
-                double scale = RANDOM.nextDouble() * 0.15D + 0.95D;
+                double scale = random.nextDouble() * 0.15D + 0.95D;
                 double trans = (1.0D - scale) / 2.0D;
                 pStack.translate(trans, trans, 0.0D);
                 pStack.scale((float)scale, (float)scale, 1.0001F);

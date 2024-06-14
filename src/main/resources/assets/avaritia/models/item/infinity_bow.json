@@ -31,5 +31,9 @@
       },
       "model": "avaritia:item/infinity_bow_tracer"
     }
-  ]
+  ],
+  "loader": "avaritia:cosmic",
+  "cosmic": {
+    "mask": "#mask"
+  }
 }

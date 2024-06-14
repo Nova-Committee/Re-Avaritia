@@ -2,11 +2,9 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.RecipeUtil;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -14,9 +12,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -25,7 +21,7 @@ import java.util.stream.Collectors;
  * Version: 1.0
  */
 @Mod.EventBusSubscriber
-public class DynamicRecipeHandler {
+public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
         List<Singularity> allSingularities = SingularityRegistryHandler.getInstance().getSingularities();

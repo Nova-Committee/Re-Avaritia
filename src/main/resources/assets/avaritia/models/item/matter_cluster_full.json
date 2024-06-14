@@ -1,6 +1,11 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/matter_cluster/full"
+    "layer0": "avaritia:item/matter_cluster/full",
+    "mask": "avaritia:item/matter_cluster/full_mask"
+  },
+  "loader": "avaritia:cosmic",
+  "cosmic": {
+    "mask": "#mask"
   }
 }

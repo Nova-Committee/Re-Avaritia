@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.api.client.model.ItemQuadBakery;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.item.IItemRenderer;
@@ -11,15 +10,12 @@ import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.client.TransformUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -33,18 +29,9 @@ import java.util.List;
 
 public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
     private final List<BakedQuad> maskQuads;
-    private final ItemOverrides overrideList = new ItemOverrides() {
-        public BakedModel resolve(@NotNull BakedModel originalModel, @NotNull ItemStack stack, @javax.annotation.Nullable ClientLevel world, @javax.annotation.Nullable LivingEntity entity, int seed) {
-            CosmicBakeModel.this.entity = entity;
-            CosmicBakeModel.this.world = world == null ? (entity == null ? null : (ClientLevel)entity.level()) : null;
-            return CosmicBakeModel.this.wrapped.getOverrides().resolve(originalModel, stack, world, entity, seed);
-        }
-    };
-
-
     public CosmicBakeModel(final BakedModel wrapped, final TextureAtlasSprite maskSprite) {
         super(wrapped);
-        this.maskQuads = ItemQuadBakery.bakeItem(maskSprite);
+        this.maskQuads = WrappedItemModel.bakeItem(maskSprite);
     }
 
     @Override
@@ -65,24 +52,22 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
-        float scale = 25.0f;
+        float scale = 25f;
         if (!AvaritiaShaders.inventoryRender) {
             yaw = (float)(mc.player.getYRot() * 2.0f * 3.141592653589793 / 360.0);
             pitch = -(float)(mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0);
-            scale = 1.0f;
+            scale = 2f;
         }
         if (stack.getItem() == ModItems.matter_cluster.get()) {
             AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float)MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.cosmicOpacity.set(1.0F);
+            AvaritiaShaders.cosmicOpacity.set(0.2F);
         }
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
         final VertexConsumer cons = source.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
         mc.getItemRenderer().renderQuadList(pStack, cons, this.maskQuads, stack, light, overlay);
-        //itemRenderer.renderModelLists(wrapped, stack, light, overlay, pStack, cons);
-        //this.renderWrapped(stack, pStack, source, light, overlay, true, vertexConsumer -> cons);
     }
 
 
@@ -92,8 +77,7 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
     }
 
     @Override
-    public @NotNull ItemOverrides getOverrides() {
-        return this.overrideList;
+    public boolean isCosmic() {
+        return true;
     }
-
 }

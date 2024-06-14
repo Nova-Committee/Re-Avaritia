@@ -13,10 +13,10 @@ import java.util.function.IntFunction;
 import static committee.nova.mods.avaritia.util.SneakyUtils.unsafeCast;
 
 /**
- * Represents a Key for abstract data storage on an {@link IVertexSource}
+ * Represents a Key for abstract data storage on an {@link committee.nova.mods.avaritia.api.client.render.pipeline.IVertexSource}
  *
- * @see VertexAttribute
- * @see IVertexSource#getAttribute
+ * @see committee.nova.mods.avaritia.api.client.render.pipeline.VertexAttribute
+ * @see committee.nova.mods.avaritia.api.client.render.pipeline.IVertexSource#getAttribute
  * Created by covers1624 on 10/10/2016.
  */
 public abstract class AttributeKey<T> {
