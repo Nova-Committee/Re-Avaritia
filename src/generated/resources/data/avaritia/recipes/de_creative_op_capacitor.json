@@ -1,0 +1,43 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "draconicevolution"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "A": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "B": {
+            "item": "avaritia:infinity"
+          },
+          "C": [],
+          "D": [],
+          "E": []
+        },
+        "pattern": [
+          "BBCCCCCBB",
+          "BBBBBBBBB",
+          "CBAAAAABC",
+          "CBACECABC",
+          "CBAEDEABC",
+          "CBACECABC",
+          "CBAAAAABC",
+          "BBBBBBBBB",
+          "BBCCCCCBB"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "botania"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "group": "{creative:1b,mana:500000}",
+        "key": {
+          "A": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "B": [],
+          "C": [],
+          "D": [],
+          "E": [],
+          "F": [],
+          "G": [],
+          "H": [],
+          "I": [],
+          "J": [],
+          "K": [],
+          "L": [],
+          "M": [],
+          "N": [],
+          "O": [],
+          "P": [],
+          "Q": [],
+          "R": [],
+          "S": [],
+          "T": [],
+          "U": []
+        },
+        "pattern": [
+          "BAAACAAAD",
+          "ATTJKLTTA",
+          "ATUUMUUTA",
+          "ANUOPOUQA",
+          "EUUPRPUUF",
+          "ASUOPOUSA",
+          "ATUUUUUTA",
+          "ATTSISTTA",
+          "GAAAHAAAA"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

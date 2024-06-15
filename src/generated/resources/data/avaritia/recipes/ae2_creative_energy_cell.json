@@ -1,0 +1,39 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "ae2"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "C": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "X": [],
+          "Y": []
+        },
+        "pattern": [
+          "CCCCXCCCC",
+          "CYYYXYYYC",
+          "CYYYXYYYC",
+          "CYYYXYYYC",
+          "XXXXXXXXX",
+          "CYYYXYYYC",
+          "CYYYXYYYC",
+          "CYYYXYYYC",
+          "CCCCXCCCC"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

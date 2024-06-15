@@ -1,0 +1,44 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "tconstruct"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "group": "{slot:abilities}",
+        "key": {
+          "A": {
+            "item": "avaritia:infinity_catalyst"
+          },
+          "B": [],
+          "C": [],
+          "E": [],
+          "F": [],
+          "G": [],
+          "H": []
+        },
+        "pattern": [
+          "GGBHHHBGG",
+          "GCCCCCCCG",
+          "BCBFFFBCB",
+          "HCFFEFFCH",
+          "HCFEAEFCH",
+          "HCFFEFFCH",
+          "BCBFFFBCB",
+          "GCCCCCCCG",
+          "GGBHHHBGG"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

@@ -33,15 +33,12 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState p_60503_, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
-        if (!level.isClientSide()) {
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
-
             if (tile instanceof ExtremeCraftingTile table){
-                NetworkHooks.openScreen((ServerPlayer) player, table, pos);
+                NetworkHooks.openScreen(serverPlayer, table, pos);
             }
-
         }
-
         return InteractionResult.SUCCESS;
     }
 
@@ -54,7 +51,6 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
                 Containers.dropContents(level, pos, table.getInventory().getStacks());
             }
         }
-
         super.onRemove(state, level, pos, newState, isMoving);
     }
 

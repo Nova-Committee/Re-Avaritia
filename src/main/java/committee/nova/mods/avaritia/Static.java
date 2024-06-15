@@ -2,7 +2,9 @@ package committee.nova.mods.avaritia;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +29,10 @@ public class Static {
     public static final ResourceLocation ICON_ATLAS_INFO = rl("cosmic_icons");
     public static boolean isLoad(String name) {
         return ModList.get().isLoaded(name);
+    }
+
+    public static Item getItem(String modid, String name) {
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, name));
     }
 
 }

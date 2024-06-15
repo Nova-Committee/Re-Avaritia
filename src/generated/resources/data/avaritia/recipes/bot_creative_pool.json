@@ -1,0 +1,44 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "botania"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "C": [],
+          "E": [],
+          "F": [],
+          "N": {
+            "item": "avaritia:neutron_ingot"
+          },
+          "X": {
+            "item": "avaritia:infinity_catalyst"
+          },
+          "Y": []
+        },
+        "pattern": [
+          "NNNNNNNNN",
+          "NXCXYXCXN",
+          "NCXEYEXCN",
+          "NXEEYEEXN",
+          "YYYYFYYYY",
+          "NXEEYEEXN",
+          "NCXEYEXCN",
+          "NXCXYXCXN",
+          "NNNNNNNNN"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

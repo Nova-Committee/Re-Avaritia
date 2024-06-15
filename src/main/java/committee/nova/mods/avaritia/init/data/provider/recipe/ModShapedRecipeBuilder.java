@@ -46,6 +46,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     private final RecipeCategory category;
     private final Item result;
     private final int count;
+    private final String nbt;
     private final List<String> rows = Lists.newArrayList();
     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
@@ -53,20 +54,26 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     private String group;
     private boolean showNotification = true;
 
-    public ModShapedRecipeBuilder(RecipeCategory p_249996_, @NotNull ItemLike p_251475_, int p_248948_) {
+    public ModShapedRecipeBuilder(RecipeCategory p_249996_, @NotNull ItemLike p_251475_, int p_248948_, String nbt) {
         this.category = p_249996_;
         this.result = p_251475_.asItem();
         this.count = p_248948_;
+        this.nbt = nbt;
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_250853_, ItemLike p_249747_, String nbt) {
+        return shaped(p_250853_, p_249747_, 1, nbt);
     }
 
     @Contract("_, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_250853_, ItemLike p_249747_) {
-        return shaped(p_250853_, p_249747_, 1);
+        return shaped(p_250853_, p_249747_, 1, "");
     }
 
-    @Contract("_, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_251325_, ItemLike p_250636_, int p_249081_) {
-        return new ModShapedRecipeBuilder(p_251325_, p_250636_, p_249081_);
+    @Contract("_, _, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_251325_, ItemLike p_250636_, int p_249081_, String nbt) {
+        return new ModShapedRecipeBuilder(p_251325_, p_250636_, p_249081_, nbt);
     }
 
     public ModShapedRecipeBuilder define(Character p_206417_, TagKey<Item> p_206418_) {
@@ -127,7 +134,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     public void save(@NotNull Consumer<FinishedRecipe> p_126141_, @NotNull ResourceLocation p_126142_) {
         this.ensureValid(p_126142_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126142_)).rewards(AdvancementRewards.Builder.recipe(p_126142_)).requirements(RequirementsStrategy.OR);
-        p_126141_.accept(new ModShapedRecipeBuilder.Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group,
+        p_126141_.accept(new ModShapedRecipeBuilder.Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group, this.nbt,
                 determineBookCategory(this.category), this.rows, this.key, this.advancement,
                 p_126142_.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
@@ -164,6 +171,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         private final ResourceLocation id;
         private final Item result;
         private final int count;
+        private final String nbt;
         private final String group;
         private final List<String> pattern;
         private final Map<Character, Ingredient> key;
@@ -171,11 +179,12 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         private final ResourceLocation advancementId;
         private final boolean showNotification;
 
-        public Result(ResourceLocation p_273548_, Item p_273530_, int p_272738_, String p_273549_, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
+        public Result(ResourceLocation p_273548_, Item p_273530_, int p_272738_, String nbt, String p_273549_, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
             super(p_273500_);
             this.id = p_273548_;
             this.result = p_273530_;
             this.count = p_272738_;
+            this.nbt = nbt;
             this.group = p_273549_;
             this.pattern = p_273744_;
             this.key = p_272991_;
@@ -208,6 +217,9 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
             jsonobject1.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
             if (this.count > 1) {
                 jsonobject1.addProperty("count", this.count);
+            }
+            if (!nbt.isEmpty()){
+                jsonobject1.addProperty("nbt", nbt);
             }
 
             p_126167_.add("result", jsonobject1);

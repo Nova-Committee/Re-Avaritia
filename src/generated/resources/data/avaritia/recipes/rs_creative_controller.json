@@ -1,0 +1,46 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "refinedstorage"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "A": {
+            "item": "avaritia:infinity_catalyst"
+          },
+          "B": {
+            "item": "avaritia:neutron_ingot"
+          },
+          "C": [],
+          "D": [],
+          "E": [],
+          "F": {
+            "tag": "refinedstorage:controller"
+          }
+        },
+        "pattern": [
+          "ABBBCBBBA",
+          "BDDDCDDDB",
+          "BDDCCCDDB",
+          "BDCCFCCDB",
+          "CCCFAFCCC",
+          "BECCFCCEB",
+          "BEECCCEEB",
+          "BEEECEEEB",
+          "ABBBCBBBA"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

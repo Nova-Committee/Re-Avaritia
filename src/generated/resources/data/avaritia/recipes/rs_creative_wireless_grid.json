@@ -1,0 +1,44 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "refinedstorage"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "A": {
+            "item": "avaritia:endest_pearl"
+          },
+          "B": [],
+          "C": [],
+          "D": [],
+          "E": [],
+          "F": [],
+          "G": [],
+          "H": []
+        },
+        "pattern": [
+          "HH     HH",
+          "H       H",
+          " BCCCCCB ",
+          " CDDFEEC ",
+          " CGFAFGC ",
+          " CDDFEEC ",
+          " BCCCCCB ",
+          "H       H",
+          "HH     HH"
+        ],
+        "result": {
+          "item": "minecraft:air"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}
