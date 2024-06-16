@@ -2,12 +2,9 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.util.ToolUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -55,6 +52,11 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     @Override
+    protected void onHitEntity(@NotNull EntityHitResult result) {
+        ToolUtils.infinityArrowDamage(result, this);
+    }
+
+    @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putDouble("damage", Float.POSITIVE_INFINITY);
@@ -75,7 +77,7 @@ public class HeavenArrowEntity extends Arrow {
 
 
     @Override
-    protected @NotNull ItemStack getPickupItem() {
+    public @NotNull ItemStack getPickupItem() {
         return new ItemStack(Items.ARROW);
     }
 }

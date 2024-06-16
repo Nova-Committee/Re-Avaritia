@@ -4,9 +4,7 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -43,7 +41,7 @@ public class HeavenSubArrowEntity extends Arrow {
     }
 
     @Override
-    protected @NotNull ItemStack getPickupItem() {
+    public @NotNull ItemStack getPickupItem() {
         return new ItemStack(Items.ARROW);
     }
 
@@ -58,14 +56,6 @@ public class HeavenSubArrowEntity extends Arrow {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        super.onHitEntity(result);
-        Entity entity = result.getEntity();
-        var randy = level().random;
-
-        if (entity instanceof LivingEntity living) {
-            var pos = living.getOnPos();
-            ToolUtils.arrowBarrage(getOwner(), level(), piercedAndKilledEntities, pickup, randy, pos);
-            this.remove(RemovalReason.KILLED);
-        }
+        ToolUtils.infinityArrowDamage(result, this);
     }
 }

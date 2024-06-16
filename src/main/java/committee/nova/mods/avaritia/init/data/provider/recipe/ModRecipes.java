@@ -671,6 +671,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("H       H")
                         .pattern("HH     HH")
 
+
                         .define('A', ModItems.endest_pearl.get())
                         .define('B', Static.getItem("refinedstorage", "range_upgrade"))
                         .define('C', Static.getItem("refinedstorage", "wireless_transmitter"))

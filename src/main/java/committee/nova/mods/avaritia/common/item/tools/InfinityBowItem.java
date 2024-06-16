@@ -150,14 +150,14 @@ public class InfinityBowItem extends BowItem {
 
                     }
 
-                }
-                else {
-                    arrowEntity = HeavenArrowEntity.create(level, player);
+                } else {
+                    arrowEntity = this.customArrow(HeavenArrowEntity.create(level, player));
                     arrowEntity.setPos(player.getX() - 0.3, player.getEyeY() - 0.1, player.getZ());
                     arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.01F);
                     if (draw == 1.0F) {
                         arrowEntity.setCritArrow(true);//蓄力满必暴击
                     }
+                    arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() * (double)DAMAGE_MULTIPLIER);
                     addEnchant(stack, level, player, arrowEntity, powerForTime);
                 }
 
@@ -191,15 +191,14 @@ public class InfinityBowItem extends BowItem {
         if (arrow.getType() != EntityType.ARROW && arrow.getType() != EntityType.SPECTRAL_ARROW) {
             return arrow;
         } else {
-            Entity owner = arrow.getOwner();
-            if (!(owner instanceof LivingEntity)) {
-                return new TraceArrowEntity(ModEntities.TRACE_ARROW.get(), arrow.level());
-            } else {
-                TraceArrowEntity newArrow = new TraceArrowEntity(arrow.level(), (LivingEntity)arrow.getOwner());
+            if (arrow.getOwner() != null && arrow.getOwner() instanceof LivingEntity livingEntity) {
+                TraceArrowEntity newArrow = new TraceArrowEntity(arrow.level(), livingEntity);
                 if (arrow instanceof SpectralArrow spectralArrow) {
                     newArrow.setSpectral(spectralArrow.duration);
                 }
                 return newArrow;
+            } else {
+                return new TraceArrowEntity(ModEntities.TRACE_ARROW.get(), arrow.level());
             }
         }
     }

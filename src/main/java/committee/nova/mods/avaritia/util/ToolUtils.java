@@ -1,36 +1,51 @@
 package committee.nova.mods.avaritia.util;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.math.RayTracer;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -239,6 +254,8 @@ public class ToolUtils {
         return counts;
     }
 
+    private static final List<String> projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
+
 
     public static void arrowBarrage(Entity shooter, Level level, List<Entity> piercedAndKilledEntities, AbstractArrow.Pickup pickup, RandomSource randy, BlockPos pos) {
         for (int i = 0; i < 30; i++) {//30支箭
@@ -265,4 +282,121 @@ public class ToolUtils {
             level.addFreshEntity(subArrow);
         }
     }
+
+
+    public static DamageSource getArrowDamageSource(AbstractArrow arrow, Entity owner, Entity target) {
+        DamageSource damagesource;
+        if (owner == null) {
+            damagesource = target.damageSources().arrow(arrow, arrow);
+        } else {
+            damagesource = target.damageSources().arrow(arrow, owner);
+            if (owner instanceof LivingEntity livingEntity) {
+                livingEntity.setLastHurtMob(target);
+            }
+        }
+
+        if (owner != null && projectileAntiImmuneEntities.contains(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(target.getType())).toString())) {
+            damagesource = ModDamageTypes.causeRandomDamage(owner);
+        }
+        return damagesource;
+    }
+
+    public static void infinityArrowDamage(@NotNull EntityHitResult result, Arrow arrow) {
+
+        Entity entity = result.getEntity();
+        float f = (float)arrow.getDeltaMovement().length();
+        int i = Mth.ceil(Mth.clamp((double)f * arrow.getBaseDamage(), 0.0D, 2.147483647E9D));
+        Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();
+        if (arrow.getPierceLevel() > 0) {
+            if (arrow.piercingIgnoreEntityIds == null) {
+                arrow.piercingIgnoreEntityIds = new IntOpenHashSet(5);
+            }
+
+            if (arrow.piercedAndKilledEntities == null) {
+                arrow.piercedAndKilledEntities = Lists.newArrayListWithCapacity(5);
+            }
+
+            if (arrow.piercingIgnoreEntityIds.size() >= arrow.getPierceLevel() + 1) {
+                arrow.discard();
+                return;
+            }
+
+            arrow.piercingIgnoreEntityIds.add(entity.getId());
+        }
+
+        if (arrow.isCritArrow()) {
+            long j = arrow.random.nextInt(i / 2 + 2);
+            i = (int)Math.min(j + (long)i, 2147483647L);
+        }
+
+        DamageSource damagesource = ToolUtils.getArrowDamageSource(arrow, owner, entity);
+        boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
+        int k = entity.getRemainingFireTicks();
+        if (arrow.isOnFire() && !isEnderman) {
+            entity.setSecondsOnFire(5);
+        }
+
+        if (entity instanceof Player player) {
+            if (player.isUsingItem() && player.getUseItem().getItem() instanceof ShieldItem) {
+                player.getCooldowns().addCooldown(player.getUseItem().getItem(), 100);
+                arrow.level().broadcastEntityEvent(player, (byte)30);
+                player.stopUsingItem();
+            }
+        }
+
+        if (entity.hurt(damagesource, (float)i)) {
+            if (entity instanceof LivingEntity livingentity) {
+                if (!arrow.level().isClientSide && arrow.getPierceLevel() <= 0) {
+                    livingentity.setArrowCount(livingentity.getArrowCount() + 1);
+                }
+
+                if (arrow.knockback > 0) {
+                    Vec3 vector3d = arrow.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale((double)arrow.knockback * 0.6D);
+                    if (vector3d.lengthSqr() > 0.0D) {
+                        livingentity.push(vector3d.x, 0.1D, vector3d.z);
+                    }
+                }
+
+                if (!arrow.level().isClientSide && owner instanceof LivingEntity) {
+                    EnchantmentHelper.doPostHurtEffects(livingentity, owner);
+                    EnchantmentHelper.doPostDamageEffects((LivingEntity)owner, livingentity);
+                }
+
+                arrow.doPostHurtEffects(livingentity);
+                if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer && !arrow.isSilent()) {
+                    ((ServerPlayer)owner).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                }
+
+                if (!entity.isAlive() && arrow.piercedAndKilledEntities != null) {
+                    arrow.piercedAndKilledEntities.add(livingentity);
+                }
+
+                if (!arrow.level().isClientSide && owner instanceof ServerPlayer serverPlayer) {
+                    if (arrow.piercedAndKilledEntities != null && arrow.shotFromCrossbow()) {
+                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, arrow.piercedAndKilledEntities);
+                    } else if (!entity.isAlive() && arrow.shotFromCrossbow()) {
+                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, List.of(entity));
+                    }
+                }
+            }
+
+            arrow.playSound(arrow.getHitGroundSoundEvent(), 1.0F, 1.2F / (arrow.random.nextFloat() * 0.2F + 0.9F));
+            if (arrow.getPierceLevel() <= 0) {
+                arrow.discard();
+            }
+        } else {
+            entity.setRemainingFireTicks(k);
+            arrow.setDeltaMovement(arrow.getDeltaMovement().scale(0.0D));
+            arrow.setYRot(arrow.getYRot() + 180.0F);
+            arrow.setPos(entity.position());
+            arrow.yRotO += 180.0F;
+            if (!arrow.level().isClientSide && arrow.getDeltaMovement().lengthSqr() < 1.0E-7D) {
+                if (arrow.pickup == AbstractArrow.Pickup.ALLOWED) {
+                    arrow.spawnAtLocation(arrow.getPickupItem(), 0.1F);
+                }
+                arrow.discard();
+            }
+        }
+    }
+
 }
