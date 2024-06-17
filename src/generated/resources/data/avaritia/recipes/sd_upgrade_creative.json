@@ -1,0 +1,46 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "storagedrawers"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "D": {
+            "item": "storagedrawers:basicdrawers"
+          },
+          "E": {
+            "item": "storagedrawers:upgrade_storage"
+          },
+          "N": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "S": {
+            "item": "avaritia:infinity_catalyst"
+          }
+        },
+        "pattern": [
+          "    S    ",
+          " NDDDDDN ",
+          " DNDDDND ",
+          " DDNDNDD ",
+          "SDDDEDDDS",
+          " DDNDNDD ",
+          " DNDDDND ",
+          " NDDDDDN ",
+          "    S    "
+        ],
+        "result": {
+          "item": "storagedrawers:upgrade_creative"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

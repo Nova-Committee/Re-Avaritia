@@ -18,9 +18,15 @@
           "B": {
             "item": "avaritia:neutron_ingot"
           },
-          "C": [],
-          "D": [],
-          "E": [],
+          "C": {
+            "item": "refinedstorage:advanced_processor"
+          },
+          "D": {
+            "item": "refinedstorage:4096k_fluid_storage_part"
+          },
+          "E": {
+            "item": "refinedstorage:64k_storage_part"
+          },
           "F": {
             "tag": "refinedstorage:controller"
           }
@@ -37,7 +43,7 @@
           "ABBBCBBBA"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "refinedstorage:creative_controller"
         },
         "show_notification": true
       }

@@ -11,31 +11,70 @@
       "recipe": {
         "type": "avaritia:shaped_extreme_craft",
         "category": "equipment",
-        "group": "{creative:1b,mana:500000}",
         "key": {
           "A": {
             "item": "avaritia:infinity_ingot"
           },
-          "B": [],
-          "C": [],
-          "D": [],
-          "E": [],
-          "F": [],
-          "G": [],
-          "H": [],
-          "I": [],
-          "J": [],
-          "K": [],
-          "L": [],
-          "M": [],
-          "N": [],
-          "O": [],
-          "P": [],
-          "Q": [],
-          "R": [],
-          "S": [],
-          "T": [],
-          "U": []
+          "B": {
+            "item": "botania:rune_envy"
+          },
+          "C": {
+            "item": "botania:rune_gluttony"
+          },
+          "D": {
+            "item": "botania:rune_winter"
+          },
+          "E": {
+            "item": "botania:rune_lust"
+          },
+          "F": {
+            "item": "botania:rune_pride"
+          },
+          "G": {
+            "item": "botania:rune_wrath"
+          },
+          "H": {
+            "item": "botania:rune_greed"
+          },
+          "I": {
+            "item": "botania:rune_sloth"
+          },
+          "J": {
+            "item": "botania:infinite_fruit"
+          },
+          "K": {
+            "item": "botania:flight_tiara"
+          },
+          "L": {
+            "item": "botania:king_key"
+          },
+          "M": {
+            "item": "botania:flugel_eye"
+          },
+          "N": {
+            "item": "botania:odin_ring"
+          },
+          "O": {
+            "item": "botania:spawner_mover"
+          },
+          "P": {
+            "item": "botania:mana_mirror"
+          },
+          "Q": {
+            "item": "botania:thor_ring"
+          },
+          "R": {
+            "item": "botania:mana_tablet"
+          },
+          "S": {
+            "item": "botania:dice"
+          },
+          "T": {
+            "item": "botania:fabulous_pool"
+          },
+          "U": {
+            "item": "botania:terrasteel_block"
+          }
         },
         "pattern": [
           "BAAACAAAD",
@@ -49,7 +88,8 @@
           "GAAAHAAAA"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "botania:mana_tablet",
+          "nbt": "{creative:1b,mana:500000}"
         },
         "show_notification": true
       }

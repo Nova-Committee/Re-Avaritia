@@ -27,7 +27,8 @@
     "    C    "
   ],
   "result": {
-    "item": "avaritia:infinity_totem"
+    "item": "avaritia:infinity_totem",
+    "nbt": "{Damage:0}"
   },
   "show_notification": true
 }

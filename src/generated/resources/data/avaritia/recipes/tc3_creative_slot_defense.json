@@ -11,17 +11,28 @@
       "recipe": {
         "type": "avaritia:shaped_extreme_craft",
         "category": "equipment",
-        "group": "{slot:defense}",
         "key": {
           "A": {
             "item": "avaritia:infinity_catalyst"
           },
-          "B": [],
-          "C": [],
-          "E": [],
-          "F": [],
-          "G": [],
-          "H": []
+          "B": {
+            "item": "tconstruct:iron_reinforcement"
+          },
+          "C": {
+            "item": "tconstruct:knightslime_ingot"
+          },
+          "E": {
+            "item": "tconstruct:manyullyn_block"
+          },
+          "F": {
+            "item": "tconstruct:jeweled_apple"
+          },
+          "G": {
+            "item": "tconstruct:iron_reinforcement"
+          },
+          "H": {
+            "item": "tconstruct:earth_slime_crystal"
+          }
         },
         "pattern": [
           "GGBHHHBGG",
@@ -35,7 +46,8 @@
           "GGBHHHBGG"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "tconstruct:creative_slot",
+          "nbt": "{slot:defense}"
         },
         "show_notification": true
       }

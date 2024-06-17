@@ -1,0 +1,55 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mekanism"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "A": {
+            "item": "mekanism:ultimate_energy_cube"
+          },
+          "B": {
+            "item": "mekanism:induction_casting"
+          },
+          "C": {
+            "item": "mekanism:induction_port"
+          },
+          "D": {
+            "item": "mekanism:induction_cell"
+          },
+          "E": {
+            "item": "mekanism:induction_provider"
+          },
+          "I": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "S": {
+            "item": "avaritia:infinity_catalyst"
+          }
+        },
+        "pattern": [
+          "BBBCECBBB",
+          "BDDDADDDB",
+          "BDSDADSDB",
+          "CDDDIDDDC",
+          "EAAISIAAE",
+          "CDDDIDDDC",
+          "BDSDADSDB",
+          "BDDDADDDB",
+          "BBBCECBBB"
+        ],
+        "result": {
+          "item": "mekanism:creative_energy_cube"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

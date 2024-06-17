@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -44,7 +45,8 @@ import java.util.function.Consumer;
 
 public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
-    private final Item result;
+    private final ItemLike result;
+    private final ResourceLocation result2;
     private final int count;
     private final String nbt;
     private final List<String> rows = Lists.newArrayList();
@@ -54,47 +56,58 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     private String group;
     private boolean showNotification = true;
 
-    public ModShapedRecipeBuilder(RecipeCategory p_249996_, @NotNull ItemLike p_251475_, int p_248948_, String nbt) {
-        this.category = p_249996_;
-        this.result = p_251475_.asItem();
-        this.count = p_248948_;
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, String nbt) {
+        this.category = category;
+        this.result = itemLike;
+        this.result2 = itemLocation;
+        this.count = count;
         this.nbt = nbt;
     }
 
     @Contract("_, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_250853_, ItemLike p_249747_, String nbt) {
-        return shaped(p_250853_, p_249747_, 1, nbt);
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, String nbt) {
+        return shaped(category, null, itemLocation, 1, nbt);
     }
 
     @Contract("_, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_250853_, ItemLike p_249747_) {
-        return shaped(p_250853_, p_249747_, 1, "");
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation) {
+        return shaped(category, null, itemLocation, 1, "");
     }
 
-    @Contract("_, _, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory p_251325_, ItemLike p_250636_, int p_249081_, String nbt) {
-        return new ModShapedRecipeBuilder(p_251325_, p_250636_, p_249081_, nbt);
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, String nbt) {
+        return shaped(category, itemLike, null, 1, nbt);
     }
 
-    public ModShapedRecipeBuilder define(Character p_206417_, TagKey<Item> p_206418_) {
-        return this.define(p_206417_, Ingredient.of(p_206418_));
+    @Contract("_, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike) {
+        return shaped(category, itemLike, null, 1, "");
     }
 
-    public ModShapedRecipeBuilder define(Character p_126128_, ItemLike p_126129_) {
-        return this.define(p_126128_, Ingredient.of(p_126129_));
+    @Contract("_, _, _, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, String nbt) {
+        return new ModShapedRecipeBuilder(category, itemLike, itemLocation, count, nbt);
     }
 
-    public ModShapedRecipeBuilder define(Character p_126128_, ItemStack p_126129_) {
-        return this.define(p_126128_, StrictNBTIngredient.of(p_126129_));
+    public ModShapedRecipeBuilder define(Character character, TagKey<Item> tagKey) {
+        return this.define(character, Ingredient.of(tagKey));
     }
 
-    public ModShapedRecipeBuilder define(Character p_126125_, Ingredient p_126126_) {
-        if (this.key.containsKey(p_126125_)) {
-            throw new IllegalArgumentException("Symbol '" + p_126125_ + "' is already defined!");
-        } else if (p_126125_ == ' ') {
+    public ModShapedRecipeBuilder define(Character character, ItemLike itemLike) {
+        return this.define(character, Ingredient.of(itemLike));
+    }
+
+    public ModShapedRecipeBuilder define(Character character, ItemStack stack) {
+        return this.define(character, StrictNBTIngredient.of(stack));
+    }
+
+    public ModShapedRecipeBuilder define(Character character, Ingredient ingredient) {
+        if (this.key.containsKey(character)) {
+            throw new IllegalArgumentException("Symbol '" + character + "' is already defined!");
+        } else if (character == ' ') {
             throw new IllegalArgumentException("Symbol ' ' (whitespace) is reserved and cannot be defined");
         } else {
-            this.key.put(p_126125_, p_126126_);
+            this.key.put(character, ingredient);
             return this;
         }
     }
@@ -109,8 +122,8 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     }
 
     @Override
-    public @NotNull ModShapedRecipeBuilder unlockedBy(@NotNull String p_126133_, @NotNull CriterionTriggerInstance p_126134_) {
-        this.advancement.addCriterion(p_126133_, p_126134_);
+    public @NotNull ModShapedRecipeBuilder unlockedBy(@NotNull String string, @NotNull CriterionTriggerInstance p_126134_) {
+        this.advancement.addCriterion(string, p_126134_);
         return this;
     }
 
@@ -120,28 +133,34 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         return this;
     }
 
-    public ModShapedRecipeBuilder showNotification(boolean p_273326_) {
-        this.showNotification = p_273326_;
+    public ModShapedRecipeBuilder showNotification(boolean show) {
+        this.showNotification = show;
         return this;
     }
 
     @Override
     public @NotNull Item getResult() {
-        return this.result;
+        if (this.result != null){
+            return this.result.asItem();
+        }
+        if (this.result2 != null){
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(this.result2));
+        }
+        return Items.AIR;
     }
 
     @Override
-    public void save(@NotNull Consumer<FinishedRecipe> p_126141_, @NotNull ResourceLocation p_126142_) {
-        this.ensureValid(p_126142_);
-        this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126142_)).rewards(AdvancementRewards.Builder.recipe(p_126142_)).requirements(RequirementsStrategy.OR);
-        p_126141_.accept(new ModShapedRecipeBuilder.Result(p_126142_, this.result, this.count, this.group == null ? "" : this.group, this.nbt,
+    public void save(@NotNull Consumer<FinishedRecipe> recipeConsumer, @NotNull ResourceLocation location) {
+        this.ensureValid(location);
+        this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(location)).rewards(AdvancementRewards.Builder.recipe(location)).requirements(RequirementsStrategy.OR);
+        recipeConsumer.accept(new ModShapedRecipeBuilder.Result(location, this.result, this.result2, this.count, this.nbt, this.group == null ? "" : this.group,
                 determineBookCategory(this.category), this.rows, this.key, this.advancement,
-                p_126142_.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
+                location.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
 
-    private void ensureValid(ResourceLocation p_126144_) {
+    private void ensureValid(ResourceLocation resourceLocation) {
         if (this.rows.isEmpty()) {
-            throw new IllegalStateException("No pattern is defined for shaped recipe " + p_126144_ + "!");
+            throw new IllegalStateException("No pattern is defined for shaped recipe " + resourceLocation + "!");
         } else {
             Set<Character> set = Sets.newHashSet(this.key.keySet());
             set.remove(' ');
@@ -150,7 +169,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
                 for(int i = 0; i < s.length(); ++i) {
                     char c0 = s.charAt(i);
                     if (!this.key.containsKey(c0) && c0 != ' ') {
-                        throw new IllegalStateException("Pattern in recipe " + p_126144_ + " uses undefined symbol '" + c0 + "'");
+                        throw new IllegalStateException("Pattern in recipe " + resourceLocation + " uses undefined symbol '" + c0 + "'");
                     }
 
                     set.remove(c0);
@@ -158,18 +177,19 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
             }
 
             if (!set.isEmpty()) {
-                throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + p_126144_);
+                throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + resourceLocation);
             } else if (this.rows.size() == 1 && this.rows.get(0).length() == 1) {
-                throw new IllegalStateException("Shaped recipe " + p_126144_ + " only takes in a single item - should it be a shapeless recipe instead?");
+                throw new IllegalStateException("Shaped recipe " + resourceLocation + " only takes in a single item - should it be a shapeless recipe instead?");
             } else if (this.advancement.getCriteria().isEmpty()) {
-                throw new IllegalStateException("No way of obtaining recipe " + p_126144_);
+                throw new IllegalStateException("No way of obtaining recipe " + resourceLocation);
             }
         }
     }
 
     public static class Result extends CraftingRecipeBuilder.CraftingResult {
         private final ResourceLocation id;
-        private final Item result;
+        private final ItemLike result;
+        private final ResourceLocation result2;
         private final int count;
         private final String nbt;
         private final String group;
@@ -179,13 +199,14 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         private final ResourceLocation advancementId;
         private final boolean showNotification;
 
-        public Result(ResourceLocation p_273548_, Item p_273530_, int p_272738_, String nbt, String p_273549_, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
+        public Result(ResourceLocation resourceLocation, ItemLike item, ResourceLocation result2, int count, String nbt, String group, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
             super(p_273500_);
-            this.id = p_273548_;
-            this.result = p_273530_;
-            this.count = p_272738_;
+            this.id = resourceLocation;
+            this.result = item;
+            this.result2 = result2;
+            this.count = count;
             this.nbt = nbt;
-            this.group = p_273549_;
+            this.group = group;
             this.pattern = p_273744_;
             this.key = p_272991_;
             this.advancement = p_273260_;
@@ -193,10 +214,10 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
             this.showNotification = p_272862_;
         }
 
-        public void serializeRecipeData(@NotNull JsonObject p_126167_) {
-            super.serializeRecipeData(p_126167_);
+        public void serializeRecipeData(@NotNull JsonObject pJson) {
+            super.serializeRecipeData(pJson);
             if (!this.group.isEmpty()) {
-                p_126167_.addProperty("group", this.group);
+                pJson.addProperty("group", this.group);
             }
 
             JsonArray jsonarray = new JsonArray();
@@ -205,25 +226,29 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
                 jsonarray.add(s);
             }
 
-            p_126167_.add("pattern", jsonarray);
+            pJson.add("pattern", jsonarray);
             JsonObject jsonobject = new JsonObject();
 
             for(Map.Entry<Character, Ingredient> entry : this.key.entrySet()) {
                 jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson());
             }
 
-            p_126167_.add("key", jsonobject);
+            pJson.add("key", jsonobject);
             JsonObject jsonobject1 = new JsonObject();
-            jsonobject1.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
+
+            if (this.result != null) jsonobject1.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result.asItem())).toString());
+            if (this.result2 != null) jsonobject1.addProperty("item", this.result2.toString());
+
             if (this.count > 1) {
                 jsonobject1.addProperty("count", this.count);
             }
-            if (!nbt.isEmpty()){
-                jsonobject1.addProperty("nbt", nbt);
+
+            if (!this.nbt.isEmpty()){
+                jsonobject1.addProperty("nbt", this.nbt);
             }
 
-            p_126167_.add("result", jsonobject1);
-            p_126167_.addProperty("show_notification", this.showNotification);
+            pJson.add("result", jsonobject1);
+            pJson.addProperty("show_notification", this.showNotification);
         }
 
         @Override

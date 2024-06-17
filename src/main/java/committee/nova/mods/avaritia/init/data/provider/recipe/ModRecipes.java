@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.util.SingularityUtils;
+import committee.nova.mods.avaritia.util.data.RawValue;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
@@ -27,6 +28,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Name: Avaritia-forge / ModRecipes
@@ -466,7 +468,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_totem.get())
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_totem.get(), "")
                 .pattern("   NNN   ")
                 .pattern("  NIIIN  ")
                 .pattern("  NYIYN  ")
@@ -485,7 +487,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
 
         ConditionalRecipe.builder().addCondition(modLoaded("ae2")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("ae2", "creative_energy_cell"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ae2", "creative_energy_cell"))
                         .pattern("CCCCXCCCC")
                         .pattern("CYYYXYYYC")
                         .pattern("CYYYXYYYC")
@@ -497,13 +499,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("CCCCXCCCC")
 
                         .define('C', ModItems.infinity_ingot.get())
-                        .define('Y', Static.getItem("ae2", "dense_energy_cell"))
-                        .define('X', Static.getItem("ae2", "engineering_processor"))
+                        .define('Y', Static.getIngredient("ae2", "dense_energy_cell"))
+                        .define('X', Static.getIngredient("ae2", "engineering_processor"))
                         .unlockedBy("has_item", has(Static.getItem("ae2", "dense_energy_cell")))::save
         ).build(consumer, Static.rl( "ae2_creative_energy_cell"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("botania")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("botania", "mana_tablet"), "{creative:1b,mana:500000}")
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("botania", "mana_tablet"), "{creative:1b,mana:500000}")
                         .pattern("BAAACAAAD")
                         .pattern("ATTJKLTTA")
                         .pattern("ATUUMUUTA")
@@ -515,31 +517,31 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("GAAAHAAAA")
 
                         .define('A', ModItems.infinity_ingot.get())
-                        .define('B', Static.getItem("botania", "rune_envy"))
-                        .define('C', Static.getItem("botania", "rune_gluttony"))
-                        .define('D', Static.getItem("botania", "rune_winter"))
-                        .define('E', Static.getItem("botania", "rune_lust"))
-                        .define('F', Static.getItem("botania", "rune_pride"))
-                        .define('G', Static.getItem("botania", "rune_wrath"))
-                        .define('H', Static.getItem("botania", "rune_greed"))
-                        .define('I', Static.getItem("botania", "rune_sloth"))
-                        .define('J', Static.getItem("botania", "infinite_fruit"))
-                        .define('K', Static.getItem("botania", "flight_tiara"))
-                        .define('L', Static.getItem("botania", "king_key"))
-                        .define('M', Static.getItem("botania", "flugel_eye"))
-                        .define('N', Static.getItem("botania", "odin_ring"))
-                        .define('O', Static.getItem("botania", "spawner_mover"))
-                        .define('P', Static.getItem("botania", "mana_mirror"))
-                        .define('Q', Static.getItem("botania", "thor_ring"))
-                        .define('R', Static.getItem("botania", "mana_tablet"))
-                        .define('S', Static.getItem("botania", "dice"))
-                        .define('T', Static.getItem("botania", "fabulous_pool"))
-                        .define('U', Static.getItem("botania", "terrasteel_block"))
+                        .define('B', Static.getIngredient("botania", "rune_envy"))
+                        .define('C', Static.getIngredient("botania", "rune_gluttony"))
+                        .define('D', Static.getIngredient("botania", "rune_winter"))
+                        .define('E', Static.getIngredient("botania", "rune_lust"))
+                        .define('F', Static.getIngredient("botania", "rune_pride"))
+                        .define('G', Static.getIngredient("botania", "rune_wrath"))
+                        .define('H', Static.getIngredient("botania", "rune_greed"))
+                        .define('I', Static.getIngredient("botania", "rune_sloth"))
+                        .define('J', Static.getIngredient("botania", "infinite_fruit"))
+                        .define('K', Static.getIngredient("botania", "flight_tiara"))
+                        .define('L', Static.getIngredient("botania", "king_key"))
+                        .define('M', Static.getIngredient("botania", "flugel_eye"))
+                        .define('N', Static.getIngredient("botania", "odin_ring"))
+                        .define('O', Static.getIngredient("botania", "spawner_mover"))
+                        .define('P', Static.getIngredient("botania", "mana_mirror"))
+                        .define('Q', Static.getIngredient("botania", "thor_ring"))
+                        .define('R', Static.getIngredient("botania", "mana_tablet"))
+                        .define('S', Static.getIngredient("botania", "dice"))
+                        .define('T', Static.getIngredient("botania", "fabulous_pool"))
+                        .define('U', Static.getIngredient("botania", "terrasteel_block"))
                         .unlockedBy("has_item", has(Static.getItem("botania", "terrasteel_block")))::save
         ).build(consumer, Static.rl( "bot_mana_tablet"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("botania")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("botania", "creative_pool"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("botania", "creative_pool"))
                         .pattern("NNNNNNNNN")
                         .pattern("NXCXYXCXN")
                         .pattern("NCXEYEXCN")
@@ -552,15 +554,15 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('X', ModItems.infinity_catalyst.get())
                         .define('N', ModItems.neutron_ingot.get())
-                        .define('C', Static.getItem("botania", "mana_pool"))
-                        .define('Y', Static.getItem("botania", "fabulous_pool"))
-                        .define('E', Static.getItem("botania", "dragonstone_block"))
-                        .define('F', Static.getItem("botania", "mana_tablet"))
+                        .define('C', Static.getIngredient("botania", "mana_pool"))
+                        .define('Y', Static.getIngredient("botania", "fabulous_pool"))
+                        .define('E', Static.getIngredient("botania", "dragonstone_block"))
+                        .define('F', Static.getIngredient("botania", "mana_tablet"))
                         .unlockedBy("has_item", has(Static.getItem("botania", "mana_tablet")))::save
         ).build(consumer, Static.rl( "bot_creative_pool"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("draconicevolution")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("draconicevolution", "creative_capacitor"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("draconicevolution", "creative_capacitor"))
                         .pattern("AAAACAAAA")
                         .pattern("AEEBCBEEA")
                         .pattern("AEBFCFBEA")
@@ -572,16 +574,16 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("AAAACAAAA")
 
                         .define('A', ModItems.infinity_ingot.get())
-                        .define('B', Static.getItem("draconicevolution", "chaotic_crafting_injector"))
-                        .define('C', Static.getItem("draconicevolution", "reactor_stabilizer"))
-                        .define('D', Static.getItem("draconicevolution", "reactor_core"))
-                        .define('E', Static.getItem("draconicevolution", "chaotic_core"))
-                        .define('F', Static.getItem("draconicevolution", "chaotic_capacitor"))
+                        .define('B', Static.getIngredient("draconicevolution", "chaotic_crafting_injector"))
+                        .define('C', Static.getIngredient("draconicevolution", "reactor_stabilizer"))
+                        .define('D', Static.getIngredient("draconicevolution", "reactor_core"))
+                        .define('E', Static.getIngredient("draconicevolution", "chaotic_core"))
+                        .define('F', Static.getIngredient("draconicevolution", "chaotic_capacitor"))
                         .unlockedBy("has_item", has(Static.getItem("draconicevolution", "chaotic_capacitor")))::save
         ).build(consumer, Static.rl( "de_creative_capacitor"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("draconicevolution")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("draconicevolution", "creative_op_capacitor"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("draconicevolution", "creative_op_capacitor"))
                         .pattern("BBCCCCCBB")
                         .pattern("BBBBBBBBB")
                         .pattern("CBAAAAABC")
@@ -594,14 +596,14 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('A', ModItems.infinity_ingot.get())
                         .define('B', ModBlocks.infinity.get())
-                        .define('C', Static.getItem("draconicevolution", "reactor_stabilizer"))
-                        .define('D', Static.getItem("draconicevolution", "reactor_core"))
-                        .define('E', Static.getItem("draconicevolution", "creative_capacitor"))
+                        .define('C', Static.getIngredient("draconicevolution", "reactor_stabilizer"))
+                        .define('D', Static.getIngredient("draconicevolution", "reactor_core"))
+                        .define('E', Static.getIngredient("draconicevolution", "creative_capacitor"))
                         .unlockedBy("has_item", has(Static.getItem("draconicevolution", "creative_capacitor")))::save
         ).build(consumer, Static.rl( "de_creative_op_capacitor"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("refinedstorage", "creative_controller"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_controller"))
                         .pattern("ABBBCBBBA")
                         .pattern("BDDDCDDDB")
                         .pattern("BDDCCCDDB")
@@ -614,15 +616,15 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('A', ModItems.infinity_catalyst.get())
                         .define('B', ModItems.neutron_ingot.get())
-                        .define('C', Static.getItem("refinedstorage", "advanced_processor"))
-                        .define('D', Static.getItem("refinedstorage", "4096k_fluid_storage_part"))
-                        .define('E', Static.getItem("refinedstorage", "64k_storage_part"))
+                        .define('C', Static.getIngredient("refinedstorage", "advanced_processor"))
+                        .define('D', Static.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
+                        .define('E', Static.getIngredient("refinedstorage", "64k_storage_part"))
                         .define('F', ItemTags.create(new ResourceLocation("refinedstorage", "controller")))
                         .unlockedBy("has_item", has(ItemTags.create(new ResourceLocation("refinedstorage", "controller"))))::save
         ).build(consumer, Static.rl("rs_creative_controller"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("refinedstorage", "creative_fluid_storage_disk"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_fluid_storage_disk"))
                         .pattern("CAAABAAAC")
                         .pattern("AAAABAAAA")
                         .pattern("AAAABAAAA")
@@ -635,13 +637,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('A', ModBlocks.infinity.get())
                         .define('B', ModBlocks.neutron_compressor.get())
-                        .define('C', Static.getItem("refinedstorage", "creative_controller"))
-                        .define('D', Static.getItem("refinedstorage", "4096k_fluid_storage_part"))
+                        .define('C', Static.getIngredient("refinedstorage", "creative_controller"))
+                        .define('D', Static.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
                         .unlockedBy("has_item", has(Static.getItem("refinedstorage", "creative_controller")))::save
         ).build(consumer, Static.rl( "rs_creative_fluid_storage_disk"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("refinedstorage", "creative_storage_disk"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_storage_disk"))
                         .pattern("CAAABAAAC")
                         .pattern("AAAABAAAA")
                         .pattern("AAAABAAAA")
@@ -654,13 +656,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('A', ModBlocks.infinity.get())
                         .define('B', ModBlocks.neutron_compressor.get())
-                        .define('C', Static.getItem("refinedstorage", "creative_controller"))
-                        .define('D', Static.getItem("refinedstorage", "64k_storage_part"))
+                        .define('C', Static.getIngredient("refinedstorage", "creative_controller"))
+                        .define('D', Static.getIngredient("refinedstorage", "64k_storage_part"))
                         .unlockedBy("has_item", has(Static.getItem("refinedstorage", "creative_controller")))::save
         ).build(consumer, Static.rl( "rs_creative_storage_disk"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("refinedstorage", "creative_wireless_grid"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_wireless_grid"))
                         .pattern("HH     HH")
                         .pattern("H       H")
                         .pattern(" BCCCCCB ")
@@ -673,18 +675,18 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
 
                         .define('A', ModItems.endest_pearl.get())
-                        .define('B', Static.getItem("refinedstorage", "range_upgrade"))
-                        .define('C', Static.getItem("refinedstorage", "wireless_transmitter"))
-                        .define('D', Static.getItem("refinedstorage", "destruction_core"))
-                        .define('E', Static.getItem("refinedstorage", "construction_core"))
-                        .define('F', Static.getItem("refinedstorage", "wireless_grid"))
-                        .define('G', Static.getItem("refinedstorage", "network_receiver"))
-                        .define('H', Static.getItem("refinedstorage", "storage_housing"))
+                        .define('B', Static.getIngredient("refinedstorage", "range_upgrade"))
+                        .define('C', Static.getIngredient("refinedstorage", "wireless_transmitter"))
+                        .define('D', Static.getIngredient("refinedstorage", "destruction_core"))
+                        .define('E', Static.getIngredient("refinedstorage", "construction_core"))
+                        .define('F', Static.getIngredient("refinedstorage", "wireless_grid"))
+                        .define('G', Static.getIngredient("refinedstorage", "network_receiver"))
+                        .define('H', Static.getIngredient("refinedstorage", "storage_housing"))
                         .unlockedBy("has_item", has(Static.getItem("refinedstorage", "wireless_grid")))::save
         ).build(consumer, Static.rl( "rs_creative_wireless_grid"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("tconstruct")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("tconstruct", "creative_slot"), "{slot:abilities}")
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("tconstruct", "creative_slot"), "{slot:abilities}")
                         .pattern("GGBHHHBGG")
                         .pattern("GCCCCCCCG")
                         .pattern("BCBFFFBCB")
@@ -696,17 +698,17 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("GGBHHHBGG")
 
                         .define('A', ModItems.infinity_catalyst.get())
-                        .define('B', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('C', Static.getItem("tconstruct", "knightslime_ingot"))
-                        .define('E', Static.getItem("tconstruct", "manyullyn_block"))
-                        .define('F', Static.getItem("tconstruct", "jeweled_apple"))
-                        .define('G', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('H', Static.getItem("tconstruct", "ichor_slime_crystal"))
+                        .define('B', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('C', Static.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('E', Static.getIngredient("tconstruct", "manyullyn_block"))
+                        .define('F', Static.getIngredient("tconstruct", "jeweled_apple"))
+                        .define('G', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('H', Static.getIngredient("tconstruct", "ichor_slime_crystal"))
                         .unlockedBy("has_item", has(Static.getItem("tconstruct", "ichor_slime_crystal")))::save
         ).build(consumer, Static.rl( "tc3_creative_slot_ability"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("tconstruct")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("tconstruct", "creative_slot"), "{slot:defense}")
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("tconstruct", "creative_slot"), "{slot:defense}")
                         .pattern("GGBHHHBGG")
                         .pattern("GCCCCCCCG")
                         .pattern("BCBFFFBCB")
@@ -718,17 +720,17 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("GGBHHHBGG")
 
                         .define('A', ModItems.infinity_catalyst.get())
-                        .define('B', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('C', Static.getItem("tconstruct", "knightslime_ingot"))
-                        .define('E', Static.getItem("tconstruct", "manyullyn_block"))
-                        .define('F', Static.getItem("tconstruct", "jeweled_apple"))
-                        .define('G', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('H', Static.getItem("tconstruct", "earth_slime_crystal"))
+                        .define('B', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('C', Static.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('E', Static.getIngredient("tconstruct", "manyullyn_block"))
+                        .define('F', Static.getIngredient("tconstruct", "jeweled_apple"))
+                        .define('G', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('H', Static.getIngredient("tconstruct", "earth_slime_crystal"))
                         .unlockedBy("has_item", has(Static.getItem("tconstruct", "earth_slime_crystal")))::save
         ).build(consumer, Static.rl("tc3_creative_slot_defense"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("tconstruct")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("tconstruct", "creative_slot"), "{slot:souls}")
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("tconstruct", "creative_slot"), "{slot:souls}")
                         .pattern("GGBHHHBGG")
                         .pattern("GCCCCCCCG")
                         .pattern("BCBFFFBCB")
@@ -740,17 +742,17 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("GGBHHHBGG")
 
                         .define('A', ModItems.infinity_catalyst.get())
-                        .define('B', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('C', Static.getItem("tconstruct", "knightslime_ingot"))
-                        .define('E', Static.getItem("tconstruct", "manyullyn_block"))
-                        .define('F', Static.getItem("tconstruct", "jeweled_apple"))
-                        .define('G', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('H', Static.getItem("tconstruct", "sky_slime_crystal"))
+                        .define('B', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('C', Static.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('E', Static.getIngredient("tconstruct", "manyullyn_block"))
+                        .define('F', Static.getIngredient("tconstruct", "jeweled_apple"))
+                        .define('G', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('H', Static.getIngredient("tconstruct", "sky_slime_crystal"))
                         .unlockedBy("has_item", has(Static.getItem("tconstruct", "sky_slime_crystal")))::save
         ).build(consumer, Static.rl("tc3_creative_slot_souls"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("tconstruct")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Static.getItem("tconstruct", "creative_slot"), "{slot:upgrades}")
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("tconstruct", "creative_slot"), "{slot:upgrades}")
                         .pattern("GGBHHHBGG")
                         .pattern("GCCCCCCCG")
                         .pattern("BCBFFFBCB")
@@ -762,14 +764,142 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .pattern("GGBHHHBGG")
 
                         .define('A', ModItems.infinity_catalyst.get())
-                        .define('B', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('C', Static.getItem("tconstruct", "knightslime_ingot"))
-                        .define('E', Static.getItem("tconstruct", "manyullyn_block"))
-                        .define('F', Static.getItem("tconstruct", "jeweled_apple"))
-                        .define('G', Static.getItem("tconstruct", "iron_reinforcement"))
-                        .define('H', Static.getItem("tconstruct", "ender_slime_crystal"))
+                        .define('B', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('C', Static.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('E', Static.getIngredient("tconstruct", "manyullyn_block"))
+                        .define('F', Static.getIngredient("tconstruct", "jeweled_apple"))
+                        .define('G', Static.getIngredient("tconstruct", "iron_reinforcement"))
+                        .define('H', Static.getIngredient("tconstruct", "ender_slime_crystal"))
                         .unlockedBy("has_item", has(Static.getItem("tconstruct", "ender_slime_crystal")))::save
         ).build(consumer, Static.rl("tc3_creative_slot_upgrades"));
+
+        ConditionalRecipe.builder().addCondition(modLoaded("storagedrawers")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("storagedrawers", "upgrade_creative"))
+                        .pattern("    S    ")
+                        .pattern(" NDDDDDN ")
+                        .pattern(" DNDDDND ")
+                        .pattern(" DDNDNDD ")
+                        .pattern("SDDDEDDDS")
+                        .pattern(" DDNDNDD ")
+                        .pattern(" DNDDDND ")
+                        .pattern(" NDDDDDN ")
+                        .pattern("    S    ")
+
+                        .define('N', ModItems.infinity_ingot.get())
+                        .define('S', ModItems.infinity_catalyst.get())
+                        .define('D', Static.getIngredient("storagedrawers", "basicdrawers"))
+                        .define('E', Static.getIngredient("storagedrawers", "upgrade_storage"))
+                        .unlockedBy("has_item", has(Static.getItem("storagedrawers", "upgrade_storage")))::save
+        ).build(consumer, Static.rl("sd_upgrade_creative"));
+
+        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_energy_cube"))
+                        .pattern("BBBCECBBB")
+                        .pattern("BDDDADDDB")
+                        .pattern("BDSDADSDB")
+                        .pattern("CDDDIDDDC")
+                        .pattern("EAAISIAAE")
+                        .pattern("CDDDIDDDC")
+                        .pattern("BDSDADSDB")
+                        .pattern("BDDDADDDB")
+                        .pattern("BBBCECBBB")
+
+                        .define('I', ModItems.infinity_ingot.get())
+                        .define('S', ModItems.infinity_catalyst.get())
+                        .define('A', Static.getIngredient("mekanism", "ultimate_energy_cube"))
+                        .define('B', Static.getIngredient("mekanism", "induction_casting"))
+                        .define('C', Static.getIngredient("mekanism", "induction_port"))
+                        .define('D', Static.getIngredient("mekanism", "induction_cell"))
+                        .define('E', Static.getIngredient("mekanism", "induction_provider"))
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_energy_cube")))::save
+        ).build(consumer, Static.rl("mek_creative_energy_cube"));
+
+        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_fluid_tank"))
+                        .pattern("         ")
+                        .pattern(" SAADAAS ")
+                        .pattern(" ABBCBBA ")
+                        .pattern(" ABBCBBA ")
+                        .pattern(" ACCICCA ")
+                        .pattern(" ABBCBBA ")
+                        .pattern(" ABBCBBA ")
+                        .pattern(" SAADAAS ")
+                        .pattern("         ")
+
+                        .define('I', ModItems.infinity_ingot.get())
+                        .define('S', ModItems.infinity_catalyst.get())
+                        .define('A', Static.getIngredient("mekanism", "ultimate_fluid_tank"))
+                        .define('B', Static.getIngredient("mekanism", "dynamic_tank"))
+                        .define('C', Static.getIngredient("mekanism", "dynamic_glass"))
+                        .define('D', Static.getIngredient("mekanism", "dynamic_valve"))
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_fluid_tank")))::save
+        ).build(consumer, Static.rl("mek_creative_fluid_tank"));
+
+        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_chemical_tank"))
+                        .pattern("   B B   ")
+                        .pattern(" SAADAAS ")
+                        .pattern(" ABBBBBA ")
+                        .pattern(" ABBCBBA ")
+                        .pattern(" ABCICBA ")
+                        .pattern(" ABBCBBA ")
+                        .pattern(" ABBBBBA ")
+                        .pattern(" SAADAAS ")
+                        .pattern("         ")
+
+                        .define('I', ModItems.infinity_ingot.get())
+                        .define('S', ModItems.infinity_catalyst.get())
+                        .define('A', Static.getIngredient("mekanism", "ultimate_chemical_tank"))
+                        .define('B', Static.getIngredient("mekanism", "dynamic_tank"))
+                        .define('C', Static.getIngredient("mekanism", "dynamic_glass"))
+                        .define('D', Static.getIngredient("mekanism", "dynamic_valve"))
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_chemical_tank")))::save
+        ).build(consumer, Static.rl("mek_creative_chemical_tank"));
+
+        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_bin"))
+                        .pattern("AAAAAAAAA")
+                        .pattern("AEIIIIIEA")
+                        .pattern("AEIIIIIEA")
+                        .pattern("AEIIIIIEA")
+                        .pattern("AEEESEEEA")
+                        .pattern("AEEEEEEEA")
+                        .pattern("AEBCDCBEA")
+                        .pattern("AEBCDCBEA")
+                        .pattern("AAAAAAAAA")
+
+                        .define('I', ModItems.infinity_ingot.get())
+                        .define('S', ModItems.infinity_catalyst.get())
+                        .define('A', Static.getIngredient("mekanism", "fusion_reactor_frame"))
+                        .define('B', Static.getIngredient("mekanism", "ultimate_energy_cube"))
+                        .define('C', Static.getIngredient("mekanism", "ultimate_fluid_tank"))
+                        .define('D', Static.getIngredient("mekanism", "ultimate_chemical_tank"))
+                        .define('E', Static.getIngredient("mekanism", "ultimate_bin"))
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_bin")))::save
+        ).build(consumer, Static.rl("mek_creative_bin"));
+
+        ConditionalRecipe.builder().addCondition(modLoaded("ernderio")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ernderio", "creative_power"))
+                        .pattern("INIIIIINI")
+                        .pattern("NZEEEEEZN")
+                        .pattern("IECWWWCEI")
+                        .pattern("IEWZIZWEI")
+                        .pattern("IEWIVIWEI")
+                        .pattern("IEWZIZWEI")
+                        .pattern("IECWWWCEI")
+                        .pattern("NZEEEEEZN")
+                        .pattern("INIIIIINI")
+
+                        .define('I', ModItems.infinity_ingot.get())
+                        .define('N', ModItems.neutron_ingot.get())
+                        .define('W', Static.getIngredient("ernderio", "weather_crystal"))
+                        .define('V', Static.getIngredient("ernderio", "vibrant_capacitor_bank"))
+                        .define('Z', Static.getIngredient("ernderio", "frank_n_zombie"))
+                        .define('E', Static.getIngredient("ernderio", "sentient_ender"))
+                        .define('C', Static.getIngredient("ernderio", "ender_crystal"))
+                        .unlockedBy("has_item", has(Static.getItem("ernderio", "creative_power")))::save
+        ).build(consumer, Static.rl("eio_creative_power"));
+
     }
 
     protected static InventoryChangeTrigger.TriggerInstance has(@NotNull TagKey<Item> tagKey) {

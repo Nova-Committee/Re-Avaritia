@@ -15,13 +15,27 @@
           "A": {
             "item": "avaritia:endest_pearl"
           },
-          "B": [],
-          "C": [],
-          "D": [],
-          "E": [],
-          "F": [],
-          "G": [],
-          "H": []
+          "B": {
+            "item": "refinedstorage:range_upgrade"
+          },
+          "C": {
+            "item": "refinedstorage:wireless_transmitter"
+          },
+          "D": {
+            "item": "refinedstorage:destruction_core"
+          },
+          "E": {
+            "item": "refinedstorage:construction_core"
+          },
+          "F": {
+            "item": "refinedstorage:wireless_grid"
+          },
+          "G": {
+            "item": "refinedstorage:network_receiver"
+          },
+          "H": {
+            "item": "refinedstorage:storage_housing"
+          }
         },
         "pattern": [
           "HH     HH",
@@ -35,7 +49,7 @@
           "HH     HH"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "refinedstorage:creative_wireless_grid"
         },
         "show_notification": true
       }

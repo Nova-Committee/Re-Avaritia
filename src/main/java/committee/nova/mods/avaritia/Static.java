@@ -1,14 +1,17 @@
 package committee.nova.mods.avaritia;
 
 import com.mojang.authlib.GameProfile;
+import committee.nova.mods.avaritia.util.data.RawValue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Description:
@@ -31,8 +34,11 @@ public class Static {
         return ModList.get().isLoaded(name);
     }
 
+    public static Ingredient getIngredient(String modid, String name) {
+       return Ingredient.fromValues(Stream.of(new RawValue(new ResourceLocation(modid, name))));
+    }
+
     public static Item getItem(String modid, String name) {
         return ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, name));
     }
-
 }

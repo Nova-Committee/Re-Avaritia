@@ -18,9 +18,15 @@
           "B": {
             "item": "avaritia:infinity"
           },
-          "C": [],
-          "D": [],
-          "E": []
+          "C": {
+            "item": "draconicevolution:reactor_stabilizer"
+          },
+          "D": {
+            "item": "draconicevolution:reactor_core"
+          },
+          "E": {
+            "item": "draconicevolution:creative_capacitor"
+          }
         },
         "pattern": [
           "BBCCCCCBB",
@@ -34,7 +40,7 @@
           "BBCCCCCBB"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "draconicevolution:creative_op_capacitor"
         },
         "show_notification": true
       }

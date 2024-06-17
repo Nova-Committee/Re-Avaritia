@@ -15,8 +15,12 @@
           "C": {
             "item": "avaritia:infinity_ingot"
           },
-          "X": [],
-          "Y": []
+          "X": {
+            "item": "ae2:engineering_processor"
+          },
+          "Y": {
+            "item": "ae2:dense_energy_cell"
+          }
         },
         "pattern": [
           "CCCCXCCCC",
@@ -30,7 +34,7 @@
           "CCCCXCCCC"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "ae2:creative_energy_cell"
         },
         "show_notification": true
       }

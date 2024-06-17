@@ -1,0 +1,52 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mekanism"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "A": {
+            "item": "mekanism:ultimate_fluid_tank"
+          },
+          "B": {
+            "item": "mekanism:dynamic_tank"
+          },
+          "C": {
+            "item": "mekanism:dynamic_glass"
+          },
+          "D": {
+            "item": "mekanism:dynamic_valve"
+          },
+          "I": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "S": {
+            "item": "avaritia:infinity_catalyst"
+          }
+        },
+        "pattern": [
+          "         ",
+          " SAADAAS ",
+          " ABBCBBA ",
+          " ABBCBBA ",
+          " ACCICCA ",
+          " ABBCBBA ",
+          " ABBCBBA ",
+          " SAADAAS ",
+          "         "
+        ],
+        "result": {
+          "item": "mekanism:creative_fluid_tank"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

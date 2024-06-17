@@ -18,8 +18,12 @@
           "B": {
             "item": "avaritia:neutron_compressor"
           },
-          "C": [],
-          "D": []
+          "C": {
+            "item": "refinedstorage:creative_controller"
+          },
+          "D": {
+            "item": "refinedstorage:4096k_fluid_storage_part"
+          }
         },
         "pattern": [
           "CAAABAAAC",
@@ -33,7 +37,7 @@
           "CAAABAAAC"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "refinedstorage:creative_fluid_storage_disk"
         },
         "show_notification": true
       }

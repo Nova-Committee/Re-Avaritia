@@ -15,11 +15,21 @@
           "A": {
             "item": "avaritia:infinity_ingot"
           },
-          "B": [],
-          "C": [],
-          "D": [],
-          "E": [],
-          "F": []
+          "B": {
+            "item": "draconicevolution:chaotic_crafting_injector"
+          },
+          "C": {
+            "item": "draconicevolution:reactor_stabilizer"
+          },
+          "D": {
+            "item": "draconicevolution:reactor_core"
+          },
+          "E": {
+            "item": "draconicevolution:chaotic_core"
+          },
+          "F": {
+            "item": "draconicevolution:chaotic_capacitor"
+          }
         },
         "pattern": [
           "AAAACAAAA",
@@ -33,7 +43,7 @@
           "AAAACAAAA"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "draconicevolution:creative_capacitor"
         },
         "show_notification": true
       }

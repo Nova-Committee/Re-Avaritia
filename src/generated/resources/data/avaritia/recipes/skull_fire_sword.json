@@ -30,7 +30,8 @@
     "D        "
   ],
   "result": {
-    "item": "avaritia:skull_fire_sword"
+    "item": "avaritia:skull_fire_sword",
+    "nbt": "{Damage:0}"
   },
   "show_notification": true
 }

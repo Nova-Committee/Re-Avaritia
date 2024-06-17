@@ -1,0 +1,55 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mekanism"
+        }
+      ],
+      "recipe": {
+        "type": "avaritia:shaped_extreme_craft",
+        "category": "equipment",
+        "key": {
+          "A": {
+            "item": "mekanism:fusion_reactor_frame"
+          },
+          "B": {
+            "item": "mekanism:ultimate_energy_cube"
+          },
+          "C": {
+            "item": "mekanism:ultimate_fluid_tank"
+          },
+          "D": {
+            "item": "mekanism:ultimate_chemical_tank"
+          },
+          "E": {
+            "item": "mekanism:ultimate_bin"
+          },
+          "I": {
+            "item": "avaritia:infinity_ingot"
+          },
+          "S": {
+            "item": "avaritia:infinity_catalyst"
+          }
+        },
+        "pattern": [
+          "AAAAAAAAA",
+          "AEIIIIIEA",
+          "AEIIIIIEA",
+          "AEIIIIIEA",
+          "AEEESEEEA",
+          "AEEEEEEEA",
+          "AEBCDCBEA",
+          "AEBCDCBEA",
+          "AAAAAAAAA"
+        ],
+        "result": {
+          "item": "mekanism:creative_bin"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

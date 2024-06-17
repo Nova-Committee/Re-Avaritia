@@ -12,16 +12,24 @@
         "type": "avaritia:shaped_extreme_craft",
         "category": "equipment",
         "key": {
-          "C": [],
-          "E": [],
-          "F": [],
+          "C": {
+            "item": "botania:mana_pool"
+          },
+          "E": {
+            "item": "botania:dragonstone_block"
+          },
+          "F": {
+            "item": "botania:mana_tablet"
+          },
           "N": {
             "item": "avaritia:neutron_ingot"
           },
           "X": {
             "item": "avaritia:infinity_catalyst"
           },
-          "Y": []
+          "Y": {
+            "item": "botania:fabulous_pool"
+          }
         },
         "pattern": [
           "NNNNNNNNN",
@@ -35,7 +43,7 @@
           "NNNNNNNNN"
         ],
         "result": {
-          "item": "minecraft:air"
+          "item": "botania:creative_pool"
         },
         "show_notification": true
       }
