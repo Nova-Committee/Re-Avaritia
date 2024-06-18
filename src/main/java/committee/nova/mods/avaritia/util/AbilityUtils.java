@@ -57,22 +57,20 @@ public class AbilityUtils {
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
-        for (var entity : toAttack) {
-            if (hurtAnimal) {
-                if (entity instanceof Animal animal) {
+        toAttack.stream().filter(entity -> entity instanceof Mob).forEach(entity -> {
+            if (entity instanceof Mob mob) {
+                if (hurtAnimal && mob instanceof Animal animal) {
                     animal.hurt(src, damage);
+                } else if (mob instanceof EnderDragon dragon) {
+                    dragon.hurt(dragon.head, src, Float.POSITIVE_INFINITY);
+                } else if (mob instanceof WitherBoss wither) {
+                    wither.setInvulnerableTicks(0);
+                    wither.hurt(src, damage);
+                } else if (!(mob instanceof Animal)){
+                    mob.hurt(src, damage);
                 }
-            } else if (entity instanceof Mob) {
-
-                    if (entity instanceof EnderDragon drageon) {
-                        drageon.hurt(drageon.head, src, Float.POSITIVE_INFINITY);
-                    } else if (entity instanceof WitherBoss wither) {
-                        wither.setInvulnerableTicks(0);
-                        wither.hurt(src, damage);
-                    } else entity.hurt(src, damage);
-
             }
-        }
+        });
     }
 
     public static boolean isPlayerWearing(LivingEntity entity, EquipmentSlot slot, Predicate<Item> predicate) {

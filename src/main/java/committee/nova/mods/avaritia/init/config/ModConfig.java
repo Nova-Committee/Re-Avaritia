@@ -34,7 +34,7 @@ public class ModConfig {
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", false, "Whether to merge matter cluster");
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
-        isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage", true, "Does the right key range attack of endless sword attack neutral creatures");
+        isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
         subArrowDamage = buildInt(common, "Sub Arrow Damage", 10000, 100, 100000, "Infinity bow scattering light arrow damage");
         axeChainCount = buildInt(common, "Axe Chain Count", 64, 16, 128, "Chain number of endless axe cutting trees");
         foodTime = buildDouble(common, "Food Time", 1d, 0.1d, 5d, "Food effect time scaling factor");
