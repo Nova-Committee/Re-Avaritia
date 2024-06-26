@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
-import committee.nova.mods.avaritia.common.menu.inventory.ExtremeCraftingInventory;
-import committee.nova.mods.avaritia.common.slot.ExtremeCraftingSlot;
+import committee.nova.mods.avaritia.common.inventory.ExtremeInventory;
+import committee.nova.mods.avaritia.common.inventory.slot.ExtremeResultSlot;
 import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -12,15 +12,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Function;
 
 /**
  * Description:
@@ -52,9 +49,9 @@ public class ExtremeCraftingMenu extends BaseMenu {
         this.world = playerInventory.player.level();
         this.result = new ResultContainer();
 
-        var matrix = new ExtremeCraftingInventory(this, inventory, 9);
+        var matrix = new ExtremeInventory(this, inventory, 9);
 
-        this.addSlot(new ExtremeCraftingSlot(this.player,this, matrix, this.result, 0, 206, 89));
+        this.addSlot(new ExtremeResultSlot(this.player,this, matrix, this.result, 0, 206, 89));
 
         int i, j;
         for (i = 0; i < 9; i++) {

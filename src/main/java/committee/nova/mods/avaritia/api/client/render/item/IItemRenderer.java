@@ -35,9 +35,9 @@ public interface IItemRenderer extends PerspectiveModel {
 
     //Useless methods for IItemRenderer.
     //@formatter:off
-    @Override default @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand) { return Collections.emptyList(); }
+    @Override default @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, @NotNull RandomSource rand) { return Collections.emptyList(); }
     @Override default boolean isCustomRenderer() { return true; }
     @Override default @NotNull TextureAtlasSprite getParticleIcon() { return TextureUtils.getMissingSprite(); }
-    @Override default ItemOverrides getOverrides() { return ItemOverrides.EMPTY; }
+    @Override default@NotNull ItemOverrides getOverrides() { return ItemOverrides.EMPTY; }
     //@formatter:on
 }

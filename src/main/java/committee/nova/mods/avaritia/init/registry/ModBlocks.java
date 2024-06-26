@@ -1,9 +1,8 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.api.common.item.BaseBlockItem;
-import committee.nova.mods.avaritia.common.block.CompressorBlock;
-import committee.nova.mods.avaritia.common.block.ExtremeCraftingTableBlock;
+import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
+import committee.nova.mods.avaritia.common.block.extreme.ExtremeCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
@@ -24,9 +23,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static committee.nova.mods.avaritia.init.registry.ModItems.COSMIC_RARITY;

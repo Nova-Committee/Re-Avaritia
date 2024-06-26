@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.block;
+package committee.nova.mods.avaritia.common.block.compressor;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.CompressorTile;

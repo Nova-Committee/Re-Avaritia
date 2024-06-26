@@ -1,10 +1,11 @@
-package committee.nova.mods.avaritia.common.menu.inventory;
+package committee.nova.mods.avaritia.common.inventory;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
@@ -12,16 +13,16 @@ import net.minecraft.world.item.ItemStack;
  * Date: 2022/4/2 11:09
  * Version: 1.0
  */
-public class ExtremeCraftingInventory extends TransientCraftingContainer {
+public class ExtremeInventory extends TransientCraftingContainer {
     private final AbstractContainerMenu container;
     private final BaseItemStackHandler inventory;
     private final boolean autoTable;
 
-    public ExtremeCraftingInventory(AbstractContainerMenu container, BaseItemStackHandler inventory, int size) {
+    public ExtremeInventory(AbstractContainerMenu container, BaseItemStackHandler inventory, int size) {
         this(container, inventory, size, false);
     }
 
-    public ExtremeCraftingInventory(AbstractContainerMenu container, BaseItemStackHandler inventory, int size, boolean autoTable) {
+    public ExtremeInventory(AbstractContainerMenu container, BaseItemStackHandler inventory, int size, boolean autoTable) {
         super(container, size, size);
         this.container = container;
         this.inventory = inventory;
@@ -44,12 +45,12 @@ public class ExtremeCraftingInventory extends TransientCraftingContainer {
     }
 
     @Override
-    public ItemStack getItem(int slot) {
+    public @NotNull ItemStack getItem(int slot) {
         return this.inventory.getStackInSlot(slot);
     }
 
     @Override
-    public ItemStack removeItem(int slot, int amount) {
+    public @NotNull ItemStack removeItem(int slot, int amount) {
         var stack = this.inventory.extractItemSuper(slot, amount, false);
 
         this.container.slotsChanged(this);
@@ -58,7 +59,7 @@ public class ExtremeCraftingInventory extends TransientCraftingContainer {
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int slot) {
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
         var stack = this.inventory.getStackInSlot(slot);
 
         this.inventory.setStackInSlot(slot, ItemStack.EMPTY);
@@ -67,17 +68,18 @@ public class ExtremeCraftingInventory extends TransientCraftingContainer {
     }
 
     @Override
-    public void setItem(int slot, ItemStack stack) {
+    public void setItem(int slot, @NotNull ItemStack stack) {
         this.inventory.setStackInSlot(slot, stack);
         this.container.slotsChanged(this);
     }
 
     @Override
     public void setChanged() {
+        super.setChanged();
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return true;
     }
 

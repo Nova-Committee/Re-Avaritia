@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.api.common.net.IPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,31 +14,31 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * TotemPacket
+ * S2CTotemPacket
  *
  * @author cnlimiter
  * @version 1.0
  * @description
  * @date 2024/3/28 14:02
  */
-public class TotemPacket {
+public class S2CTotemPacket {
     private final ItemStack stack;
     private final int entityId;
-    public TotemPacket(FriendlyByteBuf buf) {
+    public S2CTotemPacket(FriendlyByteBuf buf) {
         this.stack = buf.readItem();
         this.entityId = buf.readInt();
     }
-    public TotemPacket(ItemStack stack, int entityId) {
+    public S2CTotemPacket(ItemStack stack, int entityId) {
         this.stack = stack;
         this.entityId = entityId;
     }
 
-    public static void write(TotemPacket msg, FriendlyByteBuf buf) {
+    public static void write(S2CTotemPacket msg, FriendlyByteBuf buf) {
         buf.writeItem(msg.stack);
         buf.writeInt(msg.entityId);
     }
 
-    public static  void run(TotemPacket msg, Supplier<NetworkEvent.Context> ctx) {
+    public static  void run(S2CTotemPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             playTotem(msg.stack, msg.entityId); //处理服务端发送给客户端的消息
         });

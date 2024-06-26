@@ -187,8 +187,8 @@ publishing {
     repositories {
         if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
             maven {
-                name 'release'
-                url = 'https://maven.nova-committee.cn/releases'
+                name 'S3'
+                url = 'https://maven.nova-committee.cn/s'
 
                 credentials {
                     username System.getenv('MAVEN_USERNAME')

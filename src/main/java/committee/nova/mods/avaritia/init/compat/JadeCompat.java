@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.block.CompressorBlock;
+import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
 import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.Minecraft;

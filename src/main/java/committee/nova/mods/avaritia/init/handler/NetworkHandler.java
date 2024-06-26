@@ -1,8 +1,9 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.net.SyncSingularitiesPacket;
-import committee.nova.mods.avaritia.common.net.TotemPacket;
+import committee.nova.mods.avaritia.common.net.C2SJEIGhostPacket;
+import committee.nova.mods.avaritia.common.net.S2CSingularitiesPacket;
+import committee.nova.mods.avaritia.common.net.S2CTotemPacket;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -28,7 +29,8 @@ public class NetworkHandler {
 
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
-        CHANNEL.registerMessage(id++, SyncSingularitiesPacket.class, SyncSingularitiesPacket::write, SyncSingularitiesPacket::new, SyncSingularitiesPacket::run);
-        CHANNEL.registerMessage(id++, TotemPacket.class, TotemPacket::write, TotemPacket::new, TotemPacket::run);
+        CHANNEL.registerMessage(id++, S2CSingularitiesPacket.class, S2CSingularitiesPacket::write, S2CSingularitiesPacket::new, S2CSingularitiesPacket::run);
+        CHANNEL.registerMessage(id++, S2CTotemPacket.class, S2CTotemPacket::write, S2CTotemPacket::new, S2CTotemPacket::run);
+        CHANNEL.registerMessage(id++, C2SJEIGhostPacket.class, C2SJEIGhostPacket::write, C2SJEIGhostPacket::new, C2SJEIGhostPacket::run);
     }
 }

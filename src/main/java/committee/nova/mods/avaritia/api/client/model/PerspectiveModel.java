@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import java.util.Objects;
+
 /**
  * A simple {@link BakedModel} implementation, with automatic handling of
  * {@link PerspectiveModelState}s.
@@ -31,10 +33,10 @@ public interface PerspectiveModel extends BakedModel {
     @Override
     default @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext context, @NotNull PoseStack pStack, boolean leftFlip) {
         PerspectiveModelState modelState = getModelState();
-        Transformation transform = getModelState().getTransform(context);
-        Vector3f trans = transform.getTranslation();
-        Vector3f scale = transform.getScale();
         if (modelState != null) {
+            Transformation transform = getModelState().getTransform(context);
+            Vector3f trans = transform.getTranslation();
+            Vector3f scale = transform.getScale();
             pStack.translate(trans.x(), trans.y(), trans.z());
             pStack.mulPose(transform.getLeftRotation());
             pStack.scale(scale.x(), scale.y(), scale.z());

@@ -77,7 +77,7 @@ public class JeiCompat implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(CompressorScreen.class, 89, 35, 21, 16, CompressorCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeCraftingScreen.class, 174, 90, 21, 14, ExtremeCraftingTableCategory.RECIPE_TYPE);
-
+        //registration.addGhostIngredientHandler(ExtremeRecipeGeneratorScreen.class, new RecipeLinkJEI<>());
     }
 
     @Override

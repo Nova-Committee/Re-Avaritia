@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.block;
+package committee.nova.mods.avaritia.common.block.extreme;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
@@ -32,7 +32,7 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState p_60503_, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
+    public @NotNull InteractionResult use(@NotNull BlockState pState, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
             if (tile instanceof ExtremeCraftingTile table){
