@@ -1,11 +1,10 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/armor/boots/layer_0",
-    "mask": "avaritia:item/armor/boots/layer_0_mask"
+    "layer0": "avaritia:item/armor/boots/layer_0"
   },
   "loader": "avaritia:cosmic",
   "cosmic": {
-    "mask": "#mask"
+    "mask": "avaritia:mask/infinity_boots_mask"
   }
 }

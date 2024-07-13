@@ -18,6 +18,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms;
+
 /**
  * IItemRendererMixin
  *
@@ -42,12 +44,12 @@ public abstract class ItemRendererMixin {
     )
     public void onRenderItem(ItemStack stack, ItemDisplayContext context, boolean leftHand, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, BakedModel modelIn, CallbackInfo ci) {
         if (modelIn instanceof IItemRenderer iItemRenderer) {
+            ci.cancel();
             mStack.pushPose();
-            IItemRenderer renderer = (IItemRenderer) iItemRenderer.applyTransform(context, mStack, leftHand);
+            final IItemRenderer renderer = (IItemRenderer)ForgeHooksClient.handleCameraTransforms(mStack, iItemRenderer, context, leftHand);
             mStack.translate(-0.5D, -0.5D, -0.5D);
             renderer.renderItem(stack, context, mStack, buffers, packedLight, packedOverlay);
             mStack.popPose();
-            ci.cancel();
         }
     }
 

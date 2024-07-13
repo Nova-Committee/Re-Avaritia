@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.item.IItemRenderer;
@@ -14,10 +15,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,10 +33,10 @@ import java.util.List;
  */
 
 public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
-    private final List<BakedQuad> maskQuads;
-    public CosmicBakeModel(final BakedModel wrapped, final TextureAtlasSprite maskSprite) {
+    private final List<ResourceLocation> maskSprite;
+    public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
-        this.maskQuads = WrappedItemModel.bakeItem(maskSprite);
+        this.maskSprite = maskSprite;
     }
 
     @Override
@@ -52,24 +57,44 @@ public class CosmicBakeModel extends WrappedItemModel implements IItemRenderer {
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
-        float scale = 25f;
-        if (!AvaritiaShaders.inventoryRender) {
-            yaw = (float)(mc.player.getYRot() * 2.0f * 3.141592653589793 / 360.0);
-            pitch = -(float)(mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0);
-            scale = 2f;
-        }
-        if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float)MatterClusterItem.CAPACITY);
+        float scale = 1f;
+        if (AvaritiaShaders.inventoryRender || transformType == ItemDisplayContext.GUI) {
+            scale = 100.0F;
         } else {
-            AvaritiaShaders.cosmicOpacity.set(0.2F);
+            yaw = (float)(mc.player.getYRot() * 2.0f * Math.PI / 360.0);
+            pitch = -(float)(mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
+
+        AvaritiaShaders.cosmicTime
+                .set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
-        final VertexConsumer cons = source.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
-        mc.getItemRenderer().renderQuadList(pStack, cons, this.maskQuads, stack, light, overlay);
-    }
 
+        if (stack.getItem() == ModItems.matter_cluster.get()) {
+            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float)MatterClusterItem.CAPACITY);
+        } else {
+            AvaritiaShaders.cosmicOpacity.set(1.0F);
+        }
+
+        for (int i = 0; i < 10; ++i) {
+            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Static.rl("misc/cosmic_" + i));
+            AvaritiaShaders.COSMIC_UVS[i * 4] = sprite.getU0();
+            AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = sprite.getV0();
+            AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = sprite.getU1();
+            AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = sprite.getV1();
+        }
+        if (AvaritiaShaders.cosmicUVs != null) {
+            AvaritiaShaders.cosmicUVs.set(AvaritiaShaders.COSMIC_UVS);
+        }
+
+        final VertexConsumer cons = source.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
+        List<TextureAtlasSprite> atlasSprite  = new ArrayList<>();
+        for (ResourceLocation res : maskSprite){
+            atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
+        }
+        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
+    }
 
     @Override
     public @Nullable PerspectiveModelState getModelState() {

@@ -2,5 +2,9 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "avaritia:item/armor/legs/layer_0"
+  },
+  "loader": "avaritia:cosmic",
+  "cosmic": {
+    "mask": "avaritia:mask/infinity_pants_mask"
   }
 }

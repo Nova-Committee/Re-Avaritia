@@ -1,11 +1,10 @@
 {
   "parent": "minecraft:item/bow",
   "textures": {
-    "layer0": "avaritia:item/tools/infinity_bow/pull_0",
-    "mask": "avaritia:item/tools/infinity_bow/pull_0_mask"
+    "layer0": "avaritia:item/tools/infinity_bow/pull_0"
   },
   "loader": "avaritia:cosmic",
   "cosmic": {
-    "mask": "#mask"
+    "mask": "avaritia:mask/infinity_bow_pull_0_mask"
   }
 }

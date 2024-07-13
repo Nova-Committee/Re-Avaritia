@@ -25,5 +25,6 @@ public class ModSpriteSource extends SpriteSourceProvider {
         atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new DirectoryLister("misc", "misc/"));
         atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new DirectoryLister("models", "models/"));
         atlas(SpriteSourceProvider.CHESTS_ATLAS).addSource(new DirectoryLister("block/chest", "block/chest/"));
+        atlas(SpriteSourceProvider.BLOCKS_ATLAS).addSource(new DirectoryLister("mask", "mask/"));
     }
 }
