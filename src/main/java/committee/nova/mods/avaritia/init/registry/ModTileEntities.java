@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
+import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
 import committee.nova.mods.avaritia.common.tile.CompressorTile;
 import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
 import committee.nova.mods.avaritia.common.tile.collector.AbsNeutronCollectorTile;
@@ -8,9 +10,12 @@ import committee.nova.mods.avaritia.common.tile.collector.DefaultNeutronCollecto
 import committee.nova.mods.avaritia.common.tile.collector.DenseNeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.collector.DenserNeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.collector.DensestNeutronCollectorTile;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.DeferredRegister;
@@ -36,7 +41,7 @@ public class ModTileEntities {
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
-
+        BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
     }
 
     public static RegistryObject<BlockEntityType<AbsNeutronCollectorTile>> neutron_collector_tile = blockEntity("neutron_collector_tile", DefaultNeutronCollectorTile::new, () -> new Block[]{ModBlocks.neutron_collector.get()});
@@ -45,6 +50,7 @@ public class ModTileEntities {
     public static RegistryObject<BlockEntityType<AbsNeutronCollectorTile>> densest_neutron_collector_tile = blockEntity("densest_neutron_collector_tile", DensestNeutronCollectorTile::new, () -> new Block[]{ModBlocks.densest_neutron_collector.get()});
     public static RegistryObject<BlockEntityType<CompressorTile>> compressor_tile = blockEntity("compressor_tile", CompressorTile::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
     public static RegistryObject<BlockEntityType<ExtremeCraftingTile>> extreme_crafting_tile = blockEntity("extreme_crafting_tile", ExtremeCraftingTile::new, () -> new Block[]{ModBlocks.extreme_crafting_table.get()});
+    public static RegistryObject<BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
 
 
 

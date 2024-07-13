@@ -52,6 +52,7 @@
   "block.avaritia.neutron": "Нейтронный блок",
   "block.avaritia.neutron_collector": "Сборщик нейтрония",
   "block.avaritia.neutron_compressor": "Компрессор нейтрония",
+  "block.avaritia.compressed_chest": "Compressed Chest",
   "container.compressor": "Компрессор нейтрония",
   "container.dense_neutron_collector": "Dense Neutron Collector",
   "container.denser_neutron_collector": "Denser Neutron Collector",
@@ -101,6 +102,7 @@
   "item.avaritia.ultimate_stew": "Максимальное рагу",
   "item.avaritia.infinity_totem": "Infinity Totem",
   "item.avaritia.infinity_horse_armor": "Infinity Horse Armor",
+  "item.avaritia.infinity_bucket": "Infinity Bucket",
   "itemGroup.tab.Infinity": "Re:Avaritia",
   "jei.category.avaritia.compressor": "Компрессор нейтрония",
   "jei.category.avaritia.extreme_crafting_table": "Экстремальный крафт",
@@ -172,5 +174,7 @@
   "tooltip.skullfire_sword.desc": "Обжигает скелетов и обезглавливает их.",
   "tooltip.star_fuel.desc": "Топливо для звёзд.",
   "tooltip.infinity_totem.desc": "Eternal Guardian...",
-  "tooltip.infinity_horse_armor.desc": "Full power..."
+  "tooltip.infinity_horse_armor.desc": "Full power...",
+  "tooltip.infinity_bucket.message" : "Current Fluid: %s | Amount: %smL",
+  "tooltip.infinity_bucket.desc": "Devour everything..."
 }

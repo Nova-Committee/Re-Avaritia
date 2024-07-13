@@ -104,7 +104,7 @@ public class AvaritiaShaders {
         if (event.phase == TickEvent.Phase.START) {
             //Static.LOGGER.info(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "misc/halo")).toString());
             for (int i = 0; i < 10; ++i) {
-                TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "misc/cosmic_" + i));
+                TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Static.rl("misc/cosmic_" + i));
                 //SpriteRegistryHandler.sprites.getTextureLocations().forEach(Static.LOGGER::info);
                 COSMIC_UVS[i * 4] = sprite.getU0();
                 COSMIC_UVS[i * 4 + 1] = sprite.getV0();

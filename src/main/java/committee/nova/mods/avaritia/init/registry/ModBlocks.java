@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
 import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
@@ -17,8 +18,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -45,6 +51,7 @@ public class ModBlocks {
     public static RegistryObject<Block> neutron = block("neutron", ResourceBlock::new, Rarity.EPIC);
     public static RegistryObject<Block> infinity = block("infinity", ResourceBlock::new, COSMIC_RARITY);
     public static RegistryObject<Block> crystal_matrix = block("crystal_matrix", ResourceBlock::new, Rarity.RARE);
+    public static RegistryObject<Block> compressed_chest = block("compressed_chest", CompressedChestBlock::new, Rarity.RARE);
 
     //MACHINE
     public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new, RARE);

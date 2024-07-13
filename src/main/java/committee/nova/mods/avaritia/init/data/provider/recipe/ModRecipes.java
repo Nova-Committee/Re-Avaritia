@@ -116,6 +116,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                 .define('g', ModItems.neutron_gear.get())
                 .unlockedBy("has_item", has(ModItems.neutron_gear.get())).save(consumer);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.compressed_chest.get())
+                .pattern("ccc")
+                .pattern("cgc")
+                .pattern("ccc")
+                .define('c', Blocks.CHEST)
+                .define('g', ModItems.neutron_gear.get())
+                .unlockedBy("has_item", has(Blocks.CHEST)).save(consumer);
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
@@ -477,6 +484,22 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                 .unlockedBy("has_item", has(Items.TOTEM_OF_UNDYING)).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_bucket.get(), "")
+                .pattern("NN     NN")
+                .pattern("NNX   XNN")
+                .pattern("NBBX XBBN")
+                .pattern("NBBI IBBN")
+                .pattern("NBBI IBBN")
+                .pattern("NBBIIIBBN")
+                .pattern("NNBBBBBNN")
+                .pattern(" NNBBBNN ")
+                .pattern("  NNNNN  ")
+                .define('N', ModItems.neutron_ingot.get())
+                .define('X', ModItems.infinity_catalyst.get())
+                .define('I', ModItems.infinity_ingot.get())
+                .define('B', Items.BUCKET)
+
+                .unlockedBy("has_item", has(Items.BUCKET)).save(consumer);
 
         ConditionalRecipe.builder().addCondition(modLoaded("ae2")).addRecipe(
                 ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ae2", "creative_energy_cell"))

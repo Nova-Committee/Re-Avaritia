@@ -5,10 +5,7 @@ import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
-import committee.nova.mods.avaritia.common.item.resources.InfinityTotemItem;
-import committee.nova.mods.avaritia.common.item.resources.NeutronGearItem;
-import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
-import committee.nova.mods.avaritia.common.item.resources.StarFuelItem;
+import committee.nova.mods.avaritia.common.item.resources.*;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import net.minecraft.ChatFormatting;
@@ -67,17 +64,13 @@ public class ModItems {
 
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
     public static RegistryObject<Item> star_fuel = item("star_fuel", StarFuelItem::new);
+    public static RegistryObject<Item> infinity_bucket = item("infinity_bucket", InfinityBucketItem::new);
 
     public static RegistryObject<Item> infinity_horse_armor = item("infinity_horse_armor",
             () -> new InfinityHorseArmorItem(
                     new Item.Properties().stacksTo(1).rarity(COSMIC_RARITY)
                             .fireResistant().setNoRepair()
             ));
-
-
-
-
-
 
 
 
