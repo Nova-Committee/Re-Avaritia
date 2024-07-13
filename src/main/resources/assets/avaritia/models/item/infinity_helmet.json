@@ -1,11 +1,10 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/armor/helmet/layer_0",
-    "mask": "avaritia:item/armor/helmet/layer_0_mask"
+    "layer0": "avaritia:item/armor/helmet/layer_0"
   },
   "loader": "avaritia:cosmic",
   "cosmic": {
-    "mask": "#mask"
+    "mask": "avaritia:mask/infinity_helmet_mask"
   }
 }

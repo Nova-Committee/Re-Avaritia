@@ -70,15 +70,13 @@ public abstract class WrappedItemModel implements PerspectiveModel {
     }
 
 
-    public static List<BakedQuad> bakeItem(final TextureAtlasSprite... sprites) {
-        checkArgument(sprites, WrappedItemModel::isNullOrContainsNull);
+    public static List<BakedQuad> bakeItem(final List<TextureAtlasSprite> sprites) {
         final LinkedList<BakedQuad> quads = new LinkedList<>();
-        for (int i = 0; i < sprites.length; ++i) {
-            final TextureAtlasSprite sprite = sprites[i];
-            final List<BlockElement> unbaked = WrappedItemModel.ITEM_MODEL_GENERATOR.processFrames(i, "layer" + i, sprite.contents());
+        for (final TextureAtlasSprite sprite : sprites) {
+            final List<BlockElement> unbaked = ITEM_MODEL_GENERATOR.processFrames(sprites.indexOf(sprite), "layer" + sprites.indexOf(sprite), sprite.contents());
             for (final BlockElement element : unbaked) {
                 for (final Map.Entry<Direction, BlockElementFace> entry : element.faces.entrySet()) {
-                    quads.add(WrappedItemModel.FACE_BAKERY.bakeQuad(element.from, element.to, entry.getValue(), sprite, entry.getKey(), new PerspectiveModelState(ImmutableMap.of()), element.rotation, element.shade, Static.rl("dynamic")));
+                    quads.add(FACE_BAKERY.bakeQuad(element.from, element.to, entry.getValue(), sprite, entry.getKey(), new PerspectiveModelState(ImmutableMap.of()), element.rotation, element.shade, Static.rl("dynamic")));
                 }
             }
         }
@@ -175,10 +173,12 @@ public abstract class WrappedItemModel implements PerspectiveModel {
      */
     protected void renderWrapped(ItemStack stack, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, boolean fabulous, Function<VertexConsumer, VertexConsumer> consOverride) {
         BakedModel model = this.wrapped.getOverrides().resolve(this.wrapped, stack, this.world, this.entity, 0);
-
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        RenderType rType = ItemBlockRenderTypes.getRenderType(stack, fabulous);
-        VertexConsumer builder = ItemRenderer.getFoilBuffer(buffers, rType, true, stack.hasFoil());
-        itemRenderer.renderModelLists(model, stack, packedLight, packedOverlay, pStack, consOverride.apply(builder));
+        for (BakedModel bakedModel : model.getRenderPasses(stack, true)) {
+            for (RenderType rendertype : bakedModel.getRenderTypes(stack, true)) {
+                itemRenderer.renderModelLists(bakedModel, stack, packedLight, packedOverlay, pStack,
+                        consOverride.apply(buffers.getBuffer(rendertype)));
+            }
+        }
     }
 }

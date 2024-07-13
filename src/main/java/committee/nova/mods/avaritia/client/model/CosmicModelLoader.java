@@ -1,9 +1,12 @@
 package committee.nova.mods.avaritia.client.model;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import committee.nova.mods.avaritia.Static;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -11,6 +14,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
@@ -36,7 +40,15 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
         if (cosmicObj == null) {
             throw new IllegalStateException("Missing 'cosmic' object.");
         } else {
-            String maskTexture = GsonHelper.getAsString(cosmicObj, "mask");
+            List<String> maskTexture = new ArrayList<>();
+            if (cosmicObj.has("mask") && cosmicObj.get("mask").isJsonArray()){
+                JsonArray masks = cosmicObj.getAsJsonArray("mask");
+                for (int i = 0; i < masks.size(); i++){
+                    maskTexture.add(masks.get(i).getAsString());
+                }
+            } else {
+                maskTexture.add(GsonHelper.getAsString(cosmicObj, "mask"));
+            }
             JsonObject clean = modelContents.deepCopy();
             clean.remove("cosmic");
             clean.remove("loader");
@@ -47,19 +59,19 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
 
     public static class CosmicGeometry implements IUnbakedGeometry<CosmicGeometry>{
         private final BlockModel baseModel;
-        private final String maskTexture;
-        Material maskMaterial;
+        private final List<String> maskTextures;
 
-        public CosmicGeometry(final BlockModel baseModel, final String maskTexture) {
+        public CosmicGeometry(final BlockModel baseModel, final List<String> maskTextures) {
             this.baseModel = baseModel;
-            this.maskTexture = maskTexture;
+            this.maskTextures = maskTextures;
         }
 
         @Override
         public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
             BakedModel baseBakedModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, true);
-            this.maskMaterial = context.getMaterial(this.maskTexture);
-            return new CosmicBakeModel(baseBakedModel, spriteGetter.apply(this.maskMaterial));
+            List<ResourceLocation> textures = new ArrayList<>();
+            this.maskTextures.forEach(mask -> textures.add(new ResourceLocation(mask)));
+            return new CosmicBakeModel(baseBakedModel, textures);
         }
 
         @Override

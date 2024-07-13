@@ -6,6 +6,6 @@
   },
   "loader": "avaritia:cosmic",
   "cosmic": {
-    "mask": "#mask"
+    "mask": "avaritia:mask/infinity_chestplate_mask"
   }
 }

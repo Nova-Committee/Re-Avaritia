@@ -31,11 +31,11 @@ import java.util.Objects;
 
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AvaritiaShaders {
-    private static final float[] COSMIC_UVS = new float[40];
+    public static final float[] COSMIC_UVS = new float[40];
     public static boolean inventoryRender = false;
 
-    private static int renderTime;
-    private static float renderFrame;
+    public static int renderTime;
+    public static float renderFrame;
 
 
     public static CCShaderInstance cosmicShader;
@@ -48,12 +48,12 @@ public class AvaritiaShaders {
     public static CCUniform cosmicOpacity;
     public static CCUniform cosmicUVs;
 
-    public static Uniform cosmicTime2;
-    public static Uniform cosmicYaw2;
-    public static Uniform cosmicPitch2;
-    public static Uniform cosmicExternalScale2;
-    public static Uniform cosmicOpacity2;
-    public static Uniform cosmicUVs2;
+//    public static Uniform cosmicTime2;
+//    public static Uniform cosmicYaw2;
+//    public static Uniform cosmicPitch2;
+//    public static Uniform cosmicExternalScale2;
+//    public static Uniform cosmicOpacity2;
+//    public static Uniform cosmicUVs2;
 
 
     public static RenderType COSMIC_RENDER_TYPE = RenderType.create("avaritia:cosmic",
@@ -82,43 +82,38 @@ public class AvaritiaShaders {
             });
         });
 
-        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Static.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK), e -> {
-            cosmicShader2 = (CCShaderInstance)e;
-            cosmicTime2 = Objects.requireNonNull(cosmicShader2.getUniform("time"));
-            cosmicYaw2 = Objects.requireNonNull(cosmicShader2.getUniform("yaw"));
-            cosmicPitch2 = Objects.requireNonNull(cosmicShader2.getUniform("pitch"));
-            cosmicExternalScale2 = Objects.requireNonNull(cosmicShader2.getUniform("externalScale"));
-            cosmicOpacity2 = Objects.requireNonNull(cosmicShader2.getUniform("opacity"));
-            cosmicUVs2 = Objects.requireNonNull(cosmicShader2.getUniform("cosmicuvs"));
-            cosmicTime2.set((float)renderTime + renderFrame);
-            cosmicShader2.onApply(() -> {
-                cosmicTime2.set((float)renderTime + renderFrame);
-            });
-        });
+//        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Static.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK), e -> {
+//            cosmicShader2 = (CCShaderInstance)e;
+//            cosmicTime2 = Objects.requireNonNull(cosmicShader2.getUniform("time"));
+//            cosmicYaw2 = Objects.requireNonNull(cosmicShader2.getUniform("yaw"));
+//            cosmicPitch2 = Objects.requireNonNull(cosmicShader2.getUniform("pitch"));
+//            cosmicExternalScale2 = Objects.requireNonNull(cosmicShader2.getUniform("externalScale"));
+//            cosmicOpacity2 = Objects.requireNonNull(cosmicShader2.getUniform("opacity"));
+//            cosmicUVs2 = Objects.requireNonNull(cosmicShader2.getUniform("cosmicuvs"));
+//            cosmicTime2.set((float)renderTime + renderFrame);
+//            cosmicShader2.onApply(() -> {
+//                cosmicTime2.set((float)renderTime + renderFrame);
+//            });
+//        });
 
 
     }
 
-    @SubscribeEvent
-    public static void onRenderTick(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            //Static.LOGGER.info(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "misc/halo")).toString());
-            for (int i = 0; i < 10; ++i) {
-                TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Static.rl("misc/cosmic_" + i));
-                //SpriteRegistryHandler.sprites.getTextureLocations().forEach(Static.LOGGER::info);
-                COSMIC_UVS[i * 4] = sprite.getU0();
-                COSMIC_UVS[i * 4 + 1] = sprite.getV0();
-                COSMIC_UVS[i * 4 + 2] = sprite.getU1();
-                COSMIC_UVS[i * 4 + 3] = sprite.getV1();
-            }
-            if (cosmicUVs != null) {
-                cosmicUVs.set(COSMIC_UVS);
-            }
-            if (cosmicUVs2 != null) {
-                cosmicUVs2.set(COSMIC_UVS);
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void onRenderTick(TickEvent.RenderTickEvent event) {
+//        if (event.phase == TickEvent.Phase.START) {
+//            for (int i = 0; i < 10; ++i) {
+//                TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Static.rl("misc/cosmic_" + i));
+//                COSMIC_UVS[i * 4] = sprite.getU0();
+//                COSMIC_UVS[i * 4 + 1] = sprite.getV0();
+//                COSMIC_UVS[i * 4 + 2] = sprite.getU1();
+//                COSMIC_UVS[i * 4 + 3] = sprite.getV1();
+//            }
+//            if (cosmicUVs != null) {
+//                cosmicUVs.set(COSMIC_UVS);
+//            }
+//        }
+//    }
 
 
     @SubscribeEvent

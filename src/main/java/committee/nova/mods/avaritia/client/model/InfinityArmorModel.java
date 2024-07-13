@@ -54,9 +54,9 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
     private final Random random;
     private final HumanoidModel<Player> humanoidModel;
 
-    public static TextureAtlasSprite MASK = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask"));
-    public static TextureAtlasSprite MASK_INV = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask_inv"));
-    public static TextureAtlasSprite WING = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "models/infinity_armor_mask_wings"));
+    public static ResourceLocation MASK = Static.rl("models/infinity_armor_mask");
+    public static ResourceLocation MASK_INV = Static.rl( "models/infinity_armor_mask_inv");
+    public static ResourceLocation WING = Static.rl( "models/infinity_armor_mask_wings");
 
 
 
@@ -100,7 +100,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
 
     private static RenderType mask2(final ResourceLocation tex) {
         return RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0, RenderType.CompositeState.builder()
-                .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader2))
+                .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader))
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
                 .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                 .setLightmapState(RenderType.LIGHTMAP)
@@ -175,7 +175,6 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             f3 = 0.0f;
         }
         AvaritiaShaders.cosmicOpacity.set(1.0f);
-        AvaritiaShaders.cosmicOpacity2.set(0.2f);
         if (AvaritiaShaders.inventoryRender) {
             AvaritiaShaders.cosmicExternalScale.set(25.0f);
         } else {
@@ -225,6 +224,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             pPoseStack.scale(f2, f2, f2);
             pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
             model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(this.wingTex)), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            Static.LOGGER.info(material(WING));
             model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(this.glow(this.wingGlowTex)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float)(pulse_mag_sqr * 0.5));
             pPoseStack.popPose();
@@ -261,8 +261,8 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         return this.bufferSource.getBuffer(t);
     }
 
-    public static Material material(final TextureAtlasSprite t) {
-        return new Material(InventoryMenu.BLOCK_ATLAS, t.atlasLocation());
+    public static Material material(final ResourceLocation t) {
+        return new Material(InventoryMenu.BLOCK_ATLAS, t);
     }
 
     @Override
@@ -310,7 +310,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         @Override
         public void render(final @NotNull PoseStack pPoseStack, final @NotNull MultiBufferSource pBuffer, final int pPackedLight, final @NotNull Player l, final float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
             if (AbilityUtils.isInfinite(l)) {
-                AvaritiaShaders.cosmicOpacity2.set(0.8f);
+                AvaritiaShaders.cosmicOpacity.set(2.0f);
                 this.playerParts().forEach(t -> t.render(pPoseStack, InfinityArmorModel.material(MASK_INV).buffer(pBuffer, InfinityArmorModel::mask2), pPackedLight, 1, 1.0f, 1.0f, 1.0f, 1.0f));
             }
         }
