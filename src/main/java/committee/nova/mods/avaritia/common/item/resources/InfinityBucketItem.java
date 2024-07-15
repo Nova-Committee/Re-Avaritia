@@ -64,7 +64,7 @@ public class InfinityBucketItem extends ResourceItem {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
         if (pPlayer.isCrouching()) {
             ListTag items = itemStack.getOrCreateTag().getList(FLUIDS_NBT, Tag.TAG_COMPOUND);
-            items.add(items.remove(0));
+            if (!items.isEmpty()) items.add(items.remove(0));
             itemStack.getOrCreateTag().put(FLUIDS_NBT, items);
             return InteractionResultHolder.sidedSuccess(itemStack, pLevel.isClientSide);
         }

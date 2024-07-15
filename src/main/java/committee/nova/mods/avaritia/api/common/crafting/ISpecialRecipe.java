@@ -18,12 +18,12 @@ public interface ISpecialRecipe extends Recipe<Container> {
     }
 
     @Override
-    default boolean matches(Container inv, Level level) {
+    default boolean matches(@NotNull Container inv, @NotNull Level level) {
         return this.matches(new InvWrapper(inv));
     }
 
     @Override
-    default @NotNull NonNullList<ItemStack> getRemainingItems(Container inv) {
+    default @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull Container inv) {
         return this.getRemainingItems(new InvWrapper(inv));
     }
 
