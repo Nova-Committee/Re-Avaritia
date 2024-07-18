@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia;
 
-import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
+import committee.nova.mods.avaritia.init.compat.projecte.ModEMCHandler;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
@@ -13,9 +13,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -48,7 +46,7 @@ public class Avaritia {
     }
 
     public void setup(final FMLCommonSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(this);
+        if (Static.isLoad("projecte")) ModEMCHandler.init();
         SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
         DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
