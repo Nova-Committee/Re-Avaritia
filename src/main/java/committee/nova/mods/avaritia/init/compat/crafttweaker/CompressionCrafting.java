@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.compat.crafttweaker;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.CraftTweakerConstants;
-import com.blamejared.crafttweaker.api.action.base.IRuntimeAction;
 import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
 import com.blamejared.crafttweaker.api.action.recipe.ActionRemoveRecipe;
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
@@ -12,16 +11,9 @@ import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import committee.nova.mods.avaritia.util.RecipeUtil;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.openzen.zencode.java.ZenCodeType;
-
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Description:

@@ -8,6 +8,7 @@ import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
 import java.util.function.Supplier;
@@ -58,12 +59,12 @@ public class ModArmorMaterial {
         }
 
         @Override
-        public int getDurabilityForType(ArmorItem.Type slot) {
+        public int getDurabilityForType(ArmorItem.@NotNull Type slot) {
             return HEALTH_FUNCTION_FOR_TYPE.get(slot) * this.durabilityMultiplier;
         }
 
         @Override
-        public int getDefenseForType(ArmorItem.Type slot) {
+        public int getDefenseForType(ArmorItem.@NotNull Type slot) {
             return this.protectionFunctionForType.get(slot);
         }
 
@@ -73,17 +74,17 @@ public class ModArmorMaterial {
         }
 
         @Override
-        public SoundEvent getEquipSound() {
+        public @NotNull SoundEvent getEquipSound() {
             return this.sound;
         }
 
         @Override
-        public Ingredient getRepairIngredient() {
+        public @NotNull Ingredient getRepairIngredient() {
             return this.repairIngredient.get();
         }
 
         @Override
-        public String getName() {
+        public @NotNull String getName() {
             return name;
         }
 

@@ -39,24 +39,8 @@ public class ModDamageTypes {
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity1, @Nullable Entity entity2, @Nullable Vec3 from) {
-            super(damageTypeHolder, entity1, entity2, from);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity1, @Nullable Entity entity2) {
-            super(damageTypeHolder, entity1, entity2);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, Vec3 from) {
-            super(damageTypeHolder, from);
-        }
-
         public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity) {
             super(damageTypeHolder, entity);
-        }
-
-        public DamageSourceRandomMessages(Holder<DamageType> p_270475_) {
-            super(p_270475_);
         }
 
         @Override
