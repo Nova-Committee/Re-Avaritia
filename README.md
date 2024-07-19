@@ -14,8 +14,8 @@
 </p>
 
 <p align="center">
-    <a href="README.md">English</a> | 
-    <a href="README_CN.md">简体中文</a>
+    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README.md">English</a> | 
+    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README_CN.md">简体中文</a>
 </p>
 
 
@@ -24,7 +24,7 @@
 
 ## **📕Introduction:**
 * <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
-* This mod is <span style="color: #ff6600;">unofficial</span> and have bugs!
+* This mod is <span style="color: #ff6600;">unofficial</span>!
 
 ## **✏️Authors:**
 
@@ -60,50 +60,47 @@ mods.avaritia.ExtremeTableCrafting.remove(output);
 
 ### **KubeJs:**
 ```javascript
-//ExtremeCraft
-event.custom({
-    type: 'avaritia:shaped_extreme_craft',//Shaped Extreme Craft,Shapeless is avaritia:shapeless_extreme_craft
-    pattern: [
-        "       II",
-        "      III",
-        "     III ",
-        "    III  ",
-        " C III   ",
-        "  CII    ",
-        "  NC     ",
-        " N  C    ",
-        "X        "
-    ],
-    key: {
-        C: [
-            Ingredient.of('avaritia:crystal_matrix_ingot').toJson()
-        ],
-        I: [
-            Ingredient.of('avaritia:infinity_ingot').toJson()
-        ],
-        N: [
-            Ingredient.of('avaritia:neutron_ingot').toJson()
-        ],
-        X: [
-            Ingredient.of('avaritia:infinity_catalyst').toJson()
-        ]
-    },
-    result: [
-        Ingredient.of('avaritia:infinity_sword').toJson()
-    ]
-})
-//Compressor
-event.custom({
-    type: 'avaritia:compressor',//Compressor Recipe
-    materialCount: 1000,
-    timeRequired: 240,
-    ingredients: [
-        Ingredient.of('#forge:ingots/bronze').toJson()
-    ],
-    result: [
-        Ingredient.of('avaritia:bronze_singularity').toJson()
-    ]
-})
+ServerEvents.recipes(
+    event => {
+        event.custom({
+            type: 'avaritia:shaped_extreme_craft',//shapeless is avaritia:shapeless_extreme_craft。
+            pattern: [
+                "       I ",
+                "      III",
+                "     III ",
+                "    III  ",
+                " C III   ",
+                "  CII    ",
+                "  NC     ",
+                " N  C    ",
+                "X        "
+            ],
+            key: {
+                C: [
+                    {item: 'avaritia:crystal_matrix_ingot'}
+                ],
+                I: [
+                    {item: 'avaritia:infinity_ingot'}
+                ],
+                N: [
+                    {item: 'avaritia:neutron_ingot'}
+                ],
+                X: [
+                    {item: 'avaritia:infinity_catalyst'}
+                ]
+            },
+            result: {item: 'avaritia:infinity_sword'}
+        })
+        event.custom({
+            type: 'avaritia:compressor',
+            inputCount: 2000,
+            timeCost: 240,
+            ingredient: {tag: 'forge:ingots/copper'},
+            result: { item: 'avaritia:singularity', count: 1 , nbt: {Id: 'avaritia:copper'}}
+        })
+        console.log('Hello! The avaritia recipe event has fired!')
+    }
+)
 ```
 ### **InfinityCatalyst:**
 ```json5
