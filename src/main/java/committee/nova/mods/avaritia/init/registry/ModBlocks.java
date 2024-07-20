@@ -2,29 +2,22 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
+import committee.nova.mods.avaritia.common.block.collector.BaseNeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
-import committee.nova.mods.avaritia.common.block.collector.DefaultNeutronCollectorBlock;
-import committee.nova.mods.avaritia.common.block.collector.DenseNeutronCollectorBlock;
-import committee.nova.mods.avaritia.common.block.collector.DenserNeutronCollectorBlock;
-import committee.nova.mods.avaritia.common.block.collector.DensestNeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
+import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -55,10 +48,10 @@ public class ModBlocks {
 
     //MACHINE
     public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new, RARE);
-    public static RegistryObject<Block> neutron_collector = block("neutron_collector", DefaultNeutronCollectorBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", DenseNeutronCollectorBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", DenserNeutronCollectorBlock::new, Rarity.EPIC);
-    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", DensestNeutronCollectorBlock::new, COSMIC_RARITY);
+    public static RegistryObject<Block> neutron_collector = block("neutron_collector", BaseNeutronCollectorBlock::new, Rarity.RARE);
+    public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", BaseNeutronCollectorBlock::new, Rarity.RARE);
+    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", BaseNeutronCollectorBlock::new, Rarity.EPIC);
+    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", BaseNeutronCollectorBlock::new, COSMIC_RARITY);
     public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new, Rarity.RARE);
     //public static RegistryObject<Block> infinitato = block("infinitato", InfinitatoBlock::new);
 

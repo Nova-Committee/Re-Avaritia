@@ -51,7 +51,10 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Name: Avaritia-forge / TraceArrowEntity

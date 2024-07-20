@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.entity;
 
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;

@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.item.singularity;
 
-import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.world.entity.Entity;

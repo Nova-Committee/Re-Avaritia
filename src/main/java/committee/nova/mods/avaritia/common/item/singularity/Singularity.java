@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 /**

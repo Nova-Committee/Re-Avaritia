@@ -1,11 +1,11 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.AbilityUtils;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

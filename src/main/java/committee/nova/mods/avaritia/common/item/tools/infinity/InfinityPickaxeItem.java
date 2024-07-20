@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

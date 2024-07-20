@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
-import committee.nova.mods.avaritia.common.tile.collector.AbsNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/neutron_collector.png");
-    private AbsNeutronCollectorTile tile;
+    private BaseNeutronCollectorTile tile;
 
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 176, 166, 256, 256);
@@ -35,13 +35,13 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         this.tile = this.getTileEntity();
     }
 
-    private AbsNeutronCollectorTile getTileEntity() {
+    private BaseNeutronCollectorTile getTileEntity() {
         var level = this.getMinecraft().level;
 
         if (level != null) {
             var tile = level.getBlockEntity(this.getMenu().getBlockPos());
 
-            if (tile instanceof AbsNeutronCollectorTile compressor)
+            if (tile instanceof BaseNeutronCollectorTile compressor)
                 return compressor;
         }
 

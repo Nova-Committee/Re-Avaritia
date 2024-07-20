@@ -3,6 +3,8 @@ package committee.nova.mods.avaritia.common.tile.collector;
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.ItemUtils;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
@@ -16,7 +18,6 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -28,36 +29,39 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 13:55
  * Version: 1.0
  */
-public abstract class AbsNeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
+public class BaseNeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
 
 
     public final BaseItemStackHandler inventory;
-    private int progress;
-    private int production_ticks;
-    private Item production;
-    private String name;
-
     public SimpleContainerData data = new SimpleContainerData(1);
+    private int progress;
+    private CollectorTier tier;
 
-    public AbsNeutronCollectorTile(BlockEntityType<?> entityType, BlockPos pos, BlockState state, Item production, int production_ticks, String name) {
-        super(entityType, pos, state);
-        this.production_ticks = production_ticks;
-        this.production = production;
-        this.name = name;
+    public BaseNeutronCollectorTile(BlockPos pos, BlockState state) {
+        super(ModTileEntities.neutron_collector_tile.get(), pos, state);
         this.inventory = createInventoryHandler(null);
+        if (state.is(ModBlocks.neutron_collector.get())) {
+            tier = CollectorTier.DEFAULT;
+        } else if (state.is(ModBlocks.dense_neutron_collector.get())) {
+            tier = CollectorTier.DENSE;
+        } else if (state.is(ModBlocks.denser_neutron_collector.get())) {
+            tier = CollectorTier.DENSER;
+        } else if (state.is(ModBlocks.densest_neutron_collector.get())) {
+            tier = CollectorTier.DENSEST;
+        }
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, AbsNeutronCollectorTile tile) {
+    public static void tick(Level level, BlockPos pos, BlockState state, BaseNeutronCollectorTile tile) {
         if (level.isClientSide) return;
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
-            var stack = new ItemStack(tile.production);
+            var stack = new ItemStack(tile.tier.production);
             tile.progress++;
             tile.data.set(0, tile.progress);
-            if (tile.progress >= tile.production_ticks) {
+            if (tile.progress >= tile.tier.production_ticks) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
-                } else if (result.is(tile.production)) {
+                } else if (result.is(tile.tier.production)) {
                     if (result.getCount() < 64) {
                         tile.inventory.setStackInSlot(0, ItemUtils.grow(result, 1));
                     }
@@ -100,7 +104,7 @@ public abstract class AbsNeutronCollectorTile extends BaseInventoryTileEntity im
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("container." + name).build();
+        return Localizable.of("container." + tier.name).build();
     }
 
     @Nullable
@@ -109,11 +113,19 @@ public abstract class AbsNeutronCollectorTile extends BaseInventoryTileEntity im
         return NeutronCollectorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos(), data);
     }
 
+    public CollectorTier getTier() {
+        return tier;
+    }
+
+    public void setTier(CollectorTier tier) {
+        this.tier = tier;
+    }
+
     public int getProductionTicks() {
-        return production_ticks;
+        return tier.production_ticks;
     }
 
     public Item getProduction() {
-        return production;
+        return tier.production;
     }
 }

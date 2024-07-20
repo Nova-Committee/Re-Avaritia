@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
