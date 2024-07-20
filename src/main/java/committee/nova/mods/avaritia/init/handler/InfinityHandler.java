@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
-import committee.nova.mods.avaritia.common.item.tools.*;
+import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPacket;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -86,7 +86,7 @@ public class InfinityHandler {
                 stack.enchant(Enchantments.INFINITY_ARROWS, 10);
             }
         }
-        if (stack.is(ModItems.infinity_horse_armor.get())) {
+        if (stack.is(ModItems.neutron_horse_armor.get())) {
             if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FROST_WALKER, stack) < 10) {
                 stack.enchant(Enchantments.FROST_WALKER, 10);
             }

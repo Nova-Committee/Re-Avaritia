@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModTiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public class SkullsSwordItem extends SwordItem {
     public SkullsSwordItem() {
-        super(Tier.SKULL_SWORD, 0, -2.4f, (new Properties())
+        super(ModTiers.SKULL_SWORD, 0, -2.4f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 

@@ -124,6 +124,16 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                 .define('g', ModItems.neutron_gear.get())
                 .unlockedBy("has_item", has(Blocks.CHEST)).save(consumer);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.neutron_horse_armor.get())
+                .pattern("  a")
+                .pattern("cnc")
+                .pattern("b b")
+                .define('a', Items.DIAMOND_HELMET)
+                .define('n', ModItems.neutron_ingot.get())
+                .define('c', Items.LEATHER_HORSE_ARMOR)
+                .define('b', Items.DIAMOND_LEGGINGS)
+                .unlockedBy("has_item", has(Items.LEATHER_HORSE_ARMOR)).save(consumer);
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.record_fragment.get(), 4)
                 .requires(ItemTags.MUSIC_DISCS)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get()))

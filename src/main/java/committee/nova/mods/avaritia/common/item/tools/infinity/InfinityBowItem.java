@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.item.tools;
+package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;

@@ -1,6 +1,7 @@
-package committee.nova.mods.avaritia.common.item.tools;
+package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class InfinitySwordItem extends SwordItem {
     public InfinitySwordItem() {
-        super(Tier.INFINITY_SWORD, 0, -2.8F, (new Properties())
+        super(ModTiers.INFINITY_SWORD, 0, -2.8F, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
     }

@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
-import committee.nova.mods.avaritia.common.item.tools.InfinityBowItem;
-import committee.nova.mods.avaritia.common.item.tools.InfinityPickaxeItem;
-import committee.nova.mods.avaritia.common.item.tools.InfinityShovelItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityBowItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityPickaxeItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShovelItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;

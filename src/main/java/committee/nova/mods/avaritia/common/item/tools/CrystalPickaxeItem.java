@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
+import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ItemUtils;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 public class CrystalPickaxeItem extends PickaxeItem {
 
     public CrystalPickaxeItem() {
-        super(Tier.CRYSTAL_PICKAXE, 1, -1.5F, (new Properties())
+        super(ModTiers.CRYSTAL_PICKAXE, 1, -1.5F, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
     }

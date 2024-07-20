@@ -1,6 +1,5 @@
-package committee.nova.mods.avaritia.common.item.tools;
+package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -12,7 +11,7 @@ import java.util.function.Supplier;
  * Date: 2022/3/31 10:33
  * Version: 1.0
  */
-public enum Tier implements net.minecraft.world.item.Tier {
+public enum ModTiers implements net.minecraft.world.item.Tier {
     CRYSTAL_PICKAXE(18, 4888, 4888f, 6.0F, 0, () -> {
         return Ingredient.of(ModItems.crystal_matrix_ingot.get());
     }),
@@ -43,7 +42,7 @@ public enum Tier implements net.minecraft.world.item.Tier {
     private final int enchantmentValue;
     private final LazyLoadedValue<Ingredient> repairIngredient;
 
-    private Tier(int pLevel, int pUses, float pSpeed, float pDamage, int pEnchantmentValue, Supplier<Ingredient> pRepairIngredient) {
+    private ModTiers(int pLevel, int pUses, float pSpeed, float pDamage, int pEnchantmentValue, Supplier<Ingredient> pRepairIngredient) {
         this.level = pLevel;
         this.uses = pUses;
         this.speed = pSpeed;

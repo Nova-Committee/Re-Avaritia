@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:diamond_helmet"
+    },
+    "b": {
+      "item": "minecraft:diamond_leggings"
+    },
+    "c": {
+      "item": "minecraft:leather_horse_armor"
+    },
+    "n": {
+      "item": "avaritia:neutron_ingot"
+    }
+  },
+  "pattern": [
+    "  a",
+    "cnc",
+    "b b"
+  ],
+  "result": {
+    "item": "avaritia:neutron_horse_armor"
+  },
+  "show_notification": true
+}

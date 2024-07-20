@@ -1,6 +1,7 @@
-package committee.nova.mods.avaritia.common.item.tools;
+package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class InfinityPickaxeItem extends PickaxeItem {
 
     public InfinityPickaxeItem() {
-        super(Tier.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
+        super(ModTiers.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 

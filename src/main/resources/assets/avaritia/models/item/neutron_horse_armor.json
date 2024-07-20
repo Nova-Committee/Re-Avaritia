@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/armor/horse/infinity_horse_armor"
+    "layer0": "avaritia:item/armor/horse/neutron_horse_armor"
   }
 }
