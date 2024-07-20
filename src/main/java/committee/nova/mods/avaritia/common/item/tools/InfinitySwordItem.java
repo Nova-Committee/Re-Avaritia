@@ -101,7 +101,7 @@ public class InfinitySwordItem extends SwordItem {
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (!entity.level().isClientSide && entity instanceof Player victim) {
-            if (victim.isCreative() && !victim.isDeadOrDying() && victim.getHealth() > 0 && !AbilityUtils.isInfinite(victim)) {
+            if (!victim.isCreative() && !victim.isDeadOrDying() && victim.getHealth() > 0 && !AbilityUtils.isInfinite(victim)) {
                 victim.getCombatTracker().recordDamage(player.damageSources().source(ModDamageTypes.INFINITY, player, victim), victim.getHealth());
                 victim.setHealth(0);
                 victim.die(player.damageSources().source(ModDamageTypes.INFINITY, player, victim));
@@ -125,14 +125,4 @@ public class InfinitySwordItem extends SwordItem {
     public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
-
-//    @Override
-//    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
-//        consumer.accept(new IClientItemExtensions() {
-//            @Override
-//            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-//                return new InfinitySwordRender();
-//            }
-//        });
-//    }
 }

@@ -66,6 +66,7 @@
   "tooltip.avaritia.selected": "Selected",
   "tooltip.avaritia.tier": "Tier: %s",
   "tooltip.avaritia.crafting": "Crafting: %s x %s",
+  "tooltip.avaritia.compress": "Compress: %s x %s",
   "tooltip.avaritia.mode": "Mode: %s",
   "tooltip.avaritia.type": "Type: %s",
   "tooltip.avaritia.num_items": "Need %s Items",
@@ -176,5 +177,7 @@
   "advancements.avaritia.singularity.desc": "Compress minerals to get singularity",
   "advancements.avaritia.star_fuel.title": "Stellar Energy",
   "advancements.avaritia.star_fuel.desc": "Get stellar fuel",
-  "attribute.name.generic.walking_speed": "WALKING SPEED"
+  "attribute.name.generic.walking_speed": "WALKING SPEED",
+  "config.jade.plugin_avaritia.compressor":"Compressor",
+  "config.jade.plugin_avaritia.extreme":"Extreme Crafting"
 }

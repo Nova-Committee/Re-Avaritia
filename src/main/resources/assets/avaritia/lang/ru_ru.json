@@ -140,6 +140,7 @@
   "tooltip.avaritia.totem_break": "The Endless Totem has been depleted",
   "tooltip.avaritia.added_by": "Добавлено: %s",
   "tooltip.avaritia.crafting": "Создание: %s x %s",
+  "tooltip.avaritia.compress": "Compress: %s x %s",
   "tooltip.avaritia.eject": "Выбросить",
   "tooltip.avaritia.ejecting": "Выбрасывание...",
   "tooltip.avaritia.empty": "Пусто",
@@ -176,5 +177,7 @@
   "tooltip.infinity_totem.desc": "Eternal Guardian...",
   "tooltip.infinity_horse_armor.desc": "Full power...",
   "tooltip.infinity_bucket.message" : "Current Fluid: %s | Amount: %smL",
-  "tooltip.infinity_bucket.desc": "Devour everything..."
+  "tooltip.infinity_bucket.desc": "Devour everything...",
+  "config.jade.plugin_avaritia.compressor":"Compressor",
+  "config.jade.plugin_avaritia.extreme":"Extreme Crafting"
 }

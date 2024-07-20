@@ -66,11 +66,12 @@
   "tooltip.avaritia.selected": "Selected",
   "tooltip.avaritia.tier": "等级：%s",
   "tooltip.avaritia.crafting": "合成：%sx %s",
+  "tooltip.avaritia.compress": "中子压缩: %s x %s",
   "tooltip.avaritia.mode": "模式：%s",
   "tooltip.avaritia.type": "类型：%s",
   "tooltip.avaritia.num_items": "需要 %s 物品",
   "tooltip.avaritia.ticks": "%s刻",
-  "tooltip.avaritia.seconds": "%s Seconds",
+  "tooltip.avaritia.seconds": "%s 秒",
   "tooltip.avaritia.items_required": "所需物品：",
   "tooltip.avaritia.singularity_id": "奇点ID：%s",
   "tooltip.avaritia.added_by": "添加者：%s",
@@ -176,5 +177,7 @@
   "advancements.avaritia.singularity.desc": "压缩矿物获取任意奇点",
   "advancements.avaritia.star_fuel.title": "恒星能源",
   "advancements.avaritia.star_fuel.desc": "获取恒星燃料",
-  "attribute.name.generic.walking_speed": "移动速度"
+  "attribute.name.generic.walking_speed": "移动速度",
+  "config.jade.plugin_avaritia.compressor":"中子态素压缩机",
+  "config.jade.plugin_avaritia.extreme":"无尽合成"
 }

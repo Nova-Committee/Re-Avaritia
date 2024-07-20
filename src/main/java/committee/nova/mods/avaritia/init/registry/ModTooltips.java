@@ -17,6 +17,7 @@ public class ModTooltips {
     public static final Tooltip EMPTY = new Tooltip("tooltip.avaritia.empty");
     public static final Tooltip NUM_ITEMS = new Tooltip("tooltip.avaritia.num_items");
     public static final Tooltip CRAFTING = new Tooltip("tooltip.avaritia.crafting");
+    public static final Tooltip COMPRESS = new Tooltip("tooltip.avaritia.compress");
     public static final Tooltip TIME_CONSUME = new Tooltip("tooltip.avaritia.time_consume");
     public static final Tooltip PROGRESS = new Tooltip("tooltip.avaritia.progress");
 
