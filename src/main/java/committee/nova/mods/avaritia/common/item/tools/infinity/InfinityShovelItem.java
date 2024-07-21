@@ -82,7 +82,7 @@ public class InfinityShovelItem extends ShovelItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("destroyer")) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.shovelBreakRange.get(), ToolUtils.materialsShovel);
+            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.shovelBreakRange.get(), ToolUtils.materialsShovel, false);
         }
         return false;
     }

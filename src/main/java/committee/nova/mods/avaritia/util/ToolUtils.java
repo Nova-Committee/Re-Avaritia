@@ -68,7 +68,7 @@ public class ToolUtils {
     );
 
     public static final Set<TagKey<Block>> materialsAxe = Sets.newHashSet(
-            BlockTags.MINEABLE_WITH_AXE,
+            BlockTags.LOGS,
             BlockTags.FALL_DAMAGE_RESETTING,
             BlockTags.LEAVES
     );
@@ -81,15 +81,12 @@ public class ToolUtils {
         return state.getTags().collect(Collectors.toSet()).retainAll(keySets);
     }
 
-    public static Set<String> defaultTrashOres = new HashSet<>();//todo, set trash block in gui
+    public static Set<String> defaultTrashOres = Sets.newHashSet("minecraft:dirt");//todo, set trash block in gui
 
-    public static void breakRangeBlocks(Player player, ItemStack stack, BlockPos pos, int range, Set<TagKey<Block>> keySets) {
+    public static void breakRangeBlocks(Player player, ItemStack stack, BlockPos pos, int range, Set<TagKey<Block>> keySets, boolean filterTrash) {
         BlockHitResult traceResult = RayTracer.retrace(player, range);
         var world = player.level();
         var state = world.getBlockState(pos);
-        if (!ToolUtils.canUseTool(state, keySets)) {
-            return;
-        }
 
         if (state.isAir()) {
             return;
@@ -100,7 +97,7 @@ public class ToolUtils {
         var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
         var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolUtils.breakBlocks(world, player, stack, pos, minOffset, maxOffset, keySets, false);
+        ToolUtils.breakBlocks(world, player, stack, pos, minOffset, maxOffset, keySets, filterTrash);
     }
 
 

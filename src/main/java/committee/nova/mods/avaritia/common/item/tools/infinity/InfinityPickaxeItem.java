@@ -104,7 +104,7 @@ public class InfinityPickaxeItem extends PickaxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
+            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick, false);
         }
         return false;
     }

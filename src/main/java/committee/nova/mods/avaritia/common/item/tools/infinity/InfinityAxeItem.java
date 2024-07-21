@@ -75,7 +75,7 @@ public class InfinityAxeItem extends AxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (player.isCrouching() && !player.level().isClientSide) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, 13, ToolUtils.materialsAxe);
+            ToolUtils.breakRangeBlocks(player, stack, pos, 13, ToolUtils.materialsAxe, true);
         }
         return false;
     }
