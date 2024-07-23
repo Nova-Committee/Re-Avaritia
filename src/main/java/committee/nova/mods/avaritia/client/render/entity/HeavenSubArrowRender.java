@@ -16,10 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
-
+public final class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
     private static final ResourceLocation tex = new ResourceLocation(Static.MOD_ID, "textures/entity/heavenarrow.png");
-
 
     public HeavenSubArrowRender(EntityRendererProvider.Context p_174008_) {
         super(p_174008_);
@@ -29,6 +27,4 @@ public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
     public @NotNull ResourceLocation getTextureLocation(@NotNull HeavenSubArrowEntity entity) {
         return tex;
     }
-
-
 }

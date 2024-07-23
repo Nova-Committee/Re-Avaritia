@@ -32,9 +32,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 12:07
  * Version: 1.0
  */
-public class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
-
-
+public final class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public BaseNeutronCollectorBlock() {
@@ -119,5 +117,4 @@ public class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
     protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createTicker(type, ModTileEntities.neutron_collector_tile.get(), BaseNeutronCollectorTile::tick);
     }
-
 }

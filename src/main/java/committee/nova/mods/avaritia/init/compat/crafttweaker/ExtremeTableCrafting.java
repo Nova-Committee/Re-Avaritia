@@ -32,12 +32,14 @@ import java.util.stream.Collectors;
  */
 @ZenCodeType.Name("mods.avaritia.ExtremeTableCrafting")
 @ZenRegister
-public class ExtremeTableCrafting implements IRecipeManager<ISpecialRecipe> {
+public final class ExtremeTableCrafting implements IRecipeManager<ISpecialRecipe> {
     private static final ExtremeTableCrafting INSTANCE = new ExtremeTableCrafting();
+
     @Override
     public RecipeType<ISpecialRecipe> getRecipeType() {
         return ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
+
     @ZenCodeType.Method
     public static void addShaped(String name, IItemStack output, IIngredient[][] inputs) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));

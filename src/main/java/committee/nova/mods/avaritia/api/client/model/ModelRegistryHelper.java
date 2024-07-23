@@ -12,8 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ModelRegistryHelper {
-
+public final class ModelRegistryHelper {
     private final List<Pair<ModelResourceLocation, BakedModel>> registerModels = new LinkedList<>();
 
     public ModelRegistryHelper() {

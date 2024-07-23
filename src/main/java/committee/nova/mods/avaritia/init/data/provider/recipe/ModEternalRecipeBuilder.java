@@ -34,8 +34,7 @@ import java.util.function.Consumer;
  * CreateTime: 2023/8/24 14:07
  * Description:
  */
-
-public class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public final class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final List<Ingredient> ingredients = Lists.newArrayList();
     private final Advancement.Builder advancement = Advancement.Builder.advancement();

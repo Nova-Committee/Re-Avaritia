@@ -55,5 +55,4 @@ public class ResourceItem extends Item {
     public Entity createEntity(Level level, Entity location, ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
-
 }

@@ -26,18 +26,19 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 16:33
  * Version: 1.0
  */
-public class InfinityShovelItem extends ShovelItem {
-
+public final class InfinityShovelItem extends ShovelItem {
     public InfinityShovelItem() {
         super(ModTiers.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 
     }
+
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
     }
+
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;

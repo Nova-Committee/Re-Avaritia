@@ -13,7 +13,6 @@ import committee.nova.mods.avaritia.util.client.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
@@ -22,7 +21,6 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -32,7 +30,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * Description:
@@ -40,31 +38,28 @@ import java.util.Random;
  * Date: 2022/4/23 23:50
  * Version: 1.0
  */
-public class InfinityArmorModel extends HumanoidModel<Player> {
-
+public final class InfinityArmorModel extends HumanoidModel<Player> {
     private final ResourceLocation eyeTex = Static.rl("textures/models/infinity_armor_eyes.png");
-    private final ResourceLocation wingTex = Static.rl("textures/models/infinity_armor_wing.png");;
-    private final ResourceLocation wingGlowTex = Static.rl("textures/models/infinity_armor_wingglow.png");;
+    private final ResourceLocation wingTex = Static.rl("textures/models/infinity_armor_wing.png");
+    private final ResourceLocation wingGlowTex = Static.rl("textures/models/infinity_armor_wingglow.png");
     private static boolean modelRender;
     private static boolean playerFlying;
     private static boolean player;
     private static boolean legs = true;
     private final Minecraft mc;
     private final MultiBufferSource bufferSource;
-    private final Random random;
+    private final SecureRandom random;
     private final HumanoidModel<Player> humanoidModel;
 
     public static ResourceLocation MASK = Static.rl("models/infinity_armor_mask");
     public static ResourceLocation MASK_INV = Static.rl( "models/infinity_armor_mask_inv");
     public static ResourceLocation WING = Static.rl( "models/infinity_armor_mask_wings");
 
-
-
     public InfinityArmorModel(ModelPart pRoot, final int x) {
         super(createMesh(new CubeDeformation(1.0f), 0.0f).getRoot().bake(64, 64));
         this.mc = Minecraft.getInstance();
         this.bufferSource = this.mc.renderBuffers().bufferSource();
-        this.random = new Random();
+        this.random = new SecureRandom();
         this.humanoidModel = new HumanoidModel<>(createMesh(new CubeDeformation(0.0f), 0.0f).getRoot().bake(64, 64));
     }
 
@@ -72,7 +67,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         super(pRoot);
         this.mc = Minecraft.getInstance();
         this.bufferSource = this.mc.renderBuffers().bufferSource();
-        this.random = new Random();
+        this.random = new SecureRandom();
         this.humanoidModel = new HumanoidModel<>(createMesh(new CubeDeformation(0.0f), 0.0f).getRoot().bake(64, 64));
     }
 
@@ -123,7 +118,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         p.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(0, 16).addBox(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, deformation), PartPose.offset(-1.9f, 12.0f + f, 0.0f));
         p.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, deformation), PartPose.offset(1.9f, 12.0f + f, 0.0f));
         if (islegs) {
-            p.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16 + legoffset).addBox(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, new CubeDeformation(0.5f)), PartPose.offset(0.0f, (float)(0 + heightoffset), 0.0f));
+            p.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16 + legoffset).addBox(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, new CubeDeformation(0.5f)), PartPose.offset(0.0f, (float)heightoffset, 0.0f));
             p.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(0, 16 + legoffset).addBox(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, new CubeDeformation(0.5f)), PartPose.offset(-1.9f, (float)(12 + heightoffset), 0.0f));
             p.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(0, 16 + legoffset).mirror().addBox(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, new CubeDeformation(0.5f)), PartPose.offset(1.9f, (float)(12 + heightoffset), 0.0f));
         }

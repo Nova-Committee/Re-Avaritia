@@ -31,7 +31,7 @@ import java.util.function.Function;
  * Description:
  */
 
-public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.CosmicGeometry> {
+public final class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.CosmicGeometry> {
     public static final CosmicModelLoader INSTANCE = new CosmicModelLoader();
 
     @Override
@@ -41,9 +41,9 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
             throw new IllegalStateException("Missing 'cosmic' object.");
         } else {
             List<String> maskTexture = new ArrayList<>();
-            if (cosmicObj.has("mask") && cosmicObj.get("mask").isJsonArray()){
+            if (cosmicObj.has("mask") && cosmicObj.get("mask").isJsonArray()) {
                 JsonArray masks = cosmicObj.getAsJsonArray("mask");
-                for (int i = 0; i < masks.size(); i++){
+                for (int i = 0; i < masks.size(); i++) {
                     maskTexture.add(masks.get(i).getAsString());
                 }
             } else {
@@ -57,7 +57,7 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
         }
     }
 
-    public static class CosmicGeometry implements IUnbakedGeometry<CosmicGeometry>{
+    public static class CosmicGeometry implements IUnbakedGeometry<CosmicGeometry> {
         private final BlockModel baseModel;
         private final List<String> maskTextures;
 
@@ -78,6 +78,5 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
         public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
             this.baseModel.resolveParents(modelGetter);
         }
-
     }
 }

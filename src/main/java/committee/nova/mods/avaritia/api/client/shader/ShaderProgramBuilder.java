@@ -12,12 +12,10 @@ import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.util.SneakyUtils.nullCons;
 
-
 /**
  * Created by covers1624 on 24/5/20.
  */
-public class ShaderProgramBuilder {
-
+public final class ShaderProgramBuilder {
     private final Map<String, ShaderObject> shaders = new HashMap<>();
     private final Map<String, UniformPair> allUniforms = new HashMap<>();
     @Nullable
@@ -68,7 +66,6 @@ public class ShaderProgramBuilder {
      * Edited by KitsuneAlex on 18/11/21.
      */
     public class ShaderObjectBuilder {
-
         protected final String name;
         protected final Map<String, UniformPair> uniforms = new HashMap<>();
         @Nullable
@@ -127,8 +124,7 @@ public class ShaderProgramBuilder {
     /**
      * Created by KitsuneAlex on 18/11/21.
      */
-    public class BinaryShaderObjectBuilder extends ShaderObjectBuilder {
-
+    public final class BinaryShaderObjectBuilder extends ShaderObjectBuilder {
         @Nullable
         private BinaryType binaryType;
         @Nullable
@@ -182,6 +178,5 @@ public class ShaderProgramBuilder {
 
             return new BinaryShaderObject(name, assetSource, type, binaryType, entryPoint, allUniforms.values(), specializationCallback);
         }
-
     }
 }

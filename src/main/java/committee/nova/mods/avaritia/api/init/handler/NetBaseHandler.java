@@ -17,18 +17,12 @@ import java.util.Objects;
  * Date: 2022/4/2 13:01
  * Version: 1.0
  */
-public class NetBaseHandler {
+public final class NetBaseHandler {
     private final SimpleChannel channel;
     public int id = 0;
 
     public NetBaseHandler(ResourceLocation id) {
-        this.channel = NetworkRegistry.newSimpleChannel(id, () -> {
-            return "1.0";
-        }, (s) -> {
-            return true;
-        }, (s) -> {
-            return true;
-        });
+        this.channel = NetworkRegistry.newSimpleChannel(id, () -> "1.0", s -> true, s -> true);
     }
 
     public SimpleChannel getChannel() {
@@ -44,6 +38,7 @@ public class NetBaseHandler {
         Objects.requireNonNull(message);
         messageBuilder.consumerNetworkThread(message::run).add();
     }
+
     public <M> void sendToServer(M message) {
         this.channel.sendToServer(message);
     }

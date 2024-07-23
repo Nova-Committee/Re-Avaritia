@@ -21,7 +21,7 @@ import java.util.List;
  * Date: 2022/4/2 15:12
  * Version: 1.0
  */
-public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
+public final class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/neutron_collector.png");
     private BaseNeutronCollectorTile tile;
 
@@ -105,6 +105,4 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int j = this.getTimeRequired();
         return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
     }
-
-
 }

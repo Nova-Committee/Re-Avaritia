@@ -9,8 +9,7 @@ import committee.nova.mods.avaritia.util.vec.Vector3;
 /**
  * Uses the position of the lightmatrix to compute LC if not provided
  */
-public class LightCoordAttribute extends VertexAttribute<LC[]> {
-
+public final class LightCoordAttribute extends VertexAttribute<LC[]> {
     public static final AttributeKey<LC[]> attributeKey = AttributeKey.create("light_coord", LC[]::new);
 
     private final Vector3 vec = new Vector3();//for computation

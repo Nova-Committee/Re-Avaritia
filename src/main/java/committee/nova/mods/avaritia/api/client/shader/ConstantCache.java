@@ -7,11 +7,9 @@ package committee.nova.mods.avaritia.api.client.shader;
  * Created by KitsuneAlex on 19/11/21.
  */
 public interface ConstantCache {
-
     void constant1i(int id, int value);
 
     void constant1f(int id, float value);
 
     void constant1b(int id, boolean value);
-
 }

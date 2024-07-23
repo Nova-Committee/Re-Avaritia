@@ -15,8 +15,7 @@ import java.util.List;
 /**
  * Created by covers1624 on 13/02/2017.
  */
-public class ItemQuadBakery {
-
+public final class ItemQuadBakery {
     public static final SimpleModelState IDENTITY = new SimpleModelState(Transformation.identity());
 
     public static List<BakedQuad> bakeItem(TextureAtlasSprite... sprites) {

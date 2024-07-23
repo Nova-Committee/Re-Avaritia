@@ -13,9 +13,7 @@ import net.minecraftforge.common.data.SoundDefinitionsProvider;
  * Name ModSoundDefinitions
  * Description
  */
-
-public class ModSoundDefinitions extends SoundDefinitionsProvider {
-
+public final class ModSoundDefinitions extends SoundDefinitionsProvider {
     public ModSoundDefinitions(PackOutput output, ExistingFileHelper helper) {
         super(output, Static.MOD_ID, helper);
     }

@@ -33,8 +33,7 @@ import java.util.regex.Pattern;
  * Created by covers1624 on 22/3/22.
  */
 @SuppressWarnings ("ALL")
-public class GlslProcessor {
-
+public final class GlslProcessor {
     private static Logger LOGGER = LogManager.getLogger();
 
     private static final boolean DEBUG = Boolean.getBoolean("ccl.glsl_processor.debug");
@@ -192,5 +191,4 @@ public class GlslProcessor {
             return null;
         }
     }
-
 }

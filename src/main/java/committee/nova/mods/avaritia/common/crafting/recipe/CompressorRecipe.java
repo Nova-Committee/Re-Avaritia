@@ -27,13 +27,12 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 17:40
  * Version: 1.0
  */
-public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
+public final class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     private final ResourceLocation recipeId;
     private final NonNullList<Ingredient> inputs;
     private final ItemStack output;
     private final int inputCount;
     private final int timeRequire;
-
 
     public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeRequire) {
         this.recipeId = recipeId;
@@ -41,14 +40,12 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         this.output = output;
         this.inputCount = inputCount;
         this.timeRequire = timeRequire;
-
     }
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
-
 
     @Override
     public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
@@ -133,8 +130,6 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
             buffer.writeItem(recipe.output);
             buffer.writeInt(recipe.inputCount);
             buffer.writeInt(recipe.timeRequire);
-
-
         }
     }
 }

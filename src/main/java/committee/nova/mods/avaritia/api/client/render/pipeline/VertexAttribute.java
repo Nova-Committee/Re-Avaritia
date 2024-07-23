@@ -10,7 +10,6 @@ import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.Attribu
  * @param <T> The type for this attribute eg. int[], Vector3[]
  */
 public abstract class VertexAttribute<T> implements IVertexOperation {
-
     /**
      * Set to true when the attribute is part of the pipeline. Should only be managed by CCRenderState when constructing the pipeline
      */

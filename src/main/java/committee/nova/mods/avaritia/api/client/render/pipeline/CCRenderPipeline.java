@@ -7,8 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings ("ForLoopReplaceableByForEach")
-public class CCRenderPipeline {
-
+public final class CCRenderPipeline {
     private final CCRenderState renderState;
     @Deprecated
     private final PipelineBuilder builder;

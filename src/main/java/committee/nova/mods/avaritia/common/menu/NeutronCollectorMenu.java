@@ -22,9 +22,8 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 15:13
  * Version: 1.0
  */
-public class NeutronCollectorMenu extends BaseMenu {
+public final class NeutronCollectorMenu extends BaseMenu {
     private final ContainerData data;
-
 
     public static NeutronCollectorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new NeutronCollectorMenu(ModMenus.neutron_collector.get(), windowId, playerInventory, buffer, new SimpleContainerData(10));
@@ -38,7 +37,7 @@ public class NeutronCollectorMenu extends BaseMenu {
         this(type, id, playerInventory, BaseNeutronCollectorTile.createInventoryHandler(null), buffer.readBlockPos(), data);
     }
 
-    protected NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos, ContainerData data) {
+    private NeutronCollectorMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos, ContainerData data) {
         super(type, id, pos);
         this.data = data;
         this.addSlot(new OutputSlot(inventory, 0, 80, 32));
@@ -54,7 +53,6 @@ public class NeutronCollectorMenu extends BaseMenu {
         }
         this.addDataSlots(data);
     }
-
 
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {

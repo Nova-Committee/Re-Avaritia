@@ -25,10 +25,9 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/2/19 19:42
  * Version: 1.0
  */
-public class ExtremeCraftingMenu extends BaseMenu {
+public final class ExtremeCraftingMenu extends BaseMenu {
     private final Level world;
     private final Container result;
-    private final Player player;
 
     public static ExtremeCraftingMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {
         return new ExtremeCraftingMenu(ModMenus.extreme_crafting_table.get(), windowId, playerInventory, buf);
@@ -45,13 +44,13 @@ public class ExtremeCraftingMenu extends BaseMenu {
 
     private ExtremeCraftingMenu(MenuType<?> type, int id, Inventory playerInventory, BaseItemStackHandler inventory, BlockPos pos) {
         super(type, id, pos);
-        this.player = playerInventory.player;
+        Player player = playerInventory.player;
         this.world = playerInventory.player.level();
         this.result = new ResultContainer();
 
         var matrix = new ExtremeInventory(this, inventory, 9);
 
-        this.addSlot(new ExtremeResultSlot(this.player,this, matrix, this.result, 0, 206, 89));
+        this.addSlot(new ExtremeResultSlot(player,this, matrix, this.result, 0, 206, 89));
 
         int i, j;
         for (i = 0; i < 9; i++) {
@@ -127,5 +126,4 @@ public class ExtremeCraftingMenu extends BaseMenu {
 
         return itemstack;
     }
-
 }

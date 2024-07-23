@@ -6,14 +6,14 @@ import net.minecraft.world.inventory.MenuType;
 
 /**
  * ExtremeRecipeGeneratorMenu
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/6/25 下午1:29
+ * <p>
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/6/25 下午1:29
  */
-public class ExtremeRecipeGeneratorMenu extends BaseMenu {
-    protected ExtremeRecipeGeneratorMenu(MenuType<?> menu, int id, BlockPos pos) {
+public final class ExtremeRecipeGeneratorMenu extends BaseMenu {
+    private ExtremeRecipeGeneratorMenu(MenuType<?> menu, int id, BlockPos pos) {
         super(menu, id, pos);
     }
 }

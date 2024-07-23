@@ -19,8 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/20 17:43
  * Version: 1.0
  */
-public class HeavenSubArrowEntity extends Arrow {
-
+public final class HeavenSubArrowEntity extends Arrow {
     public HeavenSubArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
         super(entityType, level);
     }
@@ -49,6 +48,7 @@ public class HeavenSubArrowEntity extends Arrow {
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
     @Override
     protected float getWaterInertia() {
         return 0.99F;

@@ -9,7 +9,6 @@ import java.util.Objects;
  * Created by covers1624 on 9/3/22.
  */
 public abstract class NamedShaderObject implements ShaderObject {
-
     private final String name;
     private final ShaderType type;
     private final ImmutableList<UniformPair> uniforms;

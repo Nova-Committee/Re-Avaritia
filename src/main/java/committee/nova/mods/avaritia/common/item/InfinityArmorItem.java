@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * Date: 2022/4/21 15:12
  * Version: 1.0
  */
-public class InfinityArmorItem extends ArmorItem {
+public final class InfinityArmorItem extends ArmorItem {
     public InfinityArmorItem(Type pSlot) {
         super(
                 ModArmorMaterial.infinite_armor,
@@ -68,12 +68,10 @@ public class InfinityArmorItem extends ArmorItem {
         return true;
     }
 
-
     @Override
     public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
         return ModItems.COSMIC_RARITY;
     }
-
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -124,7 +122,7 @@ public class InfinityArmorItem extends ArmorItem {
     }
 
     @Override
-    public @Nullable String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+    public @NotNull String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         return Static.MOD_ID + ":textures/models/infinity_armor.png";
     }
 }

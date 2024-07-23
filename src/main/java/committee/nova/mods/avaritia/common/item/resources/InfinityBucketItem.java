@@ -36,12 +36,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/13 上午10:36
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/13 上午10:36
+ * Description:
  */
-public class InfinityBucketItem extends ResourceItem {
+public final class InfinityBucketItem extends ResourceItem {
     public static final String FLUIDS_NBT = "Fluids";
     public static final String FLUID_ID_KEY = "Id";
     public static final String FLUID_AMOUNT_KEY = "Amount";
@@ -149,7 +149,7 @@ public class InfinityBucketItem extends ResourceItem {
         stack.getOrCreateTag().put(FLUIDS_NBT, items);
     }
 
-    protected void playEmptyingSound(Player player, LevelAccessor world, BlockPos pos, Fluid fluid) {
+    private void playEmptyingSound(Player player, LevelAccessor world, BlockPos pos, Fluid fluid) {
         SoundEvent soundEvent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
         world.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
         world.gameEvent(player, GameEvent.FLUID_PLACE, pos);

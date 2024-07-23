@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 11:09
  * Version: 1.0
  */
-public class ExtremeInventory extends TransientCraftingContainer {
+public final class ExtremeInventory extends TransientCraftingContainer {
     private final AbstractContainerMenu container;
     private final BaseItemStackHandler inventory;
     private final boolean autoTable;

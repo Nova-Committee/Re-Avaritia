@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 15:16
  * Version: 1.0
  */
-public class OutputSlot extends SlotItemHandler {
+public final class OutputSlot extends SlotItemHandler {
     public OutputSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }

@@ -8,8 +8,7 @@ import committee.nova.mods.avaritia.util.vec.Vector3;
 /**
  * Apples normals to the render operation. If the model is a planar model it uses known normals.
  */
-public class NormalAttribute extends VertexAttribute<Vector3[]> {
-
+public final class NormalAttribute extends VertexAttribute<Vector3[]> {
     public static final AttributeKey<Vector3[]> attributeKey = AttributeKey.create("normal", Vector3[]::new);
 
     private Vector3[] normalRef;

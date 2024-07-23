@@ -30,18 +30,16 @@ import java.util.List;
  * Date: 2022/5/15 23:12
  * Version: 1.0
  */
-public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
+public final class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     public static final RecipeType<ICompressorRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "compressor", ICompressorRecipe.class);
     private static final ResourceLocation TEXTURE = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/compressor.png");
     private final IDrawable background;
     private final IDrawable icon;
 
-
     public CompressorCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 63);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.neutron_compressor.get()));
     }
-
 
     @Override
     public @NotNull RecipeType<ICompressorRecipe> getRecipeType() {
@@ -71,7 +69,6 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         var output = recipe.getResultItem(level.registryAccess());
         builder.addSlot(RecipeIngredientRole.INPUT, 37, 21).addIngredients(inputs.get(0));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 117, 21).addItemStack(output);
-
     }
 
     @Override
@@ -85,6 +82,4 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         }
         return List.of();
     }
-
-
 }

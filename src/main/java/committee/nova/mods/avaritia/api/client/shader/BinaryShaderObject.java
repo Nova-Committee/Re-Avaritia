@@ -24,8 +24,7 @@ import java.util.function.Consumer;
  * <p>
  * Created by KitsuneAlex on 18/11/21.
  */
-public class BinaryShaderObject extends NamedShaderObject implements ResourceManagerReloadListener {
-
+public final class BinaryShaderObject extends NamedShaderObject implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final ResourceLocation asset;

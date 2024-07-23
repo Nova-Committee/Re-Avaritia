@@ -12,9 +12,7 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessRecipeSchema;
  * CreateTime: 2023/9/17 0:49
  * Description:
  */
-
-public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
-
+public final class KubeJSAvaritiaPlugin extends KubeJSPlugin {
     @Override
     public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
         event.register(ModRecipeSerializers.SHAPED_EXTREME_CRAFT_SERIALIZER.getId(), ShapedRecipeSchema.SCHEMA);

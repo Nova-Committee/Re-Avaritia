@@ -6,7 +6,6 @@ import committee.nova.mods.avaritia.api.client.render.CCRenderState;
  * Represents an operation to be run for each vertex that operates on and modifies the current state
  */
 public interface IVertexOperation {
-
     static int registerOperation() {
         return VertexOperationRegistry.nextOperationIndex++;
     }
@@ -33,7 +32,6 @@ public interface IVertexOperation {
     int operationID();
 
     class VertexOperationRegistry {
-
         static int nextOperationIndex;
     }
 }

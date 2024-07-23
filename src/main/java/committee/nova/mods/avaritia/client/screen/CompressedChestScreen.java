@@ -13,12 +13,12 @@ import net.minecraft.world.inventory.ChestMenu;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/13 上午11:32
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/13 上午11:32
+ * Description:
  */
-public class CompressedChestScreen extends AbstractContainerScreen<ChestMenu> implements MenuAccess<ChestMenu> {
+public final class CompressedChestScreen extends AbstractContainerScreen<ChestMenu> implements MenuAccess<ChestMenu> {
     private static final ResourceLocation CONTAINER_BACKGROUND = Static.rl("textures/gui/generic_81.png");
 
     public CompressedChestScreen(ChestMenu pMenu, Inventory pPlayerInventory, Component pTitle) {

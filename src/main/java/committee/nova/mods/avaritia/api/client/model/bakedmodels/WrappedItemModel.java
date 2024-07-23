@@ -42,7 +42,6 @@ import java.util.function.Predicate;
  * Created by covers1624 on 5/07/2017.
  */
 public abstract class WrappedItemModel implements PerspectiveModel {
-
     protected BakedModel wrapped;
     protected ModelState parentState;
     @Nullable

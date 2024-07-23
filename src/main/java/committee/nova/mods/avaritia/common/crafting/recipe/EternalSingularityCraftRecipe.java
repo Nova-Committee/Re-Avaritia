@@ -32,8 +32,7 @@ import java.util.function.BiFunction;
  * CreateTime: 2023/9/16 17:19
  * Description:
  */
-
-public class EternalSingularityCraftRecipe implements ISpecialRecipe{
+public final class EternalSingularityCraftRecipe implements ISpecialRecipe{
     private static boolean ingredientsLoaded = false;
     private final ResourceLocation recipeId;
     public NonNullList<Ingredient> inputs = NonNullList.create();
@@ -99,6 +98,7 @@ public class EternalSingularityCraftRecipe implements ISpecialRecipe{
     public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return new ItemStack(ModItems.eternal_singularity.get());
     }
+
     @Override
     public boolean matches(IItemHandler inventory) {
         var ingredients = this.getIngredients();

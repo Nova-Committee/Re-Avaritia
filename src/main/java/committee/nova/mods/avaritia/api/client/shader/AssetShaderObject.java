@@ -13,8 +13,7 @@ import java.util.Objects;
 /**
  * Created by covers1624 on 24/5/20.
  */
-public class AssetShaderObject extends AbstractShaderObject implements ResourceManagerReloadListener {
-
+public final class AssetShaderObject extends AbstractShaderObject implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final ResourceLocation asset;

@@ -25,10 +25,8 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 8:44
  * Version: 1.0
  */
-public class ExtremeCraftingTile extends BaseInventoryTileEntity implements MenuProvider {
-
+public final class ExtremeCraftingTile extends BaseInventoryTileEntity implements MenuProvider {
     private final BaseItemStackHandler inventory;
-
 
     public ExtremeCraftingTile(BlockPos pos, BlockState blockState) {
         super(ModTileEntities.extreme_crafting_tile.get(), pos, blockState);
@@ -54,9 +52,8 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
         return Localizable.of("container.extreme_crafting_table").build();
     }
 
-    @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
+    public @NotNull AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
         return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this.inventory, this.getBlockPos());
     }
 
@@ -64,6 +61,4 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
         return !this.remove && cap == ForgeCapabilities.ITEM_HANDLER ? LazyOptional.empty() : super.getCapability(cap, side);
     }
-
-
 }

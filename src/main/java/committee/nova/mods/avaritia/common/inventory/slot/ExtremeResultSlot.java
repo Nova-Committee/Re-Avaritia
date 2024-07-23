@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/2/20 9:45
  * Version: 1.0
  */
-public class ExtremeResultSlot extends Slot {
-
+public final class ExtremeResultSlot extends Slot {
     private final AbstractContainerMenu container;
     private final CraftingContainer craftSlots;
     private final Player player;

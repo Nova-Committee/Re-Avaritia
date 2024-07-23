@@ -42,8 +42,7 @@ import java.util.function.Consumer;
  * CreateTime: 2023/8/24 13:59
  * Description:
  */
-
-public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public final class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final ItemLike result;
     private final ResourceLocation result2;

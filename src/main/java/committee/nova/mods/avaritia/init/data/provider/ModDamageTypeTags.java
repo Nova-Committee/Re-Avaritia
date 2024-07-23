@@ -19,9 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * CreateTime: 2023/9/10 0:39
  * Description:
  */
-
-public class ModDamageTypeTags extends TagsProvider<DamageType> {
-
+public final class ModDamageTypeTags extends TagsProvider<DamageType> {
     public ModDamageTypeTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
         super(output, Registries.DAMAGE_TYPE, future, Static.MOD_ID, helper);
     }

@@ -13,8 +13,7 @@ import net.minecraft.world.level.material.MapColor;
  * CreateTime: 2023/8/13 13:20
  * Description:
  */
-
-public class ResourceBlock extends BaseBlock {
+public final class ResourceBlock extends BaseBlock {
     public ResourceBlock() {
         super(MapColor.METAL, SoundType.METAL, 25f, 1000f);
     }
@@ -23,6 +22,4 @@ public class ResourceBlock extends BaseBlock {
     public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
         return 20.0f;
     }
-
-
 }

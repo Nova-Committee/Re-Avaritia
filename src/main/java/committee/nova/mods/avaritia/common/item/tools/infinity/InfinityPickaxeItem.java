@@ -28,8 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem {
-
+public final class InfinityPickaxeItem extends PickaxeItem {
     public InfinityPickaxeItem() {
         super(ModTiers.INFINITY_PICKAXE, 1, -2.8F, (new Properties())
                 .stacksTo(1)
@@ -68,7 +67,6 @@ public class InfinityPickaxeItem extends PickaxeItem {
         return 0;
     }
 
-
     @Override
     public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
@@ -100,7 +98,6 @@ public class InfinityPickaxeItem extends PickaxeItem {
         return true;
     }
 
-
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         if (stack.getOrCreateTag().getBoolean("hammer")) {
@@ -108,5 +105,4 @@ public class InfinityPickaxeItem extends PickaxeItem {
         }
         return false;
     }
-
 }

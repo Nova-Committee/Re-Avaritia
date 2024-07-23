@@ -14,13 +14,13 @@ import java.util.function.Function;
 
 /**
  * EternalSingularityItem
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/6/13 下午7:52
+ * <p>
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/6/13 下午7:52
  */
-public class EternalSingularityItem extends Item {
+public final class EternalSingularityItem extends Item {
     public EternalSingularityItem(Function<Properties, Properties> properties) {
         super(properties.apply(new Properties().stacksTo(16).rarity(Rarity.EPIC)));
     }

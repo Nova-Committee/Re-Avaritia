@@ -10,14 +10,15 @@ import java.util.function.Supplier;
 
 /**
  * S2CSingularitiesPacket
+ * <p>
  * Description:
  * Author: cnlimiter
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public class S2CSingularitiesPacket {
-
+public final class S2CSingularitiesPacket {
     private final List<Singularity> singularities;
+
     public S2CSingularitiesPacket(List<Singularity> singularities) {
         this.singularities = singularities;
     }
@@ -36,9 +37,7 @@ public class S2CSingularitiesPacket {
     }
 
     public static void run(S2CSingularitiesPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            SingularityRegistryHandler.getInstance().loadSingularities(msg);
-        });
+        ctx.get().enqueueWork(() -> SingularityRegistryHandler.getInstance().loadSingularities(msg));
 
         ctx.get().setPacketHandled(true);
     }

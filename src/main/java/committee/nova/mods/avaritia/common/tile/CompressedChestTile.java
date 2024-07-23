@@ -20,9 +20,8 @@ import org.jetbrains.annotations.NotNull;
  * CreateTime: 2023/11/21 3:34
  * Description:
  */
-
-public class CompressedChestTile extends ChestBlockEntity {
-    protected CompressedChestTile(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
+public final class CompressedChestTile extends ChestBlockEntity {
+    private CompressedChestTile(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         setItems(NonNullList.withSize(81, ItemStack.EMPTY));
     }

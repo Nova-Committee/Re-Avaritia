@@ -7,8 +7,7 @@ import committee.nova.mods.avaritia.util.client.colour.ColourRGBA;
 /**
  * Created by covers1624 on 10/10/2016.
  */
-public class LightingAttribute extends VertexAttribute<int[]> {
-
+public final class LightingAttribute extends VertexAttribute<int[]> {
     public static final AttributeKey<int[]> attributeKey = AttributeKey.create("lighting", int[]::new);
 
     private int[] colourRef;

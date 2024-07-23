@@ -23,18 +23,19 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 17:11
  * Version: 1.0
  */
-public class InfinityAxeItem extends AxeItem {
-
+public final class InfinityAxeItem extends AxeItem {
     public InfinityAxeItem() {
         super(ModTiers.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 
     }
+
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
     }
+
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;
@@ -61,7 +62,6 @@ public class InfinityAxeItem extends AxeItem {
         return 0;
     }
 
-
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
@@ -79,5 +79,4 @@ public class InfinityAxeItem extends AxeItem {
         }
         return false;
     }
-
 }

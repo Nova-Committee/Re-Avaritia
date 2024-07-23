@@ -28,13 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @Project: Avaritia-forge
- * @Author: cnlimiter
- * @CreateTime: 2023/12/31 11:38
- * @Description:
+ * Project: Avaritia-forge
+ * Author: cnlimiter
+ * CreateTime: 2023/12/31 11:38
+ * Description:
  */
-
-public class EndlessCandleCakeBlock extends CandleCakeBlock {
+public final class EndlessCandleCakeBlock extends CandleCakeBlock {
     private final EndlessCakeBlock cake;
     private static final Map<EndlessCakeBlock, Map<CandleBlock, EndlessCandleCakeBlock>> COMBINER = new HashMap<>();
 
@@ -54,7 +53,6 @@ public class EndlessCandleCakeBlock extends CandleCakeBlock {
     public static BlockState getCandleCakeFromCandle(EndlessCakeBlock cake, CandleBlock candle) {
         return COMBINER.get(cake).get(candle).defaultBlockState();
     }
-
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
@@ -94,8 +92,7 @@ public class EndlessCandleCakeBlock extends CandleCakeBlock {
         return new ItemStack(cake);
     }
 
-
-    protected static boolean isHittingCandle(BlockHitResult hitResult) {
+    private static boolean isHittingCandle(BlockHitResult hitResult) {
         return hitResult.getLocation().y - (double)hitResult.getBlockPos().getY() > 0.5D;
     }
 }

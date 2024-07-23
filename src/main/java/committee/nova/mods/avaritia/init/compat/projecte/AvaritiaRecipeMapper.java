@@ -6,13 +6,13 @@ import moze_intel.projecte.emc.mappers.recipe.BaseRecipeTypeMapper;
 import net.minecraft.world.item.crafting.RecipeType;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/16 上午12:41
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/16 上午12:41
+ * Description:
  */
 @RecipeTypeMapper
-public class AvaritiaRecipeMapper extends BaseRecipeTypeMapper {
+public final class AvaritiaRecipeMapper extends BaseRecipeTypeMapper {
     @Override
     public String getName() {
         return "Avaritia";

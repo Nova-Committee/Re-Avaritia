@@ -29,13 +29,11 @@ import static net.minecraft.world.entity.EquipmentSlot.*;
  * Version: 1.0
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class AbilityHandler {
-
+public final class AbilityHandler {
     public static final Set<String> entitiesWithHelmets = new HashSet<>();
     public static final Set<String> entitiesWithLeggings = new HashSet<>();
     public static final Set<String> entitiesWithBoots = new HashSet<>();
     public static final Map<String, FlightInfo> entitiesWithFlight = new HashMap<>();
-
 
     @SubscribeEvent
     public static void updateAbilities(LivingEvent.LivingTickEvent event) {
@@ -52,7 +50,6 @@ public class AbilityHandler {
             handleChestStateChange(player, key, hasChest);
             handleLeggingsStateChange(player, key, hasLeggings);
             handleBootsStateChange(player, key, hasBoots);
-
         }
     }
 
@@ -211,7 +208,6 @@ public class AbilityHandler {
         entitiesWithBoots.remove(key);
     }
 
-
     public static class FlightInfo {
         public boolean hadFlightItem;
         public boolean wasFlyingGameMode;
@@ -244,5 +240,4 @@ public class AbilityHandler {
             serverPlayer.onUpdateAbilities();
         }
     }
-
 }

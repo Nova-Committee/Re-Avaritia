@@ -31,8 +31,7 @@ import java.util.function.BiFunction;
  * CreateTime: 2023/9/16 17:19
  * Description:
  */
-
-public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
+public final class InfinityCatalystCraftRecipe implements ISpecialRecipe{
     private final ResourceLocation recipeId;
     private final String group;
     public NonNullList<Ingredient> inputs;
@@ -88,6 +87,7 @@ public class InfinityCatalystCraftRecipe implements ISpecialRecipe{
     public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
         return new ItemStack(ModItems.infinity_catalyst.get());
     }
+
     @Override
     public boolean matches(IItemHandler inventory) {
         List<ItemStack> inputs = new ArrayList<>();

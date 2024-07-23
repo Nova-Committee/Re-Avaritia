@@ -1,14 +1,10 @@
 package committee.nova.mods.avaritia.init.data.provider.loot;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
-import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CakeBlock;
-import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +18,11 @@ import java.util.stream.Collectors;
  * CreateTime: 2023/8/24 13:39
  * Description:
  */
-
-public class ModBlockLootTables extends BlockLootSubProvider {
-
-    protected ModBlockLootTables() {
+public final class ModBlockLootTables extends BlockLootSubProvider {
+    ModBlockLootTables() {
         super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
     }
+
     @Override
     protected void generate() {
         for (var block : ModBlocks.BLOCKS.getEntries()){

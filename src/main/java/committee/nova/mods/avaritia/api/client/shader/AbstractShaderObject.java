@@ -9,7 +9,6 @@ import java.util.Collection;
  * Created by covers1624 on 24/5/20.
  */
 public abstract class AbstractShaderObject extends NamedShaderObject {
-
     protected int shaderId = -1;
     protected boolean dirty;
 

@@ -35,8 +35,7 @@ import net.minecraftforge.fluids.FluidStack;
  * Uses a ThreadLocal system to assign each thread their own CCRenderState so we can use it in Multithreaded chunk batching.
  * TODO, proper piping of BakedQuads and CCBakedQuads.
  */
-public class CCRenderState {
-
+public final class CCRenderState {
     private static final ThreadLocal<CCRenderState> instances = ThreadLocal.withInitial(CCRenderState::new);
 
     //Each attrib needs to be assigned in this order to have a valid operation index.

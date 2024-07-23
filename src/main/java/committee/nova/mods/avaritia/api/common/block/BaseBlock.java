@@ -13,7 +13,7 @@ import java.util.function.Function;
  * Date: 2022/4/2 15:06
  * Version: 1.0
  */
-public class BaseBlock extends Block {
+public  class BaseBlock extends Block {
     public BaseBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

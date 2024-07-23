@@ -16,14 +16,11 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/3/31 14:33
  * Version: 1.0
  */
-public class ImmortalItemEntity extends ItemEntity {
-
-
+public final class ImmortalItemEntity extends ItemEntity {
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
         this.setDefaultPickUpDelay();
         this.lifespan = 3600;
-
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
@@ -33,7 +30,6 @@ public class ImmortalItemEntity extends ItemEntity {
             entity.setItem(itemStack);
         }
         return entity;
-
     }
 
     @Override
@@ -41,11 +37,11 @@ public class ImmortalItemEntity extends ItemEntity {
         return source == this.damageSources().fellOutOfWorld();
     }
 
-
     @Override
     public void remove(@NotNull RemovalReason pReason) {
-        if (this.getAge() >= lifespan)
+        if (this.getAge() >= lifespan) {
             super.remove(pReason);
+        }
     }
 
     @Override
@@ -60,7 +56,6 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public void playerTouch(@NotNull Player pEntity) {
-
         if (!this.level().isClientSide) {
             if (this.pickupDelay > 0) return;
             ItemStack itemstack = this.getItem();
@@ -86,10 +81,6 @@ public class ImmortalItemEntity extends ItemEntity {
                 pEntity.awardStat(Stats.ITEM_PICKED_UP.get(item), i);
                 pEntity.onItemPickup(this);
             }
-
         }
-
     }
-
-
 }

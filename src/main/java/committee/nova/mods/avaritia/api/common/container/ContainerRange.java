@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  * @description
  * @date 2024/6/11 下午11:58
  */
-public class ContainerRange {
+public final class ContainerRange {
     public Container inv;
     public Direction face;
     public WorldlyContainer sidedInv;

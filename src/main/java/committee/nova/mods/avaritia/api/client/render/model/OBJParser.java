@@ -16,8 +16,7 @@ import java.util.*;
 /**
  * Created by covers1624 on 11/4/22.
  */
-public class OBJParser {
-
+public final class OBJParser {
     private final ResourceLocation location;
     @Nullable
     private ResourceProvider provider;

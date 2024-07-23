@@ -15,7 +15,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
  * Date: 2022/4/2 12:34
  * Version: 1.0
  */
-public class Singularity {
+public final class Singularity {
     private final ResourceLocation id;
     private final String name;
     private final int[] colors;

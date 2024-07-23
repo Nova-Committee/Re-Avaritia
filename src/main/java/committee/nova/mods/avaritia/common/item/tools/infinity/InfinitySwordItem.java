@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem {
+public final class InfinitySwordItem extends SwordItem {
     public InfinitySwordItem() {
         super(ModTiers.INFINITY_SWORD, 0, -2.8F, (new Properties())
                 .stacksTo(1)
@@ -85,7 +85,6 @@ public class InfinitySwordItem extends SwordItem {
         return true;
     }
 
-
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
@@ -96,8 +95,6 @@ public class InfinitySwordItem extends SwordItem {
         level.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         return InteractionResultHolder.success(heldItem);
     }
-
-
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {

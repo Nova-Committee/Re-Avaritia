@@ -13,13 +13,12 @@ import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/13 下午12:38
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/13 下午12:38
+ * Description:
  */
-public class CompressedChestBlock extends ChestBlock {
-
+public final class CompressedChestBlock extends ChestBlock {
     public CompressedChestBlock() {
         super(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava(), () -> ModTileEntities.compressed_chest_tile.get());
     }

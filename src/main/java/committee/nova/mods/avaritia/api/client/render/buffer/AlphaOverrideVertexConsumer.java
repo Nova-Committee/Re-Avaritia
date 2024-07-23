@@ -6,8 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by covers1624 on 29/3/22.
  */
-public class AlphaOverrideVertexConsumer extends DelegatingVertexConsumer {
-
+public final class AlphaOverrideVertexConsumer extends DelegatingVertexConsumer {
     private final int alpha;
 
     public AlphaOverrideVertexConsumer(VertexConsumer delegate, double alpha) {

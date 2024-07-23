@@ -26,14 +26,13 @@ import java.util.function.Consumer;
 
 /**
  * ModAdvancements
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/4/1 20:19
+ * <p>
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/4/1 20:19
  */
 public class ModAdvancements extends ForgeAdvancementProvider {
-
     public ModAdvancements(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, ExistingFileHelper existingFileHelper) {
         super(output, registries, existingFileHelper, List.of(new AvaritiaAdvancements()));
     }
@@ -43,7 +42,6 @@ public class ModAdvancements extends ForgeAdvancementProvider {
     }
 
     private static class AvaritiaAdvancements implements AdvancementGenerator {
-
         private final List<ModAdvancementSubProvider> subProvider = List.of(new MainAdvancements());
 
         @Override
@@ -136,7 +134,6 @@ public class ModAdvancements extends ForgeAdvancementProvider {
     }
 
     private static class InfinityAdvancements implements ModAdvancementSubProvider {
-
         @Override
         public void generate(@NotNull Advancement root, HolderLookup.@NotNull Provider holderProvider, @NotNull Consumer<Advancement> consumer) {
             Advancement infinity_ingot = Advancement.Builder.advancement()

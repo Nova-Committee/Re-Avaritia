@@ -12,12 +12,10 @@ import org.jetbrains.annotations.NotNull;
  * Name ModBlockStates
  * Description
  */
-
-public class ModBlockStates extends IBlockStateProvider {
+public final class ModBlockStates extends IBlockStateProvider {
     public ModBlockStates(PackOutput output, ExistingFileHelper helper) {
         super(output, helper);
     }
-
 
     @Override
     public @NotNull String getName() {

@@ -37,18 +37,19 @@ import java.util.Set;
  * Date: 2022/5/15 16:47
  * Version: 1.0
  */
-public class InfinityHoeItem extends HoeItem {
-
+public final class InfinityHoeItem extends HoeItem {
     public InfinityHoeItem() {
         super(ModTiers.INFINITY_HOE, -5, 0f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 
     }
+
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
     }
+
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;
@@ -63,7 +64,6 @@ public class InfinityHoeItem extends HoeItem {
     public int getEnchantmentValue(ItemStack stack) {
         return 0;
     }
-
 
     @Override
     public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
@@ -121,7 +121,6 @@ public class InfinityHoeItem extends HoeItem {
         }
         pLevel.playSound(pPlayer, pPlayer.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         return InteractionResultHolder.pass(heldItem);
-
     }
 
     @Override

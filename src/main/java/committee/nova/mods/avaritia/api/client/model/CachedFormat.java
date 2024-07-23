@@ -32,8 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author covers1624
  */
-public class CachedFormat {
-
+public final class CachedFormat {
     private static final Map<VertexFormat, CachedFormat> formatCache = new ConcurrentHashMap<>();
     public static final CachedFormat BLOCK = new CachedFormat(DefaultVertexFormat.BLOCK);
 

@@ -28,9 +28,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * Name AvaritiaClient
  * Description
  */
-
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class AvaritiaClient {
+public final class AvaritiaClient {
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(Static.rl("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(Static.rl("compressed_chest_left"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_RIGHT = new ModelLayerLocation(Static.rl("compressed_chest_right"), "main");

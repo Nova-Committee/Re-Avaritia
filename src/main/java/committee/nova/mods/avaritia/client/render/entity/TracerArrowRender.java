@@ -17,10 +17,8 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity> {
-
+public final class TracerArrowRender extends ArrowRenderer<TraceArrowEntity> {
     private static final ResourceLocation tex = new ResourceLocation(Static.MOD_ID, "textures/entity/heavenarrow.png");
-
 
     public TracerArrowRender(EntityRendererProvider.Context p_174008_) {
         super(p_174008_);
@@ -30,6 +28,4 @@ public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity> {
     public @NotNull ResourceLocation getTextureLocation(@NotNull TraceArrowEntity entity) {
         return tex;
     }
-
-
 }

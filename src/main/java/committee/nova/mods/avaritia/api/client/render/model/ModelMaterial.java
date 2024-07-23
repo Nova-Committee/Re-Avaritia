@@ -9,8 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Created by covers1624 on 11/4/22.
  */
-public class ModelMaterial implements Copyable<ModelMaterial> {
-
+public final class ModelMaterial implements Copyable<ModelMaterial> {
     public static final AttributeKey<ModelMaterial> MATERIAL_KEY = new AttributeKey<>("material") {
         @Override
         public ModelMaterial createDefault(int length) {

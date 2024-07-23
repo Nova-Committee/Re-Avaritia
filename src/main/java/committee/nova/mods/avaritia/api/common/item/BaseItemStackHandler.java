@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
-public class BaseItemStackHandler extends ItemStackHandler {
+public final class BaseItemStackHandler extends ItemStackHandler {
     private final Runnable onContentsChanged;
     private final Map<Integer, Integer> slotSizeMap;
     private BiFunction<Integer, ItemStack, Boolean> slotValidator;

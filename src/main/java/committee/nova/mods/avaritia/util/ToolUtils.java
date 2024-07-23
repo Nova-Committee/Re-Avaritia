@@ -214,18 +214,18 @@ public class ToolUtils {
             int count = e.getValue();
             ItemStackWrapper wrap = e.getKey();
 
-            int size = wrap.stack.getMaxStackSize();
+            int size = wrap.stack().getMaxStackSize();
             int fullstacks = Mth.floor((float) count / size);
 
             for (int i = 0; i < fullstacks; i++) {
                 count -= size;
-                ItemStack stack = wrap.stack.copy();
+                ItemStack stack = wrap.stack().copy();
                 stack.setCount(size);
                 collated.add(stack);
             }
 
             if (count > 0) {
-                ItemStack stack = wrap.stack.copy();
+                ItemStack stack = wrap.stack().copy();
                 stack.setCount(count);
                 collated.add(stack);
             }

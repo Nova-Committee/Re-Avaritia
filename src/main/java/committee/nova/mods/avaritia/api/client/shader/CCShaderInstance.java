@@ -29,11 +29,10 @@ import java.util.List;
  * <p>
  * Created by covers1624 on 8/4/22.
  */
-public class CCShaderInstance extends ShaderInstance {
-
+public final class CCShaderInstance extends ShaderInstance {
     private final List<Runnable> applyCallbacks = new LinkedList<>();
 
-    protected CCShaderInstance(ResourceProvider resourceProvider, ResourceLocation loc, VertexFormat format) throws IOException {
+    private CCShaderInstance(ResourceProvider resourceProvider, ResourceLocation loc, VertexFormat format) throws IOException {
         super(resourceProvider, loc, format);
     }
 

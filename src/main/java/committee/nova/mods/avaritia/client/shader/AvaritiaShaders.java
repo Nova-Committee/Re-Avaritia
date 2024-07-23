@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.shader;
 
-import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Static;
@@ -9,9 +8,7 @@ import committee.nova.mods.avaritia.api.client.shader.CCUniform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterShadersEvent;
@@ -28,18 +25,26 @@ import java.util.Objects;
  * CreateTime: 2023/9/18 1:37
  * Description:
  */
-
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class AvaritiaShaders {
+public final class AvaritiaShaders {
+    private static class RenderStateShardAccess extends RenderStateShard {
+        private static final RenderStateShard.DepthTestStateShard EQUAL_DEPTH_TEST = RenderStateShard.EQUAL_DEPTH_TEST;
+        private static final RenderStateShard.LightmapStateShard LIGHT_MAP = RenderStateShard.LIGHTMAP;
+        private static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = RenderStateShard.TRANSLUCENT_TRANSPARENCY;
+        private static final RenderStateShard.TextureStateShard BLOCK_SHEET_MIPPED = RenderStateShard.BLOCK_SHEET_MIPPED;
+
+        private RenderStateShardAccess(String pName, Runnable pSetupState, Runnable pClearState) {
+            super(pName, pSetupState, pClearState);
+        }
+    }
+
     public static final float[] COSMIC_UVS = new float[40];
     public static boolean inventoryRender = false;
 
     public static int renderTime;
     public static float renderFrame;
 
-
     public static CCShaderInstance cosmicShader;
-    public static CCShaderInstance cosmicShader2;
 
     public static CCUniform cosmicTime;
     public static CCUniform cosmicYaw;
@@ -48,21 +53,13 @@ public class AvaritiaShaders {
     public static CCUniform cosmicOpacity;
     public static CCUniform cosmicUVs;
 
-//    public static Uniform cosmicTime2;
-//    public static Uniform cosmicYaw2;
-//    public static Uniform cosmicPitch2;
-//    public static Uniform cosmicExternalScale2;
-//    public static Uniform cosmicOpacity2;
-//    public static Uniform cosmicUVs2;
-
-
     public static RenderType COSMIC_RENDER_TYPE = RenderType.create("avaritia:cosmic",
             DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .setDepthTestState(RenderStateShardAccess.EQUAL_DEPTH_TEST)
+                    .setLightmapState(RenderStateShardAccess.LIGHT_MAP)
+                    .setTransparencyState(RenderStateShardAccess.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(RenderStateShardAccess.BLOCK_SHEET_MIPPED)
                     .createCompositeState(true)
     );
 
@@ -81,40 +78,7 @@ public class AvaritiaShaders {
                 cosmicTime.set((float)renderTime + renderFrame);
             });
         });
-
-//        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Static.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK), e -> {
-//            cosmicShader2 = (CCShaderInstance)e;
-//            cosmicTime2 = Objects.requireNonNull(cosmicShader2.getUniform("time"));
-//            cosmicYaw2 = Objects.requireNonNull(cosmicShader2.getUniform("yaw"));
-//            cosmicPitch2 = Objects.requireNonNull(cosmicShader2.getUniform("pitch"));
-//            cosmicExternalScale2 = Objects.requireNonNull(cosmicShader2.getUniform("externalScale"));
-//            cosmicOpacity2 = Objects.requireNonNull(cosmicShader2.getUniform("opacity"));
-//            cosmicUVs2 = Objects.requireNonNull(cosmicShader2.getUniform("cosmicuvs"));
-//            cosmicTime2.set((float)renderTime + renderFrame);
-//            cosmicShader2.onApply(() -> {
-//                cosmicTime2.set((float)renderTime + renderFrame);
-//            });
-//        });
-
-
     }
-
-//    @SubscribeEvent
-//    public static void onRenderTick(TickEvent.RenderTickEvent event) {
-//        if (event.phase == TickEvent.Phase.START) {
-//            for (int i = 0; i < 10; ++i) {
-//                TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Static.rl("misc/cosmic_" + i));
-//                COSMIC_UVS[i * 4] = sprite.getU0();
-//                COSMIC_UVS[i * 4 + 1] = sprite.getV0();
-//                COSMIC_UVS[i * 4 + 2] = sprite.getU1();
-//                COSMIC_UVS[i * 4 + 3] = sprite.getV1();
-//            }
-//            if (cosmicUVs != null) {
-//                cosmicUVs.set(COSMIC_UVS);
-//            }
-//        }
-//    }
-
 
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {

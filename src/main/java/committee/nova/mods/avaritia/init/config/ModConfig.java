@@ -9,8 +9,7 @@ import net.minecraftforge.fml.ModLoadingContext;
  * Date: 2022/5/17 15:04
  * Version: 1.0
  */
-public class ModConfig {
-
+public final class ModConfig {
     public static final ForgeConfigSpec COMMON;
 
     public static final ForgeConfigSpec.DoubleValue foodTime; //foodTime
@@ -50,7 +49,6 @@ public class ModConfig {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, COMMON);
     }
 
-
     private static ForgeConfigSpec.BooleanValue buildBoolean(ForgeConfigSpec.Builder builder, String name, boolean defaultValue, String comment) {
         return builder.comment(comment).translation(name).define(name, defaultValue);
     }
@@ -62,5 +60,4 @@ public class ModConfig {
     private static ForgeConfigSpec.DoubleValue buildDouble(ForgeConfigSpec.Builder builder, String name, double defaultValue, double min, double max, String comment) {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
-
 }

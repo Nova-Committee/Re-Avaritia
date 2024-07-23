@@ -25,13 +25,14 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class SkullsSwordItem extends SwordItem {
+public final class SkullsSwordItem extends SwordItem {
     public SkullsSwordItem() {
         super(ModTiers.SKULL_SWORD, 0, -2.4f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 
     }
+
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;

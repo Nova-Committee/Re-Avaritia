@@ -11,9 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/18 17:30
  * Version: 1.0
  */
-public class StarFuelItem extends ResourceItem {
-
-
+public final class StarFuelItem extends ResourceItem {
     public static final int BURN_TIME = Integer.MAX_VALUE;
 
     public StarFuelItem() {
@@ -24,5 +22,4 @@ public class StarFuelItem extends ResourceItem {
     public int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
         return BURN_TIME;
     }
-
 }

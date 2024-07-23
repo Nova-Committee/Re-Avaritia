@@ -13,8 +13,7 @@ import java.util.Map;
  * <p>
  * Created by covers1624 on 11/4/22.
  */
-public class MatLib {
-
+public final class MatLib {
     public final Map<String, ModelMaterial> materials = new HashMap<>();
 
     public static MatLib parse(ResourceProvider resourceProvider, ResourceLocation loc) {

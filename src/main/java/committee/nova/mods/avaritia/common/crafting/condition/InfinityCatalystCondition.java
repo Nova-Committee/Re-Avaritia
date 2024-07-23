@@ -12,7 +12,7 @@ import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
  * Date: 2022/7/10 12:46
  * Version: 1.0
  */
-public class InfinityCatalystCondition implements ICondition {
+public final class InfinityCatalystCondition implements ICondition {
     private static final ResourceLocation ID = new ResourceLocation(Static.MOD_ID, "infinity_catalyst_recipe");
 
     @Override
@@ -30,7 +30,6 @@ public class InfinityCatalystCondition implements ICondition {
 
         @Override
         public void write(JsonObject json, InfinityCatalystCondition value) {
-
         }
 
         @Override

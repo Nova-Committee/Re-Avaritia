@@ -35,8 +35,7 @@ import java.util.function.Consumer;
  * CreateTime: 2023/8/24 14:07
  * Description:
  */
-
-public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public final class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final Item result;
     private final int count;

@@ -20,7 +20,6 @@ import static committee.nova.mods.avaritia.util.SneakyUtils.unsafeCast;
  * Created by covers1624 on 10/10/2016.
  */
 public abstract class AttributeKey<T> {
-
     private final String name;
     public final int attributeKeyIndex;
     public final int operationIndex;

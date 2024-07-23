@@ -21,9 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * Name ModBlockTags
  * Description
  */
-
-public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
-
+public final class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
     public ModBlockTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, Registries.BLOCK, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
     }
@@ -32,7 +30,6 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
     public @NotNull String getName() {
         return "Avaritia Block Tags";
     }
-
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider pProvider) {
@@ -54,6 +51,5 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.infinity.get(),
                 ModBlocks.neutron.get()
         );
-
     }
 }

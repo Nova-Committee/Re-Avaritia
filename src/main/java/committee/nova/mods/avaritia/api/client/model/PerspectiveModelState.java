@@ -14,8 +14,7 @@ import java.util.Map;
  * Created by covers1624 on 9/7/22.
  * @see committee.nova.mods.avaritia.util.client.TransformUtils
  */
-public class PerspectiveModelState implements ModelState {
-
+public final class PerspectiveModelState implements ModelState {
     public static final PerspectiveModelState IDENTITY = new PerspectiveModelState(ImmutableMap.of());
 
     private final Map<ItemDisplayContext, Transformation> transforms;

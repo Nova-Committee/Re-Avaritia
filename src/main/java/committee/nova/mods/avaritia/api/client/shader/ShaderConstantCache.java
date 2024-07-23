@@ -5,8 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 /**
  * Created by KitsuneAlex on 19/11/21.
  */
-public class ShaderConstantCache implements ConstantCache {
-
+public final class ShaderConstantCache implements ConstantCache {
     private final Int2IntArrayMap values = new Int2IntArrayMap();
 
     @Override

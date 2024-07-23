@@ -17,7 +17,7 @@ import java.util.Map;
  * Date: 2022/5/15 20:37
  * Version: 1.0
  */
-public class RegisterRecipesEvent extends Event {
+public final class RegisterRecipesEvent extends Event {
     private final RecipeManager recipeManager;
 
     public RegisterRecipesEvent(RecipeManager recipeManager) {
@@ -53,6 +53,4 @@ public class RegisterRecipesEvent extends Event {
     public Recipe<?> getRecipe(ResourceLocation name) {
         return getRecipeManager().byName.get(name);
     }
-
-
 }

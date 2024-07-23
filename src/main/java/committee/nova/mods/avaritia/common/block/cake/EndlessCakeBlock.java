@@ -30,14 +30,14 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @Project: Avaritia-forge
- * @Author: cnlimiter
- * @CreateTime: 2023/12/31 11:28
- * @Description:
+ * Project: Avaritia-forge
+ * Author: cnlimiter
+ * CreateTime: 2023/12/31 11:28
+ * Description:
  */
-
-public class EndlessCakeBlock extends BaseBlock {
+public final class EndlessCakeBlock extends BaseBlock {
     public static final VoxelShape CAKE_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 8.0D, 15.0D);
+
     public EndlessCakeBlock() {
         super(Properties.of().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY));
         this.registerDefaultState(this.stateDefinition.any());
@@ -48,7 +48,7 @@ public class EndlessCakeBlock extends BaseBlock {
         return CAKE_SHAPE;
     }
 
-    protected static InteractionResult tryEat(LevelAccessor pLevel, BlockPos pPos, Player pPlayer) {
+    static InteractionResult tryEat(LevelAccessor pLevel, BlockPos pPos, Player pPlayer) {
         if (!pPlayer.canEat(true)) {
             return InteractionResult.PASS;
         } else {
@@ -114,5 +114,4 @@ public class EndlessCakeBlock extends BaseBlock {
     public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
         return false;
     }
-
 }

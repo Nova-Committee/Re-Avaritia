@@ -5,8 +5,7 @@ import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
 import committee.nova.mods.avaritia.util.vec.Rotation;
 import committee.nova.mods.avaritia.util.vec.Vector3;
 
-public class LightModel implements IVertexOperation {
-
+public final class LightModel implements IVertexOperation {
     public static final int operationIndex = IVertexOperation.registerOperation();
 
     public static class Light {

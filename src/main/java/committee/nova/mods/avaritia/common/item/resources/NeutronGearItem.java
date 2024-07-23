@@ -12,13 +12,13 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * NeutronGearItem
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/6/14 下午12:15
+ * <p>
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/6/14 下午12:15
  */
-public class NeutronGearItem extends ResourceItem{
+public final class NeutronGearItem extends ResourceItem {
     public NeutronGearItem() {
         super(Rarity.RARE, "neutron_gear", true);
     }
@@ -32,7 +32,7 @@ public class NeutronGearItem extends ResourceItem{
         var player = pContext.getPlayer();
         var itemInHand = pContext.getItemInHand();
 
-        if (tile instanceof BaseNeutronCollectorTile collectorTile && player != null && player.isCrouching()){
+        if (tile instanceof BaseNeutronCollectorTile collectorTile && player != null && player.isCrouching()) {
             switch (collectorTile.getTier()) {
                 case DEFAULT -> {
                     collectorTile.setTier(CollectorTier.DENSE);

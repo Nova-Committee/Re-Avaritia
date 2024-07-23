@@ -21,9 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * CreateTime: 2023/9/10 0:40
  * Description:
  */
-
-public class ModRegistries extends DatapackBuiltinEntriesProvider {
-
+public final class ModRegistries extends DatapackBuiltinEntriesProvider {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
 

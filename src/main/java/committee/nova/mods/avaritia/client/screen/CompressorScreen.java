@@ -22,7 +22,7 @@ import java.util.List;
  * Date: 2022/4/2 18:16
  * Version: 1.0
  */
-public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
+public final class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
     private CompressorTile tile;
 
@@ -209,5 +209,4 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         int j = this.getTimeRequired();
         return j != 0 && i != 0 ? i * pixels / j : 0;
     }
-
 }

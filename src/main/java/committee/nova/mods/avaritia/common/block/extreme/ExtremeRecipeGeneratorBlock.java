@@ -21,14 +21,12 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * ExtremeGeneratorBlock
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/6/15 下午2:18
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/6/15 下午2:18
  */
-public class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
-
+public final class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
     public ExtremeRecipeGeneratorBlock() {
         super(MapColor.METAL, SoundType.GLASS, 100f, 2000F, true);
     }
@@ -56,9 +54,8 @@ public class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
-    @Nullable
     @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new ExtremeCraftingTile(pos, state);
     }
 

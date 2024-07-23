@@ -22,13 +22,11 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/20 17:37
  * Version: 1.0
  */
-public class HeavenArrowEntity extends Arrow {
-
+public final class HeavenArrowEntity extends Arrow {
     private LivingEntity shooter;
 
     public HeavenArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
         super(entityType, level);
-
     }
 
     public static HeavenArrowEntity create(Level level, LivingEntity shooter) {
@@ -40,7 +38,6 @@ public class HeavenArrowEntity extends Arrow {
     public void setShooter(LivingEntity shooter) {
         this.shooter = shooter;
     }
-
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
@@ -62,19 +59,16 @@ public class HeavenArrowEntity extends Arrow {
         compound.putDouble("damage", Float.POSITIVE_INFINITY);
     }
 
-
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.setBaseDamage(compound.contains("damage") ? compound.getDouble("damage") : Float.POSITIVE_INFINITY);
     }
 
-
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
-
 
     @Override
     public @NotNull ItemStack getPickupItem() {

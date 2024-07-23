@@ -20,12 +20,12 @@ import java.util.List;
 /**
  * InfinityHorseArmorItem
  *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/4/5 20:04
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/4/5 20:04
  */
-public class NeutronHorseArmorItem extends HorseArmorItem {
+public final class NeutronHorseArmorItem extends HorseArmorItem {
     private static final String TEX_PATH = "textures/item/armor/horse/neutron_horse_armor.png";
 
     public NeutronHorseArmorItem(Properties pProperties) {
@@ -60,5 +60,4 @@ public class NeutronHorseArmorItem extends HorseArmorItem {
     public void appendHoverText(@NotNull ItemStack p_41421_, @Nullable Level p_41422_, @NotNull List<Component> components, @NotNull TooltipFlag p_41424_) {
         components.add(Component.literal(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip.neutron_horse_armor.desc")));
     }
-
 }

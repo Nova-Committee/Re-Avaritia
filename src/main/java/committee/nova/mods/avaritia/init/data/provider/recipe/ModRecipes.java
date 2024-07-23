@@ -28,8 +28,7 @@ import java.util.function.Consumer;
  * CreateTime: 2023/8/24 13:48
  * Description:
  */
-
-public class ModRecipes extends RecipeProvider implements IConditionBuilder{
+public final class ModRecipes extends RecipeProvider implements IConditionBuilder{
     public ModRecipes(PackOutput output) {
         super(output);
     }

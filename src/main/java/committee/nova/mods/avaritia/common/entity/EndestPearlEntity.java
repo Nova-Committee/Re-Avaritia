@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/3 0:25
  * Version: 1.0
  */
-public class EndestPearlEntity extends ThrowableItemProjectile {
+public final class EndestPearlEntity extends ThrowableItemProjectile {
     private LivingEntity shooter;
 
     public EndestPearlEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level level) {

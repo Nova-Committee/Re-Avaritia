@@ -21,14 +21,13 @@ import java.util.*;
 import static committee.nova.mods.avaritia.util.SneakyUtils.unsafeCast;
 import static committee.nova.mods.avaritia.util.vec.Rotation.sideRotations;
 
-public class CCModel implements IVertexSource, Copyable<CCModel> {
-
+public final class CCModel implements IVertexSource, Copyable<CCModel> {
     public final VertexFormat.Mode vertexMode;
     public final int vp;
     public Vertex5[] verts;
     public ArrayList<Object> attributes = new ArrayList<>();
 
-    protected CCModel(VertexFormat.Mode vertexMode) {
+    private CCModel(VertexFormat.Mode vertexMode) {
         if (vertexMode != VertexFormat.Mode.QUADS && vertexMode != VertexFormat.Mode.TRIANGLES) {
             throw new IllegalArgumentException("Models must be QUADS or TRIANGLES");
         }

@@ -10,12 +10,11 @@ import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 /**
- * Author cnlimiter
- * CreateTime 2023/9/17 0:50
- * Name CompressRecipeSchema
+ * Author: cnlimiter
+ * CreateTime: 2023/9/17 0:50
+ * Name: CompressRecipeSchema
  * Description
  */
-
 public interface CompressRecipeSchema {
     RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.INPUT_ARRAY.key("ingredients");
     RecipeKey<OutputItem> OUTPUT = ItemComponents.OUTPUT.key("result");

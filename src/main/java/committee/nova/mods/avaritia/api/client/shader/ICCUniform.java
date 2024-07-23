@@ -8,7 +8,6 @@ import org.joml.Matrix4f;
  * Created by covers1624 on 8/4/22.
  */
 public interface ICCUniform {
-
     // region Int
     default void glUniform1i(int i0) { glUniformI(i0); }
 

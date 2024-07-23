@@ -14,8 +14,7 @@ import java.util.Optional;
  * CreateTime: 2023/9/23 2:15
  * Description:
  */
-
-public class ModSpriteSource extends SpriteSourceProvider {
+public final class ModSpriteSource extends SpriteSourceProvider {
     public ModSpriteSource(PackOutput output, ExistingFileHelper fileHelper) {
         super(output, fileHelper, Static.MOD_ID);
     }

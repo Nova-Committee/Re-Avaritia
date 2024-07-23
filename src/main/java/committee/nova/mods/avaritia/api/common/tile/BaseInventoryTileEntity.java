@@ -20,9 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public abstract class BaseInventoryTileEntity extends BaseTileEntity {
-
     private final LazyOptional<IItemHandler> capability = LazyOptional.of(this::getInventory);
-
 
     public BaseInventoryTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -54,5 +52,4 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
         BlockPos pos = this.getBlockPos();
         return player.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D;
     }
-
 }

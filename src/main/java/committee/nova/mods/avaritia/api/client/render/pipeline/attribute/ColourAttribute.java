@@ -8,8 +8,7 @@ import committee.nova.mods.avaritia.util.client.colour.ColourRGBA;
 /**
  * Sets colour in CCRS to the specified colour in the model.
  */
-public class ColourAttribute extends VertexAttribute<int[]> {
-
+public final class ColourAttribute extends VertexAttribute<int[]> {
     public static final AttributeKey<int[]> attributeKey = AttributeKey.create("colour", int[]::new);
 
     private int[] colourRef;

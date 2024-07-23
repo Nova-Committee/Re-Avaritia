@@ -62,10 +62,9 @@ import java.util.Set;
  * CreateTime: 2023/9/23 16:34
  * Description:
  */
-
-public class TraceArrowEntity extends AbstractArrow {
+public final class TraceArrowEntity extends AbstractArrow {
     private static final EntityDataAccessor<Integer> ID_EFFECT_COLOR = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);;
+    private static final EntityDataAccessor<Integer> SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private Potion potion;
     private final Set<MobEffectInstance> effects;
@@ -663,5 +662,4 @@ public class TraceArrowEntity extends AbstractArrow {
             level1.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F );
         }
     }
-
 }

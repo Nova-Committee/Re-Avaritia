@@ -20,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTile extends BaseInventoryTileEntity implements MenuProvider {
+public final class CompressorTile extends BaseInventoryTileEntity implements MenuProvider {
     private final BaseItemStackHandler inventory;
     private final BaseItemStackHandler recipeInventory;
     private CompressorRecipe recipe;
@@ -164,9 +163,8 @@ public class CompressorTile extends BaseInventoryTileEntity implements MenuProvi
         return Localizable.of("container.compressor").build();
     }
 
-    @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
+    public @NotNull AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player player) {
         return CompressorMenu.create(windowId, playerInventory, this.inventory, this.getBlockPos());
     }
 

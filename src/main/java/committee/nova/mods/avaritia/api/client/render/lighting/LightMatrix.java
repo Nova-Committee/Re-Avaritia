@@ -12,8 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Note that when using the class as a vertex transformer, the vertices are assumed to be within the BB (x, y, z) -> (x+1, y+1, z+1)
  */
-public class LightMatrix implements IVertexOperation {
-
+public final class LightMatrix implements IVertexOperation {
     public static final int operationIndex = IVertexOperation.registerOperation();
 
     public int computed = 0;
@@ -123,7 +122,7 @@ public class LightMatrix implements IVertexOperation {
         }
     }
 
-    protected void interp(int s, int q, int a, int b, int c, int d) {
+    private void interp(int s, int q, int a, int b, int c, int d) {
         sample(a);
         sample(b);
         sample(c);

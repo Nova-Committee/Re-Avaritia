@@ -35,8 +35,7 @@ import net.minecraft.world.phys.AABB;
  *
  * @author covers1624
  */
-public class Quad implements IVertexProducer, IVertexConsumer {
-
+public final class Quad implements IVertexProducer, IVertexConsumer {
     public CachedFormat format;
 
     public int tintIndex = -1;

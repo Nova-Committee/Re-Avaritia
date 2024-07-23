@@ -41,8 +41,7 @@ import java.util.List;
  * Date: 2022/4/3 8:34
  * Version: 1.0
  */
-public class GapingVoidEntity extends Entity {
-
+public final class GapingVoidEntity extends Entity {
     public static final EntityDataAccessor<Integer> AGE_PARAMETER = SynchedEntityData.defineId(GapingVoidEntity.class, EntityDataSerializers.INT);
     public static final int maxLifetime = 186;
     public static final Predicate<Entity> SUCK_PREDICATE = input -> {

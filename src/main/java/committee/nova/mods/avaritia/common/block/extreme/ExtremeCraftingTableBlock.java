@@ -17,7 +17,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
@@ -25,8 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 7:38
  * Version: 1.0
  */
-public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
-
+public final class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
     public ExtremeCraftingTableBlock() {
         super(MapColor.METAL, SoundType.GLASS, 100f, 2000F, true);
     }
@@ -54,9 +52,8 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
-    @Nullable
     @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new ExtremeCraftingTile(pos, state);
     }
 
@@ -64,5 +61,4 @@ public class ExtremeCraftingTableBlock extends BaseTileEntityBlock {
     public @NotNull RenderShape getRenderShape(@NotNull BlockState p_49232_) {
         return RenderShape.MODEL;
     }
-
 }

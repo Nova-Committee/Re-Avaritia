@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 public interface IItemRenderer extends PerspectiveModel {
-
     /**
      * Called to render your item with complete control. Bypasses all vanilla rendering of your model.
      *

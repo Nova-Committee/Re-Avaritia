@@ -18,8 +18,7 @@ import java.util.Objects;
  * @description
  * @date 2024/6/11 下午11:46
  */
-public class SimpleContainer implements Container {
-
+public final class SimpleContainer implements Container {
     public ItemStack[] items;
     public int limit;
     public String name;

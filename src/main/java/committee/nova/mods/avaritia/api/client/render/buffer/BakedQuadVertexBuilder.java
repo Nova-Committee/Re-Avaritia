@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by covers1624 on 4/23/20.
  */
-public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVertexConsumer {
-
+public final class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVertexConsumer {
     private final List<Quad> quadList = new ArrayList<>();
     private final VertexFormat.Mode mode;
     private final int vSize;

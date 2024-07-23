@@ -8,13 +8,7 @@ import net.minecraft.world.item.ItemStack;
  * Date: 2022/3/31 14:16
  * Version: 1.0
  */
-public class ItemStackWrapper {
-    public final ItemStack stack;
-
-    public ItemStackWrapper(ItemStack stack) {
-        this.stack = stack;
-    }
-
+public record ItemStackWrapper(ItemStack stack) {
     @Override
     public boolean equals(Object otherobj) {
         if (otherobj instanceof ItemStackWrapper) {

@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by covers1624 on 4/24/20.
  */
-public class TransformingVertexConsumer extends DelegatingVertexConsumer {
-
+public final class TransformingVertexConsumer extends DelegatingVertexConsumer {
     private final Transformation transform;
     private final Vector3 storage = new Vector3();
 

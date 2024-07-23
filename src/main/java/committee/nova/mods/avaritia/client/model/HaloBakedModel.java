@@ -18,6 +18,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
@@ -28,14 +29,14 @@ import java.util.Random;
  * Description:
  */
 
-public class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
-    private final Random random;
+public final class HaloBakedModel extends WrappedItemModel implements IItemRenderer {
+    private final SecureRandom random;
     private final BakedQuad haloQuad;
     private final boolean pulse;
 
     public HaloBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, int color, int size, boolean pulse) {
         super(wrapped);
-        this.random = new Random();
+        this.random = new SecureRandom();
         this.haloQuad = generateHaloQuad(sprite, size, color);
         this.pulse = pulse;
     }

@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL43;
  * Created by covers1624 on 24/5/20.
  */
 public interface ShaderObject {
-
     /**
      * A simple identifier for this {@link ShaderObject},
      * used for logging.

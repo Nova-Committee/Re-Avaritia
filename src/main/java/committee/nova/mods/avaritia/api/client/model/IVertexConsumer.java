@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 
 public interface IVertexConsumer {
-
     VertexFormat getVertexFormat();
 
     void setQuadTint(int tint);

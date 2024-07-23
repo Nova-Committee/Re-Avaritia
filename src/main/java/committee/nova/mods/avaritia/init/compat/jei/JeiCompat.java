@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @JeiPlugin
-public class JeiCompat implements IModPlugin {
+public final class JeiCompat implements IModPlugin {
     public static final ResourceLocation UID = new ResourceLocation(Static.MOD_ID, "jei_plugin");
     public static final ResourceLocation ICONS = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/icons.png");
 
@@ -57,20 +57,17 @@ public class JeiCompat implements IModPlugin {
             registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
 
         }
-
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.neutron_compressor.get()), CompressorCategory.RECIPE_TYPE);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.extreme_crafting_table.get()), ExtremeCraftingTableCategory.RECIPE_TYPE);
-
     }
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
         registration.addRecipeTransferHandler(ExtremeCraftingMenu.class, ModMenus.extreme_crafting_table.get(), ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
-
     }
 
     @Override

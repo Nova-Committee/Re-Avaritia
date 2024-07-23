@@ -23,8 +23,7 @@ import java.util.Map;
  * CreateTime: 2023/8/24 13:38
  * Description:
  */
-
-public class ModLootTables extends LootTableProvider {
+public final class ModLootTables extends LootTableProvider {
     public ModLootTables(PackOutput output) {
         super(output, Collections.emptySet(), VanillaLootTableProvider.create(output).getTables());
     }

@@ -14,8 +14,7 @@ import java.util.Map;
  *
  * Created by covers1624 on 16/4/22.
  */
-public class OBJWriter {
-
+public final class OBJWriter {
     /**
      * Exports a Map of CCModels to a File.
      *

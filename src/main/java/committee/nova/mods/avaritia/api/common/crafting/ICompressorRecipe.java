@@ -7,5 +7,4 @@ public interface ICompressorRecipe extends Recipe<Container> {
     int getInputCount();
 
     int getTimeRequire();
-
 }

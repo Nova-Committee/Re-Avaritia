@@ -19,7 +19,7 @@ import snownee.jade.api.config.IPluginConfig;
  * Version: 1.0
  */
 @WailaPlugin
-public class JadeCompat implements IWailaPlugin {
+public final class JadeCompat implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
         registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, CompressorBlock.class);
@@ -27,7 +27,6 @@ public class JadeCompat implements IWailaPlugin {
     }
 
     public enum CompressorComponentProvider implements IBlockComponentProvider {
-
         INSTANCE;
 
         @Override
@@ -50,7 +49,6 @@ public class JadeCompat implements IWailaPlugin {
     }
 
     public enum ExtremeComponentProvider implements IBlockComponentProvider {
-
         INSTANCE;
 
         @Override

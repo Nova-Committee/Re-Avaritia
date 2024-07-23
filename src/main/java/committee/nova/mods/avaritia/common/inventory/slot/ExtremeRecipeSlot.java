@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * FilterSlot
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/6/21 下午9:15
+ * <p>
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/6/21 下午9:15
  */
-public class ExtremeRecipeSlot extends SlotItemHandler {
+public final class ExtremeRecipeSlot extends SlotItemHandler {
     public ExtremeRecipeSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }

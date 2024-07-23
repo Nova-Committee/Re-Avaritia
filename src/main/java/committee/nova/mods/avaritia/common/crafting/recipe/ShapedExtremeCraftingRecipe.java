@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 9:16
  * Version: 1.0
  */
-public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
+public final class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
     private final ResourceLocation recipeId;
     private final NonNullList<Ingredient> inputs;
     private final ItemStack output;
@@ -192,7 +192,6 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
                 }
             }
         }
-
         return true;
     }
 
@@ -238,5 +237,4 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
             buffer.writeItem(recipe.output);
         }
     }
-
 }

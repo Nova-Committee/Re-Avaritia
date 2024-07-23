@@ -12,5 +12,4 @@ public interface IChestHorse {
     boolean avaritia_forge$hasChest();
 
     int avaritia_forge$getInventoryColumns();
-
 }

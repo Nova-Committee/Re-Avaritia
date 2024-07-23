@@ -4,10 +4,10 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.world.item.Item;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/21 上午1:17
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/21 上午1:17
+ * Description:
  */
 public enum CollectorTier {
     DEFAULT("neutron_collector", ModItems.neutron_pile.get(), 3600),

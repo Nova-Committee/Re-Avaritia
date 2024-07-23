@@ -36,8 +36,7 @@ import java.util.List;
  * Date: 2022/3/31 14:09
  * Version: 1.0
  */
-public class MatterClusterItem extends Item {
-
+public final class MatterClusterItem extends Item {
     public static int CAPACITY = 64 * 64;
 
     public MatterClusterItem() {
@@ -199,5 +198,4 @@ public class MatterClusterItem extends Item {
     public Entity createEntity(Level level, Entity location, ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
-
 }

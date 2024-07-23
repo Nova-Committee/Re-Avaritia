@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 18:09
  * Version: 1.0
  */
-public class CompressorMenu extends BaseMenu {
+public final class CompressorMenu extends BaseMenu {
     public static CompressorMenu create(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new CompressorMenu(ModMenus.compressor.get(), windowId, playerInventory, buffer);
     }

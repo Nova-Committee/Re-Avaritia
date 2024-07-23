@@ -35,8 +35,7 @@ import java.util.List;
  * Date: 2022/5/16 23:46
  * Version: 1.0
  */
-public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRecipe> {
-
+public final class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRecipe> {
     public static final RecipeType<ISpecialRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_craft", ISpecialRecipe.class);
     private static final ResourceLocation TEXTURE = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/extreme_jei.png");
 
@@ -47,7 +46,6 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
         this.background = helper.createDrawable(TEXTURE, 0, 0, 190, 163);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.extreme_crafting_table.get()));
     }
-
 
     @Override
     public @NotNull RecipeType<ISpecialRecipe> getRecipeType() {
@@ -124,5 +122,4 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
 
         return Collections.emptyList();
     }
-
 }

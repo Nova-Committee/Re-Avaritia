@@ -29,12 +29,12 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/13 下午1:39
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/13 下午1:39
+ * Description:
  */
-public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T> {
+public final class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T> {
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
@@ -88,7 +88,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
     }
 
     @Override
-    public void render(T pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
+    public void render(T pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
         Level level = pBlockEntity.getLevel();
         boolean flag = level != null;
         BlockState blockstate = flag ? pBlockEntity.getBlockState() : Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.SOUTH);
@@ -136,7 +136,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         pBottomPart.render(pPoseStack, pConsumer, pPackedLight, pPackedOverlay);
     }
 
-    protected Material getMaterial(T blockEntity, ChestType chestType) {
+    private Material getMaterial(T blockEntity, ChestType chestType) {
         return Sheets.chooseMaterial(blockEntity, chestType, false);
     }
 }

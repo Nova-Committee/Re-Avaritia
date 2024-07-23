@@ -31,7 +31,7 @@ import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_S
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
+public final class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
     private static final ResourceLocation VOID = new ResourceLocation(Static.MOD_ID, "textures/entity/void.png");
 
     public GapingVoidRender(EntityRendererProvider.Context context) {
@@ -86,5 +86,4 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         f = Math.max(f, 1.0 - l * 30.0);
         return new ColourRGBA(f, f, f, a);
     }
-
 }

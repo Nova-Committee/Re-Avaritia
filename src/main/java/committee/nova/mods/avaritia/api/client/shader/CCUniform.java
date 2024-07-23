@@ -23,7 +23,6 @@ import java.util.Arrays;
  * Created by covers1624 on 8/4/22.
  */
 public abstract class CCUniform extends Uniform implements ICCUniform {
-
     protected final UniformType type;
 
     @SuppressWarnings ("ConstantConditions")

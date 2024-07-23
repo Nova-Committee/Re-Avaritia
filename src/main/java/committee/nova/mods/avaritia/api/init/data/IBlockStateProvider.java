@@ -22,7 +22,6 @@ import java.util.function.Supplier;
  */
 
 public abstract class IBlockStateProvider extends BlockStateProvider {
-
     public IBlockStateProvider(PackOutput output, ExistingFileHelper helper) {
         super(output, Static.MOD_ID, helper);
     }

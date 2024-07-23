@@ -19,13 +19,12 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/3 0:31
  * Version: 1.0
  */
-public class EndestPearlItem extends Item {
+public final class EndestPearlItem extends Item {
     public EndestPearlItem() {
         super(new Properties()
                 .stacksTo(16)
         );
     }
-
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
@@ -51,6 +50,4 @@ public class EndestPearlItem extends Item {
     public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
         return Rarity.RARE;
     }
-
-
 }

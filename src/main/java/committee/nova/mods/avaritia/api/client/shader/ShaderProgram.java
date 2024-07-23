@@ -27,8 +27,7 @@ import java.util.Map;
  * <p>
  * Created by covers1624 on 24/5/20.
  */
-public class ShaderProgram implements ResourceManagerReloadListener {
-
+public final class ShaderProgram implements ResourceManagerReloadListener {
     private final List<ShaderObject> shaders;
     private final Map<String, CCUniform> uniforms;
     @Nullable

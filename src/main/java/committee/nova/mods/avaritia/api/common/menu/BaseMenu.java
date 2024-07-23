@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
  * Version: 1.0
  */
 public abstract class BaseMenu extends AbstractContainerMenu {
-
     private final BlockPos pos;
 
     protected BaseMenu(MenuType<?> menu, int id, BlockPos pos) {
@@ -39,5 +38,4 @@ public abstract class BaseMenu extends AbstractContainerMenu {
     public BlockPos getBlockPos() {
         return this.pos;
     }
-
 }

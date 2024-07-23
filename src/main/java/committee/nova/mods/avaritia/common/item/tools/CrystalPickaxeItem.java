@@ -22,8 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalPickaxeItem extends PickaxeItem {
-
+public final class CrystalPickaxeItem extends PickaxeItem {
     public CrystalPickaxeItem() {
         super(ModTiers.CRYSTAL_PICKAXE, 1, -1.5F, (new Properties())
                 .stacksTo(1)
@@ -73,7 +72,4 @@ public class CrystalPickaxeItem extends PickaxeItem {
         }
         return super.use(world, player, hand);
     }
-
-
-
 }

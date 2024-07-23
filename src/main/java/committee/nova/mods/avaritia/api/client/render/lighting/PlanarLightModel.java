@@ -7,8 +7,7 @@ import committee.nova.mods.avaritia.util.client.colour.ColourRGBA;
 /**
  * Faster precomputed version of LightModel that only works for axis planar sides
  */
-public class PlanarLightModel implements IVertexOperation {
-
+public final class PlanarLightModel implements IVertexOperation {
     public static PlanarLightModel standardLightModel = LightModel.standardLightModel.reducePlanar();
 
     public int[] colours;

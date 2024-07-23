@@ -21,7 +21,6 @@ import java.util.Objects;
  * @see TransformUtils
  */
 public interface PerspectiveModel extends BakedModel {
-
     /**
      * The {@link PerspectiveModelState} for this model.
      *

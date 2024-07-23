@@ -29,10 +29,11 @@ import java.util.function.Function;
  * Date: 2022/4/2 12:42
  * Version: 1.0
  */
-public class SingularityItem extends Item implements IColored {
+public final class SingularityItem extends Item implements IColored {
     public SingularityItem(Function<Properties, Properties> properties) {
         super(properties.apply(new Properties().rarity(Rarity.UNCOMMON)));
     }
+
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
         var singularity = SingularityUtils.getSingularity(stack);

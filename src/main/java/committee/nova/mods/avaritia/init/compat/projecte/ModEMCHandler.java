@@ -9,12 +9,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/15 下午11:58
- * @Description:
+ * Project: Avaritia
+ * Author: cnlimiter
+ * CreateTime: 2024/7/15 下午11:58
+ * Description:
  */
-public class ModEMCHandler {
+public final class ModEMCHandler {
     private static void registerEMC(ItemLike item, int emc) {
         APICustomEMCMapper.INSTANCE.registerCustomEMC(Static.MOD_ID, new CustomEMCRegistration(NSSItem.createItem(item), emc));
     }

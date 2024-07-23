@@ -31,18 +31,16 @@ import java.util.function.BiFunction;
  * Date: 2022/4/2 9:16
  * Version: 1.0
  */
-public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
+public final class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
     private final ResourceLocation recipeId;
     public final NonNullList<Ingredient> inputs;
     private final ItemStack output;
     private BiFunction<Integer, ItemStack, ItemStack> transformers;
 
-
     public ShapelessExtremeCraftingRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, ItemStack output) {
         this.recipeId = recipeId;
         this.inputs = inputs;
         this.output = output;
-
     }
 
     @Override
@@ -87,7 +85,6 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
 
     @Override
     public boolean matches(IItemHandler inventory) {
-
         List<ItemStack> inputs = new ArrayList<>();
         int matched = 0;
 
@@ -181,5 +178,4 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
             buffer.writeItem(recipe.output);
         }
     }
-
 }

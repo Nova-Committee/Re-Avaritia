@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityCrossBowItem extends CrossbowItem {
+public final class InfinityCrossBowItem extends CrossbowItem {
     public InfinityCrossBowItem() {
         super(new Properties()
                 .stacksTo(1)
@@ -42,10 +42,12 @@ public class InfinityCrossBowItem extends CrossbowItem {
                 .fireResistant()
         );
     }
+
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
     }
+
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;
@@ -73,14 +75,17 @@ public class InfinityCrossBowItem extends CrossbowItem {
     public boolean isEnchantable(@NotNull ItemStack pStack) {
         return true;
     }
+
     @Override
     public int getEnchantmentValue(ItemStack stack) {
         return 99;
     }
+
     @Override
     public int getUseDuration(@NotNull ItemStack stack) {
         return 1200;
     }
+
     @Override
     public @NotNull UseAnim getUseAnimation(@NotNull ItemStack pStack) {
         return UseAnim.BOW;
@@ -198,5 +203,4 @@ public class InfinityCrossBowItem extends CrossbowItem {
 
         return f;
     }
-
 }

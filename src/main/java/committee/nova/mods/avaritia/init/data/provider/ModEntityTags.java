@@ -19,9 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * Name ModEntityTags
  * Description
  */
-
-public class ModEntityTags extends EntityTypeTagsProvider {
-
+public final class ModEntityTags extends EntityTypeTagsProvider {
     public ModEntityTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, future, Static.MOD_ID, existingFileHelper);
     }

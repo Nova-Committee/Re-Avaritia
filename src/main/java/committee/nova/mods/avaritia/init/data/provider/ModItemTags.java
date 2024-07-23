@@ -21,8 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * Description
  */
 
-public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
-
+public final class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
     public ModItemTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, Registries.ITEM, future, block -> block.builtInRegistryHolder().key(), Static.MOD_ID, existingFileHelper);
     }

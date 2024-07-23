@@ -30,8 +30,6 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class BaseNeutronCollectorTile extends BaseInventoryTileEntity implements MenuProvider {
-
-
     public final BaseItemStackHandler inventory;
     public SimpleContainerData data = new SimpleContainerData(1);
     private int progress;
@@ -100,7 +98,6 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity implements
     protected boolean canWork() {
         return inventory.getStackInSlot(0).isEmpty() || inventory.getStackInSlot(0).getCount() < 64;
     }
-
 
     @Override
     public @NotNull Component getDisplayName() {

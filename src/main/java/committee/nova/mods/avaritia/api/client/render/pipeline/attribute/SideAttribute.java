@@ -7,8 +7,7 @@ import committee.nova.mods.avaritia.util.client.VectorUtils;
 /**
  * Sets the side state in CCRS based on the provided model. If the model does not have side data it requires normals.
  */
-public class SideAttribute extends VertexAttribute<int[]> {
-
+public final class SideAttribute extends VertexAttribute<int[]> {
     public static final AttributeKey<int[]> attributeKey = AttributeKey.create("side", int[]::new);
 
     private int[] sideRef;

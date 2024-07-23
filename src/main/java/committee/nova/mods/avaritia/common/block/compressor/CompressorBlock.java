@@ -23,7 +23,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
@@ -31,16 +30,15 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:57
  * Version: 1.0
  */
-public class CompressorBlock extends BaseTileEntityBlock {
+public final class CompressorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public CompressorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);
     }
 
-    @Nullable
     @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new CompressorTile(pos, state);
     }
 
@@ -99,7 +97,6 @@ public class CompressorBlock extends BaseTileEntityBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
-
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {

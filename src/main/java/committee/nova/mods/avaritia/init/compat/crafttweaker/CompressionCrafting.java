@@ -23,7 +23,7 @@ import org.openzen.zencode.java.ZenCodeType;
  */
 @ZenCodeType.Name("mods.avaritia.CompressionCrafting")
 @ZenRegister
-public class CompressionCrafting implements IRecipeManager<ICompressorRecipe> {
+public final class CompressionCrafting implements IRecipeManager<ICompressorRecipe> {
     private static final CompressionCrafting INSTANCE = new CompressionCrafting();
 
     @Override

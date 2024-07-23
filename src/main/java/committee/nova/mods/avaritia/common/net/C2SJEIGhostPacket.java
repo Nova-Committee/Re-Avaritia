@@ -10,13 +10,13 @@ import java.util.function.Supplier;
 
 /**
  * C2SJEIGhostPacket
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/3/28 14:02
+ * <p>
+ * Author cnlimiter
+ * Version 1.0
+ * Description
+ * Date 2024/3/28 14:02
  */
-public class C2SJEIGhostPacket {
+public final class C2SJEIGhostPacket {
     private final int slotIndex;
     private final ItemStack stack;
 
