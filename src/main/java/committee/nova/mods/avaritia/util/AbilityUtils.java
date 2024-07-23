@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * @Project: Avaritia-forge
- * @Author: cnlimiter
- * @CreateTime: 2024/1/7 23:53
- * @Description:
+ * Project: Avaritia-forge
+ * Author: cnlimiter
+ * CreateTime: 2024/1/7 23:53
+ * Description:
  */
 
 public class AbilityUtils {

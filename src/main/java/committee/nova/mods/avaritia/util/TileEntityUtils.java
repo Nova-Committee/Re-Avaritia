@@ -11,8 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * Date: 2022/4/2 11:03
  * Version: 1.0
  */
-public class TileEntityUtils {
-
+public final class TileEntityUtils {
     public static void dispatchToNearbyPlayers(BlockEntity tile) {
         var level = tile.getLevel();
         if (level == null)

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.shader.CCShaderInstance;
 import committee.nova.mods.avaritia.api.client.shader.CCUniform;
+import committee.nova.mods.avaritia.util.AccessUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -27,17 +28,6 @@ import java.util.Objects;
  */
 @Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class AvaritiaShaders {
-    private static class RenderStateShardAccess extends RenderStateShard {
-        private static final RenderStateShard.DepthTestStateShard EQUAL_DEPTH_TEST = RenderStateShard.EQUAL_DEPTH_TEST;
-        private static final RenderStateShard.LightmapStateShard LIGHT_MAP = RenderStateShard.LIGHTMAP;
-        private static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = RenderStateShard.TRANSLUCENT_TRANSPARENCY;
-        private static final RenderStateShard.TextureStateShard BLOCK_SHEET_MIPPED = RenderStateShard.BLOCK_SHEET_MIPPED;
-
-        private RenderStateShardAccess(String pName, Runnable pSetupState, Runnable pClearState) {
-            super(pName, pSetupState, pClearState);
-        }
-    }
-
     public static final float[] COSMIC_UVS = new float[40];
     public static boolean inventoryRender = false;
 
@@ -56,10 +46,10 @@ public final class AvaritiaShaders {
     public static RenderType COSMIC_RENDER_TYPE = RenderType.create("avaritia:cosmic",
             DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader))
-                    .setDepthTestState(RenderStateShardAccess.EQUAL_DEPTH_TEST)
-                    .setLightmapState(RenderStateShardAccess.LIGHT_MAP)
-                    .setTransparencyState(RenderStateShardAccess.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderStateShardAccess.BLOCK_SHEET_MIPPED)
+                    .setDepthTestState(AccessUtils.EQUAL_DEPTH_TEST)
+                    .setLightmapState(AccessUtils.LIGHT_MAP)
+                    .setTransparencyState(AccessUtils.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(AccessUtils.BLOCK_SHEET_MIPPED)
                     .createCompositeState(true)
     );
 

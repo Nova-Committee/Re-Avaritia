@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
+import committee.nova.mods.avaritia.util.AccessUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -53,9 +54,9 @@ public final class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity> {
         pPoseStack.scale(0.05625f, 0.05625f, 0.05625f);
         pPoseStack.translate(-4.0, 0.0, 0.0);
         final VertexConsumer ivertexbuilder = pBuffer.getBuffer(RenderType.create("entity_cutout", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
-                .setShaderState(RenderType.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+                .setShaderState(AccessUtils.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                 .setTextureState(new RenderStateShard.TextureStateShard(this.getTextureLocation(arrowEntity), false, false))
-                .setOverlayState(RenderType.OVERLAY).createCompositeState(true)));
+                .setOverlayState(AccessUtils.OVERLAY).createCompositeState(true)));
         final PoseStack.Pose matrixstack$entry = pPoseStack.last();
         final Matrix4f matrix4f = matrixstack$entry.pose();
         final Matrix3f matrix3f = matrixstack$entry.normal();

@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.AbilityUtils;
+import committee.nova.mods.avaritia.util.AccessUtils;
 import committee.nova.mods.avaritia.util.client.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -73,11 +74,11 @@ public final class InfinityArmorModel extends HumanoidModel<Player> {
 
     private RenderType glow(final ResourceLocation tex) {
         return RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0, RenderType.CompositeState.builder()
-                .setShaderState(RenderType.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+                .setShaderState(AccessUtils.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                .setTransparencyState(RenderType.LIGHTNING_TRANSPARENCY)
-                .setCullState(RenderType.NO_CULL)
-                .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
+                .setTransparencyState(AccessUtils.LIGHTNING_TRANSPARENCY)
+                .setCullState(AccessUtils.NO_CULL)
+                .setLayeringState(AccessUtils.VIEW_OFFSET_Z_LAYERING)
                 .createCompositeState(true));
     }
 
@@ -85,11 +86,11 @@ public final class InfinityArmorModel extends HumanoidModel<Player> {
         return RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0, RenderType.CompositeState.builder()
                 .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader))
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-                .setLightmapState(RenderType.LIGHTMAP)
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                .setCullState(RenderType.NO_CULL)
-                .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
+                .setTransparencyState(AccessUtils.TRANSLUCENT_TRANSPARENCY)
+                .setLightmapState(AccessUtils.LIGHT_MAP)
+                .setWriteMaskState(AccessUtils.COLOR_WRITE)
+                .setCullState(AccessUtils.NO_CULL)
+                .setLayeringState(AccessUtils.VIEW_OFFSET_Z_LAYERING)
                 .createCompositeState(true));
     }
 
@@ -97,10 +98,10 @@ public final class InfinityArmorModel extends HumanoidModel<Player> {
         return RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0, RenderType.CompositeState.builder()
                 .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.cosmicShader))
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-                .setLightmapState(RenderType.LIGHTMAP)
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                .setCullState(RenderType.NO_CULL)
+                .setTransparencyState(AccessUtils.TRANSLUCENT_TRANSPARENCY)
+                .setLightmapState(AccessUtils.LIGHT_MAP)
+                .setWriteMaskState(AccessUtils.COLOR_WRITE)
+                .setCullState(AccessUtils.NO_CULL)
                 .createCompositeState(true));
     }
 
@@ -206,9 +207,9 @@ public final class InfinityArmorModel extends HumanoidModel<Player> {
         if (InfinityArmorModel.modelRender) {
             this.hat.render(pPoseStack, this.vertex(RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0,
                     RenderType.CompositeState.builder()
-                    .setShaderState(RenderType.POSITION_COLOR_TEX_SHADER)
+                    .setShaderState(AccessUtils.POSITION_COLOR_TEX_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(this.eyeTex, false, false))
-                    .setCullState(RenderType.NO_CULL)
+                    .setCullState(AccessUtils.NO_CULL)
                     .createCompositeState(true))), pPackedLight, pPackedOverlay, col[0], col[1], col[2], 1.0f);
         }
         pPoseStack.popPose();
