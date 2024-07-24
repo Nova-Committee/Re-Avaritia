@@ -832,7 +832,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .define('I', ModItems.infinity_ingot.get())
                         .define('S', ModItems.infinity_catalyst.get())
                         .define('A', Static.getIngredient("mekanism", "ultimate_energy_cube"))
-                        .define('B', Static.getIngredient("mekanism", "induction_casting"))
+                        .define('B', Static.getIngredient("mekanism", "induction_casing"))
                         .define('C', Static.getIngredient("mekanism", "induction_port"))
                         .define('D', Static.getIngredient("mekanism", "induction_cell"))
                         .define('E', Static.getIngredient("mekanism", "induction_provider"))
