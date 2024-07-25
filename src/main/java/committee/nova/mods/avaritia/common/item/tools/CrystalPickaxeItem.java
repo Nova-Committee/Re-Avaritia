@@ -52,7 +52,7 @@ public class CrystalPickaxeItem extends PickaxeItem {
 
     @Override
     public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
-        return 10000F;
+        return 100F;
     }
 
     @Override
