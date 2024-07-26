@@ -18,7 +18,10 @@
     " N XIX N ",
     " NIIIIIN ",
     " NIIIIIN ",
-    " NI I IN "
+    " NI I IN ",
+    "         ",
+    "         ",
+    "         "
   ],
   "result": {
     "item": "avaritia:infinity_helmet"

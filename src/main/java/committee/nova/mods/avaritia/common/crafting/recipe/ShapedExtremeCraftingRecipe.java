@@ -204,7 +204,7 @@ public class ShapedExtremeCraftingRecipe implements ISpecialRecipe{
         @Override
         public @NotNull ShapedExtremeCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
             var map = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-            var pattern = ShapedRecipe.shrink(ShapedExtremeCraftingRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
+            var pattern = ShapedExtremeCraftingRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
             int width = pattern[0].length();
             int height = pattern.length;
             var inputs = ShapedRecipe.dissolvePattern(pattern, map, width, height);

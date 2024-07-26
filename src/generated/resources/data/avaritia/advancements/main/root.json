@@ -15,7 +15,7 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "avaritia:textures/blocks/resource/neutronium.png",
+    "background": "avaritia:textures/blocks/resource/neutron.png",
     "description": {
       "translate": "advancements.avaritia.diamond_lattice.desc"
     },

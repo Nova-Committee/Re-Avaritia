@@ -13,15 +13,15 @@
     }
   },
   "pattern": [
-    "   II",
-    "  I W",
-    " I  W",
-    "I   W",
-    "X   W",
-    "I   W",
-    " I  W",
-    "  I W",
-    "   II"
+    "     II  ",
+    "    I W  ",
+    "   I  W  ",
+    "  I   W  ",
+    "  X   W  ",
+    "  I   W  ",
+    "   I  W  ",
+    "    I W  ",
+    "     II  "
   ],
   "result": {
     "item": "avaritia:infinity_bow"

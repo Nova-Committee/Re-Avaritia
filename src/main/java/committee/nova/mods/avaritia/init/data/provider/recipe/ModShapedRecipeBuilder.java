@@ -112,24 +112,24 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         }
     }
 
-    public ModShapedRecipeBuilder pattern(String p_126131_) {
-        if (!this.rows.isEmpty() && p_126131_.length() != this.rows.get(0).length()) {
+    public ModShapedRecipeBuilder pattern(String s) {
+        if (!this.rows.isEmpty() && s.length() != this.rows.get(0).length()) {
             throw new IllegalArgumentException("Pattern must be the same width on every line!");
         } else {
-            this.rows.add(p_126131_);
+            this.rows.add(s);
             return this;
         }
     }
 
     @Override
-    public @NotNull ModShapedRecipeBuilder unlockedBy(@NotNull String string, @NotNull CriterionTriggerInstance p_126134_) {
-        this.advancement.addCriterion(string, p_126134_);
+    public @NotNull ModShapedRecipeBuilder unlockedBy(@NotNull String string, @NotNull CriterionTriggerInstance pCriterionTrigger) {
+        this.advancement.addCriterion(string, pCriterionTrigger);
         return this;
     }
 
     @Override
-    public @NotNull ModShapedRecipeBuilder group(@Nullable String p_126146_) {
-        this.group = p_126146_;
+    public @NotNull ModShapedRecipeBuilder group(@Nullable String pGroupName) {
+        this.group = pGroupName;
         return this;
     }
 
@@ -171,7 +171,6 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
                     if (!this.key.containsKey(c0) && c0 != ' ') {
                         throw new IllegalStateException("Pattern in recipe " + resourceLocation + " uses undefined symbol '" + c0 + "'");
                     }
-
                     set.remove(c0);
                 }
             }
