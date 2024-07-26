@@ -40,7 +40,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -83,9 +82,20 @@ public class ToolUtils {
             BlockTags.MINEABLE_WITH_SHOVEL
     );
 
+    /***
+     * Common
+     * ***/
     public static boolean canUseTool(BlockState state, Set<TagKey<Block>> keySets){
         return state.getTags().collect(Collectors.toSet()).retainAll(keySets);
     }
+
+    private static void destroy(ServerLevel world, Player player, BlockPos pos, ItemStack heldItem) {
+        if (heldItem != null) {
+            heldItem.getItem().mineBlock(heldItem, world, world.getBlockState(pos), pos, player);
+            world.destroyBlock(pos, true);
+        }
+    }
+
 
     /***
      * Equipment
@@ -121,16 +131,23 @@ public class ToolUtils {
             return;
         }
 
+        if (world.isClientSide()) {
+            return;
+        }
+
         var doY = traceResult.getDirection().getAxis() != Direction.Axis.Y;
 
         var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
         var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
 
-        ToolUtils.breakBlocks(world, player, stack, pos, minOffset, maxOffset, keySets, filterTrash);
+        ToolUtils.breakBlocks((ServerLevel) world, player, stack, pos, minOffset, maxOffset, keySets, filterTrash);
     }
 
-    private static void breakBlocks(Level world, Player player, ItemStack stack, BlockPos origin, BlockPos min, BlockPos max, Set<TagKey<Block>> validMaterials, boolean filterTrash) {
-
+    private static void breakBlocks(ServerLevel world, Player player,
+                                    ItemStack stack,
+                                    BlockPos origin, BlockPos min, BlockPos max,
+                                    Set<TagKey<Block>> validMaterials, boolean filterTrash
+    ) {
         ItemCaptureHandler.enableItemCapture(true);//开启凋落物收集
 
         for (int lx = min.getX(); lx < max.getX(); lx++) {
@@ -144,17 +161,14 @@ public class ToolUtils {
 
         ItemCaptureHandler.enableItemCapture(false);//关闭凋落物收集
 
-        Set<ItemStack> drops = ItemCaptureHandler.getCapturedDrops();
-
-        if (filterTrash) {//是否是黑名单
-            ClustersUtils.removeTrash(drops);
-        }
-
-        ClustersUtils.spawnClusters(world, player, drops);
+        ClustersUtils.spawnClusters(world, player, filterTrash ? ClustersUtils.removeTrash(ItemCaptureHandler.getCapturedDrops()) : ItemCaptureHandler.getCapturedDrops());
 
     }
 
-    public static void removeBlockWithDrops(Level world, Player player, BlockPos pos, ItemStack stack, Set<TagKey<Block>> validMaterials) {
+    public static void removeBlockWithDrops(ServerLevel world, Player player,
+                                            BlockPos pos, ItemStack stack,
+                                            Set<TagKey<Block>> validMaterials
+                                            ) {
         if (!world.isLoaded(pos)) {
             return;
         }
@@ -176,11 +190,7 @@ public class ToolUtils {
 
         if (!event.isCanceled()) {
             if (!player.isCreative()) {//not creative
-                BlockEntity tile = world.getBlockEntity(pos);
-                block.playerWillDestroy(world, pos, state, player);
-                if (block.onDestroyedByPlayer(state, world, pos, player, true, world.getFluidState(pos))) {
-                    block.playerDestroy(world, player, pos, state, tile, stack);
-                }
+                destroy(world, player, pos, stack);
             } else {
                 world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
             }
@@ -404,28 +414,16 @@ public class ToolUtils {
     }
 
 
-    public static void destroyTree(Player player, Level world, BlockPos pos, ItemStack heldItem) {
+    public static void destroyTree(Player player, ServerLevel world, BlockPos pos, ItemStack heldItem) {
         List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
 
         ItemCaptureHandler.enableItemCapture(true);
-
         for (BlockPos logPos : connectedLogs) {
             destroy(world, player, logPos, heldItem);
         }
-
         ItemCaptureHandler.enableItemCapture(false);
-
-        Set<ItemStack> drops = ItemCaptureHandler.getCapturedDrops();
-        ClustersUtils.spawnClusters(world, player, drops);
+        ClustersUtils.spawnClusters(world, player, ItemCaptureHandler.getCapturedDrops());
     }
-
-    private static void destroy(Level world, Player player, BlockPos pos, ItemStack heldItem) {
-        if (heldItem != null) {
-            heldItem.getItem().mineBlock(heldItem, world, world.getBlockState(pos), pos, player);
-            world.destroyBlock(pos, true);
-        }
-    }
-
     private static List<BlockPos> getConnectedLogs(Level world, BlockPos pos) {
         BlockPosList positions = new BlockPosList();
         collectLogs(world, pos, positions);

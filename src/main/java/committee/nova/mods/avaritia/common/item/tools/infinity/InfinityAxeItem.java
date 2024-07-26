@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -78,9 +79,9 @@ public class InfinityAxeItem extends AxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         Level world = player.level();
-        if (!world.isClientSide ) {
+        if (!world.isClientSide) {
             if (player.isCrouching() && canHarvest(pos, world)) {
-                destroyTree(player, world, pos, stack);
+                destroyTree(player, (ServerLevel) world, pos, stack);
             }
         }
         return false;
