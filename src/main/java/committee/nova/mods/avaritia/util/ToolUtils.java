@@ -294,14 +294,14 @@ public class ToolUtils {
                     }
                 }
 
-                if (!arrow.level().isClientSide && owner instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity, owner);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity)owner, livingentity);
+                if (!arrow.level().isClientSide && owner instanceof LivingEntity livingOwner) {
+                    EnchantmentHelper.doPostHurtEffects(livingentity, livingOwner);
+                    EnchantmentHelper.doPostDamageEffects(livingOwner, livingentity);
                 }
 
                 arrow.doPostHurtEffects(livingentity);
-                if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer && !arrow.isSilent()) {
-                    ((ServerPlayer)owner).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer serverPlayer && !arrow.isSilent()) {
+                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
                 }
 
                 if (!entity.isAlive() && arrow.piercedAndKilledEntities != null) {
@@ -391,7 +391,7 @@ public class ToolUtils {
      * Axe
      * ***/
     public static boolean canHarvest(BlockPos pos, Level world) {
-        if (!isLog(world, pos)) {
+        if (!isLogOrLeaves(world, pos)) {
             return false;
         }
 
@@ -407,9 +407,16 @@ public class ToolUtils {
     public static void destroyTree(Player player, Level world, BlockPos pos, ItemStack heldItem) {
         List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
 
+        ItemCaptureHandler.enableItemCapture(true);
+
         for (BlockPos logPos : connectedLogs) {
             destroy(world, player, logPos, heldItem);
         }
+
+        ItemCaptureHandler.enableItemCapture(false);
+
+        Set<ItemStack> drops = ItemCaptureHandler.getCapturedDrops();
+        ClustersUtils.spawnClusters(world, player, drops);
     }
 
     private static void destroy(Level world, Player player, BlockPos pos, ItemStack heldItem) {
@@ -431,7 +438,7 @@ public class ToolUtils {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -1; z <= 1; z++) {
                     BlockPos p = pos.offset(x, y, z);
-                    if (isLog(world, p)) {
+                    if (isLogOrLeaves(world, p)) {
                         if (positions.add(p)) {
                             posList.add(p);
                         }
@@ -446,9 +453,9 @@ public class ToolUtils {
         }
     }
 
-    private static boolean isLog(Level world, BlockPos pos) {
+    private static boolean isLogOrLeaves(Level world, BlockPos pos) {
         BlockState b = world.getBlockState(pos);
-        return b.is(BlockTags.LOGS);
+        return b.is(BlockTags.LOGS) || b.is(BlockTags.LEAVES);
     }
 
     private static class BlockPosList extends ArrayList<BlockPos> {
