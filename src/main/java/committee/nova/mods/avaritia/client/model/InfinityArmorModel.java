@@ -8,12 +8,11 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.AbilityUtils;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import committee.nova.mods.avaritia.util.client.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
@@ -22,7 +21,6 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -309,7 +307,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
 
         @Override
         public void render(final @NotNull PoseStack pPoseStack, final @NotNull MultiBufferSource pBuffer, final int pPackedLight, final @NotNull Player l, final float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-            if (AbilityUtils.isInfinite(l)) {
+            if (ToolUtils.isInfinite(l)) {
                 AvaritiaShaders.cosmicOpacity.set(2.0f);
                 this.playerParts().forEach(t -> t.render(pPoseStack, InfinityArmorModel.material(MASK_INV).buffer(pBuffer, InfinityArmorModel::mask2), pPackedLight, 1, 1.0f, 1.0f, 1.0f, 1.0f));
             }

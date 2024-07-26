@@ -17,6 +17,9 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static committee.nova.mods.avaritia.util.ToolUtils.canHarvest;
+import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
+
 /**
  * Description:
  * Author: cnlimiter
@@ -74,8 +77,11 @@ public class InfinityAxeItem extends AxeItem {
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        if (player.isCrouching() && !player.level().isClientSide) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, 13, ToolUtils.materialsAxe, true);
+        Level world = player.level();
+        if (!world.isClientSide ) {
+            if (player.isCrouching() && canHarvest(pos, world)) {
+                destroyTree(player, world, pos, stack);
+            }
         }
         return false;
     }

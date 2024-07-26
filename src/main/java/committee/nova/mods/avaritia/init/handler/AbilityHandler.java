@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
-import static committee.nova.mods.avaritia.util.AbilityUtils.isPlayerWearing;
+import static committee.nova.mods.avaritia.util.ToolUtils.isPlayerWearing;
 import static net.minecraft.world.entity.EquipmentSlot.*;
 
 /**

@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPacket;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.util.AbilityUtils;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import committee.nova.mods.avaritia.util.lang.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -207,7 +207,7 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            if (AbilityUtils.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
+            if (ToolUtils.isInfinite(player) && !(event.getSource() instanceof ModDamageTypes.DamageSourceRandomMessages)) {
                 event.setCanceled(true);
                 player.setHealth(player.getMaxHealth());
             }
@@ -221,7 +221,7 @@ public class InfinityHandler {
                     player.setHealth(player.getMaxHealth());
                     player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
-                    AbilityUtils.attackAOE(player, 8, 1000.0f, false, false);//触发无尽图腾后对附近造成伤害
+                    ToolUtils.aoeAttack(player, 8, 1000.0f, false, false);//触发无尽图腾后对附近造成伤害
                     player.displayClientMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
                 }else {
                     player.setHealth(10.0F);
@@ -245,7 +245,7 @@ public class InfinityHandler {
         if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().is(ModItems.infinity_sword.get()) && player.getMainHandItem().useOnRelease()) {
             event.setCanceled(true);
         }
-        if (AbilityUtils.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
+        if (ToolUtils.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
     }
@@ -256,7 +256,7 @@ public class InfinityHandler {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        if (AbilityUtils.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
+        if (ToolUtils.isInfinite(player) && !event.getSource().is(ModDamageTypes.INFINITY)) {
             event.setCanceled(true);
         }
     }

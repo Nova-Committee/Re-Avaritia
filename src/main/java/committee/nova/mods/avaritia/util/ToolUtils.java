@@ -2,9 +2,8 @@ package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
-import committee.nova.mods.avaritia.common.item.MatterClusterItem;
+import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
@@ -14,30 +13,36 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -48,6 +53,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -81,8 +87,31 @@ public class ToolUtils {
         return state.getTags().collect(Collectors.toSet()).retainAll(keySets);
     }
 
-    public static Set<String> defaultTrashOres = Sets.newHashSet("minecraft:dirt");//todo, set trash block in gui
+    /***
+     * Equipment
+     * ***/
+    public static boolean isPlayerWearing(LivingEntity entity, EquipmentSlot slot, Predicate<Item> predicate) {
+        ItemStack stack = entity.getItemBySlot(slot);
+        return !stack.isEmpty() && predicate.test(stack.getItem());
+    }
 
+    public static boolean isInfinite(LivingEntity player) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getType() != EquipmentSlot.Type.ARMOR) {
+                continue;
+            }
+            ItemStack stack = player.getItemBySlot(slot);
+            if (stack.isEmpty() || !(stack.getItem() instanceof InfinityArmorItem)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /***
+     * PickAxe
+     * ***/
     public static void breakRangeBlocks(Player player, ItemStack stack, BlockPos pos, int range, Set<TagKey<Block>> keySets, boolean filterTrash) {
         BlockHitResult traceResult = RayTracer.retrace(player, range);
         var world = player.level();
@@ -99,8 +128,6 @@ public class ToolUtils {
 
         ToolUtils.breakBlocks(world, player, stack, pos, minOffset, maxOffset, keySets, filterTrash);
     }
-
-
 
     private static void breakBlocks(Level world, Player player, ItemStack stack, BlockPos origin, BlockPos min, BlockPos max, Set<TagKey<Block>> validMaterials, boolean filterTrash) {
 
@@ -120,53 +147,11 @@ public class ToolUtils {
         Set<ItemStack> drops = ItemCaptureHandler.getCapturedDrops();
 
         if (filterTrash) {//是否是黑名单
-            removeTrash(drops);
+            ClustersUtils.removeTrash(drops);
         }
 
-        spawnClusters(world, player, drops);
+        ClustersUtils.spawnClusters(world, player, drops);
 
-    }
-
-    public static void spawnClusters(Level world, Player player, Set<ItemStack> drops) {
-        if (!world.isClientSide) {
-            List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
-            for (ItemStack cluster : clusters) {
-                Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), cluster);
-            }
-        }
-    }
-
-    public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
-        ItemStack itemStack = ItemUtils.mapEquals(drop, map);
-        if (!itemStack.isEmpty())
-            map.put(itemStack, map.get(itemStack) + drop.getCount());
-        else map.put(drop, drop.getCount());
-    }
-
-    public static void putMapDrops(Level world, BlockPos pos, Player player, ItemStack stack, Map<ItemStack, Integer> map) {
-        for (ItemStack drop : Block.getDrops(world.getBlockState(pos), (ServerLevel) world, pos, world.getBlockEntity(pos), player, stack)) {
-            putMapItem(drop, map);
-        }
-    }
-
-    public static void removeTrash(Set<ItemStack> drops) {
-        Set<ItemStack> trashItems = new HashSet<>();
-        for (ItemStack drop : drops) {
-            if (isTrash(drop)) {
-                trashItems.add(drop);
-            }
-        }
-        drops.removeAll(trashItems);
-    }
-
-    private static boolean isTrash(ItemStack suspect) {
-        boolean isTrash = false;
-            for (String ore : defaultTrashOres) {
-                if (suspect.is(ForgeRegistries.ITEMS.getValue(new ResourceLocation(ore)))) {
-                    return true;
-                }
-            }
-        return isTrash;
     }
 
     public static void removeBlockWithDrops(Level world, Player player, BlockPos pos, ItemStack stack, Set<TagKey<Block>> validMaterials) {
@@ -203,56 +188,11 @@ public class ToolUtils {
 
     }
 
-    public static List<ItemStack> collateDropList(Set<ItemStack> input) {
-        return collateMatterClusterContents(collateMatterCluster(input));
-    }
 
-    public static List<ItemStack> collateMatterClusterContents(Map<ItemStackWrapper, Integer> input) {
-        List<ItemStack> collated = new ArrayList<>();
-
-        for (Map.Entry<ItemStackWrapper, Integer> e : input.entrySet()) {
-            int count = e.getValue();
-            ItemStackWrapper wrap = e.getKey();
-
-            int size = wrap.stack.getMaxStackSize();
-            int fullstacks = Mth.floor((float) count / size);
-
-            for (int i = 0; i < fullstacks; i++) {
-                count -= size;
-                ItemStack stack = wrap.stack.copy();
-                stack.setCount(size);
-                collated.add(stack);
-            }
-
-            if (count > 0) {
-                ItemStack stack = wrap.stack.copy();
-                stack.setCount(count);
-                collated.add(stack);
-            }
-        }
-
-        return collated;
-    }
-
-    public static Map<ItemStackWrapper, Integer> collateMatterCluster(Set<ItemStack> input) {
-        Map<ItemStackWrapper, Integer> counts = new HashMap<>();
-
-        if (input != null) {
-            for (ItemStack entity : input) {
-                ItemStackWrapper wrap = new ItemStackWrapper(entity);
-                if (!counts.containsKey(wrap)) {
-                    counts.put(wrap, 0);
-                }
-
-                counts.put(wrap, counts.get(wrap) + entity.getCount());
-            }
-        }
-
-        return counts;
-    }
-
+    /***
+     * Arrow
+     * ***/
     private static final List<String> projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
-
 
     public static void arrowBarrage(Entity shooter, Level level, List<Entity> piercedAndKilledEntities, AbstractArrow.Pickup pickup, RandomSource randy, BlockPos pos) {
         for (int i = 0; i < 30; i++) {//30支箭
@@ -396,4 +336,133 @@ public class ToolUtils {
         }
     }
 
+    /***
+     * Sword
+     * ***/
+    public static void sweepAttack(Level level, LivingEntity livingEntity, LivingEntity victim) {
+        if (livingEntity instanceof Player player){
+            for(LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {
+                double entityReachSq = Mth.square(player.getEntityReach()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
+                if (!player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && player.distanceToSqr(livingentity) < entityReachSq) {
+                    livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float)Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float)Math.PI / 180F)));
+                    victim.setHealth(0);
+                    victim.die(player.damageSources().source(ModDamageTypes.INFINITY, player, victim));
+                }
+            }
+            level.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, livingEntity.getSoundSource(), 1.0F, 1.0F);
+            double d0 = -Mth.sin(player.getYRot() * ((float)Math.PI / 180F));
+            double d1 = Mth.cos(player.getYRot() * ((float)Math.PI / 180F));
+            if (level instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + d0, player.getY(0.5D), player.getZ() + d1, 0, d0, 0.0D, d1, 0.0D);
+            }
+        }
+    }
+
+    public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
+        if (player.level().isClientSide) return;
+        AABB aabb = player.getBoundingBox().deflate(range);
+        List<Entity> toAttack = player.level().getEntities(player, aabb);
+        DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
+        toAttack.stream().filter(entity -> entity instanceof Mob).forEach(entity -> {
+            if (entity instanceof Mob mob) {
+                if (hurtAnimal && mob instanceof Animal animal) {
+                    animal.hurt(src, damage);
+                } else if (mob instanceof EnderDragon dragon) {
+                    dragon.hurt(dragon.head, src, Float.POSITIVE_INFINITY);
+                } else if (mob instanceof WitherBoss wither) {
+                    wither.setInvulnerableTicks(0);
+                    wither.hurt(src, damage);
+                } else if (!(mob instanceof Animal)){
+                    mob.hurt(src, damage);
+                }
+            }
+            LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
+            if (hurtAnimal && lightOn && lightningbolt != null) {
+                lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
+                lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
+                player.level().addFreshEntity(lightningbolt);
+            }
+        });
+    }
+
+
+
+    /***
+     * Axe
+     * ***/
+    public static boolean canHarvest(BlockPos pos, Level world) {
+        if (!isLog(world, pos)) {
+            return false;
+        }
+
+        BlockState state = world.getBlockState(pos);
+        if (state.getProperties().stream().anyMatch(p -> p.equals(RotatedPillarBlock.AXIS))) {
+            return state.getValue(RotatedPillarBlock.AXIS).equals(Direction.Axis.Y);
+        }
+
+        return true;
+    }
+
+
+    public static void destroyTree(Player player, Level world, BlockPos pos, ItemStack heldItem) {
+        List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
+
+        for (BlockPos logPos : connectedLogs) {
+            destroy(world, player, logPos, heldItem);
+        }
+    }
+
+    private static void destroy(Level world, Player player, BlockPos pos, ItemStack heldItem) {
+        if (heldItem != null) {
+            heldItem.getItem().mineBlock(heldItem, world, world.getBlockState(pos), pos, player);
+            world.destroyBlock(pos, true);
+        }
+    }
+
+    private static List<BlockPos> getConnectedLogs(Level world, BlockPos pos) {
+        BlockPosList positions = new BlockPosList();
+        collectLogs(world, pos, positions);
+        return positions;
+    }
+
+    private static void collectLogs(Level world, BlockPos pos, BlockPosList positions) {
+        List<BlockPos> posList = new ArrayList<>();
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
+                    BlockPos p = pos.offset(x, y, z);
+                    if (isLog(world, p)) {
+                        if (positions.add(p)) {
+                            posList.add(p);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        for (BlockPos p : posList) {
+            collectLogs(world, p, positions);
+        }
+    }
+
+    private static boolean isLog(Level world, BlockPos pos) {
+        BlockState b = world.getBlockState(pos);
+        return b.is(BlockTags.LOGS);
+    }
+
+    private static class BlockPosList extends ArrayList<BlockPos> {
+        @Override
+        public boolean add(BlockPos pos) {
+            if (!contains(pos)) {
+                return super.add(pos);
+            }
+            return false;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return stream().anyMatch(pos1 -> pos1.equals(o));
+        }
+    }
 }
