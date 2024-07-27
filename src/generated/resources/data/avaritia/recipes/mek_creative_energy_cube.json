@@ -22,10 +22,10 @@
             "item": "mekanism:induction_port"
           },
           "D": {
-            "item": "mekanism:induction_cell"
+            "item": "mekanism:ultimate_induction_cell"
           },
           "E": {
-            "item": "mekanism:induction_provider"
+            "item": "mekanism:ultimate_induction_provider"
           },
           "I": {
             "item": "avaritia:infinity_ingot"
@@ -46,7 +46,8 @@
           "BBBCECBBB"
         ],
         "result": {
-          "item": "mekanism:creative_energy_cube"
+          "item": "mekanism:creative_energy_cube",
+          "nbt": "{mekData:{EnergyContainers:[{Container:0b,stored:\"18446744073709551615.9999\"}]}}"
         },
         "show_notification": true
       }

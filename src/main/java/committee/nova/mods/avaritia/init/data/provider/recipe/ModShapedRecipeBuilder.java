@@ -15,6 +15,8 @@ import net.minecraft.data.recipes.CraftingRecipeBuilder;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -48,7 +50,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     private final ItemLike result;
     private final ResourceLocation result2;
     private final int count;
-    private final String nbt;
+    private final CompoundTag nbt;
     private final List<String> rows = Lists.newArrayList();
     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
@@ -56,7 +58,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     private String group;
     private boolean showNotification = true;
 
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, String nbt) {
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, CompoundTag nbt) {
         this.category = category;
         this.result = itemLike;
         this.result2 = itemLocation;
@@ -65,27 +67,27 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     }
 
     @Contract("_, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, String nbt) {
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, CompoundTag nbt) {
         return shaped(category, null, itemLocation, 1, nbt);
     }
 
     @Contract("_, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation) {
-        return shaped(category, null, itemLocation, 1, "");
+        return shaped(category, null, itemLocation, 1, new CompoundTag());
     }
 
     @Contract("_, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, String nbt) {
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, CompoundTag nbt) {
         return shaped(category, itemLike, null, 1, nbt);
     }
 
     @Contract("_, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike) {
-        return shaped(category, itemLike, null, 1, "");
+        return shaped(category, itemLike, null, 1, new CompoundTag());
     }
 
     @Contract("_, _, _, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, String nbt) {
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, CompoundTag nbt) {
         return new ModShapedRecipeBuilder(category, itemLike, itemLocation, count, nbt);
     }
 
@@ -190,7 +192,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         private final ItemLike result;
         private final ResourceLocation result2;
         private final int count;
-        private final String nbt;
+        private final CompoundTag nbt;
         private final String group;
         private final List<String> pattern;
         private final Map<Character, Ingredient> key;
@@ -198,7 +200,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
         private final ResourceLocation advancementId;
         private final boolean showNotification;
 
-        public Result(ResourceLocation resourceLocation, ItemLike item, ResourceLocation result2, int count, String nbt, String group, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
+        public Result(ResourceLocation resourceLocation, ItemLike item, ResourceLocation result2, int count, CompoundTag nbt, String group, CraftingBookCategory p_273500_, List<String> p_273744_, Map<Character, Ingredient> p_272991_, Advancement.Builder p_273260_, ResourceLocation p_273106_, boolean p_272862_) {
             super(p_273500_);
             this.id = resourceLocation;
             this.result = item;
@@ -243,7 +245,7 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
             }
 
             if (!this.nbt.isEmpty()){
-                jsonobject1.addProperty("nbt", this.nbt);
+                jsonobject1.addProperty("nbt", this.nbt.toString());
             }
 
             pJson.add("result", jsonobject1);

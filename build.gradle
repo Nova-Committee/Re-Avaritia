@@ -135,6 +135,7 @@ dependencies {
 
     implementation fg.deobf("curse.maven:charm-of-undying-316873:${cou_version}")
     implementation fg.deobf("curse.maven:projecte-226410:${projecte_version}")
+    runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mek_version}")
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
@@ -189,7 +190,7 @@ publishing {
         if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
             maven {
                 name 'S3'
-                url = 'https://maven.nova-committee.cn/s'
+                url = 'https://maven.nova-committee.cn/s3'
 
                 credentials {
                     username System.getenv('MAVEN_USERNAME')

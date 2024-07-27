@@ -47,7 +47,7 @@
         ],
         "result": {
           "item": "tconstruct:creative_slot",
-          "nbt": "{slot:souls}"
+          "nbt": "{slot:\"souls\"}"
         },
         "show_notification": true
       }

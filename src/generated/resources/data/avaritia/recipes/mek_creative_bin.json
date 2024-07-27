@@ -6,6 +6,10 @@
         {
           "type": "forge:mod_loaded",
           "modid": "mekanism"
+        },
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mekanismgenerators"
         }
       ],
       "recipe": {
@@ -13,7 +17,7 @@
         "category": "equipment",
         "key": {
           "A": {
-            "item": "mekanism:fusion_reactor_frame"
+            "item": "mekanismgenerators:fusion_reactor_frame"
           },
           "B": {
             "item": "mekanism:ultimate_energy_cube"

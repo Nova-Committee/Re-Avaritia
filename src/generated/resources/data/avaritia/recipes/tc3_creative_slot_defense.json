@@ -47,7 +47,7 @@
         ],
         "result": {
           "item": "tconstruct:creative_slot",
-          "nbt": "{slot:defense}"
+          "nbt": "{slot:\"defense\"}"
         },
         "show_notification": true
       }
