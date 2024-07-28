@@ -5,7 +5,7 @@
       "conditions": [
         {
           "type": "forge:mod_loaded",
-          "modid": "ernderio"
+          "modid": "enderio"
         }
       ],
       "recipe": {
@@ -13,10 +13,10 @@
         "category": "equipment",
         "key": {
           "C": {
-            "item": "ernderio:ender_crystal"
+            "item": "enderio:ender_crystal"
           },
           "E": {
-            "item": "ernderio:sentient_ender"
+            "item": "enderio:sentient_ender"
           },
           "I": {
             "item": "avaritia:infinity_ingot"
@@ -25,13 +25,13 @@
             "item": "avaritia:neutron_ingot"
           },
           "V": {
-            "item": "ernderio:vibrant_capacitor_bank"
+            "item": "enderio:vibrant_capacitor_bank"
           },
           "W": {
-            "item": "ernderio:weather_crystal"
+            "item": "enderio:weather_crystal"
           },
           "Z": {
-            "item": "ernderio:frank_n_zombie"
+            "item": "enderio:frank_n_zombie"
           }
         },
         "pattern": [
@@ -46,7 +46,7 @@
           "INIIIIINI"
         ],
         "result": {
-          "item": "ernderio:creative_power"
+          "item": "enderio:creative_power"
         },
         "show_notification": true
       }

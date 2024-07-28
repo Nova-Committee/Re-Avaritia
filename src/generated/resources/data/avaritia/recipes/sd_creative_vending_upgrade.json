@@ -16,7 +16,7 @@
             "item": "storagedrawers:basicdrawers"
           },
           "E": {
-            "item": "storagedrawers:upgrade_storage"
+            "item": "storagedrawers:emerald_storage_upgrade"
           },
           "N": {
             "item": "avaritia:infinity_ingot"
@@ -37,7 +37,7 @@
           "    S    "
         ],
         "result": {
-          "item": "storagedrawers:upgrade_creative"
+          "item": "storagedrawers:creative_vending_upgrade"
         },
         "show_notification": true
       }
