@@ -822,7 +822,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
         ).build(consumer, Static.rl("tc3_creative_slot_upgrades"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("storagedrawers")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("storagedrawers", "upgrade_creative"))
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("storagedrawers", "creative_vending_upgrade"))
                         .pattern("    S    ")
                         .pattern(" NDDDDDN ")
                         .pattern(" DNDDDND ")
@@ -835,10 +835,10 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('N', ModItems.infinity_ingot.get())
                         .define('S', ModItems.infinity_catalyst.get())
-                        .define('D', Static.getIngredient("storagedrawers", "basicdrawers"))
-                        .define('E', Static.getIngredient("storagedrawers", "upgrade_storage"))
-                        .unlockedBy("has_item", has(Static.getItem("storagedrawers", "upgrade_storage")))::save
-        ).build(consumer, Static.rl("sd_upgrade_creative"));
+                        .define('D', Static.getIngredient("storagedrawers", "oak_full_drawers_1"))
+                        .define('E', Static.getIngredient("storagedrawers", "emerald_storage_upgrade"))
+                        .unlockedBy("has_item", has(Static.getItem("storagedrawers", "emerald_storage_upgrade")))::save
+        ).build(consumer, Static.rl("sd_creative_vending_upgrade"));
 
         var creative_energy_cube_main = new CompoundTag();
         var energyContainers = new ListTag();
@@ -871,7 +871,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .define('C', Static.getIngredient("mekanism", "induction_port"))
                         .define('D', Static.getIngredient("mekanism", "ultimate_induction_cell"))
                         .define('E', Static.getIngredient("mekanism", "ultimate_induction_provider"))
-                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_energy_cube")))::save
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "ultimate_energy_cube")))::save
         ).build(consumer, Static.rl("mek_creative_energy_cube"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
@@ -892,7 +892,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .define('B', Static.getIngredient("mekanism", "dynamic_tank"))
                         .define('C', Static.getIngredient("mekanism", "structural_glass"))
                         .define('D', Static.getIngredient("mekanism", "dynamic_valve"))
-                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_fluid_tank")))::save
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "ultimate_fluid_tank")))::save
         ).build(consumer, Static.rl("mek_creative_fluid_tank"));
 
         ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
@@ -913,7 +913,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .define('B', Static.getIngredient("mekanism", "dynamic_tank"))
                         .define('C', Static.getIngredient("mekanism", "dynamic_glass"))
                         .define('D', Static.getIngredient("mekanism", "dynamic_valve"))
-                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_chemical_tank")))::save
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "ultimate_chemical_tank")))::save
         ).build(consumer, Static.rl("mek_creative_chemical_tank"));
 
         ConditionalRecipe.builder()
@@ -938,11 +938,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .define('C', Static.getIngredient("mekanism", "ultimate_fluid_tank"))
                         .define('D', Static.getIngredient("mekanism", "ultimate_chemical_tank"))
                         .define('E', Static.getIngredient("mekanism", "ultimate_bin"))
-                        .unlockedBy("has_item", has(Static.getItem("mekanism", "creative_bin")))::save
+                        .unlockedBy("has_item", has(Static.getItem("mekanism", "ultimate_bin")))::save
         ).build(consumer, Static.rl("mek_creative_bin"));
 
-        ConditionalRecipe.builder().addCondition(modLoaded("ernderio")).addRecipe(
-                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ernderio", "creative_power"))
+        ConditionalRecipe.builder().addCondition(modLoaded("enderio")).addRecipe(
+                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("enderio", "creative_power"))
                         .pattern("INIIIIINI")
                         .pattern("NZEEEEEZN")
                         .pattern("IECWWWCEI")
@@ -955,12 +955,12 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
                         .define('I', ModItems.infinity_ingot.get())
                         .define('N', ModItems.neutron_ingot.get())
-                        .define('W', Static.getIngredient("ernderio", "weather_crystal"))
-                        .define('V', Static.getIngredient("ernderio", "vibrant_capacitor_bank"))
-                        .define('Z', Static.getIngredient("ernderio", "frank_n_zombie"))
-                        .define('E', Static.getIngredient("ernderio", "sentient_ender"))
-                        .define('C', Static.getIngredient("ernderio", "ender_crystal"))
-                        .unlockedBy("has_item", has(Static.getItem("ernderio", "creative_power")))::save
+                        .define('W', Static.getIngredient("enderio", "weather_crystal"))
+                        .define('V', Static.getIngredient("enderio", "vibrant_capacitor_bank"))
+                        .define('Z', Static.getIngredient("enderio", "frank_n_zombie"))
+                        .define('E', Static.getIngredient("enderio", "sentient_ender"))
+                        .define('C', Static.getIngredient("enderio", "ender_crystal"))
+                        .unlockedBy("has_item", has(ModItems.infinity_ingot.get()))::save
         ).build(consumer, Static.rl("eio_creative_power"));
 
     }
