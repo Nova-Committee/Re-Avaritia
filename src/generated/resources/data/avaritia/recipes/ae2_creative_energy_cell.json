@@ -12,26 +12,35 @@
         "type": "avaritia:shaped_extreme_craft",
         "category": "equipment",
         "key": {
+          "A": {
+            "item": "ae2:vibration_chamber"
+          },
+          "B": {
+            "item": "ae2:calculation_processor"
+          },
           "C": {
             "item": "avaritia:infinity_ingot"
           },
+          "D": {
+            "item": "ae2:cell_component_256k"
+          },
           "X": {
-            "item": "ae2:engineering_processor"
+            "item": "ae2:singularity"
           },
           "Y": {
             "item": "ae2:dense_energy_cell"
           }
         },
         "pattern": [
-          "CCCCXCCCC",
-          "CYYYXYYYC",
-          "CYYYXYYYC",
-          "CYYYXYYYC",
-          "XXXXXXXXX",
-          "CYYYXYYYC",
-          "CYYYXYYYC",
-          "CYYYXYYYC",
-          "CCCCXCCCC"
+          "YYYYXYYYY",
+          "YCACXCACY",
+          "YACBXBCAY",
+          "YCBBXBBCY",
+          "XXXXDXXXX",
+          "YCBBXBBCY",
+          "YACBXBCAY",
+          "YCACXCACY",
+          "YYYYXYYYY"
         ],
         "result": {
           "item": "ae2:creative_energy_cell"

@@ -519,19 +519,22 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
 
         ConditionalRecipe.builder().addCondition(modLoaded("ae2")).addRecipe(
                 ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ae2", "creative_energy_cell"))
-                        .pattern("CCCCXCCCC")
-                        .pattern("CYYYXYYYC")
-                        .pattern("CYYYXYYYC")
-                        .pattern("CYYYXYYYC")
-                        .pattern("XXXXXXXXX")
-                        .pattern("CYYYXYYYC")
-                        .pattern("CYYYXYYYC")
-                        .pattern("CYYYXYYYC")
-                        .pattern("CCCCXCCCC")
+                        .pattern("YYYYXYYYY")
+                        .pattern("YCACXCACY")
+                        .pattern("YACBXBCAY")
+                        .pattern("YCBBXBBCY")
+                        .pattern("XXXXDXXXX")
+                        .pattern("YCBBXBBCY")
+                        .pattern("YACBXBCAY")
+                        .pattern("YCACXCACY")
+                        .pattern("YYYYXYYYY")
 
+                        .define('A', Static.getIngredient("ae2", "vibration_chamber"))
+                        .define('B', Static.getIngredient("ae2", "calculation_processor"))
                         .define('C', ModItems.infinity_ingot.get())
+                        .define('D', Static.getIngredient("ae2", "cell_component_256k"))
                         .define('Y', Static.getIngredient("ae2", "dense_energy_cell"))
-                        .define('X', Static.getIngredient("ae2", "engineering_processor"))
+                        .define('X', Static.getIngredient("ae2", "singularity"))
                         .unlockedBy("has_item", has(Static.getItem("ae2", "dense_energy_cell")))::save
         ).build(consumer, Static.rl( "ae2_creative_energy_cell"));
 
