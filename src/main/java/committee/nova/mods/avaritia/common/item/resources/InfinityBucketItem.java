@@ -130,10 +130,11 @@ public class InfinityBucketItem extends ResourceItem {
         ListTag items = stack.getOrCreateTag().getList(FLUIDS_NBT, Tag.TAG_COMPOUND);
         for (int i = 0; i < items.size(); i++) {
             CompoundTag compound = items.getCompound(i);
+            ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
+            if (id.toLanguageKey().contains("gtceu")) return Fluids.EMPTY;
             long amount = compound.getLong(FLUID_AMOUNT_KEY);
             if (amount >= minimumAmount) {
                 amount -= minimumAmount;
-                ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
                 if (amount == 0) items.remove(i);
                 else compound.putLong(FLUID_AMOUNT_KEY, amount);
                 return ForgeRegistries.FLUIDS.getValue(id);
@@ -150,8 +151,12 @@ public class InfinityBucketItem extends ResourceItem {
             ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
             if (fluidId.equals(id)) {
                 long a = compound.getLong(FLUID_AMOUNT_KEY);
-                a += amount;
-                compound.putLong(FLUID_AMOUNT_KEY, a);
+                if (Long.MAX_VALUE - a >= amount) {
+                    a += amount;
+                    compound.putLong(FLUID_AMOUNT_KEY, a);
+                } else {
+                    compound.putLong(FLUID_AMOUNT_KEY, Long.MAX_VALUE);
+                }
                 return;
             }
         }
@@ -175,11 +180,11 @@ public class InfinityBucketItem extends ResourceItem {
     }
 
 
-    public ICapabilityProvider initCapabilities(ItemStack stack, @javax.annotation.Nullable CompoundTag nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return new InfinityBucketWrapper(stack);
     }
 
-    public static void fillFluid(ItemStack stack, net.minecraft.world.level.material.Fluid fluid, long amount) {
+    public static void fillFluid(ItemStack stack, Fluid fluid, long amount) {
         ResourceLocation fluidId = ForgeRegistries.FLUIDS.getKey(fluid);
         ListTag items = stack.getOrCreateTag().getList(FLUIDS_NBT, CompoundTag.TAG_COMPOUND);
 
@@ -188,12 +193,15 @@ public class InfinityBucketItem extends ResourceItem {
             ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
             if (fluidId.equals(id)) {
                 long a = compound.getLong(FLUID_AMOUNT_KEY);
-                a += amount;
-                compound.putLong(FLUID_AMOUNT_KEY, a);
+                if (Long.MAX_VALUE - a >= amount) {
+                    a += amount;
+                    compound.putLong(FLUID_AMOUNT_KEY, a);
+                } else {
+                    compound.putLong(FLUID_AMOUNT_KEY, Long.MAX_VALUE);
+                }
                 return;
             }
         }
-
         CompoundTag compound = new CompoundTag();
         compound.putString(FLUID_ID_KEY, fluidId.toString());
         compound.putLong(FLUID_AMOUNT_KEY, amount);

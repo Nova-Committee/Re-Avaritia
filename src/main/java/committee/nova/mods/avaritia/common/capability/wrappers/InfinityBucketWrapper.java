@@ -12,26 +12,31 @@ public class InfinityBucketWrapper extends FluidBucketWrapper {
         super(container);
     }
 
+    @Override
     public boolean canFillFluidType(FluidStack fluid) {
         return true;
     }
 
+    @Override
     public int getTankCapacity(int tank) {
         return InfinityBucketItem.getFirstFluid(this.container).getAmount();
     }
 
+    @Override
     public @NotNull FluidStack getFluid() {
         return InfinityBucketItem.getFirstFluid(this.container);
     }
 
+    @Override
     protected void setFluid(@NotNull FluidStack fluidStack) {
         if (fluidStack.isEmpty()) {
             InfinityBucketItem.emptyFirstFluid(this.container);
         } else {
-            InfinityBucketItem.fillFluid(this.container, fluidStack.getFluid(), (long)fluidStack.getAmount());
+            InfinityBucketItem.fillFluid(this.container, fluidStack.getFluid(), fluidStack.getAmount());
         }
     }
 
+    @Override
     public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
         if (this.container.getCount() == 1 && resource.getAmount() > 0) {
             if (action.execute()) {
@@ -43,6 +48,7 @@ public class InfinityBucketWrapper extends FluidBucketWrapper {
         }
     }
 
+    @Override
     public @NotNull FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
         if (this.container.getCount() == 1 && resource.getAmount() > 0) {
             FluidStack fluidStack = this.getFluid();
@@ -59,6 +65,7 @@ public class InfinityBucketWrapper extends FluidBucketWrapper {
         }
     }
 
+    @Override
     public @NotNull FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
         if (this.container.getCount() == 1 && maxDrain > 0) {
             FluidStack fluidStack = this.getFluid();
