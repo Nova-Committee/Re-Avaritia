@@ -151,11 +151,11 @@ public class InfinityBucketItem extends ResourceItem {
             ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
             if (fluidId.equals(id)) {
                 long a = compound.getLong(FLUID_AMOUNT_KEY);
-                if (Long.MAX_VALUE - a >= amount) {
+                if (Integer.MAX_VALUE - a >= amount) {
                     a += amount;
                     compound.putLong(FLUID_AMOUNT_KEY, a);
                 } else {
-                    compound.putLong(FLUID_AMOUNT_KEY, Long.MAX_VALUE);
+                    compound.putLong(FLUID_AMOUNT_KEY, Integer.MAX_VALUE);
                 }
                 return;
             }
@@ -193,11 +193,11 @@ public class InfinityBucketItem extends ResourceItem {
             ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
             if (fluidId.equals(id)) {
                 long a = compound.getLong(FLUID_AMOUNT_KEY);
-                if (Long.MAX_VALUE - a >= amount) {
+                if (Integer.MAX_VALUE - a >= amount) {
                     a += amount;
                     compound.putLong(FLUID_AMOUNT_KEY, a);
                 } else {
-                    compound.putLong(FLUID_AMOUNT_KEY, Long.MAX_VALUE);
+                    compound.putLong(FLUID_AMOUNT_KEY, Integer.MAX_VALUE);
                 }
                 return;
             }
