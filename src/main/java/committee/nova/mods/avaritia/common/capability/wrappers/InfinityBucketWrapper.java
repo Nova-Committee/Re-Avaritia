@@ -54,7 +54,7 @@ public class InfinityBucketWrapper extends FluidBucketWrapper {
             FluidStack fluidStack = this.getFluid();
             if (!fluidStack.isEmpty() && fluidStack.isFluidEqual(resource)) {
                 if (action.execute()) {
-                    InfinityBucketItem.drainFluid(this.container, (long)resource.getAmount());
+                    return InfinityBucketItem.drainFluid(this.container, resource.getAmount());
                 }
                 return fluidStack;
             } else {

@@ -79,18 +79,22 @@ public class InfinityBucketItem extends ResourceItem {
             itemStack.getOrCreateTag().put(FLUIDS_NBT, items);
             return InteractionResultHolder.sidedSuccess(itemStack, pLevel.isClientSide);
         }
+
         BlockHitResult result = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.SOURCE_ONLY);
         if (result.getType() != HitResult.Type.BLOCK) return InteractionResultHolder.pass(itemStack);
-        BlockState target = pLevel.getBlockState(result.getBlockPos());
-        if (pLevel.mayInteract(pPlayer, result.getBlockPos()) && target.getBlock() instanceof BucketPickup drainable) {
-            ItemStack r = drainable.pickupBlock(pLevel, result.getBlockPos(), target);
+
+        BlockPos resultBlockPos = result.getBlockPos();
+        BlockState target = pLevel.getBlockState(resultBlockPos);
+
+        if (pLevel.mayInteract(pPlayer, resultBlockPos) && target.getBlock() instanceof BucketPickup drainable) {
+            ItemStack r = drainable.pickupBlock(pLevel, resultBlockPos, target);
             if (!r.isEmpty() && r.getItem() instanceof BucketItem bucketItem) {
                 Fluid fluid = bucketItem.getFluid();
-                this.insertFluid(itemStack, fluid, 1000);
-                playFillingSound(pPlayer, pLevel, result.getBlockPos(), fluid);
+                fillFluid(itemStack, fluid, 1000);
+                this.playFluidSound(pPlayer, pLevel, resultBlockPos, fluid, false);
             }
         } else {
-            BlockPos newPos = result.getBlockPos().offset(result.getDirection().getNormal());
+            BlockPos newPos = resultBlockPos.offset(result.getDirection().getNormal());
             if (pLevel.mayInteract(pPlayer, newPos)) {
                 Fluid fluid = this.getFirstAndDecrease(itemStack, 1000);
                 if (fluid != Fluids.EMPTY) {
@@ -101,7 +105,7 @@ public class InfinityBucketItem extends ResourceItem {
                         if (!pLevel.isClientSide && here.canBeReplaced(fluid))
                             pLevel.destroyBlock(newPos, true);
                         if (pLevel.setBlock(newPos, fluid.defaultFluidState().createLegacyBlock(), 11) && !here.getFluidState().isSource())
-                            this.playEmptyingSound(pPlayer, pLevel, newPos, fluid);
+                            this.playFluidSound(pPlayer, pLevel, newPos, fluid, true);
                     }
                 }
             }
@@ -114,7 +118,7 @@ public class InfinityBucketItem extends ResourceItem {
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         ListTag items = pStack.getOrCreateTag().getList(FLUIDS_NBT, Tag.TAG_COMPOUND);
-        if (pEntity instanceof Player player && player.getInventory().getSelected() == pStack && items.size() > 0) {
+        if (pEntity instanceof Player player && player.getInventory().getSelected() == pStack && !items.isEmpty()) {
             CompoundTag compound = items.getCompound(0);
             ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
             long amount = compound.getLong(FLUID_AMOUNT_KEY);
@@ -143,50 +147,9 @@ public class InfinityBucketItem extends ResourceItem {
         return Fluids.EMPTY;
     }
 
-    public void insertFluid(ItemStack stack, Fluid fluid, long amount) {
-        ResourceLocation fluidId = ForgeRegistries.FLUIDS.getKey(fluid);
-        ListTag items = stack.getOrCreateTag().getList(FLUIDS_NBT, Tag.TAG_COMPOUND);
-        for (int i = 0; i < items.size(); i++) {
-            CompoundTag compound = items.getCompound(i);
-            ResourceLocation id = new ResourceLocation(compound.getString(FLUID_ID_KEY));
-            if (fluidId.equals(id)) {
-                long a = compound.getLong(FLUID_AMOUNT_KEY);
-                if (Integer.MAX_VALUE - a >= amount) {
-                    a += amount;
-                    compound.putLong(FLUID_AMOUNT_KEY, a);
-                } else {
-                    compound.putLong(FLUID_AMOUNT_KEY, Integer.MAX_VALUE);
-                }
-                return;
-            }
-        }
-        CompoundTag compound = new CompoundTag();
-        compound.putString(FLUID_ID_KEY, fluidId.toString());
-        compound.putLong(FLUID_AMOUNT_KEY, amount);
-        items.add(compound);
-        stack.getOrCreateTag().put(FLUIDS_NBT, items);
-    }
-
-    protected void playEmptyingSound(Player player, LevelAccessor world, BlockPos pos, Fluid fluid) {
-        SoundEvent soundEvent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-        world.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-        world.gameEvent(player, GameEvent.FLUID_PLACE, pos);
-    }
-
-    protected void playFillingSound(Player player, LevelAccessor world, BlockPos pos, Fluid fluid) {
-        SoundEvent soundEvent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL;
-        world.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-        world.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
-    }
-
-
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new InfinityBucketWrapper(stack);
-    }
-
     public static void fillFluid(ItemStack stack, Fluid fluid, long amount) {
         ResourceLocation fluidId = ForgeRegistries.FLUIDS.getKey(fluid);
-        ListTag items = stack.getOrCreateTag().getList(FLUIDS_NBT, CompoundTag.TAG_COMPOUND);
+        ListTag items = stack.getOrCreateTag().getList(FLUIDS_NBT, Tag.TAG_COMPOUND);
 
         for(int i = 0; i < items.size(); ++i) {
             CompoundTag compound = items.getCompound(i);
@@ -208,6 +171,28 @@ public class InfinityBucketItem extends ResourceItem {
         items.add(compound);
         stack.getOrCreateTag().put(FLUIDS_NBT, items);
     }
+
+    protected void playFluidSound(Player player, LevelAccessor world, BlockPos pos, Fluid fluid, boolean place) {
+        SoundEvent soundEvent = fluid.is(FluidTags.LAVA)
+                ? (place ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_FILL_LAVA)
+                : (place ? SoundEvents.BUCKET_EMPTY : SoundEvents.BUCKET_FILL);
+        world.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+        world.gameEvent(player, place ? GameEvent.FLUID_PLACE : GameEvent.FLUID_PICKUP, pos);
+    }
+
+    protected void playFillingSound(Player player, LevelAccessor world, BlockPos pos, Fluid fluid) {
+        SoundEvent soundEvent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL;
+        world.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+        world.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+    }
+
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new InfinityBucketWrapper(stack);
+    }
+
+
 
     public static FluidStack drainFluid(ItemStack stack, long minimumAmount) {
         ListTag items = stack.getOrCreateTag().getList(FLUIDS_NBT, CompoundTag.TAG_COMPOUND);
