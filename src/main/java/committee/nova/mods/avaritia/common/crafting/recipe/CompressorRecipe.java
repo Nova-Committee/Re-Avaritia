@@ -55,6 +55,11 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
         return this.output;
     }
 
+    public @NotNull ItemStack getResultItem() {
+        return this.output;
+    }
+
+
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;

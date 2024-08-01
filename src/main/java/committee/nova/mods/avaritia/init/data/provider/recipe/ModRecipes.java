@@ -911,7 +911,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                         .define('S', ModItems.infinity_catalyst.get())
                         .define('A', Static.getIngredient("mekanism", "ultimate_chemical_tank"))
                         .define('B', Static.getIngredient("mekanism", "dynamic_tank"))
-                        .define('C', Static.getIngredient("mekanism", "dynamic_glass"))
+                        .define('C', Static.getIngredient("mekanism", "structural_glass"))
                         .define('D', Static.getIngredient("mekanism", "dynamic_valve"))
                         .unlockedBy("has_item", has(Static.getItem("mekanism", "ultimate_chemical_tank")))::save
         ).build(consumer, Static.rl("mek_creative_chemical_tank"));

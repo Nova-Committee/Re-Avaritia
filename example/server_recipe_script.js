@@ -3,7 +3,7 @@ ServerEvents.recipes(
         event.custom({
             type: 'avaritia:shaped_extreme_craft',//shapeless is avaritia:shapeless_extreme_craft。
             pattern: [
-                "       I ",
+                "       IA",
                 "      III",
                 "     III ",
                 "    III  ",
@@ -14,6 +14,9 @@ ServerEvents.recipes(
                 "X        "
             ],
             key: {
+                A: [
+                    Item.of('minecraft:enchanted_book').enchant('minecraft:silk_touch', 1).strongNBT()
+                ],
                 C: [
                     {item: 'avaritia:crystal_matrix_ingot'}
                 ],
@@ -32,7 +35,7 @@ ServerEvents.recipes(
         event.custom({
             type: 'avaritia:compressor',
             inputCount: 2000,
-            timeCost: 240,
+            timeCost: 300,
             ingredient: {tag: 'forge:ingots/copper'},
             result: { item: 'avaritia:singularity', count: 1 , nbt: {Id: 'avaritia:copper'}}
         })

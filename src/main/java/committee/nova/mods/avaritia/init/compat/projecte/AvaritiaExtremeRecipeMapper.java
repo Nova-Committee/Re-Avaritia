@@ -12,10 +12,10 @@ import net.minecraft.world.item.crafting.RecipeType;
  * @Description:
  */
 @RecipeTypeMapper
-public class AvaritiaRecipeMapper extends BaseRecipeTypeMapper {
+public class AvaritiaExtremeRecipeMapper extends BaseRecipeTypeMapper {
     @Override
     public String getName() {
-        return "Avaritia";
+        return "Avaritia Extreme";
     }
 
     @Override
@@ -25,6 +25,6 @@ public class AvaritiaRecipeMapper extends BaseRecipeTypeMapper {
 
     @Override
     public boolean canHandle(RecipeType<?> recipeType) {
-        return recipeType == ModRecipeTypes.EXTREME_CRAFT_RECIPE.get() || recipeType == ModRecipeTypes.COMPRESSOR_RECIPE.get();
+        return recipeType == ModRecipeTypes.EXTREME_CRAFT_RECIPE.get();
     }
 }
