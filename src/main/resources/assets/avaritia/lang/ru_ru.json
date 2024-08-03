@@ -103,6 +103,8 @@
   "item.avaritia.infinity_totem": "Infinity Totem",
   "item.avaritia.neutron_horse_armor": "Neutronium Horse Armor",
   "item.avaritia.infinity_bucket": "Infinity Bucket",
+  "item.avaritia.infinity_ring": "Infinity Ring",
+  "item.avaritia.infinity_umbrella": "Infinity Umbrella",
   "itemGroup.tab.Infinity": "Re:Avaritia",
   "jei.category.avaritia.compressor": "Компрессор нейтрония",
   "jei.category.avaritia.extreme_crafting_table": "Экстремальный крафт",
@@ -178,6 +180,8 @@
   "tooltip.neutron_horse_armor.desc": "Full power...",
   "tooltip.infinity_bucket.message" : "Current Fluid: %s | Amount: %smL",
   "tooltip.infinity_bucket.desc": "Devour everything...",
+  "tooltip.infinity_ring.desc": "...",
+  "tooltip.infinity_umbrella.desc": "Instant eternity...",
   "config.jade.plugin_avaritia.compressor":"Compressor",
   "config.jade.plugin_avaritia.extreme":"Extreme Crafting"
 }
