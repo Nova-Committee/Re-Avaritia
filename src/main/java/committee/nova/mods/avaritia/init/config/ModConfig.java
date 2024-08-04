@@ -27,12 +27,16 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue neutronCollectorProductTick;
     public static final ForgeConfigSpec.IntValue singularityTimeRequired;
 
+    public static final ForgeConfigSpec.IntValue neutronPileEmc;
+    public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
+
     //SERVER
     static {
         final var common = new ForgeConfigSpec.Builder();
-        common.comment("Avaritia Base Config").push("general");
+        common.comment("Avaritia Config");
+        common.push("tools");
         isKeepStone = buildBoolean(common, "Is Stone", false, "Does the super mode of endless tools retain stone and soil");
-        isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", false, "Whether to merge matter cluster");
+        isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", true, "Whether to merge matter cluster");
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
         isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
@@ -45,6 +49,11 @@ public class ModConfig {
         neutronCollectorProductTick = buildInt(common, "Neutron Collector Product Tick", 3600, 1200, Integer.MAX_VALUE, "The product tick of NeutronCollector");
         singularityTimeRequired = buildInt(common, "Singularity Time Required", 240, 0, Integer.MAX_VALUE, "Singularity default time required");
         common.pop();
+        common.push("emc");
+        neutronPileEmc = buildInt(common, "Neutron Pile Emc", 100, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
+        vanillaTotemEmc = buildInt(common, "Vanilla Totem Emc", 1000, 0, Integer.MAX_VALUE, "Emc of Totem Of Undying");
+        common.pop();
+
         COMMON = common.build();
     }
 

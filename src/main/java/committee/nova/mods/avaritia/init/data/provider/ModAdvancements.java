@@ -52,7 +52,7 @@ public class ModAdvancements extends ForgeAdvancementProvider {
             Advancement root = Advancement.Builder.advancement()
                     .display(ModItems.diamond_lattice.get(), Component.translatable("advancements.avaritia.diamond_lattice.title"),
                             Component.translatable("advancements.avaritia.diamond_lattice.desc"),
-                            new ResourceLocation(Static.MOD_ID, "textures/blocks/resource/neutron.png"), FrameType.TASK, false, false, false)
+                            new ResourceLocation(Static.MOD_ID, "textures/block/resource/neutron.png"), FrameType.TASK, false, false, false)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.diamond_lattice.get()))
                     .requirements(RequirementsStrategy.OR)
                     .save(consumer, Static.MOD_ID + ":main/root");

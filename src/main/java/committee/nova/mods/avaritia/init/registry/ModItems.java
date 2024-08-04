@@ -29,6 +29,11 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Static.MOD_ID);
 
     public static Rarity COSMIC_RARITY = Rarity.create("COSMIC", ChatFormatting.RED);
+    //curios
+    public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
+    public static RegistryObject<Item> infinity_ring = item("infinity_ring", NeutronRingItem::new);
+    public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
+
     //tools
     public static RegistryObject<Item> infinity_pickaxe = item("infinity_pickaxe", InfinityPickaxeItem::new);
     public static RegistryObject<Item> infinity_shovel = item("infinity_shovel", InfinityShovelItem::new);
@@ -63,7 +68,6 @@ public class ModItems {
     public static RegistryObject<Item> eternal_singularity = item("eternal_singularity", () -> new SingularityItem(properties -> properties));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(Rarity.EPIC, "record_fragment", true));
 
-    public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
     public static RegistryObject<Item> star_fuel = item("star_fuel", StarFuelItem::new);
     public static RegistryObject<Item> infinity_bucket = item("infinity_bucket", InfinityBucketItem::new);
 

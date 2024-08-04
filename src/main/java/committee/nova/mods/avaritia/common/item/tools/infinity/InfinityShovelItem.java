@@ -8,6 +8,8 @@ import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -74,6 +76,9 @@ public class InfinityShovelItem extends ShovelItem {
             CompoundTag tags = stack.getOrCreateTag();
             tags.putBoolean("destroyer", !tags.getBoolean("destroyer"));
             player.swing(hand);
+            if(!pLevel.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
+                    Component.translatable(tags.getBoolean("destroyer") ? "tooltip.infinity_shovel.type_2" : "tooltip.infinity_shovel.type_1"
+                    ), true);
             return InteractionResultHolder.success(stack);
         }
         return super.use(pLevel, player, hand);

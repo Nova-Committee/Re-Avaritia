@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.projecte;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import moze_intel.projecte.api.imc.CustomEMCRegistration;
 import moze_intel.projecte.api.nss.NSSItem;
@@ -19,7 +20,7 @@ public class ModEMCHandler {
         APICustomEMCMapper.INSTANCE.registerCustomEMC(Static.MOD_ID, new CustomEMCRegistration(NSSItem.createItem(item), emc));
     }
     public static void init() {
-        registerEMC(ModItems.neutron_pile.get(), 100);
-        registerEMC(Items.TOTEM_OF_UNDYING, 1000);
+        registerEMC(ModItems.neutron_pile.get(), ModConfig.neutronPileEmc.get());
+        registerEMC(Items.TOTEM_OF_UNDYING, ModConfig.vanillaTotemEmc.get());
     }
 }

@@ -8,6 +8,9 @@ import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ClustersUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -69,11 +72,20 @@ public class InfinityHoeItem extends HoeItem {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
-        ItemStack heldItem = pPlayer.getItemInHand(pUsedHand);
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isCrouching()) {
+            CompoundTag tags = stack.getOrCreateTag();
+            tags.putBoolean("sow", !tags.getBoolean("sow"));
+            player.swing(hand);
+            if(!world.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
+                    Component.translatable(tags.getBoolean("sow") ? "tooltip.infinity_hoe.type_2" : "tooltip.infinity_hoe.type_1"
+                    ), true);
+            return InteractionResultHolder.success(stack);
+        }
         if (!world.isClientSide) {
-            pPlayer.swing(InteractionHand.MAIN_HAND);
-            BlockPos blockPos = pPlayer.getOnPos();
+            player.swing(hand);
+            BlockPos blockPos = player.getOnPos();
             int rang = 7;
             int height = 2;
             BlockPos minPos = blockPos.offset(-rang, -height, -rang);
@@ -85,23 +97,23 @@ public class InfinityHoeItem extends HoeItem {
                 //harvest
                 if (block instanceof CropBlock) { //common
                     if (block instanceof BeetrootBlock ? state.getValue(BeetrootBlock.AGE) >= 3 : state.getValue(CropBlock.AGE) >= 7) {
-                        ClustersUtils.putMapDrops(world, pos, pPlayer, new ItemStack(this), map);
+                        ClustersUtils.putMapDrops(world, pos, player, new ItemStack(this), map);
                         world.setBlock(pos, state.setValue(block instanceof BeetrootBlock ? BeetrootBlock.AGE : CropBlock.AGE, 0), 11);
                     }
                 }
                 if (block instanceof CocoaBlock) { //coca
                     if (state.getValue(CocoaBlock.AGE) >= 2) {
-                        ClustersUtils.putMapDrops(world, pos, pPlayer, new ItemStack(this), map);
+                        ClustersUtils.putMapDrops(world, pos, player, new ItemStack(this), map);
                         world.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), 11);
                     }
                 }
                 if (block instanceof StemGrownBlock) { //pumpkin
-                    ClustersUtils.putMapDrops(world, pos, pPlayer, new ItemStack(this), map);
+                    ClustersUtils.putMapDrops(world, pos, player, new ItemStack(this), map);
                     world.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
                 }
                 if (block instanceof SweetBerryBushBlock) { //SweetBerry
                     if (state.getValue(SweetBerryBushBlock.AGE) >= 3) {
-                        ClustersUtils.putMapDrops(world, pos, pPlayer, new ItemStack(this), map);
+                        ClustersUtils.putMapDrops(world, pos, player, new ItemStack(this), map);
                         world.setBlock(pos, state.setValue(SweetBerryBushBlock.AGE, 0), 11);
                     }
                 }
@@ -110,33 +122,33 @@ public class InfinityHoeItem extends HoeItem {
                     for (int i = 0; i < 3; i++)
                         bonemealableBlock.isBonemealSuccess(world, world.random, pos, state);
                 }
-                ClustersUtils.spawnClusters(world, pPlayer, map);
+                ClustersUtils.spawnClusters(world, player, map);
 
             }
-            pPlayer.getCooldowns().addCooldown(heldItem.getItem(), 20);
+            player.getCooldowns().addCooldown(stack.getItem(), 20);
         }
-        world.playSound(pPlayer, pPlayer.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
-        return InteractionResultHolder.pass(heldItem);
+        world.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
+        return InteractionResultHolder.pass(stack);
 
     }
 
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
+        var stack = context.getItemInHand();
         var world = context.getLevel();
         var blockpos = context.getClickedPos();
-        var block1 = world.getBlockState(blockpos).getBlock();
+        var targetBlock = world.getBlockState(blockpos).getBlock();
+        var player = context.getPlayer();
+        var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7);
+        int rang = 5;
+        var minPos = blockpos.offset(-rang, 0, -rang);
+        var maxPos = blockpos.offset(rang, 0, rang);
 //        int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(context);
 //        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-        if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) && (block1 instanceof GrassBlock
-                || block1.equals(Blocks.DIRT) || block1.equals(Blocks.COARSE_DIRT))) {
-            var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7);
-            var playerentity = context.getPlayer();
-            world.playSound(playerentity, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            if (!world.isClientSide && playerentity != null) {
-                int rang = 5;
-                var minPos = blockpos.offset(-rang, 0, -rang);
-                var maxPos = blockpos.offset(rang, 0, rang);
-                if (playerentity.isCrouching()) {
+        if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
+                (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
+            if (player != null && !world.isClientSide) {
+                if (stack.getOrCreateTag().getBoolean("sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);
@@ -160,7 +172,6 @@ public class InfinityHoeItem extends HoeItem {
                         }
                     }
 
-
                     Iterable<BlockPos> inBoxMutable = BlockPos.betweenClosed(minPos, maxPos.offset(0, 3, 0));
                     Iterable<BlockPos> allInBoxMutable = BlockPos.betweenClosed(minPos.offset(-1, 0, -1), maxPos.offset(1, 4, 1));
                     for (BlockPos pos : allInBoxMutable) {
@@ -172,6 +183,7 @@ public class InfinityHoeItem extends HoeItem {
                     }
                 } else world.setBlock(blockpos, blockstate, 11); //未潜行耕种一个方块
             }
+            world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
         return InteractionResult.PASS;

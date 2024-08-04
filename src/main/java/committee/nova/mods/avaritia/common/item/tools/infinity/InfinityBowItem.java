@@ -6,6 +6,8 @@ import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -103,7 +105,10 @@ public class InfinityBowItem extends BowItem {
         if (player.isCrouching()) {
             CompoundTag tags = itemstack.getOrCreateTag();
             tags.putBoolean("tracer", !tags.getBoolean("tracer"));
-            player.setMainArm(HumanoidArm.RIGHT);
+            player.swing(hand);
+            if(!level.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
+                    Component.translatable(tags.getBoolean("tracer") ? "tooltip.infinity_bow.type_2" : "tooltip.infinity_bow.type_1"
+                            ), true);
             return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
         }
         player.startUsingItem(hand);
