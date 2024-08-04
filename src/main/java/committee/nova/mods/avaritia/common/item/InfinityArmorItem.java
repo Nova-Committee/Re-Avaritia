@@ -59,7 +59,7 @@ public class InfinityArmorItem extends ArmorItem {
     }
 
     @Override
-    public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
+    public boolean isEnderMask(ItemStack stack, Player player, EnderMan enderMan) {
         return true;
     }
 

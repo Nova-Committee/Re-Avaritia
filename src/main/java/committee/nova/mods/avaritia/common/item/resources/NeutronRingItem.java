@@ -8,11 +8,11 @@ import net.minecraft.world.item.Rarity;
  * @CreateTime: 2024/8/2 上午12:32
  * @Description:
  */
-public class InfinityRingItem extends ResourceItem {
+public class NeutronRingItem extends ResourceItem {
 
 
-    public InfinityRingItem() {
-        super(Rarity.EPIC, "infinity_ring", true, new Properties().stacksTo(1));
+    public NeutronRingItem() {
+        super(Rarity.EPIC, "neutron_ring", true, new Properties().stacksTo(1));
     }
 
 

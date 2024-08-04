@@ -8,6 +8,8 @@ import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -84,6 +86,9 @@ public class InfinityPickaxeItem extends PickaxeItem {
             CompoundTag tags = stack.getOrCreateTag();
             tags.putBoolean("hammer", !tags.getBoolean("hammer"));
             player.swing(hand);
+            if(!world.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
+                    Component.translatable(tags.getBoolean("hammer") ? "tooltip.infinity_pickaxe.type_2" : "tooltip.infinity_pickaxe.type_1"
+                    ), true);
             return InteractionResultHolder.success(stack);
         }
         return super.use(world, player, hand);

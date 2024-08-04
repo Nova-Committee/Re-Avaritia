@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPacket;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtils;
@@ -21,6 +22,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -152,7 +155,7 @@ public class InfinityHandler {
     //合并物质团
     @SubscribeEvent
     public static void clusterCluster(EntityItemPickupEvent event) {
-        if (event.getEntity() != null && event.getItem().getItem().is(ModItems.matter_cluster.get())) {
+        if (event.getEntity() != null && ModConfig.isMergeMatterCluster.get() && event.getItem().getItem().is(ModItems.matter_cluster.get())) {
             ItemStack stack = event.getItem().getItem();
             boolean mergedAny = false;
             Player player = event.getEntity();
@@ -265,7 +268,7 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
         if (event.isRecentlyHit() &&
-                event.getEntity() instanceof WitherSkeleton witherSkeleton
+                event.getEntity() instanceof AbstractSkeleton
                 && event.getSource().getEntity() instanceof Player player
         ) {
             if (player.getMainHandItem().is(ModItems.skull_sword.get()) || player.getOffhandItem().is(ModItems.skull_sword.get())) {

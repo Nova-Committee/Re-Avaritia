@@ -6,7 +6,10 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -70,7 +73,12 @@ public class InfinityAxeItem extends AxeItem {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
+            CompoundTag tags = stack.getOrCreateTag();
+            tags.putBoolean("range", !tags.getBoolean("range"));
             player.swing(hand);
+            if(!pLevel.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
+                    Component.translatable(tags.getBoolean("range") ? "tooltip.infinity_axe.type_2" : "tooltip.infinity_axe.type_1"
+                    ), true);
             return InteractionResultHolder.success(stack);
         }
         return super.use(pLevel, player, hand);
@@ -79,10 +87,8 @@ public class InfinityAxeItem extends AxeItem {
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
         Level world = player.level();
-        if (!world.isClientSide) {
-            if (player.isCrouching() && canHarvest(pos, world)) {
-                destroyTree(player, (ServerLevel) world, pos, stack);
-            }
+        if (!world.isClientSide && stack.getOrCreateTag().getBoolean("range") && canHarvest(pos, world)) {
+            destroyTree(player, (ServerLevel) world, pos, stack);
         }
         return false;
     }

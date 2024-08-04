@@ -31,7 +31,7 @@ public class ModItems {
     public static Rarity COSMIC_RARITY = Rarity.create("COSMIC", ChatFormatting.RED);
     //curios
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
-    public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
+    public static RegistryObject<Item> infinity_ring = item("infinity_ring", NeutronRingItem::new);
     public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
 
     //tools
