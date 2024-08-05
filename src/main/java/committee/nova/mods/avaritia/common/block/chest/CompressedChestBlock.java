@@ -58,7 +58,7 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
+    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull LivingEntity pPlacer, @NotNull ItemStack pStack) {
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
         if (pLevel.isClientSide()) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
@@ -68,7 +68,7 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pMovedByPiston) {
+    public void onPlace(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pOldState, boolean pMovedByPiston) {
         if (pLevel.isClientSide()) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
         CompoundTag chestTag,nameTag = null,countTag = null;
@@ -92,7 +92,7 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);
             CompoundTag chestTag = new CompoundTag();
@@ -120,7 +120,7 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void playerDestroy(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState, @Nullable BlockEntity pBlockEntity, ItemStack pTool) {
+    public void playerDestroy(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable BlockEntity pBlockEntity, ItemStack pTool) {
         if (pLevel instanceof ServerLevel serverLevel) {
             var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
 
@@ -133,7 +133,7 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, @NotNull TooltipFlag pFlag) {
         int stackCount = 0;
         if (pStack.getTag() != null && pStack.getTag().contains("stackCount")) {
             stackCount = pStack.getTag().getInt("stackCount");

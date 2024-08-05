@@ -5,10 +5,7 @@ import committee.nova.mods.avaritia.client.screen.CompressedChestScreen;
 import committee.nova.mods.avaritia.client.screen.CompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeCraftingScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCollectorScreen;
-import committee.nova.mods.avaritia.common.menu.CompressedChestMenu;
-import committee.nova.mods.avaritia.common.menu.CompressorMenu;
-import committee.nova.mods.avaritia.common.menu.ExtremeCraftingMenu;
-import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
+import committee.nova.mods.avaritia.common.menu.*;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -42,6 +39,7 @@ public class ModMenus {
         return MENUS.register(name, container);
     }
 
+    public static RegistryObject<MenuType<NeutronRingMenu>> neutron_ring = menu("neutron_ring", () -> new MenuType<>((IContainerFactory<NeutronRingMenu>) NeutronRingMenu::create, FeatureFlagSet.of()));
     public static RegistryObject<MenuType<ExtremeCraftingMenu>> extreme_crafting_table = menu("extreme_crafting_table", () -> new MenuType<>((IContainerFactory<ExtremeCraftingMenu>) ExtremeCraftingMenu::create, FeatureFlagSet.of()));
     public static RegistryObject<MenuType<NeutronCollectorMenu>> neutron_collector = menu("neutron_collector", () -> new MenuType<>((IContainerFactory<NeutronCollectorMenu>) NeutronCollectorMenu::create, FeatureFlagSet.of()));
     public static RegistryObject<MenuType<CompressorMenu>> compressor = menu("compressor", () -> new MenuType<>((IContainerFactory<CompressorMenu>) CompressorMenu::create, FeatureFlagSet.of()));

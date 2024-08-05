@@ -29,6 +29,7 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Static.MOD_ID);
 
     //curios
+    public static RegistryObject<Item> neutron_ring = item("neutron_ring", InfinityRingItem::new);
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
     public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
     public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);

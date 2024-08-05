@@ -1,7 +1,13 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
+import committee.nova.mods.avaritia.common.capability.wrappers.RingWrapper;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @Project: Avaritia
@@ -17,4 +23,15 @@ public class NeutronRingItem extends ResourceItem {
     }
 
 
+    @Override
+    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new RingWrapper(stack, nbt);
+    }
+
+    private static ItemStackHandler getInventory(ItemStack bag) {
+        if (bag.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
+            return (ItemStackHandler) bag.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElseThrow();
+        }
+        return null;
+    }
 }

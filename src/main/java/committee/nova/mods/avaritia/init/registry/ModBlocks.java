@@ -47,7 +47,7 @@ public class ModBlocks {
     public static RegistryObject<Block> neutron_collector = block("neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.EPIC);
-    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.COSMIC);
+    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new, ModRarities.RARE);
 
     //CAKE

@@ -26,6 +26,5 @@ public class CapHandler {
 
     @SubscribeEvent
     public static void attachCaps(AttachCapabilitiesEvent<Entity> event) {
-        if (!(event.getObject() instanceof AbstractHorse)) return;
     }
 }

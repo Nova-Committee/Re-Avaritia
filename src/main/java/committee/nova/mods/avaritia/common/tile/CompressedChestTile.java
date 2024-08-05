@@ -43,19 +43,23 @@ public class CompressedChestTile extends ChestBlockEntity {
     protected CompressedChestTile(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         this.openersCounter = new ContainerOpenersCounter() {
-            protected void onOpen(Level pLevel, BlockPos pPos, BlockState pState) {
+            @Override
+            protected void onOpen(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
                 playSound(pLevel, pPos, pState, SoundEvents.CHEST_OPEN);
             }
 
-            protected void onClose(Level pLevel, BlockPos pPos, BlockState pState) {
+            @Override
+            protected void onClose(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
                 playSound(pLevel, pPos, pState, SoundEvents.CHEST_CLOSE);
             }
 
-            protected void openerCountChanged(Level pLevel, BlockPos pPos, BlockState pState, int pEventId, int pEventParam) {
+            @Override
+            protected void openerCountChanged(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, int pEventId, int pEventParam) {
                 signalOpenCount(pLevel, pPos, pState, pEventId, pEventParam);
             }
 
-            protected boolean isOwnContainer(Player pPlayer) {
+            @Override
+            protected boolean isOwnContainer(@NotNull Player pPlayer) {
                 if( pPlayer.containerMenu instanceof CompressedChestMenu chestMenu) {
                     Container container = chestMenu.getContainer();
                     return container == CompressedChestTile.this || container instanceof CompoundContainer && ((CompoundContainer)container).contains(CompressedChestTile.this);
@@ -88,7 +92,7 @@ public class CompressedChestTile extends ChestBlockEntity {
 
 
     @Override
-    public void startOpen(Player pPlayer) {
+    public void startOpen(@NotNull Player pPlayer) {
         if (!this.remove && !pPlayer.isSpectator()) {
             this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
@@ -96,7 +100,7 @@ public class CompressedChestTile extends ChestBlockEntity {
     }
 
     @Override
-    public void stopOpen(Player pPlayer) {
+    public void stopOpen(@NotNull Player pPlayer) {
         if (!this.remove && !pPlayer.isSpectator()) {
             this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
