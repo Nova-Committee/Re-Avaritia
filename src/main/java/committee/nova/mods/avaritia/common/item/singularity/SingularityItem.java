@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import committee.nova.mods.avaritia.util.lang.Localizable;
@@ -31,7 +32,7 @@ import java.util.function.Function;
  */
 public class SingularityItem extends Item implements IColored {
     public SingularityItem(Function<Properties, Properties> properties) {
-        super(properties.apply(new Properties().rarity(Rarity.UNCOMMON)));
+        super(properties.apply(new Properties().rarity(ModRarities.UNCOMMON)));
     }
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {

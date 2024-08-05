@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.util.lang.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
@@ -43,6 +43,7 @@ public class InfinityArmorItem extends ArmorItem {
                 ModArmorMaterial.infinite_armor,
                 pSlot,
                 new Properties()
+                        .rarity(ModRarities.COSMIC)
                         .fireResistant()
                         .stacksTo(1)
         );
@@ -71,7 +72,7 @@ public class InfinityArmorItem extends ArmorItem {
 
     @Override
     public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return ModItems.COSMIC_RARITY;
+        return ModRarities.COSMIC;
     }
 
 

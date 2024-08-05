@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
@@ -13,7 +14,7 @@ public class InfinityTotemItem extends ResourceItem {
 
 
     public InfinityTotemItem() {
-        super(Rarity.UNCOMMON, "infinity_totem", true, new Item.Properties().stacksTo(1).durability(999));
+        super(ModRarities.EPIC, "infinity_totem", true, new Item.Properties().stacksTo(1).durability(999));
     }
 
 }

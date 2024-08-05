@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
 import committee.nova.mods.avaritia.common.capability.wrappers.InfinityBucketWrapper;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -52,7 +53,7 @@ public class InfinityBucketItem extends ResourceItem {
     public static final String FLUID_AMOUNT_KEY = "Amount";
 
     public InfinityBucketItem() {
-        super(Rarity.EPIC, "infinity_bucket", true, new Properties().stacksTo(1));
+        super(ModRarities.LEGEND, "infinity_bucket", true, new Properties().stacksTo(1));
     }
 
     @Override

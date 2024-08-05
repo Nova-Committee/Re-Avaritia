@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -27,19 +28,16 @@ import java.util.List;
  */
 public class SkullsSwordItem extends SwordItem {
     public SkullsSwordItem() {
-        super(ModTiers.SKULL_SWORD, 0, -2.4f, (new Properties())
-                .stacksTo(1)
-                .fireResistant());
+        super(ModTiers.SKULL_SWORD, 0, -2.4f,
+                new Properties()
+                        .rarity(ModRarities.EPIC)
+                        .stacksTo(1)
+                        .fireResistant());
 
     }
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
-    }
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return Rarity.EPIC;
     }
 
     @OnlyIn(Dist.CLIENT)

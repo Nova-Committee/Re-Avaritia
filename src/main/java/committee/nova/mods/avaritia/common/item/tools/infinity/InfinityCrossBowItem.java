@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -38,7 +38,7 @@ public class InfinityCrossBowItem extends CrossbowItem {
     public InfinityCrossBowItem() {
         super(new Properties()
                 .stacksTo(1)
-                .rarity(ModItems.COSMIC_RARITY)
+                .rarity(ModRarities.COSMIC)
                 .fireResistant()
         );
     }

@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTiers;
 import committee.nova.mods.avaritia.util.ItemUtils;
 import net.minecraft.network.chat.Component;
@@ -25,9 +26,11 @@ import org.jetbrains.annotations.NotNull;
 public class CrystalPickaxeItem extends PickaxeItem {
 
     public CrystalPickaxeItem() {
-        super(ModTiers.CRYSTAL_PICKAXE, 1, -1.5F, (new Properties())
-                .stacksTo(1)
-                .fireResistant());
+        super(ModTiers.CRYSTAL_PICKAXE, 1, -1.5F,
+                new Properties()
+                        .rarity(ModRarities.EPIC)
+                        .stacksTo(1)
+                        .fireResistant());
     }
 
     @Override
@@ -38,11 +41,6 @@ public class CrystalPickaxeItem extends PickaxeItem {
     @Override
     public boolean isDamageable(ItemStack stack) {
         return false;
-    }
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
-        return Rarity.EPIC;
     }
 
     @Override

@@ -3,12 +3,14 @@ package committee.nova.mods.avaritia.common.item.tools;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.HorseArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -28,8 +30,13 @@ import java.util.List;
 public class NeutronHorseArmorItem extends HorseArmorItem {
     private static final String TEX_PATH = "textures/item/armor/horse/neutron_horse_armor.png";
 
-    public NeutronHorseArmorItem(Properties pProperties) {
-        super(Integer.MAX_VALUE, new ResourceLocation(Static.MOD_ID, TEX_PATH), pProperties);
+    public NeutronHorseArmorItem() {
+        super(Integer.MAX_VALUE, new ResourceLocation(Static.MOD_ID, TEX_PATH),
+                new Item.Properties()
+                        .stacksTo(1)
+                        .rarity(ModRarities.RARE)
+                        .fireResistant()
+                        .setNoRepair());
     }
 
     @Override

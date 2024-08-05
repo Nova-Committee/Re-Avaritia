@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.singularity;
 
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +23,7 @@ import java.util.function.Function;
  */
 public class EternalSingularityItem extends Item {
     public EternalSingularityItem(Function<Properties, Properties> properties) {
-        super(properties.apply(new Properties().stacksTo(16).rarity(Rarity.EPIC)));
+        super(properties.apply(new Properties().stacksTo(16).rarity(ModRarities.RARE)));
     }
 
     @Override

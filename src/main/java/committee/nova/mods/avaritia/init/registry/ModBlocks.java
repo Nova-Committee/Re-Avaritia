@@ -10,7 +10,6 @@ import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftingTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
-import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -21,11 +20,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-
 import java.util.function.Supplier;
 
-import static committee.nova.mods.avaritia.init.registry.ModItems.COSMIC_RARITY;
-import static net.minecraft.world.item.Rarity.RARE;
 
 /**
  * Description:
@@ -37,26 +33,25 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Static.MOD_ID);
 
     //CRAFTING
-    public static RegistryObject<Block> compressed_crafting_table = block("compressed_crafting_table", CompressedCraftingTableBlock::new, Rarity.UNCOMMON);
-    public static RegistryObject<Block> double_compressed_crafting_table = block("double_compressed_crafting_table", DoubleCompressedCraftingTableBlock::new, Rarity.UNCOMMON);
+    public static RegistryObject<Block> compressed_crafting_table = block("compressed_crafting_table", CompressedCraftingTableBlock::new, ModRarities.UNCOMMON);
+    public static RegistryObject<Block> double_compressed_crafting_table = block("double_compressed_crafting_table", DoubleCompressedCraftingTableBlock::new, ModRarities.UNCOMMON);
 
     //RESOURCE
-    public static RegistryObject<Block> neutron = block("neutron", ResourceBlock::new, Rarity.EPIC);
-    public static RegistryObject<Block> infinity = block("infinity", ResourceBlock::new, COSMIC_RARITY);
-    public static RegistryObject<Block> crystal_matrix = block("crystal_matrix", ResourceBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> compressed_chest = block("compressed_chest", CompressedChestBlock::new, Rarity.RARE);
+    public static RegistryObject<Block> neutron = block("neutron", ResourceBlock::new, ModRarities.EPIC);
+    public static RegistryObject<Block> infinity = block("infinity", ResourceBlock::new, ModRarities.COSMIC);
+    public static RegistryObject<Block> crystal_matrix = block("crystal_matrix", ResourceBlock::new, ModRarities.RARE);
+    public static RegistryObject<Block> compressed_chest = block("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
 
     //MACHINE
-    public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new, RARE);
-    public static RegistryObject<Block> neutron_collector = block("neutron_collector", BaseNeutronCollectorBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", BaseNeutronCollectorBlock::new, Rarity.RARE);
-    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", BaseNeutronCollectorBlock::new, Rarity.EPIC);
-    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", BaseNeutronCollectorBlock::new, COSMIC_RARITY);
-    public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new, Rarity.RARE);
-    //public static RegistryObject<Block> infinitato = block("infinitato", InfinitatoBlock::new);
+    public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", ExtremeCraftingTableBlock::new, ModRarities.RARE);
+    public static RegistryObject<Block> neutron_collector = block("neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.RARE);
+    public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.RARE);
+    public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.EPIC);
+    public static RegistryObject<Block> densest_neutron_collector = block("densest_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.COSMIC);
+    public static RegistryObject<Block> neutron_compressor = block("neutron_compressor", CompressorBlock::new, ModRarities.RARE);
 
     //CAKE
-    public static RegistryObject<Block> endless_cake = block("endless_cake", EndlessCakeBlock::new, Rarity.UNCOMMON);
+    public static RegistryObject<Block> endless_cake = block("endless_cake", EndlessCakeBlock::new, ModRarities.UNCOMMON);
     public static RegistryObject<Block> candle_endless_cake = candleBlock("candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.CANDLE, BlockBehaviour.Properties.copy(Blocks.CAKE).lightLevel((state) -> (Boolean)state.getValue(BlockStateProperties.LIT) ? 3 : 0)));
     public static RegistryObject<Block> white_candle_endless_cake = candleBlock("white_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.WHITE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
     public static RegistryObject<Block> orange_candle_endless_cake = candleBlock("orange_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.ORANGE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));

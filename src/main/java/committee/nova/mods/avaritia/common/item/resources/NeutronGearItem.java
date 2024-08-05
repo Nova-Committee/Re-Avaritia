@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.resources;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NeutronGearItem extends ResourceItem{
     public NeutronGearItem() {
-        super(Rarity.RARE, "neutron_gear", true);
+        super(ModRarities.RARE, "neutron_gear", true);
     }
 
     @Override

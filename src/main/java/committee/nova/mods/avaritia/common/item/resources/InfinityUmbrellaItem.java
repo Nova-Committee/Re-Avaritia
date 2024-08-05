@@ -1,8 +1,7 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
 
 /**
  * @Project: Avaritia
@@ -14,7 +13,7 @@ public class InfinityUmbrellaItem extends ResourceItem {
 
 
     public InfinityUmbrellaItem() {
-        super(ModItems.COSMIC_RARITY, "infinity_umbrella", true, new Item.Properties().stacksTo(1));
+        super(ModRarities.COSMIC, "infinity_umbrella", true, new Item.Properties().stacksTo(1));
     }
 
 

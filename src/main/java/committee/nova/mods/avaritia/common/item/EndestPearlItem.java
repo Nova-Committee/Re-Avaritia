@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.item;
 
+import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -19,9 +21,10 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/3 0:31
  * Version: 1.0
  */
-public class EndestPearlItem extends Item {
+public class EndestPearlItem extends BaseItem {
     public EndestPearlItem() {
-        super(new Properties()
+        super(properties -> properties
+                .rarity(ModRarities.EPIC)
                 .stacksTo(16)
         );
     }
@@ -46,11 +49,4 @@ public class EndestPearlItem extends Item {
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return Rarity.RARE;
-    }
-
-
 }

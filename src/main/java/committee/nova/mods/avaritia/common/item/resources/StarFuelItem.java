@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
+import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -17,7 +18,7 @@ public class StarFuelItem extends ResourceItem {
     public static final int BURN_TIME = Integer.MAX_VALUE;
 
     public StarFuelItem() {
-        super(Rarity.UNCOMMON, "star_fuel", true, new Properties().stacksTo(1));
+        super(ModRarities.RARE, "star_fuel", true, new Properties().stacksTo(1));
     }
 
     @Override
