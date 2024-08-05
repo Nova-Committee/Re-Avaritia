@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.util;
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.common.item.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -29,12 +30,8 @@ public class ClustersUtils {
     public static void spawnClusters(Level world, Player player, Set<ItemStack> drops) {
         if (!world.isClientSide) {
             List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
-                for (ItemStack slot : player.getInventory().items) {
-                    if (slot.is(ModItems.matter_cluster.get())) {
-                        for (ItemStack cluster : clusters) {
-                            MatterClusterItem.mergeClusters(cluster, slot);
-                    }
-                }
+            for (ItemStack cluster : clusters) {
+                Containers.dropItemStack(world, player.getX(), player.getY() + 0.5F, player.getZ(), cluster);
             }
         }
     }
@@ -76,11 +73,11 @@ public class ClustersUtils {
 
     private static boolean isTrash(ItemStack suspect) {
         boolean isTrash = false;
-            for (String ore : defaultTrashOres) {
-                if (suspect.is(ForgeRegistries.ITEMS.getValue(new ResourceLocation(ore)))) {
-                    return true;
-                }
+        for (String ore : defaultTrashOres) {
+            if (suspect.is(ForgeRegistries.ITEMS.getValue(new ResourceLocation(ore)))) {
+                return true;
             }
+        }
         return isTrash;
     }
 
