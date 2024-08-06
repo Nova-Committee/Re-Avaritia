@@ -8,8 +8,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
@@ -21,7 +20,7 @@ public abstract class BaseMenu extends AbstractContainerMenu {
 
     private final BlockPos pos;
 
-    protected BaseMenu(MenuType<?> menu, int id, BlockPos pos) {
+    protected BaseMenu(MenuType<?> menu, int id, @Nullable BlockPos pos) {
         super(menu, id);
         this.pos = pos;
     }
@@ -32,8 +31,8 @@ public abstract class BaseMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return player.distanceToSqr(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5) <= 64;
+    public boolean stillValid(@NotNull Player player) {
+        return pos == null || player.distanceToSqr(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5) <= 64;
     }
 
     public BlockPos getBlockPos() {

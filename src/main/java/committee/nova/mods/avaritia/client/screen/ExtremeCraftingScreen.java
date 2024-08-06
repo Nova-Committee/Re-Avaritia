@@ -32,6 +32,6 @@ public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMe
 
     @Override
     protected void renderBg(@NotNull GuiGraphics stack, float partialTicks, int mouseX, int mouseY) {
-        this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
+        this.renderDefaultBg(stack);
     }
 }

@@ -1,12 +1,22 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
 import committee.nova.mods.avaritia.common.capability.wrappers.RingWrapper;
+import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,6 +32,16 @@ public class NeutronRingItem extends ResourceItem {
         super(ModRarities.EPIC, "neutron_ring", true, new Properties().stacksTo(1));
     }
 
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, @NotNull Player playerIn, @NotNull InteractionHand handIn) {
+        if (!worldIn.isClientSide && !playerIn.isCrouching()) {
+            int slot = handIn == InteractionHand.MAIN_HAND ? playerIn.getInventory().selected : 40;
+            NetworkHooks.openScreen((ServerPlayer) playerIn,
+                    new SimpleMenuProvider((id, playerInventory, player) -> NeutronRingMenu.create(id, playerInventory, slot), Component.translatable("item.avaritia.neutron_ring")),
+                    buf -> buf.writeInt(slot));
+        }
+        return super.use(worldIn, playerIn, handIn);
+    }
 
     @Override
     public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {

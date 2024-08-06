@@ -66,7 +66,7 @@ public class CompressedChestMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player pPlayer) {
+    public void removed(@NotNull Player pPlayer) {
         super.removed(pPlayer);
         this.container.stopOpen(pPlayer);
     }

@@ -1,10 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.client.screen.CompressedChestScreen;
-import committee.nova.mods.avaritia.client.screen.CompressorScreen;
-import committee.nova.mods.avaritia.client.screen.ExtremeCraftingScreen;
-import committee.nova.mods.avaritia.client.screen.NeutronCollectorScreen;
+import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.common.menu.*;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.SimpleContainer;
@@ -34,6 +31,7 @@ public class ModMenus {
         MenuScreens.register(neutron_collector.get(), NeutronCollectorScreen::new);
         MenuScreens.register(compressor.get(), CompressorScreen::new);
         MenuScreens.register(GENERIC_9x27.get(), CompressedChestScreen::new);
+        MenuScreens.register(neutron_ring.get(), NeutronRingScreen::new);
     }
     public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
         return MENUS.register(name, container);

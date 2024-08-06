@@ -97,7 +97,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
     @Override
     protected void renderBg(@NotNull GuiGraphics stack, float partialTicks, int mouseX, int mouseY) {
-        this.renderDefaultBg(stack, partialTicks, mouseX, mouseY);
+        this.renderDefaultBg(stack);
 
         int x = this.getGuiLeft();
         int y = this.getGuiTop();

@@ -45,15 +45,27 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     @Override
+    protected void init() {
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
+    }
+
+    @Override
     public void render(@NotNull GuiGraphics matrix, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrix);
         super.render(matrix, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrix, mouseX, mouseY);
     }
 
-    protected void renderDefaultBg(GuiGraphics matrix, float partialTicks, int mouseX, int mouseY) {
+    protected void renderDefaultBg(GuiGraphics matrix, float uOffSet, float vOffSet) {
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
-        matrix.blit(this.bgTexture, x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+        matrix.blit(this.bgTexture, x, y, uOffSet, vOffSet, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+    }
+
+    protected void renderDefaultBg(GuiGraphics matrix) {
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+        matrix.blit(this.bgTexture, x, y, 0, 0, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
     }
 }
