@@ -40,16 +40,10 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         setPos(x, y, z);
     }
 
-    public EndestPearlEntity(Level level, LivingEntity shooter) {
-        this(ModEntities.ENDER_PEARL.get(), level);
-        this.setShooter(shooter);
-    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.endest_pearl.get();
     }
-
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {

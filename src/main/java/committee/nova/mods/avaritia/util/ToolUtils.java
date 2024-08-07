@@ -375,7 +375,7 @@ public class ToolUtils {
         DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
         toAttack.stream().filter(entity -> entity instanceof Mob).forEach(entity -> {
             if (entity instanceof Mob mob) {
-                if (hurtAnimal && mob instanceof Animal animal) {
+                if (mob instanceof Animal animal && hurtAnimal) {
                     animal.hurt(src, damage);
                 } else if (mob instanceof EnderDragon dragon) {
                     dragon.hurt(dragon.head, src, Float.POSITIVE_INFINITY);
@@ -387,10 +387,12 @@ public class ToolUtils {
                 }
             }
             LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
-            if (hurtAnimal && lightOn && lightningbolt != null) {
-                lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
-                lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
-                player.level().addFreshEntity(lightningbolt);
+            if (lightOn && lightningbolt != null) {
+                if (!(entity instanceof Animal && hurtAnimal)) {
+                    lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
+                    lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
+                    player.level().addFreshEntity(lightningbolt);
+                }
             }
         });
     }

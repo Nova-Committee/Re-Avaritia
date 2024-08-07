@@ -6,13 +6,12 @@ import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
-import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.client.renderer.entity.IronGolemRenderer;
-import net.minecraft.client.renderer.entity.ItemEntityRenderer;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.DeferredRegister;
@@ -68,12 +67,18 @@ public class ModEntities {
                     .build(new ResourceLocation(Static.MOD_ID, "trace_arrow").toString()));
 
     public static final RegistryObject<EntityType<InfinityGolem>> INFINITY_GOLEM = ENTITIES.register("infinity_golem",
-            () -> EntityType.Builder.<InfinityGolem>of(InfinityGolem::new, MobCategory.MISC)
+            () -> EntityType.Builder.of(InfinityGolem::new, MobCategory.MISC)
                     .sized(1.4F, 2.7F)
                     .clientTrackingRange(10)
                     .fireImmune()
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Static.MOD_ID, "infinity_golem").toString()));
+
+    public static final RegistryObject<EntityType<FireBallEntity>> FIRE_BALL = ENTITIES.register("fire_ball",
+            () -> EntityType.Builder.of(FireBallEntity::new, MobCategory.MISC)
+                    .setTrackingRange(256)
+                    .setUpdateInterval(10)
+                    .build(new ResourceLocation(Static.MOD_ID, "fire_ball").toString()));
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
@@ -84,6 +89,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
         EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRenderer::new);
+        EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
     }
 
 }

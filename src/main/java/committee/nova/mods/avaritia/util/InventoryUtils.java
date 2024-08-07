@@ -54,6 +54,10 @@ public class InventoryUtils {
         return hasItem.get();
     }
 
+    public static ItemStack findFirstItem(Player player, Item consumeFrom) {
+        return player.getInventory().items.stream().filter((s) -> !s.isEmpty() && s.getItem() == consumeFrom).findFirst().orElse(ItemStack.EMPTY);
+    }
+
     public static int getFirstSlotWithStack(ItemStack itemInv, ItemStack stack) {
         AtomicInteger slot = new AtomicInteger(-1);
         itemInv.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
