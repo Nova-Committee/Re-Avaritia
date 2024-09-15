@@ -68,7 +68,7 @@ public class InfinityBucketItem extends ResourceItem {
         NumberFormat formater = DecimalFormat.getInstance();
         for (FluidStack fluid : fluids) {
             MutableComponent component = MutableComponent.create(fluid.getDisplayName().getContents());
-            component.append(": " + formater.format(fluid.getAmount()) + "mL");
+            component.append(": " + formater.format(fluid.getAmount()) + " mB");
             pTooltipComponents.add(component);
         }
     }
