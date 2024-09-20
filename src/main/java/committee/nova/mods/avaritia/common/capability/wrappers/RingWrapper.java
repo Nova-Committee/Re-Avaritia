@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.capability.wrappers;
 
-import committee.nova.mods.avaritia.common.item.resources.NeutronRingItem;
+import committee.nova.mods.avaritia.common.item.misc.NeutronRingItem;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;

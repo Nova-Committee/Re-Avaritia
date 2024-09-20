@@ -1,6 +1,7 @@
-package committee.nova.mods.avaritia.common.item.resources;
+package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.common.capability.wrappers.RingWrapper;
+import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.nbt.CompoundTag;

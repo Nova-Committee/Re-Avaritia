@@ -1,5 +1,6 @@
-package committee.nova.mods.avaritia.common.item.resources;
+package committee.nova.mods.avaritia.common.item.misc;
 
+import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.Item;
 

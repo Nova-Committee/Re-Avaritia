@@ -1,16 +1,19 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
+import committee.nova.mods.avaritia.common.inventory.slot.BlackListSlot;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.util.InventoryUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
@@ -55,13 +58,40 @@ public class NeutronRingMenu extends BaseMenu {
         int i, j;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 9; j++) {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 193 + i * 18));
+                this.addSlot(new BlackListSlot(playerInventory, j + i * 9 + 9, 8 + j * 18, 193 + i * 18, ring));
             }
         }
 
         for (j = 0; j < 9; j++) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 251));
+            this.addSlot(new BlackListSlot(playerInventory, j, 8 + j * 18, 251, ring));
         }
+    }
+
+    @Override
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int pIndex) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot1 = this.slots.get(pIndex);
+        if (slot1.hasItem()) {
+            ItemStack slot1Item = slot1.getItem();
+            itemStack = slot1Item.copy();
+
+            if (pIndex < 9 * 9) {
+                if (!this.moveItemStackTo(slot1Item, 9 * 9, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(slot1Item, 0, 9 * 9, false)) {
+                return ItemStack.EMPTY;
+            }
+
+
+            if (slot1Item.isEmpty()) {
+                slot1.setByPlayer(ItemStack.EMPTY);
+            } else {
+                slot1.setChanged();
+            }
+        }
+
+        return itemStack;
     }
 
 }
