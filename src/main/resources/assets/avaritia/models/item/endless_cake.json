@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/endless_cake"
+    "layer0": "avaritia:item/misc/endless_cake"
   }
 }

@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/foods/ultimate_stew/layer_0"
+    "layer0": "avaritia:item/foods/ultimate_stew/layer_0",
+    "layer1": "avaritia:item/foods/ultimate_stew/stew_overlay"
   }
 }

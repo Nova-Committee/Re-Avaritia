@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CompressedChestScreen extends BaseContainerScreen<CompressedChestMenu> implements MenuAccess<CompressedChestMenu> {
     private static final ResourceLocation CONTAINER_BACKGROUND = Static.rl("textures/gui/generic_243.png");
-    protected int imageWidth = 500;
 
     public CompressedChestScreen(CompressedChestMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, CONTAINER_BACKGROUND, 500, 276, 500, 276);

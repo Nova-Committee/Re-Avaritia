@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/infinity_totem",
+    "layer0": "avaritia:item/misc/infinity_totem",
     "halo": "avaritia:misc/halo"
   },
   "loader": "avaritia:halo",

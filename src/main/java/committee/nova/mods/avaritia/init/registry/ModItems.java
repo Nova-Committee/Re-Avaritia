@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.item.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.EndestPearlItem;
 import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.resources.*;
+import committee.nova.mods.avaritia.common.item.singularity.EternalSingularityItem;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.item.tools.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
@@ -65,7 +66,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(ModRarities.LEGEND, "infinity_catalyst", true));
     public static RegistryObject<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(ModRarities.COSMIC, "infinity_ingot", true));
     public static RegistryObject<Item> singularity = item("singularity", () -> new SingularityItem(properties -> properties));
-    public static RegistryObject<Item> eternal_singularity = item("eternal_singularity", () -> new SingularityItem(properties -> properties));
+    public static RegistryObject<Item> eternal_singularity = item("eternal_singularity", () -> new EternalSingularityItem(properties -> properties));
     public static RegistryObject<Item> record_fragment = item("record_fragment", () -> new ResourceItem(ModRarities.RARE, "record_fragment", true));
     public static RegistryObject<Item> star_fuel = item("star_fuel", StarFuelItem::new);
 

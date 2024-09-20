@@ -48,19 +48,19 @@ public class NeutronRingMenu extends BaseMenu {
                 int row = j / 9;
                 int col = j % 9;
                 int xPos = 8 + col * 18;
-                int yPos = 8 + row * 18;
+                int yPos = 18 + row * 18;
                 this.addSlot(new SlotItemHandler(h, j, xPos, yPos));
             }
         });
         int i, j;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 9; j++) {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 39 + j * 18, 196 + i * 18));
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 193 + i * 18));
             }
         }
 
         for (j = 0; j < 9; j++) {
-            this.addSlot(new Slot(playerInventory, j, 39 + j * 18, 254));
+            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 251));
         }
     }
 

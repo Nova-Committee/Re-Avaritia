@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/infinity_bucket",
+    "layer0": "avaritia:item/misc/infinity_bucket",
     "halo": "avaritia:misc/halo"
   },
   "loader": "avaritia:halo",

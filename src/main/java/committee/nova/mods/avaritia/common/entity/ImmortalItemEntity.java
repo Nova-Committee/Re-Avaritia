@@ -21,7 +21,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
-        this.setDefaultPickUpDelay();
+        this.pickupDelay = 5;
         this.lifespan = 3600;
 
     }
@@ -44,8 +44,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     @Override
     public void remove(@NotNull RemovalReason pReason) {
-        if (this.getAge() >= lifespan)
-            super.remove(pReason);
+        super.remove(pReason);
     }
 
     @Override
@@ -57,39 +56,4 @@ public class ImmortalItemEntity extends ItemEntity {
     public boolean ignoreExplosion() {
         return true;
     }
-
-    @Override
-    public void playerTouch(@NotNull Player pEntity) {
-
-        if (!this.level().isClientSide) {
-            if (this.pickupDelay > 0) return;
-            ItemStack itemstack = this.getItem();
-            Item item = itemstack.getItem();
-            int i = itemstack.getCount();
-            int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, pEntity);
-            if (hook < 0) return;
-            ItemStack copy = itemstack.copy();
-            if (this.pickupDelay == 0
-                    && (this.getOwner() == null || lifespan - this.getAge() <= 300 || this.getOwner().getUUID().equals(pEntity.getUUID()))
-                    && (hook == 1 || i <= 0 || pEntity.getInventory().add(itemstack))
-            ) {
-                i = copy.getCount() - itemstack.getCount();
-                copy.setCount(i);
-                net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent(pEntity, this, copy);
-                pEntity.take(this, i);
-                if (itemstack.isEmpty()) {
-                    this.age = 3600;
-                    this.discard();
-                    itemstack.setCount(i);
-                }
-
-                pEntity.awardStat(Stats.ITEM_PICKED_UP.get(item), i);
-                pEntity.onItemPickup(this);
-            }
-
-        }
-
-    }
-
-
 }
