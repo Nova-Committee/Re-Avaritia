@@ -25,7 +25,7 @@
         { "name": "FogEnd", "type": "float", "count": 1, "values": [ 1.0 ] },
         { "name": "FogColor", "type": "vec4", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
         { "name": "FogShape", "type": "int", "count": 1, "values": [ 0 ] },
-        { "name": "time", "type": "float", "count": 1, "values": [ 0 ] },
+        { "name": "time", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "yaw", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "pitch", "type": "float", "count": 1, "values": [ 0.0 ] },
         { "name": "externalScale", "type": "float", "count": 1, "values": [ 0.0 ] },
