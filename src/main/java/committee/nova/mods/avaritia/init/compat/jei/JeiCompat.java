@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.init.compat.jei;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.screen.CompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeCraftingScreen;
-import committee.nova.mods.avaritia.common.menu.ExtremeCraftingMenu;
+import committee.nova.mods.avaritia.common.menu.ModCraftingMenu;
 import committee.nova.mods.avaritia.init.compat.jei.category.CompressorCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.ExtremeCraftingTableCategory;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -69,7 +69,7 @@ public class JeiCompat implements IModPlugin {
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(ExtremeCraftingMenu.class, ModMenus.extreme_crafting_table.get(), ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
+        registration.addRecipeTransferHandler(ModCraftingMenu.class, ModMenus.extreme_crafting_table.get(), ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
 
     }
 

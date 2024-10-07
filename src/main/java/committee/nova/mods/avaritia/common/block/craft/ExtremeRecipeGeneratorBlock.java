@@ -1,7 +1,7 @@
-package committee.nova.mods.avaritia.common.block.extreme;
+package committee.nova.mods.avaritia.common.block.craft;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
+import committee.nova.mods.avaritia.common.tile.ModCraftingTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
@@ -29,15 +29,17 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
 
-    public ExtremeRecipeGeneratorBlock() {
-        super(MapColor.METAL, SoundType.GLASS, 100f, 2000F, true);
-    }
+    private final int size;
 
+    public ExtremeRecipeGeneratorBlock(int size) {
+        super(MapColor.METAL, SoundType.GLASS, 100f, 2000F, true);
+        this.size = size;
+    }
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState pState, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
-            if (tile instanceof ExtremeCraftingTile table){
+            if (tile instanceof ModCraftingTile table){
                 NetworkHooks.openScreen(serverPlayer, table, pos);
             }
         }
@@ -49,7 +51,7 @@ public class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof ExtremeCraftingTile table) {
+            if (tile instanceof ModCraftingTile table) {
                 Containers.dropContents(level, pos, table.getInventory().getStacks());
             }
         }
@@ -59,7 +61,7 @@ public class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new ExtremeCraftingTile(pos, state);
+        return new ModCraftingTile(pos, state, size);
     }
 
     @Override

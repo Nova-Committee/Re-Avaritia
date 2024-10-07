@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.item.BaseItemStackHandler;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
-import committee.nova.mods.avaritia.common.menu.ExtremeCraftingMenu;
+import committee.nova.mods.avaritia.common.menu.ModCraftingMenu;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.lang.Localizable;
 import net.minecraft.core.BlockPos;
@@ -25,23 +25,15 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 8:44
  * Version: 1.0
  */
-public class ExtremeCraftingTile extends BaseInventoryTileEntity implements MenuProvider {
+public class ModCraftingTile extends BaseInventoryTileEntity implements MenuProvider {
 
     private final BaseItemStackHandler inventory;
+    private final int size;
 
-
-    public ExtremeCraftingTile(BlockPos pos, BlockState blockState) {
+    public ModCraftingTile(BlockPos pos, BlockState blockState, int size) {
         super(ModTileEntities.extreme_crafting_tile.get(), pos, blockState);
-        this.inventory = createInventoryHandler(this::setChangedAndDispatch);
-
-    }
-
-    public static BaseItemStackHandler createInventoryHandler() {
-        return createInventoryHandler(null);
-    }
-
-    public static BaseItemStackHandler createInventoryHandler(Runnable onContentsChanged) {
-        return new BaseItemStackHandler(81, onContentsChanged);
+        this.inventory = new BaseItemStackHandler(size, this::setChangedAndDispatch);
+        this.size = size;
     }
 
     @Override
@@ -57,7 +49,7 @@ public class ExtremeCraftingTile extends BaseInventoryTileEntity implements Menu
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int p_createMenu_1_, @NotNull Inventory p_createMenu_2_, @NotNull Player p_createMenu_3_) {
-        return ExtremeCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this.inventory, this.getBlockPos());
+        return ModCraftingMenu.create(p_createMenu_1_, p_createMenu_2_, this.inventory, this.getBlockPos(), this.size);
     }
 
     @Override

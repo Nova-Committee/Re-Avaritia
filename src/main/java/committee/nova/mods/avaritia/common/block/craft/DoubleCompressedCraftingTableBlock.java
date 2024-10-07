@@ -9,7 +9,7 @@ import net.minecraft.world.level.material.MapColor;
  * Date: 2022/4/2 6:51
  * Version: 1.0
  */
-public class DoubleCompressedCraftingTableBlock extends AbstractCraftingTable {
+public class DoubleCompressedCraftingTableBlock extends AbstractCraftingTableBlock {
 
     public DoubleCompressedCraftingTableBlock() {
         super(MapColor.WOOD, SoundType.WOOD, 20F, 500F, true);

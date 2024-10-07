@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.common.menu.ExtremeCraftingMenu;
+import committee.nova.mods.avaritia.common.menu.ModCraftingMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 11:40
  * Version: 1.0
  */
-public class ExtremeCraftingScreen extends BaseContainerScreen<ExtremeCraftingMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/extreme_crafting_gui.png");
+public class ExtremeCraftingScreen extends BaseContainerScreen<ModCraftingMenu> {
+    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/craft/extreme_crafting_table_gui.png");
 
-    public ExtremeCraftingScreen(ExtremeCraftingMenu container, Inventory inventory, Component title) {
+    public ExtremeCraftingScreen(ModCraftingMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 234, 278, 512, 512);
     }
 

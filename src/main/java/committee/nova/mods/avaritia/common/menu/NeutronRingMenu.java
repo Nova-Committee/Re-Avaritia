@@ -52,7 +52,12 @@ public class NeutronRingMenu extends BaseMenu {
                 int col = j % 9;
                 int xPos = 8 + col * 18;
                 int yPos = 18 + row * 18;
-                this.addSlot(new SlotItemHandler(h, j, xPos, yPos));
+                this.addSlot(new SlotItemHandler(h, j, xPos, yPos){
+                    @Override
+                    public int getMaxStackSize() {
+                        return Integer.MAX_VALUE;
+                    }
+                });
             }
         });
         int i, j;

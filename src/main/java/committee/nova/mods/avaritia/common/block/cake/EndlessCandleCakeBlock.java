@@ -61,7 +61,7 @@ public class EndlessCandleCakeBlock extends CandleCakeBlock {
         ItemStack itemStack = player.getItemInHand(hand);
         if ((itemStack.is(Items.FLINT_AND_STEEL) || itemStack.is(Items.FIRE_CHARGE)) && isHittingCandle(hit) && !state.getValue(LIT)) {
             setLit(world, state, pos);
-            if (state.getBlock() instanceof AbstractCandleBlock abstractCandleBlock) {
+            if (state.getBlock() instanceof EndlessCakeBlock abstractCandleBlock) {
                 var PARTICLE_OFFSETS = ImmutableList.of(new Vec3(0.5D, 1.0D, 0.5D));
                 PARTICLE_OFFSETS.forEach((vec3) -> {
                     world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + vec3.x(), (double)pos.getY() + vec3.y(), (double)pos.getZ() + vec3.z(), 0.0D, 0.1F, 0.0D);

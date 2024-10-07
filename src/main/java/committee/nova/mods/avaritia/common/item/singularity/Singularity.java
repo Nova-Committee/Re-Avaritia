@@ -155,7 +155,7 @@ public class Singularity {
             this.ingredient.toNetwork(buffer);
         }
 
-        buffer.writeVarInt(this.getIngredientCount());
+        buffer.writeVarInt(this.ingredientCount);
         buffer.writeBoolean(this.enabled);
         buffer.writeBoolean(this.recipeDisabled);
     }

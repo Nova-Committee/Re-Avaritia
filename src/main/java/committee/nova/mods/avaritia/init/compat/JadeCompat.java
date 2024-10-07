@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.init.compat;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
-import committee.nova.mods.avaritia.common.block.extreme.ExtremeCraftingTableBlock;
+import committee.nova.mods.avaritia.common.block.craft.ModCraftingTableBlock;
 import committee.nova.mods.avaritia.common.tile.CompressorTile;
-import committee.nova.mods.avaritia.common.tile.ExtremeCraftingTile;
+import committee.nova.mods.avaritia.common.tile.ModCraftingTile;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.Minecraft;
@@ -23,7 +23,7 @@ public class JadeCompat implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
         registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, CompressorBlock.class);
-        registration.registerBlockComponent(ExtremeComponentProvider.INSTANCE, ExtremeCraftingTableBlock.class);
+        registration.registerBlockComponent(ExtremeComponentProvider.INSTANCE, ModCraftingTableBlock.class);
     }
 
     public enum CompressorComponentProvider implements IBlockComponentProvider {
@@ -57,7 +57,7 @@ public class JadeCompat implements IWailaPlugin {
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             var level = Minecraft.getInstance().level;
             assert level != null;
-            var compressor = (ExtremeCraftingTile) accessor.getBlockEntity();
+            var compressor = (ModCraftingTile) accessor.getBlockEntity();
             var recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.EXTREME_CRAFT_RECIPE.get(), compressor.getInventory().toIInventory(), level);
 
             if (recipe.isPresent()) {
