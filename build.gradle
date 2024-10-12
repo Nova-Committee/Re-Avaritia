@@ -9,7 +9,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = mc_version + "-" + mod_version
+version = mc_version + "-" + mod_version + "-" + release_type
 group = mod_group_id
 
 base {
