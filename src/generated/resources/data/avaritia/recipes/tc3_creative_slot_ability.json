@@ -9,7 +9,7 @@
         }
       ],
       "recipe": {
-        "type": "avaritia:shaped_extreme_craft",
+        "type": "avaritia:shaped_table",
         "category": "equipment",
         "key": {
           "A": {
@@ -49,7 +49,8 @@
           "item": "tconstruct:creative_slot",
           "nbt": "{slot:\"abilities\"}"
         },
-        "show_notification": true
+        "show_notification": true,
+        "tier": 4
       }
     }
   ]

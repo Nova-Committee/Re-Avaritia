@@ -4,8 +4,8 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.lang.Localizable;
@@ -75,7 +75,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
         assert level != null;
         var inputs = recipe.getIngredients();
         var output = recipe.getResultItem(level.registryAccess());
-        if (recipe instanceof ShapedExtremeCraftingRecipe shaped) {
+        if (recipe instanceof ShapedTableCraftingRecipe shaped) {
             int stackIndex = 0;
             int heightOffset = Math.floorDiv(9 - shaped.getHeight(), 2);
             int widthOffset = Math.floorDiv(9 - shaped.getWidth(), 2);
@@ -87,7 +87,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
                 }
             }
             builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
-        } else if (recipe instanceof ShapelessExtremeCraftingRecipe) {
+        } else if (recipe instanceof ShapelessTableCraftingRecipe) {
             shapelessRecipe(builder, inputs);
             builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(output);
         } else if (recipe instanceof InfinityCatalystCraftRecipe) {
@@ -115,7 +115,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ISpecialRec
 
     @Override
     public @NotNull List<Component> getTooltipStrings(@NotNull ISpecialRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        var shapeless = recipe instanceof ShapelessExtremeCraftingRecipe;
+        var shapeless = recipe instanceof ShapelessTableCraftingRecipe;
         int sX = (shapeless ? 340 : 306) / 2, sY = 200 / 2;
 
         if (shapeless && mouseX > sX + 10 && mouseX < sX + 20 && mouseY > sY - 1 && mouseY < sY + 8) {

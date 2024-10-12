@@ -9,7 +9,7 @@
         }
       ],
       "recipe": {
-        "type": "avaritia:shaped_extreme_craft",
+        "type": "avaritia:shaped_table",
         "category": "equipment",
         "key": {
           "A": {
@@ -42,7 +42,8 @@
         "result": {
           "item": "draconicevolution:creative_op_capacitor"
         },
-        "show_notification": true
+        "show_notification": true,
+        "tier": 4
       }
     }
   ]

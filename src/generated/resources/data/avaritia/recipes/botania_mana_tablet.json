@@ -9,7 +9,7 @@
         }
       ],
       "recipe": {
-        "type": "avaritia:shaped_extreme_craft",
+        "type": "avaritia:shaped_table",
         "category": "equipment",
         "key": {
           "A": {
@@ -91,7 +91,8 @@
           "item": "botania:mana_tablet",
           "nbt": "{creative:1b,mana:500000}"
         },
-        "show_notification": true
+        "show_notification": true,
+        "tier": 4
       }
     }
   ]

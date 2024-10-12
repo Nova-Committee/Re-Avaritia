@@ -1,5 +1,5 @@
 {
-  "type": "avaritia:shapeless_extreme_craft",
+  "type": "avaritia:shapeless_table",
   "category": "equipment",
   "ingredients": [
     {
@@ -44,5 +44,6 @@
   ],
   "result": {
     "item": "avaritia:cosmic_meatballs"
-  }
+  },
+  "tier": 4
 }

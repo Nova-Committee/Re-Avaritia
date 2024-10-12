@@ -2,10 +2,9 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
-import committee.nova.mods.avaritia.common.block.craft.ModCraftingTier;
 import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
 import committee.nova.mods.avaritia.common.tile.CompressorTile;
-import committee.nova.mods.avaritia.common.tile.ModCraftingTile;
+import committee.nova.mods.avaritia.common.tile.ModCraftTile;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.level.block.Block;
@@ -48,10 +47,13 @@ public class ModTileEntities {
     }
     );
     public static RegistryObject<BlockEntityType<CompressorTile>> compressor_tile = blockEntity("compressor_tile", CompressorTile::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
-    public static RegistryObject<BlockEntityType<ModCraftingTile>> sculk_crafting_tile = blockEntity("sculk_crafting_tile", (blockPos, blockState) -> new ModCraftingTile(blockPos, blockState, ModCraftingTier.SCULK.size), () -> new Block[]{ModBlocks.sculk_crafting_table.get()});
-    public static RegistryObject<BlockEntityType<ModCraftingTile>> nether_crafting_tile = blockEntity("nether_crafting_tile", (blockPos, blockState) -> new ModCraftingTile(blockPos, blockState, ModCraftingTier.NETHER.size), () -> new Block[]{ModBlocks.nether_crafting_table.get()});
-    public static RegistryObject<BlockEntityType<ModCraftingTile>> end_crafting_tile = blockEntity("end_crafting_tile", (blockPos, blockState) -> new ModCraftingTile(blockPos, blockState, ModCraftingTier.END.size), () -> new Block[]{ModBlocks.end_crafting_table.get()});
-    public static RegistryObject<BlockEntityType<ModCraftingTile>> extreme_crafting_tile = blockEntity("extreme_crafting_tile", (blockPos, blockState) -> new ModCraftingTile(blockPos, blockState, ModCraftingTier.EXTREME.size), () -> new Block[]{ModBlocks.extreme_crafting_table.get()});
+public static RegistryObject<BlockEntityType<ModCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", ModCraftTile::new,
+        () -> new Block[]{
+                ModBlocks.sculk_crafting_table.get(),
+                ModBlocks.nether_crafting_table.get(),
+                ModBlocks.end_crafting_table.get(),
+                ModBlocks.extreme_crafting_table.get()
+});
     public static RegistryObject<BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
 
 

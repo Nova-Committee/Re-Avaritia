@@ -1,5 +1,5 @@
 {
-  "type": "avaritia:shapeless_extreme_craft",
+  "type": "avaritia:shapeless_table",
   "category": "equipment",
   "ingredients": [
     {
@@ -50,5 +50,6 @@
   ],
   "result": {
     "item": "avaritia:ultimate_stew"
-  }
+  },
+  "tier": 4
 }

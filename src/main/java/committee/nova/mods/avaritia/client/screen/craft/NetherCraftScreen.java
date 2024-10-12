@@ -1,8 +1,8 @@
-package committee.nova.mods.avaritia.client.screen;
+package committee.nova.mods.avaritia.client.screen.craft;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.common.menu.ModCraftingMenu;
+import committee.nova.mods.avaritia.common.menu.ModCraftMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,19 +15,19 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 11:40
  * Version: 1.0
  */
-public class ExtremeCraftingScreen extends BaseContainerScreen<ModCraftingMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/craft/extreme_crafting_table_gui.png");
+public class NetherCraftScreen extends BaseContainerScreen<ModCraftMenu> {
+    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/craft/nether_crafting_table_gui.png");
 
-    public ExtremeCraftingScreen(ModCraftingMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, BACKGROUND, 234, 278, 512, 512);
+    public NetherCraftScreen(ModCraftMenu container, Inventory inventory, Component title) {
+        super(container, inventory, title, BACKGROUND, 176, 206, 256, 256);
     }
 
     @Override
     protected void renderLabels(GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.drawString(font, title, 8, 6, 4210752, false);
-        stack.drawString(font, this.playerInventoryTitle, 39, this.imageHeight - 94, 4210752, false);
+        stack.drawString(font, title, 12, 114, 4210752, false);
+        //stack.drawString(font, this.playerInventoryTitle, 39, this.imageHeight - 94, 4210752, false);
     }
 
     @Override

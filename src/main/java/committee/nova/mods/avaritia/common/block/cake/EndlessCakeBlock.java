@@ -71,7 +71,7 @@ public class EndlessCakeBlock extends BaseBlock {
                 }
 
                 pLevel.playSound(null, pPos, SoundEvents.CAKE_ADD_CANDLE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                pLevel.setBlockAndUpdate(pPos, EndlessCandleCakeBlock.getCandleCakeFromCandle(this, candleBlock));
+                pLevel.setBlockAndUpdate(pPos, EndlessCandleCakeBlock.getCandleCakeFromCandle(candleBlock));
                 pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos);
                 pPlayer.awardStat(Stats.ITEM_USED.get(item));
                 return InteractionResult.SUCCESS;

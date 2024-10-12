@@ -10,10 +10,9 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ShapedExtremeCraftingRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -60,7 +59,7 @@ public class ExtremeTableCrafting implements IRecipeManager<ISpecialRecipe> {
             }
         }
 
-        var recipe = new ShapedExtremeCraftingRecipe(id, width, height, ingredients, output.getInternal());
+        var recipe = new ShapedTableCraftingRecipe(id, width, height, ingredients, output.getInternal());
         recipe.setTransformers((x, y, stack) -> inputs[y][x].getRemainingItem(new MCItemStack(stack)).getInternal());
 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
@@ -69,7 +68,7 @@ public class ExtremeTableCrafting implements IRecipeManager<ISpecialRecipe> {
     @ZenCodeType.Method
     public static void addShapeless(String name, IItemStack output, IIngredient[] inputs) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new ShapelessExtremeCraftingRecipe(id, toIngredientsList(inputs), output.getInternal());
+        var recipe = new ShapelessTableCraftingRecipe(id, toIngredientsList(inputs), output.getInternal());
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 

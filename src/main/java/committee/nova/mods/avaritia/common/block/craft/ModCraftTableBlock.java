@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.common.block.craft;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.ModCraftingTile;
+import committee.nova.mods.avaritia.common.tile.ModCraftTile;
+import committee.nova.mods.avaritia.init.registry.ModCraftTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
@@ -10,7 +11,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -25,20 +25,20 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 7:38
  * Version: 1.0
  */
-public class ModCraftingTableBlock extends BaseTileEntityBlock {
+public class ModCraftTableBlock extends BaseTileEntityBlock {
 
-    private final int size;
+    private final ModCraftTier tier;
 
-    public ModCraftingTableBlock(ModCraftingTier tier) {
+    public ModCraftTableBlock(ModCraftTier tier) {
         super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true);
-        this.size = tier.size;
+        this.tier = tier;
     }
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState pState, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
-            if (tile instanceof ModCraftingTile table){
+            if (tile instanceof ModCraftTile table){
                 NetworkHooks.openScreen(serverPlayer, table, pos);
             }
         }
@@ -50,7 +50,7 @@ public class ModCraftingTableBlock extends BaseTileEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof ModCraftingTile table) {
+            if (tile instanceof ModCraftTile table) {
                 Containers.dropContents(level, pos, table.getInventory().getStacks());
             }
         }
@@ -60,7 +60,7 @@ public class ModCraftingTableBlock extends BaseTileEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new ModCraftingTile(pos, state, size);
+        return new ModCraftTile(pos, state);
     }
 
     @Override

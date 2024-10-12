@@ -4,13 +4,12 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
 import committee.nova.mods.avaritia.common.block.collector.BaseNeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
-import committee.nova.mods.avaritia.common.block.craft.ModCraftingTableBlock;
+import committee.nova.mods.avaritia.common.block.craft.ModCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
-import committee.nova.mods.avaritia.common.block.craft.CompressedCraftingTableBlock;
-import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftingTableBlock;
-import committee.nova.mods.avaritia.common.block.craft.ModCraftingTier;
+import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
+import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -34,8 +33,8 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Static.MOD_ID);
 
     //CRAFTING
-    public static RegistryObject<Block> compressed_crafting_table = block("compressed_crafting_table", CompressedCraftingTableBlock::new, ModRarities.UNCOMMON);
-    public static RegistryObject<Block> double_compressed_crafting_table = block("double_compressed_crafting_table", DoubleCompressedCraftingTableBlock::new, ModRarities.UNCOMMON);
+    public static RegistryObject<Block> compressed_crafting_table = block("compressed_crafting_table", CompressedCraftTableBlock::new, ModRarities.UNCOMMON);
+    public static RegistryObject<Block> double_compressed_crafting_table = block("double_compressed_crafting_table", DoubleCompressedCraftTableBlock::new, ModRarities.UNCOMMON);
 
     //RESOURCE
     public static RegistryObject<Block> neutron = block("neutron", ResourceBlock::new, ModRarities.EPIC);
@@ -44,10 +43,10 @@ public class ModBlocks {
     public static RegistryObject<Block> compressed_chest = block("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
 
     //MACHINE
-    public static RegistryObject<Block> sculk_crafting_table = block("sculk_crafting_table", () -> new ModCraftingTableBlock(ModCraftingTier.SCULK), ModRarities.COMMON);
-    public static RegistryObject<Block> nether_crafting_table = block("nether_crafting_table", () -> new ModCraftingTableBlock(ModCraftingTier.NETHER), ModRarities.UNCOMMON);
-    public static RegistryObject<Block> end_crafting_table = block("end_crafting_table", () -> new ModCraftingTableBlock(ModCraftingTier.END), ModRarities.RARE);
-    public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", () -> new ModCraftingTableBlock(ModCraftingTier.EXTREME), ModRarities.EPIC);
+    public static RegistryObject<Block> sculk_crafting_table = block("sculk_crafting_table", () -> new ModCraftTableBlock(ModCraftTier.SCULK), ModRarities.COMMON);
+    public static RegistryObject<Block> nether_crafting_table = block("nether_crafting_table", () -> new ModCraftTableBlock(ModCraftTier.NETHER), ModRarities.UNCOMMON);
+    public static RegistryObject<Block> end_crafting_table = block("end_crafting_table", () -> new ModCraftTableBlock(ModCraftTier.END), ModRarities.RARE);
+    public static RegistryObject<Block> extreme_crafting_table = block("extreme_crafting_table", () -> new ModCraftTableBlock(ModCraftTier.EXTREME), ModRarities.EPIC);
     public static RegistryObject<Block> neutron_collector = block("neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> dense_neutron_collector = block("dense_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.EPIC);
     public static RegistryObject<Block> denser_neutron_collector = block("denser_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.LEGEND);

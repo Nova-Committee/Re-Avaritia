@@ -1,5 +1,5 @@
 {
-  "type": "avaritia:shaped_extreme_craft",
+  "type": "avaritia:shaped_table",
   "category": "equipment",
   "key": {
     "C": {
@@ -27,8 +27,8 @@
     "    C    "
   ],
   "result": {
-    "item": "avaritia:infinity_totem",
-    "nbt": "{Damage:0}"
+    "item": "avaritia:infinity_totem"
   },
-  "show_notification": true
+  "show_notification": true,
+  "tier": 4
 }

@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
@@ -31,18 +32,22 @@ import java.util.function.BiFunction;
  * Date: 2022/4/2 9:16
  * Version: 1.0
  */
-public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
+public class ShapelessTableCraftingRecipe implements ISpecialRecipe, ITierRecipe {
     private final ResourceLocation recipeId;
     public final NonNullList<Ingredient> inputs;
     private final ItemStack output;
+    private final int tier;
     private BiFunction<Integer, ItemStack, ItemStack> transformers;
 
+    public ShapelessTableCraftingRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, ItemStack output) {
+        this(recipeId, inputs, output, 0);
+    }
 
-    public ShapelessExtremeCraftingRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, ItemStack output) {
+    public ShapelessTableCraftingRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, ItemStack output, int tier) {
         this.recipeId = recipeId;
         this.inputs = inputs;
         this.output = output;
-
+        this.tier = tier;
     }
 
     @Override
@@ -87,7 +92,8 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
 
     @Override
     public boolean matches(IItemHandler inventory) {
-
+        if (this.tier != 0 && this.tier != getTierFromSize(inventory.getSlots()))
+            return false;
         List<ItemStack> inputs = new ArrayList<>();
         int matched = 0;
 
@@ -137,13 +143,31 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
         return remaining;
     }
 
+    @Override
+    public int getTier() {
+        if (this.tier > 0) return this.tier;
+        return getTierFromSize(this.inputs.size());
+    }
+
+    @Override
+    public boolean hasRequiredTier() {
+        return this.tier > 0;
+    }
+
+    private static int getTierFromSize(int size) {
+        return size < 10 ? 1
+                : size < 26 ? 2
+                : size < 50 ? 3
+                : 4;
+    }
+
     public void setTransformers(BiFunction<Integer, ItemStack, ItemStack> transformers) {
         this.transformers = transformers;
     }
 
-    public static class Serializer implements RecipeSerializer<ShapelessExtremeCraftingRecipe> {
+    public static class Serializer implements RecipeSerializer<ShapelessTableCraftingRecipe> {
         @Override
-        public @NotNull ShapelessExtremeCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
+        public @NotNull ShapelessTableCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
             NonNullList<Ingredient> inputs = NonNullList.create();
             var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
 
@@ -152,12 +176,13 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
             }
 
             var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
+            int tier = GsonHelper.getAsInt(json, "tier", 0);
 
-            return new ShapelessExtremeCraftingRecipe(recipeId, inputs, output);
+            return new ShapelessTableCraftingRecipe(recipeId, inputs, output, tier);
         }
 
         @Override
-        public ShapelessExtremeCraftingRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public ShapelessTableCraftingRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
             var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
 
@@ -166,12 +191,13 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
             }
 
             var output = buffer.readItem();
+            int tier = buffer.readVarInt();
 
-            return new ShapelessExtremeCraftingRecipe(recipeId, inputs, output);
+            return new ShapelessTableCraftingRecipe(recipeId, inputs, output, tier);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, ShapelessExtremeCraftingRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, ShapelessTableCraftingRecipe recipe) {
             buffer.writeVarInt(recipe.inputs.size());
 
             for (var ingredient : recipe.inputs) {
@@ -179,6 +205,7 @@ public class ShapelessExtremeCraftingRecipe implements ISpecialRecipe{
             }
 
             buffer.writeItem(recipe.output);
+            buffer.writeVarInt(recipe.tier);
         }
     }
 

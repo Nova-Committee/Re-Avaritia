@@ -1,5 +1,5 @@
 {
-  "type": "avaritia:shaped_extreme_craft",
+  "type": "avaritia:shaped_table",
   "category": "equipment",
   "key": {
     "E": {
@@ -29,5 +29,6 @@
   "result": {
     "item": "avaritia:endest_pearl"
   },
-  "show_notification": true
+  "show_notification": true,
+  "tier": 4
 }

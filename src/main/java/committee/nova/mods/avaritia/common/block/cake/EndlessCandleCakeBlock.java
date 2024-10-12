@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.block.cake;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -35,24 +36,16 @@ import java.util.Map;
  */
 
 public class EndlessCandleCakeBlock extends CandleCakeBlock {
-    private final EndlessCakeBlock cake;
-    private static final Map<EndlessCakeBlock, Map<CandleBlock, EndlessCandleCakeBlock>> COMBINER = new HashMap<>();
+    private static final Map<Block, EndlessCandleCakeBlock> BY_CANDLE = Maps.newHashMap();;
 
     public EndlessCandleCakeBlock(Block candle, Properties settings) {
         super(candle, settings);
-        this.cake = (EndlessCakeBlock) ModBlocks.endless_cake.get();
-        if (COMBINER.containsKey(cake)) {
-            COMBINER.get(cake).put((CandleBlock) candle, this);
-        } else {
-            Map<CandleBlock, EndlessCandleCakeBlock> candleCakeBlockMap = new HashMap<>();
-            candleCakeBlockMap.put((CandleBlock) candle, this);
-            COMBINER.put(cake, candleCakeBlockMap);
-        }
-
+        this.registerDefaultState(this.stateDefinition.any().setValue(LIT, false));
+        BY_CANDLE.put(candle, this);
     }
 
-    public static BlockState getCandleCakeFromCandle(EndlessCakeBlock cake, CandleBlock candle) {
-        return COMBINER.get(cake).get(candle).defaultBlockState();
+    public static BlockState getCandleCakeFromCandle(CandleBlock candle) {
+        return BY_CANDLE.get(candle).defaultBlockState();
     }
 
 
@@ -61,7 +54,7 @@ public class EndlessCandleCakeBlock extends CandleCakeBlock {
         ItemStack itemStack = player.getItemInHand(hand);
         if ((itemStack.is(Items.FLINT_AND_STEEL) || itemStack.is(Items.FIRE_CHARGE)) && isHittingCandle(hit) && !state.getValue(LIT)) {
             setLit(world, state, pos);
-            if (state.getBlock() instanceof EndlessCakeBlock abstractCandleBlock) {
+            if (state.getBlock() instanceof EndlessCandleCakeBlock abstractCandleBlock) {
                 var PARTICLE_OFFSETS = ImmutableList.of(new Vec3(0.5D, 1.0D, 0.5D));
                 PARTICLE_OFFSETS.forEach((vec3) -> {
                     world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + vec3.x(), (double)pos.getY() + vec3.y(), (double)pos.getZ() + vec3.z(), 0.0D, 0.1F, 0.0D);
@@ -91,7 +84,7 @@ public class EndlessCandleCakeBlock extends CandleCakeBlock {
 
     @Override
     public @NotNull ItemStack getCloneItemStack(@NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
-        return new ItemStack(cake);
+        return new ItemStack(ModBlocks.endless_cake.get());
     }
 
 

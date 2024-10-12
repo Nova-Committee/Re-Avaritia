@@ -9,7 +9,7 @@
         }
       ],
       "recipe": {
-        "type": "avaritia:shaped_extreme_craft",
+        "type": "avaritia:shaped_table",
         "category": "equipment",
         "key": {
           "A": {
@@ -51,7 +51,8 @@
         "result": {
           "item": "refinedstorage:creative_wireless_grid"
         },
-        "show_notification": true
+        "show_notification": true,
+        "tier": 4
       }
     }
   ]

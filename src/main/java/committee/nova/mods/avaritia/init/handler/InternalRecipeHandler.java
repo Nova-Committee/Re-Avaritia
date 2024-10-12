@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.init.handler;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessExtremeCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.util.SingularityUtils;
@@ -72,7 +72,7 @@ public class InternalRecipeHandler {
     }
 
     @ApiStatus.Experimental
-    public static ShapelessExtremeCraftingRecipe addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
+    public static ShapelessTableCraftingRecipe addExtremeShapelessRecipe(ItemStack result, List<ItemStack> ingredients) {
         List<ItemStack> arraylist = new ArrayList<>();
 
         for (ItemStack stack : ingredients) {
@@ -83,7 +83,7 @@ public class InternalRecipeHandler {
             }
         }
 
-        return new ShapelessExtremeCraftingRecipe(ForgeRegistries.ITEMS.getKey(result.getItem()), getList(arraylist), result);
+        return new ShapelessTableCraftingRecipe(ForgeRegistries.ITEMS.getKey(result.getItem()), getList(arraylist), result);
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {

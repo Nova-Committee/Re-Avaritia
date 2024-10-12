@@ -40,25 +40,27 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
     private final RecipeCategory category;
     private final Item result;
     private final int count;
+    private final int tier;
     private final List<Ingredient> ingredients = Lists.newArrayList();
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
 
-    public ModShapelessRecipeBuilder(RecipeCategory p_250837_, @NotNull ItemLike p_251897_, int p_252227_) {
+    public ModShapelessRecipeBuilder(RecipeCategory p_250837_, @NotNull ItemLike p_251897_, int p_252227_, int tier) {
         this.category = p_250837_;
         this.result = p_251897_.asItem();
         this.count = p_252227_;
+        this.tier = tier;
     }
 
     @Contract("_, _ -> new")
     public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_250714_, ItemLike p_249659_) {
-        return new ModShapelessRecipeBuilder(p_250714_, p_249659_, 1);
+        return new ModShapelessRecipeBuilder(p_250714_, p_249659_, 1, 4);
     }
 
-    @Contract("_, _, _ -> new")
-    public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_) {
-        return new ModShapelessRecipeBuilder(p_252339_, p_250836_, p_249928_);
+    @Contract("_, _, _, _ -> new")
+    public static @NotNull ModShapelessRecipeBuilder shapeless(RecipeCategory p_252339_, ItemLike p_250836_, int p_249928_, int tier) {
+        return new ModShapelessRecipeBuilder(p_252339_, p_250836_, p_249928_, tier);
     }
 
     public ModShapelessRecipeBuilder requires(TagKey<Item> p_206420_) {
@@ -110,7 +112,7 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
     public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModShapelessRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        p_126205_.accept(new ModShapelessRecipeBuilder.Result(p_126206_, this.result, this.count, this.tier, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -123,27 +125,31 @@ public class ModShapelessRecipeBuilder extends CraftingRecipeBuilder implements 
         private final ResourceLocation id;
         private final Item result;
         private final int count;
+        private final int tier;
         private final String group;
         private final List<Ingredient> ingredients;
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
 
-        public Result(ResourceLocation p_249007_, Item p_248667_, int p_249014_, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
+        public Result(ResourceLocation p_249007_, Item p_248667_, int count, int tier, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
             super(p_249485_);
             this.id = p_249007_;
             this.result = p_248667_;
-            this.count = p_249014_;
+            this.count = count;
+            this.tier = tier;
             this.group = p_248592_;
             this.ingredients = p_252312_;
             this.advancement = p_249909_;
             this.advancementId = p_249109_;
         }
 
+        @Override
         public void serializeRecipeData(@NotNull JsonObject p_126230_) {
             super.serializeRecipeData(p_126230_);
             if (!this.group.isEmpty()) {
                 p_126230_.addProperty("group", this.group);
             }
+            p_126230_.addProperty("tier", this.tier);
 
             JsonArray jsonarray = new JsonArray();
 

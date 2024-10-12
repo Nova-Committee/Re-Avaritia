@@ -24,11 +24,11 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/5/20 21:42
  * Version: 1.0
  */
-public class AbstractCraftingTableBlock extends BaseBlock {
+public class AbstractCraftTableBlock extends BaseBlock {
     private static final Component CONTAINER_TITLE = Component.translatable("container.crafting");
 
 
-    public AbstractCraftingTableBlock(MapColor color, SoundType sound, float hardness, float resistance, boolean tool) {
+    public AbstractCraftTableBlock(MapColor color, SoundType sound, float hardness, float resistance, boolean tool) {
         super(color, sound, hardness, resistance, tool);
     }
 
