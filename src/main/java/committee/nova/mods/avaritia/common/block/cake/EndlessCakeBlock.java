@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.block.cake;
 
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -40,7 +41,6 @@ public class EndlessCakeBlock extends BaseBlock {
     public static final VoxelShape CAKE_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 8.0D, 15.0D);
     public EndlessCakeBlock() {
         super(Properties.of().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY));
-        this.registerDefaultState(this.stateDefinition.any());
     }
 
     @Override
@@ -63,20 +63,20 @@ public class EndlessCakeBlock extends BaseBlock {
     public @NotNull InteractionResult use(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         Item item = itemstack.getItem();
-        if (itemstack.is(ItemTags.CANDLES)) {
-            Block block = Block.byItem(item);
-            if (block instanceof CandleBlock candleBlock) {
-                if (!pPlayer.isCreative()) {
-                    itemstack.shrink(1);
-                }
-
-                pLevel.playSound(null, pPos, SoundEvents.CAKE_ADD_CANDLE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                pLevel.setBlockAndUpdate(pPos, EndlessCandleCakeBlock.getCandleCakeFromCandle(candleBlock));
-                pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos);
-                pPlayer.awardStat(Stats.ITEM_USED.get(item));
-                return InteractionResult.SUCCESS;
-            }
-        }
+//        if (itemstack.is(ItemTags.CANDLES) && pState.is(ModBlocks.endless_cake.get())) {
+//            Block block = Block.byItem(item);
+//            if (block instanceof CandleBlock candleBlock) {
+//                if (!pPlayer.isCreative()) {
+//                    itemstack.shrink(1);
+//                }
+//
+//                pLevel.playSound(null, pPos, SoundEvents.CAKE_ADD_CANDLE, SoundSource.BLOCKS, 1.0F, 1.0F);
+//                pLevel.setBlockAndUpdate(pPos, EndlessCandleCakeBlock.getCandleCakeFromCandle(candleBlock));
+//                pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos);
+//                pPlayer.awardStat(Stats.ITEM_USED.get(item));
+//                return InteractionResult.SUCCESS;
+//            }
+//        }
 
         if (pLevel.isClientSide) {
             if (tryEat(pLevel, pPos, pPlayer).consumesAction()) {
@@ -96,9 +96,6 @@ public class EndlessCakeBlock extends BaseBlock {
         return pFacing == Direction.DOWN && !pState.canSurvive(pLevel, pCurrentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
     }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
-    }
 
     @Override
     public int getAnalogOutputSignal(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos) {
@@ -112,7 +109,7 @@ public class EndlessCakeBlock extends BaseBlock {
 
     @Override
     public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
-        return false;
+        return true;
     }
 
 }

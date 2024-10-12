@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModTiers;
+import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ItemUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,7 +10,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 public class CrystalPickaxeItem extends PickaxeItem {
 
     public CrystalPickaxeItem() {
-        super(ModTiers.CRYSTAL_PICKAXE, 1, -1.5F,
+        super(ModToolTiers.CRYSTAL_PICKAXE, 1, -1.5F,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

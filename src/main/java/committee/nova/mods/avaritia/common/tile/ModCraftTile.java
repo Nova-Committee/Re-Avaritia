@@ -54,7 +54,7 @@ public class ModCraftTile extends BaseInventoryTileEntity implements MenuProvide
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("container.extreme_crafting_table").build();
+        return Localizable.of("container." + tier.name).build();
     }
 
     @Nullable

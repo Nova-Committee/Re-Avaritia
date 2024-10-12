@@ -7,16 +7,12 @@ import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.ModCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
-import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -55,24 +51,6 @@ public class ModBlocks {
 
     //CAKE
     public static RegistryObject<Block> endless_cake = block("endless_cake", EndlessCakeBlock::new, ModRarities.UNCOMMON);
-    public static RegistryObject<Block> candle_endless_cake = candleBlock("candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.CANDLE, BlockBehaviour.Properties.copy(Blocks.CAKE).lightLevel((state) -> (Boolean)state.getValue(BlockStateProperties.LIT) ? 3 : 0)));
-    public static RegistryObject<Block> white_candle_endless_cake = candleBlock("white_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.WHITE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> orange_candle_endless_cake = candleBlock("orange_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.ORANGE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> magenta_candle_endless_cake = candleBlock("magenta_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.MAGENTA_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> elight_blue_candle_ndless_cake = candleBlock("light_blue_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.LIGHT_BLUE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> yellow_candle_endless_cake = candleBlock("yellow_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.YELLOW_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> lime_candle_endless_cake = candleBlock("lime_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.LIME_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> pink_candle_endless_cake = candleBlock("pink_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.PINK_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> gray_candle_endless_cake = candleBlock("gray_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.GRAY_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> light_gray_candle_endless_cake = candleBlock("light_gray_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.LIGHT_GRAY_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> cyan_candle_endless_cake = candleBlock("cyan_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.CYAN_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> purple_candle_endless_cake = candleBlock("purple_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.PURPLE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> blue_candle_endless_cake = candleBlock("blue_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.BLUE_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> brown_candle_endless_cake = candleBlock("brown_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.BROWN_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> green_candle_endless_cake = candleBlock("green_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.GREEN_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> red_candle_endless_cake = candleBlock("red_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.RED_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-    public static RegistryObject<Block> black_candle_endless_cake = candleBlock("black_candle_endless_cake", () -> new EndlessCandleCakeBlock(Blocks.BLACK_CANDLE, BlockBehaviour.Properties.copy(Blocks.CANDLE_CAKE)));
-
 
     private static RegistryObject<Block> candleBlock(String name, Supplier<Block> block) {
         return BLOCKS.register(name, block);

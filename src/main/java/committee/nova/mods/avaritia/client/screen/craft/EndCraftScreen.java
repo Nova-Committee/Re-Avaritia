@@ -26,7 +26,7 @@ public class EndCraftScreen extends BaseContainerScreen<ModCraftMenu> {
     protected void renderLabels(GuiGraphics stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.drawString(font, title, 23, 150, 4210752, false);
+        stack.drawString(font, title, 27, 148, 4210752, false);
         //stack.drawString(font, this.playerInventoryTitle, 39, this.imageHeight - 94, 4210752, false);
     }
 

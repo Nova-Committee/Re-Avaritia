@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModTiers;
+import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class InfinityShovelItem extends ShovelItem {
 
     public InfinityShovelItem() {
-        super(ModTiers.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
+        super(ModToolTiers.INFINITY_SHOVEL, -2, -2.8f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 

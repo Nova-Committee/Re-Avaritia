@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModTiers;
+import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ClustersUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,7 +40,7 @@ import java.util.Map;
 public class InfinityHoeItem extends HoeItem {
 
     public InfinityHoeItem() {
-        super(ModTiers.INFINITY_HOE, -5, 0f, (new Properties())
+        super(ModToolTiers.INFINITY_HOE, -5, 0f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 

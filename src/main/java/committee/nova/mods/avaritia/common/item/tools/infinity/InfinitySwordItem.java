@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class InfinitySwordItem extends SwordItem {
     public InfinitySwordItem() {
-        super(ModTiers.INFINITY_SWORD, 0, -2.8F, (new Properties())
+        super(ModToolTiers.INFINITY_SWORD, 0, -2.8F, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
     }

@@ -1,14 +1,10 @@
 package committee.nova.mods.avaritia.init.data.provider.loot;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
-import committee.nova.mods.avaritia.common.block.cake.EndlessCandleCakeBlock;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CakeBlock;
-import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 

@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModTiers;
+import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,7 +32,7 @@ import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
 public class InfinityAxeItem extends AxeItem {
 
     public InfinityAxeItem() {
-        super(ModTiers.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
+        super(ModToolTiers.INFINITY_PICKAXE, 10, -3.0f, (new Properties())
                 .stacksTo(1)
                 .fireResistant());
 

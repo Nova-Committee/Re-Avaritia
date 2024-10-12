@@ -48,7 +48,8 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
         tag(BlockTags.BEACON_BASE_BLOCKS).add(
                 ModBlocks.crystal_matrix.get(),
                 ModBlocks.infinity.get(),
-                ModBlocks.neutron.get()
+                ModBlocks.neutron.get(),
+                ModBlocks.endless_cake.get()
         );
 
         tag(BlockTags.PORTALS).add(
