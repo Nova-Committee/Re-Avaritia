@@ -1,13 +1,12 @@
 {
-  "render_type": "cutout",
-  "parent": "block/cube",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "north": "avaritia:block/machine/craft/sculk_crafting_table_side",
+    "down": "avaritia:block/machine/craft/sculk_crafting_table_bottom",
     "east": "avaritia:block/machine/craft/sculk_crafting_table_side",
+    "north": "avaritia:block/machine/craft/sculk_crafting_table_side",
+    "particle": "avaritia:block/machine/craft/sculk_crafting_table_side",
     "south": "avaritia:block/machine/craft/sculk_crafting_table_side",
-    "west": "avaritia:block/machine/craft/sculk_crafting_table_side",
     "up": "avaritia:block/machine/craft/sculk_crafting_table_top",
-    "down": "avaritia:block/craft/craft/sculk_crafting_table_bottom",
-    "particle": "avaritia:block/machine/craft/sculk_crafting_table_side"
+    "west": "avaritia:block/machine/craft/sculk_crafting_table_side"
   }
 }

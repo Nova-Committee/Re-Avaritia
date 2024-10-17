@@ -18,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.util.ToolUtils.isPlayerWearing;
 import static net.minecraft.world.entity.EquipmentSlot.*;
@@ -34,7 +35,7 @@ public class AbilityHandler {
     public static final Set<String> entitiesWithHelmets = new HashSet<>();
     public static final Set<String> entitiesWithLeggings = new HashSet<>();
     public static final Set<String> entitiesWithBoots = new HashSet<>();
-    public static final Map<String, FlightInfo> entitiesWithFlight = new HashMap<>();
+    public static final Map<String, FlightInfo> entitiesWithFlight = new ConcurrentHashMap<>();
 
 
     @SubscribeEvent
