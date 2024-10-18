@@ -1,6 +1,5 @@
-package committee.nova.mods.avaritia.common.item.tools;
+package committee.nova.mods.avaritia.common.item.tools.blaze;
 
-import committee.nova.mods.avaritia.common.entity.FireBallEntity;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -8,13 +7,10 @@ import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,9 +25,9 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class SkullsSwordItem extends SwordItem {
-    public SkullsSwordItem() {
-        super(ModToolTiers.SKULL_SWORD, 0, -2.4f,
+public class BlazeSoulHoeItem extends HoeItem {
+    public BlazeSoulHoeItem() {
+        super(ModToolTiers.BLAZE_SWORD, 0, -2.4f,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
@@ -49,26 +45,26 @@ public class SkullsSwordItem extends SwordItem {
         tooltip.add(Component.translatable(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip.skullfire_sword.desc")));
     }
 
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
-        var heldItem = player.getItemInHand(hand);
-        if (!level.isClientSide) {
-            List<Entity> entities = level.getEntities(player, player.getBoundingBox().deflate(10));
-            double d2 = 0;
-            if (!entities.isEmpty()) d2 = entities.get(0).getY(0.5D) - player.getY(0.5D);
-
-            FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level);
-            if (fireBallEntity != null){
-                fireBallEntity.setOwner(player);
-                fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
-                fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-                level.addFreshEntity(fireBallEntity);
-            }
-
-        }
-        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
-        return InteractionResultHolder.success(heldItem);
-    }
+//    @Override
+//    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
+//        var heldItem = player.getItemInHand(hand);
+//        if (!level.isClientSide) {
+//            List<Entity> entities = level.getEntities(player, player.getBoundingBox().deflate(10));
+//            double d2 = 0;
+//            if (!entities.isEmpty()) d2 = entities.get(0).getY(0.5D) - player.getY(0.5D);
+//
+//            FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level);
+//            if (fireBallEntity != null){
+//                fireBallEntity.setOwner(player);
+//                fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
+//                fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+//                level.addFreshEntity(fireBallEntity);
+//            }
+//
+//        }
+//        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
+//        return InteractionResultHolder.success(heldItem);
+//    }
 
     @Override
     public boolean hasCustomEntity(ItemStack stack) {

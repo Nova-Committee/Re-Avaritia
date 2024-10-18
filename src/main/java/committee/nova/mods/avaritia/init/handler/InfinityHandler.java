@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.common.item.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPacket;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtils;
@@ -24,8 +23,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,8 +30,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
@@ -50,7 +45,6 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -275,7 +269,7 @@ public class InfinityHandler {
                 event.getEntity() instanceof AbstractSkeleton
                 && event.getSource().getEntity() instanceof Player player
         ) {
-            if (player.getMainHandItem().is(ModItems.skull_sword.get()) || player.getOffhandItem().is(ModItems.skull_sword.get())) {
+            if (player.getMainHandItem().is(ModItems.blaze_skull_sword.get()) || player.getOffhandItem().is(ModItems.blaze_skull_sword.get())) {
                 if (event.getDrops().isEmpty()) {
                     addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
                 } else {

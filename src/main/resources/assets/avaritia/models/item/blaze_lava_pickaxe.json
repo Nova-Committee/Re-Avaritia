@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/tools/blaze_lava_pickaxe/layer_0"
+  }
+}

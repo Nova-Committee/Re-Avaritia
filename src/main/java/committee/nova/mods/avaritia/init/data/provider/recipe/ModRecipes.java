@@ -9,7 +9,6 @@ import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
-import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -382,7 +381,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.skull_sword.get())
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.blaze_skull_sword.get())
                 .pattern("       CX")
                 .pattern("      CXC")
                 .pattern("     CXC ")

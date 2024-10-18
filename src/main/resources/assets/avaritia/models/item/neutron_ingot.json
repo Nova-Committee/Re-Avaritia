@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/neutron_ingot",
+    "layer0": "avaritia:item/resource/neutron/neutron_ingot",
     "halo": "avaritia:misc/halo_noise"
   },
   "loader": "avaritia:halo",

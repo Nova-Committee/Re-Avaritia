@@ -12,25 +12,37 @@ import java.util.function.Supplier;
  * Version: 1.0
  */
 public enum ModToolTiers implements net.minecraft.world.item.Tier {
-    CRYSTAL_PICKAXE(18, 4888, 4888f, 6.0F, 0, () -> {
+    CRYSTAL_PICKAXE(50, 4888, 4888f, 8.0F, 0, () -> {
         return Ingredient.of(ModItems.crystal_matrix_ingot.get());
     }),
-    SKULL_SWORD(18, 4888, 4888f, 10F, 0, () -> {
+    BLAZE_PICKAXE(50, 4888, 4888f, 8.0F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot.get());
     }),
-    INFINITY_PICKAXE(32, 9999, 9999f, 8.0F, 0, () -> {
+    BLAZE_SWORD(50, 4888, 4888f, 10F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot.get());
     }),
-    INFINITY_SWORD(32, 9999, 9999f, 10F, 0, () -> {
+    BLAZE_SHOVEL(50, 4888, 4888f, 8.0F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot.get());
     }),
-    INFINITY_SHOVEL(32, 9999, 9999f, 8.0F, 0, () -> {
+    BLAZE_HOE(50, 4888, 4888f, 8.0F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot.get());
     }),
-    INFINITY_HOE(32, 9999, 9999f, 8.0F, 0, () -> {
+    BLAZE_AXE(50, 4888, 4888f, 8.0F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot.get());
     }),
-    INFINITY_AXE(32, 9999, 9999f, 8.0F, 0, () -> {
+    INFINITY_PICKAXE(100, 9999, 9999f, 8.0F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot.get());
+    }),
+    INFINITY_SWORD(100, 9999, 9999f, 10F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot.get());
+    }),
+    INFINITY_SHOVEL(100, 9999, 9999f, 8.0F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot.get());
+    }),
+    INFINITY_HOE(100, 9999, 9999f, 8.0F, 0, () -> {
+        return Ingredient.of(ModItems.infinity_ingot.get());
+    }),
+    INFINITY_AXE(100, 9999, 9999f, 8.0F, 0, () -> {
         return Ingredient.of(ModItems.infinity_ingot.get());
     });
 

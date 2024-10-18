@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/tools/skull_sword/layer_0"
+    "layer0": "avaritia:item/tools/blaze_bush_axe/layer_0"
   }
 }

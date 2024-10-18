@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/endest_pearl/layer_0",
+    "layer0": "avaritia:item/misc/endest_pearl/layer_0",
     "halo": "avaritia:misc/halo"
   },
   "loader": "avaritia:halo",
