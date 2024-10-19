@@ -44,6 +44,7 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
                 ModBlocks.neutron_compressor.get()
         );
+        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.compressed_chest.get());
         tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.endless_cake.get());
         tag(BlockTags.BEACON_BASE_BLOCKS).add(
                 ModBlocks.crystal_matrix.get(),

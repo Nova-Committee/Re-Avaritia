@@ -82,13 +82,13 @@ public class CompressedChestBlock extends ChestBlock {
             Container container = (Container) blockentity;
             for (String index : nameTag.getAllKeys()) {
                 var name = nameTag.getString(index);
-                var count = countTag.getInt(index);
-                var nbt = nbtTag.getCompound(index);
                 var newItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
                 if (newItem == null) continue;
                 ItemStack is = new ItemStack(newItem);
-                is.setCount(count);
-                is.setTag(nbt);
+                is.setCount(countTag.getInt(index));
+                if (nbtTag != null && !nbtTag.getCompound(index).isEmpty()) {
+                    is.setTag(nbtTag.getCompound(index));
+                }
                 container.setItem(Integer.parseInt(index), is);
             }
         }
