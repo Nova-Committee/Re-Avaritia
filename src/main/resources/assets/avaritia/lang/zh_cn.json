@@ -68,7 +68,7 @@
   "tooltip.infinity_umbrella.desc": "刹那永恒...",
   "tooltip.infinity_bucket.desc": "吞噬一切...",
   "tooltip.endless_cake.desc": "何为饕餮？",
-  "tooltip.infinity_bucket.message" : "当前流体: %s | 剩余量: %s毫升",
+  "tooltip.infinity_bucket.message": "当前流体: %s | 剩余量: %s毫升",
   "tooltip.infinity": "无限",
   "tooltip.infinity.desc": "攻击伤害",
   "tooltip.armor.desc": "盔甲",
@@ -209,9 +209,9 @@
   "advancements.avaritia.star_fuel.title": "恒星能源",
   "advancements.avaritia.star_fuel.desc": "获取恒星燃料",
   "attribute.name.generic.walking_speed": "移动速度",
-  "config.jade.plugin_avaritia.compressor":"中子态素压缩机",
-  "config.jade.plugin_avaritia.sculk":"幽匿合成",
-  "config.jade.plugin_avaritia.end":"终末合成",
-  "config.jade.plugin_avaritia.nether":"炼狱合成",
-  "config.jade.plugin_avaritia.extreme":"终焉合成"
+  "config.jade.plugin_avaritia.compressor": "中子态素压缩机",
+  "config.jade.plugin_avaritia.sculk": "幽匿合成",
+  "config.jade.plugin_avaritia.end": "终末合成",
+  "config.jade.plugin_avaritia.nether": "炼狱合成",
+  "config.jade.plugin_avaritia.extreme": "终焉合成"
 }
