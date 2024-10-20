@@ -39,6 +39,7 @@ public class Avaritia {
         ModTileEntities.BLOCK_ENTITIES.register(bus);
         ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
+        ModEnchants.ENCHANTMENT.register(bus);
         ModRecipeTypes.RECIPES.register(bus);
         ModRecipeSerializers.SERIALIZERS.register(bus);
         ModCreativeModeTabs.TABS.register(bus);

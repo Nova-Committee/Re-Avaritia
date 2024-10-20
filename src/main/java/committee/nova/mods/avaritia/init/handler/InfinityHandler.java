@@ -35,6 +35,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -98,6 +99,31 @@ public class InfinityHandler {
                 stack.enchant(Enchantments.FALL_PROTECTION, 10);
             }
         }
+            if (stack.is(ModItems.blaze_sword.get())) {
+                if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FIRE_ASPECT, stack) < 2) {
+                    stack.enchant(Enchantments.FIRE_ASPECT, 2);
+                }
+            }
+            if (stack.is(ModItems.blaze_axe.get())) {
+                if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FIRE_ASPECT, stack) < 2) {
+                    stack.enchant(Enchantments.FIRE_ASPECT, 2);
+                }
+            }
+            if (stack.is(ModItems.blaze_pickaxe.get())) {
+                if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FIRE_ASPECT, stack) < 2) {
+                    stack.enchant(Enchantments.FIRE_ASPECT, 2);
+                }
+            }
+            if (stack.is(ModItems.blaze_hoe.get())) {
+                if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FIRE_ASPECT, stack) < 2) {
+                    stack.enchant(Enchantments.FIRE_ASPECT, 2);
+                }
+            }
+            if (stack.is(ModItems.blaze_shovel.get())) {
+                if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FIRE_ASPECT, stack) < 2) {
+                    stack.enchant(Enchantments.FIRE_ASPECT, 2);
+                }
+            }
     }
 
     @SubscribeEvent
