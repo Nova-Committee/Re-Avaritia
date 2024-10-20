@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.SoundType;
 public enum ModCraftTier {
 
     SCULK("sculk_crafting_table", SoundType.SCULK_CATALYST,  25, 500, 3, 30, 17, 8, 84, 8, 142, 124, 35),
-    NETHER("nether_crafting_table", SoundType.NETHERRACK, 50, 1000, 5, 14, 18, 8, 124, 8, 182, 143, 54),
+    NETHER("nether_crafting_table", SoundType.NETHERRACK, 50, 1000, 5, 14, 18, 8, 124, 8, 182, 142, 53),
     END("end_crafting_table", SoundType.SOUL_SOIL, 75, 1500, 7, 8, 18, 20, 160, 20, 218, 172, 71),
     EXTREME("extreme_crafting_table", SoundType.GLASS,  100,2000, 9, 8, 18, 39, 196, 39, 254, 206, 89);
 
