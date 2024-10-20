@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.init.event.RegisterRecipesEvent;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -24,22 +25,22 @@ public class ResourceReloadHandler {
     @SubscribeEvent
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
 
-        event.addListener(new SingularityResourceReload(event.getServerResources().getConditionContext()));
-        event.addListener(new RegisterRecipesReloadListener(event.getServerResources().getRecipeManager()));
+        event.addListener(new SingularityResourceReloadListener(event.getServerResources()));
+        event.addListener(new RegisterRecipesReloadListener(event.getServerResources()));
     }
 
 
-    private record SingularityResourceReload(ICondition.IContext context) implements ResourceManagerReloadListener {
+    private record SingularityResourceReloadListener(ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            SingularityRegistryHandler.getInstance().onResourceManagerReload(context);
+            SingularityRegistryHandler.getInstance().onResourceManagerReload(serverResources.getConditionContext());
         }
     }
 
-    private record RegisterRecipesReloadListener(RecipeManager recipeManager) implements ResourceManagerReloadListener {
+    private record RegisterRecipesReloadListener(ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(recipeManager));
+            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(serverResources.getRecipeManager()));
         }
     }
 }

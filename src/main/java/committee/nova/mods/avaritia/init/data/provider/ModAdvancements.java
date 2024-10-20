@@ -81,9 +81,9 @@ public class ModAdvancements extends ForgeAdvancementProvider {
                     .requirements(RequirementsStrategy.OR)
                     .save(consumer, Static.MOD_ID + ":main/extreme_crafting_table");
             Advancement skull_fire_sword = Advancement.Builder.advancement()
-                    .display(ModItems.blaze_skull_sword.get(), Component.translatable("advancements.avaritia.skull_sword.title"), Component.translatable("advancements.avaritia.skull_sword.desc"), null, FrameType.TASK, true, true, true)
+                    .display(ModItems.blaze_sword.get(), Component.translatable("advancements.avaritia.skull_sword.title"), Component.translatable("advancements.avaritia.skull_sword.desc"), null, FrameType.TASK, true, true, true)
                     .parent(extreme_crafting_table)
-                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.blaze_skull_sword.get()))
+                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.blaze_sword.get()))
                     .requirements(RequirementsStrategy.OR)
                     .save(consumer, Static.MOD_ID + ":main/skull_sword");
 

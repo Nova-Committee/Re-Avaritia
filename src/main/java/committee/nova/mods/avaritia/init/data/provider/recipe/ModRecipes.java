@@ -381,7 +381,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder{
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.blaze_skull_sword.get())
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.blaze_sword.get())
                 .pattern("       CX")
                 .pattern("      CXC")
                 .pattern("     CXC ")

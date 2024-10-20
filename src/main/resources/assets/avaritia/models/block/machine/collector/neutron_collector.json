@@ -2,12 +2,12 @@
   "render_type": "cutout",
   "parent": "block/cube",
   "textures": {
-    "north": "avaritia:block/machine/collector/collector_side",
-    "east": "avaritia:block/machine/collector/collector_side",
+    "north": "avaritia:block/machine/collector/frame",
+    "east": "avaritia:block/machine/collector/collector_side_left",
     "south": "avaritia:block/machine/collector/collector_front",
-    "west": "avaritia:block/machine/collector/collector_side",
+    "west": "avaritia:block/machine/collector/collector_side_right",
     "up": "avaritia:block/machine/collector/collector_top",
-    "down": "avaritia:block/machine/collector/collector_side",
+    "down": "avaritia:block/machine/collector/frame",
     "particle": "avaritia:block/machine/collector/collector_top"
   }
 }

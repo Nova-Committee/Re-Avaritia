@@ -269,7 +269,7 @@ public class InfinityHandler {
                 event.getEntity() instanceof AbstractSkeleton
                 && event.getSource().getEntity() instanceof Player player
         ) {
-            if (player.getMainHandItem().is(ModItems.blaze_skull_sword.get()) || player.getOffhandItem().is(ModItems.blaze_skull_sword.get())) {
+            if (player.getMainHandItem().is(ModItems.blaze_sword.get()) || player.getOffhandItem().is(ModItems.blaze_sword.get())) {
                 if (event.getDrops().isEmpty()) {
                     addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
                 } else {

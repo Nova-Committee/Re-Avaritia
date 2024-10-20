@@ -126,8 +126,8 @@ dependencies {
     implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}")
     implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
 
-    compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api"))
-    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}"))
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 
     implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
@@ -138,10 +138,10 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mek_version}")
     runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:${ae2_version}")
 
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
-        jarJar.ranged(it, "[0.3.6,)")
-    }
+//    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+//    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.6")) {
+//        jarJar.ranged(it, "[0.3.6,)")
+//    }
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']

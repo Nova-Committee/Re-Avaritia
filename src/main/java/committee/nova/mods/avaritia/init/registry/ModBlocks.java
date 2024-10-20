@@ -36,6 +36,7 @@ public class ModBlocks {
     public static RegistryObject<Block> neutron = block("neutron", ResourceBlock::new, ModRarities.EPIC);
     public static RegistryObject<Block> infinity = block("infinity", ResourceBlock::new, ModRarities.COSMIC);
     public static RegistryObject<Block> crystal_matrix = block("crystal_matrix", ResourceBlock::new, ModRarities.RARE);
+    public static RegistryObject<Block> blaze_cube_block = block("blaze_cube_block", ResourceBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> compressed_chest = block("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
 
     //MACHINE

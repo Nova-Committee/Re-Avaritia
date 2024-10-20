@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
+import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -25,24 +26,26 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeFireShovelItem extends ShovelItem {
-    public BlazeFireShovelItem() {
+public class BlazeShovelItem extends ShovelItem implements ITooltip {
+    private final String name;
+    public BlazeShovelItem(String name) {
         super(ModToolTiers.BLAZE_SWORD, 0, -2.4f,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant());
 
+        this.name = name;
     }
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
         return false;
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        tooltip.add(Component.translatable(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip.skullfire_sword.desc")));
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
     }
 
 //    @Override
