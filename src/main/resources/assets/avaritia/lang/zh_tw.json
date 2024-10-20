@@ -213,5 +213,7 @@
   "config.jade.plugin_avaritia.sculk": "伏聆合成",
   "config.jade.plugin_avaritia.end": "終末合成",
   "config.jade.plugin_avaritia.nether": "煉獄合成",
-  "config.jade.plugin_avaritia.extreme": "終焉合成"
+  "config.jade.plugin_avaritia.extreme": "終焉合成",
+  "rarity.legend.name": "傳說",
+  "rarity.cosmic.name": "無盡"
 }
