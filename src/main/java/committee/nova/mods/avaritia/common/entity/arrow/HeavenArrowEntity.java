@@ -18,19 +18,13 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/20 17:37
- * Version: 1.0
- */
 public class HeavenArrowEntity extends Arrow {
 
     private Entity shooter;
 
     public HeavenArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
         super(entityType, level);
-
+        this.shooter = null; // 显式初始化为 null
     }
 
     public static HeavenArrowEntity create(Level level, LivingEntity shooter) {
@@ -39,20 +33,29 @@ public class HeavenArrowEntity extends Arrow {
         return entity;
     }
 
-
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         var pos = result.getBlockPos();
         var randy = level().random;
-        if (shooter != null) ToolUtils.arrowBarrage(this.shooter, level(), piercedAndKilledEntities, pickup, randy, pos);
+        if (shooter != null) {
+            ToolUtils.arrowBarrage(this.shooter, level(), piercedAndKilledEntities, pickup, randy, pos);
+        } else {
+            // 记录日志
+            System.out.println("HeavenArrowEntity: shooter is null!");
+        }
         this.remove(RemovalReason.KILLED);
     }
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         Entity entity = result.getEntity();
-        if (shooter != null) entity.hurt(ModDamageTypes.causeRandomDamage(this.shooter), Float.MAX_VALUE);
+        if (shooter != null) {
+            entity.hurt(ModDamageTypes.causeRandomDamage(this.shooter), Float.MAX_VALUE);
+        } else {
+            // 处理 shooter 为 null 的情况
+            entity.hurt(ModDamageTypes.causeRandomDamage(entity), Float.MAX_VALUE); // 使用被击中的实体作为默认值
+        }
     }
 
     @Override
@@ -61,19 +64,16 @@ public class HeavenArrowEntity extends Arrow {
         compound.putDouble("damage", Float.POSITIVE_INFINITY);
     }
 
-
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.setBaseDamage(compound.contains("damage") ? compound.getDouble("damage") : Float.POSITIVE_INFINITY);
     }
 
-
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
-
 
     @Override
     public @NotNull ItemStack getPickupItem() {
