@@ -50,11 +50,13 @@ public class HeavenArrowEntity extends Arrow {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         Entity entity = result.getEntity();
-        if (shooter != null) {
-            entity.hurt(ModDamageTypes.causeRandomDamage(this.shooter), Float.MAX_VALUE);
+        final float HEAVEN_ARROW_DAMAGE = 2000f;
+        if (shooter != null && shooter != entity) {
+            entity.hurt(ModDamageTypes.causeRandomDamage(this.shooter), HEAVEN_ARROW_DAMAGE);
         } else {
             // 处理 shooter 为 null 的情况
-            entity.hurt(ModDamageTypes.causeRandomDamage(entity), Float.MAX_VALUE); // 使用被击中的实体作为默认值
+         //   entity.hurt(ModDamageTypes.causeRandomDamage(entity), Float.MAX_VALUE); // 使用被击中的实体作为默认值
+            System.out.println("无尽弓: 射手为空或射到了自己, 无伤害。");
         }
     }
 
