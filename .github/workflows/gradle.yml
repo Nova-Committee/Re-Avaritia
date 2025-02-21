@@ -25,11 +25,22 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
+      - name: 缓存 Gradle 依赖项
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
+
+      - name: 强制刷新 Gradle 依赖
+        run: ./gradlew clean build --refresh-dependencies
 
       - name: Build
         uses: gradle/gradle-build-action@v2
