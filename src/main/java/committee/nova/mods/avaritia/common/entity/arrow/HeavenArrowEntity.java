@@ -50,7 +50,7 @@ public class HeavenArrowEntity extends Arrow {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         Entity entity = result.getEntity();
-        final float HEAVEN_ARROW_DAMAGE = 2000f;
+        final float HEAVEN_ARROW_DAMAGE = 200f;
         if (shooter != null && shooter != entity) {
             entity.hurt(ModDamageTypes.causeRandomDamage(this.shooter), HEAVEN_ARROW_DAMAGE);
         } else {
