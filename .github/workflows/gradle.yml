@@ -25,10 +25,6 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
-      - name: 更新 Gradle 镜像源
-        run: |
-          echo "distributionUrl=https\://mirror.tuna.tsinghua.edu.cn/gradle/distributions/gradle-8.7-bin.zip" > gradle/wrapper/gradle-wrapper.properties
-
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
