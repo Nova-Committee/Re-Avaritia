@@ -75,7 +75,7 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
-            switchMode(world, player, hand, I18n.get("tooltip.avaritia.tool.smelt"));
+            switchMode(world, player, hand, Component.translatable("tooltip.avaritia.tool.smelt"));
             return InteractionResultHolder.success(stack);
         }
         return super.use(world, player, hand);

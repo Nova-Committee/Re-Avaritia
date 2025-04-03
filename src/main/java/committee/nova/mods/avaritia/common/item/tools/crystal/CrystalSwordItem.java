@@ -71,7 +71,7 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
-            switchMode(world, player, hand, I18n.get("tooltip.avaritia.tool.blade_slash"));
+            switchMode(world, player, hand, Component.translatable("tooltip.avaritia.tool.blade_slash"));
             return InteractionResultHolder.success(stack);
         }
         if (isActive(stack)) ToolUtils.shootBladeSlash(stack, player);//射出剑气
