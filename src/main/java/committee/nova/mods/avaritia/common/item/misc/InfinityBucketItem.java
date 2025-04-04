@@ -135,7 +135,7 @@ public class InfinityBucketItem extends ResourceItem {
     @Override
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (pEntity instanceof Player player && player.getInventory().getSelected() == pStack) {
+        if (pLevel.isClientSide && pEntity instanceof Player player && player.getInventory().getSelected() == pStack) {
             FluidStack firstContained = getFluids(pStack).stream().findFirst().orElse(FluidStack.EMPTY);
             NumberFormat formater = DecimalFormat.getInstance();
             String displayName = firstContained.getDisplayName().getString();
