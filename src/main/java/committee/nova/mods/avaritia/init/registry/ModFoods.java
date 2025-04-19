@@ -14,18 +14,18 @@ import net.minecraft.world.food.FoodProperties;
 public class ModFoods {
 
     public static double ratio = 1;
-    public static final FoodProperties ultimate_stew = (new FoodProperties.Builder()).nutrition(20).saturationMod(20F)
+    public static final FoodProperties ultimate_stew = (new FoodProperties.Builder()).nutrition(20).saturationModifier(20F)
             .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) Math.ceil(5 * 60 * 20 * ratio), 4), 1).effect(
                     () -> new MobEffectInstance(MobEffects.DIG_SPEED, (int) Math.ceil(3 * 60 * 20 * ratio), 2), 1).effect(
                     () -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) Math.ceil(3 * 60 * 20 * ratio), 2), 1).effect(
-                    () -> new MobEffectInstance(MobEffects.JUMP, (int) Math.ceil(3 * 60 * 20 * ratio), 2), 1).alwaysEat().meat().build();
+                    () -> new MobEffectInstance(MobEffects.JUMP, (int) Math.ceil(3 * 60 * 20 * ratio), 2), 1).alwaysEdible().fast().build();
 
-    public static final FoodProperties cosmic_meatballs = (new FoodProperties.Builder()).nutrition(20).saturationMod(20F)
+    public static final FoodProperties cosmic_meatballs = (new FoodProperties.Builder()).nutrition(20).saturationModifier(20F)
             .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, (int) Math.ceil(5 * 60 * 20 * ratio), 0), 1).effect(
                     () -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, (int) Math.ceil(1 * 60 * 20 * ratio), 1), 1).effect(
                     () -> new MobEffectInstance(MobEffects.ABSORPTION, (int) Math.ceil(3 * 60 * 20 * ratio), 2), 1).effect(
                     () -> new MobEffectInstance(MobEffects.NIGHT_VISION, (int) Math.ceil(3 * 60 * 20 * ratio), 0), 1).effect(
                     () -> new MobEffectInstance(MobEffects.WATER_BREATHING, (int) Math.ceil(2 * 60 * 20 * ratio), 2), 1).effect(
-                    () -> new MobEffectInstance(MobEffects.REGENERATION, (int) Math.ceil(5 * 60 * 20 * ratio), 4), 1).alwaysEat().build();
+                    () -> new MobEffectInstance(MobEffects.REGENERATION, (int) Math.ceil(5 * 60 * 20 * ratio), 4), 1).alwaysEdible().build();
 
 }

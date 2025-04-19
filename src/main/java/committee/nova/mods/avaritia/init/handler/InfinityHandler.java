@@ -35,25 +35,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.entity.item.ItemEvent;
-import net.minecraftforge.event.entity.item.ItemExpireEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.item.ItemEvent;
+import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import java.util.Set;
 
@@ -63,7 +58,7 @@ import java.util.Set;
  * Date: 2022/3/31 10:46
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber
 public class InfinityHandler {
     @SubscribeEvent
     public static void onPlayerMine(PlayerInteractEvent.LeftClickBlock event) {
@@ -143,11 +138,11 @@ public class InfinityHandler {
 
     //合并物质团
     @SubscribeEvent
-    public static void clusterCluster(EntityItemPickupEvent event) {
-        if (event.getEntity() != null && ModConfig.isMergeMatterCluster.get() && event.getItem().getItem().is(ModItems.matter_cluster.get())) {
-            ItemStack stack = event.getItem().getItem();
+    public static void clusterCluster(ItemEntityPickupEvent event) {
+        if (ModConfig.isMergeMatterCluster.get() && event.getItemEntity().getItem().is(ModItems.matter_cluster.get())) {
+            ItemStack stack = event.getItemEntity().getItem();
             boolean mergedAny = false;
-            Player player = event.getEntity();
+            Player player = event.getPlayer();
 
             for (ItemStack slot : player.getInventory().items) {
                 if (stack.isEmpty()) {
@@ -166,8 +161,8 @@ public class InfinityHandler {
 
     @SubscribeEvent
     public static void expCancel(ItemExpireEvent event) {
-        if (event.getEntity() instanceof ImmortalItemEntity) {
-            event.setCanceled(true);
+        if (event.getEntity() instanceof ImmortalItemEntity itemEntity) {
+            itemEntity.setUnlimitedLifetime();
         }
     }
 
@@ -286,7 +281,6 @@ public class InfinityHandler {
     @SubscribeEvent
     public static void toolEnchant(BlockEvent.BreakEvent event) {//炽热
         var player = event.getPlayer();
-        if (player == null) return;
         var tool = player.getMainHandItem();
         if (tool.isEmpty()) return;
         var world = (Level) event.getLevel();

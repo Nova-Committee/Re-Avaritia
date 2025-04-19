@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.init.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
+
+import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Description:
@@ -11,48 +12,48 @@ import net.minecraftforge.fml.ModLoadingContext;
  */
 public class ModConfig {
 
-    public static final ForgeConfigSpec COMMON;
+    public static final ModConfigSpec COMMON;
 
-    public static final ForgeConfigSpec.DoubleValue foodTime; //foodTime
-    public static final ForgeConfigSpec.BooleanValue isKeepStone;
-    public static final ForgeConfigSpec.BooleanValue isMergeMatterCluster;
-    public static final ForgeConfigSpec.IntValue swordRangeDamage;
-    public static final ForgeConfigSpec.IntValue swordAttackRange;
-    public static final ForgeConfigSpec.BooleanValue isSwordAttackAnimal;
-    public static final ForgeConfigSpec.BooleanValue isSwordAttackLightning;
-    public static final ForgeConfigSpec.BooleanValue isSwordAttackEndless;
-    public static final ForgeConfigSpec.IntValue subArrowDamage;
-    public static final ForgeConfigSpec.IntValue axeChainCount;
-    public static final ForgeConfigSpec.IntValue pickAxeBreakRange;
-    public static final ForgeConfigSpec.IntValue shovelBreakRange;
-    public static final ForgeConfigSpec.IntValue neutronCollectorProductTick;
-    public static final ForgeConfigSpec.IntValue singularityTimeRequired;
-    public static final ForgeConfigSpec.DoubleValue growthSoulFarmland;
-    public static final ForgeConfigSpec.IntValue bladeSlashDamage;
-    public static final ForgeConfigSpec.IntValue bladeSlashRadius;
-    public static final ForgeConfigSpec.BooleanValue internalInfinityCatalystCraft;
+    public static final ModConfigSpec.DoubleValue foodTime; //foodTime
+    public static final ModConfigSpec.BooleanValue isKeepStone;
+    public static final ModConfigSpec.BooleanValue isMergeMatterCluster;
+    public static final ModConfigSpec.IntValue swordRangeDamage;
+    public static final ModConfigSpec.IntValue swordAttackRange;
+    public static final ModConfigSpec.BooleanValue isSwordAttackAnimal;
+    public static final ModConfigSpec.BooleanValue isSwordAttackLightning;
+    public static final ModConfigSpec.BooleanValue isSwordAttackEndless;
+    public static final ModConfigSpec.IntValue subArrowDamage;
+    public static final ModConfigSpec.IntValue axeChainCount;
+    public static final ModConfigSpec.IntValue pickAxeBreakRange;
+    public static final ModConfigSpec.IntValue shovelBreakRange;
+    public static final ModConfigSpec.IntValue neutronCollectorProductTick;
+    public static final ModConfigSpec.IntValue singularityTimeRequired;
+    public static final ModConfigSpec.DoubleValue growthSoulFarmland;
+    public static final ModConfigSpec.IntValue bladeSlashDamage;
+    public static final ModConfigSpec.IntValue bladeSlashRadius;
+    public static final ModConfigSpec.BooleanValue internalInfinityCatalystCraft;
 
-    public static final ForgeConfigSpec.IntValue neutronPileEmc;
-    public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
+    public static final ModConfigSpec.IntValue neutronPileEmc;
+    public static final ModConfigSpec.IntValue vanillaTotemEmc;
 
-    public static final ForgeConfigSpec.IntValue chestMaxItemSize;
-    public static final ForgeConfigSpec.BooleanValue useSinglePageMode;
-    public static final ForgeConfigSpec.LongValue slotStackLimit;
-    public static final ForgeConfigSpec.IntValue maxPageLimit;
-    public static final ForgeConfigSpec.IntValue resetMaxPage;
-    public static final ForgeConfigSpec.IntValue inventoryRows;
+    public static final ModConfigSpec.IntValue chestMaxItemSize;
+    public static final ModConfigSpec.BooleanValue useSinglePageMode;
+    public static final ModConfigSpec.LongValue slotStackLimit;
+    public static final ModConfigSpec.IntValue maxPageLimit;
+    public static final ModConfigSpec.IntValue resetMaxPage;
+    public static final ModConfigSpec.IntValue inventoryRows;
 
-    public static ForgeConfigSpec.IntValue MAX_SIZE_PRE_CHANNEL;
-    public static ForgeConfigSpec.IntValue MAX_CHANNELS_PRE_PLAYER;
-    public static ForgeConfigSpec.IntValue MAX_PUBLIC_CHANNELS;
-    public static ForgeConfigSpec.IntValue CHANNEL_FAST_UPDATE_RATE;
-    public static ForgeConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
+    public static ModConfigSpec.IntValue MAX_SIZE_PRE_CHANNEL;
+    public static ModConfigSpec.IntValue MAX_CHANNELS_PRE_PLAYER;
+    public static ModConfigSpec.IntValue MAX_PUBLIC_CHANNELS;
+    public static ModConfigSpec.IntValue CHANNEL_FAST_UPDATE_RATE;
+    public static ModConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
 
-    public static final ForgeConfigSpec.BooleanValue useAdvanceTooltips;
+    public static final ModConfigSpec.BooleanValue useAdvanceTooltips;
 
     //SERVER
     static {
-        final var common = new ForgeConfigSpec.Builder();
+        final var common = new ModConfigSpec.Builder();
         common.comment("Avaritia Common Config");
         common.push("tools");
         isKeepStone = buildBoolean(common, "Is Stone", false, "Does the super mode of endless tools retain stone and soil");
@@ -99,24 +100,24 @@ public class ModConfig {
         COMMON = common.build();
     }
 
-    public static void register() {
-        ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, COMMON);
+    public static void register(ModContainer modContainer) {
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, ModConfig.COMMON);
     }
 
 
-    private static ForgeConfigSpec.BooleanValue buildBoolean(ForgeConfigSpec.Builder builder, String name, boolean defaultValue, String comment) {
+    private static ModConfigSpec.BooleanValue buildBoolean(ModConfigSpec.Builder builder, String name, boolean defaultValue, String comment) {
         return builder.comment(comment).translation(name).define(name, defaultValue);
     }
 
-    private static ForgeConfigSpec.IntValue buildInt(ForgeConfigSpec.Builder builder, String name, int defaultValue, int min, int max, String comment) {
+    private static ModConfigSpec.IntValue buildInt(ModConfigSpec.Builder builder, String name, int defaultValue, int min, int max, String comment) {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
 
-    private static ForgeConfigSpec.DoubleValue buildDouble(ForgeConfigSpec.Builder builder, String name, double defaultValue, double min, double max, String comment) {
+    private static ModConfigSpec.DoubleValue buildDouble(ModConfigSpec.Builder builder, String name, double defaultValue, double min, double max, String comment) {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
 
-    private static ForgeConfigSpec.LongValue buildLong(ForgeConfigSpec.Builder builder, String name, long defaultValue, long min, long max, String comment) {
+    private static ModConfigSpec.LongValue buildLong(ModConfigSpec.Builder builder, String name, long defaultValue, long min, long max, String comment) {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
 

@@ -6,7 +6,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +19,13 @@ public class RegisterRecipesEvent extends Event {
     }
 
     public RecipeManager getRecipeManager() {
-        if (!(recipeManager.recipes instanceof HashMap)) {
+        if (!(recipeManager.byType instanceof HashMap)) {
             try {
                 Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipes = new HashMap<>();
-                recipeManager.recipes.forEach((type, map) -> 
+                recipeManager.byType.forEach((type, map) ->
                     newRecipes.put(type, new HashMap<>(map))
                 );
-                recipeManager.recipes = newRecipes;
+                recipeManager.byType = newRecipes;
             } catch (Exception e) {
                 Lib.LOGGER.error("Failed to convert recipes: {}", e.getMessage());
             }
@@ -44,14 +44,14 @@ public class RegisterRecipesEvent extends Event {
         RecipeManager manager = getRecipeManager();
 
         try {
-            Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipes = new HashMap<>(manager.recipes);
+            Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipes = new HashMap<>(manager.byType);
             newRecipes.computeIfAbsent(recipe.getType(), t -> new HashMap<>())
                       .put(recipe.getId(), recipe);
 
             Map<ResourceLocation, Recipe<?>> newByName = new HashMap<>(manager.byName);
             newByName.put(recipe.getId(), recipe);
 
-            manager.recipes = newRecipes;
+            manager.byType = newRecipes;
             manager.byName = newByName;
         } catch (Exception e) {
             Lib.LOGGER.error("Failed to add recipe: {}", e.getMessage());

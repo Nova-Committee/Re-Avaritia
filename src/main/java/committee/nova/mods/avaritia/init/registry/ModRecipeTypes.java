@@ -4,13 +4,13 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.BaseTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
@@ -22,14 +22,14 @@ import java.util.function.Supplier;
  * Version: 1.0
  */
 public class ModRecipeTypes {
-    public static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, Static.MOD_ID);
+    public static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, Static.MOD_ID);
 
-    public static final @NotNull RegistryObject<RecipeType<BaseTableCraftingRecipe>> CRAFTING_TABLE_RECIPE = recipe("crafting_table_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "crafting_table_recipe")));
-    public static final @NotNull RegistryObject<RecipeType<ICompressorRecipe>> COMPRESSOR_RECIPE = recipe("compressor_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "compressor_recipe")));
-    public static final @NotNull RegistryObject<RecipeType<ExtremeSmithingRecipe>> EXTREME_SMITHING_RECIPE = recipe("extreme_smithing_recipe", () -> RecipeType.simple(new ResourceLocation(Static.MOD_ID, "extreme_smithing_recipe")));
+    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<BaseTableCraftingRecipe>> CRAFTING_TABLE_RECIPE = recipe("crafting_table_recipe", () -> RecipeType.simple(Static.rl( "crafting_table_recipe")));
+    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ICompressorRecipe>> COMPRESSOR_RECIPE = recipe("compressor_recipe", () -> RecipeType.simple(Static.rl( "compressor_recipe")));
+    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ExtremeSmithingRecipe>> EXTREME_SMITHING_RECIPE = recipe("extreme_smithing_recipe", () -> RecipeType.simple(Static.rl( "extreme_smithing_recipe")));
 
 
-    public static <T extends Recipe<Container>> RegistryObject<RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
+    public static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
         return RECIPES.register(name, type);
     }
 

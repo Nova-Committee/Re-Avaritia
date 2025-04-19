@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.init.data;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;

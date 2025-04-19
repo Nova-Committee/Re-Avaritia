@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.common.entity.InfinityGolem;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 
 /**
  * AttributesHandler
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
  * @description
  * @date 2024/4/5 11:37
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class AttributesHandler {
 
     @SubscribeEvent

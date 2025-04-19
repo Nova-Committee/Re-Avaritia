@@ -5,13 +5,8 @@ import committee.nova.mods.avaritia.common.net.*;
 import committee.nova.mods.avaritia.common.net.channel.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.util.Optional;
 
@@ -21,8 +16,9 @@ import java.util.Optional;
  * Date: 2022/4/2 13:07
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
+    private static final String PROTOCOL_VERSION = Integer.toString(1);
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(Static.rl("main"), () -> {
         return "1.0";
     }, (s) -> {
@@ -51,6 +47,11 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SOpenRingPack.class, C2SOpenRingPack::write, C2SOpenRingPack::new, C2SOpenRingPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+    }
+
+    public static void registerPackets(PayloadRegistrar registrar) {
+        registrar.commonToClient(S2CSingularitiesPack.ID, buf -> new SyncSingularitiesPacket(SingularityRegistryHandler.getInstance().readFromBuffer(buf)), handler -> handler.server(SyncSingularitiesPacket::run));
+
     }
 
     public static void sendNbtDataToServer(CompoundTag tag) {

@@ -9,8 +9,8 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * Date: 2022/5/15 20:34
  * Version: 1.0
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
@@ -58,7 +58,7 @@ public class InternalRecipeHandler {
             return null;
 
         var id = singularity.getId();
-        var recipeId = new ResourceLocation(Static.MOD_ID, id.getPath() + "_singularity");
+        var recipeId = Static.rl( id.getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();

@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 
@@ -15,11 +15,5 @@ import java.util.function.Supplier;
  * @Description:
  */
 public class ModEnchants {
-    public static final DeferredRegister<Enchantment> ENCHANTMENT = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Static.MOD_ID);
 
-    //public static RegistryObject<Enchantment> smelt = enchant("smelt", SmeltEnchant::new);
-
-    public static RegistryObject<Enchantment> enchant(String name, Supplier<Enchantment> enchantment) {
-        return ENCHANTMENT.register(name, enchantment);
-    }
 }

@@ -45,7 +45,7 @@ public abstract class NetherWartBlockMixin extends BushBlock implements Bonemeal
     }
 
     @Override
-    public boolean isValidBonemealTarget(@NotNull LevelReader pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, boolean pIsClient) {
+    public boolean isValidBonemealTarget(@NotNull LevelReader pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
         return !this.avaritia$isMaxAge(pState);
     }
 

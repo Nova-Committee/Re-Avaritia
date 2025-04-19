@@ -7,7 +7,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModDamageTypes {
 
-    public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Static.MOD_ID, "infinity"));
+    public static ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, Static.rl("infinity"));
 
     public static final RegistrySetBuilder DAMAGE_BUILDER = new RegistrySetBuilder()
             .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
@@ -39,7 +38,7 @@ public class ModDamageTypes {
     }
 
     // 注册
-    public static void bootstrap(BootstapContext<DamageType> context) {
+    public static void bootstrap(RegistrySetBuilder.RegistryBootstrap<DamageType> context) {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
     }
 

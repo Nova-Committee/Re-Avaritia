@@ -4,13 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import committee.nova.mods.avaritia.api.utils.data.RawValue;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -42,7 +42,7 @@ public class Static {
 
 
     public static ResourceLocation rl(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public static boolean isLoad(String name) {
@@ -50,11 +50,11 @@ public class Static {
     }
 
     public static Ingredient getIngredient(String modid, String name) {
-        return Ingredient.fromValues(Stream.of(new RawValue(new ResourceLocation(modid, name))));
+        return Ingredient.fromValues(Stream.of(new RawValue(ResourceLocation.fromNamespaceAndPath(modid, name))));
     }
 
     public static Item getItem(String modid, String name) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, name));
+        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(modid, name)).get();
     }
 
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {

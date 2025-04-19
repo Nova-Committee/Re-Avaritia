@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -18,10 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EnchantmentHelper.class)
 public abstract class EnchantmentHelperMixin {
     @Inject(at = @At("RETURN"), method = "getItemEnchantmentLevel", cancellable = true)
-    private static void getItemEnchantmentLevel(Enchantment enchantment, ItemStack stack,
-                                                CallbackInfoReturnable<Integer> cir) {
+    private static void getItemEnchantmentLevel(Holder<Enchantment> enchantment, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         if (cir.getReturnValueI() == 0 && stack.getItem() instanceof InitEnchantItem item) {
-            int level = item.getInitEnchantLevel(stack, enchantment);
+            int level = item.getInitEnchantLevel(stack, enchantment.value());
             if (level != 0) {
                 cir.setReturnValue(level);
             }

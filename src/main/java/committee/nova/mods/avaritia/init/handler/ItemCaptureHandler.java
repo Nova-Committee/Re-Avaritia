@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.init.handler;
 
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,7 +17,7 @@ import java.util.Set;
  * @description
  * @date 2024/4/3 18:25
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber
 public class ItemCaptureHandler {
     private static final Set<ItemStack> capturedDrops = new LinkedHashSet<>();
     private static boolean doItemCapture = false;

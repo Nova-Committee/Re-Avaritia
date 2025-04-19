@@ -11,11 +11,12 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,7 @@ import static net.minecraft.world.entity.EquipmentSlot.*;
  * Date: 2022/4/21 15:38
  * Version: 1.0
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class AbilityHandler {
 
     public static final Set<String> entitiesWithHelmets = new HashSet<>();
@@ -42,14 +43,14 @@ public class AbilityHandler {
 
 
     @SubscribeEvent
-    public static void updateAbilities(LivingEvent.LivingTickEvent event) {
+    public static void updateAbilities(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof Player player) {
             String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
 
-            boolean hasHelmet = isPlayerWearing(event.getEntity(), HEAD, item -> item instanceof InfinityArmorItem);
-            boolean hasChest = isPlayerWearing(event.getEntity(), CHEST, item -> item instanceof InfinityArmorItem);
-            boolean hasLeggings = isPlayerWearing(event.getEntity(), LEGS, item -> item instanceof InfinityArmorItem);
-            boolean hasBoots = isPlayerWearing(event.getEntity(), FEET, item -> item instanceof InfinityArmorItem);
+            boolean hasHelmet = isPlayerWearing(player, HEAD, item -> item instanceof InfinityArmorItem);
+            boolean hasChest = isPlayerWearing(player, CHEST, item -> item instanceof InfinityArmorItem);
+            boolean hasLeggings = isPlayerWearing(player, LEGS, item -> item instanceof InfinityArmorItem);
+            boolean hasBoots = isPlayerWearing(player, FEET, item -> item instanceof InfinityArmorItem);
 
 
             handleHelmetStateChange(player, key, hasHelmet);
@@ -79,7 +80,7 @@ public class AbilityHandler {
             flightInfo.wasFlyingAllowed = player.getAbilities().mayfly;
             if (hasChest) {
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
-                for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().isBeneficial())) {
+                for (MobEffectInstance potion : Collections2.filter(effects, potion -> !potion.getEffect().value().isBeneficial())) {
                     player.removeEffect(potion.getEffect());
                 }
             }
