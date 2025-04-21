@@ -13,13 +13,12 @@ import committee.nova.mods.avaritia.common.net.S2CSingularitiesPack;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  * Date: 2022/4/2 12:35
  * Version: 1.0
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class SingularityRegistryHandler {
     private static final SingularityRegistryHandler INSTANCE = new SingularityRegistryHandler();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
@@ -61,11 +60,11 @@ public class SingularityRegistryHandler {
         }
     }
 
-    public void onResourceManagerReload(ICondition.IContext context) {
-        this.loadSingularities(context);
+    public void onResourceManagerReload() {
+        this.loadSingularities();
     }
 
-    public void loadSingularities(ICondition.IContext context) {
+    public void loadSingularities() {
         var stopwatch = Stopwatch.createStarted();
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
 
@@ -74,7 +73,7 @@ public class SingularityRegistryHandler {
         this.singularities.clear();
 
         if (!dir.mkdirs() && dir.isDirectory()) {
-            this.loadFiles(dir, context);
+            this.loadFiles(dir);
         }
 
         stopwatch.stop();
@@ -114,21 +113,21 @@ public class SingularityRegistryHandler {
         return this.singularities.get(id);
     }
 
-    public void writeToBuffer(FriendlyByteBuf buffer) {
+    public void writeToBuffer(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(this.singularities.size());
 
         this.singularities.forEach((id, singularity) -> {
-            singularity.write(buffer);
+            singularity.toNetwork(buffer);
         });
     }
 
-    public List<Singularity> readFromBuffer(FriendlyByteBuf buffer) {
+    public List<Singularity> readFromBuffer(RegistryFriendlyByteBuf buffer) {
         List<Singularity> singularities = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            var singularity = Singularity.read(buffer);
+            var singularity = Singularity.fromNetwork(buffer);
 
             singularities.add(singularity);
         }
@@ -148,7 +147,7 @@ public class SingularityRegistryHandler {
         Static.LOGGER.info("Loaded {} singularities from the server", singularities.size());
     }
 
-    private void loadFiles(File dir, ICondition.IContext context) {
+    private void loadFiles(File dir) {
         var files = dir.listFiles((FileFilter) FileFilterUtils.suffixFileFilter(".json"));
         if (files == null)
             return;
@@ -163,7 +162,7 @@ public class SingularityRegistryHandler {
                 var name = file.getName().replace(".json", "");
                 json = JsonParser.parseReader(reader).getAsJsonObject();
 
-                singularity = SingularityUtils.loadFromJson(new ResourceLocation(Static.MOD_ID, name), json, context);
+                singularity = SingularityUtils.loadFromJson(Static.rl( name), json);
 
                 reader.close();
             } catch (Exception e) {

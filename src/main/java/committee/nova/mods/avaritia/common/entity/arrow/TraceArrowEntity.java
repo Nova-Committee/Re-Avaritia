@@ -5,8 +5,6 @@ import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -32,8 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -175,7 +172,7 @@ public class TraceArrowEntity extends Arrow {
                     }
                 }
 
-                if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS && !flag && !ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+                if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS && !flag && !EventHooks.onProjectileImpact(this, raytraceresult)) {
                     this.onHit(raytraceresult);
                     this.hasImpulse = true;
                 }
@@ -254,10 +251,10 @@ public class TraceArrowEntity extends Arrow {
 
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(SPECTRAL_TIME, 0);
-        this.entityData.define(JUMP_COUNT, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SPECTRAL_TIME, 0);
+        builder.define(JUMP_COUNT, 0);
     }
 
 
@@ -292,11 +289,6 @@ public class TraceArrowEntity extends Arrow {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING, spectralTime, 0));
         }
 
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

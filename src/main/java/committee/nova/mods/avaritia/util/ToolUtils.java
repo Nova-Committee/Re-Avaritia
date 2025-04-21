@@ -20,6 +20,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -55,12 +56,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -143,7 +140,7 @@ public class ToolUtils {
      */
     public static boolean isInfinite(LivingEntity player) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() != EquipmentSlot.Type.ARMOR) {
+            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
                 continue;
             }
             ItemStack stack = player.getItemBySlot(slot);
@@ -292,7 +289,7 @@ public class ToolUtils {
             }
         }
 
-        if (owner != null && projectileAntiImmuneEntities.contains(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(target.getType())).toString())) {
+        if (owner != null && projectileAntiImmuneEntities.contains(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).toString())) {
             damagesource = ModDamageTypes.causeRandomDamage(owner);
         }
         return damagesource;
@@ -328,7 +325,7 @@ public class ToolUtils {
         }
 
         if (arrow.isCritArrow()) {
-            long j = arrow.random.nextInt(i / 2 + 2);
+            long j = arrow.getRandom().nextInt(i / 2 + 2);
             i = (int) Math.min(j + (long) i, 2147483647L);
         }
 
@@ -336,7 +333,7 @@ public class ToolUtils {
         boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
         int k = entity.getRemainingFireTicks();
         if (arrow.isOnFire() && !isEnderman) {
-            entity.setSecondsOnFire(5);
+            entity.setRemainingFireTicks(5);
         }
 
         if (entity instanceof Player player) {
@@ -525,7 +522,7 @@ public class ToolUtils {
                     serverLevel.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), 11);
                 }
             }
-            if (block instanceof StemGrownBlock) { //pumpkin
+            if (block instanceof StemBlock) { //pumpkin
                 ClustersUtils.putMapDrops(serverLevel, pos, player, stack, map);
                 serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
             }
@@ -561,7 +558,7 @@ public class ToolUtils {
             BlockState state = serverLevel.getBlockState(pos);
             Block block = state.getBlock();
             if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock)
-                    && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state, false)
+                    && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state)
                     && ForgeHooks.onCropsGrowPre(serverLevel, pos, state, true)
             ) {
                 for (int i = 0; i < cost; i++) {
@@ -665,7 +662,7 @@ public class ToolUtils {
     public static void melting(Block block, BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, BlockEvent.BreakEvent event) {
         if (!block.canHarvestBlock(state, world, pos, player) || block instanceof CropBlock) return;
         List<ItemStack> drops = Block.getDrops(state, (ServerLevel) world, pos, null);
-        int unLuck = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
+        int unLuck = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FORTUNE, tool);
         //霉运影响
         boolean flag = unLuck > 0 && world.random.nextDouble() < unLuck * 0.2; //霉运判断结果 true触发
         if (drops.isEmpty() || flag) return;

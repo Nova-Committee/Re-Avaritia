@@ -25,13 +25,13 @@ public class Avaritia {
         modEventBus.addListener(this::setup);
         modEventBus.addListener(ModDataGen::gatherData);
 
+        ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModCreativeModeTabs.TABS.register(modEventBus);
         ModTileEntities.BLOCK_ENTITIES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
-        ModEnchants.ENCHANTMENT.register(modEventBus);
         ModRecipeTypes.RECIPES.register(modEventBus);
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
 

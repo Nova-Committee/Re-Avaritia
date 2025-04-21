@@ -3,19 +3,20 @@ package committee.nova.mods.avaritia.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.utils.NBTUtils;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 /**
  * Description:
@@ -24,8 +25,8 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
  * Version: 1.0
  */
 public class SingularityUtils {
-    public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
-        if (!CraftingHelper.processConditions(json, "conditions", context)) {
+    public static Singularity loadFromJson(ResourceLocation id, JsonObject json) {
+        if (!ICondition.conditionsMatched(JsonOps.INSTANCE, json)) {
             Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
             return null;
         }
@@ -35,9 +36,7 @@ public class SingularityUtils {
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
-        Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
-
         var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
 
         if (ing == null) {
@@ -46,8 +45,10 @@ public class SingularityUtils {
             var tag = ing.get("tag").getAsString();
             singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
         } else {
-            var ingredient = Ingredient.fromJson(json.get("ingredient"));
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, ingredient, materialCount, time);
+            Ingredient.CODEC.decode(JsonOps.INSTANCE, json.get("ingredient"))
+                    .resultOrPartial(Util.prefix("ingredient error", Static.LOGGER::error))
+                    .ifPresent((ingredient) -> finalSingularity.setIngredient(ingredient.getFirst()));
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, vIngredient, materialCount, time);
         }
 
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
@@ -92,12 +93,12 @@ public class SingularityUtils {
             json.add("conditions", array);
 
         } else {
-            ingredient = singularity.getIngredient().toJson();
+            ingredient = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, singularity.getIngredient()).result().orElse(null);
         }
 
         json.add("ingredient", ingredient);
         json.addProperty("enabled", singularity.isEnabled());
-        json.addProperty("recipeDisabled", singularity.isRecipeDisabled());
+        json.addProperty("recipeEnabled", singularity.isRecipeEnabled());
 
 
         return json;
@@ -115,7 +116,7 @@ public class SingularityUtils {
         var nbt = makeTag(singularity);
         var stack = new ItemStack(ModItems.singularity.get());
 
-        stack.setTag(nbt);
+        stack.tag(nbt);
 
         return stack;
     }

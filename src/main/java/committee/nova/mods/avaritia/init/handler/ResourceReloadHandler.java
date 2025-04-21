@@ -4,10 +4,10 @@ import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/5/15 11:40
  * Version: 1.0
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class ResourceReloadHandler {
 
 
@@ -32,7 +32,7 @@ public class ResourceReloadHandler {
             ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            SingularityRegistryHandler.getInstance().onResourceManagerReload(serverResources.getConditionContext());
+            SingularityRegistryHandler.getInstance().onResourceManagerReload();
         }
     }
 
@@ -40,7 +40,7 @@ public class ResourceReloadHandler {
             ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(serverResources.getRecipeManager()));
+            NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(serverResources.getRecipeManager()));
         }
     }
 }

@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraft
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.SingularityUtils;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -40,7 +39,7 @@ public class InternalRecipeHandler {
         }
 
         for (var singularity : allSingularities) {
-            if (singularity.isRecipeDisabled()) {
+            if (!singularity.isEnabled() || !singularity.isRecipeEnabled()) {
                 continue;
             }
 

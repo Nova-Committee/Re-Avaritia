@@ -9,7 +9,6 @@ import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
@@ -49,8 +48,6 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-
-import java.util.Set;
 
 /**
  * Description:
