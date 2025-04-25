@@ -1,14 +1,17 @@
 package committee.nova.mods.avaritia.common.container.slot;
 
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.RecipeHolder;
+import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -59,9 +62,9 @@ public class ModCraftResultSlot extends Slot {
     @Override
     public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
         this.checkTakeAchievements(stack);
-        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> remaining = player.level().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), this.craftSlots, player.level());
-        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
+        CommonHooks.setCraftingPlayer(player);
+        NonNullList<ItemStack> remaining = player.level().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), (TierInput) this.craftSlots.asCraftInput(), player.level());
+        CommonHooks.setCraftingPlayer(null);
 
         for (int i = 0; i < remaining.size(); i++) {
             var slotStack = this.craftSlots.getItem(i);
@@ -75,7 +78,7 @@ public class ModCraftResultSlot extends Slot {
             if (!remainingStack.isEmpty()) {
                 if (slotStack.isEmpty()) {
                     this.craftSlots.setItem(i, remainingStack);
-                } else if (ItemStack.isSameItem(slotStack, remainingStack) && ItemStack.isSameItemSameTags(slotStack, remainingStack)) {
+                } else if (ItemStack.isSameItem(slotStack, remainingStack) && ItemStack.isSameItemSameComponents(slotStack, remainingStack)) {
                     remainingStack.grow(slotStack.getCount());
                     this.craftSlots.setItem(i, remainingStack);
                 } else if (!this.player.getInventory().add(remainingStack)) {
@@ -90,10 +93,10 @@ public class ModCraftResultSlot extends Slot {
     protected void checkTakeAchievements(@NotNull ItemStack pStack) {
         if (this.removeCount > 0) {
             pStack.onCraftedBy(this.player.level(), this.player, this.removeCount);
-            net.minecraftforge.event.ForgeEventFactory.firePlayerCraftingEvent(this.player, pStack, this.craftSlots);
+            EventHooks.firePlayerCraftingEvent(this.player, pStack, this.craftSlots);
         }
 
-        if (this.container instanceof RecipeHolder recipeholder) {
+        if (this.container instanceof RecipeCraftingHolder recipeholder) {
             recipeholder.awardUsedRecipes(this.player, this.craftSlots.getItems());
         }
 

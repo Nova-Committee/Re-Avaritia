@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.api.client.util.colour.Colour;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public @NotNull VertexConsumer addVertex(float x, float y, float z) {
         if (!format.hasPosition) return this;
 
         checkNewQuad();
@@ -92,7 +93,7 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
     }
 
     @Override
-    public VertexConsumer color(int red, int green, int blue, int alpha) {
+    public @NotNull VertexConsumer setColor(int red, int green, int blue, int alpha) {
         if (!format.hasColor) return this;
 
         checkNewQuad();
@@ -104,7 +105,7 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
     }
 
     @Override
-    public VertexConsumer uv(float u, float v) {
+    public @NotNull VertexConsumer setUv(float u, float v) {
         if (!format.hasUV) return this;
 
         checkNewQuad();
@@ -114,17 +115,17 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
     }
 
     @Override
-    public VertexConsumer overlayCoords(int u, int v) {
+    public @NotNull VertexConsumer setOverlay(int packedOverlay) {
         if (!format.hasOverlay) return this;
 
         checkNewQuad();
-        current.vertices[vertex].overlay[0] = u / (float) 0xF0;
-        current.vertices[vertex].overlay[1] = v / (float) 0xF0;
+        current.vertices[vertex].overlay[0] = (packedOverlay & 65535) / (float) 0xF0;
+        current.vertices[vertex].overlay[1] = (packedOverlay >> 16 & 65535) / (float) 0xF0;
         return this;
     }
 
     @Override
-    public VertexConsumer uv2(int u, int v) {
+    public @NotNull VertexConsumer setUv2(int u, int v) {
         if (!format.hasLightMap) return this;
 
         checkNewQuad();
@@ -134,7 +135,7 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z) {
+    public @NotNull VertexConsumer setNormal(float x, float y, float z) {
         if (!format.hasNormal) return this;
 
         checkNewQuad();

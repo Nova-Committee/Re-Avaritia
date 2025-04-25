@@ -22,7 +22,7 @@ import org.joml.Matrix4f;
  * @Description:
  */
 public class FireBallRender extends EntityRenderer<FireBallEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/enderdragon/dragon_fireball.png");
+    private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.tryParse("textures/entity/enderdragon/dragon_fireball.png");
     private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(TEXTURE_LOCATION);
 
     public FireBallRender(EntityRendererProvider.Context pContext) {

@@ -49,7 +49,7 @@ import java.util.stream.Stream;
  */
 @JeiPlugin
 public class AvaritiaJeiPlugin implements IModPlugin {
-    public static final ResourceLocation UID = new ResourceLocation(Static.MOD_ID, "jei_plugin");
+    public static final ResourceLocation UID = Static.rl( "jei_plugin");
 
     @Override
     public @NotNull ResourceLocation getPluginUid() {

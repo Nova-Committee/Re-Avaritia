@@ -15,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -249,10 +250,15 @@ public class ItemFilterScreen extends Screen {
     private void updateItems() {
         if (Minecraft.getInstance().player != null) {
             this.itemList.clear();
-            CompoundTag filters = Minecraft.getInstance().player.getMainHandItem().getOrCreateTag().getCompound("filters");
-            filters.getAllKeys().forEach(key -> {
-                this.itemList.add(ItemStack.of((CompoundTag) filters.get(key)));
-            });
+            Optional.ofNullable(Minecraft.getInstance().player.getMainHandItem().get(DataComponents.CUSTOM_DATA)).ifPresent(
+                    customData -> {
+                        customData.update(c -> {
+                            c.getAllKeys().forEach(key -> {
+                                this.itemList.add(ItemStack.of((CompoundTag) filters.get(key)));
+                            });
+                        });
+                    }
+                    );
         }
         setScrollOffset(0);
     }

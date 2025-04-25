@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -74,7 +75,7 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
         Slot slot = this.menu.getSlot(0);
         if (slot.hasItem()) {
             String s = name;
-            if (!slot.getItem().hasCustomHoverName() && name.equals(slot.getItem().getHoverName().getString())) {
+            if (name.equals(slot.getItem().getHoverName().getString())) {
                 s = "";
             }
 

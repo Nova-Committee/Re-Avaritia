@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.wrappers.InfinityBucketWrapper;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -24,14 +25,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidActionResult;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,11 +88,8 @@ public class InfinityBucketItem extends ResourceItem {
             return FluidStack.EMPTY;
         }
 
-        ResourceLocation fluidName = new ResourceLocation(nbt.getString(FLUID_ID_KEY));
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
-        if (fluid == null) {
-            return FluidStack.EMPTY;
-        }
+        ResourceLocation fluidName = ResourceLocation.parse(nbt.getString(FLUID_ID_KEY));
+        Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
 
         int amount = nbt.getInt(FLUID_AMOUNT_KEY);
         return new FluidStack(fluid, amount);
@@ -110,8 +105,7 @@ public class InfinityBucketItem extends ResourceItem {
     @NotNull
     public static String getFluidName(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidName = ForgeRegistries.FLUIDS.getKey(fluid);
-        if (fluidName == null) return "";
+        ResourceLocation fluidName = BuiltInRegistries.FLUID.getKey(fluid);
         return fluidName.toString();
     }
 
@@ -138,7 +132,7 @@ public class InfinityBucketItem extends ResourceItem {
         if (pLevel.isClientSide && pEntity instanceof Player player && player.getInventory().getSelected() == pStack) {
             FluidStack firstContained = getFluids(pStack).stream().findFirst().orElse(FluidStack.EMPTY);
             NumberFormat formater = DecimalFormat.getInstance();
-            String displayName = firstContained.getDisplayName().getString();
+            String displayName = firstContained.getHoverName().getString();
             String amount = formater.format(firstContained.getAmount());
             player.displayClientMessage(Component.translatable("tooltip.infinity_bucket.message", displayName, amount), true);
         }
@@ -158,7 +152,7 @@ public class InfinityBucketItem extends ResourceItem {
             return InteractionResultHolder.success(itemStack);
         }
 
-        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(itemStack).resolve().orElse(null);
+        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(itemStack).orElse(null);
         if (fluidHandler == null) {
             return InteractionResultHolder.pass(itemStack);
         }

@@ -13,17 +13,19 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.*;
 
 import static committee.nova.mods.avaritia.Static.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
+import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
 
 /**
  * Author cnlimiter
@@ -32,7 +34,7 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
  * Description
  */
 
-@Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = MOD)
 public class AvaritiaModClient {
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(Static.rl("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(Static.rl("compressed_chest_left"), "main");
@@ -78,15 +80,11 @@ public class AvaritiaModClient {
         );
     }
 
-    @SubscribeEvent
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
-
-    }
 
     @SubscribeEvent
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register("cosmic", CosmicModelLoader.INSTANCE);
-        event.register("halo", HaloModelLoader.INSTANCE);
+        event.register(Static.rl("cosmic"), CosmicModelLoader.INSTANCE);
+        event.register(Static.rl("halo"), HaloModelLoader.INSTANCE);
     }
 
     @SubscribeEvent
@@ -96,7 +94,7 @@ public class AvaritiaModClient {
     }
 
     private static void addLayer(final EntityRenderersEvent.AddLayers e, final String s) {
-        final LivingEntityRenderer entityRenderer = e.getSkin(s);
+        final LivingEntityRenderer entityRenderer = e.getSkin(PlayerSkin.Model.valueOf(s));
         entityRenderer.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>) entityRenderer));
     }
 

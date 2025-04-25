@@ -8,9 +8,8 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.HorseArmorItem;
+import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -30,11 +29,11 @@ import java.util.List;
  * @description
  * @date 2024/4/5 20:04
  */
-public class NeutronHorseArmorItem extends HorseArmorItem implements ITooltip, InitEnchantItem {
+public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, InitEnchantItem {
     private static final String TEX_PATH = "textures/item/armor/horse/neutron_horse_armor.png";
 
     public NeutronHorseArmorItem() {
-        super(Integer.MAX_VALUE, new ResourceLocation(Static.MOD_ID, TEX_PATH),
+        super(Integer.MAX_VALUE, Static.rl( TEX_PATH),
                 new Item.Properties()
                         .stacksTo(1)
                         .rarity(ModRarities.RARE)

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import committee.nova.mods.avaritia.Static;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -22,4 +23,6 @@ public class ModDataComponents {
             () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> INFINITY_BOW_TRACER = DATA_COMPONENTS.register("infinity_bow_tracer",
             () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> INFINITY_MODE = DATA_COMPONENTS.register("infinity_mode",
+            () -> DataComponentType.<CompoundTag>builder().persistent(CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG).cacheEncoding().build());
 }

@@ -32,7 +32,7 @@ import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_S
  */
 @OnlyIn(Dist.CLIENT)
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
-    private static final ResourceLocation VOID = new ResourceLocation(Static.MOD_ID, "textures/entity/void.png");
+    private static final ResourceLocation VOID = Static.rl( "textures/entity/void.png");
 
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);

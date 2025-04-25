@@ -22,7 +22,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/neutron_collector.png");
+    private static final ResourceLocation BACKGROUND = Static.rl( "textures/gui/neutron_collector.png");
     private BaseNeutronCollectorTile tile;
 
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {

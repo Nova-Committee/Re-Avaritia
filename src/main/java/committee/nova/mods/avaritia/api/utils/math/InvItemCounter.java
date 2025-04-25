@@ -33,7 +33,7 @@ public class InvItemCounter {
     private void add(int i) {
         ItemStack invItem = itemList.get(i);
         if (invItem.isEmpty()) return;
-        if (invItem.hasTag()) nbtItemIndex.add(i);
+        if (!invItem.getComponents().isEmpty()) nbtItemIndex.add(i);
         else {
             if(invItemAmount.containsKey(invItem.getItem())) invItemAmount.replace(invItem.getItem(), invItemAmount.get(invItem.getItem()) + invItem.getCount());
             else invItemAmount.put(invItem.getItem(), invItem.getCount());
@@ -47,10 +47,10 @@ public class InvItemCounter {
 
     public int getCount(ItemStack itemStack) {
         int count = 0;
-        if (itemStack.hasTag()) {
+        if (!itemStack.getComponents().isEmpty()) {
             for (Integer itemIndex : nbtItemIndex) {
                 ItemStack itemStack1 = itemList.get(itemIndex);
-                if (ItemStack.isSameItemSameTags(itemStack, itemStack1)) {
+                if (ItemStack.isSameItemSameComponents(itemStack, itemStack1)) {
                     count += itemStack.getCount();
                 }
             }

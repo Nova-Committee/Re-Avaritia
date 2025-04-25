@@ -49,7 +49,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public ResourceLocation getUid() {
-            return new ResourceLocation(Static.MOD_ID, "compressor");
+            return Static.rl( "compressor");
         }
     }
 
@@ -72,7 +72,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public ResourceLocation getUid() {
-            return new ResourceLocation(Static.MOD_ID, "crafting_table");
+            return Static.rl( "crafting_table");
         }
     }
 
@@ -94,7 +94,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public ResourceLocation getUid() {
-            return new ResourceLocation(Static.MOD_ID, "extreme_smithing");
+            return Static.rl( "extreme_smithing");
         }
     }
 }

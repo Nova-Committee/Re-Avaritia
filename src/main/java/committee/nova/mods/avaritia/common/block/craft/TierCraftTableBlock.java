@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -17,7 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,11 +33,11 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState pState, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand p_60507_, @NotNull BlockHitResult p_60508_) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult p_60508_) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
             if (tile instanceof TierCraftTile table) {
-                NetworkHooks.openScreen(serverPlayer, table, pos);
+                serverPlayer.openMenu(table, pos);
             }
         }
         return InteractionResult.SUCCESS;

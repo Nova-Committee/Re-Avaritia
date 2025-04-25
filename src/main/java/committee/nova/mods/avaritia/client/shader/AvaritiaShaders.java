@@ -9,13 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ import java.util.Objects;
  * Description:
  */
 
-@Mod.EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class AvaritiaShaders {
     public static final float[] COSMIC_UVS = new float[40];
     public static boolean inventoryRender = false;
@@ -57,7 +58,7 @@ public class AvaritiaShaders {
 
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
-        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Static.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK), e -> {
+        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), Static.rl("cosmic"), DefaultVertexFormat.BLOCK), e -> {
             cosmicShader = (CCShaderInstance) e;
             cosmicTime = Objects.requireNonNull(cosmicShader.getUniform("time"));
             cosmicYaw = Objects.requireNonNull(cosmicShader.getUniform("yaw"));
@@ -74,16 +75,16 @@ public class AvaritiaShaders {
 
 
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent event) {
-        if (!Minecraft.getInstance().isPaused() && event.phase == TickEvent.Phase.END) {
+    public static void clientTick(ClientTickEvent.Post event) {
+        if (!Minecraft.getInstance().isPaused() ) {
             ++renderTime;
         }
     }
 
     @SubscribeEvent
-    public static void renderTick(TickEvent.RenderTickEvent event) {
-        if (!Minecraft.getInstance().isPaused() && event.phase == TickEvent.Phase.START) {
-            renderFrame = event.renderTickTime;
+    public static void renderTick(RenderFrameEvent.Pre event) {
+        if (!Minecraft.getInstance().isPaused()) {
+            renderFrame = event.getPartialTick().getGameTimeDeltaTicks();
         }
     }
 

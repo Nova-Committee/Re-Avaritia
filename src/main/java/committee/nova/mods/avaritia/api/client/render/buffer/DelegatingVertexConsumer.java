@@ -1,8 +1,10 @@
 package committee.nova.mods.avaritia.api.client.render.buffer;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 /**
  * A simple {@link VertexConsumer} implementation which forwards to a delegate.
@@ -25,53 +27,38 @@ public abstract class DelegatingVertexConsumer implements ISpriteAwareVertexCons
     }
 
     @Override
-    public @NotNull VertexConsumer vertex(double x, double y, double z) {
-        delegate.vertex(x, y, z);
+    public @NotNull VertexConsumer addVertex(float x, float y, float z) {
+        delegate.addVertex(x, y, z);
         return this;
     }
 
     @Override
-    public @NotNull VertexConsumer color(int r, int g, int b, int a) {
-        delegate.color(r, g, b, a);
+    public @NotNull VertexConsumer setColor(int red, int green, int blue, int alpha) {
+        delegate.setColor(red, green, blue, alpha);
         return this;
     }
 
     @Override
-    public @NotNull VertexConsumer uv(float u, float v) {
-        delegate.uv(u, v);
+    public @NotNull VertexConsumer setUv(float u, float v) {
+        delegate.setUv(u, v);
         return this;
     }
 
     @Override
-    public @NotNull VertexConsumer overlayCoords(int u, int v) {
-        delegate.overlayCoords(u, v);
+    public @NotNull VertexConsumer setUv1(int u, int v) {
+        delegate.setUv1(u, v);
         return this;
     }
 
     @Override
-    public @NotNull VertexConsumer uv2(int u, int v) {
-        delegate.uv2(u, v);
+    public @NotNull VertexConsumer setUv2(int u, int v) {
+        delegate.setUv2(u, v);
         return this;
     }
 
     @Override
-    public @NotNull VertexConsumer normal(float x, float y, float z) {
-        delegate.normal(x, y, z);
+    public @NotNull VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
+        delegate.setNormal(normalX, normalY, normalZ);
         return this;
-    }
-
-    @Override
-    public void endVertex() {
-        delegate.endVertex();
-    }
-
-    @Override
-    public void defaultColor(int r, int g, int b, int a) {
-        delegate.defaultColor(r, g, b, a);
-    }
-
-    @Override
-    public void unsetDefaultColor() {
-        delegate.unsetDefaultColor();
     }
 }

@@ -30,8 +30,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,12 +48,12 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof CompressedChestTile chestTile) {
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, pos);
+                player.openMenu(chestTile, pos);
             }
         }
         return InteractionResult.SUCCESS;

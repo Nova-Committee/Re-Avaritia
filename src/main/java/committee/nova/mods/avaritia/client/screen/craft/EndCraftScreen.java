@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class EndCraftScreen extends BaseContainerScreen<TierCraftMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/craft/end_crafting_table_gui.png");
+    private static final ResourceLocation BACKGROUND = Static.rl( "textures/gui/craft/end_crafting_table_gui.png");
 
     public EndCraftScreen(TierCraftMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 200, 242);

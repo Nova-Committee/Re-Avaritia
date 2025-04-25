@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity> {
 
-    private static final ResourceLocation tex = new ResourceLocation(Static.MOD_ID, "textures/entity/heavenarrow.png");
+    private static final ResourceLocation tex = Static.rl( "textures/entity/heavenarrow.png");
 
 
     public TracerArrowRender(EntityRendererProvider.Context p_174008_) {

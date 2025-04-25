@@ -54,14 +54,14 @@ public class InfinityUpgradeItem extends ResourceItem {
                     collectorTile.setTier(CollectorTier.DENSE);
                     level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_collector.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                    itemInHand.consume(1, serverPlayer);
                     return InteractionResult.SUCCESS;
                 }
                 case DENSE -> {
                     collectorTile.setTier(CollectorTier.DENSER);
                     level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                    itemInHand.consume(1, serverPlayer);
                     return InteractionResult.SUCCESS;
                 }
                 default -> {

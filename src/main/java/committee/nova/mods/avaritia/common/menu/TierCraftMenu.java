@@ -14,8 +14,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,9 +29,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final Level world;
-    private final Container result;
+    private final ResultContainer result;
     private final Player player;
     private final ModCraftTier tier;
+    private final ModCraftContainer matrix;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
         this(type, id, playerInventory, buf.readBlockPos(), tier);
@@ -44,9 +47,9 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.result = new ResultContainer();
         this.tier = tier;
 
-        var matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
+        this.matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
 
-        this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, 0, tier.outX, tier.outY));
+        this.addSlot(new ResultSlot(this.player, matrix, this.result, 0, tier.outX, tier.outY));
 
         int i, j;
         for (i = 0; i < tier.size; i++) {
@@ -102,10 +105,11 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), matrix, this.world);
+        var inventory = this.matrix.asCraftInput();
+        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world);
 
         if (recipe.isPresent()) {
-            var result = recipe.get().assemble(matrix, this.world.registryAccess());
+            var result = recipe.get().value().assemble(inventory, this.world.registryAccess());
             this.result.setItem(0, result);
         } else {
             this.result.setItem(0, ItemStack.EMPTY);

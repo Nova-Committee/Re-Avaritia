@@ -1,13 +1,11 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.crafting.condition.InfinityCatalystCondition;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -37,9 +35,7 @@ public class ModRecipeSerializers {
 
     @SubscribeEvent
     public static void registerRecipeSerializers(RegisterEvent event) {
-        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
-            CraftingHelper.register(InfinityCatalystCondition.Serializer.INSTANCE);
-        }
+
     }
 
 }

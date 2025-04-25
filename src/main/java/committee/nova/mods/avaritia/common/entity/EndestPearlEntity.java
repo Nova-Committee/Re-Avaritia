@@ -7,8 +7,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -45,11 +42,6 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         return ModItems.endest_pearl.get();
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
     private ParticleOptions getParticle() {
         ItemStack itemstack = this.getItemRaw();
         return itemstack.isEmpty() ? ParticleTypes.PORTAL : new ItemParticleOption(ParticleTypes.ITEM, itemstack);
@@ -72,13 +64,11 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult pos) {
+    protected void onHitEntity(@NotNull EntityHitResult pos) {
         super.onHitEntity(pos);
         Entity entity = pos.getEntity();
 
-        if (entity != null) {
-            entity.hurt(this.damageSources().thrown(this, getOwner()), 0.0F);
-        }
+        entity.hurt(this.damageSources().thrown(this, getOwner()), 0.0F);
 
         if (!level().isClientSide) {
             GapingVoidEntity ent;
@@ -87,10 +77,8 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             } else ent = new GapingVoidEntity(level());
 
             Direction dir = entity.getDirection();
-            Vec3 offset = Vec3.ZERO;
-            if (dir != null) {
-                offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
-            }
+            Vec3 offset;
+            offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
             if (shooter != null) {
                 ent.setUser(shooter);
             }
@@ -114,10 +102,8 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
 
             } else ent = new GapingVoidEntity(level());
             Direction dir = result.getDirection();
-            Vec3 offset = Vec3.ZERO;
-            if (dir != null) {
-                offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
-            }
+            Vec3 offset;
+            offset = new Vec3(dir.getStepX(), dir.getStepY(), dir.getStepZ());
             if (shooter != null) {
                 ent.setUser(shooter);
             }

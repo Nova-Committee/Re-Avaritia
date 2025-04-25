@@ -30,7 +30,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
     private final CyclingSlotBackground additionalIcon2 = new CyclingSlotBackground(3);
     private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
-    private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = new ResourceLocation("item/empty_slot_smithing_template_netherite_upgrade");
+    private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = ResourceLocation.tryParse("item/empty_slot_smithing_template_netherite_upgrade");
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, SMITHING_LOCATION);

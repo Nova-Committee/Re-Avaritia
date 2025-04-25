@@ -18,7 +18,7 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
  * @Description:
  */
 public class NeutronRingScreen extends BaseContainerScreen<NeutronRingMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/neutron_ring.png");
+    private static final ResourceLocation BACKGROUND = Static.rl( "textures/gui/neutron_ring.png");
 
     public NeutronRingScreen(NeutronRingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, BACKGROUND, 256, 276, 256, 276);

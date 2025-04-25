@@ -2,9 +2,8 @@ package committee.nova.mods.avaritia.common.container.slot;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,6 +27,6 @@ public class ModCraftRecipeSlot extends SlotItemHandler {
     @NotNull
     @Override
     public ItemStack getItem() {
-        return ItemHandlerHelper.copyStackWithSize(super.getItem(), 1);
+        return super.getItem().copyWithCount(1);
     }
 }

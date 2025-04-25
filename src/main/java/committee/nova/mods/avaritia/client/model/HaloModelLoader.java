@@ -18,10 +18,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
-import net.minecraftforge.client.RenderTypeGroup;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.RenderTypeGroup;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -119,11 +119,11 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
         public static void unpack(final int[] from, final float[] to, final VertexFormat formatFrom, final int v, final int e) {
             final int length = Math.min(4, to.length);
             final VertexFormatElement element = formatFrom.getElements().get(e);
-            final int vertexStart = v * formatFrom.getVertexSize() + formatFrom.getOffset(e);
-            final int count = element.getElementCount();
-            final VertexFormatElement.Type type = element.getType();
-            final VertexFormatElement.Usage usage = element.getUsage();
-            final int size = type.getSize();
+            final int vertexStart = v * formatFrom.getVertexSize() + formatFrom.getOffset(VertexFormatElement.byId(e));
+            final int count = element.count();
+            final VertexFormatElement.Type type = element.type();
+            final VertexFormatElement.Usage usage = element.usage();
+            final int size = type.size();
             final int mask = (256 << 8 * (size - 1)) - 1;
             for (int i = 0; i < length; ++i) {
                 if (i < count) {
@@ -164,7 +164,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
                 int e2;
                 for (e2 = 0; e2 < toCount; ++e2) {
                     final VertexFormatElement current = to.getElements().get(e2);
-                    if (expected.getUsage() == current.getUsage() && expected.getIndex() == current.getIndex()) {
+                    if (expected.usage() == current.usage() && expected.index() == current.index()) {
                         break;
                     }
                 }
@@ -223,13 +223,13 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
         }
 
         @Override
-        public BakedModel bake(final IGeometryBakingContext owner, final ModelBaker bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
-            final BakedModel bakedBaseModel = this.baseModel.bake(bakery, this.baseModel, spriteGetter, modelTransform, modelLocation, false);
+        public BakedModel bake(final IGeometryBakingContext owner, final ModelBaker bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides) {
+            final BakedModel bakedBaseModel = this.baseModel.bake(bakery, this.baseModel, spriteGetter, modelTransform, false);
             //Static.LOGGER.info("test0"+ this.texture);
             Material particleLocation = this.baseModel.getMaterial(this.texture);
             TextureAtlasSprite particle =
                     spriteGetter.apply(particleLocation);
-            //Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(Static.MOD_ID, "misc/halo"));
+            //Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Static.rl( "misc/halo"));
             //Static.LOGGER.info("test1"+ particle.toString());
             return new HaloBakedModel(tintLayers(bakedBaseModel, layerColors), particle, this.color, this.size, this.pulse);
         }

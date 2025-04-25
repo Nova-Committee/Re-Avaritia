@@ -27,11 +27,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -115,8 +115,8 @@ public class GapingVoidEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(AGE_PARAMETER, 0);
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        builder.define(AGE_PARAMETER, 0);
 
     }
 
@@ -135,14 +135,7 @@ public class GapingVoidEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
     public void tick() {
-        //super.tick();
-
         double posX = this.getX();
         double posY = this.getY();
         double posZ = this.getZ();
@@ -265,7 +258,7 @@ public class GapingVoidEntity extends Entity {
                         if (dist <= nomrange && !level().getBlockState(blockPos).isAir()) {
                             BlockState state = level().getBlockState(blockPos);
                             BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level(), blockPos, state, fakePlayer);
-                            MinecraftForge.EVENT_BUS.post(event);
+                            NeoForge.EVENT_BUS.post(event);
                             if (!event.isCanceled()) {
                                 float resist = state.getBlock().getExplosionResistance();
                                 if (resist <= 10.0) {
@@ -283,7 +276,7 @@ public class GapingVoidEntity extends Entity {
 
     @Override
     public boolean canBeCollidedWith() {
-        return false;
+        return super.canBeCollidedWith();
     }
 
     @Override

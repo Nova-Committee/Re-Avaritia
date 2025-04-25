@@ -31,7 +31,7 @@ import java.util.Arrays;
  */
 public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmithingRecipe> {
     public static final RecipeType<ExtremeSmithingRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_smithing", ExtremeSmithingRecipe.class);
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png");
+    private static final ResourceLocation TEXTURE = Static.rl( "textures/gui/jei/extreme_smithing_jei.png");
     private final IDrawable background;
     private final IDrawable icon;
 

@@ -11,13 +11,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -128,7 +129,7 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
+    public void appendHoverText(@NotNull ItemStack pStack, Item.@NotNull TooltipContext context, @NotNull List<Component> pTooltip, @NotNull TooltipFlag pFlag) {
         if (Minecraft.getInstance().player == null) return;
         if (!pStack.hasTag()) return;
         if (pStack.getTag().contains("BlockEntityTag")) {
@@ -146,27 +147,27 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
-        if (!level.isClientSide() && !player.isSpectator()) {
-            var tile = level.getBlockEntity(pos);
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
+        if (!pLevel.isClientSide() && !pPlayer.isSpectator()) {
+            var tile = pLevel.getBlockEntity(pPos);
 
             if (tile instanceof BlackHoleTile chestTile) {
                 if (chestTile.getOwner() == null) {
-                    chestTile.setOwner(player.getUUID());
+                    chestTile.setOwner(pPlayer.getUUID());
                     chestTile.setLocked(false);
                 }
 
                 if (chestTile.getChannelOwner() == null || chestTile.getChannelID() < 0) {
-                    chestTile.setChannelOwner(player.getUUID());
+                    chestTile.setChannelOwner(pPlayer.getUUID());
                     chestTile.setChannelId(0);
                 }
 
                 if (chestTile.getChannelInfo() == null)
-                    NetworkHooks.openScreen((ServerPlayer) player, new ChannelMenuProvider(chestTile), buf -> {
+                    NetworkHooks.openScreen((ServerPlayer) pPlayer, new ChannelMenuProvider(chestTile), buf -> {
                     });
                 else {
-                    NetworkHooks.openScreen((ServerPlayer) player, new ChannelMenuProvider(chestTile), buf -> {
-                        buf.writeBlockPos(pos);
+                    NetworkHooks.openScreen((ServerPlayer) pPlayer, new ChannelMenuProvider(chestTile), buf -> {
+                        buf.writeBlockPos(pPos);
                         buf.writeInt(-2);
                         buf.writeUUID(chestTile.getOwner());
                         buf.writeBoolean(chestTile.isLocked());
@@ -281,7 +282,7 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
 
 
     @Override
-    public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
+    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
     }
 

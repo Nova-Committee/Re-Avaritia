@@ -4,6 +4,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +19,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
-        this.pickupDelay = 5;
+        this.setPickUpDelay(5);
         this.lifespan = 3600;
 
     }
@@ -50,7 +51,7 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean ignoreExplosion() {
+    public boolean ignoreExplosion(@NotNull Explosion explosion) {
         return true;
     }
 }

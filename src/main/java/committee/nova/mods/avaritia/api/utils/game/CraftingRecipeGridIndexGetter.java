@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.utils.game;
 
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 
 import java.util.ArrayList;
 
@@ -16,14 +16,14 @@ public class CraftingRecipeGridIndexGetter {
     private int last = 0;
 
     public CraftingRecipeGridIndexGetter(CraftingRecipe craftingRecipe) {
-        if (craftingRecipe instanceof IShapedRecipe<?> recipe) {
+        if (craftingRecipe instanceof ShapedRecipe recipe) {
             int x = 0;
             int y;
-            if (recipe.getRecipeWidth() == 1) x = 1;
-            if (recipe.getRecipeHeight() == 1) y = 1;
-            else y = 3 - recipe.getRecipeHeight();
-            for (int i = y; i < recipe.getRecipeHeight() + y; i++) {
-                for (int j = x; j < recipe.getRecipeWidth() + x; j++) {
+            if (recipe.getWidth() == 1) x = 1;
+            if (recipe.getHeight() == 1) y = 1;
+            else y = 3 - recipe.getHeight();
+            for (int i = y; i < recipe.getHeight() + y; i++) {
+                for (int j = x; j < recipe.getWidth() + x; j++) {
                     indexArray.add(i * 3 + j);
                 }
             }

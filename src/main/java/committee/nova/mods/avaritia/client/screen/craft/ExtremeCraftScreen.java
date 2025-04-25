@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
  * Version: 1.0
  */
 public class ExtremeCraftScreen extends BaseContainerScreen<TierCraftMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/craft/extreme_crafting_table_gui.png");
+    private static final ResourceLocation BACKGROUND = Static.rl( "textures/gui/craft/extreme_crafting_table_gui.png");
 
     public ExtremeCraftScreen(TierCraftMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND, 234, 278, 512, 512);

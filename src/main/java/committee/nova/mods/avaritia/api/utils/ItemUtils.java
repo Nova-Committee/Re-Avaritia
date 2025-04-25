@@ -6,6 +6,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import committee.nova.mods.avaritia.api.utils.vec.Vector3;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -35,9 +37,8 @@ public class ItemUtils {
     }
 
     public static String getId(Item item) {
-        ResourceLocation resource = ForgeRegistries.ITEMS.getKey(item);
-        if (resource == null) return "minecraft:air";
-        else return resource.toString();
+        ResourceLocation resource = BuiltInRegistries.ITEM.getKey(item);
+        return resource.toString();
     }
 
     public static String getId(ItemStack itemStack) {
@@ -47,7 +48,7 @@ public class ItemUtils {
     public static Item getItem(String id) {
         String resourceId = id;
         if (id.contains("{") && id.endsWith("}")) resourceId = resourceId.substring(0, id.indexOf("{"));
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(resourceId));
+        return BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(resourceId));
     }
 
     public static ItemStack getItemStack(String id) {
@@ -69,7 +70,7 @@ public class ItemUtils {
             try {
                 String nbtString = id.substring(id.indexOf("{"));
                 CompoundTag nbt = TagParser.parseTag(nbtString);
-                itemStack.setTag(nbt);
+                itemStack.get(DataComponents.CUSTOM_DATA).update();
             } catch (Exception e) {
                 if (throwException) throw e;
                 LOGGER.error("Failed to parse NBT data", e);

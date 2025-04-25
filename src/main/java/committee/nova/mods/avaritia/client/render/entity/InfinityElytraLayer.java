@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class InfinityElytraLayer<T extends LivingEntity, M extends EntityModel<T>> extends ElytraLayer<T, M> {
-    private static final ResourceLocation WINGS_LOCATION = new ResourceLocation(Static.MOD_ID, "textures/entity/infinity_elytra.png");
+    private static final ResourceLocation WINGS_LOCATION = Static.rl( "textures/entity/infinity_elytra.png");
 
     public InfinityElytraLayer(RenderLayerParent<T, M> pRenderer, EntityModelSet pModelSet) {
         super(pRenderer, pModelSet);

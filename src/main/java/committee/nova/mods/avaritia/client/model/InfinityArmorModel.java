@@ -147,19 +147,19 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         return LayerDefinition.create(m, 64, 64);
     }
 
-    private void renderToBufferWing(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    private void renderToBufferWing(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int color) {
         final ModelPart h = this.rebuildWings().bakeRoot();
         ModelPart bipedRightWing = h.getChild("bipedRightWing");
         ModelPart bipedLeftWing = h.getChild("bipedLeftWing");
-        bipedRightWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-        bipedLeftWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        bipedRightWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, color);
+        bipedLeftWing.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, color);
     }
 
     @Override
-    public void renderToBuffer(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public void renderToBuffer(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int color) {
         final InfinityArmorModel model = new InfinityArmorModel(this.rebuildWings().bakeRoot(), 0);
         this.copyBipedAngles(this, this.humanoidModel);
-        super.renderToBuffer(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        super.renderToBuffer(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, color);
         final long time = this.mc.player.level().getGameTime();
         final double pulse = Math.sin(time / 10.0) * 0.5 + 0.5;
         final double pulse_mag_sqr = pulse * pulse * pulse * pulse * pulse * pulse;
@@ -187,20 +187,20 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         pPoseStack.pushPose();
         pPoseStack.scale(f, f, f);
         pPoseStack.translate(0.0, this.babyYHeadOffset / 16.0f * f3, 0.0);
-        this.head.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        this.head.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, color);
         if (InfinityArmorModel.modelRender && !InfinityArmorModel.player) {
-            this.hatsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, InfinityArmorModel::mask2), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+            this.hatsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, InfinityArmorModel::mask2), pPackedLight, pPackedOverlay, color));
         }
         pPoseStack.popPose();
 
         pPoseStack.pushPose();
         pPoseStack.scale(f2, f2, f2);
         pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
-        this.bodyParts().forEach(t -> t.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+        this.bodyParts().forEach(t -> t.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, color));
         if (InfinityArmorModel.modelRender && !InfinityArmorModel.player) {
-            this.bodyPartsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, InfinityArmorModel::mask2), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+            this.bodyPartsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, InfinityArmorModel::mask2), pPackedLight, pPackedOverlay, color));
         }
-        this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(this.glow(this.eyeTex)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5)));
+        this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(this.glow(this.eyeTex)), pPackedLight, pPackedOverlay, (int) (pulse_mag_sqr * 0.5)));
         pPoseStack.popPose();
 
         pPoseStack.pushPose();
@@ -208,11 +208,11 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         final float[] col = ColorUtils.HSVtoRGB(this.random.nextFloat() * 6.0f, 1.0f, 1.0f);
         pPoseStack.scale(f, f, f);
         pPoseStack.translate(0.0, this.babyYHeadOffset / 16.0f * f3, -0.029999999329447746);
-        this.hat.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        this.hat.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, color);
         if (InfinityArmorModel.modelRender) {
             this.hat.render(pPoseStack, this.vertex(RenderType.create("", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 0,
                     RenderType.CompositeState.builder()
-                            .setShaderState(RenderType.POSITION_COLOR_TEX_SHADER)
+                            .setShaderState(RenderType.POSITION_COLOR_SHADER)
                             .setTextureState(new RenderStateShard.TextureStateShard(this.eyeTex, false, false))
                             .setCullState(RenderType.NO_CULL)
                             .createCompositeState(true))), pPackedLight, pPackedOverlay, col[0], col[1], col[2], 1.0f);
@@ -224,9 +224,9 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             this.rebuildWings();
             pPoseStack.scale(f2, f2, f2);
             pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
-            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(this.wingTex)), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(this.wingTex)), pPackedLight, pPackedOverlay, color);
             Static.LOGGER.info(material(WING));
-            model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, color);
             model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(this.glow(this.wingGlowTex)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5));
             pPoseStack.popPose();
         }

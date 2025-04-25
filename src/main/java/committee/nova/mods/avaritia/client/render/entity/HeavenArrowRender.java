@@ -30,7 +30,7 @@ import org.joml.Matrix4f;
 @OnlyIn(Dist.CLIENT)
 public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity> {
 
-    private static final ResourceLocation tex = new ResourceLocation(Static.MOD_ID, "textures/entity/heavenarrow.png");
+    private static final ResourceLocation tex = Static.rl( "textures/entity/heavenarrow.png");
 
 
     public HeavenArrowRender(EntityRendererProvider.Context p_174008_) {

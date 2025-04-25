@@ -25,16 +25,16 @@ public class TransformingVertexConsumer extends DelegatingVertexConsumer {
     }
 
     @Override
-    public @NotNull VertexConsumer vertex(double x, double y, double z) {
+    public @NotNull VertexConsumer addVertex(float x, float y, float z) {
         storage.set(x, y, z);
         transform.apply(storage);
-        return super.vertex(storage.x, storage.y, storage.z);
+        return super.addVertex((float) storage.x, (float) storage.y, (float) storage.z);
     }
 
     @Override
-    public @NotNull VertexConsumer normal(float x, float y, float z) {
-        storage.set(x, y, z);
+    public @NotNull VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
+        storage.set(normalX, normalY, normalZ);
         transform.applyN(storage);
-        return delegate.normal((float) storage.x, (float) storage.y, (float) storage.z);
+        return delegate.setNormal((float) storage.x, (float) storage.y, (float) storage.z);
     }
 }

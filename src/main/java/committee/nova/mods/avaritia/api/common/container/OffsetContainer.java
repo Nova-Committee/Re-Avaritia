@@ -8,7 +8,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -106,8 +106,9 @@ public interface OffsetContainer extends Container {
             return ItemStack.EMPTY;
         } else {
             ItemStack stack = container.getStack();
+            stack.setCount((int) container.getCount());
             //int size = (int)Math.min(container.getCount(), stack.getMaxStackSize());
-            return ItemHandlerHelper.copyStackWithSize(stack, (int) container.getCount());
+            return stack;
         }
     }
 

@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import static committee.nova.mods.avaritia.init.registry.ModDataComponents.INFINITY_MODE;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -18,13 +20,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ISwitchable {
     default boolean isActive(ItemStack stack, String funcName) {
-        if (!stack.getOrCreateTagElement("mode").contains(funcName)) return false;
-        return stack.getOrCreateTagElement("mode").getBoolean(funcName);
+        if (!stack.getOrDefault(INFINITY_MODE, new CompoundTag()).contains(funcName)) return false;
+        return stack.getOrDefault(INFINITY_MODE, new CompoundTag()).getBoolean(funcName);
     }
 
     default void switchMode(@NotNull Level world, Player player, @NotNull InteractionHand hand, String funcName) {
         ItemStack stack = player.getItemInHand(hand);
-        CompoundTag tags = stack.getOrCreateTagElement("mode");
+        CompoundTag tags = stack.getOrDefault(INFINITY_MODE, new CompoundTag());
         Component funcTooltip = Component.translatable("tooltip.avaritia.tool." + funcName);
         tags.putBoolean(funcName, !tags.getBoolean(funcName));
         if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)

@@ -34,7 +34,7 @@ import java.util.List;
 public class ExtremeCraftingTableCategory implements IRecipeCategory<BaseTableCraftingRecipe> {
 
     public static final RecipeType<BaseTableCraftingRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_craft", BaseTableCraftingRecipe.class);
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Static.MOD_ID, "textures/gui/jei/tables/extreme_jei.png");
+    private static final ResourceLocation TEXTURE = Static.rl( "textures/gui/jei/tables/extreme_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;

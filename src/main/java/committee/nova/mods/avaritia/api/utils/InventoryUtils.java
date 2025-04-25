@@ -4,13 +4,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,15 +33,15 @@ public class InventoryUtils {
      * @return 存入完返回的剩余物品
      */
     public static ItemStack tryInsert(ItemStack itemInv, ItemStack stack) {
-        AtomicReference<ItemStack> returnStack = new AtomicReference<>(ItemHandlerHelper.copyStackWithSize(stack, stack.getCount()));
-        itemInv.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
+        AtomicReference<ItemStack> returnStack = new AtomicReference<>(stack.copyWithCount(stack.getCount()));
+        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
             returnStack.set(ItemHandlerHelper.insertItem(h, stack, false));
         });
         return returnStack.get();
     }
 
     public static ItemStack tryFilteredInsert(ItemStack itemInv, ItemStack stack) {
-        if (itemInv.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent() && itemInvHasItem(itemInv, stack)) {
+        if (Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).isPresent() && itemInvHasItem(itemInv, stack)) {
             return tryInsert(itemInv, stack);
         }
         return stack;
@@ -54,7 +55,7 @@ public class InventoryUtils {
      */
     private static boolean itemInvHasItem(ItemStack itemInv, ItemStack stack) {
         AtomicBoolean hasItem = new AtomicBoolean(false);
-        itemInv.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
+        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
             for (int i = 0; i < h.getSlots(); i++) {
                 if (h.getStackInSlot(i).getItem() == stack.getItem()) {
                     hasItem.set(true);
@@ -76,7 +77,7 @@ public class InventoryUtils {
      */
     public static int getFirstSlotWithStack(ItemStack itemInv, ItemStack stack) {
         AtomicInteger slot = new AtomicInteger(-1);
-        itemInv.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
+        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
             for (int i = 0; i < h.getSlots(); i++) {
                 if (h.getStackInSlot(i).getItem() == stack.getItem()) {
                     slot.set(i);
@@ -94,7 +95,7 @@ public class InventoryUtils {
      */
     private static int getLastSlotWithStack(ItemStack itemInv, ItemStack stack) {
         AtomicInteger slot = new AtomicInteger(-1);
-        itemInv.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
+        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
             for (int i = h.getSlots() - 1; i >= 0; i--) {
                 if (h.getStackInSlot(i).getItem() == stack.getItem()) {
                     slot.set(i);

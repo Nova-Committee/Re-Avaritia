@@ -13,6 +13,7 @@ import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 import org.openzen.zencode.java.ZenCodeType;
 
 /**
@@ -27,16 +28,16 @@ public class CompressorCrafting implements IRecipeManager<ICompressorRecipe> {
     private static final CompressorCrafting INSTANCE = new CompressorCrafting();
 
     @ZenCodeType.Method
-    public static void addRecipe(String name, IIngredient input, IItemStack output, int inputCount, int timeCost) {
+    public void addRecipe(String name, IIngredient input, IItemStack output, int inputCount, int timeCost) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new CompressorRecipe(id, input.asVanillaIngredient(), output.getInternal(), inputCount, timeCost);
+        var recipe = new CompressorRecipe(input.asVanillaIngredient(), output.getInternal(), inputCount, timeCost);
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE,  createHolder(id, recipe)));
     }
 
     @ZenCodeType.Method
     public static void remove(IItemStack stack) {
-        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(INSTANCE, recipe -> recipe.getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
+        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(INSTANCE, recipe -> recipe.value().getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
     }
 
     @Override

@@ -16,10 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.PlantType;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,20 +58,19 @@ public class SoulFarmLandBlock extends BaseBlock {
         return SHAPE;
     }
 
-
     @Override
     @Nullable
-    public BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        if (toolAction.equals(ToolActions.HOE_TILL) && context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
+    public BlockState getToolModifiedState(@NotNull BlockState state, @NotNull UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        if (itemAbility.equals(ItemAbilities.HOE_TILL) && context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
             return ModBlocks.soul_farmland.get().defaultBlockState();
         }
         return null;
     }
 
+
     @Override
-    public boolean canSustainPlant(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull Direction facing, net.minecraftforge.common.@NotNull IPlantable plantable) {
-        PlantType type = plantable.getPlantType(world, pos);
-        return type == PlantType.CROP || type == PlantType.NETHER || type == PlantType.BEACH || type == PlantType.DESERT || type == PlantType.PLAINS;
+    public @NotNull TriState canSustainPlant(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull Direction facing, BlockState plantable) {
+        return TriState.TRUE;
     }
 
 
@@ -103,10 +101,9 @@ public class SoulFarmLandBlock extends BaseBlock {
             if (aboveBlock instanceof BonemealableBlock growable
                     && level.random.nextFloat() <= ModConfig.growthSoulFarmland.get()
             ) {
-                if (growable.isValidBonemealTarget(level, pos.above(), aboveState, false) && ForgeHooks.onCropsGrowPre(level, pos.above(), aboveState, true)) {
+                if (growable.isValidBonemealTarget(level, pos.above(), aboveState)) {
                     growable.performBonemeal(level, level.random, pos.above(), aboveState);
                     level.levelEvent(2005, pos.above(), 0);
-                    ForgeHooks.onCropsGrowPost(level, pos.above(), aboveState);
                 }
             }
         }

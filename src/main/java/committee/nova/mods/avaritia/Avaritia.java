@@ -34,6 +34,7 @@ public class Avaritia {
         ModEntities.ENTITIES.register(modEventBus);
         ModRecipeTypes.RECIPES.register(modEventBus);
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
+        ModIngredients.INGREDIENT.register(modEventBus);
 
     }
 

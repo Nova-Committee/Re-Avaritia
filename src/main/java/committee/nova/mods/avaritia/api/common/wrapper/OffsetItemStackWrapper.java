@@ -6,8 +6,7 @@ import committee.nova.mods.avaritia.util.StorageUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.IntSupplier;
@@ -138,7 +137,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
         StorageItem container = this.getContainerInSlot(slot);
         ItemStack stack = container.getStack();
         int size = (int)Math.min(container.getCount(), stack.getMaxStackSize());
-        return ItemHandlerHelper.copyStackWithSize(stack, container.getCount() > 64 ? (int) container.getCount() : size);
+        return stack.copyWithCount(container.getCount() > 64 ? (int) container.getCount() : size);
     }
 
     @Override
@@ -152,7 +151,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
             ItemStack stackInSlot = container.getStack();
             long limit = this.getSlotLimitLong(slot);
             if (!container.isEmpty()) {
-                if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot)) {
+                if (!ItemStack.isSameItemSameComponents(stack, stackInSlot)) {
                     return stack;
                 }
 
@@ -171,7 +170,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
                     }
                 }
 
-                return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - toInsert);
+                return stack.copyWithCount(stack.getCount() - toInsert);
             }
         }
     }
@@ -196,7 +195,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
                     }
                 }
 
-                return ItemHandlerHelper.copyStackWithSize(stackInSlot, toExtract);
+                return stackInSlot.copyWithCount(toExtract);
             }
         }
     }

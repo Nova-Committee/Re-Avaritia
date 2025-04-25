@@ -9,10 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Arrays;
 
@@ -42,10 +42,10 @@ public class PlayerUtils {
             BlockSnapshot before = BlockSnapshot.create(level.dimension(), level, pos);
             level.setBlockAndUpdate(pos, state);
             BlockEvent.EntityPlaceEvent evt = new BlockEvent.EntityPlaceEvent(before, Blocks.AIR.defaultBlockState(), player);
-            MinecraftForge.EVENT_BUS.post(evt);
+            NeoForge.EVENT_BUS.post(evt);
             if (evt.isCanceled()) {
                 level.restoringBlockSnapshots = true;
-                before.restore(true, false);
+                before.restore();
                 level.restoringBlockSnapshots = false;
                 return false;
             } else {

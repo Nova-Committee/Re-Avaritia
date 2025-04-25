@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
-import committee.nova.mods.avaritia.api.utils.data.RawValue;
+import committee.nova.mods.avaritia.common.ingredient.ItemIngredient;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Description:
@@ -50,7 +49,7 @@ public class Static {
     }
 
     public static Ingredient getIngredient(String modid, String name) {
-        return Ingredient.fromValues(Stream.of(new RawValue(ResourceLocation.fromNamespaceAndPath(modid, name))));
+        return new ItemIngredient(ResourceLocation.fromNamespaceAndPath(modid, name)).toVanilla();
     }
 
     public static Item getItem(String modid, String name) {

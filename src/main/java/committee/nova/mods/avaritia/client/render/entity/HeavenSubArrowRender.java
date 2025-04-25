@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
 
-    private static final ResourceLocation tex = new ResourceLocation(Static.MOD_ID, "textures/entity/heavenarrow.png");
+    private static final ResourceLocation tex = Static.rl( "textures/entity/heavenarrow.png");
 
 
     public HeavenSubArrowRender(EntityRendererProvider.Context p_174008_) {

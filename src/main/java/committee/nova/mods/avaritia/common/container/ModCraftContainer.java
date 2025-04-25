@@ -1,10 +1,12 @@
 package committee.nova.mods.avaritia.common.container;
 
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -88,5 +90,11 @@ public class ModCraftContainer extends TransientCraftingContainer {
         for (int i = 0; i < this.getContainerSize(); i++) {
             this.inventory.setStackInSlot(i, ItemStack.EMPTY);
         }
+    }
+
+    @Override
+    public @NotNull TierInput asCraftInput() {
+        var tier = Math.floorDiv(this.getWidth(), 2);
+        return TierInput.of(this.getWidth(), this.getHeight(), this.inventory.getStacks(), tier);
     }
 }

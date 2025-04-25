@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.api.common.wrapper;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -95,16 +95,13 @@ public class ItemStackWrapper implements BaseItemWrapper {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         ListTag nbtTagList = new ListTag();
-        for (int i = 0; i < stacks.size(); i++)
-        {
-            if (!stacks.get(i).isEmpty())
-            {
+        for (int i = 0; i < stacks.size(); i++) {
+            if (!stacks.get(i).isEmpty()) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt("Slot", i);
-                stacks.get(i).save(itemTag);
-                nbtTagList.add(itemTag);
+                nbtTagList.add(stacks.get(i).save(provider, itemTag));
             }
         }
         CompoundTag nbt = new CompoundTag();
@@ -114,17 +111,15 @@ public class ItemStackWrapper implements BaseItemWrapper {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.@NotNull Provider provider, CompoundTag nbt) {
         setSize(nbt.contains("Size", Tag.TAG_INT) ? nbt.getInt("Size") : stacks.size());
         ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); i++)
-        {
+        for (int i = 0; i < tagList.size(); i++) {
             CompoundTag itemTags = tagList.getCompound(i);
             int slot = itemTags.getInt("Slot");
 
-            if (slot >= 0 && slot < stacks.size())
-            {
-                stacks.set(slot, ItemStack.of(itemTags));
+            if (slot >= 0 && slot < stacks.size()) {
+                ItemStack.parse(provider, itemTags).ifPresent(stack -> stacks.set(slot, stack));
             }
         }
     }
@@ -195,14 +190,20 @@ public class ItemStackWrapper implements BaseItemWrapper {
     public ItemStack insertItemSuper(int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
+
         if (!isItemValid(slot, stack))
             return stack;
+
         validateSlotIndex(slot);
+
         ItemStack existing = this.stacks.get(slot);
+
         int limit = getStackLimit(slot, stack);
+
         if (!existing.isEmpty()) {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!ItemStack.isSameItemSameComponents(stack, existing))
                 return stack;
+
             limit -= existing.getCount();
         }
 
@@ -213,41 +214,45 @@ public class ItemStackWrapper implements BaseItemWrapper {
 
         if (!simulate) {
             if (existing.isEmpty()) {
-                this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
-            }
-            else {
+                this.stacks.set(slot, reachedLimit ? stack.copyWithCount(limit) : stack);
+            } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
             onContentsChanged(slot);
         }
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount()- limit) : ItemStack.EMPTY;
+
+        return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
     public ItemStack extractItemSuper(int slot, int amount, boolean simulate)
     {
         if (amount == 0)
             return ItemStack.EMPTY;
+
         validateSlotIndex(slot);
+
         ItemStack existing = this.stacks.get(slot);
+
         if (existing.isEmpty())
             return ItemStack.EMPTY;
+
         int toExtract = Math.min(amount, existing.getMaxStackSize());
+
         if (existing.getCount() <= toExtract) {
             if (!simulate) {
                 this.stacks.set(slot, ItemStack.EMPTY);
                 onContentsChanged(slot);
                 return existing;
-            }
-            else {
+            } else {
                 return existing.copy();
             }
-        }
-        else {
+        } else {
             if (!simulate) {
-                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
                 onContentsChanged(slot);
             }
-            return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
+
+            return existing.copyWithCount(toExtract);
         }
     }
 

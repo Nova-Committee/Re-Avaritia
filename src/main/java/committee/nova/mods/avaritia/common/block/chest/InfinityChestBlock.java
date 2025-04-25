@@ -109,12 +109,12 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
         if (!level.isClientSide() && !player.isSpectator()) {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof InfinityChestTile chestTile) {
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {buf.writeBlockPos(pos);});
+                player.openMenu(chestTile, buf -> {buf.writeBlockPos(pos);});
             }
         }
 

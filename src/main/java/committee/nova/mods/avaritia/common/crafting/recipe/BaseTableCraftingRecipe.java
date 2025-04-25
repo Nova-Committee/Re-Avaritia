@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
-import committee.nova.mods.avaritia.api.common.crafting.ITierRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 
 /**
  * @Name: BaseTableCraftingRecipe
@@ -10,5 +9,5 @@ import committee.nova.mods.avaritia.api.common.crafting.ITierRecipe;
  * @Description: 
  *
 **/
-public interface BaseTableCraftingRecipe extends ISpecialRecipe, ITierRecipe {
+public interface BaseTableCraftingRecipe extends ITierCraftingRecipe {
 }

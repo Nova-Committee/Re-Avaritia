@@ -10,9 +10,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * @Project: Avaritia
@@ -37,7 +39,7 @@ public class NeutronRingMenu extends BaseMenu {
         if (ring.isEmpty()) {
             this.ring = InventoryUtils.findItemInInv(playerInventory.player, stack -> stack.is(ModItems.neutron_ring.get()), stack -> stack);
         }
-        ring.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
+        Optional.ofNullable(ring.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
             for (int j = 0; j < h.getSlots(); j++) {
                 int row = j / 9;
                 int col = j % 9;

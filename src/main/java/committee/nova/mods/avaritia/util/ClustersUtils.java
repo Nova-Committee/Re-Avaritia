@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.Sets;
-import committee.nova.mods.avaritia.api.common.wrapper.StrictItemStack;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -74,7 +73,7 @@ public class ClustersUtils {
     private static boolean isTrash(ItemStack suspect, Set<String> defaultTrashOres) {
         boolean isTrash = false;
         for (String ore : defaultTrashOres) {
-            if (suspect.is(ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(ore)))) {
+            if (suspect.is(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(ore)))) {
                 return true;
             }
         }
@@ -85,25 +84,25 @@ public class ClustersUtils {
         return collateMatterClusterContents(collateMatterCluster(input));
     }
 
-    public static List<ItemStack> collateMatterClusterContents(Map<StrictItemStack, Integer> input) {
+    public static List<ItemStack> collateMatterClusterContents(Map<ItemStack, Integer> input) {
         List<ItemStack> collated = new ArrayList<>();
 
-        for (Map.Entry<StrictItemStack, Integer> e : input.entrySet()) {
+        for (Map.Entry<ItemStack, Integer> e : input.entrySet()) {
             int count = e.getValue();
-            StrictItemStack wrap = e.getKey();
+            ItemStack wrap = e.getKey();
 
-            int size = wrap.stack.getMaxStackSize();
+            int size = wrap.getMaxStackSize();
             int fullstacks = Mth.floor((float) count / size);
 
             for (int i = 0; i < fullstacks; i++) {
                 count -= size;
-                ItemStack stack = wrap.stack.copy();
+                ItemStack stack = wrap.copy();
                 stack.setCount(size);
                 collated.add(stack);
             }
 
             if (count > 0) {
-                ItemStack stack = wrap.stack.copy();
+                ItemStack stack = wrap.copy();
                 stack.setCount(count);
                 collated.add(stack);
             }
@@ -112,12 +111,12 @@ public class ClustersUtils {
         return collated;
     }
 
-    public static Map<StrictItemStack, Integer> collateMatterCluster(Set<ItemStack> input) {
-        Map<StrictItemStack, Integer> counts = new HashMap<>();
+    public static Map<ItemStack, Integer> collateMatterCluster(Set<ItemStack> input) {
+        Map<ItemStack, Integer> counts = new HashMap<>();
 
         if (input != null) {
             for (ItemStack entity : input) {
-                StrictItemStack wrap = new StrictItemStack(entity);
+                ItemStack wrap = new ItemStack(entity.getItem());
                 if (!counts.containsKey(wrap)) {
                     counts.put(wrap, 0);
                 }

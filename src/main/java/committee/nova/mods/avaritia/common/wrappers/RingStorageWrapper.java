@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
@@ -26,7 +27,7 @@ import net.minecraftforge.common.util.INBTSerializable;
     }
 
     @Override
-    public boolean isItemValid(int slot, ItemStack stack) {
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return !(stack.getItem() instanceof NeutronRingItem) && super.isItemValid(slot, stack);
     }
 

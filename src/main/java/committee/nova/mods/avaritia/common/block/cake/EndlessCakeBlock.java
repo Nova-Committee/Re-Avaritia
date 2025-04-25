@@ -4,8 +4,8 @@ import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -55,24 +55,7 @@ public class EndlessCakeBlock extends BaseBlock {
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        Item item = itemstack.getItem();
-//        if (itemstack.is(ItemTags.CANDLES) && pState.is(ModBlocks.endless_cake.get())) {
-//            Block block = Block.byItem(item);
-//            if (block instanceof CandleBlock candleBlock) {
-//                if (!pPlayer.isCreative()) {
-//                    itemstack.shrink(1);
-//                }
-//
-//                pLevel.playSound(null, pPos, SoundEvents.CAKE_ADD_CANDLE, SoundSource.BLOCKS, 1.0F, 1.0F);
-//                pLevel.setBlockAndUpdate(pPos, EndlessCandleCakeBlock.getCandleCakeFromCandle(candleBlock));
-//                pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos);
-//                pPlayer.awardStat(Stats.ITEM_USED.get(item));
-//                return InteractionResult.SUCCESS;
-//            }
-//        }
-
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer, @NotNull BlockHitResult pHit) {
         if (pLevel.isClientSide) {
             if (tryEat(pLevel, pPos, pPlayer).consumesAction()) {
                 return InteractionResult.SUCCESS;
@@ -103,8 +86,7 @@ public class EndlessCakeBlock extends BaseBlock {
     }
 
     @Override
-    public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
+    public boolean isPathfindable(@NotNull BlockState pState, @NotNull PathComputationType pType) {
         return true;
     }
-
 }

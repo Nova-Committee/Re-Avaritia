@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.entity;
 import committee.nova.mods.avaritia.api.utils.EntityUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -12,7 +13,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -53,10 +54,6 @@ public class BladeSlashEntity extends Projectile {
         this.duration += durationModifier;
     }
 
-    @Override
-    protected void defineSynchedData() {
-
-    }
 
     @Override
     protected void doWaterSplashEffect() {
@@ -73,6 +70,11 @@ public class BladeSlashEntity extends Projectile {
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         discard();
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+
     }
 
     @Override
@@ -108,7 +110,7 @@ public class BladeSlashEntity extends Projectile {
         }
         this.hitEntities(this.level(), start, end);
 
-        if (blockCollision && !ForgeEventFactory.onProjectileImpact(this, blockResult)) {
+        if (blockCollision && !EventHooks.onProjectileImpact(this, blockResult)) {
             this.onHitBlock(blockResult);
         }
     }
@@ -119,7 +121,7 @@ public class BladeSlashEntity extends Projectile {
 
     protected void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
         EntityUtils.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
-                .filter(result -> !ForgeEventFactory.onProjectileImpact(this, result))
+                .filter(result -> !EventHooks.onProjectileImpact(this, result))
                 .forEach(this::onHitEntity);
     }
 }

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/4/5 11:35
  */
 public class InfinityGolemRenderer extends IronGolemRenderer {
-    private static final ResourceLocation GOLEM_LOCATION = new ResourceLocation(Static.MOD_ID, "textures/entity/iron_golem.png");
+    private static final ResourceLocation GOLEM_LOCATION = Static.rl( "textures/entity/iron_golem.png");
 
     public InfinityGolemRenderer(EntityRendererProvider.Context p_174188_) {
         super(p_174188_);

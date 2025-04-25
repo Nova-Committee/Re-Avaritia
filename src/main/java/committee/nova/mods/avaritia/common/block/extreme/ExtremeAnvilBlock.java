@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.block.extreme;
 
+import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.init.registry.ModResourceBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTags;
@@ -43,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
  * @Description:
  */
 public class ExtremeAnvilBlock extends FallingBlock{
+    public static final MapCodec<ExtremeAnvilBlock> CODEC = simpleCodec(properties1 -> new ExtremeAnvilBlock());
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape BASE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D);
     private static final VoxelShape X_LEG1 = Block.box(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D);
@@ -65,6 +67,11 @@ public class ExtremeAnvilBlock extends FallingBlock{
     }
 
     @Override
+    protected @NotNull MapCodec<? extends FallingBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
     public void tick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
         if (!isNoDown(pLevel.getBlockState(pPos.below())) && pPos.getY() >= pLevel.getMinBuildHeight()) {
             pLevel.destroyBlock(pPos.below(), true);
@@ -83,7 +90,7 @@ public class ExtremeAnvilBlock extends FallingBlock{
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
@@ -139,11 +146,6 @@ public class ExtremeAnvilBlock extends FallingBlock{
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING);
-    }
-
-    @Override
-    public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
-        return false;
     }
 
     @Override

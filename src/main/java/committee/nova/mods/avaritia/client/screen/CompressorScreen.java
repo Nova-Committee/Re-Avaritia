@@ -23,7 +23,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Static.MOD_ID, "textures/gui/compressor.png");
+    private static final ResourceLocation BACKGROUND = Static.rl("textures/gui/compressor.png");
 
     public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND);

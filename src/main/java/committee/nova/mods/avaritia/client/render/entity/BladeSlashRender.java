@@ -75,9 +75,9 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
         return TEXTURE;
     }
 
-    public void vertex(Matrix4f pose, Matrix3f normal, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight) {
+    public void vertex(PoseStack.Pose pose, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight) {
 
-        builder.vertex(pose, x, y, z).color(255, 255, 255, 200).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, nx, ny, nz).endVertex();
+        builder.addVertex(x, y, z).setColor(255, 255, 255, 200).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(nx, ny, nz).endVertex();
     }
 
 }
