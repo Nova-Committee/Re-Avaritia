@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.util;
 import committee.nova.mods.avaritia.common.wrappers.StorageItem;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -11,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class StorageUtils {
     public static String getItemId(Item item) {
         if (ITEM_ID_MAP.containsKey(item)) return ITEM_ID_MAP.get(item);
         else {
-            String id = ForgeRegistries.ITEMS.getKey(item).toString();
+            String id = BuiltInRegistries.ITEM.getKey(item).toString();
             ITEM_ID_MAP.put(item, id);
             ID_ITEM_MAP.put(id, item);
             return id;
@@ -63,7 +63,7 @@ public class StorageUtils {
     public static Item getItem(String id) {
         if (ID_ITEM_MAP.containsKey(id)) return ID_ITEM_MAP.get(id);
         else {
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(id));
             if (item == null || item.equals(Items.AIR)) return Items.AIR;
             ID_ITEM_MAP.put(id, item);
             ITEM_ID_MAP.put(item, id);
@@ -74,7 +74,7 @@ public class StorageUtils {
     public static String getFluidId(Fluid fluid) {
         if (FLUID_ID_MAP.containsKey(fluid)) return FLUID_ID_MAP.get(fluid);
         else {
-            String id = ForgeRegistries.FLUIDS.getKey(fluid).toString();
+            String id = BuiltInRegistries.FLUID.getKey(fluid).toString();
             FLUID_ID_MAP.put(fluid, id);
             ID_FLUID_MAP.put(id, fluid);
             return id;
@@ -84,7 +84,7 @@ public class StorageUtils {
     public static Fluid getFluid(String id) {
         if (ID_FLUID_MAP.containsKey(id)) return ID_FLUID_MAP.get(id);
         else {
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(id));
+            Fluid fluid = BuiltInRegistries.FLUID.get(ResourceLocation.tryParse(id));
             if (fluid == null) return Fluids.EMPTY;
             ID_FLUID_MAP.put(id, fluid);
             FLUID_ID_MAP.put(fluid, id);

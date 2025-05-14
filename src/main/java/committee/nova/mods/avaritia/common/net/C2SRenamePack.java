@@ -1,44 +1,50 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * C2SJEIGhostPacket
+ * C2SRenamePack
  *
  * @author cnlimiter
  * @version 1.0
  * @description
  * @date 2024/3/28 14:02
  */
-public class C2SRenamePack {
-    private final String name;
+public record C2SRenamePack(String name) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<C2SRenamePack> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_rename"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SRenamePack> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8,
+            C2SRenamePack::name,
+            C2SRenamePack::new
+    );
 
-    public C2SRenamePack(FriendlyByteBuf buf) {
-        this.name = buf.readUtf();
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public C2SRenamePack(String name) {
-        this.name = name;
-    }
-
-    public void write(FriendlyByteBuf buf) {
-        buf.writeUtf(name);
-    }
-
-    public void run(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            AbstractContainerMenu abstractcontainermenu = player.containerMenu;
-            if (abstractcontainermenu instanceof ExtremeAnvilMenu anvilmenu) {
-                anvilmenu.setItemName(name);
-            }
-        });
-        ctx.get().setPacketHandled(true);
+    public static class Handler implements IPayloadHandler<C2SRenamePack> {
+        @Override
+        public void handle(@NotNull C2SRenamePack packet, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                var player = context.player();
+                if (player instanceof ServerPlayer serverPlayer){
+                    AbstractContainerMenu abstractcontainermenu = serverPlayer.containerMenu;
+                    if (abstractcontainermenu instanceof ExtremeAnvilMenu anvilmenu) {
+                        anvilmenu.setItemName(packet.name);
+                    }
+                }
+            });
+        }
     }
 }

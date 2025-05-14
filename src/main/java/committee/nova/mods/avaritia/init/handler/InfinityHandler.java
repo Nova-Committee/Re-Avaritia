@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
@@ -41,13 +42,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.item.ItemEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
+import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 
 /**
  * Description:
@@ -89,7 +91,7 @@ public class InfinityHandler {
 
         if (event.getItemStack().getItem() == ModItems.infinity_pickaxe.get()) {
             if (state.getDestroySpeed(level, event.getPos()) <= -1 || state.getMapColor(level, pos) == MapColor.STONE || state.getMapColor(level, pos) == MapColor.METAL) {
-                if (event.getItemStack().getOrCreateTag().getBoolean("hammer")) {
+                if (Boolean.TRUE.equals(event.getItemStack().get(ModDataComponents.INFINITY_PICKAXE_HAMMER))) {
                     ModItems.infinity_pickaxe.get().onBlockStartBreak(item, event.getPos(), event.getEntity());
                 }
             }
@@ -126,7 +128,7 @@ public class InfinityHandler {
                 if (!event.getEntity().isInWater() && !EnchantmentHelper.hasAquaAffinity(event.getEntity())) {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
-                if (held.getOrCreateTag().getBoolean("hammer") || held.getOrCreateTag().getBoolean("destroyer")) {
+                if (Boolean.TRUE.equals(held.get(ModDataComponents.INFINITY_PICKAXE_HAMMER)) || Boolean.TRUE.equals(held.get(ModDataComponents.INFINITY_SHOVEL_DESTROYER))) {
                     event.setNewSpeed(event.getNewSpeed() * 0.5F);
                 }
             }
@@ -198,7 +200,7 @@ public class InfinityHandler {
             } else {
                 ItemStack totem = ToolUtils.getPlayerTotemItem(player);
                 if (!totem.isEmpty()) {
-                    NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CTotemPack(totem, player.getId()));
+                    PacketDistributor.sendToPlayer(player, new S2CTotemPack(totem, player.getId()));
 
                     player.removeAllEffects();
                     if (totem.getDamageValue() == 1) { //最后一次
@@ -214,7 +216,7 @@ public class InfinityHandler {
                     player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 1));
                     player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 700, 2));
                     player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1100, 0));
-                    totem.hurtAndBreak(1, player, e -> e.swing(InteractionHand.MAIN_HAND));
+                    totem.hurtAndBreak(1, player, getSlotForHand(InteractionHand.MAIN_HAND));
                     event.setCanceled(true);
                 }
             }
@@ -223,7 +225,7 @@ public class InfinityHandler {
 
     //取消身穿无尽套时受到的所有伤害
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onGetHurt(LivingHurtEvent event) {
+    public static void onGetHurt(ArmorHurtEvent event) {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
@@ -237,11 +239,8 @@ public class InfinityHandler {
 
     //取消对无尽套的伤害
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onAttacked(LivingAttackEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
-        if (ToolUtils.isInfinite(player)) {
+    public static void onAttacked(AttackEntityEvent event) {
+        if (ToolUtils.isInfinite(event.getEntity())) {
             event.setCanceled(true);
         }
     }

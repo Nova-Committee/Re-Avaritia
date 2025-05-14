@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.Rarity;
+import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 
 /**
  * @Project: Avaritia
@@ -14,6 +15,10 @@ public class ModRarities {
     public static Rarity UNCOMMON = Rarity.UNCOMMON;
     public static Rarity RARE = Rarity.RARE;
     public static Rarity EPIC = Rarity.EPIC;
-    public static Rarity LEGEND = Rarity.create("LEGEND", ChatFormatting.GOLD);
-    public static Rarity COSMIC = Rarity.create("COSMIC", ChatFormatting.RED);
+    public static Rarity LEGEND = new EnumProxy<>(
+            Rarity.class, 8888, "avaritia:legend", ChatFormatting.GOLD
+    ).getValue();
+    public static Rarity COSMIC = new EnumProxy<>(
+            Rarity.class, 9999, "avaritia:cosmic", ChatFormatting.RED
+    ).getValue();
 }

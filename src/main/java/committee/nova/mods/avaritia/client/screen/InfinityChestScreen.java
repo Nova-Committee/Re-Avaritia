@@ -12,11 +12,13 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -51,10 +53,10 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     protected void subInit() {
-        this.addRenderableWidget(new ImageButton(this.leftPos + 121, this.topPos + 6, 11, 11, 187, 22, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 10))));
-        this.addRenderableWidget(new ImageButton(this.leftPos + 134, this.topPos + 6, 7, 11, 183, 0, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 1))));
-        this.addRenderableWidget(new ImageButton(this.leftPos + 149, this.topPos + 6, 7, 11, 176, 0, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 1))));
-        this.addRenderableWidget(new ImageButton(this.leftPos + 158, this.topPos + 6, 11, 11, 176, 22, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 10))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 121, this.topPos + 6, 11, 11, 187, 22, 11, MULTI_PAGE_TEXTURE, (button) -> PacketDistributor.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 10))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 134, this.topPos + 6, 7, 11, 183, 0, 11, MULTI_PAGE_TEXTURE, (button) -> PacketDistributor.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 1))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 149, this.topPos + 6, 7, 11, 176, 0, 11, MULTI_PAGE_TEXTURE, (button) -> PacketDistributor.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 1))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 158, this.topPos + 6, 11, 11, 176, 22, 11, MULTI_PAGE_TEXTURE, (button) -> PacketDistributor.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 10))));
     }
 
     @Override

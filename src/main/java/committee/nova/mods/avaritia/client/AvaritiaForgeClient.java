@@ -23,6 +23,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Collections;
 import java.util.List;
@@ -75,13 +76,13 @@ public class AvaritiaForgeClient {
             }
         }
         while (RING_KEY.consumeClick() && player != null) {
-            NetworkHandler.CHANNEL.sendToServer(new C2SOpenRingPack());
+            PacketDistributor.sendToServer(new C2SOpenRingPack());
         }
 
         infinityElytraCooldown = Math.max(infinityElytraCooldown - 1, 0);
         if (Minecraft.getInstance().options.keyJump.isDown() && infinityElytraCooldown <= 0) {
             infinityElytraCooldown = 50;
-            NetworkHandler.CHANNEL.sendToServer(new C2SElytraSpeedUpPacket());
+            PacketDistributor.sendToServer(new C2SElytraSpeedUpPacket());
         }
     }
 

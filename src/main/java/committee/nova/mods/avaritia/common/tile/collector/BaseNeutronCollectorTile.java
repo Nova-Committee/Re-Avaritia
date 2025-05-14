@@ -16,7 +16,6 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +55,7 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
             tile.data.set(0, tile.progress);
             if (tile.progress >= tile.tier.production_ticks) {
                 if (result.isEmpty()) {
-                    tile.inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
+                    tile.inventory.setStackInSlot(0, stack.copyWithCount(1));
                 } else if (result.is(stack.getItem())) {
                     if (result.getCount() < 64) {
                         tile.inventory.setStackInSlot(0, ItemUtils.grow(result, 1));

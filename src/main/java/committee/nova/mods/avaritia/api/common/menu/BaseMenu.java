@@ -40,7 +40,7 @@ public abstract class BaseMenu extends AbstractContainerMenu implements IDataRec
     }
 
     public void sendMessage(CompoundTag compound) {
-        NetworkHandler.sendNbtDataToServer(compound);
+        //NetworkHandler.sendNbtDataToServer(compound);
     }
 
     @Override

@@ -1,14 +1,11 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.net.*;
-import committee.nova.mods.avaritia.common.net.channel.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-
-import java.util.Optional;
 
 /**
  * Description:
@@ -16,49 +13,42 @@ import java.util.Optional;
  * Date: 2022/4/2 13:07
  * Version: 1.0
  */
-@EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = Integer.toString(1);
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(Static.rl("main"), () -> {
-        return "1.0";
-    }, (s) -> {
-        return true;
-    }, (s) -> {
-        return true;
-    });
-    public static int id = 0;
-    ;
-
     @SubscribeEvent
-    public static void init(FMLCommonSetupEvent event) {
-        CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
-        CHANNEL.registerMessage(id++, S2CSingularitiesPack.class, S2CSingularitiesPack::write, S2CSingularitiesPack::new, S2CSingularitiesPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CTotemPack.class, S2CTotemPack::write, S2CTotemPack::new, S2CTotemPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SRenamePack.class, C2SRenamePack::write, C2SRenamePack::new, C2SRenamePack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SChangePagePack.class, C2SChangePagePack::write, C2SChangePagePack::new, C2SChangePagePack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SElytraSpeedUpPacket.class, C2SElytraSpeedUpPacket::write, C2SElytraSpeedUpPacket::new, C2SElytraSpeedUpPacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CChannelListPack.class, S2CChannelListPack::write, S2CChannelListPack::new, S2CChannelListPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, S2CChannelStatePack.class, S2CChannelStatePack::write, S2CChannelStatePack::new, S2CChannelStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, C2SFilterChannelPack.class, C2SFilterChannelPack::write, C2SFilterChannelPack::new, C2SFilterChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SSetChannelPack.class, C2SSetChannelPack::write, C2SSetChannelPack::new, C2SSetChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SOpenRingPack.class, C2SOpenRingPack::write, C2SOpenRingPack::new, C2SOpenRingPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+    public static void init(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1.1");
+        registrar = registrar.executesOn(HandlerThread.MAIN);
+        registrar.playBidirectional(S2CSingularitiesPack.TYPE, S2CSingularitiesPack.STREAM_CODEC,
+                new S2CSingularitiesPack.Handler());
+        registrar.playToClient(S2CTotemPack.TYPE, S2CTotemPack.STREAM_CODEC,
+                new S2CTotemPack.Handler());
+
+
+
+        registrar.playToServer(C2SRenamePack.TYPE, C2SRenamePack.STREAM_CODEC,
+                new C2SRenamePack.Handler());
+        registrar.playToServer(C2SElytraSpeedUpPacket.TYPE, C2SElytraSpeedUpPacket.STREAM_CODEC,
+                new C2SElytraSpeedUpPacket.Handler());
+        registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
+                new C2SOpenRingPack.Handler());
+        registrar.playToServer(C2SChangePagePack.TYPE, C2SChangePagePack.STREAM_CODEC,
+                new C2SChangePagePack.Handler());
+        //CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
+        //CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(id++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(id++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+//        CHANNEL.registerMessage(id++, S2CChannelListPack.class, S2CChannelListPack::write, S2CChannelListPack::new, S2CChannelListPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+//        CHANNEL.registerMessage(id++, S2CChannelStatePack.class, S2CChannelStatePack::write, S2CChannelStatePack::new, S2CChannelStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+//        CHANNEL.registerMessage(id++, C2SFilterChannelPack.class, C2SFilterChannelPack::write, C2SFilterChannelPack::new, C2SFilterChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(id++, C2SSetChannelPack.class, C2SSetChannelPack::write, C2SSetChannelPack::new, C2SSetChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(id++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(id++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
-    public static void registerPackets(PayloadRegistrar registrar) {
-        registrar.commonToClient(S2CSingularitiesPack.ID, buf -> new SyncSingularitiesPacket(SingularityRegistryHandler.getInstance().readFromBuffer(buf)), handler -> handler.server(SyncSingularitiesPacket::run));
 
-    }
+//    public static void sendNbtDataToServer(CompoundTag tag) {
+//        CHANNEL.sendToServer(new NbtDataPack(tag));
+//    }
 
-    public static void sendNbtDataToServer(CompoundTag tag) {
-        CHANNEL.sendToServer(new NbtDataPack(tag));
-    }
-
-    public static void sendNbtDataTo(ServerPlayer pl, CompoundTag tag) {
-        CHANNEL.send(PacketDistributor.PLAYER.with(() -> pl), new NbtDataPack(tag));
-    }
 }

@@ -1,11 +1,15 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IChangePage;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * C2SJEIGhostPacket
@@ -15,31 +19,31 @@ import java.util.function.Supplier;
  * @description
  * @date 2024/3/28 14:02
  */
-public class C2SChangePagePack {
-    private final int page;
+public record C2SChangePagePack(int page) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<C2SChangePagePack> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_change_page"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SChangePagePack> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            C2SChangePagePack::page,
+            C2SChangePagePack::new
+    );
 
-
-    public C2SChangePagePack(FriendlyByteBuf buf) {
-        this.page = buf.readInt();
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public C2SChangePagePack(int page) {
-        this.page = page;
-    }
-
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(page);
-    }
-
-    public void run(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) return;
-            if (player.containerMenu instanceof IChangePage menu) {
-                menu.changePage(page);
-                player.containerMenu.broadcastChanges();
-            }
-        });
-        ctx.get().setPacketHandled(true);
+    public static class Handler implements IPayloadHandler<C2SChangePagePack> {
+        @Override
+        public void handle(@NotNull C2SChangePagePack packet, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                var player = context.player();
+                if (player instanceof ServerPlayer serverPlayer){
+                    if (serverPlayer.containerMenu instanceof IChangePage menu) {
+                        menu.changePage(packet.page);
+                        serverPlayer.containerMenu.broadcastChanges();
+                    }
+                }
+            });
+        }
     }
 }

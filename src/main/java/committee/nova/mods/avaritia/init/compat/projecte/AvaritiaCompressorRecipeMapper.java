@@ -13,6 +13,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 
 /**
@@ -29,6 +30,11 @@ public class AvaritiaCompressorRecipeMapper implements IRecipeTypeMapper {
     }
 
     @Override
+    public String getTranslationKey() {
+        return "";
+    }
+
+    @Override
     public String getDescription() {
         return "Maps avaritia recipes.";
     }
@@ -39,8 +45,8 @@ public class AvaritiaCompressorRecipeMapper implements IRecipeTypeMapper {
     }
 
     @Override
-    public boolean handleRecipe(IMappingCollector<NormalizedSimpleStack, Long> mapper, Recipe<?> recipe, RegistryAccess registryAccess, INSSFakeGroupManager fakeGroupManager) {
-        if (!(recipe instanceof CompressorRecipe compressorRecipe)) {
+    public boolean handleRecipe(IMappingCollector<NormalizedSimpleStack, Long> iMappingCollector, RecipeHolder<?> recipeHolder, RegistryAccess registryAccess, INSSFakeGroupManager inssFakeGroupManager) {
+        if (!(recipeHolder.value() instanceof CompressorRecipe compressorRecipe)) {
             return false;
         } else {
             boolean handled = false;
@@ -52,7 +58,7 @@ public class AvaritiaCompressorRecipeMapper implements IRecipeTypeMapper {
                     NormalizedSimpleStack inputStack = NSSItem.createItem(input);
                     ItemStack output = compressorRecipe.getResultItem();
                     if (!output.isEmpty()) {
-                        IngredientUtils ingredientHelper = new IngredientUtils(mapper);
+                        IngredientUtils ingredientHelper = new IngredientUtils(iMappingCollector);
                         ingredientHelper.put(inputStack, compressorRecipe.getInputCount() * timeRequire / 240);
                         if (ingredientHelper.addAsConversion(output)) {
                             handled = true;

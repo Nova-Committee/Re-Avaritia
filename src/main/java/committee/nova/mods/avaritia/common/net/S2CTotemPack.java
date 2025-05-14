@@ -1,17 +1,19 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * S2CTotemPacket
@@ -21,45 +23,38 @@ import java.util.function.Supplier;
  * @description
  * @date 2024/3/28 14:02
  */
-public class S2CTotemPack {
-    private final ItemStack stack;
-    private final int entityId;
+public record S2CTotemPack(ItemStack stack, int entityId) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<S2CTotemPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("s2c_totem"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CTotemPack> STREAM_CODEC = StreamCodec.composite(
+            ItemStack.OPTIONAL_STREAM_CODEC,
+            S2CTotemPack::stack,
+            ByteBufCodecs.INT,
+            S2CTotemPack::entityId,
+            S2CTotemPack::new
+    );
 
-    public S2CTotemPack(FriendlyByteBuf buf) {
-        this.stack = buf.readItem();
-        this.entityId = buf.readInt();
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public S2CTotemPack(ItemStack stack, int entityId) {
-        this.stack = stack;
-        this.entityId = entityId;
-    }
+    public static class Handler implements IPayloadHandler<S2CTotemPack> {
+        @Override
+        public void handle(@NotNull S2CTotemPack packet, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                Minecraft instance = Minecraft.getInstance();
+                ClientLevel world = instance.level;
 
-    public void write(FriendlyByteBuf buf) {
-        buf.writeItem(stack);
-        buf.writeInt(entityId);
-    }
-
-    public void run(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            playTotem(stack, entityId); //处理服务端发送给客户端的消息
-        });
-        ctx.get().setPacketHandled(true);
-    }
-
-    //播放图腾动画，声音，粒子
-    @OnlyIn(Dist.CLIENT)
-    public static void playTotem(ItemStack stack, int entityId) {
-        Minecraft instance = Minecraft.getInstance();
-        ClientLevel world = instance.level;
-
-        if (world != null) {
-            Entity entity = world.getEntity(entityId);
-            if (entity != null) {
-                instance.particleEngine.createTrackingEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
-                world.playLocalSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, entity.getSoundSource(), 1.0F, 1.0F, false);
-                instance.gameRenderer.displayItemActivation(stack);
-            }
+                if (world != null) {
+                    Entity entity = world.getEntity(packet.entityId);
+                    if (entity != null) {
+                        instance.particleEngine.createTrackingEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
+                        world.playLocalSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, entity.getSoundSource(), 1.0F, 1.0F, false);
+                        instance.gameRenderer.displayItemActivation(packet.stack);
+                    }
+                }
+            });
         }
     }
+
 }

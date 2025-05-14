@@ -57,7 +57,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -75,11 +78,11 @@ import static committee.nova.mods.avaritia.util.ClustersUtils.defaultTrashOres;
 public class ToolUtils {
     public static final Set<TagKey<Block>> materialsPick = Sets.newHashSet(
             BlockTags.MINEABLE_WITH_PICKAXE,
-            Tags.Blocks.STONE, Tags.Blocks.STORAGE_BLOCKS,
-            Tags.Blocks.GLASS, Tags.Blocks.ORES,
+            Tags.Blocks.STONES, Tags.Blocks.STORAGE_BLOCKS,
+            Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.ORES,
             BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
             Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE,
-            Tags.Blocks.COBBLESTONE_DEEPSLATE,
+            Tags.Blocks.COBBLESTONES,
             BlockTags.FEATURES_CANNOT_REPLACE
     );
 
@@ -220,7 +223,7 @@ public class ToolUtils {
         Block block = state.getBlock();
         if (world.isClientSide) return;
 
-        if (state.is(Blocks.GRASS) && stack.is(ModItems.infinity_pickaxe.get())) {
+        if (state.is(Blocks.GRASS_BLOCK) && stack.is(ModItems.infinity_pickaxe.get())) {
             world.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
         }
 
@@ -230,7 +233,7 @@ public class ToolUtils {
         }
 
         BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, player);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
 
         if (!event.isCanceled()) {
             if (!player.isCreative()) {//not creative
@@ -380,7 +383,7 @@ public class ToolUtils {
                 }
             }
 
-            arrow.playSound(arrow.getHitGroundSoundEvent(), 1.0F, 1.2F / (arrow.random.nextFloat() * 0.2F + 0.9F));
+            arrow.playSound(arrow.getHitGroundSoundEvent(), 1.0F, 1.2F / (arrow.getRandom().nextFloat() * 0.2F + 0.9F));
             if (arrow.getPierceLevel() <= 0) {
                 arrow.setDeltaMovement(entity.getDeltaMovement().scale(0.0D));
                 arrow.setPos(entity.position());
@@ -413,7 +416,7 @@ public class ToolUtils {
     public static void sweepAttack(Level level, LivingEntity livingEntity, Entity victim) {
         if (livingEntity instanceof Player player) {
             for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {
-                double entityReachSq = Mth.square(player.getEntityReach()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
+                double entityReachSq = Mth.square(player.entityInteractionRange()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
                 if (!player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker()) && player.distanceToSqr(livingentity) < entityReachSq) {
                     livingentity.knockback(0.6F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
                 }

@@ -1,49 +1,50 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.utils.InventoryUtils;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkHooks;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * C2SJEIGhostPacket
+ * C2SOpenRingPack
  *
  * @author cnlimiter
  * @version 1.0
  * @description
  * @date 2024/3/28 14:02
  */
-public class C2SOpenRingPack {
+public record C2SOpenRingPack() implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<C2SOpenRingPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_open_ring"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SOpenRingPack> STREAM_CODEC = StreamCodec.unit(new C2SOpenRingPack());
 
-    public C2SOpenRingPack(FriendlyByteBuf buf) {
-
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public C2SOpenRingPack() {
-
-    }
-
-    public void write(FriendlyByteBuf buf) {
-
-    }
-
-    public void run(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            var ring = InventoryUtils.findItemInInv(player, stack -> stack.is(ModItems.neutron_ring.get()), stack -> stack);
-            if (player != null && !ring.isEmpty()) {
-                NetworkHooks.openScreen(player,
-                        new SimpleMenuProvider((id, playerInventory, player1) -> new NeutronRingMenu(id, playerInventory, -1), Component.translatable("item.avaritia.neutron_ring")),
-                        buf -> buf.writeInt(-1));
-            }
-        });
-        ctx.get().setPacketHandled(true);
+    public static class Handler implements IPayloadHandler<C2SOpenRingPack> {
+        @Override
+        public void handle(@NotNull C2SOpenRingPack packet, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                var player = context.player();
+                if (player instanceof ServerPlayer serverPlayer){
+                    var ring = InventoryUtils.findItemInInv(serverPlayer, stack -> stack.is(ModItems.neutron_ring.get()), stack -> stack);
+                    if (!ring.isEmpty()) {
+                        serverPlayer.openMenu(
+                                new SimpleMenuProvider((id, playerInventory, player1) -> new NeutronRingMenu(id, playerInventory, -1), Component.translatable("item.avaritia.neutron_ring")),
+                                buf -> buf.writeInt(-1));
+                    }
+                }
+            });
+        }
     }
 }

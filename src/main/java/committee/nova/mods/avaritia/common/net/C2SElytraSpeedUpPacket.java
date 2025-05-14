@@ -1,32 +1,37 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
+public record C2SElytraSpeedUpPacket() implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<C2SElytraSpeedUpPacket> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_elytra_speedup"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SElytraSpeedUpPacket> STREAM_CODEC = StreamCodec.unit(new C2SElytraSpeedUpPacket());
 
-public class C2SElytraSpeedUpPacket {
-    public C2SElytraSpeedUpPacket(FriendlyByteBuf buf) {
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public C2SElytraSpeedUpPacket() {
-    }
-
-    public void write(FriendlyByteBuf buf) {
-    }
-
-    public void run(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) return;
-            if (player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get()) && player.isFallFlying())
-                player.serverLevel().addFreshEntity(new FireworkRocketEntity(player.serverLevel(), Items.AIR.getDefaultInstance(), player));
-        });
-        ctx.get().setPacketHandled(true);
+    public static class Handler implements IPayloadHandler<C2SElytraSpeedUpPacket> {
+        @Override
+        public void handle(@NotNull C2SElytraSpeedUpPacket packet, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                var player = context.player();
+                if (player instanceof ServerPlayer serverPlayer){
+                    if (serverPlayer.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get()) && player.isFallFlying())
+                        serverPlayer.serverLevel().addFreshEntity(new FireworkRocketEntity(serverPlayer.serverLevel(), Items.AIR.getDefaultInstance(), player));
+                }
+            });
+        }
     }
 }

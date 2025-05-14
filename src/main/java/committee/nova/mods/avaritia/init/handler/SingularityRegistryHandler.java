@@ -19,6 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
@@ -54,9 +55,9 @@ public class SingularityRegistryHandler {
         var player = event.getPlayer();
 
         if (player != null) {
-            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
+            PacketDistributor.sendToPlayer(player, message);
         } else {
-            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
+            PacketDistributor.sendToAllPlayers(message);
         }
     }
 
@@ -136,7 +137,7 @@ public class SingularityRegistryHandler {
     }
 
     public void loadSingularities(S2CSingularitiesPack message) {
-        var singularities = message.getSingularities()
+        var singularities = message.singularities()
                 .stream()
                 .collect(Collectors.toMap(Singularity::getId, s -> s));
 

@@ -6,15 +6,11 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.CraftingRecipeBuilder;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -25,8 +21,6 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +38,7 @@ import java.util.function.Consumer;
  * Description:
  */
 
-public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public class ModShapedRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final ItemLike result;
     private final ResourceLocation result2;
@@ -145,8 +139,8 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     }
 
     @Override
-    public @NotNull ModShapedRecipeBuilder unlockedBy(@NotNull String string, @NotNull CriterionTriggerInstance pCriterionTrigger) {
-        this.advancement.addCriterion(string, pCriterionTrigger);
+    public @NotNull RecipeBuilder unlockedBy(@NotNull String name, @NotNull Criterion<?> criterion) {
+        this.advancement.addCriterion(name, criterion);
         return this;
     }
 
@@ -173,12 +167,17 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     }
 
     @Override
+    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        this.ensureValid(id);
+        this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.Strategy.OR);
+        recipeOutput.accept(new ModShapedRecipeBuilder.Result(id, this.result, this.result2, this.count, this.tier, this.nbt, this.group == null ? "" : this.group,
+                RecipeBuilder.determineBookCategory(this.category), this.rows, this.key, this.advancement,
+                id.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
+    }
+
+    @Override
     public void save(@NotNull Consumer<FinishedRecipe> recipeConsumer, @NotNull ResourceLocation location) {
-        this.ensureValid(location);
-        this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(location)).rewards(AdvancementRewards.Builder.recipe(location)).requirements(RequirementsStrategy.OR);
-        recipeConsumer.accept(new ModShapedRecipeBuilder.Result(location, this.result, this.result2, this.count, this.tier, this.nbt, this.group == null ? "" : this.group,
-                determineBookCategory(this.category), this.rows, this.key, this.advancement,
-                location.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
+
     }
 
     private void ensureValid(ResourceLocation resourceLocation) {

@@ -1,11 +1,13 @@
 package committee.nova.mods.avaritia.util;
 
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import moze_intel.projecte.api.mapper.collector.IMappingCollector;
 import moze_intel.projecte.api.nss.NSSFluid;
 import moze_intel.projecte.api.nss.NSSItem;
 import moze_intel.projecte.api.nss.NormalizedSimpleStack;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,7 @@ import java.util.Map;
  */
 public class IngredientUtils {
     private final IMappingCollector<NormalizedSimpleStack, Long> mapper;
-    private Map<NormalizedSimpleStack, Integer> ingredientMap = new HashMap<>();
+    private Object2IntMap<NormalizedSimpleStack> ingredientMap = new Object2IntArrayMap<>();
     private boolean isValid = true;
 
     public IngredientUtils(IMappingCollector<NormalizedSimpleStack, Long> mapper) {
@@ -27,7 +29,7 @@ public class IngredientUtils {
 
     public void resetHelper() {
         this.isValid = true;
-        this.ingredientMap = new HashMap<>();
+        this.ingredientMap = new Object2IntArrayMap<>();
     }
 
     public void put(NormalizedSimpleStack stack, int amount) {

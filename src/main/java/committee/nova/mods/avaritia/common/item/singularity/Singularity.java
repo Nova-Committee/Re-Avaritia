@@ -36,6 +36,10 @@ public class Singularity {
     private int timeRequired;
     private boolean enabled;
     private boolean recipeEnabled;
+    public Singularity(ResourceLocation id, String name, int overlayColor, int underlayColor, String tag) {
+        this(id, name, overlayColor, underlayColor, tag, 1000, 240, true, true);
+    }
+
     public Singularity(ResourceLocation id, String name, int overlayColor, int underlayColor, String tag,
                        int ingredientCount, int timeRequired,
                        boolean enabled, boolean recipeEnabled) {

@@ -55,7 +55,7 @@ public class EndlessCakeBlock extends BaseBlock {
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer, @NotNull BlockHitResult pHit) {
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
         if (pLevel.isClientSide) {
             if (tryEat(pLevel, pPos, pPlayer).consumesAction()) {
                 return InteractionResult.SUCCESS;

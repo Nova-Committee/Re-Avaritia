@@ -7,11 +7,15 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import committee.nova.mods.avaritia.util.SingularityUtils;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
@@ -27,13 +31,13 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.CompoundIngredient;
-import net.minecraftforge.common.crafting.ConditionalRecipe;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.ConditionalRecipeOutput;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -44,21 +48,21 @@ import java.util.function.Consumer;
  */
 
 public class ModRecipes extends RecipeProvider implements IConditionBuilder {
-    public ModRecipes(PackOutput output) {
-        super(output);
+    public ModRecipes(PackOutput output, CompletableFuture<HolderLookup.Provider> future) {
+        super(output, future);
     }
 
-    protected static InventoryChangeTrigger.TriggerInstance has(@NotNull TagKey<Item> tagKey) {
+    protected static Criterion<InventoryChangeTrigger.TriggerInstance> has(@NotNull TagKey<Item> tagKey) {
         return inventoryTrigger(ItemPredicate.Builder.item().of(tagKey).build());
     }
 
     protected static String getModItemName(ItemLike pItemLike) {
-        return ForgeRegistries.ITEMS.getKey(pItemLike.asItem()).getPath();
+        return BuiltInRegistries.ITEM.getKey(pItemLike.asItem()).getPath();
     }
 
     @Override
-    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
-        InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
+    protected void buildRecipes(@NotNull RecipeOutput consumer) {
+        InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR).triggerInstance();
 
         nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.MISC, ModItems.neutron_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.neutron.get(), "neutron_ingot_from_neutron_block", "neutron_ingot");
         nineBlockStorageRecipesWithCustomPacking(consumer, RecipeCategory.MISC, ModItems.neutron_nugget.get(), RecipeCategory.MISC, ModItems.neutron_ingot.get(), "neutron_ingot_from_nuggets", "neutron_ingot");
@@ -307,9 +311,9 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .pattern("  aaa  ")
                 .pattern("   a   ")
                 .pattern("       ")
-                .define('b', ItemTags.MUSIC_DISCS)
+                .define('b', Tags.Items.MUSIC_DISCS)
                 .define('a', ModItems.neutron_pile.get())
-                .unlockedBy("has_item", has(ItemTags.MUSIC_DISCS)).save(consumer);
+                .unlockedBy("has_item", has(Tags.Items.MUSIC_DISCS)).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.refined_coal.get(), 2)
                 .pattern("     ")
@@ -1018,7 +1022,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
 
-        ConditionalRecipe.builder().addCondition(modLoaded("ae2")).addRecipe(
+        consumer.withConditions(modLoaded("ae2")).accept(
                 ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ae2", "creative_energy_cell"))
                         .pattern("YYYYXYYYY")
                         .pattern("YCACXCACY")

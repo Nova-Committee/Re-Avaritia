@@ -62,7 +62,7 @@ public class InternalRecipeHandler {
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();
 
-        return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
+        return new CompressorRecipe(ingredient, output, ingredientCount, timeRequired);
     }
 
 
