@@ -19,8 +19,10 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,6 +47,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -665,7 +668,10 @@ public class ToolUtils {
     public static void melting(Block block, BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, BlockEvent.BreakEvent event) {
         if (!block.canHarvestBlock(state, world, pos, player) || block instanceof CropBlock) return;
         List<ItemStack> drops = Block.getDrops(state, (ServerLevel) world, pos, null);
-        int unLuck = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FORTUNE, tool);
+        Holder<Enchantment> fortune =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.FORTUNE);
+        int unLuck = EnchantmentHelper.getTagEnchantmentLevel(fortune, tool);
         //霉运影响
         boolean flag = unLuck > 0 && world.random.nextDouble() < unLuck * 0.2; //霉运判断结果 true触发
         if (drops.isEmpty() || flag) return;
@@ -735,7 +741,10 @@ public class ToolUtils {
      */
     public static void shootBladeSlash(ItemStack stack, Player player) {
         Level world = player.level();
-        BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack));
+        Holder<Enchantment> sweeping_edge =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.SWEEPING_EDGE);
+        BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getTagEnchantmentLevel(sweeping_edge, stack));
         world.addFreshEntity(projectile);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
         player.swing(player.getUsedItemHand());

@@ -25,6 +25,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.List;
 
@@ -38,12 +39,12 @@ public class AvaritiaEmiPlugin implements EmiPlugin {
 
         registry.addCategory(CompressorCategory.CATEGORY);
         registry.addWorkstation(CompressorCategory.CATEGORY, CompressorCategory.WORKSTATION);
-        for (ICompressorRecipe recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()))
+        for (RecipeHolder<ICompressorRecipe> recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()))
             registry.addRecipe(new CompressorCategory(recipe));
 
         registry.addCategory(ExtremeSmithingRecipeCategory.CATEGORY);
         registry.addWorkstation(ExtremeSmithingRecipeCategory.CATEGORY, ExtremeSmithingRecipeCategory.WORKSTATION);
-        for (ExtremeSmithingRecipe recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()))
+        for (RecipeHolder<ExtremeSmithingRecipe> recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()))
             registry.addRecipe(new ExtremeSmithingRecipeCategory(recipe));
 
         registry.addCategory(SculkCraftingTableCategory.CATEGORY);
@@ -54,13 +55,13 @@ public class AvaritiaEmiPlugin implements EmiPlugin {
         registry.addWorkstation(EndCraftingTableCategory.CATEGORY, EndCraftingTableCategory.WORKSTATION);
         registry.addCategory(ExtremeCraftingTableCategory.CATEGORY);
         registry.addWorkstation(ExtremeCraftingTableCategory.CATEGORY, ExtremeCraftingTableCategory.WORKSTATION);
-        for (BaseTableCraftingRecipe recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()))
-            registry.addRecipe(switch (recipe.getTier()) {
+        for (RecipeHolder<BaseTableCraftingRecipe> recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()))
+            registry.addRecipe(switch (recipe.value().getTier()) {
                 case 1 -> new SculkCraftingTableCategory(recipe);
                 case 2 -> new NetherCraftingTableCategory(recipe);
                 case 3 -> new EndCraftingTableCategory(recipe);
                 case 4 -> new ExtremeCraftingTableCategory(recipe);
-                default -> throw new UnsupportedOperationException("Unsupported tier " + recipe.getTier());
+                default -> throw new UnsupportedOperationException("Unsupported tier " + recipe.value().getTier());
             });
 
         registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModBlocks.neutron_collector.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_collector")), ResourceLocation.tryBuild(Static.MOD_ID, "/info_collector")));

@@ -1,12 +1,10 @@
 package committee.nova.mods.avaritia.init.compat.kubejs;
 
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
+import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Author cnlimiter
@@ -16,9 +14,9 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
  */
 
 public interface CompressRecipeSchema {
-    RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
-    RecipeKey<OutputItem> OUTPUT = ItemComponents.OUTPUT.key("result");
-    RecipeKey<Integer> INPUT_COUNT = NumberComponent.INT.key("inputCount").optional(1000);
-    RecipeKey<Integer> TIME_COST = NumberComponent.INT.key("timeCost").optional(240);
-    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENT, OUTPUT, INPUT_COUNT, TIME_COST);
+    RecipeKey<ItemStack> INGREDIENT = ItemStackComponent.ITEM_STACK.inputKey("ingredient");
+    RecipeKey<ItemStack> OUTPUT = ItemStackComponent.ITEM_STACK.outputKey("result");
+    RecipeKey<Integer> INPUT_COUNT = NumberComponent.INT.inputKey("inputCount").optional(1000);
+    RecipeKey<Integer> TIME_COST = NumberComponent.INT.inputKey("timeCost").optional(240);
+    RecipeSchema SCHEMA = new RecipeSchema(INGREDIENT, OUTPUT, INPUT_COUNT, TIME_COST);
 }

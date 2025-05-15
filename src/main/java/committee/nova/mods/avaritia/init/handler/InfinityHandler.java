@@ -61,11 +61,13 @@ import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 public class InfinityHandler {
     @SubscribeEvent
     public static void onPlayerMine(PlayerInteractEvent.LeftClickBlock event) {
-        ItemStack item = event.getItemStack();
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
-        BlockState state = level.getBlockState(pos);
-        if (event.getFace() == null || event.getLevel().isClientSide || event.getItemStack().isEmpty() || event.getEntity().isCreative()) {
+        var item = event.getItemStack();
+        var level = event.getLevel();
+        var pos = event.getPos();
+        var state = level.getBlockState(pos);
+        var player= event.getEntity();
+        var face = event.getFace();
+        if (face == null || level.isClientSide || item.isEmpty() || player.isCreative()) {
             return;
         }
 
@@ -89,10 +91,10 @@ public class InfinityHandler {
             }
         }
 
-        if (event.getItemStack().getItem() == ModItems.infinity_pickaxe.get()) {
-            if (state.getDestroySpeed(level, event.getPos()) <= -1 || state.getMapColor(level, pos) == MapColor.STONE || state.getMapColor(level, pos) == MapColor.METAL) {
-                if (Boolean.TRUE.equals(event.getItemStack().get(ModDataComponents.INFINITY_PICKAXE_HAMMER))) {
-                    ModItems.infinity_pickaxe.get().onBlockStartBreak(item, event.getPos(), event.getEntity());
+        if (item.getItem() == ModItems.infinity_pickaxe.get()) {
+            if (state.getDestroySpeed(level, pos) <= -1) {
+                if (item.has(ModDataComponents.INFINITY_PICKAXE_HAMMER) && item.getOrDefault(ModDataComponents.INFINITY_PICKAXE_HAMMER, false)) {
+                    item.mineBlock(level, state, pos, player);
                 }
             }
         }
@@ -123,12 +125,12 @@ public class InfinityHandler {
             ItemStack held = event.getEntity().getMainHandItem();
             if (held.is(ModItems.infinity_pickaxe.get()) || held.is(ModItems.infinity_shovel.get())) {
                 if (!event.getEntity().onGround()) {
-                    event.setNewSpeed(event.getNewSpeed() * 5);
+                    event.setNewSpeed(event.getNewSpeed() * 5F);
                 }
-                if (!event.getEntity().isInWater() && !EnchantmentHelper.hasAquaAffinity(event.getEntity())) {
-                    event.setNewSpeed(event.getNewSpeed() * 5);
+                if (!event.getEntity().isInWater()) {
+                    event.setNewSpeed(event.getNewSpeed() * 5F);
                 }
-                if (Boolean.TRUE.equals(held.get(ModDataComponents.INFINITY_PICKAXE_HAMMER)) || Boolean.TRUE.equals(held.get(ModDataComponents.INFINITY_SHOVEL_DESTROYER))) {
+                if (held.getOrDefault(ModDataComponents.INFINITY_PICKAXE_HAMMER, false) || held.getOrDefault(ModDataComponents.INFINITY_SHOVEL_DESTROYER, false)) {
                     event.setNewSpeed(event.getNewSpeed() * 0.5F);
                 }
             }
@@ -196,7 +198,9 @@ public class InfinityHandler {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (ToolUtils.isInfinite(player)) {
                 event.setCanceled(true);
-                player.setHealth(player.getMaxHealth());
+                player.hurtTime = 0;
+                player.deathTime = 0;
+                player.setHealth(Math.max(20.0F, player.getMaxHealth()));
             } else {
                 ItemStack totem = ToolUtils.getPlayerTotemItem(player);
                 if (!totem.isEmpty()) {
@@ -254,7 +258,7 @@ public class InfinityHandler {
         ) {
             if (player.getMainHandItem().is(ModItems.blaze_sword.get()) || player.getOffhandItem().is(ModItems.blaze_sword.get())) {
                 if (event.getDrops().isEmpty()) {
-                    addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
+                    addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL));
                 } else {
                     int skulls = 0;
 
@@ -266,7 +270,7 @@ public class InfinityHandler {
                     }
 
                     if (skulls == 0) {
-                        addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL, 1));
+                        addDrop(event, new ItemStack(Items.WITHER_SKELETON_SKULL));
                     }
                 }
 

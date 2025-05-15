@@ -19,6 +19,11 @@ public class AvaritiaExtremeRecipeMapper extends BaseRecipeTypeMapper {
     }
 
     @Override
+    public String getTranslationKey() {
+        return "";
+    }
+
+    @Override
     public String getDescription() {
         return "Maps avaritia recipes.";
     }

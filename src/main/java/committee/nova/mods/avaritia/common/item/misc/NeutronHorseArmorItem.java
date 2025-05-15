@@ -4,9 +4,12 @@ import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.AnimalArmorItem;
@@ -33,7 +36,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, 
     private static final String TEX_PATH = "textures/item/armor/horse/neutron_horse_armor.png";
 
     public NeutronHorseArmorItem() {
-        super(Integer.MAX_VALUE, Static.rl( TEX_PATH),
+        super(ModArmorMaterial.infinite_armor, BodyType.EQUESTRIAN, false,
                 new Item.Properties()
                         .stacksTo(1)
                         .rarity(ModRarities.RARE)
@@ -47,7 +50,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, 
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 10;
     }
 
@@ -57,29 +60,33 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, 
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
     @Override
-    public @Nullable Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public @Nullable Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override
     public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
+        Holder<Enchantment> sweeping_edge =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(enchantment);
         if (enchantment == Enchantments.FROST_WALKER) return 10;
         else if (enchantment == Enchantments.ALL_DAMAGE_PROTECTION) return 10;
         else if (enchantment == Enchantments.FALL_PROTECTION) return 10;
         else return 0;
     }
 
+
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable TooltipContext context, List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FROST_WALKER.getFullname(10)).build());
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.ALL_DAMAGE_PROTECTION.getFullname(10)).build());
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FALL_PROTECTION.getFullname(10)).build());
-        appendTooltip(stack, level, tooltipComponents, isAdvanced, "neutron_horse_armor");
+        appendTooltip(stack, context, tooltipComponents, isAdvanced, "neutron_horse_armor");
     }
 }

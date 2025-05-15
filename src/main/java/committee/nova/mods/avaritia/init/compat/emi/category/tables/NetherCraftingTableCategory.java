@@ -16,11 +16,12 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record NetherCraftingTableCategory(BaseTableCraftingRecipe recipe) implements EmiRecipe {
+public record NetherCraftingTableCategory(RecipeHolder<BaseTableCraftingRecipe> recipe) implements EmiRecipe {
     private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Static.MOD_ID, "textures/gui/jei/tables/nether_jei.png"), 0, 0, 157, 100);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.nether_crafting_table.get());
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Static.MOD_ID, "nether_crafting_table"), WORKSTATION);
@@ -32,19 +33,19 @@ public record NetherCraftingTableCategory(BaseTableCraftingRecipe recipe) implem
 
     @Override
     public @NotNull ResourceLocation getId() {
-        return this.recipe.getId();
+        return this.recipe.id();
     }
 
     @Override
     public List<EmiIngredient> getInputs() {
-        return this.recipe.getIngredients().stream().map(EmiIngredient::of).toList();
+        return this.recipe.value().getIngredients().stream().map(EmiIngredient::of).toList();
     }
 
     @Override
     public List<EmiStack> getOutputs() {
         var level = Minecraft.getInstance().level;
         assert level != null;
-        return List.of(EmiStack.of(this.recipe.getResultItem(level.registryAccess())));
+        return List.of(EmiStack.of(this.recipe.value().getResultItem(level.registryAccess())));
     }
 
     @Override
@@ -61,10 +62,10 @@ public record NetherCraftingTableCategory(BaseTableCraftingRecipe recipe) implem
     public void addWidgets(WidgetHolder widgets) {
         ClientLevel level = Minecraft.getInstance().level;
         assert level != null;
-        NonNullList<Ingredient> inputs = recipe.getIngredients();
-        ItemStack output = recipe.getResultItem(level.registryAccess());
+        NonNullList<Ingredient> inputs = recipe.value().getIngredients();
+        ItemStack output = recipe.value().getResultItem(level.registryAccess());
         widgets.addTexture(TEXTURE, 1, 1);
-        if (recipe instanceof ShapedTableCraftingRecipe shaped) {
+        if (recipe.value() instanceof ShapedTableCraftingRecipe shaped) {
             int stackIndex = 0;
             int heightOffset = Math.floorDiv(5 - shaped.getHeight(), 2);
             int widthOffset = Math.floorDiv(5 - shaped.getWidth(), 2);
@@ -75,13 +76,13 @@ public record NetherCraftingTableCategory(BaseTableCraftingRecipe recipe) implem
                     stackIndex++;
                 }
             widgets.addSlot(EmiStack.of(output), 133, 40).recipeContext(this).drawBack(false);
-        } else if (recipe instanceof ShapelessTableCraftingRecipe) {
+        } else if (recipe.value() instanceof ShapelessTableCraftingRecipe) {
             shapelessRecipe(widgets, inputs);
             widgets.addSlot(EmiStack.of(output), 133, 40).recipeContext(this).drawBack(false);
-        } else if (recipe instanceof InfinityCatalystCraftRecipe) {
+        } else if (recipe.value() instanceof InfinityCatalystCraftRecipe) {
             shapelessRecipe(widgets, inputs);
             widgets.addSlot(EmiStack.of(ModItems.infinity_catalyst.get()), 133, 40).recipeContext(this).drawBack(false);
-        } else if (recipe instanceof EternalSingularityCraftRecipe) {
+        } else if (recipe.value() instanceof EternalSingularityCraftRecipe) {
             shapelessRecipe(widgets, inputs);
             widgets.addSlot(EmiStack.of(ModItems.eternal_singularity.get()), 133, 40).recipeContext(this).drawBack(false);
         }

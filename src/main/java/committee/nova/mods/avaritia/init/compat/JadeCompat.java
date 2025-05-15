@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
@@ -12,6 +13,7 @@ import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 
@@ -36,12 +38,11 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-            var level = Minecraft.getInstance().level;
-            assert level != null;
             var compressor = (CompressorTile) accessor.getBlockEntity();
             var recipe = compressor.getActiveRecipe();
 
             if (recipe != null) {
+                var level = accessor.getLevel();
                 var output = recipe.getResultItem(level.registryAccess());
                 tooltip.add(ModTooltips.COMPRESS.args(output.getCount(), output.getHoverName()).build());
             }
@@ -62,10 +63,12 @@ public class JadeCompat implements IWailaPlugin {
             var level = Minecraft.getInstance().level;
             assert level != null;
             var craftTile = (TierCraftTile) accessor.getBlockEntity();
-            var recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), craftTile.getInventory().toIInventory(), level);
+            var recipe = level.getRecipeManager().
+                    getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(),
+                            TierInput.of(craftTile.tier.size, craftTile.tier.size, craftTile.getInventory().getStacks(), craftTile.tier.ordinal()), level).map(RecipeHolder::value).orElse(null);
 
-            if (recipe.isPresent()) {
-                var output = recipe.get().getResultItem(level.registryAccess());
+            if (recipe != null) {
+                var output = recipe.getResultItem(level.registryAccess());
                 tooltip.add(ModTooltips.CRAFTING.args(I18n.get("jei.category.avaritia." + craftTile.tier.name), output.getCount(), output.getHoverName()).build());
             }
         }
@@ -86,7 +89,7 @@ public class JadeCompat implements IWailaPlugin {
             assert level != null;
             var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get());
             if (!recipes.isEmpty()) {
-                ExtremeSmithingRecipe recipe = recipes.get(0);
+                ExtremeSmithingRecipe recipe = recipes.get(0).value();
                 var output = recipe.getResultItem(level.registryAccess());
                 tooltip.add(ModTooltips.SMITHING.args(output.getCount(), output.getHoverName()).build());
             }

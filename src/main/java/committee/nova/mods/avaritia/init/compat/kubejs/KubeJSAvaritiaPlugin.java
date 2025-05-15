@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.init.compat.kubejs;
 
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 
 /**
  * Name: Avaritia-forge / KubeJSAvaritiaPlugin
@@ -11,10 +11,10 @@ import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
  * Description:
  */
 
-public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
+public class KubeJSAvaritiaPlugin implements KubeJSPlugin {
 
     @Override
-    public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+    public void registerRecipeSchemas(RecipeSchemaRegistry event) {
         event.register(ModRecipeSerializers.SHAPED_CRAFT_SERIALIZER.getId(), ShapedTableRecipeSchema.SCHEMA);
         event.register(ModRecipeSerializers.SHAPELESS_CRAFT_SERIALIZER.getId(), ShapelessTableRecipeSchema.SCHEMA);
         event.register(ModRecipeSerializers.COMPRESSOR_SERIALIZER.getId(), CompressRecipeSchema.SCHEMA);

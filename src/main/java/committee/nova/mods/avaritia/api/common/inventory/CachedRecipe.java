@@ -24,7 +24,7 @@ public class CachedRecipe <I extends RecipeInput, T extends Recipe<I>> {
         if (this.recipe != null && this.recipe.matches(inventory, level)) {
             return true;
         } else {
-            this.recipe = (T)(level.getRecipeManager().getRecipeFor(this.type, inventory, level).map(RecipeHolder::value).orElse(null));
+            this.recipe = level.getRecipeManager().getRecipeFor(this.type, inventory, level).map(RecipeHolder::value).orElse(null);
             return this.recipe != null;
         }
     }
@@ -38,6 +38,6 @@ public class CachedRecipe <I extends RecipeInput, T extends Recipe<I>> {
     }
 
     public T checkAndGet(I inventory, Level level) {
-        return (T)(this.check(inventory, level) ? this.recipe : null);
+        return this.check(inventory, level) ? this.recipe : null;
     }
 }

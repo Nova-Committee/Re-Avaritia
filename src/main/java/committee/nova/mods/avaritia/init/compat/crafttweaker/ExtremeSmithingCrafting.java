@@ -11,6 +11,7 @@ import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -23,19 +24,18 @@ import org.openzen.zencode.java.ZenCodeType;
 @ZenCodeType.Name("mods.avaritia.ExtremeSmithing")
 @ZenRegister
 public class ExtremeSmithingCrafting implements IRecipeManager<ExtremeSmithingRecipe> {
-    private static final ExtremeSmithingCrafting INSTANCE = new ExtremeSmithingCrafting();
 
     @ZenCodeType.Method
-    public static void addRecipe(String name, IIngredient template, IIngredient base, IIngredient additions, IItemStack output) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new ExtremeSmithingRecipe(id, template.asVanillaIngredient(), base.asVanillaIngredient(), additions.asVanillaIngredient(), output.getInternal());
+    public void addRecipe(String name, IIngredient template, IIngredient base, IIngredient additions, IItemStack output) {
+        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
+        var recipe = new ExtremeSmithingRecipe(template.asVanillaIngredient(), base.asVanillaIngredient(), additions.asVanillaIngredient(), output.getInternal());
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, new RecipeHolder<>(id, recipe)));
     }
 
     @ZenCodeType.Method
-    public static void remove(IItemStack stack) {
-        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(INSTANCE, recipe -> recipe.getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
+    public void remove(IItemStack stack) {
+        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(this, recipe -> recipe.value().getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
     }
 
     @Override

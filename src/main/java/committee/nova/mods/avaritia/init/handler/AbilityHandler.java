@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.handler;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.utils.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import net.minecraft.server.level.ServerPlayer;
@@ -9,6 +10,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,10 +21,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.util.ToolUtils.isPlayerWearing;
@@ -136,7 +136,7 @@ public class AbilityHandler {
     private static void handleBootsStateChange(Player player, String key, boolean hasBoots) {
         if (hasBoots) {
             if (entitiesWithBoots.contains(key)) {
-                player.setMaxUpStep(1.0625F);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
+                Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).addPermanentModifier(new AttributeModifier(Static.rl("avaritia_boots"), 1.0625F - 0.6F, AttributeModifier.Operation.ADD_VALUE));
                 boolean flying = player.getAbilities().flying;
                 boolean swimming = player.isInWater();
                 boolean sneaking = player.isCrouching();
@@ -166,7 +166,7 @@ public class AbilityHandler {
                 entitiesWithBoots.add(key);
             }
         } else {
-            player.setMaxUpStep(0.6F);
+            Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).removeModifier(Static.rl("avaritia_boots"));
             entitiesWithBoots.remove(key);
         }
     }

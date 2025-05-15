@@ -12,11 +12,12 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record CompressorCategory(ICompressorRecipe recipe) implements EmiRecipe {
+public record CompressorCategory(RecipeHolder<ICompressorRecipe> recipe) implements EmiRecipe {
     private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Static.MOD_ID, "textures/gui/jei/compressor.png"), 0, 0, 169, 62);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.neutron_compressor.get());
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Static.MOD_ID, "compressor"), WORKSTATION);
@@ -28,19 +29,19 @@ public record CompressorCategory(ICompressorRecipe recipe) implements EmiRecipe 
 
     @Override
     public @NotNull ResourceLocation getId() {
-        return this.recipe.getId();
+        return this.recipe.id();
     }
 
     @Override
     public List<EmiIngredient> getInputs() {
-        return this.recipe.getIngredients().stream().map(EmiIngredient::of).map(x -> x.setAmount(this.recipe.getInputCount())).toList();
+        return this.recipe.value().getIngredients().stream().map(EmiIngredient::of).map(x -> x.setAmount(this.recipe.value().getInputCount())).toList();
     }
 
     @Override
     public List<EmiStack> getOutputs() {
         ClientLevel level = Minecraft.getInstance().level;
         assert level != null;
-        return List.of(EmiStack.of(this.recipe.getResultItem(level.registryAccess())));
+        return List.of(EmiStack.of(this.recipe.value().getResultItem(level.registryAccess())));
     }
 
     @Override

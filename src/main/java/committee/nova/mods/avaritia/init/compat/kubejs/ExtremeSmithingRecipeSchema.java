@@ -5,8 +5,10 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
+import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeConstructor;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 /**
@@ -16,13 +18,13 @@ import net.minecraft.world.item.crafting.Ingredient;
  * @Description:
  */
 public interface ExtremeSmithingRecipeSchema {
-    RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
-    RecipeKey<InputItem> TEMPLATE = ItemComponents.INPUT.key("template");
-    RecipeKey<InputItem> BASE = ItemComponents.INPUT.key("base");
-    RecipeKey<InputItem> ADDITION = ItemComponents.INPUT.key("addition");
+    RecipeKey<ItemStack> RESULT = ItemStackComponent.ITEM_STACK.outputKey("result");
+    RecipeKey<ItemStack> TEMPLATE = ItemStackComponent.ITEM_STACK.inputKey("template");
+    RecipeKey<ItemStack> BASE = ItemStackComponent.ITEM_STACK.inputKey("base");
+    RecipeKey<ItemStack> ADDITION = ItemStackComponent.ITEM_STACK.inputKey("addition");
 
     RecipeSchema SCHEMA = new RecipeSchema(RESULT, TEMPLATE, BASE, ADDITION)
-            .uniqueOutputId(RESULT)
+            .uniqueId(RESULT)
             .constructor(RESULT, TEMPLATE, BASE, ADDITION)
             .constructor(RecipeConstructor.Factory.defaultWith((recipe, key) -> {
                 if (key == TEMPLATE) {
