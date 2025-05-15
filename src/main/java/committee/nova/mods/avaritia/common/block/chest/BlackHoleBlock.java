@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import com.google.common.collect.ImmutableMap;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleTile;
-import committee.nova.mods.avaritia.addons.channel.ChannelMenuProvider;
-import committee.nova.mods.avaritia.addons.channel.ClientChannelManager;
+import committee.nova.mods.avaritia.addons._channel.BlackHoleTile;
+import committee.nova.mods.avaritia.addons._channel.ChannelMenuProvider;
+import committee.nova.mods.avaritia.addons._channel.ClientChannelManager;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;

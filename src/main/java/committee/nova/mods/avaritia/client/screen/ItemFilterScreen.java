@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -134,7 +135,7 @@ public class ItemFilterScreen extends Screen {
                 , (int) (90 - this.margin * 2), 20
                 , GuiUtils.textToComponent(Text.i18n("添加")), button -> {
                     Minecraft.getInstance().setScreen(new ItemSelectScreen(this, input -> {
-                        NetworkHandler.CHANNEL.sendToServer(new C2SItemFilterPack(0, input));
+                        PacketDistributor.sendToServer(new C2SItemFilterPack(input,0));
                         this.itemList.add(input);
                     }, Blocks.DIRT.asItem().getDefaultInstance()));
                 }));
@@ -144,7 +145,7 @@ public class ItemFilterScreen extends Screen {
                 , GuiUtils.textToComponent(Text.i18n("删除"))
                 , button -> {
                     this.itemList.remove(this.currentItem);
-                    if (this.currentItem != null) NetworkHandler.CHANNEL.sendToServer(new C2SItemFilterPack(1, this.currentItem));
+                    if (this.currentItem != null) PacketDistributor.sendToServer(new C2SItemFilterPack(this.currentItem, 1));
                     Minecraft.getInstance().setScreen(null);
                 }));
     }
@@ -153,7 +154,7 @@ public class ItemFilterScreen extends Screen {
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, delta);
         GuiUtils.fill(graphics, (int) (this.bgX - this.margin), (int) (this.bgY - this.margin), (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5), 0xCCC6C6C6, 2);
         GuiUtils.fillOutLine(graphics, (int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.itemPerLine + this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.maxLine + this.margin), 1, 0xFF000000, 1);
         super.render(graphics, mouseX, mouseY, delta);
@@ -161,8 +162,8 @@ public class ItemFilterScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        this.setScrollOffset(this.getScrollOffset() - delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        this.setScrollOffset(this.getScrollOffset() - scrollY);
         return true;
     }
 
@@ -254,7 +255,7 @@ public class ItemFilterScreen extends Screen {
                     customData -> {
                         customData.update(c -> {
                             c.getAllKeys().forEach(key -> {
-                                this.itemList.add(ItemStack.of((CompoundTag) filters.get(key)));
+                                //this.itemList.add(ItemStack.of((CompoundTag) filters.get(key)));
                             });
                         });
                     }
@@ -338,7 +339,8 @@ public class ItemFilterScreen extends Screen {
                         // 绘制物品详情悬浮窗
                         context.button().setCustomPopupFunction(() -> {
                             if (context.button().isHovered()) {
-                                List<Component> list = itemStack.getTooltipLines(Minecraft.getInstance().player, Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
+                                Item.TooltipContext tooltipContext = Item.TooltipContext.of(Minecraft.getInstance().level);
+                                List<Component> list = itemStack.getTooltipLines(tooltipContext, Minecraft.getInstance().player, Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
                                 List<Component> list1 = Lists.newArrayList(list);
                                 this.visibleTags.forEach((itemITag) -> {
                                     if (itemStack.is(itemITag)) {

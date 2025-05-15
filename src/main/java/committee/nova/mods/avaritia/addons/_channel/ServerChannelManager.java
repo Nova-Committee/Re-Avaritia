@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.addons._channel;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.common.net.channel.*;

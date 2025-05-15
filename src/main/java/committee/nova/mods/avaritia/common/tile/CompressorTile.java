@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
+import committee.nova.mods.avaritia.api.common.inventory.CachedRecipe;
+import committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
@@ -9,12 +11,14 @@ import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +34,7 @@ public class CompressorTile extends BaseInventoryTileEntity {
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
     private final SimpleContainerData data = new SimpleContainerData(1);
-    private ICompressorRecipe recipe;
+    private final CachedRecipe<CraftingInput, ICompressorRecipe> recipe;
     private ItemStack materialStack = ItemStack.EMPTY;
     private int materialCount;
     private int progress;
@@ -38,25 +42,22 @@ public class CompressorTile extends BaseInventoryTileEntity {
 
     public CompressorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.compressor_tile.get(), pos, state);
-        this.inventory = createInventoryHandler();
-        this.recipeInventory = new ItemStackWrapper(1);
+        this.inventory = createInventoryHandler((slot) -> this.setChanged());
+        this.recipeInventory = ItemStackWrapper.create(1);
+        this.recipe = new CachedRecipe<>(ModRecipeTypes.COMPRESSOR_RECIPE.get());
     }
 
-    public static ItemStackWrapper createInventoryHandler() {
-        var inventory = new ItemStackWrapper(2);
-        inventory.setOutputSlots(0);
-        return inventory;
+    public static ItemStackWrapper createInventoryHandler(OnContentsChangedFunction onContentsChanged) {
+        return ItemStackWrapper.create(2, onContentsChanged, builder -> {
+            builder.setOutputSlots(0);
+            builder.setCanInsert((slot, stack) -> slot == 1);
+        });
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, CompressorTile tile) {
+        var recipe = tile.getActiveRecipe();
         var output = tile.inventory.getStackInSlot(0);
         var input = tile.inventory.getStackInSlot(1);
-
-        tile.recipeInventory.setStackInSlot(0, tile.materialStack);
-
-        if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
-            tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
-        }
 
         if (!level.isClientSide()) {
             if (!input.isEmpty()) {
@@ -66,11 +67,11 @@ public class CompressorTile extends BaseInventoryTileEntity {
                     tile.setChangedFast();
                 }
 
-                if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount()) {
+                if (recipe != null && tile.materialCount < recipe.getInputCount()) {
                     if (ItemUtils.areStacksSameType(input, tile.materialStack)) {
                         int consumeAmount = input.getCount();
 
-                        consumeAmount = Math.min(consumeAmount, tile.recipe.getInputCount() - tile.materialCount);
+                        consumeAmount = Math.min(consumeAmount, recipe.getInputCount() - tile.materialCount);
 
 
                         input.shrink(consumeAmount);
@@ -82,17 +83,17 @@ public class CompressorTile extends BaseInventoryTileEntity {
                 }
             }
 
-            if (tile.recipe != null) {
-                if (tile.materialCount >= tile.recipe.getInputCount()) {
+            if (recipe != null) {
+                if (tile.materialCount >= recipe.getInputCount()) {
                     tile.progress++;
                     tile.data.set(0, tile.progress);
-                    if (tile.progress >= tile.recipe.getTimeCost()) {
-                        var result = tile.recipe.assemble(tile.inventory.toIInventory(), level.registryAccess());
+                    if (tile.progress >= recipe.getTimeCost()) {
+                        var result = recipe.assemble(tile.toCraftingInput(), level.registryAccess());
 
                         if (ItemUtils.canCombineStacks(result, output)) {
                             tile.updateResult(result);
                             tile.progress = 0;
-                            tile.materialCount -= tile.recipe.getInputCount();
+                            tile.materialCount -= recipe.getInputCount();
 
                             if (tile.materialCount <= 0) {
                                 tile.materialStack = ItemStack.EMPTY;
@@ -137,19 +138,19 @@ public class CompressorTile extends BaseInventoryTileEntity {
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.loadAdditional(tag, registries);
         this.materialCount = tag.getInt("MaterialCount");
-        this.materialStack = ItemStack.of(tag.getCompound("MaterialStack"));
+        this.materialStack = ItemStack.parseOptional(registries, tag.getCompound("MaterialStack"));
         this.progress = tag.getInt("Progress");
         this.ejecting = tag.getBoolean("Ejecting");
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("MaterialCount", this.materialCount);
-        tag.put("MaterialStack", this.materialStack.serializeNBT());
+        tag.put("MaterialStack", this.materialStack.saveOptional(registries));
         tag.putInt("Progress", this.progress);
         tag.putBoolean("Ejecting", this.ejecting);
     }
@@ -193,18 +194,27 @@ public class CompressorTile extends BaseInventoryTileEntity {
     }
 
     public ICompressorRecipe getActiveRecipe() {
-        return this.recipe;
+        if (this.level == null)
+            return null;
+
+        this.recipeInventory.setStackInSlot(0, this.materialStack);
+
+        return this.recipe.checkAndGet(this.toCraftingInput(), this.level);
+    }
+
+    private CraftingInput toCraftingInput() {
+        return this.recipeInventory.toShapelessCraftingInput();
     }
 
     public int getMaterialsRequired() {
         if (this.hasRecipe())
-            return this.recipe.getInputCount();
+            return this.recipe.get().getInputCount();
         return 0;
     }
 
     public int getTimeRequired() {
         if (this.hasRecipe())
-            return this.recipe.getTimeCost();
+            return this.recipe.get().getTimeCost();
         return 0;
     }
 

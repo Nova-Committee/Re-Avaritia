@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,12 +31,6 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
     public ExtremeAnvilScreen(ExtremeAnvilMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, ANVIL_LOCATION);
         this.titleLabelX = 60;
-    }
-
-    @Override
-    public void containerTick() {
-        super.containerTick();
-        this.name.tick();
     }
 
     @Override
@@ -80,7 +75,7 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
             }
 
             if (this.menu.setItemName(s)) {
-                NetworkHandler.CHANNEL.sendToServer(new C2SRenamePack(s));
+                PacketDistributor.sendToServer(new C2SRenamePack(s));
             }
 
         }

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EternalSingularityItem extends Item {
     public EternalSingularityItem() {
-        super(new Properties().stacksTo(16).rarity(ModRarities.RARE));
+        super(new Properties().stacksTo(8).rarity(ModRarities.RARE));
     }
 
     @Override
@@ -32,13 +32,13 @@ public class EternalSingularityItem extends Item {
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 

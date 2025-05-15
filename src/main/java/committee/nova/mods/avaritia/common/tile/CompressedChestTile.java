@@ -128,7 +128,7 @@ public class CompressedChestTile extends ChestBlockEntity {
     }
 
     @Override
-    protected void signalOpenCount(Level pLevel, BlockPos pPos, BlockState pState, int pEventId, int pEventParam) {
+    protected void signalOpenCount(Level pLevel, @NotNull BlockPos pPos, BlockState pState, int pEventId, int pEventParam) {
         Block block = pState.getBlock();
         pLevel.blockEvent(pPos, block, 1, pEventParam);
     }

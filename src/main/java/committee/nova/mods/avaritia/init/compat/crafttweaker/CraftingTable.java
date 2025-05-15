@@ -18,10 +18,13 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,11 +36,9 @@ import java.util.stream.Collectors;
 @ZenCodeType.Name("mods.avaritia.CraftingTable")
 @ZenRegister
 public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
-    private static final CraftingTable INSTANCE = new CraftingTable();
-
     @ZenCodeType.Method
-    public static void addShaped(String name, int tier, IItemStack output, IIngredient[][] inputs) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
+    public void addShaped(String name, int tier, IItemStack output, IIngredient[][] inputs) {
+        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
         if (tier > 4 || tier < 0) {
             tier = 0;
             CraftTweakerAPI.getLogger(Static.MOD_ID).error("Unable to assign a tier to the Table Recipe for stack " + output.getCommandString() + ". Tier cannot be greater than 4 or less than 0.");
@@ -60,44 +61,45 @@ public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
             }
         }
 
-        var recipe = new ShapedTableCraftingRecipe(id, width, height, ingredients, output.getInternal(), tier);
-        recipe.setTransformers((x, y, stack) -> inputs[y][x].getRemainingItem(new MCItemStack(stack)).getInternal());
+        var pattern = new ShapedRecipePattern(width, height, ingredients, Optional.empty());
+        var recipe = new ShapedTableCraftingRecipe(pattern, output.getInternal(), tier);
+        recipe.setTransformer((x, y, stack) -> inputs[y][x].getRemainingItem(new MCItemStack(stack)).getInternal());
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, new RecipeHolder<>(id, recipe)));
     }
 
     @ZenCodeType.Method
-    public static void addShapeless(String name, IItemStack output, IIngredient[] inputs) {
+    public void addShapeless(String name, IItemStack output, IIngredient[] inputs) {
         addShapeless(name, 0, output, inputs);
     }
 
     @ZenCodeType.Method
-    public static void addShapeless(String name, int tier, IItemStack output, IIngredient[] inputs) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
+    public void addShapeless(String name, int tier, IItemStack output, IIngredient[] inputs) {
+        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
         if (tier > 4 || tier < 0) {
             tier = 0;
             CraftTweakerAPI.getLogger(Static.MOD_ID).error("Unable to assign a tier to the Table Recipe for stack " + output.getCommandString() + ". Tier cannot be greater than 4 or less than 0.");
         }
-        var recipe = new ShapelessTableCraftingRecipe(id, toIngredientsList(inputs), output.getInternal(), tier);
+        var recipe = new ShapelessTableCraftingRecipe(toIngredientsList(inputs), output.getInternal(), tier);
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, new RecipeHolder<>(id, recipe)));
     }
 
     @ZenCodeType.Method
-    public static void addCatalyst(String name, IIngredient[] inputs) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
+    public void addCatalyst(String name, IIngredient[] inputs) {
+        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
         var recipe = new InfinityCatalystCraftRecipe(id, "default", toIngredientsList(inputs));
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, new RecipeHolder<>(id, recipe)));
     }
 
     @ZenCodeType.Method
-    public static void remove(IItemStack stack) {
-        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(INSTANCE, recipe -> recipe.getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
+    public void remove(IItemStack stack) {
+        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(this, recipe -> recipe.value().getResultItem(RegistryAccess.EMPTY).is(stack.getInternal().getItem())));
     }
 
     private static NonNullList<Ingredient> toIngredientsList(IIngredient... ingredients) {

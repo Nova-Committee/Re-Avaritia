@@ -205,7 +205,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
 
         pPoseStack.pushPose();
         this.random.setSeed(time / 3L * 1723609L);
-        final float[] col = ColorUtils.HSVtoRGB(this.random.nextFloat() * 6.0f, 1.0f, 1.0f);
+        final int col = ColorUtils.HSBToRGB(this.random.nextFloat() * 6.0f, 1.0f, 1.0f);
         pPoseStack.scale(f, f, f);
         pPoseStack.translate(0.0, this.babyYHeadOffset / 16.0f * f3, -0.029999999329447746);
         this.hat.render(pPoseStack, material(MASK).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, color);
@@ -215,7 +215,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
                             .setShaderState(RenderType.POSITION_COLOR_SHADER)
                             .setTextureState(new RenderStateShard.TextureStateShard(this.eyeTex, false, false))
                             .setCullState(RenderType.NO_CULL)
-                            .createCompositeState(true))), pPackedLight, pPackedOverlay, col[0], col[1], col[2], 1.0f);
+                            .createCompositeState(true))), pPackedLight, pPackedOverlay, col);
         }
         pPoseStack.popPose();
 
@@ -307,7 +307,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         public void render(final @NotNull PoseStack pPoseStack, final @NotNull MultiBufferSource pBuffer, final int pPackedLight, final @NotNull Player l, final float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
             if (ToolUtils.isInfinite(l)) {
                 AvaritiaShaders.cosmicOpacity.set(2.0f);
-                this.playerParts().forEach(t -> t.render(pPoseStack, InfinityArmorModel.material(MASK_INV).buffer(pBuffer, InfinityArmorModel::mask2), pPackedLight, 1, 1.0f, 1.0f, 1.0f, 1.0f));
+                this.playerParts().forEach(t -> t.render(pPoseStack, InfinityArmorModel.material(MASK_INV).buffer(pBuffer, InfinityArmorModel::mask2), pPackedLight, 1, ColorUtils.HSBToRGB(1.0f, 1.0f, 1.0f)));
             }
         }
     }

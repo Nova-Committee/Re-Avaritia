@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.wrappers;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 /**
  * @Project: Avaritia
@@ -22,14 +22,14 @@ public class StorageItem{
         this.count = count;
     }
 
-    private StorageItem(CompoundTag nbt) {
-        this.stack = ItemStack.of(nbt.getCompound("Stack"));
+    private StorageItem(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+        this.stack = ItemStack.parseOptional(lookupProvider, nbt.getCompound("Stack"));
         this.count = Integer.toUnsignedLong(nbt.getInt("Count"));
     }
 
     public static StorageItem create(ItemStack stack, int count) {
         if (!stack.isEmpty() && count != 0) {
-            ItemStack copy = ItemHandlerHelper.copyStackWithSize(stack, 1);
+            ItemStack copy = stack.copyWithCount(1);
             StorageItem container = new StorageItem(copy, count);
             container.updateEmptyState();
             return container;
@@ -42,8 +42,8 @@ public class StorageItem{
         return create(stack, stack.getCount());
     }
 
-    public static StorageItem read(CompoundTag nbt) {
-        StorageItem container = new StorageItem(nbt);
+    public static StorageItem read(HolderLookup.Provider lookupProvider,CompoundTag nbt) {
+        StorageItem container = new StorageItem(lookupProvider, nbt);
         container.updateEmptyState();
         return container;
     }
@@ -83,9 +83,9 @@ public class StorageItem{
         this.grow(-count);
     }
 
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider lookupProvider) {
         CompoundTag nbt = new CompoundTag();
-        nbt.put("Stack", this.stack.serializeNBT());
+        nbt.put("Stack", this.stack.save(lookupProvider));
         nbt.putInt("Count", (int)this.count);
         return nbt;
     }

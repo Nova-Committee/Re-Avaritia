@@ -101,33 +101,33 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public int getMaxPage() {
         return ModConfig.maxPageLimit.get();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public int getCurrentPage() {
         return this.chestData.get(0);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public long getItemCount(int slot) {
         return Integer.toUnsignedLong(this.itemCounts.get(slot));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public OffsetContainer getChestContainer() {
         return this.container;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public Inventory getPlayerInventory() {
         return this.playerInventory;
     }
 
 
-    @OnlyIn(Dist.CLIENT)
+    
     public int getSwapIndex() {
         return this.swapIndex;
     }

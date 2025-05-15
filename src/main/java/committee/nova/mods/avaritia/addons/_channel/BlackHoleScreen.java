@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.addons._channel;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;

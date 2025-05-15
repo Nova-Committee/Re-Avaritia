@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.net.channel;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.addons.channel.ChannelSelectMenu;
+import committee.nova.mods.avaritia.addons._channel.ChannelSelectMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

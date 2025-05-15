@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.menu;
 
+import committee.nova.mods.avaritia.common.crafting.input.ExtremeSmithingRecipeInput;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -12,7 +13,10 @@ import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -29,9 +33,9 @@ import java.util.Optional;
  */
 public class ExtremeSmithingMenu extends ItemCombinerMenu {
     @Nullable
-    private SmithingRecipe selectedRecipe;
+    private RecipeHolder<ExtremeSmithingRecipe> selectedRecipe;
     private final Level level;
-    private final List<ExtremeSmithingRecipe> recipes;
+    private final List<RecipeHolder<ExtremeSmithingRecipe>> recipes;
 
     public ExtremeSmithingMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(id, playerInventory, ContainerLevelAccess.NULL);
@@ -45,7 +49,7 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
 
     @Override
     protected boolean mayPickup(@NotNull Player pPlayer, boolean pHasStack) {
-        return this.selectedRecipe != null && this.selectedRecipe.matches(this.inputSlots, this.level);
+        return this.selectedRecipe != null && this.selectedRecipe.value().matches(this.createRecipeInput(), this.level);
     }
 
     @Override
@@ -74,15 +78,16 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
 
     @Override
     public void createResult() {
-        List<ExtremeSmithingRecipe> list = this.level.getRecipeManager().getRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get(), this.inputSlots, this.level);
+        ExtremeSmithingRecipeInput smithingrecipeinput = this.createRecipeInput();
+        List<RecipeHolder<ExtremeSmithingRecipe>> list = this.level.getRecipeManager().getRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get(), smithingrecipeinput, this.level);
         if (list.isEmpty()) {
             this.resultSlots.setItem(0, ItemStack.EMPTY);
         } else {
-            ExtremeSmithingRecipe smithingrecipe = list.get(0);
-            ItemStack itemstack = smithingrecipe.assemble(this.inputSlots, this.level.registryAccess());
+            RecipeHolder<ExtremeSmithingRecipe> recipeholder = list.get(0);
+            ItemStack itemstack = recipeholder.value().assemble(smithingrecipeinput, this.level.registryAccess());
             if (itemstack.isItemEnabled(this.level.enabledFeatures())) {
-                this.selectedRecipe = smithingrecipe;
-                this.resultSlots.setRecipeUsed(smithingrecipe);
+                this.selectedRecipe = recipeholder;
+                this.resultSlots.setRecipeUsed(recipeholder);
                 this.resultSlots.setItem(0, itemstack);
             }
         }
@@ -92,23 +97,23 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
     protected @NotNull ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
         return ItemCombinerMenuSlotDefinition.create().withSlot(0, 31, 35, (stack) -> {
             return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isTemplateIngredient(stack);
+                return recipe.value().isTemplateIngredient(stack);
             });
         }).withSlot(1, 49, 35, (stack) -> {
             return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isBaseIngredient(stack);
+                return recipe.value().isBaseIngredient(stack);
             });
         }).withSlot(2, 67, 35, (stack) -> {
             return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isAdditionIngredient(stack);
+                return recipe.value().isAdditionIngredient(stack);
             });
         }).withSlot(3, 49, 17, (stack) -> {
             return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isAdditionIngredient(stack);
+                return recipe.value().isAdditionIngredient(stack);
             });
         }).withSlot(4, 49, 53, (stack) -> {
             return this.recipes.stream().anyMatch((recipe) -> {
-                return recipe.isAdditionIngredient(stack);
+                return recipe.value().isAdditionIngredient(stack);
             });
         }).withResultSlot(5, 121, 35).build();
     }
@@ -128,11 +133,11 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
     @Override
     public int getSlotToQuickMoveTo(@NotNull ItemStack pStack) {
         return this.recipes.stream().map((smithingRecipe) -> {
-            return findSlotMatchingIngredient(smithingRecipe, pStack);
+            return findSlotMatchingIngredient(smithingRecipe.value(), pStack);
         }).filter(Optional::isPresent).findFirst().orElse(Optional.of(List.of(0))).get().get(0);
     }
 
-    private static Optional<List<Integer>> findSlotMatchingIngredient(SmithingRecipe pRecipe, ItemStack pStack) {
+    private static Optional<List<Integer>> findSlotMatchingIngredient(ExtremeSmithingRecipe pRecipe, ItemStack pStack) {
         if (pRecipe.isTemplateIngredient(pStack)) {
             return Optional.of(List.of(0));
         } else if (pRecipe.isBaseIngredient(pStack)) {
@@ -150,7 +155,11 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
     @Override
     public boolean canMoveIntoInputSlots(@NotNull ItemStack pStack) {
         return this.recipes.stream().map((smithingRecipe) -> {
-            return findSlotMatchingIngredient(smithingRecipe, pStack);
+            return findSlotMatchingIngredient(smithingRecipe.value(), pStack);
         }).anyMatch(Optional::isPresent);
+    }
+
+    private ExtremeSmithingRecipeInput createRecipeInput() {
+        return new ExtremeSmithingRecipeInput(this.inputSlots.getItem(0), this.inputSlots.getItem(1), this.inputSlots.getItem(2), this.inputSlots.getItem(3), this.inputSlots.getItem(4));
     }
 }

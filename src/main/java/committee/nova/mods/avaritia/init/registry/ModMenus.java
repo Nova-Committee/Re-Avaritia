@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleScreen;
-import committee.nova.mods.avaritia.addons.channel.ChannelMenu;
-import committee.nova.mods.avaritia.addons.channel.ChannelSelectMenu;
-import committee.nova.mods.avaritia.addons.channel.ChannelSelectScreen;
+import committee.nova.mods.avaritia.addons._channel.BlackHoleScreen;
+import committee.nova.mods.avaritia.addons._channel.ChannelMenu;
+import committee.nova.mods.avaritia.addons._channel.ChannelSelectMenu;
+import committee.nova.mods.avaritia.addons._channel.ChannelSelectScreen;
 import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;

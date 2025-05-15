@@ -9,14 +9,16 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,32 +41,44 @@ public class InfinityChestTile extends BaseContainerBlockEntity implements Offse
     }
 
     @Override
+    protected @NotNull NonNullList<ItemStack> getItems() {
+        var items = NonNullList.withSize(this.containers.size(), ItemStack.EMPTY);
+        items.retainAll(containers.values().stream().map(StorageItem::getStack).toList());
+        return items;
+    }
+
+    @Override
+    protected void setItems(@NotNull NonNullList<ItemStack> items) {
+
+    }
+
+    @Override
     protected @NotNull AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory) {
         return new InfinityChestMenu(pContainerId, pInventory, this.getBlockPos(), this, this.chestData);
     }
 
-    public void loadFromTag(CompoundTag compound) {
+    public void loadFromTag(HolderLookup.Provider lookupProvider,CompoundTag compound) {
         this.containers.clear();
-        StorageUtils.loadAllItems(compound, this.containers);
+        StorageUtils.loadAllItems(lookupProvider, compound, this.containers);
         this.page = compound.getInt("Page");
     }
 
-    public CompoundTag saveToTag(CompoundTag compound) {
-        StorageUtils.saveAllItems(compound, this.containers);
+    public CompoundTag saveToTag(HolderLookup.Provider lookupProvider, CompoundTag compound) {
+        StorageUtils.saveAllItems(lookupProvider, compound, this.containers);
         compound.putInt("Page", this.page);
         return compound;
     }
 
     @Override
-    public void load(@NotNull CompoundTag pTag) {
-        super.load(pTag);
-        this.loadFromTag(pTag);
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.loadAdditional(tag, registries);
+        this.loadFromTag(registries, tag);
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag pTag) {
-        super.saveAdditional(pTag);
-        this.saveToTag(pTag);
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.saveAdditional(tag, registries);
+        this.saveToTag(registries, tag);
     }
 
     private final ContainerData chestData = new ContainerData() {
@@ -87,10 +101,5 @@ public class InfinityChestTile extends BaseContainerBlockEntity implements Offse
     public OffsetItemStackWrapper getItemHandler() {
         int slots = ModConfig.inventoryRows.get() * 9;
         return OffsetItemStackWrapper.create(this.containers, slots * this.page, slots);
-    }
-
-    @Override
-    protected @NotNull IItemHandler createUnSidedHandler() {
-        return this.getItemHandler();
     }
 }

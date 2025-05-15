@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.tile.collector;
 
+import committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
@@ -8,6 +9,7 @@ import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,8 +28,6 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
-
-
     public final ItemStackWrapper inventory;
     public SimpleContainerData data = new SimpleContainerData(1);
     private int progress;
@@ -35,7 +35,7 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
 
     public BaseNeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile.get(), pos, state);
-        this.inventory = createInventoryHandler();
+        this.inventory = createInventoryHandler((slot) -> this.setChangedAndDispatch());
         if (state.is(ModBlocks.neutron_collector.get())) {
             tier = CollectorTier.DEFAULT;
         } else if (state.is(ModBlocks.dense_neutron_collector.get())) {
@@ -65,25 +65,21 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
                 tile.setChangedAndDispatch();
             }
         }
-
-
     }
 
-    public static ItemStackWrapper createInventoryHandler() {
-        var inventory = new ItemStackWrapper(1, Integer.MAX_VALUE);
-        inventory.setOutputSlots(0);
-        return inventory;
+    public static ItemStackWrapper createInventoryHandler(OnContentsChangedFunction onContentsChanged) {
+        return ItemStackWrapper.create(9, onContentsChanged, builder -> {});
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.loadAdditional(tag, registries);
         this.progress = tag.getInt("progress");
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("progress", progress);
     }
 

@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.api.common.tile;
 
 import committee.nova.mods.avaritia.api.utils.TileEntityUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
@@ -29,8 +30,8 @@ public abstract class BaseTileEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag() {
-        return this.saveWithFullMetadata();
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider provider) {
+        return this.saveWithFullMetadata(provider);
     }
 
     @Override

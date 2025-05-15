@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static committee.nova.mods.avaritia.Static.GSON;
+
 /**
  * Description:
  * Author: cnlimiter
@@ -41,7 +43,6 @@ import java.util.stream.Collectors;
 @EventBusSubscriber
 public class SingularityRegistryHandler {
     private static final SingularityRegistryHandler INSTANCE = new SingularityRegistryHandler();
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
     private final Map<ResourceLocation, Singularity> singularities = new LinkedHashMap<>();
 
@@ -112,28 +113,6 @@ public class SingularityRegistryHandler {
 
     public Singularity getSingularityById(ResourceLocation id) {
         return this.singularities.get(id);
-    }
-
-    public void writeToBuffer(RegistryFriendlyByteBuf buffer) {
-        buffer.writeVarInt(this.singularities.size());
-
-        this.singularities.forEach((id, singularity) -> {
-            singularity.toNetwork(buffer);
-        });
-    }
-
-    public List<Singularity> readFromBuffer(RegistryFriendlyByteBuf buffer) {
-        List<Singularity> singularities = new ArrayList<>();
-
-        int size = buffer.readVarInt();
-
-        for (int i = 0; i < size; i++) {
-            var singularity = Singularity.fromNetwork(buffer);
-
-            singularities.add(singularity);
-        }
-
-        return singularities;
     }
 
     public void loadSingularities(S2CSingularitiesPack message) {

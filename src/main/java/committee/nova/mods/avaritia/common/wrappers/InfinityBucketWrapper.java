@@ -3,22 +3,19 @@ package committee.nova.mods.avaritia.common.wrappers;
 import committee.nova.mods.avaritia.common.item.misc.InfinityBucketItem;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProvider {
+public class InfinityBucketWrapper implements IFluidHandlerItem {
     @NotNull
     private final ItemStack container;
-    private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
 
     public InfinityBucketWrapper(@NotNull ItemStack container) {
         this.container = container;
@@ -48,7 +45,7 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
     }
 
     @Override
-    public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
+    public int fill(@NotNull FluidStack resource, IFluidHandler.@NotNull FluidAction action) {
         if (container.getCount() != 1 && resource.isEmpty()) {
             return 0;
         }
@@ -56,7 +53,7 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
         List<FluidStack> fluids = InfinityBucketItem.getFluids(container);
 
         FluidStack contained = fluids.stream()
-                .filter(fluid -> fluid.isFluidEqual(resource))
+                .filter(fluid -> FluidStack.isSameFluidSameComponents(fluid, resource))
                 .findFirst()
                 .orElse(FluidStack.EMPTY);
 
@@ -65,12 +62,12 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
             fillAmount = resource.getAmount();
             FluidStack filled = resource.copy();
             filled.setAmount(fillAmount);
-            fluids.add(0, filled);
+            fluids.addFirst(filled);
         } else {
             fillAmount = Math.min(Integer.MAX_VALUE - contained.getAmount(), resource.getAmount());
             contained.grow(fillAmount);
             fluids.remove(contained);
-            fluids.add(0, contained);
+            fluids.addFirst(contained);
         }
 
         if (action.execute()) {
@@ -81,19 +78,19 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
+    public @NotNull FluidStack drain(@NotNull FluidStack resource, IFluidHandler.@NotNull FluidAction action) {
         if (container.getCount() != 1 || resource.isEmpty()) {
             return FluidStack.EMPTY;
         }
         FluidStack firstContained = InfinityBucketItem.getFluids(container).stream().findFirst().orElse(FluidStack.EMPTY);
-        if (!resource.isFluidEqual(firstContained)) {
+        if (!FluidStack.isSameFluidSameComponents(resource, firstContained)) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
+    public @NotNull FluidStack drain(int maxDrain, IFluidHandler.@NotNull FluidAction action) {
         if (container.getCount() != 1 || maxDrain <= 0) {
             return FluidStack.EMPTY;
         }
@@ -119,10 +116,6 @@ public class InfinityBucketWrapper implements IFluidHandlerItem, ICapabilityProv
         return drained;
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return ForgeCapabilities.FLUID_HANDLER_ITEM.orEmpty(cap, holder);
-    }
 
     @Override
     public @NotNull ItemStack getContainer() {

@@ -1,8 +1,10 @@
 package committee.nova.mods.avaritia.api.common.tile;
 
 import committee.nova.mods.avaritia.api.common.wrapper.BaseItemWrapper;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -24,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public abstract class BaseInventoryTileEntity extends BaseTileEntity {
-
-    private LazyOptional<IItemHandler> capability = LazyOptional.of(this::getInventory);
     private LockCode lockKey = LockCode.NO_LOCK;
 
 
@@ -43,20 +43,20 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
         }
     }
 
-    public abstract @NotNull BaseItemWrapper getInventory();
+    public abstract @NotNull ItemStackWrapper getInventory();
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.loadAdditional(tag, registries);
         this.lockKey = LockCode.fromTag(tag);
-        this.getInventory().deserializeNBT(tag);
+        this.getInventory().deserializeNBT(registries, tag);
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        super.saveAdditional(tag, registries);
         this.lockKey.addToTag(tag);
-        tag.merge(this.getInventory().serializeNBT());
+        tag.merge(this.getInventory().serializeNBT(registries));
     }
 
     public boolean canOpen(Player pPlayer) {
@@ -70,27 +70,6 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
     }
 
     protected abstract AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory);
-
-
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        if (!this.isRemoved() && cap == ForgeCapabilities.ITEM_HANDLER) {
-            return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, this.capability);
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.capability.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        this.capability = LazyOptional.of(this::getInventory);
-    }
 
     public boolean isUsableByPlayer(Player player) {
         BlockPos pos = this.getBlockPos();

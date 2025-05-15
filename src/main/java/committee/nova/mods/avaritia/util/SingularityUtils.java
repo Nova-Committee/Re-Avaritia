@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.api.utils.NBTUtils;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -36,26 +37,22 @@ public class SingularityUtils {
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
-        var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
         var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
 
-        if (ing == null) {
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
-        } else if (ing.has("tag")) {
-            var tag = ing.get("tag").getAsString();
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
-        } else {
-            Ingredient.CODEC.decode(JsonOps.INSTANCE, json.get("ingredient"))
-                    .resultOrPartial(Util.prefix("ingredient error", Static.LOGGER::error))
-                    .ifPresent((ingredient) -> finalSingularity.setIngredient(ingredient.getFirst()));
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, vIngredient, materialCount, time);
-        }
-
+        Singularity singularity;
+        var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
         var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
 
-        singularity.setEnabled(enabled);
-        singularity.setRecipeDisabled(recipeDisabled);
+        if (ing == null) {
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time, enabled, recipeDisabled);
+        } else if (ing.has("tag")) {
+            var tag = ing.get("tag").getAsString();
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time, enabled, recipeDisabled);
+        } else {
+            var ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, json.get("ingredient")).getOrThrow().getFirst();
+            singularity = new Singularity(id, name, new int[] { overlayColor, underlayColor }, ingredient, materialCount, time, enabled, recipeDisabled);
+        }
 
         return singularity;
     }
@@ -67,8 +64,8 @@ public class SingularityUtils {
 
         var colors = new JsonArray();
 
-        colors.add(Integer.toString(singularity.getOverlayColor(), 16));
-        colors.add(Integer.toString(singularity.getUnderlayColor(), 16));
+        colors.add(Integer.toHexString(singularity.getOverlayColor() & 0x00FFFFFF));
+        colors.add(Integer.toHexString(singularity.getUnderlayColor() & 0x00FFFFFF));
 
         json.add("colors", colors);
         json.addProperty("timeRequired", singularity.getTimeRequired());
@@ -104,27 +101,16 @@ public class SingularityUtils {
         return json;
     }
 
-    public static CompoundTag makeTag(Singularity singularity) {
-        var nbt = new CompoundTag();
-
-        nbt.putString("Id", singularity.getId().toString());
-
-        return nbt;
-    }
-
     public static ItemStack getItemForSingularity(Singularity singularity) {
-        var nbt = makeTag(singularity);
         var stack = new ItemStack(ModItems.singularity.get());
-
-        stack.tag(nbt);
-
+        stack.set(ModDataComponents.SINGULARITY_ID, singularity.getId());
         return stack;
     }
 
     public static Singularity getSingularity(ItemStack stack) {
-        var id = NBTUtils.getString(stack, "Id");
-        if (!id.isEmpty()) {
-            return SingularityRegistryHandler.getInstance().getSingularityById(ResourceLocation.tryParse(id));
+        var id = stack.get(ModDataComponents.SINGULARITY_ID);
+        if (id != null) {
+            return SingularityRegistryHandler.getInstance().getSingularityById(id);
         }
 
         return null;

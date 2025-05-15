@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net.channel;
 
-import committee.nova.mods.avaritia.addons.channel.ClientChannelManager;
+import committee.nova.mods.avaritia.addons._channel.ClientChannelManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;

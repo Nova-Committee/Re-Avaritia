@@ -53,7 +53,7 @@ public class ModCraftContainer extends TransientCraftingContainer {
 
     @Override
     public @NotNull ItemStack removeItem(int slot, int amount) {
-        var stack = this.inventory.extractItemSuper(slot, amount, false);
+        var stack = this.inventory.extractItem(slot, amount, false);
 
         this.container.slotsChanged(this);
 

@@ -39,7 +39,7 @@ public class InfinityClockTile extends BaseInventoryTileEntity {
     }
 
     public static ItemStackWrapper createInventoryHandler() {
-        return new ItemStackWrapper(1, 1);
+        return ItemStackWrapper.create(1);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, InfinityClockTile tile) {

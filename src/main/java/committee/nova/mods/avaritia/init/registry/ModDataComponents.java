@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,6 +19,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  */
 public class ModDataComponents {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, Static.MOD_ID);
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> INFINITY_PICKAXE_HAMMER = DATA_COMPONENTS.register("infinity_pickaxe_hammer",
             () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> INFINITY_SHOVEL_DESTROYER = DATA_COMPONENTS.register("infinity_shovel_destroyer",
@@ -28,6 +30,8 @@ public class ModDataComponents {
             () -> DataComponentType.<CompoundTag>builder().persistent(CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG).cacheEncoding().build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> TOOL_FILTERS = DATA_COMPONENTS.register("tool_filters",
             () -> DataComponentType.<CompoundTag>builder().persistent(CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG).cacheEncoding().build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> SINGULARITY_ID = DATA_COMPONENTS.register("singularity_id",
+            () -> DataComponentType.<ResourceLocation>builder().persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC).build());
 //    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomData>> TOOL_FILTERS = DATA_COMPONENTS.register("tool_filters",
 //            () -> DataComponentType.<CustomData>builder().persistent(CustomData.CODEC).networkSynchronized(CustomData.STREAM_CODEC).cacheEncoding().build());
 }

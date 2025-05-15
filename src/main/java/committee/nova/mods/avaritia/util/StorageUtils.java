@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.util;
 import committee.nova.mods.avaritia.common.wrappers.StorageItem;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -99,14 +100,14 @@ public class StorageUtils {
         return containers;
     }
 
-    public static void saveAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
+    public static void saveAllItems(HolderLookup.Provider lookupProvider, CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
         ListTag list = new ListTag();
 
         for (Int2ObjectMap.Entry<StorageItem> storageItemEntry : containers.int2ObjectEntrySet()) {
             int index = storageItemEntry.getIntKey();
             StorageItem item = storageItemEntry.getValue();
             if (!item.isEmpty()) {
-                CompoundTag compound = item.serializeNBT();
+                CompoundTag compound = item.serializeNBT(lookupProvider);
                 compound.putInt("Index", index);
                 list.add(compound);
             }
@@ -114,13 +115,13 @@ public class StorageUtils {
         nbt.put("Items", list);
     }
 
-    public static void loadAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
+    public static void loadAllItems(HolderLookup.Provider lookupProvider,CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
         ListTag list = nbt.getList("Items", Tag.TAG_COMPOUND);
 
         for(int i = 0; i < list.size(); ++i) {
             CompoundTag compound = list.getCompound(i);
             int index = compound.getInt("Index");
-            StorageItem item = StorageItem.read(compound);
+            StorageItem item = StorageItem.read(lookupProvider, compound);
             if (!item.isEmpty()) {
                 containers.put(index, item);
             }

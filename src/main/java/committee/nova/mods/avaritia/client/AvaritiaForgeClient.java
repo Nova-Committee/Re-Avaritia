@@ -12,6 +12,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -109,9 +110,9 @@ public class AvaritiaForgeClient {
             var stack = e.getItemStack();
             var tooltips = e.getToolTip();
             if (Screen.hasAltDown()) {
-                CompoundTag tag=stack.getTag();
-                if (tag != null) {
-                    addTagCompound("  ", tooltips, tag);
+                var data = stack.get(DataComponents.CUSTOM_DATA);
+                if (data != null) {
+                    addTagCompound("  ", tooltips, data.copyTag());
                 }
             }
         }

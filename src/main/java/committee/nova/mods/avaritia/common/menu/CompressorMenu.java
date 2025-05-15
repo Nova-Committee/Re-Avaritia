@@ -13,8 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public class CompressorMenu extends BaseTileMenu<CompressorTile> {
     private final ContainerData progressData;
     public CompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(id, playerInventory, CompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
+        this(id, playerInventory, CompressorTile.createInventoryHandler(null), buffer.readBlockPos(), new SimpleContainerData(1));
     }
 
     public CompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
@@ -80,8 +78,6 @@ public class CompressorMenu extends BaseTileMenu<CompressorTile> {
 
         return itemstack;
     }
-
-    @OnlyIn(Dist.CLIENT)
     public int getProgress() {
         return this.progressData.get(0);
     }

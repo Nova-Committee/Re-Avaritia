@@ -31,42 +31,10 @@ public record S2CSingularitiesPack(List<Singularity> singularities) implements C
     public static final CustomPacketPayload.Type<S2CSingularitiesPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("s2c_singularities"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CSingularitiesPack> STREAM_CODEC = StreamCodec.composite(
-            new StreamCodec<RegistryFriendlyByteBuf, Singularity>() {
-                @Override
-                public void encode(@NotNull RegistryFriendlyByteBuf buffer, @NotNull Singularity singularity) {
-                    RegistryFriendlyByteBuf tmpBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(),
-                            buffer.registryAccess(), ConnectionType.NEOFORGE);
-                    try {
-                        Singularity.streamCodec().encode(tmpBuf, singularity);
-                    } catch (Throwable throwable) {
-                        tmpBuf.release();
-                        buffer.writeBoolean(false);
-                        Static.LOGGER.debug("Failed to encode singularity: %s".formatted(singularity), throwable);
-                    }
-                }
-
-                @Override
-                public @NotNull Singularity decode(@NotNull RegistryFriendlyByteBuf buffer) {
-                    boolean success = buffer.readBoolean();
-                    if (!success) {
-                        return ModSingularities.NULL;
-                    }
-                    RegistryFriendlyByteBuf tmpBuf = new RegistryFriendlyByteBuf(
-                            Unpooled.wrappedBuffer(RegistryFriendlyByteBuf.readByteArray(buffer)),
-                            buffer.registryAccess(), ConnectionType.NEOFORGE);
-                    try {
-                        return Singularity.streamCodec().decode(tmpBuf);
-                    } catch (Throwable throwable) {
-                        return ModSingularities.NULL;
-                    } finally {
-                        tmpBuf.release();
-                    }
-                }
-            }
-    .apply(ByteBufCodecs.<RegistryFriendlyByteBuf, Singularity, Collection<Singularity>>collection(ArrayList::new))
-            .map(list -> {
-                return list.stream().filter(Objects::nonNull).toList();
-            }, UnaryOperator.identity()), S2CSingularitiesPack::singularities, S2CSingularitiesPack::new);
+            Singularity.STREAM_CODEC.apply(ByteBufCodecs.list()),
+            S2CSingularitiesPack::singularities,
+            S2CSingularitiesPack::new
+    );
 
 
 

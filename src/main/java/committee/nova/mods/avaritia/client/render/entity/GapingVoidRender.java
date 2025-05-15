@@ -18,8 +18,8 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_SHADOW_SHADER;
@@ -71,11 +71,11 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         stack.mulPose(Axis.XP.rotationDegrees((float) (Math.atan2(Math.sqrt(dx * dx + dz * dz), dy) * 57.29577951308232 + 90.0)));
         stack.pushPose();
         stack.mulPose(Axis.XP.rotationDegrees(90.0f));
-        final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(RenderType.create("avaritia:void_halo", DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, RenderType.CompositeState.builder().setShaderState(RenderType.POSITION_COLOR_TEX_SHADER).setTextureState(new RenderStateShard.TextureStateShard(Static.rl("textures/entity/void_halo.png"), false, false)).setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY).setWriteMaskState(RenderType.COLOR_WRITE).createCompositeState(false))), stack);
-        cons.vertex(-halocoord, 0.0, -halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(0.0f, 0.0f).endVertex();
-        cons.vertex(-halocoord, 0.0, halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(0.0f, 1.0f).endVertex();
-        cons.vertex(halocoord, 0.0, halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(1.0f, 1.0f).endVertex();
-        cons.vertex(halocoord, 0.0, -halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(1.0f, 0.0f).endVertex();
+        final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(RenderType.create("avaritia:void_halo", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, RenderType.CompositeState.builder().setShaderState(RenderType.POSITION_TEX_SHADER).setTextureState(new RenderStateShard.TextureStateShard(Static.rl("textures/entity/void_halo.png"), false, false)).setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY).setWriteMaskState(RenderType.COLOR_WRITE).createCompositeState(false))), stack);
+        cons.addVertex((float) -halocoord, 0.0f, (float) -halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(0.0f, 0.0f);
+        cons.addVertex((float) -halocoord, 0.0f, (float) halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(0.0f, 1.0f);
+        cons.addVertex((float) halocoord, 0.0f, (float) halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(1.0f, 1.0f);
+        cons.addVertex((float) halocoord, 0.0f, (float) -halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(1.0f, 0.0f);
         stack.popPose();
         stack.scale((float) scale, (float) scale, (float) scale);
         final CCRenderState cc = CCRenderState.instance();

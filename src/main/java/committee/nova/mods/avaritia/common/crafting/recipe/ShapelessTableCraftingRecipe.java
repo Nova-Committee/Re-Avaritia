@@ -1,28 +1,26 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.RecipeMatcher;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
 
 /**
@@ -32,43 +30,53 @@ import java.util.function.BiFunction;
  * Version: 1.0
  */
 public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
-    public final NonNullList<Ingredient> inputs;
-    private final ResourceLocation recipeId;
-    private final ItemStack output;
+    private final NonNullList<Ingredient> inputs;
+    private final ItemStack result;
     private final int tier;
-    private BiFunction<Integer, ItemStack, ItemStack> transformers;
+    private BiFunction<Integer, ItemStack, ItemStack> transformer;
 
-    public ShapelessTableCraftingRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, ItemStack output) {
-        this(recipeId, inputs, output, 0);
+    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result) {
+        this(inputs, result, 0);
     }
 
-    public ShapelessTableCraftingRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, ItemStack output, int tier) {
-        this.recipeId = recipeId;
+    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result, int tier) {
         this.inputs = inputs;
-        this.output = output;
+        this.result = result;
         this.tier = tier;
     }
 
-    private static int getTierFromSize(int size) {
-        return size < 10 ? 1
-                : size < 26 ? 2
-                : size < 50 ? 3
-                : 4;
+    @Override
+    public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+        return this.result;
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess p_267052_) {
-        return this.output;
+    public boolean matches(@NotNull TierInput input, @NotNull Level level) {
+        if (this.tier != 0 && this.tier != input.tier())
+            return false;
+
+        if (this.inputs.size() != input.ingredientCount())
+            return false;
+
+        var inputs = NonNullList.<ItemStack>create();
+
+        for (var i = 0; i < input.size(); i++) {
+            var item = input.getItem(i);
+            if (!item.isEmpty()) {
+                inputs.add(item);
+            }
+        }
+
+        return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs, this.inputs) != null;
     }
 
+    @Override
+    public @NotNull ItemStack assemble(@NotNull TierInput input, HolderLookup.@NotNull Provider registries) {
+        return this.result.copy();
+    }
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;
-    }
-
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return this.recipeId;
     }
 
     @Override
@@ -81,61 +89,35 @@ public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
         return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
     }
 
+
+
     @Override
     public boolean canCraftInDimensions(int width, int height) {
         return width * height >= this.inputs.size();
     }
 
     @Override
-    public ItemStack assemble(IItemHandler inventory) {
-        return this.output.copy();
-    }
+    public @NotNull NonNullList<ItemStack> getRemainingItems(TierInput inventory) {
+        var remaining = NonNullList.withSize(inventory.size(), ItemStack.EMPTY);
 
-    @Override
-    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
-        return this.output.copy();
-    }
-
-    @Override
-    public boolean matches(IItemHandler inventory) {
-        if (this.tier != 0 && this.tier != getTierFromSize(inventory.getSlots()))
-            return false;
-        List<ItemStack> inputs = new ArrayList<>();
-        int matched = 0;
-
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            var stack = inventory.getStackInSlot(i);
-
-            if (!stack.isEmpty()) {
-                inputs.add(stack);
-
-                matched++;
+        for (int i = 0; i < remaining.size(); ++i) {
+            var item = inventory.getItem(i);
+            if (item.hasCraftingRemainingItem()) {
+                remaining.set(i, item.getCraftingRemainingItem());
             }
         }
 
-        return matched == this.inputs.size() && RecipeMatcher.findMatches(inputs, this.inputs) != null;
-    }
-
-    @Override
-    public boolean matches(@NotNull Container inv, @NotNull Level level) {
-        return this.matches(new InvWrapper(inv));
-    }
-
-    @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
-        var remaining = BaseTableCraftingRecipe.super.getRemainingItems(inv);
-
-        if (this.transformers != null) {
+        if (this.transformer != null) {
             var used = new boolean[remaining.size()];
 
             for (int i = 0; i < remaining.size(); i++) {
-                var stack = inv.getStackInSlot(i);
+                var stack = inventory.getItem(i);
 
                 for (int j = 0; j < this.inputs.size(); j++) {
                     var input = this.inputs.get(j);
 
                     if (!used[j] && input.test(stack)) {
-                        var ingredient = this.transformers.apply(j, stack);
+                        var ingredient = this.transformer.apply(j, stack);
 
                         used[j] = true;
                         remaining.set(i, ingredient);
@@ -152,7 +134,11 @@ public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
     @Override
     public int getTier() {
         if (this.tier > 0) return this.tier;
-        return getTierFromSize(this.inputs.size());
+        var size = this.inputs.size();
+        return size < 10 ? 1
+                : size < 26 ? 2
+                : size < 50 ? 3
+                : 4;
     }
 
     @Override
@@ -160,50 +146,71 @@ public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
         return this.tier > 0;
     }
 
-    public void setTransformers(BiFunction<Integer, ItemStack, ItemStack> transformers) {
-        this.transformers = transformers;
+
+    public void setTransformers(BiFunction<Integer, ItemStack, ItemStack> transformer) {
+        this.transformer = transformer;
     }
 
     public static class Serializer implements RecipeSerializer<ShapelessTableCraftingRecipe> {
+        public static final MapCodec<ShapelessTableCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
+                builder.group(
+                        Ingredient.CODEC_NONEMPTY
+                                .listOf()
+                                .fieldOf("ingredients")
+                                .flatXmap(
+                                        field -> {
+                                            var max = 81;
+                                            var ingredients = field.toArray(Ingredient[]::new);
+                                            if (ingredients.length == 0) {
+                                                return DataResult.error(() -> "No ingredients for Combination recipe");
+                                            } else {
+                                                return ingredients.length > max
+                                                        ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
+                                                        : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
+                                            }
+                                        },
+                                        DataResult::success
+                                )
+                                .forGetter(recipe -> recipe.inputs),
+                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier)
+                ).apply(builder, ShapelessTableCraftingRecipe::new)
+        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessTableCraftingRecipe> STREAM_CODEC = StreamCodec.of(
+                ShapelessTableCraftingRecipe.Serializer::toNetwork, ShapelessTableCraftingRecipe.Serializer::fromNetwork
+        );
         @Override
-        public @NotNull ShapelessTableCraftingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            NonNullList<Ingredient> inputs = NonNullList.create();
-            var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
-
-            for (int i = 0; i < ingredients.size(); i++) {
-                inputs.add(Ingredient.fromJson(ingredients.get(i)));
-            }
-
-            var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int tier = GsonHelper.getAsInt(json, "tier", 0);
-
-            return new ShapelessTableCraftingRecipe(recipeId, inputs, output, tier);
+        public @NotNull MapCodec<ShapelessTableCraftingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public ShapelessTableCraftingRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, ShapelessTableCraftingRecipe> streamCodec() {
+            return STREAM_CODEC;
+        }
+
+        private static ShapelessTableCraftingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
             var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
 
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.fromNetwork(buffer));
+                inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
 
-            var output = buffer.readItem();
+            var result = ItemStack.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
 
-            return new ShapelessTableCraftingRecipe(recipeId, inputs, output, tier);
+            return new ShapelessTableCraftingRecipe(inputs, result, tier);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, ShapelessTableCraftingRecipe recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, ShapelessTableCraftingRecipe recipe) {
             buffer.writeVarInt(recipe.inputs.size());
 
             for (var ingredient : recipe.inputs) {
-                ingredient.toNetwork(buffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
 
-            buffer.writeItem(recipe.output);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
         }
     }

@@ -2,11 +2,15 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -17,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,17 +84,15 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
         ItemStack itemstack = this.inputSlots.getItem(0);
         int i = 0;
         int k = 0;
-        if (itemstack.isEmpty()) {
-            this.resultSlots.setItem(0, ItemStack.EMPTY);
-        } else {
+        if(!itemstack.isEmpty() && EnchantmentHelper.canStoreEnchantments(itemstack)){
             ItemStack itemstack1 = itemstack.copy();
             ItemStack itemstack2 = this.inputSlots.getItem(1);
-            Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
+            ItemEnchantments.Mutable itemenchantments$mutable = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(itemstack1));
             this.repairItemCountCost = 0;
             boolean flag = false;
 
             if (!itemstack2.isEmpty()) {
-                flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantments(itemstack2).isEmpty();
+                flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
                 if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
                     int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                     if (l2 <= 0) {
@@ -127,49 +130,52 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                         }
                     }
 
-                    Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(itemstack2);
-                    for(Enchantment enchantment1 : map1.keySet()) {
-                        if (enchantment1 != null) {
-                            int i2 = map.getOrDefault(enchantment1, 0);
-                            int j2 = map1.get(enchantment1);
-                            j2 = i2 + j2;
-                            if (j2 > enchantment1.getMaxLevel()) {
-                                j2 = enchantment1.getMaxLevel();
-                            }
+                    ItemEnchantments itemenchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemstack2);
+                    boolean flag2 = false;
+                    boolean flag3 = false;
+                    for(Object2IntMap.Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
+                        Holder<Enchantment> holder = entry.getKey();
+                        int i2 = itemenchantments$mutable.getLevel(holder);
+                        int j2 = entry.getIntValue();
+                        j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+                        Enchantment enchantment = holder.value();
+                        boolean flag1 = itemstack.supportsEnchantment(holder);
+                        if (this.player.getAbilities().instabuild) {
+                            flag1 = true;
+                        }
 
-                            map.put(enchantment1, j2);
-                            int k3 = 0;
-                            switch (enchantment1.getRarity()) {
-                                case COMMON -> k3 = 1;
-                                case UNCOMMON -> k3 = 2;
-                                case RARE -> k3 = 4;
-                                case VERY_RARE -> k3 = 8;
+                        for (Holder<Enchantment> holder1 : itemenchantments$mutable.keySet()) {
+                            if (!holder1.equals(holder) && !Enchantment.areCompatible(holder, holder1)) {
+                                flag1 = false;
+                                i++;
                             }
+                        }
+                        if (!flag1) {
+                            flag3 = true;
+                        } else {
+                            flag2 = true;
+                            itemenchantments$mutable.set(holder, j2);
+                        }
 
-                            if (flag) {
-                                k3 = Math.max(1, k3 / 2);
-                            }
-
-                            i += k3 * j2;
-                            if (itemstack.getCount() > 1) {
-                                i = 40;
-                            }
+                        if (flag3 && !flag2) {
+                            this.resultSlots.setItem(0, ItemStack.EMPTY);
+                            return;
                         }
                     }
 
                 }
             }
 
-            if (this.itemName != null && !Util.isBlank(this.itemName)) {
+            if (this.itemName != null && !StringUtil.isBlank(this.itemName)) {
                 if (!this.itemName.equals(itemstack.getHoverName().getString())) {
                     k = 1;
                     i += k;
-                    itemstack1.setHoverName(Component.literal(this.itemName));
+                    itemstack1.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
                 }
-            } else if (itemstack.hasCustomHoverName()) {
+            } else if (itemstack.has(DataComponents.CUSTOM_NAME)) {
                 k = 1;
                 i += k;
-                itemstack1.resetHoverName();
+                itemstack1.remove(DataComponents.CUSTOM_NAME);
             }
 
             if (flag && !itemstack1.isBookEnchantable(itemstack2)) {
@@ -181,17 +187,16 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
             }
 
             if (!itemstack1.isEmpty()) {
-                EnchantmentHelper.setEnchantments(map, itemstack1);
+                EnchantmentHelper.setEnchantments(itemstack1, itemenchantments$mutable.toImmutable());
             }
 
             this.resultSlots.setItem(0, itemstack1);
             this.broadcastChanges();
         }
+        else {
+            this.resultSlots.setItem(0, ItemStack.EMPTY);
+        }
 
-    }
-
-    public static int calculateIncreasedRepairCost(int pOldRepairCost) {
-        return pOldRepairCost * 2 + 1;
     }
 
     public boolean setItemName(String pItemName) {
@@ -200,10 +205,10 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
             this.itemName = s;
             if (this.getSlot(2).hasItem()) {
                 ItemStack itemstack = this.getSlot(2).getItem();
-                if (Util.isBlank(s)) {
-                    itemstack.resetHoverName();
+                if (StringUtil.isBlank(s)) {
+                    itemstack.remove(DataComponents.CUSTOM_NAME);
                 } else {
-                    itemstack.setHoverName(Component.literal(s));
+                    itemstack.set(DataComponents.CUSTOM_NAME, Component.literal(s));
                 }
             }
 
@@ -216,7 +221,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
 
     @Nullable
     private static String validateName(String pItemName) {
-        String s = SharedConstants.filterText(pItemName);
-        return s.length() <= 100 ? s : null;
+        String s = StringUtil.filterText(pItemName);
+        return s.length() <= 50 ? s : null;
     }
 }

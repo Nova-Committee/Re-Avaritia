@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -80,7 +80,7 @@ public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity> {
     }
 
     public void drawVertex(final Matrix4f m1, final Matrix3f m2, final VertexConsumer v, final int offsetX, final int offsetY, final int offsetZ, final float textureX, final float textureY, final int pContext9_, final int pContext10_, final int pContext11_, final int packedLightIn) {
-        v.vertex(m1, (float) offsetX, (float) offsetY, (float) offsetZ).color(255, 255, 255, 255).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(m2, (float) pContext9_, (float) pContext11_, (float) pContext10_).endVertex();
+        v.addVertex(m1, (float) offsetX, (float) offsetY, (float) offsetZ).setColor(255, 255, 255, 255).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn).setNormal((float) pContext9_, (float) pContext11_, (float) pContext10_);
     }
 
 }

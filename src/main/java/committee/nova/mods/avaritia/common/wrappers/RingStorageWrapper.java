@@ -5,11 +5,12 @@ import committee.nova.mods.avaritia.common.item.misc.NeutronRingItem;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,17 +33,17 @@ import org.jetbrains.annotations.NotNull;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
         CompoundTag compound = new CompoundTag();
-        StorageUtils.saveAllItems(compound, this.containers);
+        StorageUtils.saveAllItems(provider, compound, this.containers);
         compound.putInt("Page", this.page);
         return compound;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag compoundTag) {
+    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull CompoundTag compoundTag) {
         this.containers.clear();
-        StorageUtils.loadAllItems(compoundTag, this.containers);
+        StorageUtils.loadAllItems(provider, compoundTag, this.containers);
         this.page = compoundTag.getInt("Page");
     }
 

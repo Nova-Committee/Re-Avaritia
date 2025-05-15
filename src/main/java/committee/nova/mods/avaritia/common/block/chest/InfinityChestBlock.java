@@ -2,23 +2,13 @@ package committee.nova.mods.avaritia.common.block.chest;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.common.wrappers.StorageItem;
-import committee.nova.mods.avaritia.util.StorageUtils;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
@@ -39,11 +29,7 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * @Project: Avaritia
@@ -77,36 +63,36 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
         builder.add(FACING, WATERLOGGED);
     }
 
-    @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, TooltipFlag pFlag) {
-        if (Minecraft.getInstance().player == null) return;
-        if (!pStack.hasTag()) return;
-        if (pStack.getTag().contains("BlockEntityTag")) {
-            CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
-            if (nbt.contains("Items", 9)) {
-                Int2ObjectMap<StorageItem> containers = StorageUtils.newContainers();
-                StorageUtils.loadAllItems(nbt, containers);
-                int i = 0;
-                int j = 0;
-
-                for (StorageItem next : containers.values()) {
-                    if (!next.isEmpty()) {
-                        ++j;
-                        if (i <= 4) {
-                            ++i;
-                            MutableComponent textComponent = next.getStack().getHoverName().copy();
-                            textComponent.append(" x").append(String.format("%,d", next.getCount()));
-                            pTooltip.add(textComponent);
-                        }
-                    }
-                }
-
-                if (j - i > 0) {
-                    pTooltip.add((Component.translatable("container.shulkerBox.more", j - i)).withStyle(ChatFormatting.ITALIC));
-                }
-            }
-        }
-    }
+//    @Override
+//    public void appendHoverText(@NotNull ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, TooltipFlag pFlag) {
+//        if (Minecraft.getInstance().player == null) return;
+//        if (!pStack.hasTag()) return;
+//        if (pStack.getTag().contains("BlockEntityTag")) {
+//            CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
+//            if (nbt.contains("Items", 9)) {
+//                Int2ObjectMap<StorageItem> containers = StorageUtils.newContainers();
+//                StorageUtils.loadAllItems(nbt, containers);
+//                int i = 0;
+//                int j = 0;
+//
+//                for (StorageItem next : containers.values()) {
+//                    if (!next.isEmpty()) {
+//                        ++j;
+//                        if (i <= 4) {
+//                            ++i;
+//                            MutableComponent textComponent = next.getStack().getHoverName().copy();
+//                            textComponent.append(" x").append(String.format("%,d", next.getCount()));
+//                            pTooltip.add(textComponent);
+//                        }
+//                    }
+//                }
+//
+//                if (j - i > 0) {
+//                    pTooltip.add((Component.translatable("container.shulkerBox.more", j - i)).withStyle(ChatFormatting.ITALIC));
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
@@ -130,24 +116,24 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public void playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
+    public @NotNull BlockState playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
         if (!pLevel.isClientSide() && pPlayer.isCreative() && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity instanceof InfinityChestTile infinityChestTile) {
                 ItemStack stack = new ItemStack(this);
-                CompoundTag compound = infinityChestTile.saveToTag(new CompoundTag());
-                if (!compound.isEmpty()) {
-                    stack.addTagElement("BlockEntityTag", compound);
-                }
-
-                if (infinityChestTile.hasCustomName()) {
-                    stack.setHoverName(infinityChestTile.getCustomName());
-                }
+                //CompoundTag compound = infinityChestTile.saveToTag(new CompoundTag());
+//                if (!compound.isEmpty()) {
+//                    stack.addTagElement("BlockEntityTag", compound);
+//                }
+//
+//                if (infinityChestTile.hasCustomName()) {
+//                    stack.setHoverName(infinityChestTile.getCustomName());
+//                }
 
                 popResource(pLevel, pPos, stack);
             }
         }
-        super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
+        return super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
 
     @Override
@@ -179,7 +165,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public FluidState getFluidState(BlockState pState) {
+    public @NotNull FluidState getFluidState(BlockState pState) {
         return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
     }
 
@@ -199,7 +185,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
+    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
         return false;
     }
 

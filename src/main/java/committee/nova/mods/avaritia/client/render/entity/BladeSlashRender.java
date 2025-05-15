@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -56,15 +56,13 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(entity.zRot));
         matrixStackIn.scale(0.6F, 0.6F, 1.8F);
         PoseStack.Pose matrixStackEntry = matrixStackIn.last();
-        Matrix4f pose = matrixStackEntry.pose();
-        Matrix3f normal = matrixStackEntry.normal();
         VertexConsumer builder = buffer.getBuffer(RENDER_TYPE);
 
         packedLight = 0x00F000F0;
-        this.vertex(pose, normal, builder, 1, 0, 1, 1, 0, 0, 1, 0, packedLight);
-        this.vertex(pose, normal, builder, 1, 0, -1, 0, 0, 0, 1, 0, packedLight);
-        this.vertex(pose, normal, builder, -1, 0, -1, 0, 1, 0, 1, 0, packedLight);
-        this.vertex(pose, normal, builder, -1, 0, 1, 1, 1, 0, 1, 0, packedLight);
+        this.vertex(matrixStackEntry, builder, 1, 0, 1, 1, 0, 0, 1, 0, packedLight);
+        this.vertex(matrixStackEntry, builder, 1, 0, -1, 0, 0, 0, 1, 0, packedLight);
+        this.vertex(matrixStackEntry, builder, -1, 0, -1, 0, 1, 0, 1, 0, packedLight);
+        this.vertex(matrixStackEntry, builder, -1, 0, 1, 1, 1, 0, 1, 0, packedLight);
 
         matrixStackIn.popPose();
         super.render(entity, entityYaw, partialTicks, matrixStackIn, buffer, packedLight);
@@ -77,7 +75,7 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
 
     public void vertex(PoseStack.Pose pose, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight) {
 
-        builder.addVertex(x, y, z).setColor(255, 255, 255, 200).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(nx, ny, nz).endVertex();
+        builder.addVertex(x, y, z).setColor(255, 255, 255, 200).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(nx, ny, nz);
     }
 
 }
