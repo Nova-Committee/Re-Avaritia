@@ -42,9 +42,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
 
     public static ResourceLocation MASK = Static.rl("models/infinity_armor_mask");
     public static ResourceLocation MASK_INV = Static.rl("models/infinity_armor_mask_inv");
-    ;
     public static ResourceLocation WING = Static.rl("models/infinity_armor_mask_wings");
-    ;
     private static boolean modelRender;
     private static boolean playerFlying;
     private static boolean player;
@@ -225,9 +223,9 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             pPoseStack.scale(f2, f2, f2);
             pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
             model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(this.wingTex)), pPackedLight, pPackedOverlay, color);
-            Static.LOGGER.info(material(WING));
+            //Static.LOGGER.info(material(WING));
             model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, this::mask), pPackedLight, pPackedOverlay, color);
-            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(this.glow(this.wingGlowTex)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5));
+            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(this.glow(this.wingGlowTex)), pPackedLight, pPackedOverlay, ColorUtils.HSBToRGB(0.84f, 1.0f, 0.95f));
             pPoseStack.popPose();
         }
     }

@@ -1,22 +1,21 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
+import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,11 +30,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 
 /**
  * Description:
@@ -43,13 +44,15 @@ import java.util.List;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, InitEnchantItem {
+public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, IInitEnchantItem {
+    private final InitEnchantment initEnchantment;
     public InfinityBowItem() {
         super(new Properties()
                 .stacksTo(1)
                 .rarity(ModRarities.COSMIC)
                 .fireResistant()
         );
+        this.initEnchantment = new InitEnchantment(Enchantments.INFINITY, 10);
     }
 
     @Override
@@ -58,12 +61,12 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
     @Override
-    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+    public boolean onEntityItemUpdate(@NotNull ItemStack stack, ItemEntity entity) {
         if (entity.getAge() >= 0) {
             entity.setExtendedLifetime();
         }
@@ -76,12 +79,12 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 99;
     }//附魔系数
 
     @Override
-    public int getUseDuration(@NotNull ItemStack stack) {
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return 1200;
     }//使用时间
 
@@ -92,31 +95,29 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.INFINITY_ARROWS ? 10 : 0;
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        return this.initEnchantment.getLevel(enchantment);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.INFINITY_ARROWS.getFullname(10)).build());
+        this.initEnchantment.appendHoverText(context, tooltipComponents);
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
-        if (ret != null) return ret;
         if (player.isCrouching()) {
             switchMode(level, player, hand, "infinity_bow_tracer");
             return InteractionResultHolder.success(itemstack);
@@ -129,8 +130,8 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
         if (!level.isClientSide) {
             if (entity instanceof Player player) {
-                int drawTime = this.getUseDuration(stack) - timeLeft;
-                drawTime = ForgeEventFactory.onArrowLoose(stack, level, player, drawTime, true);
+                int drawTime = this.getUseDuration(stack, player) - timeLeft;
+                drawTime = EventHooks.onArrowLoose(stack, level, player, drawTime, true);
                 if (drawTime < 0) {
                     return;
                 }
@@ -140,11 +141,11 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
                 float draw = getPowerForTime(drawTime);//蓄力时间
                 float powerForTime = draw * VELOCITY_MULTIPLIER;
 
-                AbstractArrow arrowEntity = this.customArrow(new HeavenArrowEntity(player));
+                AbstractArrow arrowEntity = new HeavenArrowEntity(player);
 
                 if (isActive(stack, "infinity_bow_tracer")) {//追踪模式
                     if ((double) powerForTime >= 0.1D) {
-                        arrowEntity = this.customArrow(new TraceArrowEntity(player));
+                        arrowEntity = new TraceArrowEntity(player);
                     }
                 }
 
@@ -161,20 +162,21 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     }
 
     private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
-        int j = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.POWER_ARROWS, stack);//力量箭矢
+        Holder<Enchantment> POWER =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.POWER);
+        Holder<Enchantment> FLAMING =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.FLAME);
+
+        int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
         if (j > 0) {
             arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() + (double) j * 0.5D + 0.5D);
         }
-
-        int k = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.PUNCH_ARROWS, stack);
-        if (k > 0) {
-            arrowEntity.setKnockback(k);
+        if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
+            arrowEntity.setRemainingFireTicks(100);
         }
-
-        if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FLAMING_ARROWS, stack) > 0) {//火焰箭矢
-            arrowEntity.setSecondsOnFire(100);
-        }
-        stack.hurtAndBreak(1, player, (livingEntity) -> livingEntity.broadcastBreakEvent(player.getUsedItemHand()));
+        stack.hurtAndBreak(1, player, getSlotForHand(player.getUsedItemHand()));
         arrowEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         level.addFreshEntity(arrowEntity);
     }

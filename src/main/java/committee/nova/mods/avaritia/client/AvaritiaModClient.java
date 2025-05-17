@@ -9,18 +9,26 @@ import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import org.jetbrains.annotations.NotNull;
 
 import static committee.nova.mods.avaritia.Static.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
@@ -62,6 +70,21 @@ public class AvaritiaModClient {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRegisterShaders(RegisterShadersEvent event) {
         AvaritiaShaders.onRegisterShaders(event);//注册着色器
+    }
+
+    @SubscribeEvent
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public @NotNull HumanoidModel<Player> getHumanoidArmorModel(@NotNull LivingEntity entityLiving, @NotNull ItemStack itemstack, @NotNull EquipmentSlot armorSlot, @NotNull HumanoidModel _deafult) {
+                InfinityArmorModel model =
+                        armorSlot == EquipmentSlot.LEGS
+                                ? new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, true).getRoot().bake(64, 64))
+                                : new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, false).getRoot().bake(64, 64));
+                model.update(entityLiving, itemstack, armorSlot);
+                return model;
+            }
+        }, ModItems.infinity_helmet, ModItems.infinity_chestplate, ModItems.infinity_pants, ModItems.infinity_boots);
     }
 
     @SubscribeEvent

@@ -22,36 +22,29 @@ import java.util.List;
  * Version: 1.0
  */
 public class ResourceItem extends Item implements ITooltip {
-    private final Rarity rarity;
     private final String name;
     private final boolean needsTooltip;
 
     public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip) {
-        this(rarity, registryName, needsTooltip, new Properties());
+        this(rarity, registryName, needsTooltip, new Properties().rarity(rarity));
     }
 
     public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip, Properties properties) {
-        super(properties);
-        this.rarity = rarity;
+        super(properties.rarity(rarity));
         this.name = registryName;
         this.needsTooltip = needsTooltip;
     }
 
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack pStack) {
-        return rarity;
-    }
-
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> components, @NotNull TooltipFlag p_41424_) {
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable TooltipContext context, @NotNull List<Component> components, @NotNull TooltipFlag p_41424_) {
         if (needsTooltip)
-            appendTooltip(pStack, pLevel, components, p_41424_, name);
+            appendTooltip(pStack, context, components, p_41424_, name);
     }
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 

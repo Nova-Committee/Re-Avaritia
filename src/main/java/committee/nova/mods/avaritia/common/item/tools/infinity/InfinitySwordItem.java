@@ -1,13 +1,15 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,6 +37,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,16 +50,21 @@ import java.util.List;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
+public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
+    private final InitEnchantment initEnchantment;
     public InfinitySwordItem() {
-        super(ModToolTiers.INFINITY, 900, 0F, (new Properties())
-                .rarity(ModRarities.COSMIC)
-                .stacksTo(1)
-                .fireResistant());
+        super(ModToolTiers.INFINITY,
+                new Properties()
+                        .rarity(ModRarities.COSMIC)
+                        .stacksTo(1)
+                        .fireResistant()
+                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.BLAZE.getSpeed()))
+        );
+        this.initEnchantment = new InitEnchantment(Enchantments.LOOTING, 10);
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+    public boolean onLeftClickEntity(@NotNull ItemStack stack, Player player, @NotNull Entity entity) {
         var level = player.level();
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
         if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
@@ -181,7 +190,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
     }
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {
-        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(victim, pDamageSource)) return;
+        if (CommonHooks.onLivingDeath(victim, pDamageSource)) return;
         if (!victim.isRemoved() && !victim.dead) {
             Entity entity = pDamageSource.getEntity();
             LivingEntity livingentity = victim.getKillCredit();
@@ -218,7 +227,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
         if (!victim.level().isClientSide) {
             boolean flag = false;
             if (pEntitySource instanceof WitherBoss) {
-                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(victim.level(), pEntitySource)) {
+                if (EventHooks.canEntityGrief(victim.level(), pEntitySource)) {
                     BlockPos blockpos = victim.blockPosition();
                     BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
                     if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
@@ -248,12 +257,12 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
 
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 0;
     }
 
@@ -263,7 +272,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
@@ -274,13 +283,13 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.MOB_LOOTING ? 10 : 0;
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        return this.initEnchantment.getLevel(enchantment);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.MOB_LOOTING.getFullname(10)).build());
+        this.initEnchantment.appendHoverText(context, tooltipComponents);
     }
 }

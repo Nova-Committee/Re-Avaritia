@@ -1,31 +1,23 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
-import committee.nova.mods.avaritia.api.utils.lang.Localizable;
+import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
-import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
@@ -45,13 +37,17 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable {
+public class InfinityPickaxeItem extends PickaxeItem implements IInitEnchantItem, IFilterItem, ISwitchable {
+    private final InitEnchantment initEnchantment;
 
     public InfinityPickaxeItem() {
-        super(ModToolTiers.INFINITY, -50, 0F, (new Properties())
+        super(ModToolTiers.INFINITY,(new Properties())
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
-                .fireResistant());
+                .fireResistant()
+                .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.BLAZE.getSpeed()))
+        );
+        this.initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 20);
     }
 
     @Override
@@ -60,23 +56,23 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 0;
     }
 
@@ -110,36 +106,23 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
         return true;
     }
 
+
     @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        var world = player.level();
-        var state = world.getBlockState(pos);
-        if (isActive(stack, "infinity_pickaxe_hammer")) {
+    public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
+        if (miningEntity instanceof Player player && isActive(stack, "infinity_pickaxe_hammer")) {
             ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick, true);
         }
         return false;
     }
 
-
-
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.BLOCK_FORTUNE ? 20 : 0;
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        return this.initEnchantment.getLevel(enchantment);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.BLOCK_FORTUNE.getFullname(10)).build());
-    }
-
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlot.MAINHAND) {
-            multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-        }
-        return multimap;
+        this.initEnchantment.appendHoverText(context, tooltipComponents);
     }
 }

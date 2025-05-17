@@ -1,24 +1,19 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
-import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +24,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -39,18 +33,21 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, InitEnchantItem {
+public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, IInitEnchantItem {
     private final String name;
+    private final InitEnchantment initEnchantment;
 
     public BlazeHoeItem(String name) {
-        super(ModToolTiers.BLAZE, -10, 10f,
+        super(ModToolTiers.BLAZE,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
+                        .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
 
         this.name = name;
+        this.initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
     }
 
     @Override
@@ -59,15 +56,15 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.FIRE_ASPECT ? 10 : 0;
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        return this.initEnchantment.getLevel(enchantment);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FIRE_ASPECT.getFullname(10)).build());
-        this.appendTooltip(stack, level, tooltipComponents, isAdvanced, name);
+        this.initEnchantment.appendHoverText(context, tooltipComponents);
+        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
     }
 
     @Override
@@ -95,15 +92,5 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
             level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             return InteractionResult.SUCCESS;
         } else return super.useOn(pContext);
-    }
-
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlot.MAINHAND) {
-            multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-        }
-        return multimap;
     }
 }

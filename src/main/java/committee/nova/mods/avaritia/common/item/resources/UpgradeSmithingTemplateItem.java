@@ -16,12 +16,12 @@ import java.util.List;
 public class UpgradeSmithingTemplateItem extends SmithingTemplateItem {
     private static final ChatFormatting TITLE_FORMAT = ChatFormatting.GRAY;
     private static final ChatFormatting DESCRIPTION_FORMAT = ChatFormatting.BLUE;
-    private static final ResourceLocation EMPTY_SLOT_HOE = new ResourceLocation("item/empty_slot_hoe");
-    private static final ResourceLocation EMPTY_SLOT_AXE = new ResourceLocation("item/empty_slot_axe");
-    private static final ResourceLocation EMPTY_SLOT_SWORD = new ResourceLocation("item/empty_slot_sword");
-    private static final ResourceLocation EMPTY_SLOT_SHOVEL = new ResourceLocation("item/empty_slot_shovel");
-    private static final ResourceLocation EMPTY_SLOT_PICKAXE = new ResourceLocation("item/empty_slot_pickaxe");
-    private static final ResourceLocation EMPTY_SLOT_BLOCK = new ResourceLocation("item/empty_slot_block");
+    private static final ResourceLocation EMPTY_SLOT_HOE = ResourceLocation.tryParse("item/empty_slot_hoe");
+    private static final ResourceLocation EMPTY_SLOT_AXE = ResourceLocation.tryParse("item/empty_slot_axe");
+    private static final ResourceLocation EMPTY_SLOT_SWORD = ResourceLocation.tryParse("item/empty_slot_sword");
+    private static final ResourceLocation EMPTY_SLOT_SHOVEL = ResourceLocation.tryParse("item/empty_slot_shovel");
+    private static final ResourceLocation EMPTY_SLOT_PICKAXE = ResourceLocation.tryParse("item/empty_slot_pickaxe");
+    private static final ResourceLocation EMPTY_SLOT_BLOCK = ResourceLocation.tryParse("item/empty_slot_block");
 
     public UpgradeSmithingTemplateItem() {
         super(Component.translatable("item.avaritia.upgrade_smithing_template"),

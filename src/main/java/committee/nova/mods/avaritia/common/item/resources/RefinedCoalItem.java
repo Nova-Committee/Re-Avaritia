@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.resources;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,7 +20,7 @@ public class RefinedCoalItem extends ResourceItem{
     public static final int BURN_TIME = 16000 * 10;
 
     @Override
-    public int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
+    public int getBurnTime(@NotNull ItemStack stack, @Nullable RecipeType<?> recipeType) {
         return BURN_TIME;
     }
 }
