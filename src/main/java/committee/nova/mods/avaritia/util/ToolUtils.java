@@ -47,6 +47,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -356,16 +357,8 @@ public class ToolUtils {
                     livingentity.setArrowCount(livingentity.getArrowCount() + 1);
                 }
 
-                if (arrow.knockback > 0) {
-                    Vec3 vector3d = arrow.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale((double) arrow.knockback * 0.6D);
-                    if (vector3d.lengthSqr() > 0.0D) {
-                        livingentity.push(vector3d.x, 0.1D, vector3d.z);
-                    }
-                }
-
-                if (!arrow.level().isClientSide && owner instanceof LivingEntity livingOwner) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity, livingOwner);
-                    EnchantmentHelper.doPostDamageEffects(livingOwner, livingentity);
+                if (arrow.level() instanceof ServerLevel serverLevel && owner instanceof LivingEntity livingOwner) {
+                    EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, livingentity, damagesource, arrow.getWeaponItem());
                 }
 
                 arrow.doPostHurtEffects(livingentity);
@@ -565,12 +558,12 @@ public class ToolUtils {
             Block block = state.getBlock();
             if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock)
                     && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state)
-                    && ForgeHooks.onCropsGrowPre(serverLevel, pos, state, true)
+                    //&& ForgeHooks.onCropsGrowPre(serverLevel, pos, state, true)
             ) {
                 for (int i = 0; i < cost; i++) {
                     bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, pos, state);
                     serverLevel.levelEvent(2005, pos, 0);
-                    ForgeHooks.onCropsGrowPost(serverLevel, pos, state);
+                    //ForgeHooks.onCropsGrowPost(serverLevel, pos, state);
                 }
             }
         }
@@ -676,7 +669,7 @@ public class ToolUtils {
         boolean flag = unLuck > 0 && world.random.nextDouble() < unLuck * 0.2; //霉运判断结果 true触发
         if (drops.isEmpty() || flag) return;
         drops.forEach(itemStack -> {
-            ItemStack dropStack = getMeltingItem(world, itemStack, tool);
+            ItemStack dropStack = getMeltingItem(player, world, itemStack, tool);
             if (!dropStack.equals(itemStack)) {
                 ToolUtils.meltingAchieve(world, player, pos, event);
                 world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, dropStack));
@@ -692,12 +685,15 @@ public class ToolUtils {
      * @param tool      使用工具
      * @return 烧炼产物
      */
-    public static ItemStack getMeltingItem(Level world, ItemStack itemStack, ItemStack tool) {
-        ItemStack dropStack = world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(itemStack), world)
-                .map(smeltingRecipe -> smeltingRecipe.getResultItem(world.registryAccess())).filter(e -> !e.isEmpty())
-                .map(e -> ItemHandlerHelper.copyStackWithSize(e, tool.getCount() * e.getCount()))
+    public static ItemStack getMeltingItem(Player player, Level world, ItemStack itemStack, ItemStack tool) {
+        ItemStack dropStack = world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
+                .map(smeltingRecipe -> smeltingRecipe.value().getResultItem(world.registryAccess())).filter(e -> !e.isEmpty())
+                .map(e -> e.copyWithCount(tool.getCount() * e.getCount()))
                 .orElse(itemStack);
-        int fortune = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
+        Holder<Enchantment> fortuneEnchant =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.FORTUNE);
+        int fortune = EnchantmentHelper.getTagEnchantmentLevel(fortuneEnchant, tool);
         if (fortune > 0) { //时运影响产物数量
             RandomSource random = RandomSource.create();
             int count = 1;
@@ -781,8 +777,9 @@ public class ToolUtils {
         if (!(targetBlock instanceof EntityBlock entityBlock)) {
             return;
         }
-        if (level instanceof ServerLevel && targetBlock.isRandomlyTicking(targetState) &&
-                level.getRandom().nextInt(Mth.clamp(4096 / (speed * random_tick_rate), 1, 4096)) < randomTicks) {
+        if (level instanceof ServerLevel
+                && targetBlock.isRandomlyTicking
+                && level.getRandom().nextInt(Mth.clamp(4096 / (speed * random_tick_rate), 1, 4096)) < randomTicks) {
             targetState.randomTick(level, pos, level.getRandom());
         }
         BlockEntity blockEntity = level.getBlockEntity(pos);

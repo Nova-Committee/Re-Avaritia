@@ -1,29 +1,25 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -38,18 +34,21 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
     private final String name;
 
     public CrystalPickaxeItem(String name) {
-        super(ModToolTiers.CRYSTAL, -25, 0F,
+        super(ModToolTiers.CRYSTAL,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
-                        .fireResistant());
+                        .fireResistant()
+                        .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
+        );
         this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+                                @NotNull TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
     }
 
     @Override
@@ -70,15 +69,21 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        Holder<Enchantment> SILK_TOUCH =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.SILK_TOUCH);
+        Holder<Enchantment> FORTUNE =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.FORTUNE);
         if (player.isCrouching()) {
-            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
+            if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
                 ItemUtils.clearEnchants(stack);
-                stack.enchant(Enchantments.BLOCK_FORTUNE, 3);
+                stack.enchant(FORTUNE, 3);
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
                     serverPlayer.sendSystemMessage(Component.translatable("tooltip.crystal_pickaxe.enchant_1"), true);
             } else {
                 ItemUtils.clearEnchants(stack);
-                stack.enchant(Enchantments.SILK_TOUCH, 1);
+                stack.enchant(SILK_TOUCH, 1);
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
                     serverPlayer.sendSystemMessage(Component.translatable("tooltip.crystal_pickaxe.enchant_2"), true);
             }
@@ -86,16 +91,5 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
             return InteractionResultHolder.success(stack);
         }
         return super.use(world, player, hand);
-    }
-
-
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlot.MAINHAND) {
-            multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-        }
-        return multimap;
     }
 }

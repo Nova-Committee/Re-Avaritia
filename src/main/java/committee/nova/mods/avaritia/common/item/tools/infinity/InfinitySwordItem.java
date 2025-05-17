@@ -33,6 +33,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,6 +43,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -85,15 +87,12 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
                 this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());
             }
 
-            if (endlessDamage) {
-                if (victim.isDeadOrDying()) {
-                    victim.setHealth(0);//设置血量为零
-                    this.die(victim, damageSource);//修正设置死亡
-                    player.killedEntity(serverLevel, victim);//添加至信息统计
-                    //player.getCombatTracker().recordDamage(damageSource, victim.getHealth());//添加至伤害记录
-                }
+            if (!victim.isDeadOrDying() && endlessDamage) {
+                victim.setHealth(0);//设置血量为零
+                victim.die(damageSource);//修正设置死亡
+                player.killedEntity(serverLevel, victim);//添加至信息统计
+                //player.getCombatTracker().recordDamage(damageSource, victim.getHealth());//添加至伤害记录
             }
-            return true;
         }
         return false;
     }
@@ -167,7 +166,7 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
             }
 
             if (victim.isDeadOrDying()) {
-                this.die(victim, pSource);
+                victim.die(pSource);
             } else {
                 SoundEvent soundevent = SoundEvents.GENERIC_HURT;
                 victim.playSound(soundevent, 2F, victim.getVoicePitch());
@@ -189,61 +188,6 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
         }
     }
 
-    public void die(LivingEntity victim, DamageSource pDamageSource) {
-        if (CommonHooks.onLivingDeath(victim, pDamageSource)) return;
-        if (!victim.isRemoved() && !victim.dead) {
-            Entity entity = pDamageSource.getEntity();
-            LivingEntity livingentity = victim.getKillCredit();
-            if (victim.deathScore >= 0 && livingentity != null) {
-                livingentity.awardKillScore(victim, victim.deathScore, pDamageSource);
-            }
-
-            if (victim.isSleeping()) {
-                victim.stopSleeping();
-            }
-
-            if (!victim.level().isClientSide && victim.hasCustomName()) {
-                Static.LOGGER.info("Named entity {} died: {}", this, victim.getCombatTracker().getDeathMessage().getString());
-            }
-
-            victim.dead = true;
-            victim.getCombatTracker().recheckStatus();
-            Level level = victim.level();
-            if (level instanceof ServerLevel serverlevel) {
-                if (entity == null || entity.killedEntity(serverlevel, victim)) {
-                    victim.gameEvent(GameEvent.ENTITY_DIE);
-                    victim.dropAllDeathLoot(pDamageSource);
-                    this.createWitherRose(victim, livingentity);
-                }
-
-                victim.level().broadcastEntityEvent(victim, (byte)3);
-            }
-
-            victim.setPose(Pose.DYING);
-        }
-    }
-
-    protected void createWitherRose(LivingEntity victim, @Nullable LivingEntity pEntitySource) {
-        if (!victim.level().isClientSide) {
-            boolean flag = false;
-            if (pEntitySource instanceof WitherBoss) {
-                if (EventHooks.canEntityGrief(victim.level(), pEntitySource)) {
-                    BlockPos blockpos = victim.blockPosition();
-                    BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
-                    if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
-                        victim.level().setBlock(blockpos, blockstate, 3);
-                        flag = true;
-                    }
-                }
-
-                if (!flag) {
-                    ItemEntity itementity = new ItemEntity(victim.level(), victim.getX(), victim.getY(), victim.getZ(), new ItemStack(Items.WITHER_ROSE));
-                    victim.level().addFreshEntity(itementity);
-                }
-            }
-
-        }
-    }
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);

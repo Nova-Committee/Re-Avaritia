@@ -36,18 +36,21 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
     private final String name;
 
     public CrystalAxeItem(String name) {
-        super(ModToolTiers.CRYSTAL, 25, -25F,
+        super(ModToolTiers.CRYSTAL,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
-                        .fireResistant());
+                        .fireResistant()
+                        .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
+        );
         this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+                                @NotNull TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
     }
 
     @Override
@@ -73,15 +76,5 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
             serverPlayer.level().broadcastEntityEvent(serverPlayer, (byte) 30);
         }
         return super.onLeftClickEntity(stack, player, entity);
-    }
-
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlot.MAINHAND) {
-            multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-        }
-        return multimap;
     }
 }
