@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -60,12 +61,12 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
         return new CompressedChestTile(pPos, pState);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+    public @NotNull BlockState getStateForPlacement(BlockPlaceContext pContext) {
         ChestType chesttype = ChestType.SINGLE;
         Direction direction = pContext.getHorizontalDirection().getOpposite();
         FluidState fluidstate = pContext.getLevel().getFluidState(pContext.getClickedPos());
@@ -77,7 +78,7 @@ public class CompressedChestBlock extends ChestBlock {
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
         if (pLevel.isClientSide()) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (pStack.getTag() != null && blockentity instanceof CompressedChestTile chestTile) {
+        if (blockentity instanceof CompressedChestTile chestTile) {
             chestTile.setChestTag(pStack.getTag());
         }
     }
@@ -97,8 +98,7 @@ public class CompressedChestBlock extends ChestBlock {
             Container container = (Container) blockentity;
             for (String index : nameTag.getAllKeys()) {
                 var name = nameTag.getString(index);
-                var newItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
-                if (newItem == null) continue;
+                var newItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(name));
                 ItemStack is = new ItemStack(newItem);
                 is.setCount(countTag.getInt(index));
                 if (nbtTag != null && !nbtTag.getCompound(index).isEmpty()) {
@@ -123,7 +123,7 @@ public class CompressedChestBlock extends ChestBlock {
                     var item = container.getItem(i);
                     if (item.isEmpty()) continue;
                     stackCount++;
-                    nameTag.putString(String.valueOf(i), ForgeRegistries.ITEMS.getResourceKey(item.getItem()).get().location().toString());
+                    nameTag.putString(String.valueOf(i), BuiltInRegistries.ITEM.getResourceKey(item.getItem()).get().location().toString());
                     countTag.putInt(String.valueOf(i), item.getCount());
                     if (item.getTag() != null) {
                         nbtTag.put(String.valueOf(i), item.getTag());

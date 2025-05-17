@@ -145,7 +145,7 @@ public class GapingVoidEntity extends Entity {
         if (age >= maxLifetime && !level().isClientSide) {
             level().explode(this, posX, posY, posZ, 6.0f, Level.ExplosionInteraction.BLOCK);
             int range = 4;
-            AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
+            AABB axisAlignedBB = new AABB(new Vec3(posX - range, posY - range, posZ - range), new Vec3(posX + range, posY + range, posZ + range));
             List<Entity> nommed = level().getEntitiesOfClass(Entity.class, axisAlignedBB, COMNOM_PREDICATE);
             nommed.stream()
                     .filter(entity -> entity != this)
@@ -184,10 +184,9 @@ public class GapingVoidEntity extends Entity {
 
         // *slurping noises*
 
-        double particlespeed = 4.5;
         double size = getVoidScale(age) * 0.5 - 0.2;
         int range = (int) (size * suckRange);
-        AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
+        AABB axisAlignedBB = new AABB(new Vec3(posX - range, posY - range, posZ - range), new Vec3(posX + range, posY + range, posZ + range));
 
         List<Entity> sucked = level().getEntitiesOfClass(Entity.class, axisAlignedBB, SUCK_PREDICATE);
 
@@ -218,7 +217,7 @@ public class GapingVoidEntity extends Entity {
 
         // om nom nom
         int nomrange = (int) (radius * 0.95);
-        AABB alignedBB = new AABB(position.offset(-nomrange, -nomrange, -nomrange), position.offset(nomrange, nomrange, nomrange));
+        AABB alignedBB = new AABB(new Vec3(posX - nomrange, posY - nomrange, posZ - nomrange), new Vec3(posX + nomrange, posY + nomrange, posZ + nomrange));
         List<Entity> nommed = level().getEntitiesOfClass(Entity.class, alignedBB, COMNOM_PREDICATE);
 
         for (Entity nommee : nommed) {
@@ -241,7 +240,7 @@ public class GapingVoidEntity extends Entity {
         if (age % 10 == 0) {
             Vec3 posFloor = this.position();
 
-            int blockrange = (int) Math.round(nomrange);
+            int blockrange = Math.round(nomrange);
 
             for (int y = -blockrange; y <= blockrange; y++) {
                 for (int z = -blockrange; z <= blockrange; z++) {

@@ -90,7 +90,7 @@ public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
     @ZenCodeType.Method
     public void addCatalyst(String name, IIngredient[] inputs) {
         var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
-        var recipe = new InfinityCatalystCraftRecipe(id, "default", toIngredientsList(inputs));
+        var recipe = new InfinityCatalystCraftRecipe("default", toIngredientsList(inputs));
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 

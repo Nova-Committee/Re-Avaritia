@@ -1,30 +1,20 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
+import com.mojang.serialization.MapCodec;
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.SingularityUtils;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.RecipeMatcher;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
 
 /**
  * Name: Avaritia-forge / InfinityCatalystRecipe
@@ -33,34 +23,28 @@ import java.util.function.BiFunction;
  * Description:
  */
 
-public class EternalSingularityCraftRecipe implements BaseTableCraftingRecipe {
-    private static boolean ingredientsLoaded = false;
-    private final ResourceLocation recipeId;
+public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe {
+    private static final Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     public NonNullList<Ingredient> inputs = NonNullList.create();
-    private BiFunction<Integer, ItemStack, ItemStack> transformers;
 
-    public EternalSingularityCraftRecipe(ResourceLocation recipeId) {
-        this.recipeId = recipeId;
+    public EternalSingularityCraftRecipe(ItemStack output) {
+        super(NonNullList.create(), output, 4);
     }
 
     public static void invalidate() {
-        ingredientsLoaded = false;
+        INGREDIENTS_LOADED.clear();
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= this.inputs.size();
-    }
-
-    @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess pRegistryAccess) {
-        return new ItemStack(ModItems.eternal_singularity.get());
+    public boolean matches(@NotNull TierInput input, @NotNull Level level) {
+        var ingredients = this.getIngredients();
+        return !ingredients.isEmpty() && super.matches(input, level);
     }
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        if (!ingredientsLoaded) {
-            inputs.clear();
+        if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
+            super.getIngredients().clear();
 
             SingularityRegistryHandler.getInstance().getSingularities()
                     .stream()
@@ -68,16 +52,11 @@ public class EternalSingularityCraftRecipe implements BaseTableCraftingRecipe {
                     .limit(81)
                     .map(SingularityUtils::getItemForSingularity)
                     .map(Ingredient::of)
-                    .forEach(inputs::add);
+                    .forEach(super.getIngredients()::add);
 
-            ingredientsLoaded = true;
+            INGREDIENTS_LOADED.put(this, true);
         }
-        return this.inputs;
-    }
-
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return this.recipeId;
+        return super.getIngredients();
     }
 
     @Override
@@ -85,100 +64,26 @@ public class EternalSingularityCraftRecipe implements BaseTableCraftingRecipe {
         return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
     }
 
-    @Override
-    public @NotNull RecipeType<?> getType() {
-        return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
-    }
-
-    @Override
-    public ItemStack assemble(IItemHandler var1) {
-        return new ItemStack(ModItems.eternal_singularity.get());
-    }
-
-    @Override
-    public @NotNull ItemStack assemble(@NotNull Container inv, @NotNull RegistryAccess p_267052_) {
-        return new ItemStack(ModItems.eternal_singularity.get());
-    }
-
-    @Override
-    public boolean matches(IItemHandler inventory) {
-        var ingredients = this.getIngredients();
-        List<ItemStack> inputs = new ArrayList<>();
-        int matched = 0;
-
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            var stack = inventory.getStackInSlot(i);
-
-            if (!stack.isEmpty()) {
-                inputs.add(stack);
-
-                matched++;
-            }
-        }
-
-        return !ingredients.isEmpty() && matched == this.inputs.size() && RecipeMatcher.findMatches(inputs, this.inputs) != null;
-    }
-
-    @Override
-    public boolean matches(@NotNull Container inv, @NotNull Level level) {
-        return this.matches(new InvWrapper(inv));
-    }
-
-    @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
-        var remaining = BaseTableCraftingRecipe.super.getRemainingItems(inv);
-
-        if (this.transformers != null) {
-            var used = new boolean[remaining.size()];
-
-            for (int i = 0; i < remaining.size(); i++) {
-                var stack = inv.getStackInSlot(i);
-
-                for (int j = 0; j < this.inputs.size(); j++) {
-                    var input = this.inputs.get(j);
-
-                    if (!used[j] && input.test(stack)) {
-                        var ingredient = this.transformers.apply(j, stack);
-
-                        used[j] = true;
-                        remaining.set(i, ingredient);
-
-                        break;
-                    }
-                }
-            }
-        }
-
-        return remaining;
-    }
-    @Override
-    public int getTier() {
-        return 4;
-    }
-
-    @Override
-    public boolean hasRequiredTier() {
-        return true;
-    }
-
-    public void setTransformers(BiFunction<Integer, ItemStack, ItemStack> transformers) {
-        this.transformers = transformers;
-    }
-
-
     public static class Serializer implements RecipeSerializer<EternalSingularityCraftRecipe> {
+        public static final MapCodec<EternalSingularityCraftRecipe> CODEC = MapCodec.unit(() -> new EternalSingularityCraftRecipe(new ItemStack(ModItems.eternal_singularity.get())));
+        public static final StreamCodec<RegistryFriendlyByteBuf, EternalSingularityCraftRecipe> STREAM_CODEC = StreamCodec.of(
+                EternalSingularityCraftRecipe.Serializer::toNetwork, EternalSingularityCraftRecipe.Serializer::fromNetwork
+        );
+
         @Override
-        public @NotNull EternalSingularityCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            return new EternalSingularityCraftRecipe(recipeId);
+        public @NotNull MapCodec<EternalSingularityCraftRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public EternalSingularityCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            return new EternalSingularityCraftRecipe(recipeId);
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, EternalSingularityCraftRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
 
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull EternalSingularityCraftRecipe recipe) {
+        public static EternalSingularityCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            return new EternalSingularityCraftRecipe(new ItemStack(ModItems.eternal_singularity.get()));
         }
+
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, EternalSingularityCraftRecipe recipe) { }
     }
 }

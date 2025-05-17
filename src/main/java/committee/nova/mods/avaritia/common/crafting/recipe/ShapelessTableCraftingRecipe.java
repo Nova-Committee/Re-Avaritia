@@ -1,7 +1,5 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
@@ -9,11 +7,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import lombok.Getter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -30,6 +28,7 @@ import java.util.function.BiFunction;
  * Version: 1.0
  */
 public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
+    @Getter
     private final NonNullList<Ingredient> inputs;
     private final ItemStack result;
     private final int tier;
@@ -90,7 +89,6 @@ public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
     }
 
 
-
     @Override
     public boolean canCraftInDimensions(int width, int height) {
         return width * height >= this.inputs.size();
@@ -145,7 +143,6 @@ public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
     public boolean hasRequiredTier() {
         return this.tier > 0;
     }
-
 
     public void setTransformers(BiFunction<Integer, ItemStack, ItemStack> transformer) {
         this.transformer = transformer;
