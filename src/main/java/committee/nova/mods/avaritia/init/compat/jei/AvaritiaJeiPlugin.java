@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import committee.nova.mods.avaritia.client.screen.CompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
@@ -35,6 +36,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -72,13 +74,14 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         ClientLevel world = Minecraft.getInstance().level;
         if (world != null) {
             var manager = world.getRecipeManager();
-            registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get()));
+            registration.addRecipes(CompressorCategory.RECIPE_TYPE, RecipeUtils.byTypeValues(manager, ModRecipeTypes.COMPRESSOR_RECIPE.get()));
 
-            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, manager.getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()));
+            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, RecipeUtils.byTypeValues(manager, ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()));
 
             var recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
-                    manager.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()).values()
+                    RecipeUtils.byType(manager, ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
                             .stream()
+                            .map(RecipeHolder::value)
                             .filter(recipe -> recipe.hasRequiredTier() ? tier == recipe.getTier() : tier >= recipe.getTier())
                             .toList()
             ));

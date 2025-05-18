@@ -37,7 +37,6 @@ public class CompressedChestTile extends ChestBlockEntity {
 
     protected final int SIZE = 243;
     private final ContainerOpenersCounter openersCounter;
-    protected CompoundTag chestTag;
 
     protected CompressedChestTile(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
@@ -131,13 +130,5 @@ public class CompressedChestTile extends ChestBlockEntity {
     protected void signalOpenCount(Level pLevel, @NotNull BlockPos pPos, BlockState pState, int pEventId, int pEventParam) {
         Block block = pState.getBlock();
         pLevel.blockEvent(pPos, block, 1, pEventParam);
-    }
-
-    public CompoundTag getChestTag() {
-        return chestTag;
-    }
-
-    public void setChestTag(CompoundTag chestTag) {
-        this.chestTag = chestTag;
     }
 }

@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceProvider;
-import net.minecraftforge.fml.loading.toposort.TopologicalSort;
+import net.neoforged.fml.loading.toposort.TopologicalSort;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -165,9 +165,9 @@ public class GlslProcessor {
                     if (!includeFolder) {
                         match = matcher.group(2);
                     }
-                    ResourceLocation loc = new ResourceLocation(match);
+                    ResourceLocation loc = ResourceLocation.tryParse(match);
                     if (includeFolder) {
-                        loc = new ResourceLocation(loc.getNamespace(), FilenameUtils.normalize("shaders/include/" + loc.getPath(), true));
+                        loc = ResourceLocation.tryBuild(loc.getNamespace(), FilenameUtils.normalize("shaders/include/" + loc.getPath(), true));
                     }
                     imports.add(loc);
                 }

@@ -9,10 +9,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -134,12 +134,12 @@ public final class FluidItemRender {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex(matrix, x1, y2, zIndex).uv(minU, maxV).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, zIndex).uv(maxU, maxV).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x2, y1, zIndex).uv(maxU, minV).color(r, g, b, a).endVertex();
-        bufferbuilder.vertex(matrix, x1, y1, zIndex).uv(minU, minV).color(r, g, b, a).endVertex();
+        var tesselator = Tesselator.getInstance();
+        var bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix, x1, y2, zIndex).setUv(minU, maxV).setColor(r, g, b, a);
+        bufferbuilder.addVertex(matrix, x2, y2, zIndex).setUv(maxU, maxV).setColor(r, g, b, a);
+        bufferbuilder.addVertex(matrix, x2, y1, zIndex).setUv(maxU, minV).setColor(r, g, b, a);
+        bufferbuilder.addVertex(matrix, x1, y1, zIndex).setUv(minU, minV).setColor(r, g, b, a);
 
         if (blending) {
             RenderSystem.enableBlend();
@@ -148,7 +148,7 @@ public final class FluidItemRender {
             RenderSystem.disableBlend();
         }
        // RenderSystem.enableTexture();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     public static void renderFluid(FluidStack fluidStack, PoseStack poseStack, int x, int y, int z) {

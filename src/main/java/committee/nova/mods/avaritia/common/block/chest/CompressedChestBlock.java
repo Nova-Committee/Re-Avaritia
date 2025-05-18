@@ -3,8 +3,10 @@ package committee.nova.mods.avaritia.common.block.chest;
 import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,21 +17,27 @@ import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +51,8 @@ import java.util.List;
  * @Description:
  */
 public class CompressedChestBlock extends ChestBlock {
+    public static final ResourceLocation CONTENTS = ResourceLocation.withDefaultNamespace("contents");
+    private static final Component UNKNOWN_CONTENTS = Component.translatable("container.shulkerBox.unknownContents");
 
     public CompressedChestBlock() {
         super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava(), () -> ModTileEntities.compressed_chest_tile.get());
@@ -74,93 +84,70 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull LivingEntity pPlacer, @NotNull ItemStack pStack) {
-        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
-        if (pLevel.isClientSide()) return;
-        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (blockentity instanceof CompressedChestTile chestTile) {
-            chestTile.setChestTag(pStack.getTag());
+    protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockentity = level.getBlockEntity(pos);
+            super.onRemove(state, level, pos, newState, isMoving);
+            if (blockentity instanceof ShulkerBoxBlockEntity) {
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
+            }
         }
     }
 
     @Override
-    public void onPlace(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pOldState, boolean pMovedByPiston) {
-        if (pLevel.isClientSide()) return;
-        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        CompoundTag chestTag, nameTag = null, countTag = null, nbtTag = null;
-        if (blockentity instanceof CompressedChestTile chestTile && chestTile.getChestTag() != null) {
-            chestTag = chestTile.getChestTag();
-            if (chestTag.contains("name")) nameTag = chestTag.getCompound("name");
-            if (chestTag.contains("count")) countTag = chestTag.getCompound("count");
-            if (chestTag.contains("nbt")) nbtTag = chestTag.getCompound("nbt");
+    public @NotNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof ShulkerBoxBlockEntity shulkerboxblockentity) {
+            if (!level.isClientSide && player.isCreative() && !shulkerboxblockentity.isEmpty()) {
+                ItemStack itemstack = ModBlocks.compressed_chest.toStack();
+                itemstack.applyComponents(blockentity.collectComponents());
+                ItemEntity itementity = new ItemEntity(
+                        level, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemstack
+                );
+                itementity.setDefaultPickUpDelay();
+                level.addFreshEntity(itementity);
+            } else {
+                shulkerboxblockentity.unpackLootTable(player);
+            }
         }
-        if (nameTag != null && countTag != null) {
-            Container container = (Container) blockentity;
-            for (String index : nameTag.getAllKeys()) {
-                var name = nameTag.getString(index);
-                var newItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(name));
-                ItemStack is = new ItemStack(newItem);
-                is.setCount(countTag.getInt(index));
-                if (nbtTag != null && !nbtTag.getCompound(index).isEmpty()) {
-                    is.setTag(nbtTag.getCompound(index));
+
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.Builder params) {
+        BlockEntity blockentity = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (blockentity instanceof ShulkerBoxBlockEntity shulkerboxblockentity) {
+            params = params.withDynamicDrop(CONTENTS, p_56219_ -> {
+                for (int i = 0; i < shulkerboxblockentity.getContainerSize(); i++) {
+                    p_56219_.accept(shulkerboxblockentity.getItem(i));
                 }
-                container.setItem(Integer.parseInt(index), is);
-            }
+            });
         }
+
+        return super.getDrops(state, params);
     }
 
     @Override
-    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            CompoundTag chestTag = new CompoundTag();
-            int stackCount = 0;
-            if (blockentity instanceof Container container) {
-                CompoundTag nameTag = new CompoundTag();
-                CompoundTag countTag = new CompoundTag();
-                CompoundTag nbtTag = new CompoundTag();
-                for (int i = 0; i < container.getContainerSize(); ++i) {
-                    var item = container.getItem(i);
-                    if (item.isEmpty()) continue;
-                    stackCount++;
-                    nameTag.putString(String.valueOf(i), BuiltInRegistries.ITEM.getResourceKey(item.getItem()).get().location().toString());
-                    countTag.putInt(String.valueOf(i), item.getCount());
-                    if (item.getTag() != null) {
-                        nbtTag.put(String.valueOf(i), item.getTag());
-                    }
-                }
-                chestTag.put("name", nameTag);
-                chestTag.put("count", countTag);
-                chestTag.put("nbt", nbtTag);
-                chestTag.putInt("stackCount", stackCount);
-            }
-
-            if (blockentity instanceof CompressedChestTile chestTile) {
-                chestTile.setChestTag(chestTag);
-            }
-            pLevel.removeBlockEntity(pPos);
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        if (stack.has(DataComponents.CONTAINER_LOOT)) {
+            tooltipComponents.add(UNKNOWN_CONTENTS);
         }
-    }
 
-    @Override
-    public void playerDestroy(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable BlockEntity pBlockEntity, ItemStack pTool) {
-        if (pLevel instanceof ServerLevel serverLevel) {
-            var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
+        int i = 0;
+        int j = 0;
 
-            if (pBlockEntity instanceof CompressedChestTile chestTile) {
-                pStack.setTag(chestTile.getChestTag());
+        for (ItemStack itemstack : stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).nonEmptyItems()) {
+            j++;
+            if (i <= 4) {
+                i++;
+                tooltipComponents.add(Component.translatable("container.shulkerBox.itemCount", itemstack.getHoverName(), itemstack.getCount()));
             }
-            popResource(serverLevel, pPos, pStack);
-            pState.spawnAfterBreak(serverLevel, pPos, pTool, false);
         }
-    }
 
-    @Override
-    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, @NotNull TooltipFlag pFlag) {
-        int stackCount = 0;
-        if (pStack.getTag() != null && pStack.getTag().contains("stackCount")) {
-            stackCount = pStack.getTag().getInt("stackCount");
+        if (j - i > 0) {
+            tooltipComponents.add(Component.translatable("container.shulkerBox.more", j - i).withStyle(ChatFormatting.ITALIC));
         }
-        pTooltip.add(Component.literal(String.format("%s/243", stackCount)));
     }
 }

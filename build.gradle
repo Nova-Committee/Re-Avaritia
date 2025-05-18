@@ -69,21 +69,36 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven { url = "https://maven.covers1624.net/" }
-    maven { url = 'https://maven.blamejared.com' }
-    maven { url = 'https://maven.theillusivec4.top/' }
-    maven { url = 'https://maven.melanx.de/' }
+    maven { url = "https://maven.blamejared.com" }
+    maven { url = "https://maven.theillusivec4.top/" }
+    maven { url = "https://maven.melanx.de/" }
     maven { url = "https://maven.architectury.dev" }
     maven { url = "https://maven.saps.dev/minecraft" }
-    maven { url = 'https://www.jitpack.io' }
+    maven { url = "https://www.jitpack.io" }
     maven { url = "https://maven.terraformersmc.com/" }
+    maven { url = "https://maven.rover656.dev/releases" }
     maven {
         name = 'Twilight Forest'
         url = 'https://modmaven.dev/'
     }
     maven {
-        url "https://www.cursemaven.com"
+        url = "https://www.cursemaven.com"
         content {
             includeGroup "curse.maven"
+        }
+    }
+    maven {
+        url = "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+
+    maven {
+        url = 'https://jitpack.io'
+        content {
+            includeGroup "com.github.rtyley"
         }
     }
 }
@@ -101,9 +116,13 @@ dependencies {
 
     implementation ("curse.maven:charm-of-undying-316873:${cou_version}")
     implementation ("curse.maven:projecte-226410:${projecte_version}")
-    runtimeOnly ("curse.maven:mekanism-268560:${mek_version}")
-    runtimeOnly ("curse.maven:applied-energistics-2-223794:${ae2_version}")
+    implementation ("curse.maven:mekanism-268560:${mek_version}")
+    implementation ("curse.maven:applied-energistics-2-223794:${ae2_version}")
+    implementation ("curse.maven:refined-storage-243076:${rs_version}")
+    implementation ("curse.maven:storage-drawers-223852:${sd_version}")
+    compileOnly ("com.enderio:enderio-machines:7.1.8-alpha")
 
+    runtimeOnly ("curse.maven:ender-io-64578:${eio_version}")
 
     compileOnly ("org.projectlombok:lombok:$lombok_version")
     annotationProcessor ("org.projectlombok:lombok:$lombok_version")

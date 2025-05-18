@@ -15,12 +15,12 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.searchtree.SearchTree;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Quaternionf;
@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.minecraft.client.gui.screens.inventory.SmithingScreen.ARMOR_STAND_ANGLE;
 
 /**
  * @Project: Avaritia
@@ -41,7 +40,7 @@ import static net.minecraft.client.gui.screens.inventory.SmithingScreen.ARMOR_ST
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */
 public class EntitySelectScreen extends Screen {
-
+    private static final Quaternionf ARMOR_STAND_ANGLE = (new Quaternionf()).rotationXYZ(0.43633232F, 0.0F, (float)Math.PI);
     private static final Logger LOGGER = LogManager.getLogger();
     // 每行显示数量
     private final int itemPerLine = 5;
@@ -174,7 +173,7 @@ public class EntitySelectScreen extends Screen {
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, delta);
         GuiUtils.fill(graphics, (int) (this.bgX - this.margin), (int) (this.bgY - this.margin), (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ENTITY_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5), 0xCCC6C6C6, 2);
         GuiUtils.fillOutLine(graphics, (int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin), (int) ((GuiUtils.ENTITY_ICON_SIZE + this.margin) * this.itemPerLine + this.margin), (int) ((GuiUtils.ENTITY_ICON_SIZE + this.margin) * this.maxLine + this.margin), 1, 0xFF000000, 1);
         super.render(graphics, mouseX, mouseY, delta);
@@ -185,8 +184,8 @@ public class EntitySelectScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        this.setScrollOffset(this.getScrollOffset() - delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        this.setScrollOffset(this.getScrollOffset() - scrollY);
         return true;
     }
 
@@ -281,7 +280,7 @@ public class EntitySelectScreen extends Screen {
     }
 
     private List<EntityType<?>> getAllItemList() {
-        return new ArrayList<>(ForgeRegistries.ENTITY_TYPES.getValues().stream().toList());
+        return new ArrayList<>(BuiltInRegistries.ENTITY_TYPE.stream().toList());
     }
 
     /**
@@ -346,7 +345,7 @@ public class EntitySelectScreen extends Screen {
                                 .setId(entityType.getDescriptionId());
 
                         GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), bgColor);
-                        InventoryScreen.renderEntityInInventory(context.graphics(), (int) context.button().getX() + 1, (int) context.button().getY() + 1, 50, ARMOR_STAND_ANGLE, (Quaternionf) null, (LivingEntity) entityType.create(Minecraft.getInstance().level));
+                        //InventoryScreen.renderEntityInInventory(context.graphics(), (int) context.button().getX() + 1, (int) context.button().getY() + 1, 50, ARMOR_STAND_ANGLE, (Quaternionf) null, (LivingEntity) entityType.create(Minecraft.getInstance().level));
                         //context.graphics().renderItem(itemStack, (int) context.button().getX() + 1, (int) context.button().getY() + 1);
                         // 绘制物品详情悬浮窗
                         context.button().setCustomPopupFunction(() -> {
@@ -372,8 +371,8 @@ public class EntitySelectScreen extends Screen {
         String s = this.inputField == null ? null : this.inputField.getValue();
         this.itemList.clear();
         if (StringUtils.isNotNullOrEmpty(s)) {
-            SearchTree<EntityType<?>> isearchtree = Minecraft.getInstance().getSearchTree(ModSearches.LIVING_ENTITY_KEY);
-            this.itemList.addAll(isearchtree.search(s.toLowerCase(Locale.ROOT)));
+//            SearchTree<EntityType<?>> isearchtree = Minecraft.getInstance().se(ModSearches.LIVING_ENTITY_KEY);
+//            this.itemList.addAll(isearchtree.search(s.toLowerCase(Locale.ROOT)));
         } else {
             this.itemList.addAll(new ArrayList<>(this.getAllItemList()));
         }
@@ -401,7 +400,7 @@ public class EntitySelectScreen extends Screen {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             this.selectedEntityId = bt.getId();
             if (StringUtils.isNotNullOrEmpty(this.selectedEntityId)) {
-                this.currentEntity = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(selectedEntityId));
+                //this.currentEntity = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(selectedEntityId));
                 //LOGGER.debug("Select item: {}", ItemRewardParser.getDisplayName(this.currentItem));
                 flag.set(true);
 

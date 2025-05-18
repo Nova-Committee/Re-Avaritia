@@ -62,9 +62,13 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
         ModEntities.onClientSetup();
-        ModMenus.onClientSetup();
         ModTileEntities.onClientSetup();
         ModSearches.onClientSetup();
+    }
+
+    @SubscribeEvent
+    public static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        ModMenus.onClientSetup(event);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

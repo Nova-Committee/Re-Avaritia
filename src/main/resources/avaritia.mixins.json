@@ -5,8 +5,8 @@
   "refmap": "avaritia.refmap.json",
   "mixins": [
     "EnchantmentHelperMixin",
-    "FrostWalkerEnchantmentMixin",
-    "NetherWartBlockMixin"
+    "NetherWartBlockMixin",
+    "RecipeManagerMixin"
   ],
   "client": [
     "ItemRendererMixin",

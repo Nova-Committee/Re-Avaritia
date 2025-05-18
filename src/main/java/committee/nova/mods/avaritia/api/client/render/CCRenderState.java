@@ -26,8 +26,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
+
+import java.util.List;
+
 
 /**
  * The core of the CodeChickenLib render system.
@@ -101,8 +104,7 @@ public class CCRenderState {
      * @return The {@link BufferBuilder} instance from {@link Tesselator}.
      */
     public BufferBuilder startDrawing(VertexFormat.Mode mode, VertexFormat format) {
-        BufferBuilder r = Tesselator.getInstance().getBuilder();
-        r.begin(mode, format);
+        var r = Tesselator.getInstance().begin(mode, format);
         bind(r);
         return r;
     }
@@ -116,10 +118,10 @@ public class CCRenderState {
      * @param buffer The {@link BufferBuilder} to bind to.
      * @return The same {@link BufferBuilder} that was passed in.
      */
-    public BufferBuilder startDrawing(VertexFormat.Mode mode, VertexFormat format, BufferBuilder buffer) {
-        buffer.begin(mode, format);
-        bind(buffer);
-        return buffer;
+    public BufferBuilder startDrawing(VertexFormat.Mode mode, VertexFormat format, Tesselator buffer) {
+        var r= buffer.begin(mode, format);
+        bind(r);
+        return r;
     }
 
     /**
@@ -247,39 +249,37 @@ public class CCRenderState {
         if (r instanceof ISpriteAwareVertexConsumer) {
             ((ISpriteAwareVertexConsumer) r).sprite(sprite);
         }
-        ImmutableList<VertexFormatElement> elements = fmt.getElements();
-        for (int e = 0; e < elements.size(); e++) {
-            VertexFormatElement fmte = elements.get(e);
-            switch (fmte.getUsage()) {
+        List<VertexFormatElement> elements = fmt.getElements();
+        for (VertexFormatElement fmte : elements) {
+            switch (fmte.usage()) {
                 case POSITION:
-                    r.vertex(vert.vec.x, vert.vec.y, vert.vec.z);
+                    r.addVertex((float) vert.vec.x, (float) vert.vec.y, (float) vert.vec.z);
                     break;
                 case UV:
-                    int idx = fmte.getIndex();
+                    int idx = fmte.index();
                     switch (idx) {
-                        case 0 -> r.uv((float) vert.uv.u, (float) vert.uv.v);
-                        case 1 -> r.overlayCoords(overlay);
-                        case 2 -> r.uv2(brightness);
+                        case 0 -> r.setUv((float) vert.uv.u, (float) vert.uv.v);
+                        case 1 -> r.setOverlay(overlay);
+                        case 2 -> r.setLight(brightness);
                     }
                     break;
                 case COLOR:
-                    if (r instanceof BufferBuilder && ((BufferBuilder) r).defaultColorSet) {
+                    if (r instanceof BufferBuilder
+                           // && ((BufferBuilder) r).defaultColorSet
+                    ) {
                         //-_- Fucking mojang..
-                        ((BufferBuilder) r).nextElement();
+                       // ((BufferBuilder) r).nextElement();
                     } else {
-                        r.color(colour >>> 24, colour >> 16 & 0xFF, colour >> 8 & 0xFF, alphaOverride >= 0 ? alphaOverride : colour & 0xFF);
+                        r.setColor(colour >>> 24, colour >> 16 & 0xFF, colour >> 8 & 0xFF, alphaOverride >= 0 ? alphaOverride : colour & 0xFF);
                     }
                     break;
                 case NORMAL:
-                    r.normal((float) normal.x, (float) normal.y, (float) normal.z);
-                    break;
-                case PADDING:
+                    r.setNormal((float) normal.x, (float) normal.y, (float) normal.z);
                     break;
                 default:
                     throw new UnsupportedOperationException("Generic vertex format element");
             }
         }
-        r.endVertex();
     }
 
     public void setBrightness(BlockAndTintGetter world, BlockPos pos) {
@@ -312,9 +312,5 @@ public class CCRenderState {
 
     public VertexFormat getVertexFormat() {
         return fmt;
-    }
-
-    public void draw() {
-        Tesselator.getInstance().end();
     }
 }

@@ -1,14 +1,18 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IDataReceiver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
@@ -16,36 +20,36 @@ import java.util.function.Supplier;
  * @CreateTime: 2025/2/23 01:45
  * @Description:
  */
-public class NbtDataPack {
-    public CompoundTag tag;
+public record NbtDataPack(CompoundTag tag) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<NbtDataPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("sync_nbt"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, NbtDataPack> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.COMPOUND_TAG,
+            NbtDataPack::tag,
+            NbtDataPack::new
+    );
 
-    public NbtDataPack(CompoundTag tag) {
-        this.tag = tag;
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public NbtDataPack(FriendlyByteBuf pb) {
-        tag = pb.readAnySizeNbt();
-    }
-
-    public void write(FriendlyByteBuf pb) {
-        pb.writeNbt(tag);
-    }
-
-    public void run(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-            ctx.get().enqueueWork(() -> {
-                ServerPlayer sender = ctx.get().getSender();
-                if (sender != null && sender.containerMenu instanceof IDataReceiver dataReceiver) {
-                    dataReceiver.receive(tag);
-                }
-            });
-        } else if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-            ctx.get().enqueueWork(() -> {
-                if(Minecraft.getInstance().screen instanceof IDataReceiver dataReceiver) {
-                    dataReceiver.receive(tag);
-                }
-            });
+    public static class Handler implements IPayloadHandler<NbtDataPack> {
+        @Override
+        public void handle(@NotNull NbtDataPack packet, @NotNull IPayloadContext context) {
+            if(context.flow() == PacketFlow.CLIENTBOUND) {
+                context.enqueueWork(() -> {
+                    Player sender = context.player();
+                    if (sender != null && sender.containerMenu instanceof IDataReceiver dataReceiver) {
+                        dataReceiver.receive(packet.tag);
+                    }
+                });
+            } else if(context.flow() == PacketFlow.SERVERBOUND) {
+                context.enqueueWork(() -> {
+                    if(Minecraft.getInstance().screen instanceof IDataReceiver dataReceiver) {
+                        dataReceiver.receive(packet.tag());
+                    }
+                });
+            }
         }
-        ctx.get().setPacketHandled(true);
     }
 }

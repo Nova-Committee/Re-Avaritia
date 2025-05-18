@@ -19,9 +19,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -167,7 +164,7 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                     StorageItem container2 = itemHandler.getContainerInSlot(k);
                     boolean swap = container1.isEmpty() && !container2.isEmpty();
                     if (!container1.isEmpty() && !container2.isEmpty()) {
-                        if (ItemHandlerHelper.canItemStacksStack(container1.getStack(), container2.getStack())) {
+                        //if (ItemHandlerHelper.canItemStacksStack(container1.getStack(), container2.getStack())) {
                             long freeSpace = itemHandler.getSlotFreeSpace(j);
                             if (freeSpace > 0L) {
                                 long size = Math.min(container2.getCount(), freeSpace);
@@ -175,7 +172,7 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                                 container2.shrink(size);
                                 loop = true;
                             }
-                        }
+                        //}
 
                         swap = comparator.compare(container1, container2) > 0;
                     }
@@ -207,7 +204,9 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
             ItemStack stackInSlot = slot.getItem();
             if (stackInSlot.isEmpty()) {
                 emptySlots.add(index);
-            } else if (ItemHandlerHelper.canItemStacksStack(stack, stackInSlot)) {
+            } else
+                //if (ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+                {
                 int size;
                 if (index < this.container.getContainerSize()) {
                     long freeSpace = this.container.getItemHandler().getSlotFreeSpace(index);
@@ -279,7 +278,9 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                                 setCarried(ItemStack.EMPTY);
                             }
 
-                            if (ItemHandlerHelper.canItemStacksStack(grabbedStack, stackInSlot) && this.moveItemStackTo(grabbedStack, slotId, slotId + 1, false)) {
+                            if (
+                                    //ItemHandlerHelper.canItemStacksStack(grabbedStack, stackInSlot) &&
+                                            this.moveItemStackTo(grabbedStack, slotId, slotId + 1, false)) {
                                 setCarried(grabbedStack);
                             }
                         }
@@ -297,7 +298,9 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                                 setCarried(grabbedStack);
                             }
 
-                            if (ItemHandlerHelper.canItemStacksStack(grabbedStack, stackInSlot) && this.container.getItemHandler().getSlotFreeSpace(slotId) > 0L) {
+                            if (
+                                    //ItemHandlerHelper.canItemStacksStack(grabbedStack, stackInSlot) &&
+                                            this.container.getItemHandler().getSlotFreeSpace(slotId) > 0L) {
                                 grabbedStack.shrink(1);
                                 this.container.getItemInSlot(slotId).grow(1L);
                                 setCarried(grabbedStack);
@@ -311,7 +314,7 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                             this.swapIndex = slotId;
                         }
                     } else if (dragType == 3 && !stackInSlot.isEmpty()) {
-                        copy = ItemHandlerHelper.copyStackWithSize(stackInSlot, 1);
+                        copy = stackInSlot.copyWithCount(1);
                         if (this.moveItemStackTo(copy, this.container.getContainerSize(), this.mainInventorySize, true)) {
                             this.container.getItemInSlot(slotId).shrink(1L);
                             if (this.container.getItemInSlot(slotId).isEmpty()) {
@@ -327,7 +330,7 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                             StorageItem container = this.container.getItemInSlot(slotId);
                             int stackSize = dragType == 1 ? stackInSlot.getMaxStackSize() : 1;
                             size = (int)Math.min(stackSize, container.getCount());
-                            player.drop(ItemHandlerHelper.copyStackWithSize(stackInSlot, size), false);
+                            player.drop(stackInSlot.copyWithCount(size), false);
                             container.shrink(size);
                             if (container.isEmpty()) {
                                 slot.set(ItemStack.EMPTY);
@@ -340,10 +343,10 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                         if (!grabbedStack.isEmpty()) {
                             for(i = 0; i < this.container.getContainerSize(); ++i) {
                                 copy = this.getSlot(i).getItem();
-                                if (ItemHandlerHelper.canItemStacksStack(grabbedStack, copy)) {
+                                //if (ItemHandlerHelper.canItemStacksStack(grabbedStack, copy)) {
                                     while(!this.quickMoveStack(player, i).isEmpty()) {
                                     }
-                                }
+                                //}
                             }
                         }
                     } else {
@@ -365,7 +368,7 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                     if (dragType == 3) {
                         grabbedStack = slot.getItem();
                         if (!grabbedStack.isEmpty()) {
-                            stackInSlot = ItemHandlerHelper.copyStackWithSize(grabbedStack, 1);
+                            stackInSlot = grabbedStack.copyWithCount(1);
                             if (this.moveItemStackTo(stackInSlot, 0, this.container.getContainerSize(), false)) {
                                 grabbedStack.shrink(1);
                             }
@@ -376,9 +379,9 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
                     if (!grabbedStack.isEmpty()) {
                         for(i = this.container.getContainerSize(); i < this.mainInventorySize; ++i) {
                             copy = this.getSlot(i).getItem();
-                            if (ItemHandlerHelper.canItemStacksStack(grabbedStack, copy)) {
+                            //if (ItemHandlerHelper.canItemStacksStack(grabbedStack, copy)) {
                                 this.quickMoveStack(player, i);
-                            }
+                            //}
                         }
                     }
                 }

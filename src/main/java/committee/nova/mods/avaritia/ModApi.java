@@ -29,7 +29,7 @@ public class ModApi {
             }
         }
 
-        return new ShapelessTableCraftingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), getList(arraylist), result, tier);
+        return new ShapelessTableCraftingRecipe(getList(arraylist), result, tier);
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {

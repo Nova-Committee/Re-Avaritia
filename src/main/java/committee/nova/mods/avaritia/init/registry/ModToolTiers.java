@@ -1,13 +1,8 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Static;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.SimpleTier;
-
-import java.util.List;
 
 /**
  * Description:
@@ -22,7 +17,4 @@ public class ModToolTiers {
             () -> Ingredient.of(ModItems.crystal_matrix_ingot.get()));
     public static final Tier INFINITY =new SimpleTier(ModTags.NEEDS_INFINITY_TOOL,9999, 100f, 100f,  9999,
             () -> Ingredient.of(ModItems.infinity_ingot.get()));
-
-
-
 }

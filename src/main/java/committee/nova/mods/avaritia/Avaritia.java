@@ -26,8 +26,10 @@ public class Avaritia {
         modEventBus.addListener(ModDataGen::gatherData);
 
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
+        ModArmorMaterial.ARMOR_MATERIALS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
+        ModDamageTypes.DAMAGE_TYPES.register(modEventBus);
         ModCreativeModeTabs.TABS.register(modEventBus);
         ModTileEntities.BLOCK_ENTITIES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
@@ -39,7 +41,7 @@ public class Avaritia {
     }
 
     public void setup(final FMLCommonSetupEvent event) {
-        if (Static.isLoad("projecte")) ModEMCHandler.init();
+        //if (Static.isLoad("projecte")) ModEMCHandler.init();
         SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
         DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }

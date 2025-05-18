@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.wrappers.InfinityBucketWrapper;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -55,7 +56,7 @@ public class InfinityBucketItem extends ResourceItem {
     }
 
     public static List<FluidStack> getFluids(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
+        CompoundTag nbt = stack.get(DataComponents.CUSTOM_DATA).getUnsafe();
         if (nbt == null)
             return new ArrayList<>();
 
@@ -75,7 +76,7 @@ public class InfinityBucketItem extends ResourceItem {
         }
         CompoundTag tag = new CompoundTag();
         tag.put(FLUIDS_NBT, listTag);
-        stack.setTag(tag);
+        //stack.setTag(tag);
     }
 
     @NotNull
@@ -109,18 +110,18 @@ public class InfinityBucketItem extends ResourceItem {
         return fluidName.toString();
     }
 
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new InfinityBucketWrapper(stack);
-    }
+//    @Override
+//    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+//        return new InfinityBucketWrapper(stack);
+//    }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable TooltipContext context, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, context, pTooltipComponents, pIsAdvanced);
         List<FluidStack> fluids = getFluids(pStack);
         NumberFormat formater = DecimalFormat.getInstance();
         for (FluidStack fluid : fluids) {
-            MutableComponent component = MutableComponent.create(fluid.getDisplayName().getContents());
+            MutableComponent component = MutableComponent.create(fluid.getHoverName().getContents());
             component.append(": " + formater.format(fluid.getAmount()) + " mB");
             pTooltipComponents.add(component);
         }
@@ -165,7 +166,9 @@ public class InfinityBucketItem extends ResourceItem {
         BlockPos hitPos = hitResult.getBlockPos();
         BlockState hitState = pLevel.getBlockState(hitPos);
         Block hitBlock = hitState.getBlock();
-        boolean canPickUp = hitBlock instanceof IFluidBlock || hitBlock instanceof BucketPickup;
+        boolean canPickUp =
+                //hitBlock instanceof IFluidBlock ||
+                hitBlock instanceof BucketPickup;
         if (pLevel.mayInteract(pPlayer, hitPos) && canPickUp) {
             FluidActionResult pickUpResult = FluidUtil.tryPickUpFluid(itemStack, pPlayer, pLevel, hitPos, hitResult.getDirection());
             if (pickUpResult.isSuccess()) {

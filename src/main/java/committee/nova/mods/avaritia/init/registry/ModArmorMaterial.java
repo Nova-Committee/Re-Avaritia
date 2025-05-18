@@ -1,11 +1,9 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -23,9 +21,9 @@ import java.util.List;
  * Version: 1.0
  */
 public class ModArmorMaterial {
-    public static final DeferredRegister<ArmorMaterial> REGISTER = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, Static.MOD_ID);
+    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, Static.MOD_ID);
 
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> infinite_armor = REGISTER.register("infinite_armor", () ->
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> infinite_armor = ARMOR_MATERIALS.register("infinite_armor", () ->
                     new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266655_) -> {
                         p_266655_.put(ArmorItem.Type.BOOTS, 3);
                         p_266655_.put(ArmorItem.Type.LEGGINGS, 6);

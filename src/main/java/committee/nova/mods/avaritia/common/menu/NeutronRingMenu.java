@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.api.utils.InventoryUtils;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -26,7 +27,7 @@ public class NeutronRingMenu extends BaseMenu {
     public ItemStack ring = ItemStack.EMPTY;
     public int slot;
 
-    public NeutronRingMenu(int id, Inventory playerInventory, FriendlyByteBuf buf) {
+    public NeutronRingMenu(int id, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
         this(id, playerInventory, buf.readInt());
     }
 

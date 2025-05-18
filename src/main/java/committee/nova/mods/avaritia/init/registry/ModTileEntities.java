@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.addons._channel.BlackHoleTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
@@ -56,6 +55,5 @@ public class ModTileEntities {
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.get()});
-    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<BlackHoleTile>> hole_tile = blockEntity("hole_tile", BlackHoleTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
 
 }

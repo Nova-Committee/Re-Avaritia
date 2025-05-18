@@ -15,8 +15,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.SessionSearchTrees;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.searchtree.SearchRegistry;
 import net.minecraft.client.searchtree.SearchTree;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -193,7 +194,7 @@ public class ItemSelectScreen extends Screen {
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, delta);
         GuiUtils.fill(graphics, (int) (this.bgX - this.margin), (int) (this.bgY - this.margin), (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5), 0xCCC6C6C6, 2);
         GuiUtils.fillOutLine(graphics, (int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.itemPerLine + this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.maxLine + this.margin), 1, 0xFF000000, 1);
         super.render(graphics, mouseX, mouseY, delta);
@@ -204,8 +205,8 @@ public class ItemSelectScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        this.setScrollOffset(this.getScrollOffset() - delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        this.setScrollOffset(this.getScrollOffset() - deltaY);
         return true;
     }
 
@@ -435,7 +436,7 @@ public class ItemSelectScreen extends Screen {
                         // 绘制物品详情悬浮窗
                         context.button().setCustomPopupFunction(() -> {
                             if (context.button().isHovered()) {
-                                List<Component> list = itemStack.getTooltipLines(Minecraft.getInstance().player, Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
+                                List<Component> list = itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level.registryAccess()), Minecraft.getInstance().player, Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
                                 List<Component> list1 = Lists.newArrayList(list);
                                 Item item = itemStack.getItem();
                                 this.visibleTags.forEach((itemITag) -> {
@@ -468,15 +469,19 @@ public class ItemSelectScreen extends Screen {
         this.itemList.clear();
         this.visibleTags.clear();
         if (StringUtils.isNotNullOrEmpty(s)) {
-            SearchTree<ItemStack> isearchtree;
-            if (s.startsWith("#")) {
-                s = s.substring(1);
-                isearchtree = Minecraft.getInstance().getSearchTree(SearchRegistry.CREATIVE_TAGS);
-                this.updateVisibleTags(s);
-            } else {
-                isearchtree = Minecraft.getInstance().getSearchTree(SearchRegistry.CREATIVE_NAMES);
+            ClientPacketListener clientpacketlistener = this.minecraft.getConnection();
+            if (clientpacketlistener != null) {
+                SessionSearchTrees sessionsearchtrees = clientpacketlistener.searchTrees();
+                SearchTree<ItemStack> isearchtree;
+                if (s.startsWith("#")) {
+                    s = s.substring(1);
+                    isearchtree = sessionsearchtrees.creativeTagSearch();
+                    this.updateVisibleTags(s);
+                } else {
+                    isearchtree = sessionsearchtrees.creativeNameSearch();
+                }
+                this.itemList.addAll(isearchtree.search(s.toLowerCase(Locale.ROOT)));
             }
-            this.itemList.addAll(isearchtree.search(s.toLowerCase(Locale.ROOT)));
         } else {
             this.itemList.addAll(new ArrayList<>(this.inventoryMode ? this.getPlayerItemList() : this.getAllItemList()));
         }
@@ -578,7 +583,9 @@ public class ItemSelectScreen extends Screen {
                         LOGGER.error("Invalid NBT: {}", input);
                         itemStack = null;
                     }
-                    if (itemStack != null && itemStack.hasTag()) {
+                    if (itemStack != null
+                            //&& itemStack.hasTag()
+                    ) {
                         this.currentItem = itemStack;
                         this.selectedItemId = ItemUtils.getId(this.currentItem);
                     } else {

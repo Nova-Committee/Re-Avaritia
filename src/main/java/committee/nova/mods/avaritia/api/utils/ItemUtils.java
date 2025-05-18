@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -70,7 +69,7 @@ public class ItemUtils {
             try {
                 String nbtString = id.substring(id.indexOf("{"));
                 CompoundTag nbt = TagParser.parseTag(nbtString);
-                itemStack.get(DataComponents.CUSTOM_DATA).update();
+                //itemStack.get(DataComponents.CUSTOM_DATA).update();
             } catch (Exception e) {
                 if (throwException) throw e;
                 LOGGER.error("Failed to parse NBT data", e);
@@ -81,9 +80,9 @@ public class ItemUtils {
 
     public static String getNbtString(ItemStack itemStack) {
         String json = "";
-        if (itemStack.hasTag() && itemStack.getTag() != null) {
-            json = itemStack.getTag().toString();
-        }
+//        if (itemStack.hasTag() && itemStack.getTag() != null) {
+//            json = itemStack.getTag().toString();
+//        }
         return json;
     }
 
@@ -93,7 +92,7 @@ public class ItemUtils {
             String itemId = json.get("item").getAsString();
             int count = json.get("count").getAsInt();
             count = Math.max(count, 1);
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
             if (item == null) {
                 throw new JsonParseException("Unknown item ID: " + itemId);
             }
@@ -103,7 +102,7 @@ public class ItemUtils {
             if (json.has("nbt")) {
                 try {
                     CompoundTag nbt = TagParser.parseTag(json.get("nbt").getAsString());
-                    itemStack.setTag(nbt);
+                    //itemStack.setTag(nbt);
                 } catch (CommandSyntaxException e) {
                     throw new JsonParseException("Failed to parse NBT data", e);
                 }
@@ -122,11 +121,11 @@ public class ItemUtils {
             json.addProperty("count", reward.getCount());
 
             // 如果物品有NBT数据，则序列化
-            if (reward.hasTag()) {
-                if (reward.getTag() != null) {
-                    json.addProperty("nbt", getNbtString(reward));
-                }
-            }
+//            if (reward.hasTag()) {
+//                if (reward.getTag() != null) {
+//                    json.addProperty("nbt", getNbtString(reward));
+//                }
+//            }
         } catch (Exception e) {
             LOGGER.error("Failed to serialize item reward", e);
             json.addProperty("item", getId(Items.AIR));
@@ -197,7 +196,7 @@ public class ItemUtils {
      * @return whether the two items are the same in terms of damage and itemID.
      */
     public static boolean areStacksSameType(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {
-        return !stack1.isEmpty() && !stack2.isEmpty() && (stack1.getItem() == stack2.getItem() && (stack2.getDamageValue() == stack1.getDamageValue()) && ItemStack.isSameItemSameTags(stack2, stack1));
+        return !stack1.isEmpty() && !stack2.isEmpty() && (stack1.getItem() == stack2.getItem() && (stack2.getDamageValue() == stack1.getDamageValue()) && ItemStack.isSameItemSameComponents(stack2, stack1));
     }
 
     public static boolean canCombineStacks(ItemStack stack1, ItemStack stack2) {
@@ -212,31 +211,31 @@ public class ItemUtils {
         return stack1.isEmpty() ? stack2.copy() : grow(stack1, stack2.getCount());
     }
 
-    public static boolean compareTags(ItemStack stack1, ItemStack stack2) {
-        if (!stack1.hasTag()) {
-            return true;
-        } else if (stack1.hasTag() && !stack2.hasTag()) {
-            return false;
-        } else {
-            Set<String> stack1Keys = NBTUtils.getTagCompound(stack1).getAllKeys();
-            Set<String> stack2Keys = NBTUtils.getTagCompound(stack2).getAllKeys();
-            Iterator<String> iterator = stack1Keys.iterator();
-
-            String key;
-            do {
-                if (!iterator.hasNext()) {
-                    return true;
-                }
-
-                key = iterator.next();
-                if (!stack2Keys.contains(key)) {
-                    return false;
-                }
-            } while (NbtUtils.compareNbt(NBTUtils.getTag(stack1, key), NBTUtils.getTag(stack2, key), true));
-
-            return false;
-        }
-    }
+//    public static boolean compareTags(ItemStack stack1, ItemStack stack2) {
+//        if (!stack1.hasTag()) {
+//            return true;
+//        } else if (stack1.hasTag() && !stack2.hasTag()) {
+//            return false;
+//        } else {
+//            Set<String> stack1Keys = NBTUtils.getTagCompound(stack1).getAllKeys();
+//            Set<String> stack2Keys = NBTUtils.getTagCompound(stack2).getAllKeys();
+//            Iterator<String> iterator = stack1Keys.iterator();
+//
+//            String key;
+//            do {
+//                if (!iterator.hasNext()) {
+//                    return true;
+//                }
+//
+//                key = iterator.next();
+//                if (!stack2Keys.contains(key)) {
+//                    return false;
+//                }
+//            } while (NbtUtils.compareNbt(NBTUtils.getTag(stack1, key), NBTUtils.getTag(stack2, key), true));
+//
+//            return false;
+//        }
+//    }
 
     /**
      * Drops an item with basic default random velocity.
@@ -291,22 +290,20 @@ public class ItemUtils {
         }
     }
 
-    public static void removeEnchant(ItemStack stack, Enchantment pEnchantment) {
-        if (!stack.getOrCreateTag().contains("Enchantments", Tag.TAG_LIST)) {
-            stack.getOrCreateTag().put("Enchantments", new ListTag());
-        }
-
-        ListTag listtag = stack.getOrCreateTag().getList("Enchantments", Tag.TAG_COMPOUND);
-        listtag.stream().filter(tag -> {
-            CompoundTag compoundtag = (CompoundTag) tag;
-            return Enchantment.byId(compoundtag.getShort("id")) == pEnchantment;
-        }).forEach(listtag::remove);
-    }
+//    public static void removeEnchant(ItemStack stack, Enchantment pEnchantment) {
+//        if (!stack.getOrCreateTag().contains("Enchantments", Tag.TAG_LIST)) {
+//            stack.getOrCreateTag().put("Enchantments", new ListTag());
+//        }
+//
+//        ListTag listtag = stack.getOrCreateTag().getList("Enchantments", Tag.TAG_COMPOUND);
+//        listtag.stream().filter(tag -> {
+//            CompoundTag compoundtag = (CompoundTag) tag;
+//            return Enchantment.byId(compoundtag.getShort("id")) == pEnchantment;
+//        }).forEach(listtag::remove);
+//    }
 
     public static void clearEnchants(ItemStack stack) {
-        if (stack.getOrCreateTag().contains("Enchantments", Tag.TAG_LIST)) {
-            stack.getOrCreateTag().remove("Enchantments");
-        }
+        stack.getTagEnchantments().enchantments.clear();
     }
 
 }

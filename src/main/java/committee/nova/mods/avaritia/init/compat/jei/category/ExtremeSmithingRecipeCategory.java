@@ -6,12 +6,14 @@ import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -32,11 +34,9 @@ import java.util.Arrays;
 public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmithingRecipe> {
     public static final RecipeType<ExtremeSmithingRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_smithing", ExtremeSmithingRecipe.class);
     private static final ResourceLocation TEXTURE = Static.rl( "textures/gui/jei/extreme_smithing_jei.png");
-    private final IDrawable background;
     private final IDrawable icon;
 
     public ExtremeSmithingRecipeCategory(IGuiHelper guiHelper) {
-        background = guiHelper.createDrawable(TEXTURE, 0, 0, 170, 64);
         icon = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.extreme_smithing_table.get()));
     }
 
@@ -51,14 +51,15 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     }
 
     @Override
-    public @NotNull IDrawable getBackground() {
-        return background;
+    public void draw(@NotNull ExtremeSmithingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        guiGraphics.blit(TEXTURE, 0, 0, 0,0,170, 64);
     }
 
     @Override
     public @NotNull IDrawable getIcon() {
         return icon;
     }
+
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull ExtremeSmithingRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 27, 23)

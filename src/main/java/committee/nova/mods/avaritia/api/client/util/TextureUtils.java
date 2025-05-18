@@ -12,12 +12,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -176,7 +176,7 @@ public class TextureUtils {
      * 获取指定命名空间的任意贴图
      */
     public static TextureAtlasSprite getTexture(String location) {
-        return getTextureMap().getSprite(new ResourceLocation(location));
+        return getTextureMap().getSprite(ResourceLocation.tryParse(location));
     }
 
     /**
@@ -190,7 +190,7 @@ public class TextureUtils {
      * 获取指定命名空间的方块贴图
      */
     public static TextureAtlasSprite getBlockTexture(String string) {
-        return getBlockTexture(new ResourceLocation(string));
+        return getBlockTexture(ResourceLocation.tryParse(string));
     }
 
     /**
@@ -199,21 +199,21 @@ public class TextureUtils {
      * @return 贴图
      */
     public static TextureAtlasSprite getBlockTexture(ResourceLocation location) {
-        return getTexture(new ResourceLocation(location.getNamespace(), "block/" + location.getPath()));
+        return getTexture(ResourceLocation.tryBuild(location.getNamespace(), "block/" + location.getPath()));
     }
 
     /**
      * 获取指定命名空间的物品贴图
      */
     public static TextureAtlasSprite getItemTexture(String string) {
-        return getItemTexture(new ResourceLocation(string));
+        return getItemTexture(ResourceLocation.tryParse(string));
     }
 
     /**
      * 获取指定命名空间的物品贴图
      */
     public static TextureAtlasSprite getItemTexture(ResourceLocation location) {
-        return getTexture(new ResourceLocation(location.getNamespace(), "items/" + location.getPath()));
+        return getTexture(ResourceLocation.tryBuild(location.getNamespace(), "items/" + location.getPath()));
     }
 
     /**
@@ -275,9 +275,9 @@ public class TextureUtils {
      */
     public static ResourceLocation getEffectTexture(MobEffectInstance mobEffectInstance) {
         ResourceLocation effectIcon;
-        ResourceLocation registryName = ForgeRegistries.MOB_EFFECTS.getKey(mobEffectInstance.getEffect());
+        ResourceLocation registryName = BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.getEffect().value());
         if (registryName != null) {
-            effectIcon = new ResourceLocation(registryName.getNamespace(), DEFAULT_EFFECT_DIR + registryName.getPath() + ".png");
+            effectIcon = ResourceLocation.tryBuild(registryName.getNamespace(), DEFAULT_EFFECT_DIR + registryName.getPath() + ".png");
         } else {
             effectIcon = null;
         }

@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -17,8 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
@@ -61,15 +60,15 @@ public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPa
                             case 0 -> {
                                     if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
                                         tag.getCompound("filters")
-                                                .put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.save());
+                                                .put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
                                     }
 
 
                             }
                             case 1 -> {
                                 CompoundTag filters = tag.getCompound("filters");
-                                if (filters.contains(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString())){
-                                    filters.remove(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
+                                if (filters.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
+                                    filters.remove(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString());
                                 }
                             }
                             case 2 -> {
