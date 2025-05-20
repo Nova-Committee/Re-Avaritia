@@ -1,15 +1,9 @@
-package committee.nova.mods.avaritia.init.compat.kubejs;
+package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeConstructor;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * @Project: Avaritia
@@ -25,12 +19,5 @@ public interface ExtremeSmithingRecipeSchema {
 
     RecipeSchema SCHEMA = new RecipeSchema(RESULT, TEMPLATE, BASE, ADDITION)
             .uniqueId(RESULT)
-            .constructor(RESULT, TEMPLATE, BASE, ADDITION)
-            .constructor(RecipeConstructor.Factory.defaultWith((recipe, key) -> {
-                if (key == TEMPLATE) {
-                    return InputItem.of(Ingredient.of(ModItems.upgrade_smithing_template.get()), 1);
-                } else {
-                    return null;
-                }
-            }), RESULT, BASE, ADDITION);
+            .constructor(RESULT, TEMPLATE, BASE, ADDITION);
 }

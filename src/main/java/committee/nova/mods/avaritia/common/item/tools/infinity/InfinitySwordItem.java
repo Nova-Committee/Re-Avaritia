@@ -1,14 +1,15 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.*;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -22,28 +23,18 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -57,10 +48,10 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
-                        .rarity(ModRarities.COSMIC)
+                        .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.BLAZE.getSpeed()))
+                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
         this.initEnchantment = new InitEnchantment(Enchantments.LOOTING, 10);
     }
@@ -70,7 +61,7 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
         var level = player.level();
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
         if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
-            var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
+            var damageSource = player.damageSources().source(ModDamageTypes.INFINITY.getKey(), victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
             if (victim instanceof EnderDragon dragon ) {
                 dragon.hurt(dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());

@@ -31,7 +31,7 @@ public final class ShapedRecipePatternCodecs {
             if (pattern.isEmpty()) {
                 return DataResult.error(() -> "Invalid pattern: empty pattern not allowed");
             } else {
-                int length = ((String)pattern.getFirst()).length();
+                int length = pattern.getFirst().length();
 
                 for(String line : pattern) {
                     if (length != line.length()) {

@@ -9,9 +9,6 @@ import moze_intel.projecte.api.nss.NormalizedSimpleStack;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @Project: Avaritia
  * @Author: cnlimiter

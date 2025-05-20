@@ -26,7 +26,7 @@ public abstract class CCUniform extends Uniform implements ICCUniform {
 
     protected final UniformType type;
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings ("ConstantConditions")
     protected CCUniform(String name, UniformType type, int count, @Nullable Shader parent) {
         super(name, type.getVanillaType(), count, parent);
         this.type = type;
@@ -41,8 +41,7 @@ public abstract class CCUniform extends Uniform implements ICCUniform {
     }
 
     static CCUniform makeUniform(String name, UniformType type, int count, @Nullable Shader parent) {
-        if (count % type.getSize() != 0)
-            throw new IllegalArgumentException("Expected count to be a multiple of the uniform type size: " + type.getSize());
+        if (count % type.getSize() != 0) throw new IllegalArgumentException("Expected count to be a multiple of the uniform type size: " + type.getSize());
         return switch (type.getCarrier()) {
             case INT, U_INT -> new IntUniform(name, type, count, parent);
             case FLOAT, MATRIX -> new FloatUniform(name, type, count, parent);
@@ -223,15 +222,15 @@ public abstract class CCUniform extends Uniform implements ICCUniform {
                 case VEC3 -> GL20.glUniform3fv(getLocation(), cache);
                 case VEC4 -> GL20.glUniform4fv(getLocation(), cache);
 
-                case MAT2 -> GL20.glUniformMatrix2fv(getLocation(), transpose, cache);
+                case MAT2 -> GL20.glUniformMatrix2fv  (getLocation(), transpose, cache);
                 case MAT2x3 -> GL21.glUniformMatrix2x3fv(getLocation(), transpose, cache);
                 case MAT2x4 -> GL21.glUniformMatrix2x4fv(getLocation(), transpose, cache);
 
-                case MAT3 -> GL20.glUniformMatrix3fv(getLocation(), transpose, cache);
+                case MAT3 -> GL20.glUniformMatrix3fv  (getLocation(), transpose, cache);
                 case MAT3x2 -> GL21.glUniformMatrix3x2fv(getLocation(), transpose, cache);
                 case MAT3x4 -> GL21.glUniformMatrix3x4fv(getLocation(), transpose, cache);
 
-                case MAT4 -> GL20.glUniformMatrix4fv(getLocation(), transpose, cache);
+                case MAT4 -> GL20.glUniformMatrix4fv  (getLocation(), transpose, cache);
                 case MAT4x2 -> GL21.glUniformMatrix4x2fv(getLocation(), transpose, cache);
                 case MAT4x3 -> GL21.glUniformMatrix4x3fv(getLocation(), transpose, cache);
 
@@ -263,15 +262,15 @@ public abstract class CCUniform extends Uniform implements ICCUniform {
                 case D_VEC3 -> GL40.glUniform3dv(getLocation(), cache);
                 case D_VEC4 -> GL40.glUniform4dv(getLocation(), cache);
 
-                case D_MAT2 -> GL40.glUniformMatrix2dv(getLocation(), transpose, cache);
+                case D_MAT2 -> GL40.glUniformMatrix2dv  (getLocation(), transpose, cache);
                 case D_MAT2x3 -> GL40.glUniformMatrix2x3dv(getLocation(), transpose, cache);
                 case D_MAT2x4 -> GL40.glUniformMatrix2x4dv(getLocation(), transpose, cache);
 
-                case D_MAT3 -> GL40.glUniformMatrix3dv(getLocation(), transpose, cache);
+                case D_MAT3 -> GL40.glUniformMatrix3dv  (getLocation(), transpose, cache);
                 case D_MAT3x2 -> GL40.glUniformMatrix3x2dv(getLocation(), transpose, cache);
                 case D_MAT3x4 -> GL40.glUniformMatrix3x4dv(getLocation(), transpose, cache);
 
-                case D_MAT4 -> GL40.glUniformMatrix4dv(getLocation(), transpose, cache);
+                case D_MAT4 -> GL40.glUniformMatrix4dv  (getLocation(), transpose, cache);
                 case D_MAT4x2 -> GL40.glUniformMatrix4x2dv(getLocation(), transpose, cache);
                 case D_MAT4x3 -> GL40.glUniformMatrix4x3dv(getLocation(), transpose, cache);
 

@@ -35,7 +35,7 @@ public class ItemOverrideHandler {
                 return Boolean.TRUE.equals(itemStack.get(ModDataComponents.INFINITY_SHOVEL_DESTROYER.get())) ? 1 : 0;
             });
             setPropertyOverride(ModItems.matter_cluster.get(), Static.rl("cap"), (itemStack, world, livingEntity, d) -> {
-                return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
+                return MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(itemStack)) == MatterClusterItem.CAPACITY ? 1 : 0;
             });
 
             setPropertyOverride(ModItems.infinity_bow.get(), Static.rl("pull"), (itemStack, world, livingEntity, d) -> {

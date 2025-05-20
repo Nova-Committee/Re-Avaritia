@@ -4,10 +4,9 @@ import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -38,14 +37,14 @@ public class EndlessCakeBlock extends BaseBlock {
         super(Properties.of().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY));
     }
 
-    protected static InteractionResult tryEat(LevelAccessor pLevel, BlockPos pPos, Player pPlayer) {
+    protected static ItemInteractionResult tryEat(LevelAccessor pLevel, BlockPos pPos, Player pPlayer) {
         if (!pPlayer.canEat(true)) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         } else {
             pPlayer.awardStat(Stats.EAT_CAKE_SLICE);
             pPlayer.getFoodData().eat(2, 0.1F);
             pLevel.gameEvent(pPlayer, GameEvent.EAT, pPos);
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
     }
 
@@ -55,18 +54,19 @@ public class EndlessCakeBlock extends BaseBlock {
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
-        if (pLevel.isClientSide) {
-            if (tryEat(pLevel, pPos, pPlayer).consumesAction()) {
-                return InteractionResult.SUCCESS;
+    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level,
+                                                       @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            if (tryEat(level, pos, player).consumesAction()) {
+                return ItemInteractionResult.SUCCESS;
             }
 
-            if (itemstack.isEmpty()) {
-                return InteractionResult.CONSUME;
+            if (stack.isEmpty()) {
+                return ItemInteractionResult.CONSUME;
             }
         }
 
-        return tryEat(pLevel, pPos, pPlayer);
+        return tryEat(level, pos, player);
     }
 
     @Override

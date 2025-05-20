@@ -1,24 +1,24 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
-import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @Project: Avaritia
@@ -32,28 +32,33 @@ public class ModExtremeSmithingRecipeBuilder implements RecipeBuilder {
     private final Ingredient base;
     private final Ingredient additions;
     private final Item result;
-    private final Advancement.Builder advancement = Advancement.Builder.recipeAdvancement();
+    private final int count;
+    private final ItemStack resultStack;
+    private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+    private ICondition[] conditions;
 
-    public ModExtremeSmithingRecipeBuilder(Ingredient pTemplate, Ingredient pBase, Ingredient pAddition, RecipeCategory pCategory, Item pResult) {
+    public ModExtremeSmithingRecipeBuilder(Ingredient pTemplate, Ingredient pBase, Ingredient pAddition, RecipeCategory pCategory, ItemStack pResult) {
         this.category = pCategory;
         this.template = pTemplate;
         this.base = pBase;
         this.additions = pAddition;
-        this.result = pResult;
+        this.count = pResult.getCount();
+        this.result = pResult.getItem();
+        this.resultStack = pResult;
     }
 
-    public static ModExtremeSmithingRecipeBuilder smithing(Ingredient pTemplate, Ingredient pBase, Ingredient pAddition, RecipeCategory pCategory, Item pResult) {
+    public static ModExtremeSmithingRecipeBuilder smithing(Ingredient pTemplate, Ingredient pBase, Ingredient pAddition, RecipeCategory pCategory, ItemStack pResult) {
         return new ModExtremeSmithingRecipeBuilder(pTemplate, pBase, pAddition, pCategory, pResult);
     }
 
     @Override
-    public @NotNull RecipeBuilder unlockedBy(@NotNull String pCriterionName, @NotNull CriterionTriggerInstance pCriterionTrigger) {
-        this.advancement.addCriterion(pCriterionName, pCriterionTrigger);
+    public @NotNull ModExtremeSmithingRecipeBuilder unlockedBy(@NotNull String name, @NotNull Criterion<?> criterion) {
+        this.criteria.put(name, criterion);
         return this;
     }
 
     @Override
-    public @NotNull RecipeBuilder group(@Nullable String pGroupName) {
+    public @NotNull ModExtremeSmithingRecipeBuilder group(@Nullable String pGroupName) {
         //this.group = pGroupName;
         return this;
     }
@@ -63,44 +68,32 @@ public class ModExtremeSmithingRecipeBuilder implements RecipeBuilder {
         return this.result;
     }
 
-    public void save(Consumer<FinishedRecipe> pRecipeConsumer, @NotNull ResourceLocation pLocation) {
-        this.ensureValid(pLocation);
-        this.advancement.parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pLocation)).rewards(AdvancementRewards.Builder.recipe(pLocation)).requirements(RequirementsStrategy.OR);
-        pRecipeConsumer.accept(new ModExtremeSmithingRecipeBuilder.Result(pLocation, this.template, this.base, this.additions, this.result, this.advancement, pLocation.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+    public @NotNull ModExtremeSmithingRecipeBuilder conditions(@Nullable ICondition... conditions) {
+        this.conditions = conditions;
+        return this;
     }
 
-    private void ensureValid(ResourceLocation pLocation) {
-        if (this.advancement.getCriteria().isEmpty()) {
-            throw new IllegalStateException("No way of obtaining recipe " + pLocation);
+    @Override
+    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        this.ensureValid(id);
+        Advancement.Builder advancement$builder = recipeOutput.advancement()
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .rewards(AdvancementRewards.Builder.recipe(id))
+                .requirements(AdvancementRequirements.Strategy.OR);
+        this.criteria.forEach(advancement$builder::addCriterion);
+        ExtremeSmithingRecipe shapelessrecipe = new ExtremeSmithingRecipe(
+                this.template,
+                this.base,
+                this.additions,
+                this.resultStack
+        );
+        recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
+    }
+
+    private void ensureValid(ResourceLocation id) {
+        if (this.criteria.isEmpty()) {
+            throw new IllegalStateException("No way of obtaining recipe " + id);
         }
     }
 
-    public record Result(ResourceLocation id,Ingredient template, Ingredient base, Ingredient additions, Item result, Advancement.Builder advancement, ResourceLocation advancementId) implements FinishedRecipe {
-        @Override
-        public void serializeRecipeData(JsonObject pJson) {
-            pJson.add("template", this.template.toJson());
-            pJson.add("base", this.base.toJson());
-            pJson.add("addition", this.additions.toJson());
-            JsonObject jsonobject = new JsonObject();
-            jsonobject.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString());
-            pJson.add("result", jsonobject);
-        }
-        @Override
-        public @NotNull ResourceLocation getId() {
-            return this.id;
-        }
-        @Override
-        public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.get();
-        }
-        @Override
-        public @NotNull JsonObject serializeAdvancement() {
-            return this.advancement.serializeToJson();
-        }
-        @Override
-        @Nullable
-        public ResourceLocation getAdvancementId() {
-            return this.advancementId;
-        }
-    }
 }

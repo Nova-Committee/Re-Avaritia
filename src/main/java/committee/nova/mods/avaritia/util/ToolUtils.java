@@ -11,10 +11,7 @@ import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.init.registry.ModTags;
+import committee.nova.mods.avaritia.init.registry.*;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -23,6 +20,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,7 +31,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
@@ -60,11 +57,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -209,8 +204,8 @@ public class ToolUtils {
 
         ClustersUtils.spawnClusters(world, player,
                 filterTrash ? ClustersUtils.removeTrash(ItemCaptureHandler.getCapturedDrops(),
-                        stack.getOrCreateTag().contains("filters")
-                                ? stack.getOrCreateTag().getCompound("filters").getAllKeys()
+                        !stack.getOrDefault(ModDataComponents.TOOL_FILTERS, new CompoundTag()).isEmpty()
+                                ? stack.get(ModDataComponents.TOOL_FILTERS).getAllKeys()
                                 : defaultTrashOres)
                 : ItemCaptureHandler.getCapturedDrops());
 
@@ -462,7 +457,7 @@ public class ToolUtils {
         if (player.level().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
-        DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
+        DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY.getKey(), player, player);
         toAttack.stream()
                 .filter(entity -> entity instanceof Mob)
                 .filter(entity -> !entity.getType().is(ModTags.NEUTRAL_CREATURES))

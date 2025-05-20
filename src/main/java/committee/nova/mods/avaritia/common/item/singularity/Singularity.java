@@ -24,13 +24,9 @@ import java.util.Arrays;
 @Getter
 @Setter
 public class Singularity {
-    public static final StreamCodec<RegistryFriendlyByteBuf, Singularity> STREAM_CODEC = StreamCodec.ofMember(
-            Singularity::toNetwork, Singularity::fromNetwork
+    public static final StreamCodec<RegistryFriendlyByteBuf, Singularity> STREAM_CODEC = StreamCodec.of(
+            Singularity::encode, Singularity::fromNetwork
     );
-
-    public static StreamCodec<RegistryFriendlyByteBuf, Singularity> streamCodec() {
-        return STREAM_CODEC;
-    }
 
     private ResourceLocation id;
     private String name;
@@ -138,6 +134,10 @@ public class Singularity {
         }
 
         return singularity;
+    }
+
+    public static void encode(RegistryFriendlyByteBuf buffer, Singularity singularity) {
+        singularity.toNetwork(buffer);
     }
 
     public void toNetwork(RegistryFriendlyByteBuf buffer) {

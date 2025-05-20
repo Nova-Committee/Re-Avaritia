@@ -82,8 +82,8 @@ public class ModItems {
     public static DeferredItem<Item> neutron_gear = item("neutron_gear", NeutronGearItem::new);
     //infinity
     public static DeferredItem<Item> infinity_nugget = item("infinity_nugget", (s) -> new ResourceItem(ModRarities.EPIC, s, true));
-    public static DeferredItem<Item> infinity_catalyst = item("infinity_catalyst", (s) -> new ResourceItem(ModRarities.LEGEND, s, true));
-    public static DeferredItem<Item> infinity_ingot = item("infinity_ingot", (s) -> new ResourceItem(ModRarities.COSMIC, s, true));
+    public static DeferredItem<Item> infinity_catalyst = item("infinity_catalyst", (s) -> new ResourceItem(ModRarities.LEGEND.getValue(), s, true));
+    public static DeferredItem<Item> infinity_ingot = item("infinity_ingot", (s) -> new ResourceItem(ModRarities.COSMIC.getValue(), s, true));
     //singularity
     public static DeferredItem<Item> singularity = item("singularity", SingularityItem::new);
     public static DeferredItem<Item> eternal_singularity = item("eternal_singularity", EternalSingularityItem::new);
@@ -100,6 +100,11 @@ public class ModItems {
     public static DeferredItem<Item> ultimate_stew = item("ultimate_stew", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.ultimate_stew)));
     public static DeferredItem<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs)));
     public static DeferredItem<Item> forge_energy = item("forge_energy", false);
+
+    static {
+        ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);
+    }
+
     public static DeferredItem<Item> item(String name) {
         return item(name, true);
     }

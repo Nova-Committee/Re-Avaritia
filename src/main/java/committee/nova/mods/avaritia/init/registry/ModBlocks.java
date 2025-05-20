@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
+import committee.nova.mods.avaritia.api.common.item.BaseBlockItem;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
@@ -31,8 +32,12 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -44,6 +49,7 @@ import java.util.function.Supplier;
  */
 public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Static.MOD_ID);
+    public static final Map<String, Supplier<BlockItem>> BLOCK_ITEMS = new LinkedHashMap<>();
 
     //CRAFTING
     public static DeferredBlock<Block> compressed_crafting_table = itemBlock("compressed_crafting_table", CompressedCraftTableBlock::new, ModRarities.UNCOMMON);
@@ -51,12 +57,12 @@ public class ModBlocks {
 
     //RESOURCE
     public static DeferredBlock<Block> neutron = itemBlock("neutron", () -> new ResourceBlock(ModResourceBlocks.NEUTRON), ModRarities.EPIC);
-    public static DeferredBlock<Block> infinity = itemBlock("infinity", () -> new ResourceBlock(ModResourceBlocks.INFINITY), ModRarities.COSMIC);
+    public static DeferredBlock<Block> infinity = itemBlock("infinity", () -> new ResourceBlock(ModResourceBlocks.INFINITY), ModRarities.COSMIC.getValue());
     public static DeferredBlock<Block> crystal_matrix = itemBlock("crystal_matrix", () -> new ResourceBlock(ModResourceBlocks.CRYSTAL), ModRarities.RARE);
     public static DeferredBlock<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new ResourceBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static DeferredBlock<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
-    public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
-    public static DeferredBlock<Block> infinity_clock = itemBlock("infinity_clock", InfinityClockBlock::new, ModRarities.LEGEND);
+    public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND.getValue());
+    public static DeferredBlock<Block> infinity_clock = itemBlock("infinity_clock", InfinityClockBlock::new, ModRarities.LEGEND.getValue());
     public static DeferredBlock<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
             () -> new BaseBlock(BlockBehaviour.Properties.of()
@@ -84,12 +90,12 @@ public class ModBlocks {
     public static DeferredBlock<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME), ModRarities.EPIC);
     public static DeferredBlock<Block> neutron_collector = itemBlock("neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> dense_neutron_collector = itemBlock("dense_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.EPIC);
-    public static DeferredBlock<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.LEGEND);
-    public static DeferredBlock<Block> densest_neutron_collector = itemBlock("densest_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.COSMIC);
+    public static DeferredBlock<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.LEGEND.getValue());
+    public static DeferredBlock<Block> densest_neutron_collector = itemBlock("densest_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.COSMIC.getValue());
     public static DeferredBlock<Block> neutron_compressor = itemBlock("neutron_compressor", CompressorBlock::new, ModRarities.RARE);
-    public static DeferredBlock<Block> extreme_smithing_table = itemBlock("extreme_smithing_table", ExtremeSmithingTableBlock::new, ModRarities.LEGEND);
+    public static DeferredBlock<Block> extreme_smithing_table = itemBlock("extreme_smithing_table", ExtremeSmithingTableBlock::new, ModRarities.LEGEND.getValue());
 
-    public static DeferredBlock<Block> extreme_anvil = itemBlock("extreme_anvil", ExtremeAnvilBlock::new, ModRarities.LEGEND);
+    public static DeferredBlock<Block> extreme_anvil = itemBlock("extreme_anvil", ExtremeAnvilBlock::new, ModRarities.LEGEND.getValue());
 
     //CAKE
     public static DeferredBlock<Block> endless_cake = itemBlock("endless_cake", EndlessCakeBlock::new, ModRarities.UNCOMMON);
@@ -126,27 +132,30 @@ public class ModBlocks {
     }
 
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem) {
-        return itemBlock(name, block, hasItem, new Item.Properties());
+        return itemBlock(name, block, hasItem, b -> () -> new BaseBlockItem(b.get(), p -> p));
     }
 
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, Rarity rarity) {
-        return itemBlock(name, block, true, new Item.Properties().rarity(rarity));
+        return itemBlock(name, block, true, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity)));
     }
 
-    public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties) {
+    public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties){
+        return itemBlock(name, block, hasItem, b -> () -> new BaseBlockItem(b.get(), p -> properties));
+    }
+
+
+    public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Function<DeferredBlock<Block>, Supplier<? extends BlockItem>> item) {
         var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties));
+        if (hasItem) BLOCK_ITEMS.put(name, () -> item.apply(reg).get());;
         return reg;
     }
 
     public static DeferredBlock<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
-        var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties){
+        return itemBlock(name, block, hasItem, b -> () -> new BaseBlockItem(b.get(), p -> properties) {
             @Override
-            public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+            public int getBurnTime(@NotNull ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                 return burnTime;
             }
         });
-        return reg;
     }
 }

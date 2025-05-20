@@ -1,2 +1,0 @@
-+committee.nova.mods.avaritia.common.crafting.recipe
-+committee.nova.mods.avaritia.init.compat.kubejs

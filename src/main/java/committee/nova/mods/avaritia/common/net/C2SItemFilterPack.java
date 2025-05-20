@@ -3,26 +3,17 @@ package committee.nova.mods.avaritia.common.net;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 /**
  * C2SJEIGhostPacket
@@ -59,21 +50,18 @@ public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPa
                         switch(packet.action) {
                             case 0 -> {
                                     if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                        tag.getCompound("filters")
-                                                .put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
+                                        tag.put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
                                     }
 
 
                             }
                             case 1 -> {
-                                CompoundTag filters = tag.getCompound("filters");
-                                if (filters.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                    filters.remove(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString());
+                                if (tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
+                                    tag.remove(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString());
                                 }
                             }
                             case 2 -> {
-                                CompoundTag filters = tag.getCompound("filters");
-                                filters.getAllKeys().forEach(filters::remove);
+                                tag.getAllKeys().forEach(tag::remove);
                             }
                         }
 

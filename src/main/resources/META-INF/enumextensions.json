@@ -1,0 +1,22 @@
+{
+	"entries": [
+		{
+			"enum": "net/minecraft/world/item/Rarity",
+			"name": "AVARITIA_LEGEND",
+			"constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+			"parameters": {
+				"class": "committee/nova/mods/avaritia/init/registry/ModRarities",
+				"field": "LEGEND"
+			}
+		},
+		{
+			"enum": "net/minecraft/world/item/Rarity",
+			"name": "AVARITIA_COSMIC",
+			"constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+			"parameters": {
+				"class": "committee/nova/mods/avaritia/init/registry/ModRarities",
+				"field": "COSMIC"
+			}
+		}
+	]
+}

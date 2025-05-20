@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.compat.kubejs;
+package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;

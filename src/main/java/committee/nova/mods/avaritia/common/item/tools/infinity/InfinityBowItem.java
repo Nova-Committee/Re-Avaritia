@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
@@ -49,7 +49,7 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     public InfinityBowItem() {
         super(new Properties()
                 .stacksTo(1)
-                .rarity(ModRarities.COSMIC)
+                .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
         );
         this.initEnchantment = new InitEnchantment(Enchantments.INFINITY, 10);

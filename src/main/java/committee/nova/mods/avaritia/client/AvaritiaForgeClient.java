@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,8 +28,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
-
-import static net.minecraft.ChatFormatting.DARK_PURPLE;
 
 /**
  * Author cnlimiter
@@ -67,7 +64,7 @@ public class AvaritiaForgeClient {
      * @param event 客户端Tick事件
      */
     @SubscribeEvent
-    public static void onClientTick(ClientTickEvent event) {
+    public static void onClientTick(ClientTickEvent.Post event) {
         LocalPlayer player = Minecraft.getInstance().player;
         // 检测并消费点击事件
         while (FILTER_KEY.consumeClick() && player != null) {

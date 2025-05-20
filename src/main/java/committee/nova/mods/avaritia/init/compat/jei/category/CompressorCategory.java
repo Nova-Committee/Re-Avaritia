@@ -3,9 +3,6 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
-import committee.nova.mods.avaritia.common.crafting.recipe.BaseTableCraftingRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import mezz.jei.api.constants.VanillaTypes;
@@ -25,9 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Description:

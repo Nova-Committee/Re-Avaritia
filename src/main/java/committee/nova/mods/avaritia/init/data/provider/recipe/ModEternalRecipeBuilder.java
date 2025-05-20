@@ -1,32 +1,27 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.CraftingRecipeBuilder;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import org.jetbrains.annotations.Contract;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Name: Avaritia-forge / ModShapelessRecipeBuilder
@@ -35,130 +30,91 @@ import java.util.function.Consumer;
  * Description:
  */
 
-public class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
+public class ModEternalRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
-    private final List<Ingredient> ingredients = Lists.newArrayList();
-    private final Advancement.Builder advancement = Advancement.Builder.advancement();
+    private final NonNullList<Ingredient> ingredients = NonNullList.create();
+    private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     @Nullable
     private String group;
+    private ICondition[] conditions;
 
-    public ModEternalRecipeBuilder(RecipeCategory p_250837_) {
-        this.category = p_250837_;
+
+    public ModEternalRecipeBuilder(RecipeCategory category) {
+        this.category = category;
     }
 
-    @Contract("_ -> new")
-    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory p_250714_) {
-        return new ModEternalRecipeBuilder(p_250714_);
+    public static ModEternalRecipeBuilder shapeless(RecipeCategory category) {
+        return new ModEternalRecipeBuilder(category);
     }
 
-
-    public ModEternalRecipeBuilder requires(TagKey<Item> p_206420_) {
-        return this.requires(Ingredient.of(p_206420_));
+    public ModEternalRecipeBuilder requires(TagKey<Item> tag) {
+        return this.requires(Ingredient.of(tag));
     }
 
-    public ModEternalRecipeBuilder requires(ItemLike p_126210_) {
-        return this.requires(p_126210_, 1);
+    public ModEternalRecipeBuilder requires(ItemLike item) {
+        return this.requires(item, 1);
     }
 
-    public ModEternalRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
-        for (int i = 0; i < p_126213_; ++i) {
-            this.requires(Ingredient.of(p_126212_));
+    public ModEternalRecipeBuilder requires(ItemLike item, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            this.requires(Ingredient.of(item));
         }
 
         return this;
     }
 
-    public ModEternalRecipeBuilder requires(Ingredient p_126185_) {
-        return this.requires(p_126185_, 1);
+    public ModEternalRecipeBuilder requires(Ingredient ingredient) {
+        return this.requires(ingredient, 1);
     }
 
-    public ModEternalRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
-        for (int i = 0; i < p_126188_; ++i) {
-            this.ingredients.add(p_126187_);
+    public ModEternalRecipeBuilder requires(Ingredient ingredient, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            this.ingredients.add(ingredient);
         }
 
         return this;
     }
 
     @Override
-    public @NotNull ModEternalRecipeBuilder unlockedBy(@NotNull String p_126197_, @NotNull CriterionTriggerInstance p_126198_) {
-        this.advancement.addCriterion(p_126197_, p_126198_);
+    public @NotNull ModEternalRecipeBuilder unlockedBy(@NotNull String name, @NotNull Criterion<?> criterion) {
+        this.criteria.put(name, criterion);
         return this;
     }
 
     @Override
-    public @NotNull ModEternalRecipeBuilder group(@Nullable String p_126195_) {
-        this.group = p_126195_;
+    public @NotNull ModEternalRecipeBuilder group(@Nullable String group) {
+        this.group = group;
         return this;
     }
 
     @Override
     public @NotNull Item getResult() {
-        return ModItems.eternal_singularity.get();
+        return ModItems.infinity_catalyst.get();
+    }
+
+
+    public @NotNull ModEternalRecipeBuilder conditions(@Nullable ICondition... conditions) {
+        this.conditions = conditions;
+        return this;
     }
 
     @Override
-    public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
-        this.ensureValid(p_126206_);
-        this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModEternalRecipeBuilder.Result(p_126206_, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        this.ensureValid(id);
+        Advancement.Builder advancement$builder = recipeOutput.advancement()
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .rewards(AdvancementRewards.Builder.recipe(id))
+                .requirements(AdvancementRequirements.Strategy.OR);
+        this.criteria.forEach(advancement$builder::addCriterion);
+        EternalSingularityCraftRecipe shapelessrecipe = new EternalSingularityCraftRecipe(
+                ModItems.eternal_singularity.get().getDefaultInstance()
+        );
+        recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
     }
 
-    private void ensureValid(ResourceLocation p_126208_) {
-        if (this.advancement.getCriteria().isEmpty()) {
-            throw new IllegalStateException("No way of obtaining recipe " + p_126208_);
-        }
-    }
-
-    public static class Result extends CraftingResult {
-        private final ResourceLocation id;
-        private final String group;
-        private final List<Ingredient> ingredients;
-        private final Advancement.Builder advancement;
-        private final ResourceLocation advancementId;
-
-        public Result(ResourceLocation p_249007_, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
-            super(p_249485_);
-            this.id = p_249007_;
-            this.group = p_248592_;
-            this.ingredients = p_252312_;
-            this.advancement = p_249909_;
-            this.advancementId = p_249109_;
-        }
-
-        public void serializeRecipeData(@NotNull JsonObject p_126230_) {
-            super.serializeRecipeData(p_126230_);
-            if (!this.group.isEmpty()) {
-                p_126230_.addProperty("group", this.group);
-            }
-
-            JsonArray jsonarray = new JsonArray();
-
-            for (Ingredient ingredient : this.ingredients) {
-                jsonarray.add(ingredient.toJson());
-            }
-
-            p_126230_.add("ingredients", jsonarray);
-        }
-
-        @Override
-        public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
-        }
-
-        @Override
-        public @NotNull ResourceLocation getId() {
-            return this.id;
-        }
-
-        @Nullable
-        public JsonObject serializeAdvancement() {
-            return this.advancement.serializeToJson();
-        }
-
-        @Nullable
-        public ResourceLocation getAdvancementId() {
-            return this.advancementId;
+    private void ensureValid(ResourceLocation id) {
+        if (this.criteria.isEmpty()) {
+            throw new IllegalStateException("No way of obtaining recipe " + id);
         }
     }
 }

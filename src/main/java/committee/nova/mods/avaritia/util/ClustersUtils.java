@@ -28,21 +28,14 @@ public class ClustersUtils {
 
     public static void spawnClusters(Level world, Player player, Set<ItemStack> drops) {
         if (!world.isClientSide) {
-            List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
-            for (ItemStack cluster : clusters) {
-                Containers.dropItemStack(world, player.getX(), player.getY() + 0.5F, player.getZ(), cluster);
-            }
+            Containers.dropItemStack(world, player.getX(), player.getY() + 0.5F, player.getZ(), MatterClusterItem.makeClusters(drops));
         }
     }
 
     public static void spawnClusters(Level world, Player player, Map<ItemStack, Integer> map) {
         if (!world.isClientSide) {
             HashSet<ItemStack> stacks = new HashSet<>();
-            map.forEach((stack, integer) -> stacks.add(stack.copyWithCount(map.get(stack))));
-            List<ItemStack> clusters = MatterClusterItem.makeClusters(stacks);
-            for (ItemStack cluster : clusters) {
-                Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), cluster);
-            }
+            Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), MatterClusterItem.makeClusters(stacks));
         }
     }
 

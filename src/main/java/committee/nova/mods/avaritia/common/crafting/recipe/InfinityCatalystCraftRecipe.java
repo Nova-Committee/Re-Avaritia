@@ -4,22 +4,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.BiFunction;
 
 /**
  * Name: Avaritia-forge / InfinityCatalystRecipe
@@ -30,10 +23,12 @@ import java.util.function.BiFunction;
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     private final String group;
+    private final int count;
 
-    public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs) {
+    public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
         super(inputs, new ItemStack(ModItems.infinity_catalyst.get()), 4);
         this.group = pGroup;
+        this.count = count;
     }
 
     @Override
@@ -67,7 +62,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                                         },
                                         DataResult::success
                                 )
-                                .forGetter(ShapelessTableCraftingRecipe::getInputs)
+                                .forGetter(ShapelessTableCraftingRecipe::getInputs),
+                        Codec.INT.fieldOf("count").forGetter(recipe -> recipe.count)
                 ).apply(builder, InfinityCatalystCraftRecipe::new)
         );
         public static final StreamCodec<RegistryFriendlyByteBuf, InfinityCatalystCraftRecipe> STREAM_CODEC = StreamCodec.of(
@@ -91,8 +87,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             for (int i = 0; i < size; ++i) {
                 inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
-
-            return new InfinityCatalystCraftRecipe(group, inputs);
+            int count = buffer.readInt();
+            return new InfinityCatalystCraftRecipe(group, inputs, count);
         }
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, InfinityCatalystCraftRecipe recipe) {
@@ -102,6 +98,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             for (var ingredient : recipe.getInputs()) {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
+            buffer.writeInt(recipe.count);
         }
     }
 }

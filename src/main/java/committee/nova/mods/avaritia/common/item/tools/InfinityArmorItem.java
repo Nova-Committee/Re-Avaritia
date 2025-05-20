@@ -15,7 +15,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -36,7 +39,7 @@ public class InfinityArmorItem extends ArmorItem {
                 ModArmorMaterial.infinite_armor,
                 pSlot,
                 new Properties()
-                        .rarity(ModRarities.COSMIC)
+                        .rarity(ModRarities.COSMIC.getValue())
                         .fireResistant()
                         .stacksTo(1)
         );

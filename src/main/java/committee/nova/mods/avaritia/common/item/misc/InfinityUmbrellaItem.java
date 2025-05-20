@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
  */
 public class InfinityUmbrellaItem extends ResourceItem {
     public InfinityUmbrellaItem() {
-        super(ModRarities.COSMIC, "infinity_umbrella", true, new Item.Properties().stacksTo(1));
+        super(ModRarities.COSMIC.getValue(), "infinity_umbrella", true, new Item.Properties().stacksTo(1));
     }
 
 

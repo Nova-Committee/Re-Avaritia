@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -17,20 +17,19 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
-import java.util.Objects;
 
 /**
  * Description:
@@ -46,7 +45,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
     public InfinityCrossBowItem() {
         super(new Properties()
                 .stacksTo(1)
-                .rarity(ModRarities.COSMIC)
+                .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
         );
     }
@@ -61,7 +60,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
     }
 
     public static void performShooting(@NotNull Level worldIn, LivingEntity shooter, @NotNull InteractionHand pUsedHand, ItemStack stack, int counts, float velocityIn, float inaccuracyIn) {
-        if (shooter instanceof Player player && net.minecraftforge.event.ForgeEventFactory.onArrowLoose(stack, shooter.level(), player, 1, true) < 0) return;
+        if (shooter instanceof Player player && EventHooks.onArrowLoose(stack, shooter.level(), player, 1, true) < 0) return;
         float[] afloat = getShotPitches(shooter.getRandom()); //声音大小
         boolean flag = shooter instanceof Player player && player.getAbilities().instabuild;
         for (int i = 0; i < counts; ++i) {
@@ -109,15 +108,15 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
             if (pIsCreativeMode || pProjectileAngle != 0.0F) {
                 projectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
             }
-            if (pShooter instanceof CrossbowAttackMob crossbowattackmob) {
-                crossbowattackmob.shootCrossbowProjectile(Objects.requireNonNull(crossbowattackmob.getTarget()), pCrossbowStack, projectile, pProjectileAngle);
-            } else {
+//            if (pShooter instanceof CrossbowAttackMob crossbowattackmob) {
+//                crossbowattackmob.shootCrossbowProjectile(Objects.requireNonNull(crossbowattackmob.getTarget()), pCrossbowStack, projectile, pProjectileAngle);
+//            } else {
                 Vec3 vec31 = pShooter.getUpVector(1.0F);
                 Quaternionf quaternionf = (new Quaternionf()).setAngleAxis(pProjectileAngle * ((float) Math.PI / 180F), vec31.x, vec31.y, vec31.z);
                 Vec3 vec3 = pShooter.getViewVector(1.0F);
                 Vector3f vector3f = vec3.toVector3f().rotate(quaternionf);
                 projectile.shoot(vector3f.x(), vector3f.y(), vector3f.z(), pVelocity, pInaccuracy);
-            }
+            //}
             pLevel.addFreshEntity(projectile);
             pLevel.playSound(null, pShooter.getX(), pShooter.getY(), pShooter.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, pSoundPitch);
         }
@@ -130,8 +129,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
             arrow.setCritArrow(true);
         } //暴击粒子
         arrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
-        arrow.setShotFromCrossbow(true);
-        arrow.setPierceLevel((byte) 5);
+        //arrow.shotFromCrossbow(true);
+        //arrow.setPierceLevel((byte) 5);
         return arrow;
     }
 
@@ -149,13 +148,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
     }
 
     public static boolean isCharged(ItemStack pCrossbowStack) {
-        CompoundTag compoundtag = pCrossbowStack.getTag();
-        return compoundtag != null && compoundtag.getBoolean("Charged");
-    }
-
-    public static void setCharged(ItemStack pCrossbowStack, boolean pIsCharged) {
-        CompoundTag compoundtag = pCrossbowStack.getOrCreateTag();
-        compoundtag.putBoolean("Charged", pIsCharged);
+        ChargedProjectiles chargedprojectiles = pCrossbowStack.getOrDefault(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
+        return !chargedprojectiles.isEmpty();
     }
 
     @Override
@@ -195,7 +189,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
     }
 
     @Override
-    public int getUseDuration(@NotNull ItemStack stack) {
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return getChargeDuration() + 3; //使用时间
     }
 
@@ -204,7 +198,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
         ItemStack itemstack = player.getItemInHand(hand);
         if (isCharged(itemstack)) { //弹药已装填 发射5发
             performShooting(level, player, hand, itemstack, 5, getShootingPower(), 1.0F);
-            setCharged(itemstack, false);
             return InteractionResultHolder.consume(itemstack);
         }
         else if (!isCharged(itemstack)) {
@@ -220,9 +213,9 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
     @Override
     public void onUseTick(Level pLevel, @NotNull LivingEntity pLivingEntity, @NotNull ItemStack pStack, int pCount) {
         if (!pLevel.isClientSide) {
-            SoundEvent soundevent = SoundEvents.CROSSBOW_LOADING_START;
-            SoundEvent soundevent1 = SoundEvents.CROSSBOW_LOADING_MIDDLE;
-            float f = (float)(pStack.getUseDuration() - pCount) / getChargeDuration();
+            SoundEvent soundevent = SoundEvents.CROSSBOW_LOADING_START.value();
+            SoundEvent soundevent1 = SoundEvents.CROSSBOW_LOADING_MIDDLE.value();
+            float f = (float)(pStack.getUseDuration(pLivingEntity) - pCount) / getChargeDuration();
             if (f < 0.2F) {
                 this.startSoundPlayed = false;
                 this.midLoadSoundPlayed = false;
@@ -243,12 +236,12 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip {
 
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level pLevel, @NotNull LivingEntity entity, int pTimeLeft) {
-        int i = this.getUseDuration(stack) - pTimeLeft;
+        int i = this.getUseDuration(stack, entity) - pTimeLeft;
         float f = getPowerForTime(i);
         if (f >= 1.0F && !isCharged(stack)) {
-            setCharged(stack, true);
+            //setCharged(stack, true);
             SoundSource soundcategory = entity instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE;
-            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.CROSSBOW_LOADING_END, soundcategory, 1.0F, 1.0F / (entity.random.nextFloat() * 0.5F + 1.0F) + 0.2F);
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.CROSSBOW_LOADING_END, soundcategory, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
         }
     }
 }

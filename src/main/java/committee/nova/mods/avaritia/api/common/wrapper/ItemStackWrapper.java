@@ -9,17 +9,12 @@ import committee.nova.mods.avaritia.api.common.inventory.CanExtractFunction;
 import committee.nova.mods.avaritia.api.common.inventory.CanInsertFunction;
 import committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction;
 import committee.nova.mods.avaritia.api.common.inventory.RecipeInventory;
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.neoforged.neoforge.common.util.DataComponentUtil;
@@ -27,11 +22,9 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**

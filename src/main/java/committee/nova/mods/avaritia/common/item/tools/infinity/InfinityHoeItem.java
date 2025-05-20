@@ -1,15 +1,13 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,10 +17,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
@@ -43,10 +37,13 @@ import org.jetbrains.annotations.Nullable;
 public class InfinityHoeItem extends HoeItem {
 
     public InfinityHoeItem() {
-        super(ModToolTiers.INFINITY, -50, 0f, (new Properties())
-                .rarity(ModRarities.COSMIC)
-                .stacksTo(1)
-                .fireResistant());
+        super(ModToolTiers.INFINITY,
+                new Properties()
+                        .rarity(ModRarities.COSMIC.getValue())
+                        .stacksTo(1)
+                        .fireResistant()
+                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
+        );
 
     }
 
@@ -74,16 +71,16 @@ public class InfinityHoeItem extends HoeItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        var tags = stack.getOrDefault(ModDataComponents.INFINITY_HOE_SOW, false);
         if (player.isCrouching()) {
-            CompoundTag tags = stack.getOrCreateTag();
-            tags.putBoolean("sow", !tags.getBoolean("sow"));
+            stack.set(ModDataComponents.INFINITY_HOE_SOW, !stack.getOrDefault(ModDataComponents.INFINITY_HOE_SOW, false));
             player.swing(hand);
             if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
-                    Component.translatable(tags.getBoolean("sow") ? "tooltip.infinity_hoe.type_2" : "tooltip.infinity_hoe.type_1"
+                    Component.translatable(tags ? "tooltip.infinity_hoe.type_2" : "tooltip.infinity_hoe.type_1"
                     ), true);
             return InteractionResultHolder.success(stack);
         }
-        if (!world.isClientSide && world instanceof ServerLevel serverLevel && stack.getOrCreateTag().getBoolean("sow")) {
+        if (!world.isClientSide && world instanceof ServerLevel serverLevel && tags) {
             player.swing(hand);
             BlockPos blockPos = player.getOnPos();
             int rang = 7;
@@ -109,10 +106,11 @@ public class InfinityHoeItem extends HoeItem {
         var maxPos = blockpos.offset(rang, 0, rang);
 //        int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(context);
 //        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+        var tags = stack.getOrDefault(ModDataComponents.INFINITY_HOE_SOW, false);
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
             if (player != null && !world.isClientSide) {
-                if (player.isCrouching() && stack.getOrCreateTag().getBoolean("sow")) {
+                if (player.isCrouching() && tags) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);
@@ -171,23 +169,14 @@ public class InfinityHoeItem extends HoeItem {
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlot.MAINHAND) {
-            multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
-        }
-        return multimap;
-    }
 }

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class InfinityUpgradeItem extends ResourceItem {
     public InfinityUpgradeItem(String registryName) {
-        super(ModRarities.LEGEND, registryName, true,
+        super(ModRarities.LEGEND.getValue(), registryName, true,
                 new Properties()
                         .durability(16)
 

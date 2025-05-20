@@ -10,6 +10,6 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
  */
 public class EnhancementCoreItem extends ResourceItem{
     public EnhancementCoreItem() {
-        super(ModRarities.LEGEND, "enhancement_core", true);
+        super(ModRarities.LEGEND.getValue(), "enhancement_core", true);
     }
 }

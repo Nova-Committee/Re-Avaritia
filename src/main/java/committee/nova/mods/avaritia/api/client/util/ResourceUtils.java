@@ -45,7 +45,7 @@ public class ResourceUtils {
      * @throws IOException If the resource doesn't exist, or some other IO error occurred.
      */
     public static Resource getResource(String location) throws IOException {
-        return getResource(new ResourceLocation(location));
+        return getResource(ResourceLocation.tryParse(location));
     }
 
     /**

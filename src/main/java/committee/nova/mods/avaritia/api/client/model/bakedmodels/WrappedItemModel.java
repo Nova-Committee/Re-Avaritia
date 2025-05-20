@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.api.client.model.bakedmodels;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.Static;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModel;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;

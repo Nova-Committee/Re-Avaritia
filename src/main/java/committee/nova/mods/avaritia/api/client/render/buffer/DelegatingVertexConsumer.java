@@ -1,10 +1,8 @@
 package committee.nova.mods.avaritia.api.client.render.buffer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
 /**
  * A simple {@link VertexConsumer} implementation which forwards to a delegate.

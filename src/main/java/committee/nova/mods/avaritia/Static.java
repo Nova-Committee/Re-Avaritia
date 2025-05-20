@@ -41,7 +41,7 @@ public class Static {
 
 
     public static ResourceLocation rl(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+        return ResourceLocation.tryBuild(MOD_ID, path);
     }
 
     public static boolean isLoad(String name) {
@@ -49,11 +49,11 @@ public class Static {
     }
 
     public static Ingredient getIngredient(String modid, String name) {
-        return new ItemIngredient(ResourceLocation.fromNamespaceAndPath(modid, name)).toVanilla();
+        return new ItemIngredient(ResourceLocation.tryBuild(modid, name)).toVanilla();
     }
 
     public static Item getItem(String modid, String name) {
-        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(modid, name)).get();
+        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryBuild(modid, name)).get();
     }
 
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {

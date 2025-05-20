@@ -42,9 +42,9 @@ mat4 rotationMatrix(vec3 axis, float angle)
     float oc = 1.0 - c;
 
     return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-    0.0,                                0.0,                                0.0,                                1.0);
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
 }
 
 void main (void)
@@ -111,8 +111,7 @@ void main (void)
         int tv = int(mod(floor(v*uvtiles),uvtiles));
 
         // get pseudorandom variants
-        //int position = ((1777541 * tu) + (7649689 * tv) + (3612703 * (i+31)) + 1723609 ) ^ 50943779;
-        int position = ((171 * tu) + (489 * tv) + (303 * (i+31)) + 17209 ) ^ 50943779;
+        int position = ((1777541 * tu) + (7649689 * tv) + (361273 * (i+31)) + 1723609 ) ^ 50943779;
         int symbol = int(mod(position, cosmicoutof));
         int rotation = int(mod(pow(tu,float(tv)) + tu + 3 + tv*i, 8));
         bool flip = false;

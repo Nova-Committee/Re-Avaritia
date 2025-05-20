@@ -121,7 +121,7 @@ public class AvaritiaModClient {
     }
 
     private static void addLayer(final EntityRenderersEvent.AddLayers e, final String s) {
-        final LivingEntityRenderer entityRenderer = e.getSkin(PlayerSkin.Model.valueOf(s));
+        final LivingEntityRenderer entityRenderer = e.getSkin(PlayerSkin.Model.byName(s));
         entityRenderer.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>) entityRenderer));
     }
 

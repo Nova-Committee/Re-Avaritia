@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.api.common.menu;
 
 import committee.nova.mods.avaritia.api.iface.IDataReceiver;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.api.client.render;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.*;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.render.buffer.ISpriteAwareVertexConsumer;
@@ -28,8 +27,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -48,20 +50,18 @@ public class CCRenderState {
     public final VertexAttribute<int[]> lightingAttrib = new LightingAttribute();
     public final VertexAttribute<int[]> sideAttrib = new SideAttribute();
     public final VertexAttribute<LC[]> lightCoordAttrib = new LightCoordAttribute();
-    //vertex outputs
-    public final Vertex5 vert = new Vertex5();
-    public final Vector3 normal = new Vector3();
+
     //pipeline state
-    public IVertexSource model;
+    public @Nullable IVertexSource model;
     public int firstVertexIndex;
     public int lastVertexIndex;
     public int vertexIndex;
     public CCRenderPipeline pipeline;
-    public VertexConsumer r;
+    public @Nullable VertexConsumer r;
+    public @Nullable VertexFormat fmt;
+    public @Nullable CachedFormat cFmt;
 
     //context
-    public VertexFormat fmt;
-    public CachedFormat cFmt;
     /**
      * The base color, multiplied by the {@link ColourAttribute} from the bound model if present otherwise used as-is.
      */
@@ -78,6 +78,10 @@ public class CCRenderState {
      * A standard {@link LightMatrix} instance to be shared on this pipeline.
      */
     public LightMatrix lightMatrix = new LightMatrix();
+
+    //vertex outputs
+    public final Vertex5 vert = new Vertex5();
+    public final Vector3 normal = new Vector3();
     public int colour;
     public int brightness;
     public int overlay;
@@ -85,7 +89,7 @@ public class CCRenderState {
     //attribute storage
     public int side;
     public LC lc = new LC();
-    public TextureAtlasSprite sprite;
+    public @Nullable TextureAtlasSprite sprite;
 
     private CCRenderState() {
         pipeline = new CCRenderPipeline(this);
@@ -93,35 +97,6 @@ public class CCRenderState {
 
     public static CCRenderState instance() {
         return instances.get();
-    }
-
-    /**
-     * Bind this {@link CCRenderState} instance to the {@link Tesselator} buffer
-     * and prepare to start drawing vertices for the given <code>mode</code> and {@link VertexFormat}.
-     *
-     * @param mode   The Draw Mode.
-     * @param format The {@link VertexFormat}.
-     * @return The {@link BufferBuilder} instance from {@link Tesselator}.
-     */
-    public BufferBuilder startDrawing(VertexFormat.Mode mode, VertexFormat format) {
-        var r = Tesselator.getInstance().begin(mode, format);
-        bind(r);
-        return r;
-    }
-
-    /**
-     * Bind this {@link CCRenderState} instance to the given {@link BufferBuilder}
-     * and prepare to start drawing vertices for the given <code>mode</code> and {@link VertexFormat}.
-     *
-     * @param mode   The Draw Mode.
-     * @param format The {@link VertexFormat}.
-     * @param buffer The {@link BufferBuilder} to bind to.
-     * @return The same {@link BufferBuilder} that was passed in.
-     */
-    public BufferBuilder startDrawing(VertexFormat.Mode mode, VertexFormat format, Tesselator buffer) {
-        var r= buffer.begin(mode, format);
-        bind(r);
-        return r;
     }
 
     /**
@@ -232,6 +207,10 @@ public class CCRenderState {
     }
 
     public void render() {
+        if (r == null) throw new IllegalStateException("VertexConsumer is not bound.");
+        if (fmt == null) throw new IllegalStateException("VertexFormat is not bound?"); // this should be handled by the VertexConsumer assertion.
+        if (model == null) throw new IllegalStateException("Model is not set.");
+
         Vertex5[] verts = model.getVertices();
         for (vertexIndex = firstVertexIndex; vertexIndex < lastVertexIndex; vertexIndex++) {
             model.prepareVertex(this);
@@ -246,38 +225,27 @@ public class CCRenderState {
     }
 
     public void writeVert() {
-        if (r instanceof ISpriteAwareVertexConsumer) {
-            ((ISpriteAwareVertexConsumer) r).sprite(sprite);
+        assert r != null;
+        assert fmt != null;
+        assert cFmt != null;
+        if (sprite != null && r instanceof ISpriteAwareVertexConsumer cons) {
+            cons.sprite(sprite);
         }
         List<VertexFormatElement> elements = fmt.getElements();
         for (VertexFormatElement fmte : elements) {
             switch (fmte.usage()) {
-                case POSITION:
-                    r.addVertex((float) vert.vec.x, (float) vert.vec.y, (float) vert.vec.z);
-                    break;
-                case UV:
-                    int idx = fmte.index();
-                    switch (idx) {
+                case POSITION -> r.addVertex((float) vert.vec.x, (float) vert.vec.y, (float) vert.vec.z);
+                case UV -> {
+                    switch (fmte.index()) {
                         case 0 -> r.setUv((float) vert.uv.u, (float) vert.uv.v);
                         case 1 -> r.setOverlay(overlay);
                         case 2 -> r.setLight(brightness);
+                        default -> throw new UnsupportedOperationException("Unknown UV index. " + fmte.index());
                     }
-                    break;
-                case COLOR:
-                    if (r instanceof BufferBuilder
-                           // && ((BufferBuilder) r).defaultColorSet
-                    ) {
-                        //-_- Fucking mojang..
-                       // ((BufferBuilder) r).nextElement();
-                    } else {
-                        r.setColor(colour >>> 24, colour >> 16 & 0xFF, colour >> 8 & 0xFF, alphaOverride >= 0 ? alphaOverride : colour & 0xFF);
-                    }
-                    break;
-                case NORMAL:
-                    r.setNormal((float) normal.x, (float) normal.y, (float) normal.z);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Generic vertex format element");
+                }
+                case COLOR -> r.setColor(colour >>> 24, colour >> 16 & 0xFF, colour >> 8 & 0xFF, alphaOverride >= 0 ? alphaOverride : colour & 0xFF);
+                case NORMAL -> r.setNormal((float) normal.x, (float) normal.y, (float) normal.z);
+                default -> throw new UnsupportedOperationException("Generic vertex format element");
             }
         }
     }
@@ -298,19 +266,19 @@ public class CCRenderState {
         this.baseColour = IClientFluidTypeExtensions.of(fluidStack.getFluid()).getTintColor(fluidStack) << 8 | alpha;
     }
 
-    public ColourRGBA getColour() {
-        return new ColourRGBA(colour);
-    }
-
     public void setColour(Colour colour) {
         this.colour = colour.rgba();
     }
 
+    public ColourRGBA getColour() {
+        return new ColourRGBA(colour);
+    }
+
     public VertexConsumer getConsumer() {
-        return r;
+        return requireNonNull(r, "VertexConsumer is not bound.");
     }
 
     public VertexFormat getVertexFormat() {
-        return fmt;
+        return requireNonNull(fmt, "VertexFormat is not bound.");
     }
 }

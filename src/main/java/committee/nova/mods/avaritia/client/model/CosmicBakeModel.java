@@ -67,7 +67,7 @@ public class CosmicBakeModel extends WrappedItemModel {
         AvaritiaShaders.cosmicExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
         } else {
             AvaritiaShaders.cosmicOpacity.set(1.0F);
         }

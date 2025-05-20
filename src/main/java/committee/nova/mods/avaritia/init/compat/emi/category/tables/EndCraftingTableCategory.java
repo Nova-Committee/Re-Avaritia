@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.emi.category.tables;
 
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;

@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
-import committee.nova.mods.avaritia.common.container.slot.ModCraftResultSlot;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
 import committee.nova.mods.avaritia.init.registry.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -17,7 +16,6 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 

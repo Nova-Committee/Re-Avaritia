@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.api.utils;
 
-import com.google.common.base.Objects;
 import committee.nova.mods.avaritia.api.common.container.FaceContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;

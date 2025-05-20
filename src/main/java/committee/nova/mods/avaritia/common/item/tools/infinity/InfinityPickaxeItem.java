@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -41,11 +41,12 @@ public class InfinityPickaxeItem extends PickaxeItem implements IInitEnchantItem
     private final InitEnchantment initEnchantment;
 
     public InfinityPickaxeItem() {
-        super(ModToolTiers.INFINITY,(new Properties())
-                .rarity(ModRarities.COSMIC)
-                .stacksTo(1)
-                .fireResistant()
-                .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.BLAZE.getSpeed()))
+        super(ModToolTiers.INFINITY,
+                new Properties()
+                        .rarity(ModRarities.COSMIC.getValue())
+                        .stacksTo(1)
+                        .fireResistant()
+                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
         this.initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 20);
     }

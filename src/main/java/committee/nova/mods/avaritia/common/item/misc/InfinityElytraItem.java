@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class InfinityElytraItem extends ElytraItem {
     public InfinityElytraItem() {
         super(new Item.Properties()
-                .rarity(ModRarities.COSMIC)
+                .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
                 .stacksTo(1));
     }

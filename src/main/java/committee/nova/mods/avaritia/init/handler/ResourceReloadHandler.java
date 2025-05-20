@@ -1,12 +1,10 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +22,7 @@ public class ResourceReloadHandler {
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
 
         event.addListener(new SingularityResourceReloadListener(event.getServerResources()));
-        event.addListener(new RegisterRecipesReloadListener(event.getServerResources()));
+        //event.addListener(new RegisterRecipesReloadListener(event.getServerResources()));
     }
 
 
@@ -36,11 +34,11 @@ public class ResourceReloadHandler {
         }
     }
 
-    private record RegisterRecipesReloadListener(
-            ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
-        @Override
-        public void onResourceManagerReload(@NotNull ResourceManager manager) {
-            NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(serverResources.getRecipeManager()));
-        }
-    }
+//    private record RegisterRecipesReloadListener(
+//            ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
+//        @Override
+//        public void onResourceManagerReload(@NotNull ResourceManager manager) {
+//            NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(serverResources.getRecipeManager()));
+//        }
+//    }
 }

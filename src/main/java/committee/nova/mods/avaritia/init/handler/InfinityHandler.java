@@ -29,12 +29,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -139,11 +137,11 @@ public class InfinityHandler {
 
     //合并物质团
     @SubscribeEvent
-    public static void clusterCluster(ItemEntityPickupEvent event) {
+    public static void clusterCluster(ItemEntityPickupEvent.Post event) {
+        Player player = event.getPlayer();
+        ItemStack stack = event.getItemEntity().getItem();
         if (ModConfig.isMergeMatterCluster.get() && event.getItemEntity().getItem().is(ModItems.matter_cluster.get())) {
-            ItemStack stack = event.getItemEntity().getItem();
             boolean mergedAny = false;
-            Player player = event.getPlayer();
 
             for (ItemStack slot : player.getInventory().items) {
                 if (stack.isEmpty()) {
@@ -296,16 +294,16 @@ public class InfinityHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void entityItemUnDeath(ItemEvent event) {//取消无尽物品受到的伤害
-        ItemEntity entityItem = event.getEntity();
-        Item item = entityItem.getItem().getItem();
-        if (item instanceof InfinityArmorItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
-                item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
-                item instanceof InfinitySwordItem || item instanceof InfinityCrossBowItem) {
-            entityItem.setInvulnerable(true);
-        }
-    }
+//    @SubscribeEvent
+//    public static void entityItemUnDeath(ItemEvent event) {//取消无尽物品受到的伤害
+//        ItemEntity entityItem = event.getEntity();
+//        Item item = entityItem.getItem().getItem();
+//        if (item instanceof InfinityArmorItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
+//                item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
+//                item instanceof InfinitySwordItem || item instanceof InfinityCrossBowItem) {
+//            entityItem.setInvulnerable(true);
+//        }
+//    }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {
         ItemEntity entity = new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), drop);

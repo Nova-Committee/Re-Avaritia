@@ -6,9 +6,11 @@
   "mixins": [
     "EnchantmentHelperMixin",
     "NetherWartBlockMixin",
-    "RecipeManagerMixin"
+    "RecipeManagerMixin",
+    "ReloadableServerResourcesMixin"
   ],
   "client": [
+    "ClientPacketListenerMixin",
     "ItemRendererMixin",
     "PlayerRendererMixin"
   ],

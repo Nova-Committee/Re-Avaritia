@@ -11,7 +11,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +31,6 @@ public class CompressorRecipe implements ICompressorRecipe {
     private final ItemStack output;
     private final int inputCount;
     private final int timeCost;
-
 
     public CompressorRecipe(Ingredient input, ItemStack output, int inputCount, int timeCost) {
         this.inputs = NonNullList.of(Ingredient.EMPTY, input);

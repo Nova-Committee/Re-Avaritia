@@ -3,22 +3,18 @@ package committee.nova.mods.avaritia.client.shader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Static;
-import committee.nova.mods.avaritia.api.client.shader.CCShaderInstance;
 import committee.nova.mods.avaritia.api.client.shader.CCUniform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.*;
 
-import java.util.Objects;
+import java.io.IOException;
 
 /**
  * Name: Avaritia-forge / AvaritiaShaders
@@ -36,7 +32,8 @@ public class AvaritiaShaders {
     public static float renderFrame;
 
 
-    public static CCShaderInstance cosmicShader;
+    public static ShaderInstance cosmicShader;
+    public static ShaderInstance cosmicArmorShader;
 
     public static CCUniform cosmicTime;
     public static CCUniform cosmicYaw;
@@ -46,9 +43,12 @@ public class AvaritiaShaders {
     public static CCUniform cosmicUVs;
 
 
-    public static RenderType COSMIC_RENDER_TYPE = RenderType.create("avaritia:cosmic",
-            DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
-            RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader))
+    public static RenderType COSMIC_RENDER_TYPE = RenderType.create(
+            Static.rl("cosmic").toString(),
+            DefaultVertexFormat.BLOCK,
+            VertexFormat.Mode.QUADS, 2097152, true, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader))
                     .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
@@ -58,19 +58,27 @@ public class AvaritiaShaders {
 
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
-        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), Static.rl("cosmic"), DefaultVertexFormat.BLOCK), e -> {
-            cosmicShader = (CCShaderInstance) e;
-            cosmicTime = Objects.requireNonNull(cosmicShader.getUniform("time"));
-            cosmicYaw = Objects.requireNonNull(cosmicShader.getUniform("yaw"));
-            cosmicPitch = Objects.requireNonNull(cosmicShader.getUniform("pitch"));
-            cosmicExternalScale = Objects.requireNonNull(cosmicShader.getUniform("externalScale"));
-            cosmicOpacity = Objects.requireNonNull(cosmicShader.getUniform("opacity"));
-            cosmicUVs = Objects.requireNonNull(cosmicShader.getUniform("cosmicuvs"));
-            cosmicTime.set((float) renderTime + renderFrame);
-            cosmicShader.onApply(() -> {
-                cosmicTime.set((float) renderTime + renderFrame);
-            });
-        });
+        try {
+            cosmicShader = new ShaderInstance(event.getResourceProvider(), Static.rl("cosmic"), DefaultVertexFormat.BLOCK);
+            cosmicArmorShader = new ShaderInstance(event.getResourceProvider(), Static.rl("cosmic"), DefaultVertexFormat.NEW_ENTITY);
+            event.registerShader(cosmicShader, shaderInstance -> {});
+            event.registerShader(cosmicArmorShader, shaderInstance -> {});
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), Static.rl("cosmic"), DefaultVertexFormat.BLOCK), e -> {
+//            cosmicShader = (CCShaderInstance) e;
+//            cosmicTime = Objects.requireNonNull(cosmicShader.getUniform("time"));
+//            cosmicYaw = Objects.requireNonNull(cosmicShader.getUniform("yaw"));
+//            cosmicPitch = Objects.requireNonNull(cosmicShader.getUniform("pitch"));
+//            cosmicExternalScale = Objects.requireNonNull(cosmicShader.getUniform("externalScale"));
+//            cosmicOpacity = Objects.requireNonNull(cosmicShader.getUniform("opacity"));
+//            cosmicUVs = Objects.requireNonNull(cosmicShader.getUniform("cosmicuvs"));
+//            cosmicTime.set((float) renderTime + renderFrame);
+//            cosmicShader.onApply(() -> {
+//                cosmicTime.set((float) renderTime + renderFrame);
+//            });
+//        });
     }
 
 
