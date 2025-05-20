@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
@@ -52,10 +52,10 @@ public class ModAdvancements extends AdvancementProvider {
             AdvancementHolder root = Advancement.Builder.advancement()
                     .display(ModItems.diamond_lattice.get(), Component.translatable("advancements.avaritia.diamond_lattice.title"),
                             Component.translatable("advancements.avaritia.diamond_lattice.desc"),
-                            Static.rl( "textures/block/resource/neutron.png"), AdvancementType.TASK, false, false, false)
+                            Const.rl( "textures/block/resource/neutron.png"), AdvancementType.TASK, false, false, false)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.diamond_lattice.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/root");
+                    .save(consumer, Const.MOD_ID + ":main/root");
 
             this.subProvider.forEach(provider -> provider.generate(root, registries, consumer));
         }
@@ -72,7 +72,7 @@ public class ModAdvancements extends AdvancementProvider {
                     .parent(root)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.neutron_pile.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/neutron_pile");
+                    .save(consumer, Const.MOD_ID + ":main/neutron_pile");
 
 
             AdvancementHolder extreme_crafting_table = Advancement.Builder.advancement()
@@ -80,40 +80,40 @@ public class ModAdvancements extends AdvancementProvider {
                     .parent(neutron_pile)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.extreme_crafting_table.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/extreme_crafting_table");
+                    .save(consumer, Const.MOD_ID + ":main/extreme_crafting_table");
             AdvancementHolder skull_fire_sword = Advancement.Builder.advancement()
                     .display(ModItems.blaze_sword.get(), Component.translatable("advancements.avaritia.skull_sword.title"), Component.translatable("advancements.avaritia.skull_sword.desc"), null, AdvancementType.TASK, true, true, true)
                     .parent(extreme_crafting_table)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.blaze_sword.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/skull_sword");
+                    .save(consumer, Const.MOD_ID + ":main/skull_sword");
 
             AdvancementHolder neutron_ingot = Advancement.Builder.advancement()
                     .display(ModItems.neutron_ingot.get(), Component.translatable("advancements.avaritia.neutron_ingot.title"), Component.translatable("advancements.avaritia.neutron_ingot.desc"), null, AdvancementType.GOAL, true, true, true)
                     .parent(neutron_pile)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.neutron_ingot.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/neutron_ingot");
+                    .save(consumer, Const.MOD_ID + ":main/neutron_ingot");
 
             AdvancementHolder endest_pearl = Advancement.Builder.advancement()
                     .display(ModItems.endest_pearl.get(), Component.translatable("advancements.avaritia.endest_pearl.title"), Component.translatable("advancements.avaritia.endest_pearl.desc"), null, AdvancementType.GOAL, true, true, true)
                     .parent(neutron_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.endest_pearl.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/endest_pearl");
+                    .save(consumer, Const.MOD_ID + ":main/endest_pearl");
 
             AdvancementHolder neutron_compressor = Advancement.Builder.advancement()
                     .display(ModBlocks.neutron_compressor.get(), Component.translatable("advancements.avaritia.neutron_compressor.title"), Component.translatable("advancements.avaritia.neutron_compressor.desc"), null, AdvancementType.TASK, true, true, true)
                     .parent(neutron_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.neutron_compressor.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/neutron_compressor");
+                    .save(consumer, Const.MOD_ID + ":main/neutron_compressor");
             AdvancementHolder singularity = Advancement.Builder.advancement()
                     .display(SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE), Component.translatable("advancements.avaritia.singularity.title"), Component.translatable("advancements.avaritia.singularity.desc"), null, AdvancementType.GOAL, true, true, true)
                     .parent(neutron_compressor)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(ModTags.SINGULARITY).build()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":main/singularity");
+                    .save(consumer, Const.MOD_ID + ":main/singularity");
 
             this.subProvider.forEach(provider -> provider.generate(singularity, holderProvider, consumer));
 
@@ -131,7 +131,7 @@ public class ModAdvancements extends AdvancementProvider {
                     .parent(root)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_catalyst.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":singularity/infinity_catalyst");
+                    .save(consumer, Const.MOD_ID + ":singularity/infinity_catalyst");
             this.subProvider.forEach(provider -> provider.generate(infinity_catalyst, holderProvider, consumer));
         }
     }
@@ -145,7 +145,7 @@ public class ModAdvancements extends AdvancementProvider {
                     .parent(root)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_ingot.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_ingot");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_ingot");
 
 
             AdvancementHolder star_fuel = Advancement.Builder.advancement()
@@ -153,56 +153,56 @@ public class ModAdvancements extends AdvancementProvider {
                     .parent(root)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.star_fuel.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/star_fuel");
+                    .save(consumer, Const.MOD_ID + ":infinity/star_fuel");
 
             AdvancementHolder infinity_pickaxe = Advancement.Builder.advancement()
                     .display(ModItems.infinity_pickaxe.get(), Component.translatable("advancements.avaritia.infinity_pickaxe.title"), Component.translatable("advancements.avaritia.infinity_pickaxe.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_pickaxe.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_pickaxe");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_pickaxe");
 
             AdvancementHolder matter_cluster = Advancement.Builder.advancement()
                     .display(ModItems.matter_cluster.get(), Component.translatable("advancements.avaritia.matter_cluster.title"), Component.translatable("advancements.avaritia.matter_cluster.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_pickaxe)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.matter_cluster.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/matter_cluster");
+                    .save(consumer, Const.MOD_ID + ":infinity/matter_cluster");
 
             AdvancementHolder infinity_shovel = Advancement.Builder.advancement()
                     .display(ModItems.infinity_shovel.get(), Component.translatable("advancements.avaritia.infinity_shovel.title"), Component.translatable("advancements.avaritia.infinity_shovel.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_shovel.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_shovel");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_shovel");
 
             AdvancementHolder infinity_hoe = Advancement.Builder.advancement()
                     .display(ModItems.infinity_hoe.get(), Component.translatable("advancements.avaritia.infinity_hoe.title"), Component.translatable("advancements.avaritia.infinity_hoe.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_hoe.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_hoe");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_hoe");
 
             AdvancementHolder infinity_axe = Advancement.Builder.advancement()
                     .display(ModItems.infinity_axe.get(), Component.translatable("advancements.avaritia.infinity_axe.title"), Component.translatable("advancements.avaritia.infinity_axe.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_axe.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_axe");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_axe");
 
             AdvancementHolder infinity_sword = Advancement.Builder.advancement()
                     .display(ModItems.infinity_sword.get(), Component.translatable("advancements.avaritia.infinity_sword.title"), Component.translatable("advancements.avaritia.infinity_sword.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_sword.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_sword");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_sword");
 
             AdvancementHolder infinity_bow = Advancement.Builder.advancement()
                     .display(ModItems.infinity_bow.get(), Component.translatable("advancements.avaritia.infinity_bow.title"), Component.translatable("advancements.avaritia.infinity_bow.desc"), null, AdvancementType.CHALLENGE, true, true, true)
                     .parent(infinity_ingot)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_bow.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_bow");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_bow");
 
             AdvancementHolder infinity_armor = Advancement.Builder.advancement()
                     .display(ModItems.infinity_chestplate.get(), Component.translatable("advancements.avaritia.infinity_armor.title"), Component.translatable("advancements.avaritia.infinity_armor.desc"), null, AdvancementType.CHALLENGE, true, true, true)
@@ -214,7 +214,7 @@ public class ModAdvancements extends AdvancementProvider {
                             ModItems.infinity_boots.get()
                     ))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_armor");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_armor");
 
             AdvancementHolder infinity_food = Advancement.Builder.advancement()
                     .display(ModItems.ultimate_stew.get(), Component.translatable("advancements.avaritia.infinity_food.title"), Component.translatable("advancements.avaritia.infinity_food.desc"), null, AdvancementType.CHALLENGE, true, true, true)
@@ -222,7 +222,7 @@ public class ModAdvancements extends AdvancementProvider {
                     .addCriterion("food0", ConsumeItemTrigger.TriggerInstance.usedItem(ModItems.ultimate_stew.get()))
                     .addCriterion("food1", ConsumeItemTrigger.TriggerInstance.usedItem(ModItems.cosmic_meatballs.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Static.MOD_ID + ":infinity/infinity_food");
+                    .save(consumer, Const.MOD_ID + ":infinity/infinity_food");
         }
     }
 }

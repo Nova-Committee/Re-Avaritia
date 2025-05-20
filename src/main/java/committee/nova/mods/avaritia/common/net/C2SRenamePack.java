@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/3/28 14:02
  */
 public record C2SRenamePack(String name) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<C2SRenamePack> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_rename"));
+    public static final CustomPacketPayload.Type<C2SRenamePack> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_rename"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SRenamePack> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
             C2SRenamePack::name,

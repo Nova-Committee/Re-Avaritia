@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
@@ -92,7 +92,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, 
 
     @Override
     public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
-        if (infinite_armor.value().layers().contains(layer)) return Static.rl(TEX_PATH);
+        if (infinite_armor.value().layers().contains(layer)) return Const.rl(TEX_PATH);
         else return super.getArmorTexture(stack, entity, slot, layer, innerModel);
     }
 }

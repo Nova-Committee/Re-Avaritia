@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.emi.category;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -23,9 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public record ExtremeSmithingRecipeCategory(RecipeHolder<ExtremeSmithingRecipe> recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Static.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png"), 0, 0, 169, 63);
+    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png"), 0, 0, 169, 63);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.extreme_smithing_table.get());
-    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Static.MOD_ID, "extreme_smithing_table"), WORKSTATION);
+    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "extreme_smithing_table"), WORKSTATION);
 
     @Override
     public EmiRecipeCategory getCategory() {

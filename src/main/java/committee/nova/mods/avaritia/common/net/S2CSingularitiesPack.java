@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -21,16 +21,13 @@ import java.util.List;
  * Version: 1.0
  */
 public record S2CSingularitiesPack(List<Singularity> singularities) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<S2CSingularitiesPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("s2c_singularities"));
+    public static final CustomPacketPayload.Type<S2CSingularitiesPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_singularities"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CSingularitiesPack> STREAM_CODEC = StreamCodec.composite(
             Singularity.STREAM_CODEC.apply(ByteBufCodecs.list()),
             S2CSingularitiesPack::singularities,
             S2CSingularitiesPack::new
     );
-
-
-
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

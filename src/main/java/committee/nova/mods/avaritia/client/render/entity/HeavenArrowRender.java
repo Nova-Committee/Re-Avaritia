@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -30,7 +30,7 @@ import org.joml.Matrix4f;
 @OnlyIn(Dist.CLIENT)
 public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity> {
 
-    private static final ResourceLocation tex = Static.rl( "textures/entity/heavenarrow.png");
+    private static final ResourceLocation tex = Const.rl( "textures/entity/heavenarrow.png");
 
 
     public HeavenArrowRender(EntityRendererProvider.Context p_174008_) {

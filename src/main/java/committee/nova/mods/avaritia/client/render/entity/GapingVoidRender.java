@@ -1,19 +1,17 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.buffer.TransformingVertexConsumer;
 import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
 import committee.nova.mods.avaritia.api.client.util.colour.Colour;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -21,8 +19,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-
-import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_SHADOW_SHADER;
 
 /**
  * Description:
@@ -32,7 +28,6 @@ import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_S
  */
 @OnlyIn(Dist.CLIENT)
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
-    private static final ResourceLocation VOID = Static.rl( "textures/entity/void.png");
 
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);
@@ -47,7 +42,7 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull GapingVoidEntity p_114482_) {
-        return VOID;
+        return Res.VOID;
     }
 
     @Override
@@ -67,22 +62,26 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
             halocoord *= 1.0 + close * close * close * close * 1.5;
         }
         stack.pushPose();
+
         stack.mulPose(Axis.YP.rotationDegrees((float) (Math.atan2(dx, dz) * 57.29577951308232)));
         stack.mulPose(Axis.XP.rotationDegrees((float) (Math.atan2(Math.sqrt(dx * dx + dz * dz), dy) * 57.29577951308232 + 90.0)));
+
         stack.pushPose();
         stack.mulPose(Axis.XP.rotationDegrees(90.0f));
-        final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(RenderType.create("avaritia:void_halo", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, RenderType.CompositeState.builder().setShaderState(RenderType.POSITION_TEX_SHADER).setTextureState(new RenderStateShard.TextureStateShard(Static.rl("textures/entity/void_halo.png"), false, false)).setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY).setWriteMaskState(RenderType.COLOR_WRITE).createCompositeState(false))), stack);
+        final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(AvaritiaRenderTypes.VOID_HALO), stack);
         cons.addVertex((float) -halocoord, 0.0f, (float) -halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(0.0f, 0.0f);
         cons.addVertex((float) -halocoord, 0.0f, (float) halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(0.0f, 1.0f);
         cons.addVertex((float) halocoord, 0.0f, (float) halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(1.0f, 1.0f);
         cons.addVertex((float) halocoord, 0.0f, (float) -halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(1.0f, 0.0f);
         stack.popPose();
+
         stack.scale((float) scale, (float) scale, (float) scale);
         final CCRenderState cc = CCRenderState.instance();
         cc.reset();
-        cc.bind(RenderType.create("avaritia:void_hemisphere", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256, RenderType.CompositeState.builder().setShaderState(RENDERTYPE_ENTITY_SHADOW_SHADER).setTextureState(new RenderStateShard.TextureStateShard(GapingVoidRender.VOID, false, false)).setCullState(RenderType.NO_CULL).createCompositeState(false)), buf, stack);
+        cc.bind(AvaritiaRenderTypes.VOID, buf, stack);
         cc.baseColour = colour.rgba();
-        new OBJParser(Static.rl("models/hemisphere.obj")).parse().get("model").render(cc);
+        new OBJParser(Const.rl("models/hemisphere.obj")).parse().get("model").render(cc);
+
         stack.popPose();
 
     }

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,7 +18,7 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
  * @Description:
  */
 public class NeutronRingScreen extends BaseContainerScreen<NeutronRingMenu> {
-    private static final ResourceLocation BACKGROUND = Static.rl( "textures/gui/neutron_ring.png");
+    private static final ResourceLocation BACKGROUND = Const.rl( "textures/gui/neutron_ring.png");
 
     public NeutronRingScreen(NeutronRingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, BACKGROUND, 256, 276, 256, 276);

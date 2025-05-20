@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
@@ -22,7 +22,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
-    private static final ResourceLocation BACKGROUND = Static.rl( "textures/gui/neutron_collector.png");
+    private static final ResourceLocation BACKGROUND = Const.rl( "textures/gui/neutron_collector.png");
     private BaseNeutronCollectorTile tile;
 
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {

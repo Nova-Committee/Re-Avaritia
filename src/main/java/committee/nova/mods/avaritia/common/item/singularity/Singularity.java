@@ -21,34 +21,31 @@ import java.util.Arrays;
  * Date: 2022/4/2 12:34
  * Version: 1.0
  */
-@Getter
-@Setter
 public class Singularity {
     public static final StreamCodec<RegistryFriendlyByteBuf, Singularity> STREAM_CODEC = StreamCodec.of(
-            Singularity::encode, Singularity::fromNetwork
+            Singularity::encode, Singularity::read
     );
 
-    private ResourceLocation id;
-    private String name;
+    @Getter private final ResourceLocation id;
+    @Getter private final String name;
     private final int[] colors;
-    private String tag;
-    private int ingredientCount;
-    private int timeRequired;
+    @Getter private final String tag;
+    private final int ingredientCount;
+    @Getter private final int timeRequired;
     @Nullable
     private Ingredient ingredient;
-    private boolean enabled;
-    private boolean recipeEnabled;
+    @Getter @Setter private boolean enabled = true;
+    @Getter @Setter private boolean recipeEnabled  = true;
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, 1000, 240, true, true);
+        this(id, name, colors, tag, 1000, 240);
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, 1000, 240, true, true);
+        this(id, name, colors, ingredient, 1000, 240);
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, @Nullable Ingredient ingredient,
-                       int ingredientCount, int timeRequired,
-                       boolean enabled, boolean recipeEnabled) {
+                       int ingredientCount, int timeRequired) {
         this.id = id;
         this.name = name;
         this.colors = Arrays.stream(colors).map(c -> FastColor.ARGB32.color(255, c)).toArray();
@@ -56,13 +53,11 @@ public class Singularity {
         this.tag = null;
         this.ingredientCount = ingredientCount;
         this.timeRequired = timeRequired;
-        this.enabled = enabled;
-        this.recipeEnabled = recipeEnabled;
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag,
-                       int ingredientCount, int timeRequired,
-                       boolean enabled, boolean recipeEnabled) {
+                       int ingredientCount, int timeRequired
+    ) {
         this.id = id;
         this.name = name;
         this.colors = Arrays.stream(colors).map(c -> FastColor.ARGB32.color(255, c)).toArray();
@@ -70,10 +65,15 @@ public class Singularity {
         this.tag = tag;
         this.ingredientCount = ingredientCount;
         this.timeRequired = timeRequired;
-        this.enabled = enabled;
-        this.recipeEnabled = recipeEnabled;
     }
 
+    public int getOverlayColor() {
+        return this.colors[0];
+    }
+
+    public int getUnderlayColor() {
+        return this.colors[1];
+    }
 
     public Ingredient getIngredient() {
         if (this.tag != null && this.ingredient == null) {
@@ -99,15 +99,7 @@ public class Singularity {
         return Localizable.of(this.name).build();
     }
 
-    public int getOverlayColor() {
-        return this.colors[0];
-    }
-
-    public int getUnderlayColor() {
-        return this.colors[1];
-    }
-
-    public static Singularity fromNetwork(RegistryFriendlyByteBuf buffer) {
+    public static Singularity read(RegistryFriendlyByteBuf buffer) {
         var id = buffer.readResourceLocation();
         var name = buffer.readUtf();
         int[] colors = buffer.readVarIntArray();
@@ -120,27 +112,29 @@ public class Singularity {
         } else {
             ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
         }
-        int ingredientCount = buffer.readVarInt();
+
         int timeRequired = buffer.readVarInt();
-        boolean enabled = buffer.readBoolean();
-        boolean recipeEnabled = buffer.readBoolean();
+        int ingredientCount = buffer.readVarInt();
 
 
         Singularity singularity;
         if (isTagIngredient) {
-            singularity = new Singularity(id, name, colors, tag, ingredientCount, timeRequired, enabled, recipeEnabled);
+            singularity = new Singularity(id, name, colors, tag, ingredientCount, timeRequired);
         } else {
-            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, timeRequired, enabled, recipeEnabled);
+            singularity = new Singularity(id, name, colors, ingredient, ingredientCount, timeRequired);
         }
+
+        singularity.enabled = buffer.readBoolean();
+        singularity.recipeEnabled = buffer.readBoolean();
 
         return singularity;
     }
 
     public static void encode(RegistryFriendlyByteBuf buffer, Singularity singularity) {
-        singularity.toNetwork(buffer);
+        singularity.write(buffer);
     }
 
-    public void toNetwork(RegistryFriendlyByteBuf buffer) {
+    public void write(RegistryFriendlyByteBuf buffer) {
         buffer.writeResourceLocation(this.id);
         buffer.writeUtf(this.name);
         buffer.writeVarIntArray(this.colors);
@@ -150,8 +144,8 @@ public class Singularity {
         } else {
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, this.ingredient != null ? this.ingredient : Ingredient.EMPTY);
         }
-        buffer.writeInt(this.timeRequired);
-        buffer.writeInt(this.ingredientCount);
+        buffer.writeVarInt(this.timeRequired);
+        buffer.writeVarInt(this.getIngredientCount());
         buffer.writeBoolean(this.enabled);
         buffer.writeBoolean(this.recipeEnabled);
     }

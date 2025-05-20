@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModSpriteSource extends SpriteSourceProvider {
     public ModSpriteSource(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper fileHelper) {
-        super(output, future, Static.MOD_ID, fileHelper);
+        super(output, future, Const.MOD_ID, fileHelper);
     }
 
     @Override

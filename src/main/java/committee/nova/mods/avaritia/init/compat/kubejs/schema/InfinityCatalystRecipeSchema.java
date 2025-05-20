@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.compat.kubejs.ModKubeRecipe;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -51,7 +51,7 @@ public interface InfinityCatalystRecipeSchema {
     RecipeKey<String> GROUP = StringComponent.NON_EMPTY.otherKey("group").optional("default");
     RecipeKey<List<Ingredient>> INGREDIENTS = IngredientComponent.INGREDIENT.instance().asList().inputKey("ingredients").defaultOptional();
     RecipeSchema SCHEMA = new RecipeSchema(GROUP, INGREDIENTS)
-            .factory(new KubeRecipeFactory(Static.rl("infinity_catalyst"), InfinityCatalystKubeRecipe.class, InfinityCatalystKubeRecipe::new))
+            .factory(new KubeRecipeFactory(Const.rl("infinity_catalyst"), InfinityCatalystKubeRecipe.class, InfinityCatalystKubeRecipe::new))
             .constructor(GROUP, INGREDIENTS)
             ;
 }

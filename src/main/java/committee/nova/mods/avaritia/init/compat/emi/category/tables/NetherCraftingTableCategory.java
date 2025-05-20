@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.emi.category.tables;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record NetherCraftingTableCategory(RecipeHolder<BaseTableCraftingRecipe> recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Static.MOD_ID, "textures/gui/jei/tables/nether_jei.png"), 0, 0, 157, 100);
+    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/tables/nether_jei.png"), 0, 0, 157, 100);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.nether_crafting_table.get());
-    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Static.MOD_ID, "nether_crafting_table"), WORKSTATION);
+    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "nether_crafting_table"), WORKSTATION);
 
     @Override
     public EmiRecipeCategory getCategory() {

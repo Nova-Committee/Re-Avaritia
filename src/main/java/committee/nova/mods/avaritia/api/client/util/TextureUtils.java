@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static committee.nova.mods.avaritia.Static.LOGGER;
+import static committee.nova.mods.avaritia.Const.LOGGER;
 
 public class TextureUtils {
     /**

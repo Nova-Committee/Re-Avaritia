@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.common.wrapper;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ShapelessCraftingInput;
 import committee.nova.mods.avaritia.api.common.inventory.CanExtractFunction;
 import committee.nova.mods.avaritia.api.common.inventory.CanInsertFunction;
@@ -128,7 +128,7 @@ public class ItemStackWrapper extends ItemStackHandler {
             CompoundTag item = items.getCompound(i);
             int slot = item.getInt("Slot");
             if (slot >= 0 && slot < this.stacks.size()) {
-                ITEM_STACK_CODEC.parse(lookup.createSerializationContext(NbtOps.INSTANCE), item).resultOrPartial((error) -> Static.LOGGER.error("Tried to load invalid item: '{}'", error)).ifPresent((stack) -> this.stacks.set(slot, stack));
+                ITEM_STACK_CODEC.parse(lookup.createSerializationContext(NbtOps.INSTANCE), item).resultOrPartial((error) -> Const.LOGGER.error("Tried to load invalid item: '{}'", error)).ifPresent((stack) -> this.stacks.set(slot, stack));
             }
         }
 

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  */
 
 public class ModDamageTypes {
-    public static final DeferredRegister<DamageType> DAMAGE_TYPES = DeferredRegister.create(Registries.DAMAGE_TYPE, Static.MOD_ID);
+    public static final DeferredRegister<DamageType> DAMAGE_TYPES = DeferredRegister.create(Registries.DAMAGE_TYPE, Const.MOD_ID);
     public static final DeferredHolder<DamageType, DamageType> INFINITY = DAMAGE_TYPES.register("infinity", () -> new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
 
     public static DamageSource causeRandomDamage(Entity attacker) {

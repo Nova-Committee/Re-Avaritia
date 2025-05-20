@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IChangePage;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/3/28 14:02
  */
 public record C2SChangePagePack(int page) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<C2SChangePagePack> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_change_page"));
+    public static final CustomPacketPayload.Type<C2SChangePagePack> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_change_page"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SChangePagePack> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
             C2SChangePagePack::page,

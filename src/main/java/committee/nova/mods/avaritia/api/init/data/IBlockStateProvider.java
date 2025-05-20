@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.init.data;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public abstract class IBlockStateProvider extends BlockStateProvider {
 
     public IBlockStateProvider(PackOutput output, ExistingFileHelper helper) {
-        super(output, Static.MOD_ID, helper);
+        super(output, Const.MOD_ID, helper);
     }
 
     protected ResourceLocation texture(String name) {

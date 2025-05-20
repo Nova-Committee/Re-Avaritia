@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -30,8 +30,8 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
-    public static final RecipeType<ICompressorRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "compressor", ICompressorRecipe.class);
-    private static final ResourceLocation TEXTURE = Static.rl( "textures/gui/jei/compressor.png");
+    public static final RecipeType<ICompressorRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "compressor", ICompressorRecipe.class);
+    private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/compressor.png");
     private final IDrawable icon;
 
 

@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-import static committee.nova.mods.avaritia.Static.LOGGER;
+import static committee.nova.mods.avaritia.Const.LOGGER;
 
 /**
  * Description:

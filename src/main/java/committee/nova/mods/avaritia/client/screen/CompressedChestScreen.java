@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.CompressedChestMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
  * @Description:
  */
 public class CompressedChestScreen extends BaseContainerScreen<CompressedChestMenu>{
-    private static final ResourceLocation CONTAINER_BACKGROUND = Static.rl("textures/gui/generic_243.png");
+    private static final ResourceLocation CONTAINER_BACKGROUND = Const.rl("textures/gui/generic_243.png");
 
     public CompressedChestScreen(CompressedChestMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, CONTAINER_BACKGROUND, 500, 276, 500, 276);

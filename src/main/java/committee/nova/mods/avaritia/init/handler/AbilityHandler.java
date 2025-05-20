@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.handler;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import net.minecraft.server.level.ServerPlayer;
@@ -136,7 +136,7 @@ public class AbilityHandler {
     private static void handleBootsStateChange(Player player, String key, boolean hasBoots) {
         if (hasBoots) {
             if (entitiesWithBoots.contains(key)) {
-                Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).addPermanentModifier(new AttributeModifier(Static.rl("avaritia_boots"), 1.0625F - 0.6F, AttributeModifier.Operation.ADD_VALUE));
+                Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).addPermanentModifier(new AttributeModifier(Const.rl("avaritia_boots"), 1.0625F - 0.6F, AttributeModifier.Operation.ADD_VALUE));
                 boolean flying = player.getAbilities().flying;
                 boolean swimming = player.isInWater();
                 boolean sneaking = player.isCrouching();
@@ -166,7 +166,7 @@ public class AbilityHandler {
                 entitiesWithBoots.add(key);
             }
         } else {
-            Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).removeModifier(Static.rl("avaritia_boots"));
+            Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).removeModifier(Const.rl("avaritia_boots"));
             entitiesWithBoots.remove(key);
         }
     }

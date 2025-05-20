@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.core.HolderLookup;
@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 public class ModEntityTags extends EntityTypeTagsProvider {
 
     public ModEntityTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, future, Static.MOD_ID, existingFileHelper);
+        super(output, future, Const.MOD_ID, existingFileHelper);
     }
 
     @Override

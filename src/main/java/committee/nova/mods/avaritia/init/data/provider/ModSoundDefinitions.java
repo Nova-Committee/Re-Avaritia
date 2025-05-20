@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 public class ModSoundDefinitions extends SoundDefinitionsProvider {
 
     public ModSoundDefinitions(PackOutput output, ExistingFileHelper helper) {
-        super(output, Static.MOD_ID, helper);
+        super(output, Const.MOD_ID, helper);
     }
 
     @Override

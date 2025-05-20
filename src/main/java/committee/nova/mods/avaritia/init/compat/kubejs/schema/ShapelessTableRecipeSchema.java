@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.compat.kubejs.ModKubeRecipe;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -69,7 +69,7 @@ public interface ShapelessTableRecipeSchema{
     RecipeKey<Integer> TIER = NumberComponent.INT.inputKey("tier").optional(0);
 
     RecipeSchema SCHEMA = new RecipeSchema(INGREDIENTS, RESULT, TIER)
-            .factory(new KubeRecipeFactory(Static.rl("shapeless_table"), ShapelessTableKubeRecipe.class, ShapelessTableKubeRecipe::new))
+            .factory(new KubeRecipeFactory(Const.rl("shapeless_table"), ShapelessTableKubeRecipe.class, ShapelessTableKubeRecipe::new))
             .constructor(INGREDIENTS, RESULT)
             .constructor(INGREDIENTS, RESULT, TIER)
             .constructor()

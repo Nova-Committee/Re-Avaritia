@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/3/28 14:02
  */
 public record S2CTotemPack(ItemStack stack, int entityId) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<S2CTotemPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("s2c_totem"));
+    public static final CustomPacketPayload.Type<S2CTotemPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CTotemPack> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
             S2CTotemPack::stack,

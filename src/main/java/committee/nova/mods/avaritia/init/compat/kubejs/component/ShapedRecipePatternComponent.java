@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.kubejs.component;
 
 import com.mojang.serialization.Codec;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
  * @Description:
  */
 public record ShapedRecipePatternComponent() implements RecipeComponent<ShapedRecipePattern> {
-    public static final RecipeComponentType<ShapedRecipePattern> SHAPE_RECIPE = RecipeComponentType.unit(Static.rl("shaped_recipe_pattern"), new ShapedRecipePatternComponent());
+    public static final RecipeComponentType<ShapedRecipePattern> SHAPE_RECIPE = RecipeComponentType.unit(Const.rl("shaped_recipe_pattern"), new ShapedRecipePatternComponent());
 
     @Override
     public RecipeComponentType<?> type() {

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.jei;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import committee.nova.mods.avaritia.client.screen.CompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
@@ -9,7 +9,6 @@ import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
@@ -51,7 +50,7 @@ import java.util.stream.Stream;
  */
 @JeiPlugin
 public class AvaritiaJeiPlugin implements IModPlugin {
-    public static final ResourceLocation UID = Static.rl( "jei_plugin");
+    public static final ResourceLocation UID = Const.rl( "jei_plugin");
 
     @Override
     public @NotNull ResourceLocation getPluginUid() {
@@ -131,9 +130,9 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
-        ModItems.singularity.asOptional().ifPresent(item -> registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, (stack, context) -> {
-            Singularity singularity = SingularityUtils.getSingularity(stack);
+        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.singularity.get(), (stack, context) -> {
+            var singularity = SingularityUtils.getSingularity(stack);
             return singularity != null ? singularity.getId().toString() : "";
-        }));
+        });
     }
 }

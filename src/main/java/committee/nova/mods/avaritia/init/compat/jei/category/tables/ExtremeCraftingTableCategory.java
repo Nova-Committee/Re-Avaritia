@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.jei.category.tables;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -31,8 +31,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ExtremeCraftingTableCategory implements IRecipeCategory<BaseTableCraftingRecipe> {
 
-    public static final RecipeType<BaseTableCraftingRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_craft", BaseTableCraftingRecipe.class);
-    private static final ResourceLocation TEXTURE = Static.rl( "textures/gui/jei/tables/extreme_jei.png");
+    public static final RecipeType<BaseTableCraftingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "extreme_craft", BaseTableCraftingRecipe.class);
+    private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/tables/extreme_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;

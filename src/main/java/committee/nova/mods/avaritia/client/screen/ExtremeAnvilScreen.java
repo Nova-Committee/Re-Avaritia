@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.net.C2SRenamePack;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
-    private static final ResourceLocation ANVIL_LOCATION = Static.rl("textures/gui/extreme_anvil_gui.png");
+    private static final ResourceLocation ANVIL_LOCATION = Const.rl("textures/gui/extreme_anvil_gui.png");
     private EditBox name;
 
     public ExtremeAnvilScreen(ExtremeAnvilMenu pMenu, Inventory pPlayerInventory, Component pTitle) {

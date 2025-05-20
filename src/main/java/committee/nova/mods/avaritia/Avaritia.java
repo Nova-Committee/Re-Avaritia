@@ -4,7 +4,6 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.*;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -16,7 +15,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
  * Date: 2022/5/15 10:10
  * Version: 1.0
  */
-@Mod(Static.MOD_ID)
+@Mod(Const.MOD_ID)
 public class Avaritia {
 
     public Avaritia(IEventBus modEventBus, ModContainer modContainer) {

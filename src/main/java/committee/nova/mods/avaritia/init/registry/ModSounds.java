@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -16,8 +16,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * Version: 1.0
  */
 public class ModSounds {
-    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Static.MOD_ID);
-    public static final DeferredHolder<SoundEvent, SoundEvent> GAPING_VOID = SOUNDS.register("gaping_void", () -> SoundEvent.createVariableRangeEvent(Static.rl("gaping_void")));
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Const.MOD_ID);
+    public static final DeferredHolder<SoundEvent, SoundEvent> GAPING_VOID = SOUNDS.register("gaping_void", () -> SoundEvent.createVariableRangeEvent(Const.rl("gaping_void")));
     public static final SoundType END_PORTAL = new DeferredSoundType(1.0F, 1.0F,
             () -> SoundEvents.END_PORTAL_FRAME_FILL,
             () -> SoundEvents.END_PORTAL_FRAME_FILL,

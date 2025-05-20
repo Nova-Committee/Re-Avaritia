@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.entity;
 
 import com.google.common.base.Predicate;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
@@ -70,7 +70,7 @@ public class GapingVoidEntity extends Entity {
         setSharedFlagOnFire(true);
         noCulling = true;
         if (level() instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Static.AVARITIA_FAKE_PLAYER);
+            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
         }
     }
 
@@ -122,7 +122,7 @@ public class GapingVoidEntity extends Entity {
     protected void readAdditionalSaveData(CompoundTag tag) {
         setAge(tag.getInt("age"));
         if (level() instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Static.AVARITIA_FAKE_PLAYER);
+            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
         }
     }
 

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
@@ -36,7 +36,7 @@ import java.util.TreeSet;
  * Description
  */
 
-@EventBusSubscriber(modid = Static.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
 

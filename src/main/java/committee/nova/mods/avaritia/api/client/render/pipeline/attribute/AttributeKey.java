@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.api.client.render.pipeline.attribute;
 
 import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
 import committee.nova.mods.avaritia.api.utils.java.ArrayUtils;
+import committee.nova.mods.avaritia.api.utils.java.Copyable;
 
 import java.util.ArrayList;
 import java.util.HashMap;

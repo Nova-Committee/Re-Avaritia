@@ -9,7 +9,7 @@ import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.BaseTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
@@ -41,7 +41,7 @@ public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
         var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
         if (tier > 4 || tier < 0) {
             tier = 0;
-            CraftTweakerAPI.getLogger(Static.MOD_ID).error("Unable to assign a tier to the Table Recipe for stack " + output.getCommandString() + ". Tier cannot be greater than 4 or less than 0.");
+            CraftTweakerAPI.getLogger(Const.MOD_ID).error("Unable to assign a tier to the Table Recipe for stack " + output.getCommandString() + ". Tier cannot be greater than 4 or less than 0.");
         }
         int height = inputs.length;
         int width = 0;
@@ -78,7 +78,7 @@ public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
         var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
         if (tier > 4 || tier < 0) {
             tier = 0;
-            CraftTweakerAPI.getLogger(Static.MOD_ID).error("Unable to assign a tier to the Table Recipe for stack " + output.getCommandString() + ". Tier cannot be greater than 4 or less than 0.");
+            CraftTweakerAPI.getLogger(Const.MOD_ID).error("Unable to assign a tier to the Table Recipe for stack " + output.getCommandString() + ". Tier cannot be greater than 4 or less than 0.");
         }
         var recipe = new ShapelessTableCraftingRecipe(toIngredientsList(inputs), output.getInternal(), tier);
 

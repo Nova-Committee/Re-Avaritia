@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -21,7 +21,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class ModArmorMaterial {
-    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, Static.MOD_ID);
+    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, Const.MOD_ID);
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> infinite_armor = ARMOR_MATERIALS.register("infinite_armor", () ->
                     new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266655_) -> {
@@ -30,7 +30,7 @@ public class ModArmorMaterial {
                         p_266655_.put(ArmorItem.Type.CHESTPLATE, 8);
                         p_266655_.put(ArmorItem.Type.HELMET, 3);
                     }), 15, SoundEvents.ARMOR_EQUIP_DIAMOND,
-                            () -> Ingredient.of(ModItems.infinity_ingot.get()), List.of(new ArmorMaterial.Layer(Static.rl("infinity_armor"))),1.0f, 1.0f)
+                            () -> Ingredient.of(ModItems.infinity_ingot.get()), List.of(new ArmorMaterial.Layer(Const.rl("infinity_armor"))),1.0f, 1.0f)
             );
     private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266653_) -> {
         p_266653_.put(ArmorItem.Type.BOOTS, 13);

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.emi.category;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -18,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record CompressorCategory(RecipeHolder<ICompressorRecipe> recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Static.MOD_ID, "textures/gui/jei/compressor.png"), 0, 0, 169, 62);
+    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/compressor.png"), 0, 0, 169, 62);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.neutron_compressor.get());
-    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Static.MOD_ID, "compressor"), WORKSTATION);
+    public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "compressor"), WORKSTATION);
 
     @Override
     public EmiRecipeCategory getCategory() {

@@ -30,18 +30,18 @@ import java.util.function.Predicate;
  * Date: 2022/3/31 11:37
  * Version: 1.0
  */
-public class Static {
+public class Const {
     public static final String MOD_ID = "avaritia";
 
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final GameProfile AVARITIA_FAKE_PLAYER = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
     public static final boolean curios = ModList.get().isLoaded("curios");
 
 
     public static ResourceLocation rl(String path) {
-        return ResourceLocation.tryBuild(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public static boolean isLoad(String name) {
@@ -49,11 +49,11 @@ public class Static {
     }
 
     public static Ingredient getIngredient(String modid, String name) {
-        return new ItemIngredient(ResourceLocation.tryBuild(modid, name)).toVanilla();
+        return new ItemIngredient(ResourceLocation.fromNamespaceAndPath(modid, name)).toVanilla();
     }
 
     public static Item getItem(String modid, String name) {
-        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryBuild(modid, name)).get();
+        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(modid, name)).get();
     }
 
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {

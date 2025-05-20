@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.render.tile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -112,7 +112,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
             f1 = 1.0F - f1;
             f1 = 1.0F - f1 * f1 * f1;
             int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(pPackedLight);
-            VertexConsumer vertexconsumer = new Material(Sheets.CHEST_SHEET, Static.rl("block/chest/compressed_chest")).buffer(pBuffer, RenderType::entityCutout);
+            VertexConsumer vertexconsumer = new Material(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest")).buffer(pBuffer, RenderType::entityCutout);
             if (flag1) {
                 vertexconsumer = getMaterial(pBlockEntity, chesttype).buffer(pBuffer, RenderType::entityCutout);
                 if (chesttype == ChestType.LEFT) {

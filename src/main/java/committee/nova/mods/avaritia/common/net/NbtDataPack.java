@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IDataReceiver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public record NbtDataPack(CompoundTag tag) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<NbtDataPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("sync_nbt"));
+    public static final CustomPacketPayload.Type<NbtDataPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("sync_nbt"));
     public static final StreamCodec<RegistryFriendlyByteBuf, NbtDataPack> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG,
             NbtDataPack::tag,

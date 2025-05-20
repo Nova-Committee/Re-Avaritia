@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.item.BaseItem;
 import committee.nova.mods.avaritia.common.item.misc.*;
 import committee.nova.mods.avaritia.common.item.resources.*;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * Version: 1.0
  */
 public class ModItems {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems( Static.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems( Const.MOD_ID);
 
     //curios
     public static DeferredItem<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);

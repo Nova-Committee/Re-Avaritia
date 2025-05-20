@@ -17,9 +17,9 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public class NetworkHandler {
     @SubscribeEvent
     public static void init(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("1.1");
-        registrar = registrar.executesOn(HandlerThread.MAIN);
-        registrar.playBidirectional(S2CSingularitiesPack.TYPE, S2CSingularitiesPack.STREAM_CODEC,
+        var registrar = event.registrar("1.1");
+
+        registrar.playToClient(S2CSingularitiesPack.TYPE, S2CSingularitiesPack.STREAM_CODEC,
                 new S2CSingularitiesPack.Handler());
         registrar.playToClient(S2CTotemPack.TYPE, S2CTotemPack.STREAM_CODEC,
                 new S2CTotemPack.Handler());

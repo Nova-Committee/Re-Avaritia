@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
@@ -22,6 +22,7 @@ import java.util.List;
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
+        SingularityRegistryHandler.getInstance().loadSingularities();
         List<Singularity> allSingularities = SingularityRegistryHandler.getInstance().getSingularities();
 
         for (var singularity : allSingularities) {
@@ -42,7 +43,7 @@ public class InternalRecipeHandler {
         if (ingredient == Ingredient.EMPTY)
             return null;
 
-        var recipeId = Static.rl( singularity.getId().getPath() + "_singularity");
+        var recipeId = Const.rl(singularity.getId().getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();

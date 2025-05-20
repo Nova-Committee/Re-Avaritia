@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import net.minecraft.core.component.DataComponents;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<C2SItemFilterPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("s2c_totem"));
+    public static final CustomPacketPayload.Type<C2SItemFilterPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SItemFilterPack> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
             C2SItemFilterPack::stack,

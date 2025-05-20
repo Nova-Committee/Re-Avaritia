@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
@@ -25,20 +25,20 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * Version: 1.0
  */
 public class ModEntities {
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Static.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Const.MOD_ID);
 
 
     public static final DeferredHolder<EntityType<?>, EntityType<ImmortalItemEntity>> IMMORTAL = ENTITIES.register("immortal",
             () -> EntityType.Builder.of(ImmortalItemEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
-                    .build(Static.rl( "immortal").toString()));
+                    .build(Const.rl( "immortal").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<EndestPearlEntity>> ENDER_PEARL = ENTITIES.register("enderst_pearl",
             () -> EntityType.Builder.<EndestPearlEntity>of(EndestPearlEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
-                    .build(Static.rl("enderst_pearl").toString()));
+                    .build(Const.rl("enderst_pearl").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<GapingVoidEntity>> GAPING_VOID = ENTITIES.register("gaping_void",
             () -> EntityType.Builder.<GapingVoidEntity>of(GapingVoidEntity::new, MobCategory.MISC)
-                    .build(Static.rl("gaping_void").toString()));
+                    .build(Const.rl("gaping_void").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<HeavenArrowEntity>> HEAVEN_ARROW = ENTITIES.register("heaven_arrow",
             () -> EntityType.Builder.<HeavenArrowEntity>of(HeavenArrowEntity::new, MobCategory.MISC)
@@ -46,7 +46,7 @@ public class ModEntities {
                     .clientTrackingRange(4)
                     .updateInterval(20)
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(Static.rl("heaven_arrow").toString()));
+                    .build(Const.rl("heaven_arrow").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<HeavenSubArrowEntity>> HEAVEN_SUB_ARROW = ENTITIES.register("heaven_sub_arrow",
             () -> EntityType.Builder.<HeavenSubArrowEntity>of(HeavenSubArrowEntity::new, MobCategory.MISC)
@@ -54,7 +54,7 @@ public class ModEntities {
                     .clientTrackingRange(4)
                     .updateInterval(20)
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(Static.rl("heaven_sub_arrow").toString()));
+                    .build(Const.rl("heaven_sub_arrow").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
             () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
@@ -62,7 +62,7 @@ public class ModEntities {
                     .fireImmune()
                     .noSummon()
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(Static.rl("trace_arrow").toString()));
+                    .build(Const.rl("trace_arrow").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<InfinityGolem>> INFINITY_GOLEM = ENTITIES.register("infinity_golem",
             () -> EntityType.Builder.of(InfinityGolem::new, MobCategory.MISC)
@@ -70,20 +70,20 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .fireImmune()
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(Static.rl("infinity_golem").toString()));
+                    .build(Const.rl("infinity_golem").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FireBallEntity>> FIRE_BALL = ENTITIES.register("fire_ball",
             () -> EntityType.Builder.of(FireBallEntity::new, MobCategory.MISC)
                     .setTrackingRange(256)
                     .setUpdateInterval(10)
-                    .build(Static.rl("fire_ball").toString()));
+                    .build(Const.rl("fire_ball").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BladeSlashEntity>> BLADE_SLASH = ENTITIES.register("blade_slash",
             () -> EntityType.Builder.<BladeSlashEntity>of(BladeSlashEntity::new, MobCategory.MISC)
                     .sized(3F, 0.5F)
                     .setUpdateInterval(10)
                     .fireImmune()
-                    .build(Static.rl("blade_slash").toString()));
+                    .build(Const.rl("blade_slash").toString()));
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {

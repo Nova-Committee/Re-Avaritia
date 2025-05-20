@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.item.singularity;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
@@ -49,11 +49,11 @@ public class SingularityItem extends Item implements IColored {
         if (singularity != null) {
             var modid = singularity.getId().getNamespace();
 
-            if (!modid.equals(Static.MOD_ID))
+            if (!modid.equals(Const.MOD_ID))
                 tooltip.add(ModTooltips.getAddedByTooltip(modid));
 
             if (flag.isAdvanced())
-                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getId()).color(ChatFormatting.DARK_GRAY).build());
+                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getId().toString()).color(ChatFormatting.DARK_GRAY).build());
         }
     }
 

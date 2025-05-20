@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.resources.UpgradeSmithingTemplateItem;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +24,7 @@ import java.util.Optional;
  * @Description:
  */
 public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu>  {
-    private static final ResourceLocation SMITHING_LOCATION = Static.rl("textures/gui/extreme_smithing_table_gui.png");
+    private static final ResourceLocation SMITHING_LOCATION = Const.rl("textures/gui/extreme_smithing_table_gui.png");
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
     private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);

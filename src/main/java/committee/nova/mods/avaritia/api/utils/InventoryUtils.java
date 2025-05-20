@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static committee.nova.mods.avaritia.Static.curios;
+import static committee.nova.mods.avaritia.Const.curios;
 
 /**
  * @Project: Avaritia

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.tile.CompressorTile;
@@ -23,7 +23,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
-    private static final ResourceLocation BACKGROUND = Static.rl("textures/gui/compressor.png");
+    private static final ResourceLocation BACKGROUND = Const.rl("textures/gui/compressor.png");
 
     public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND);

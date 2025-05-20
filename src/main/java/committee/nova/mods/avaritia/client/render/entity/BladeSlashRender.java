@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -30,7 +30,7 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 @OnlyIn(Dist.CLIENT)
 public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
 
-    private static final ResourceLocation TEXTURE = Static.rl("textures/entity/blade_slash.png");
+    private static final ResourceLocation TEXTURE = Const.rl("textures/entity/blade_slash.png");
     private static final RenderType RENDER_TYPE = RenderType.create("blade_projectile",
             DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
             RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(TEXTURE, false, false))

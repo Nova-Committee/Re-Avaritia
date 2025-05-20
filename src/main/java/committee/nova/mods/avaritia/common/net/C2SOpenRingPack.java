@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.InventoryUtils;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/3/28 14:02
  */
 public record C2SOpenRingPack() implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<C2SOpenRingPack> TYPE = new CustomPacketPayload.Type<>(Static.rl("c2s_open_ring"));
+    public static final CustomPacketPayload.Type<C2SOpenRingPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_open_ring"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SOpenRingPack> STREAM_CODEC = StreamCodec.unit(new C2SOpenRingPack());
 
     @Override

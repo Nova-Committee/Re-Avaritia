@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
@@ -25,12 +25,12 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 public class SingularityUtils {
     public static Singularity loadFromJson(ResourceLocation id, JsonObject json) {
         if (!ICondition.conditionsMatched(JsonOps.INSTANCE, json)) {
-            Static.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
+            Const.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
             return null;
         }
         var name = GsonHelper.getAsString(json, "name");
         var colors = GsonHelper.getAsJsonArray(json, "colors");
-        int materialCount = Static.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "materialCount", 1000);
+        int materialCount = Const.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "materialCount", 1000);
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
@@ -42,14 +42,17 @@ public class SingularityUtils {
         var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
 
         if (ing == null) {
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time, enabled, recipeDisabled);
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
         } else if (ing.has("tag")) {
             var tag = ing.get("tag").getAsString();
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time, enabled, recipeDisabled);
+            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
         } else {
             var ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, json.get("ingredient")).getOrThrow().getFirst();
-            singularity = new Singularity(id, name, new int[] { overlayColor, underlayColor }, ingredient, materialCount, time, enabled, recipeDisabled);
+            singularity = new Singularity(id, name, new int[] { overlayColor, underlayColor }, ingredient, materialCount, time);
         }
+
+        singularity.setEnabled(enabled);
+        singularity.setRecipeEnabled(!recipeDisabled);
 
         return singularity;
     }

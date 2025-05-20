@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static committee.nova.mods.avaritia.Static.GSON;
+import static committee.nova.mods.avaritia.Const.GSON;
 
 /**
  * @Project: Avaritia

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import com.mojang.serialization.Codec;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.component.MatterClusterContents;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * @Description:
  */
 public class ModDataComponents {
-    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, Static.MOD_ID);
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, Const.MOD_ID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> INFINITY_PICKAXE_HAMMER = DATA_COMPONENTS.register("infinity_pickaxe_hammer",
             () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());

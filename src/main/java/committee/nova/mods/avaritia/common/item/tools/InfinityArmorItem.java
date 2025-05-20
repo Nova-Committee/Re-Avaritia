@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
@@ -101,6 +101,6 @@ public class InfinityArmorItem extends ArmorItem {
 
     @Override
     public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
-        return Static.rl("textures/models/infinity_armor.png");
+        return Const.rl("textures/models/infinity_armor.png");
     }
 }

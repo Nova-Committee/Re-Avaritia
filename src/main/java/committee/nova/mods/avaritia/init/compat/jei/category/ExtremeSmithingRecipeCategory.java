@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -32,8 +32,8 @@ import java.util.Arrays;
  * @Description:
  */
 public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmithingRecipe> {
-    public static final RecipeType<ExtremeSmithingRecipe> RECIPE_TYPE = RecipeType.create(Static.MOD_ID, "extreme_smithing", ExtremeSmithingRecipe.class);
-    private static final ResourceLocation TEXTURE = Static.rl( "textures/gui/jei/extreme_smithing_jei.png");
+    public static final RecipeType<ExtremeSmithingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "extreme_smithing", ExtremeSmithingRecipe.class);
+    private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/extreme_smithing_jei.png");
     private final IDrawable icon;
 
     public ExtremeSmithingRecipeCategory(IGuiHelper guiHelper) {

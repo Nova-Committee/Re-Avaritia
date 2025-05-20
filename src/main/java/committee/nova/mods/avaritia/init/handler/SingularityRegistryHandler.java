@@ -4,7 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import committee.nova.mods.avaritia.Static;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.common.net.S2CSingularitiesPack;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static committee.nova.mods.avaritia.Static.GSON;
+import static committee.nova.mods.avaritia.Const.GSON;
 
 /**
  * Description:
@@ -57,10 +57,6 @@ public class SingularityRegistryHandler {
         }
     }
 
-    public void onResourceManagerReload() {
-        this.loadSingularities();
-    }
-
     public void loadSingularities() {
         var stopwatch = Stopwatch.createStarted();
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
@@ -73,28 +69,30 @@ public class SingularityRegistryHandler {
             this.loadFiles(dir);
         }
 
+        EternalSingularityCraftRecipe.invalidate();
+
         stopwatch.stop();
 
-        Static.LOGGER.info("Loaded {} singularity type(s) in {} ms", this.singularities.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        Const.LOGGER.info("Loaded {} singularity type(s) in {} ms", this.singularities.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     public void writeDefaultSingularityFiles() {
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia" + File.separator + "singularities").toFile();
 
         if (!dir.exists() && dir.mkdirs()) {
-            Static.LOGGER.warn("Could not find default singularities,try to generate!");
+            Const.LOGGER.warn("Could not find default singularities,try to generate!");
             for (var singularity : ModSingularities.getDefaults()) {
                 var json = SingularityUtils.writeToJson(singularity);
                 FileWriter writer = null;
 
                 try {
                     var file = new File(dir, singularity.getId().getPath() + ".json");
-                    writer = new FileWriter(file, StandardCharsets.UTF_8);
+                    writer = new FileWriter(file);
 
                     GSON.toJson(json, writer);
                     writer.close();
                 } catch (Exception e) {
-                    Static.LOGGER.error("An error occurred while generating default singularities", e);
+                    Const.LOGGER.error("An error occurred while generating default singularities", e);
                 } finally {
                     IOUtils.closeQuietly(writer);
                 }
@@ -119,7 +117,7 @@ public class SingularityRegistryHandler {
         this.singularities.putAll(singularities);
         EternalSingularityCraftRecipe.invalidate();
 
-        Static.LOGGER.info("Loaded {} singularities from the server", singularities.size());
+        Const.LOGGER.info("Loaded {} singularities from the server", singularities.size());
     }
 
     private void loadFiles(File dir) {
@@ -137,11 +135,11 @@ public class SingularityRegistryHandler {
                 var name = file.getName().replace(".json", "");
                 json = JsonParser.parseReader(reader).getAsJsonObject();
 
-                singularity = SingularityUtils.loadFromJson(Static.rl( name), json);
+                singularity = SingularityUtils.loadFromJson(Const.rl(name), json);
 
                 reader.close();
             } catch (Exception e) {
-                Static.LOGGER.error("An error occurred while loading singularities", e);
+                Const.LOGGER.error("An error occurred while loading singularities", e);
             } finally {
                 IOUtils.closeQuietly(reader);
             }
