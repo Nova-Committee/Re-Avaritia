@@ -1,5 +1,13 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.init.registry.ModItems;
+import moze_intel.projecte.gameObjs.items.ICapabilityAware;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+
 /**
  * CapHandler
  *
@@ -8,6 +16,16 @@ package committee.nova.mods.avaritia.init.handler;
  * @description
  * @date 2024/4/7 1:48
  */
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class CapHandler {
+    @SubscribeEvent
+    private static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        for (Holder<Item> entry : ModItems.ITEMS.getEntries()) {
+            Item item = entry.value();
+            if (item instanceof ICapabilityAware capabilityAware) {
+                capabilityAware.attachCapabilities(event);
+            }
+        }
+    }
 
 }

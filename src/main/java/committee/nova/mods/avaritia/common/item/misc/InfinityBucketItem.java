@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import committee.nova.mods.avaritia.api.iface.IItemCapability;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
+import committee.nova.mods.avaritia.common.wrappers.InfinityBucketWrapper;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -17,14 +19,19 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
@@ -37,6 +44,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +53,7 @@ import java.util.stream.Collectors;
  * @CreateTime: 2024/7/13 上午10:36
  * @Description:
  */
-public class InfinityBucketItem extends ResourceItem {
+public class InfinityBucketItem extends ResourceItem implements IItemCapability {
     public static final String FLUIDS_NBT = "Fluids";
     public static final String FLUID_ID_KEY = "Id";
     public static final String FLUID_AMOUNT_KEY = "Amount";
@@ -55,8 +63,8 @@ public class InfinityBucketItem extends ResourceItem {
     }
 
     public static List<FluidStack> getFluids(ItemStack stack) {
-        CompoundTag nbt = stack.get(DataComponents.CUSTOM_DATA).getUnsafe();
-        if (nbt == null)
+        CompoundTag nbt = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).isEmpty())
             return new ArrayList<>();
 
         if (!nbt.contains(FLUIDS_NBT, Tag.TAG_LIST))
@@ -75,7 +83,7 @@ public class InfinityBucketItem extends ResourceItem {
         }
         CompoundTag tag = new CompoundTag();
         tag.put(FLUIDS_NBT, listTag);
-        //stack.setTag(tag);
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, (nbt) -> nbt.update(tag1 -> tag1.merge(tag)));
     }
 
     @NotNull
@@ -109,10 +117,10 @@ public class InfinityBucketItem extends ResourceItem {
         return fluidName.toString();
     }
 
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-//        return new InfinityBucketWrapper(stack);
-//    }
+    @Override
+    public void attachCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new InfinityBucketWrapper(stack), this);
+    }
 
     @Override
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable TooltipContext context, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
@@ -166,7 +174,7 @@ public class InfinityBucketItem extends ResourceItem {
         BlockState hitState = pLevel.getBlockState(hitPos);
         Block hitBlock = hitState.getBlock();
         boolean canPickUp =
-                //hitBlock instanceof IFluidBlock ||
+                hitBlock instanceof LiquidBlock ||
                 hitBlock instanceof BucketPickup;
         if (pLevel.mayInteract(pPlayer, hitPos) && canPickUp) {
             FluidActionResult pickUpResult = FluidUtil.tryPickUpFluid(itemStack, pPlayer, pLevel, hitPos, hitResult.getDirection());

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.wrappers;
 
-import committee.nova.mods.avaritia.common.item.misc.InfinityBucketItem;
+    import committee.nova.mods.avaritia.common.item.misc.InfinityBucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;

@@ -136,7 +136,7 @@ public class AbilityHandler {
     private static void handleBootsStateChange(Player player, String key, boolean hasBoots) {
         if (hasBoots) {
             if (entitiesWithBoots.contains(key)) {
-                Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).addPermanentModifier(new AttributeModifier(Const.rl("avaritia_boots"), 1.0625F - 0.6F, AttributeModifier.Operation.ADD_VALUE));
+                Objects.requireNonNull(player.getAttribute(Attributes.STEP_HEIGHT)).addOrUpdateTransientModifier(new AttributeModifier(Const.rl("avaritia_boots"), 1.0625F - 0.6F, AttributeModifier.Operation.ADD_VALUE));
                 boolean flying = player.getAbilities().flying;
                 boolean swimming = player.isInWater();
                 boolean sneaking = player.isCrouching();
