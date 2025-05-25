@@ -1,13 +1,14 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.FireBallEntity;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -32,13 +33,14 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, IInitEnchantItem {
+public class BlazeSwordItem extends SwordItem implements ITooltip, IItemEnchant {
     private final String name;
     private final InitEnchantment initEnchantment;
 
     public BlazeSwordItem(String name) {
         super(ModToolTiers.BLAZE,
                 new Properties()
+                        .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()

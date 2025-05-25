@@ -1,13 +1,16 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
+import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,11 +37,12 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 16:47
  * Version: 1.0
  */
-public class InfinityHoeItem extends HoeItem {
+public class InfinityHoeItem extends HoeItem implements IItemMode<InfinityMode> {
 
     public InfinityHoeItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
+                        .component(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT)
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
@@ -53,15 +57,19 @@ public class InfinityHoeItem extends HoeItem {
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
-        return 0;
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        return false;
     }
 
+    @Override
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
+        return 0;
+    }
 
     @Override
     public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
@@ -69,28 +77,34 @@ public class InfinityHoeItem extends HoeItem {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        var tags = stack.getOrDefault(ModDataComponents.INFINITY_HOE_SOW, false);
-        if (player.isCrouching()) {
-            stack.set(ModDataComponents.INFINITY_HOE_SOW, !stack.getOrDefault(ModDataComponents.INFINITY_HOE_SOW, false));
-            player.swing(hand);
-            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
-                    Component.translatable(tags ? "tooltip.infinity_hoe.type_2" : "tooltip.infinity_hoe.type_1"
-                    ), true);
-            return InteractionResultHolder.success(stack);
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
+        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player player, @NotNull InteractionHand hand) {
+        var itemstack = player.getItemInHand(hand);
+        if (player.isCrouching() && !pLevel.isClientSide) {
+            changeMode(player, itemstack, hand);
+            return InteractionResultHolder.success(itemstack);
         }
-        if (!world.isClientSide && world instanceof ServerLevel serverLevel && tags) {
+        if (pLevel instanceof ServerLevel serverLevel && getMode(itemstack).equals(InfinityMode.RANGE)) {
             player.swing(hand);
             BlockPos blockPos = player.getOnPos();
             int rang = 7;
             int height = 2;
-            ToolUtils.rangeHarvest(serverLevel, player, stack, blockPos, rang, height);
+            ToolUtils.rangeHarvest(serverLevel, player, itemstack, blockPos, rang, height);
             ToolUtils.rangeBonemealable(serverLevel, blockPos, rang, height, 3);
-            player.getCooldowns().addCooldown(stack.getItem(), 10);
-            world.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
+            player.getCooldowns().addCooldown(itemstack.getItem(), 10);
+            serverLevel.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResultHolder.pass(itemstack);
     }
 
     @Override
@@ -106,11 +120,10 @@ public class InfinityHoeItem extends HoeItem {
         var maxPos = blockpos.offset(rang, 0, rang);
 //        int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(context);
 //        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-        var tags = stack.getOrDefault(ModDataComponents.INFINITY_HOE_SOW, false);
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
             if (player != null && !world.isClientSide) {
-                if (player.isCrouching() && tags) {
+                if (player.isCrouching() && getMode(stack).equals(InfinityMode.RANGE)) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);
@@ -169,14 +182,13 @@ public class InfinityHoeItem extends HoeItem {
     }
 
     @Override
-    public boolean hasCustomEntity(@NotNull ItemStack stack) {
-        return true;
+    public DataComponentType<InfinityMode> getDataComponentType() {
+        return ModDataComponents.INFINITY_MODE.get();
     }
 
-    @Nullable
     @Override
-    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+    public InfinityMode getDefaultMode() {
+        return InfinityMode.DEFAULT;
     }
 
 }

@@ -1,10 +1,13 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -25,12 +28,13 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable {
+public class CrystalSwordItem extends SwordItem implements ITooltip, IItemMode<ToolMode> {
     private final String name;
 
     public CrystalSwordItem(String name) {
         super(ModToolTiers.CRYSTAL,
                 new Properties()
+                        .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
@@ -52,7 +56,7 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+    public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
         if (player instanceof ServerPlayer serverPlayer) {
             // 取消攻击冷却
             serverPlayer.resetAttackStrengthTicker();
@@ -65,11 +69,21 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            switchMode(world, player, hand, "blade_slash");
+        if (player.isCrouching() && !world.isClientSide) {
+            changeMode(player, stack, hand, ToolMode.ADVANCE);
             return InteractionResultHolder.success(stack);
         }
-        if (isActive(stack, "blade_slash")) ToolUtils.shootBladeSlash(stack, player);//射出剑气
+        if (getMode(stack).equals(ToolMode.ADVANCE)) ToolUtils.shootBladeSlash(stack, player);//射出剑气
         return super.use(world, player, hand);
+    }
+
+    @Override
+    public DataComponentType<ToolMode> getDataComponentType() {
+        return ModDataComponents.TOOL_MODE.get();
+    }
+
+    @Override
+    public ToolMode getDefaultMode() {
+        return ToolMode.DEFAULT;
     }
 }

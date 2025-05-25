@@ -14,13 +14,12 @@ import net.minecraft.world.phys.Vec3;
 public class RayTracer {
 
     public static Vec3 getCorrectedHeadVec(Player player) {
-        return player.position().add(0.0D, (double) player.getEyeHeight(), 0.0D);
+        return player.position().add(0.0D, player.getEyeHeight(), 0.0D);
     }
 
     public static Vec3 getStartVec(Player player) {
         return getCorrectedHeadVec(player);
     }
-
 
     public static Vec3 getEndVec(Player player) {
         Vec3 headVec = getCorrectedHeadVec(player);

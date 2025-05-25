@@ -215,9 +215,7 @@ public class ToolUtils {
                                             BlockPos pos, ItemStack stack,
                                             Set<TagKey<Block>> validMaterials
     ) {
-        if (!world.isLoaded(pos)) {
-            return;
-        }
+        if (!world.isLoaded(pos)) return;
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (world.isClientSide) return;
@@ -645,16 +643,14 @@ public class ToolUtils {
     /**
      * 炽热 自动识别可进行的熔炉配方进行处理（如：原矿-矿物锭）
      *
-     * @param block  原矿方块
      * @param state  原矿状态
      * @param world  世界
      * @param pos    点击坐标
      * @param player 玩家
      * @param tool   使用的工具
-     * @param event  破坏事件
      */
-    public static void melting(Block block, BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, BlockEvent.BreakEvent event) {
-        if (!block.canHarvestBlock(state, world, pos, player) || block instanceof CropBlock) return;
+    public static void melting(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool) {
+        if (!state.getBlock().canHarvestBlock(state, world, pos, player) || state.getBlock() instanceof CropBlock) return;
         List<ItemStack> drops = Block.getDrops(state, (ServerLevel) world, pos, null);
         Holder<Enchantment> fortune =
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
@@ -666,7 +662,7 @@ public class ToolUtils {
         drops.forEach(itemStack -> {
             ItemStack dropStack = getMeltingItem(player, world, itemStack, tool);
             if (!dropStack.equals(itemStack)) {
-                ToolUtils.meltingAchieve(world, player, pos, event);
+                ToolUtils.meltingAchieve(world, player, pos);
                 world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, dropStack));
             }
         });
@@ -709,10 +705,8 @@ public class ToolUtils {
      * @param world  世界
      * @param player 玩家
      * @param pos    坐标
-     * @param event  事件
-     *               from <a href="https://github.com/yuoft/MoreEnchants/blob/master/src/main/java/com/yuo/enchants/Event/EventHelper.java">...</a>
      */
-    public static void meltingAchieve(Level world, Player player, BlockPos pos, BlockEvent.BreakEvent event) {
+    public static void meltingAchieve(Level world, Player player, BlockPos pos) {
         if (!world.isClientSide) {
             ServerLevel serverWorld = (ServerLevel) world;
             for (int i = 0; i < 10; i++) {
@@ -721,7 +715,7 @@ public class ToolUtils {
             }
         }
         world.playSound(player, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
-        world.setBlockAndUpdate(event.getPos(), Blocks.AIR.defaultBlockState()); //设置此坐标为空气
+        world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); //设置此坐标为空气
     }
 
     /**

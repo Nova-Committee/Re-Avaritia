@@ -5,6 +5,7 @@
 //import net.minecraft.core.Direction;
 //import net.minecraft.nbt.CompoundTag;
 //import net.minecraft.world.item.ItemStack;
+//import net.neoforged.neoforge.common.util.INBTSerializable;
 //import org.jetbrains.annotations.NotNull;
 //
 ///**
@@ -13,7 +14,7 @@
 // * @CreateTime: 2024/8/5 下午11:31
 // * @Description:
 // */
-//public class RingStorageProvider implements ICapabilitySerializable<CompoundTag> {
+//public class RingStorageProvider implements INBTSerializable<CompoundTag> {
 //    private final ItemStackWrapper inv;
 //    private final LazyOptional<ItemStackWrapper> inventoryCap;
 //

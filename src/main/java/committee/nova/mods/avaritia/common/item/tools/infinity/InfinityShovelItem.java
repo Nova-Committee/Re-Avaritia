@@ -1,11 +1,13 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
+import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -24,18 +26,17 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 16:33
  * Version: 1.0
  */
-public class InfinityShovelItem extends ShovelItem implements ISwitchable {
+public class InfinityShovelItem extends ShovelItem implements IItemMode<InfinityMode> {
 
     public InfinityShovelItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
+                        .component(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT)
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
-
         );
-
     }
 
     @Override
@@ -44,24 +45,29 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable {
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
     }
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
-        if (stack.getOrDefault(ModDataComponents.INFINITY_SHOVEL_DESTROYER, false)) {
+    public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
+        if (getMode(stack).equals(InfinityMode.RANGE)) {
             return 5.0F;
         }
         return Math.max(super.getDestroySpeed(stack, state), 6.0f);
@@ -69,16 +75,16 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            switchMode(pLevel, player, hand, "infinity_shovel_destroyer");
-            return InteractionResultHolder.success(stack);
+        var itemstack = player.getItemInHand(hand);
+        if (player.isCrouching() && !pLevel.isClientSide) {
+            changeMode(player, itemstack, hand);
+            return InteractionResultHolder.success(itemstack);
         }
 
         //右键发射发射终望珍珠,冷却20s
-        if (isActive(stack, "infinity_shovel_destroyer")) {
+        if (getMode(itemstack).equals(InfinityMode.RANGE)) {
             ToolUtils.pearlAttack(player, ModItems.endest_pearl.get().getDefaultInstance(), pLevel);//
-            player.getCooldowns().addCooldown(stack.getItem(), 200);
+            player.getCooldowns().addCooldown(itemstack.getItem(), 200);
         }
 
         return super.use(pLevel, player, hand);
@@ -86,9 +92,19 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable {
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (isActive(stack, "infinity_shovel_destroyer") && miningEntity instanceof Player player) {
+        if (getMode(stack).equals(InfinityMode.RANGE) && miningEntity instanceof Player player) {
             ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.shovelBreakRange.get(), ToolUtils.materialsShovel, false);
         }
         return false;
+    }
+
+    @Override
+    public DataComponentType<InfinityMode> getDataComponentType() {
+        return ModDataComponents.INFINITY_MODE.get();
+    }
+
+    @Override
+    public InfinityMode getDefaultMode() {
+        return InfinityMode.DEFAULT;
     }
 }

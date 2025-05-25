@@ -11,7 +11,7 @@ version = minecraft_version + "-" + mod_version + "-" + mod_version_tag
 group = mod_group_id
 
 base {
-    archivesName = mod_name
+    archivesName = mod_name + "-" + mod_loader
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

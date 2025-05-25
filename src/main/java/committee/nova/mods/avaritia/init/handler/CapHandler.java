@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.api.common.item.iface.IItemCapability;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import moze_intel.projecte.gameObjs.items.ICapabilityAware;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,8 +22,8 @@ public class CapHandler {
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
         for (Holder<Item> entry : ModItems.ITEMS.getEntries()) {
             Item item = entry.value();
-            if (item instanceof ICapabilityAware capabilityAware) {
-                capabilityAware.attachCapabilities(event);
+            if (item instanceof IItemCapability iItemCapability) {
+                iItemCapability.attachCapabilities(event);
             }
         }
     }

@@ -1,8 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
@@ -26,7 +25,7 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable, IInitEnchantItem {
+public class BlazeShovelItem extends ShovelItem implements ITooltip, IItemEnchant {
     private final String name;
     private final InitEnchantment initEnchantment;
 

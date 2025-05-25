@@ -10,11 +10,7 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
  * @Description:
  */
 public class InfinityRingItem extends ResourceItem {
-
-
     public InfinityRingItem() {
         super(ModRarities.LEGEND.getValue(), "infinity_ring", true, new Properties().stacksTo(1));
     }
-
-
 }

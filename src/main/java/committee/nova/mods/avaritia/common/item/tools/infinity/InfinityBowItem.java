@@ -1,15 +1,18 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
+import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -44,10 +47,11 @@ import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, IInitEnchantItem {
+public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<InfinityMode>, IItemEnchant {
     private final InitEnchantment initEnchantment;
     public InfinityBowItem() {
         super(new Properties()
+                .component(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT)
                 .stacksTo(1)
                 .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
@@ -62,6 +66,11 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
 
     @Override
     public boolean isDamageable(@NotNull ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public boolean isBarVisible(@NotNull ItemStack stack) {
         return false;
     }
 
@@ -116,10 +125,10 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            switchMode(level, player, hand, "infinity_bow_tracer");
+        if (player.isCrouching() && !pLevel.isClientSide) {
+            changeMode(player, itemstack, hand);
             return InteractionResultHolder.success(itemstack);
         }
         player.startUsingItem(hand);
@@ -143,7 +152,7 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
 
                 AbstractArrow arrowEntity = new HeavenArrowEntity(player);
 
-                if (isActive(stack, "infinity_bow_tracer")) {//追踪模式
+                if (getMode(stack).equals(InfinityMode.RANGE)) {//追踪模式
                     if ((double) powerForTime >= 0.1D) {
                         arrowEntity = new TraceArrowEntity(player);
                     }
@@ -179,5 +188,15 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
         stack.hurtAndBreak(1, player, getSlotForHand(player.getUsedItemHand()));
         arrowEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         level.addFreshEntity(arrowEntity);
+    }
+
+    @Override
+    public DataComponentType<InfinityMode> getDataComponentType() {
+        return ModDataComponents.INFINITY_MODE.get();
+    }
+
+    @Override
+    public InfinityMode getDefaultMode() {
+        return InfinityMode.DEFAULT;
     }
 }

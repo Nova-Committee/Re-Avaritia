@@ -1,5 +1,6 @@
-package committee.nova.mods.avaritia.init.registry;
+package committee.nova.mods.avaritia.init.registry.enums;
 
+import committee.nova.mods.avaritia.init.registry.ModSounds;
 import net.minecraft.world.level.block.SoundType;
 
 /**

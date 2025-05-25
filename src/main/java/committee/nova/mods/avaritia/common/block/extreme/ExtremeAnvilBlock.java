@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.block.extreme;
 
 import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
-import committee.nova.mods.avaritia.init.registry.ModResourceBlocks;
+import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

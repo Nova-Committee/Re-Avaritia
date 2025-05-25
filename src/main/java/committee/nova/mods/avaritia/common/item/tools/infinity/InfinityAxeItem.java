@@ -1,11 +1,14 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -29,11 +32,12 @@ import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
  * Date: 2022/5/15 17:11
  * Version: 1.0
  */
-public class InfinityAxeItem extends AxeItem implements ISwitchable {
+public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> {
 
     public InfinityAxeItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
+                        .component(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT)
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
@@ -48,41 +52,56 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable {
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
     @Override
-    public boolean hasCustomEntity(ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        return false;
     }
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 0;
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            switchMode(pLevel, player, hand, "infinity_axe_range");
-            return InteractionResultHolder.success(stack);
+        var itemstack = player.getItemInHand(hand);
+        if (player.isCrouching() && !pLevel.isClientSide) {
+            changeMode(player, itemstack, hand);
+            return InteractionResultHolder.success(itemstack);
         }
         return super.use(pLevel, player, hand);
     }
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (level instanceof ServerLevel serverLevel && isActive(stack, "infinity_axe_range") && canHarvest(pos, level) && miningEntity instanceof ServerPlayer player) {
+        if (level instanceof ServerLevel serverLevel && getMode(stack).equals(InfinityMode.RANGE) && canHarvest(pos, level) && miningEntity instanceof ServerPlayer player) {
             destroyTree(player, serverLevel, pos, stack);
         }
         return false;
+    }
+
+    @Override
+    public DataComponentType<InfinityMode> getDataComponentType() {
+        return ModDataComponents.INFINITY_MODE.get();
+    }
+
+    @Override
+    public InfinityMode getDefaultMode() {
+        return InfinityMode.DEFAULT;
     }
 }

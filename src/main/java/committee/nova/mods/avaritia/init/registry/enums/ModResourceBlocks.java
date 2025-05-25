@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.registry;
+package committee.nova.mods.avaritia.init.registry.enums;
 
 /**
  * @Project: Avaritia

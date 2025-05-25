@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -9,27 +8,30 @@ import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,11 +40,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.item.ItemEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
-import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -88,15 +87,6 @@ public class InfinityHandler {
                 level.setBlock(pos, Blocks.END_PORTAL.defaultBlockState(), 2);
             }
         }
-
-        if (item.getItem() == ModItems.infinity_pickaxe.get()) {
-            if (state.getDestroySpeed(level, pos) <= -1) {
-                if (item.has(ModDataComponents.INFINITY_PICKAXE_HAMMER) && item.getOrDefault(ModDataComponents.INFINITY_PICKAXE_HAMMER, false)) {
-                    item.mineBlock(level, state, pos, player);
-                }
-            }
-        }
-
     }
     @SubscribeEvent
     public static void onPlayerMine(BlockEvent.BreakEvent event) {
@@ -128,7 +118,7 @@ public class InfinityHandler {
                 if (!event.getEntity().isInWater()) {
                     event.setNewSpeed(event.getNewSpeed() * 5F);
                 }
-                if (held.getOrDefault(ModDataComponents.INFINITY_PICKAXE_HAMMER, false) || held.getOrDefault(ModDataComponents.INFINITY_SHOVEL_DESTROYER, false)) {
+                if (held.getOrDefault(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT).equals(InfinityMode.RANGE)) {
                     event.setNewSpeed(event.getNewSpeed() * 0.5F);
                 }
             }
@@ -225,28 +215,47 @@ public class InfinityHandler {
         }
     }
 
-    //取消身穿无尽套时受到的所有伤害
+    //取消身穿无尽套时受到的所有伤害(除了无尽伤害)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onGetHurt(ArmorHurtEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
-        if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().is(ModItems.infinity_sword.get()) && player.getMainHandItem().useOnRelease()) {
-            event.setCanceled(true);
-        }
-        if (ToolUtils.isInfinite(player)) {
-            event.setCanceled(true);
+    public static void onInfiniteHurt(LivingIncomingDamageEvent event) {
+        DamageSource damageSource = event.getSource();
+        if (event.getEntity() instanceof Player player) {
+            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY.getKey())) {
+                event.setCanceled(true);
+            }
         }
     }
 
     //取消对无尽套的伤害
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onAttacked(AttackEntityEvent event) {
-        if (ToolUtils.isInfinite(event.getEntity())) {
+    public static void onAttackedInfinite(AttackEntityEvent event) {
+        if (event.getTarget() instanceof LivingEntity living && ToolUtils.isInfinite(living)) {
             event.setCanceled(true);
         }
     }
 
+    @SubscribeEvent
+    public static void onLivingDamage(LivingDamageEvent.Pre event) {
+        DamageSource damageSource = event.getSource();
+        if (event.getEntity() instanceof Player player) {
+            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY.getKey())) {
+                event.setNewDamage(0.0F);
+                player.hurtTime = 0;
+                player.deathTime = 0;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingHurt(LivingDamageEvent.Post event) {
+        DamageSource damageSource = event.getSource();
+        if (event.getEntity() instanceof Player player) {
+            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY.getKey())) {
+                player.hurtTime = 0;
+                player.deathTime = 0;
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
@@ -273,24 +282,6 @@ public class InfinityHandler {
                 }
 
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void toolEnchant(BlockEvent.BreakEvent event) {//炽热
-        var player = event.getPlayer();
-        var tool = player.getMainHandItem();
-        if (tool.isEmpty()) return;
-        var world = (Level) event.getLevel();
-        BlockPos pos = event.getPos();
-        Block block = event.getState().getBlock();
-        BlockState state = event.getState();
-        if (
-                (tool.is(ModItems.blaze_axe.get()) || tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
-                        && tool.getItem() instanceof ISwitchable switchable
-        ) {
-            if (switchable.isActive(tool, "smelt"))
-                ToolUtils.melting(block, state, world, pos, player, tool, event);
         }
     }
 

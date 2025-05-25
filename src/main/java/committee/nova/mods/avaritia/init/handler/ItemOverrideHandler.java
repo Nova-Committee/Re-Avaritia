@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityCrossBowItem;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.resources.ResourceLocation;
@@ -29,10 +30,10 @@ public class ItemOverrideHandler {
     public static void init(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             setPropertyOverride(ModItems.infinity_pickaxe.get(), Const.rl("hammer"), (itemStack, world, livingEntity, d) -> {
-                return Boolean.TRUE.equals(itemStack.get(ModDataComponents.INFINITY_PICKAXE_HAMMER.get())) ? 1 : 0;
+                return itemStack.getOrDefault(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT).equals(InfinityMode.RANGE) ? 1 : 0;
             });
             setPropertyOverride(ModItems.infinity_shovel.get(), Const.rl("destroyer"), (itemStack, world, livingEntity, d) -> {
-                return Boolean.TRUE.equals(itemStack.get(ModDataComponents.INFINITY_SHOVEL_DESTROYER.get())) ? 1 : 0;
+                return itemStack.getOrDefault(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT).equals(InfinityMode.RANGE) ? 1 : 0;
             });
             setPropertyOverride(ModItems.matter_cluster.get(), Const.rl("cap"), (itemStack, world, livingEntity, d) -> {
                 return MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(itemStack)) == MatterClusterItem.CAPACITY ? 1 : 0;
@@ -53,13 +54,15 @@ public class ItemOverrideHandler {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return CrossbowItem.isCharged(itemStack) && Boolean.TRUE.equals(itemStack.get(ModDataComponents.INFINITY_BOW_TRACER.get())) ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack, livingEntity);
+                    return CrossbowItem.isCharged(itemStack) &&
+                            itemStack.getOrDefault(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT).equals(InfinityMode.RANGE)
+                            ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack, livingEntity);
                 }
             });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracing"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem()
                         && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack)
-                        && Boolean.TRUE.equals(itemStack.get(ModDataComponents.INFINITY_BOW_TRACER.get()))
+                        && itemStack.getOrDefault(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT).equals(InfinityMode.RANGE)
                         ? 1.0F : 0.0F;
             });
 

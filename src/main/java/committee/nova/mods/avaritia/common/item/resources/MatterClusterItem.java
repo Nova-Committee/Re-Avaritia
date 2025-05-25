@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
 import committee.nova.mods.avaritia.api.utils.ContainerUtils;
-import committee.nova.mods.avaritia.common.component.MatterClusterContents;
+import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -48,8 +48,8 @@ public class MatterClusterItem extends Item {
 
 
     public static List<ItemStack> getClusterItems(ItemStack cluster) {
-        MatterClusterContents clusterContainer = cluster.getOrDefault(ModDataComponents.MATTER_CLUSTER.get(),
-                MatterClusterContents.EMPTY);
+        InfinityContainerContents clusterContainer = cluster.getOrDefault(ModDataComponents.MATTER_CLUSTER.get(),
+                InfinityContainerContents.EMPTY);
         return clusterContainer.getItems();
     }
 
@@ -78,8 +78,8 @@ public class MatterClusterItem extends Item {
         }
         if (count > 0) {
             ItemStack cluster = new ItemStack(ModItems.matter_cluster.get());
-            cluster.update(ModDataComponents.MATTER_CLUSTER.get(), MatterClusterContents.EMPTY,
-                    clusterContainer -> MatterClusterContents.fromItems(clusterInventory.getItems()));
+            cluster.update(ModDataComponents.MATTER_CLUSTER.get(), InfinityContainerContents.EMPTY,
+                    clusterContainer -> InfinityContainerContents.fromItems(clusterInventory.getItems()));
             return cluster;
         }
         return ItemStack.EMPTY;
@@ -127,12 +127,12 @@ public class MatterClusterItem extends Item {
 
 
     private static void writeClusterInventory(ItemStack cluster, SimpleContainer clusterContents) {
-        cluster.update(ModDataComponents.MATTER_CLUSTER.get(), MatterClusterContents.EMPTY,
-                clusterContainer -> MatterClusterContents.fromItems(clusterContents.getItems()));
+        cluster.update(ModDataComponents.MATTER_CLUSTER.get(), InfinityContainerContents.EMPTY,
+                clusterContainer -> InfinityContainerContents.fromItems(clusterContents.getItems()));
     }
 
     private static SimpleContainer readClusterInventory(ItemStack cluster) {
-        var slotClusterInv = cluster.getOrDefault(ModDataComponents.MATTER_CLUSTER.get(), MatterClusterContents.EMPTY);
+        var slotClusterInv = cluster.getOrDefault(ModDataComponents.MATTER_CLUSTER.get(), InfinityContainerContents.EMPTY);
         return new SimpleContainer(slotClusterInv.getItems().toArray(ItemStack[]::new));
     }
 

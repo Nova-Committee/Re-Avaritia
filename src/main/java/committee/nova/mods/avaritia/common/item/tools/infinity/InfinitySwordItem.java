@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.iface.IInitEnchantItem;
+import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
@@ -43,7 +43,7 @@ import java.util.List;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
+public class InfinitySwordItem extends SwordItem implements IItemEnchant {
     private final InitEnchantment initEnchantment;
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY,
@@ -197,6 +197,11 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
     }
 
     @Override
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 0;
     }
@@ -213,7 +218,7 @@ public class InfinitySwordItem extends SwordItem implements IInitEnchantItem {
 
     @Nullable
     @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 

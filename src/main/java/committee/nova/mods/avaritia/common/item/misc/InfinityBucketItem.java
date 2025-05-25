@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
-import committee.nova.mods.avaritia.api.iface.IItemCapability;
+import committee.nova.mods.avaritia.api.common.item.iface.IItemCapability;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.wrappers.InfinityBucketWrapper;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
@@ -44,7 +43,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

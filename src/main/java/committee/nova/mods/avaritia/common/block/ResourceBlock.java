@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.block;
 
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
-import committee.nova.mods.avaritia.init.registry.ModResourceBlocks;
+import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;

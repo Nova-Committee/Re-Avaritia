@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -46,7 +47,7 @@ public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPa
                 var player = context.player();
                 if (player instanceof ServerPlayer serverPlayer) {
                     if (serverPlayer.getMainHandItem().getItem() instanceof IFilterItem) {
-                        var tag = player.getMainHandItem().get(ModDataComponents.TOOL_FILTERS);
+                        var tag = player.getMainHandItem().getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
                         switch(packet.action) {
                             case 0 -> {
                                     if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
