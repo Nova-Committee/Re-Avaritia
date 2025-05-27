@@ -74,7 +74,7 @@ public class ModExtremeSmithingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, @NotNull ResourceLocation id) {
         this.ensureValid(id);
         Advancement.Builder advancement$builder = recipeOutput.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
@@ -87,7 +87,11 @@ public class ModExtremeSmithingRecipeBuilder implements RecipeBuilder {
                 this.additions,
                 this.resultStack
         );
-        recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
+        if (this.conditions != null) {
+            recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
+        } else {
+            recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        }
     }
 
     private void ensureValid(ResourceLocation id) {

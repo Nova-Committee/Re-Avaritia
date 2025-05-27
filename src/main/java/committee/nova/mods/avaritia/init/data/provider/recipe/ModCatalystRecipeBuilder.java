@@ -117,7 +117,11 @@ public class ModCatalystRecipeBuilder implements RecipeBuilder {
                 this.ingredients,
                 this.count
         );
-        recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
+        if (this.conditions != null) {
+            recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
+        } else {
+            recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        }
     }
 
     private void ensureValid(ResourceLocation id) {

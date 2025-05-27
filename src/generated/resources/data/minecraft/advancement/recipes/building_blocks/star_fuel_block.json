@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_star_fuel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:star_fuel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:star_fuel_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_star_fuel"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:star_fuel_block"
+    ]
+  }
+}

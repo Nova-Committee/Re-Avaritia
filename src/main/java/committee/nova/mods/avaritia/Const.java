@@ -53,7 +53,7 @@ public class Const {
     }
 
     public static Item getItem(String modid, String name) {
-        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(modid, name)).get();
+        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(modid, name)).orElseThrow();
     }
 
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {

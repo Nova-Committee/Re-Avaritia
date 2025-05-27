@@ -61,7 +61,7 @@ public class InfinitySwordItem extends SwordItem implements IItemEnchant {
         var level = player.level();
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
         if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
-            var damageSource = player.damageSources().source(ModDamageTypes.INFINITY.getKey(), victim, player);
+            var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
             if (victim instanceof EnderDragon dragon ) {
                 dragon.hurt(dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());

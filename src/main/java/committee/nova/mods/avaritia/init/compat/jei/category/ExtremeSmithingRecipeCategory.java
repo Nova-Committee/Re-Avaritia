@@ -35,9 +35,11 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     public static final RecipeType<ExtremeSmithingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "extreme_smithing", ExtremeSmithingRecipe.class);
     private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/extreme_smithing_jei.png");
     private final IDrawable icon;
+    private final IDrawable background;
 
-    public ExtremeSmithingRecipeCategory(IGuiHelper guiHelper) {
-        icon = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.extreme_smithing_table.get()));
+    public ExtremeSmithingRecipeCategory(IGuiHelper helper) {
+        icon = helper.createDrawableItemStack(new ItemStack(ModBlocks.extreme_smithing_table.get()));
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 64);
     }
 
     @Override
@@ -51,8 +53,8 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     }
 
     @Override
-    public void draw(@NotNull ExtremeSmithingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.blit(TEXTURE, 0, 0, 0,0,170, 64);
+    public @NotNull IDrawable getBackground() {
+        return this.background;
     }
 
     @Override

@@ -29,13 +29,13 @@ public class ModDamageTypeTags extends TagsProvider<DamageType> {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        this.tag(DamageTypeTags.BYPASSES_ARMOR).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.BYPASSES_SHIELD).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.BYPASSES_INVULNERABILITY).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.BYPASSES_COOLDOWN).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.BYPASSES_RESISTANCE).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(ModDamageTypes.INFINITY.getKey());
-        this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(ModDamageTypes.INFINITY.getKey());
+        this.tag(DamageTypeTags.BYPASSES_ARMOR).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.BYPASSES_SHIELD).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.BYPASSES_INVULNERABILITY).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.BYPASSES_COOLDOWN).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.BYPASSES_RESISTANCE).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(ModDamageTypes.INFINITY);
+        this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(ModDamageTypes.INFINITY);
     }
 }

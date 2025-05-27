@@ -127,7 +127,7 @@ public class InfinityHandler {
 
     //合并物质团
     @SubscribeEvent
-    public static void clusterCluster(ItemEntityPickupEvent.Post event) {
+    public static void clusterCluster(ItemEntityPickupEvent.Pre event) {
         Player player = event.getPlayer();
         ItemStack stack = event.getItemEntity().getItem();
         if (ModConfig.isMergeMatterCluster.get() && event.getItemEntity().getItem().is(ModItems.matter_cluster.get())) {
@@ -220,7 +220,7 @@ public class InfinityHandler {
     public static void onInfiniteHurt(LivingIncomingDamageEvent event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY.getKey())) {
+            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 event.setCanceled(true);
             }
         }
@@ -238,7 +238,7 @@ public class InfinityHandler {
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY.getKey())) {
+            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 event.setNewDamage(0.0F);
                 player.hurtTime = 0;
                 player.deathTime = 0;
@@ -250,7 +250,7 @@ public class InfinityHandler {
     public static void onLivingHurt(LivingDamageEvent.Post event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY.getKey())) {
+            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 player.hurtTime = 0;
                 player.deathTime = 0;
             }

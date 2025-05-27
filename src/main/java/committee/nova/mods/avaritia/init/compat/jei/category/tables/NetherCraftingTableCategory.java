@@ -34,10 +34,11 @@ public class NetherCraftingTableCategory implements IRecipeCategory<BaseTableCra
 
     public static final RecipeType<BaseTableCraftingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "nether_craft", BaseTableCraftingRecipe.class);
     private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/tables/nether_jei.png");
-
+    private final IDrawable background;
     private final IDrawable icon;
 
     public NetherCraftingTableCategory(IGuiHelper helper) {
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 158, 101);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.nether_crafting_table.get()));
     }
 
@@ -53,9 +54,10 @@ public class NetherCraftingTableCategory implements IRecipeCategory<BaseTableCra
     }
 
     @Override
-    public void draw(@NotNull BaseTableCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.blit(TEXTURE, 0, 0, 0,0,158, 101);
+    public @NotNull IDrawable getBackground() {
+        return this.background;
     }
+
 
     @Override
     public @NotNull IDrawable getIcon() {

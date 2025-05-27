@@ -20,14 +20,12 @@ public class Avaritia {
 
     public Avaritia(IEventBus modEventBus, ModContainer modContainer) {
         ModConfig.register(modContainer);
-        modEventBus.addListener(this::setup);
-        modEventBus.addListener(ModDataGen::gatherData);
+
 
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModArmorMaterial.ARMOR_MATERIALS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
-        ModDamageTypes.DAMAGE_TYPES.register(modEventBus);
         ModCreativeModeTabs.TABS.register(modEventBus);
         ModTileEntities.BLOCK_ENTITIES.register(modEventBus);
         ModSounds.SOUNDS.register(modEventBus);
@@ -37,6 +35,8 @@ public class Avaritia {
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModIngredients.INGREDIENT.register(modEventBus);
 
+        modEventBus.addListener(this::setup);
+        modEventBus.addListener(ModDataGen::gatherData);
     }
 
     public void setup(final FMLCommonSetupEvent event) {

@@ -33,10 +33,12 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     public static final RecipeType<ICompressorRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "compressor", ICompressorRecipe.class);
     private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/compressor.png");
     private final IDrawable icon;
+    private final IDrawable background;
 
 
     public CompressorCategory(IGuiHelper helper) {
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.neutron_compressor.get()));
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 63);
     }
 
 
@@ -51,8 +53,8 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     }
 
     @Override
-    public void draw(@NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.blit(TEXTURE, 0, 0, 0,0,170, 63);
+    public @NotNull IDrawable getBackground() {
+        return this.background;
     }
 
     @Override

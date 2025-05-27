@@ -1,8 +1,6 @@
 {
   "pack": {
-    "description": {
-      "text": "Avaritia Resources"
-    },
-    "pack_format": 15
+    "description": "Avaritia Resources",
+    "pack_format": 34
   }
 }

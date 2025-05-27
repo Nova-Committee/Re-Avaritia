@@ -1,0 +1,32 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": {
+      "item": "minecraft:ancient_debris"
+    },
+    "b": {
+      "item": "minecraft:blaze_powder"
+    },
+    "c": {
+      "item": "minecraft:fire_charge"
+    },
+    "x": {
+      "item": "minecraft:blaze_rod"
+    },
+    "y": {
+      "item": "minecraft:bone"
+    }
+  },
+  "pattern": [
+    " bcb ",
+    "byxyb",
+    "cxaxc",
+    "byxyb",
+    " bcb "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:blaze_cube"
+  },
+  "tier": 2
+}

@@ -1,0 +1,52 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanismgenerators"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "mekanismgenerators:fusion_reactor_frame"
+    },
+    "B": {
+      "item": "mekanism:ultimate_energy_cube"
+    },
+    "C": {
+      "item": "mekanism:ultimate_fluid_tank"
+    },
+    "D": {
+      "item": "mekanism:ultimate_chemical_tank"
+    },
+    "E": {
+      "item": "mekanism:ultimate_bin"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "S": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "AAAAAAAAA",
+    "AEIIIIIEA",
+    "AEIIIIIEA",
+    "AEIIIIIEA",
+    "AEEESEEEA",
+    "AEEEEEEEA",
+    "AEBCDCBEA",
+    "AEBCDCBEA",
+    "AAAAAAAAA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mekanism:creative_bin"
+  },
+  "tier": 4
+}

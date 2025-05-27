@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": {
+      "item": "avaritia:neutron_pile"
+    },
+    "b": {
+      "tag": "c:music_discs"
+    }
+  },
+  "pattern": [
+    "       ",
+    "   a   ",
+    "  aaa  ",
+    " aabaa ",
+    "  aaa  ",
+    "   a   ",
+    "       "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:record_fragment"
+  },
+  "tier": 3
+}

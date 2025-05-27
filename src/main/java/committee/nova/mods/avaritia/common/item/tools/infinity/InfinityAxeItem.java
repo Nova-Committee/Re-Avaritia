@@ -90,7 +90,7 @@ public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (level instanceof ServerLevel serverLevel && getMode(stack).equals(InfinityMode.RANGE) && canHarvest(pos, level) && miningEntity instanceof ServerPlayer player) {
-            destroyTree(player, serverLevel, pos, stack);
+            destroyTree(player, serverLevel, pos, state);
         }
         return false;
     }

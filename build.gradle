@@ -117,6 +117,7 @@ dependencies {
     implementation ("curse.maven:charm-of-undying-316873:${cou_version}")
     implementation ("curse.maven:projecte-226410:${projecte_version}")
     implementation ("curse.maven:mekanism-268560:${mek_version}")
+    implementation "curse.maven:mekanism-generators-268566:${mek_generators_version}"
     implementation ("curse.maven:guideme-1173950:${gd_version}")
     implementation ("curse.maven:applied-energistics-2-223794:${ae2_version}")
     implementation ("curse.maven:refined-storage-243076:${rs_version}")

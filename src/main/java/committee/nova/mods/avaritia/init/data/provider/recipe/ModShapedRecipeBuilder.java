@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
+import com.blamejared.crafttweaker.api.loot.condition.LootConditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
@@ -67,14 +68,15 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     }
 
     public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result) {
-        return shaped(category, result, 1);
+        return shaped(category, result, 4);
     }
 
     /**
      * Creates a new builder for a shaped recipe.
      */
-    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int count) {
-        return new ModShapedRecipeBuilder(category, result, count);
+
+    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int tier) {
+        return new ModShapedRecipeBuilder(category, new ItemStack(result, 1), tier);
     }
 
     public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemStack result, int tier) {
@@ -157,7 +159,9 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
                 this.tier
         );
         var advancement = advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
-        recipeOutput.accept(id, shapedrecipe, advancement, this.conditions);
+        if (this.conditions != null) {
+            recipeOutput.accept(id, shapedrecipe, advancement, this.conditions);
+        } else recipeOutput.accept(id, shapedrecipe, advancement);
     }
 
 
