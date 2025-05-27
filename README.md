@@ -14,8 +14,8 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README.md">English</a> | 
-    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README_CN.md">简体中文</a>
+    <a href="README.md">English</a> | 
+    <a href="README_CN.md">简体中文</a>
 </p>
 
 
