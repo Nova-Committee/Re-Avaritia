@@ -5,7 +5,7 @@
 <p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
 <p align="center">
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions">
+        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1/1.21.1-c70039" alt="Supported Versions">
     </a>
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
         <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
