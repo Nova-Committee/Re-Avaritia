@@ -80,14 +80,14 @@ public class SingularityUtils {
             var main = new JsonObject();
 
             var sub = new JsonObject();
-            main.addProperty("type", "forge:not");
+            main.addProperty("type", "neoforge:not");
 
             sub.addProperty("tag", singularity.getTag());
-            sub.addProperty("type", "forge:tag_empty");
+            sub.addProperty("type", "neoforge:tag_empty");
 
             main.add("value", sub);
             array.add(main);
-            json.add("conditions", array);
+            json.add("neoforge:conditions", array);
 
         } else {
             ingredient = Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, singularity.getIngredient()).result().orElse(null);
