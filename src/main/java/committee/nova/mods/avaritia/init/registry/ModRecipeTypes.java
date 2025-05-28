@@ -14,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/2 9:19
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/4/2 11:37
+ * @Description:
  */
 public class ModRecipeTypes {
     public static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, Const.MOD_ID);

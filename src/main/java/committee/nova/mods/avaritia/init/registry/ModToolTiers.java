@@ -5,10 +5,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.SimpleTier;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/3/31 10:33
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/3/31 11:37
+ * @Description:
  */
 public class ModToolTiers {
     public static final Tier BLAZE =new SimpleTier(ModTags.NEEDS_BLAZE_TOOL,7777, 25f, 25f,  77,

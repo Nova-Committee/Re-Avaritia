@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -48,9 +49,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
     private static boolean playerFlying;
     private static boolean player;
     private static boolean legs = true;
-    private final ResourceLocation eyeTex = Const.rl("textures/models/infinity_armor_eyes.png");
-    private final ResourceLocation wingTex = Const.rl("textures/models/infinity_armor_wing.png");
-    private final ResourceLocation wingGlowTex = Const.rl("textures/models/infinity_armor_wingglow.png");
+
     private final Minecraft mc;
     private final MultiBufferSource bufferSource;
     private final Random random;
@@ -177,7 +176,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         if (InfinityArmorModel.modelRender && !InfinityArmorModel.player) {
             this.bodyPartsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, AvaritiaRenderTypes::mask), pPackedLight, pPackedOverlay, color));
         }
-        this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(AvaritiaRenderTypes.glow(this.eyeTex)), pPackedLight, pPackedOverlay, (int) (pulse_mag_sqr * 0.5)));
+        this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(AvaritiaRenderTypes.glow(Res.EYE_TEX)), pPackedLight, pPackedOverlay, (int) (pulse_mag_sqr * 0.5)));
         pPoseStack.popPose();
 
         pPoseStack.pushPose();
@@ -196,10 +195,10 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             this.rebuildWings();
             pPoseStack.scale(f2, f2, f2);
             pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
-            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(this.wingTex)), pPackedLight, pPackedOverlay, color);
+            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(Res.WING_TEX)), pPackedLight, pPackedOverlay, color);
             //Static.LOGGER.info(material(WING));
             model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, AvaritiaRenderTypes::mask), pPackedLight, pPackedOverlay, color);
-            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(AvaritiaRenderTypes.wing(this.wingGlowTex)), pPackedLight, pPackedOverlay, ColorUtils.HSBToRGB(0.84f, 1.0f, 0.95f));
+            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(AvaritiaRenderTypes.wing(Res.WING_GLOW_TEX)), pPackedLight, pPackedOverlay, ColorUtils.HSBToRGB(0.84f, 1.0f, 0.95f));
             pPoseStack.popPose();
         }
     }

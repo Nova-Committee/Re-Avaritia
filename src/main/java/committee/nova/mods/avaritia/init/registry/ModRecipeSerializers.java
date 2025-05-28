@@ -10,10 +10,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 /**
- * Name: Avaritia-forge / ModRecipeSerializers
- * Author: cnlimiter
- * CreateTime: 2023/9/8 22:27
- * Description:
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2023/9/8 22:27
+ * @Description:
  */
 public class ModRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, Const.MOD_ID);

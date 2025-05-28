@@ -10,10 +10,10 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/5/15 10:10
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/3/31 11:37
+ * @Description:
  */
 @Mod(Const.MOD_ID)
 public class Avaritia {

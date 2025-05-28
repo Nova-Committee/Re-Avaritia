@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -30,10 +31,9 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 @OnlyIn(Dist.CLIENT)
 public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
 
-    private static final ResourceLocation TEXTURE = Const.rl("textures/entity/blade_slash.png");
     private static final RenderType RENDER_TYPE = RenderType.create("blade_projectile",
             DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
-            RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(TEXTURE, false, false))
+            RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(Res.BLADE_SLASH, false, false))
                     .setShaderState(RENDERTYPE_TEXT_SEE_THROUGH_SHADER)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setCullState(NO_CULL)
@@ -68,7 +68,7 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull BladeSlashEntity entity) {
-        return TEXTURE;
+        return Res.BLADE_SLASH;
     }
 
     public void vertex(PoseStack.Pose pose, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight) {

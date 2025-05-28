@@ -25,10 +25,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/3/31 11:37
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/3/31 11:37
+ * @Description:
  */
 public class Const {
     public static final String MOD_ID = "avaritia";

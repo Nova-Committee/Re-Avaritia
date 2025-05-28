@@ -8,10 +8,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.List;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/2 12:37
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/3/31 11:37
+ * @Description:
  */
 public class ModSingularities {
     public static final Singularity COAL = new Singularity(Const.rl( "coal"), "singularity.avaritia.coal", new int[]{0x363739, 0x261E24}, Ingredient.of(Items.COAL));

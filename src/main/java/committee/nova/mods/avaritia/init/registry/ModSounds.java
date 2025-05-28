@@ -11,10 +11,10 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/20 17:34
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/3/31 11:37
+ * @Description:
  */
 public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Const.MOD_ID);

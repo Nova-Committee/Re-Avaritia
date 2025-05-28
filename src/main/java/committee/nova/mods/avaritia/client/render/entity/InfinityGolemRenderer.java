@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IronGolemRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/4/5 11:35
  */
 public class InfinityGolemRenderer extends IronGolemRenderer {
-    private static final ResourceLocation GOLEM_LOCATION = Const.rl( "textures/entity/iron_golem.png");
 
     public InfinityGolemRenderer(EntityRendererProvider.Context p_174188_) {
         super(p_174188_);
@@ -24,6 +24,6 @@ public class InfinityGolemRenderer extends IronGolemRenderer {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull IronGolem pEntity) {
-        return GOLEM_LOCATION;
+        return Res.INFINITY_GOLEM;
     }
 }

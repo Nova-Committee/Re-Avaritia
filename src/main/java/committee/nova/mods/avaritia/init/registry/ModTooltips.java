@@ -5,10 +5,10 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/2 12:45
- * Version: 1.0
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/3/31 11:37
+ * @Description:
  */
 public class ModTooltips {
     public static final Tooltip ADDED_BY = new Tooltip("tooltip.avaritia.added_by");

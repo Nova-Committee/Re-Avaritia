@@ -11,9 +11,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 /**
- * @Project: Avaritia-forge
+ * @Project: Avaritia
  * @Author: cnlimiter
- * @CreateTime: 2024/1/8 22:43
+ * @CreateTime: 2022/3/31 11:37
  * @Description:
  */
 
