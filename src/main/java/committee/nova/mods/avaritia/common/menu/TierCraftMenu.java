@@ -21,10 +21,10 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/2/19 19:42
- * Version: 1.0
+ * @Project: Re-Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2022/2/19 19:42
+ * @Description: 1.0
  */
 public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final Level world;

@@ -21,6 +21,8 @@ public class ModTags {
     public static final TagKey<Item> SINGULARITY = ItemTags.create(Const.rl("singularity"));
     public static final TagKey<Item> DRAWERS = ItemTags.create(ResourceLocation.tryBuild("storagedrawers", "drawers"));
 
+    public static final TagKey<Item> ELYTRA_SLOT = ItemTags.create(ResourceLocation.tryBuild("elytraslot", "elytra"));
+
     public static final TagKey<Item> NEUTRON_DUST = ItemTags.create(ResourceLocation.tryBuild("c", "dust/neutronium"));
     public static final TagKey<Item> NEUTRON_NUGGET = ItemTags.create(ResourceLocation.tryBuild("c", "nuggets/neutronium"));
     public static final TagKey<Item> NEUTRON_INGOT = ItemTags.create(ResourceLocation.tryBuild("c", "ingot/neutronium"));

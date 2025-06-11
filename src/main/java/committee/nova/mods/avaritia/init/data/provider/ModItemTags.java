@@ -39,5 +39,6 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.NEUTRON_DUST).add(ModItems.neutron_pile.get());
         tag(ModTags.NEUTRON_NUGGET).add(ModItems.neutron_nugget.get());
         tag(ModTags.NEUTRON_INGOT).add(ModItems.neutron_ingot.get());
+        tag(ModTags.ELYTRA_SLOT).add(ModItems.infinity_elytra.get());
     }
 }

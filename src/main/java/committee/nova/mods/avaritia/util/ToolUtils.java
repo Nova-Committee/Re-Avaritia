@@ -442,7 +442,7 @@ public class ToolUtils {
         if (player.level().isClientSide) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
-        DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
+        DamageSource src = ModDamageTypes.causeRandomDamage(player);
         toAttack.stream()
                 .filter(entity -> entity instanceof Mob)
                 .filter(entity -> !entity.getType().is(ModTags.NEUTRAL_CREATURES))

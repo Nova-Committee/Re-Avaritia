@@ -109,6 +109,8 @@ dependencies {
 
     compileOnly ("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
     runtimeOnly ("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+    runtimeOnly ("curse.maven:elytra-slot-317716:${elytra_slot_version}")
+    runtimeOnly ("curse.maven:caelus-308989:${caelus_version}")
 
     implementation ("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
     //implementation ("dev.latvian.mods:rhino-neoforge:${rhino_version}")

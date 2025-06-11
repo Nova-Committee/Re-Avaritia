@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.data;
 
 import committee.nova.mods.avaritia.init.data.provider.*;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -30,8 +31,7 @@ public class ModDataGen {
         DataGenerator generator = event.getGenerator();
         PackOutput output = generator.getPackOutput();
         ExistingFileHelper helper = event.getExistingFileHelper();
-        DatapackBuiltinEntriesProvider datapackProvider = new ModRegistries(output, event.getLookupProvider());
-        CompletableFuture<HolderLookup.Provider> lookupProvider = datapackProvider.getRegistryProvider();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         if (event.includeClient()) {
             generator.addProvider(true, new ModBlockStates(output, helper));
@@ -47,7 +47,9 @@ public class ModDataGen {
             generator.addProvider(true, new ModBlockTags(output, lookupProvider, helper));
             generator.addProvider(true, new ModEntityTags(output, lookupProvider, helper));
             generator.addProvider(true, new ModAdvancements(output, lookupProvider, helper));
-            generator.addProvider(true, new ModDamageTypeTags(output, lookupProvider, helper));
+            DatapackBuiltinEntriesProvider datapackProvider = new ModRegistries(output, event.getLookupProvider());
+            generator.addProvider(true, datapackProvider);
+            generator.addProvider(true, new ModDamageTypeTags(output, datapackProvider.getRegistryProvider(), helper));
 //            generator.addProvider(true, new ModFluidTags(output, lookupProvider, helper));
 
             generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
