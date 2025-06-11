@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.emi.category.tables;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record EndCraftingTableCategory(RecipeHolder<BaseTableCraftingRecipe> recipe) implements EmiRecipe {
+public record EndCraftingTableCategory(RecipeHolder<ITierCraftingRecipe> recipe) implements EmiRecipe {
     private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/tables/end_jei.png"), 0, 0, 193, 133);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.end_crafting_table.get());
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "end_crafting_table"), WORKSTATION);

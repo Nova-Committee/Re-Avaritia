@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.emi.category.tables;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SculkCraftingTableCategory(RecipeHolder<BaseTableCraftingRecipe> recipe) implements EmiRecipe {
+public record SculkCraftingTableCategory(RecipeHolder<ITierCraftingRecipe> recipe) implements EmiRecipe {
     private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/tables/sculk_jei.png"), 0, 0, 116, 55);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.sculk_crafting_table.get());
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "sculk_crafting_table"), WORKSTATION);

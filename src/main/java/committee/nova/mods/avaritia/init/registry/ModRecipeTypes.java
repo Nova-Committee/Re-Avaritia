@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.BaseTableCraftingRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.Recipe;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 public class ModRecipeTypes {
     public static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, Const.MOD_ID);
 
-    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<BaseTableCraftingRecipe>> CRAFTING_TABLE_RECIPE = recipe("crafting_table_recipe", () -> RecipeType.simple(Const.rl( "crafting_table_recipe")));
+    public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ITierCraftingRecipe>> CRAFTING_TABLE_RECIPE = recipe("crafting_table_recipe", () -> RecipeType.simple(Const.rl( "crafting_table_recipe")));
     public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ICompressorRecipe>> COMPRESSOR_RECIPE = recipe("compressor_recipe", () -> RecipeType.simple(Const.rl( "compressor_recipe")));
     public static final @NotNull DeferredHolder<RecipeType<?>, RecipeType<ExtremeSmithingRecipe>> EXTREME_SMITHING_RECIPE = recipe("extreme_smithing_recipe", () -> RecipeType.simple(Const.rl( "extreme_smithing_recipe")));
 

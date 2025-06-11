@@ -14,6 +14,9 @@ public class ModConfig {
 
     public static final ModConfigSpec COMMON;
 
+    public static final ModConfigSpec.BooleanValue isInfinityLight;
+
+
     public static final ModConfigSpec.DoubleValue foodTime; //foodTime
     public static final ModConfigSpec.BooleanValue isKeepStone;
     public static final ModConfigSpec.BooleanValue isMergeMatterCluster;
@@ -55,6 +58,9 @@ public class ModConfig {
     static {
         final var common = new ModConfigSpec.Builder();
         common.comment("Avaritia Common Config");
+        common.push("tools");
+        isInfinityLight = buildBoolean(common, "Is Infinity Light", false, "The blocks near the infinity blocks are the brightest");
+        common.pop();
         common.push("tools");
         isKeepStone = buildBoolean(common, "Is Stone", false, "Does the super mode of endless tools retain stone and soil");
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", true, "Whether to merge matter cluster");

@@ -10,7 +10,7 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.crafting.recipe.BaseTableCraftingRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 @ZenCodeType.Name("mods.avaritia.CraftingTable")
 @ZenRegister
-public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
+public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
     @ZenCodeType.Method
     public void addShaped(String name, int tier, IItemStack output, IIngredient[][] inputs) {
         var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
@@ -109,7 +109,7 @@ public class CraftingTable implements IRecipeManager<BaseTableCraftingRecipe> {
     }
 
     @Override
-    public RecipeType<BaseTableCraftingRecipe> getRecipeType() {
+    public RecipeType<ITierCraftingRecipe> getRecipeType() {
         return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
     }
 }

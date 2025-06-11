@@ -102,7 +102,7 @@ public class ModItems {
     public static DeferredItem<Item> forge_energy = item("forge_energy", false);
 
     static {
-        ModBlocks.BLOCK_ITEMS.forEach(ITEMS::register);
+        ModBlocks.BLOCK_ITEMS.forEach((s, blockItemSupplier) -> ModItems.item(s, blockItemSupplier::get));
     }
 
     public static DeferredItem<Item> item(String name) {

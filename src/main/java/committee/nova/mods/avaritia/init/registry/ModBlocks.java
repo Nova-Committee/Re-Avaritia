@@ -148,7 +148,7 @@ public class ModBlocks {
 
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Function<DeferredBlock<Block>, Supplier<? extends BlockItem>> item) {
         var reg = BLOCKS.register(name, block);
-        if (hasItem) BLOCK_ITEMS.put(name, () -> item.apply(reg).get());;
+        if (hasItem) BLOCK_ITEMS.put(name, () -> item.apply(reg).get());
         return reg;
     }
 

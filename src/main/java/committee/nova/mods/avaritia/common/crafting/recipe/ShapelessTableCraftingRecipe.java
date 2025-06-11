@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -27,7 +28,7 @@ import java.util.function.BiFunction;
  * Date: 2022/4/2 9:16
  * Version: 1.0
  */
-public class ShapelessTableCraftingRecipe implements BaseTableCraftingRecipe {
+public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     @Getter
     private final NonNullList<Ingredient> inputs;
     private final ItemStack result;

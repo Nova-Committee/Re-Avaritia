@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.crafting.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.api.common.crafting.ShapedRecipePatternCodecs;
 import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.api.utils.java.TriFunction;
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  * from <a href="https://github.com/BlakeBr0/ExtendedCrafting/blob/1.21/src/main/java/com/blakebr0/extendedcrafting/crafting/recipe/ShapedTableRecipe.java">...</a>
  */
-public class ShapedTableCraftingRecipe implements BaseTableCraftingRecipe {
+public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     private final ShapedRecipePattern pattern;
     private final ItemStack result;
     private final int tier;

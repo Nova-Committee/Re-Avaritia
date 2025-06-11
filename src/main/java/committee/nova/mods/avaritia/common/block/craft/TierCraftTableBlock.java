@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.block.craft;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import net.minecraft.core.BlockPos;
@@ -62,12 +63,14 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
     }
 
     @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+    public int getLightEmission(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos) {
         // 遍历方向列表，检查每个方向的方块状态
-        for (Direction direction : Direction.values()) {
-            BlockPos offsetPos = pos.relative(direction);
-            if (level.getBlockState(offsetPos).is( ModBlocks.infinity.get())) {
-                return 15;
+        if (ModConfig.isInfinityLight.get()) {
+            for (Direction direction : Direction.values()) {
+                BlockPos offsetPos = pos.relative(direction);
+                if (level.getBlockState(offsetPos).is(ModBlocks.infinity.get())) {
+                    return 15;
+                }
             }
         }
         return this.tier.lightLevel;

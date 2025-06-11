@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.compat.emi;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.BaseTableCraftingRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.compat.emi.category.CompressorCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.ExtremeSmithingRecipeCategory;
@@ -55,7 +55,7 @@ public class AvaritiaEmiPlugin implements EmiPlugin {
         registry.addWorkstation(EndCraftingTableCategory.CATEGORY, EndCraftingTableCategory.WORKSTATION);
         registry.addCategory(ExtremeCraftingTableCategory.CATEGORY);
         registry.addWorkstation(ExtremeCraftingTableCategory.CATEGORY, ExtremeCraftingTableCategory.WORKSTATION);
-        for (RecipeHolder<BaseTableCraftingRecipe> recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()))
+        for (RecipeHolder<ITierCraftingRecipe> recipe : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()))
             registry.addRecipe(switch (recipe.value().getTier()) {
                 case 1 -> new SculkCraftingTableCategory(recipe);
                 case 2 -> new NetherCraftingTableCategory(recipe);

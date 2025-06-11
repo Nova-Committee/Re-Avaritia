@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
+import committee.nova.mods.avaritia.common.container.slot.ModCraftResultSlot;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -45,9 +46,9 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.result = new ResultContainer();
         this.tier = tier;
 
-        this.matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
+        this.matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size);
 
-        this.addSlot(new ResultSlot(this.player, matrix, this.result, 0, tier.outX, tier.outY));
+        this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, 0, tier.outX, tier.outY));
 
         int i, j;
         for (i = 0; i < tier.size; i++) {

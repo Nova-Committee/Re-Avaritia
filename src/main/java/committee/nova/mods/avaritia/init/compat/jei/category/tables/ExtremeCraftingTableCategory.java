@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei.category.tables;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.crafting.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -29,9 +30,9 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/5/16 23:46
  * Version: 1.0
  */
-public class ExtremeCraftingTableCategory implements IRecipeCategory<BaseTableCraftingRecipe> {
+public class ExtremeCraftingTableCategory implements IRecipeCategory<ITierCraftingRecipe> {
 
-    public static final RecipeType<BaseTableCraftingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "extreme_craft", BaseTableCraftingRecipe.class);
+    public static final RecipeType<ITierCraftingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "extreme_craft", ITierCraftingRecipe.class);
     private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/tables/extreme_jei.png");
 
     private final IDrawable background;
@@ -44,7 +45,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<BaseTableCr
 
 
     @Override
-    public @NotNull RecipeType<BaseTableCraftingRecipe> getRecipeType() {
+    public @NotNull RecipeType<ITierCraftingRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
@@ -64,7 +65,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<BaseTableCr
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, BaseTableCraftingRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ITierCraftingRecipe recipe, @NotNull IFocusGroup focuses) {
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
@@ -108,7 +109,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<BaseTableCr
     }
 
     @Override
-    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull BaseTableCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull ITierCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         var shapeless = recipe instanceof ShapelessTableCraftingRecipe;
         int sX = (shapeless ? 340 : 306) / 2, sY = 200 / 2;
 
