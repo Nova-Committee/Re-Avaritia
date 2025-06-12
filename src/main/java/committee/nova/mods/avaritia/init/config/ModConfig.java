@@ -53,12 +53,13 @@ public class ModConfig {
     public static ModConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
 
     public static final ModConfigSpec.BooleanValue useAdvanceTooltips;
+    public static final ModConfigSpec.BooleanValue useModDifficulty;
 
     //SERVER
     static {
         final var common = new ModConfigSpec.Builder();
         common.comment("Avaritia Common Config");
-        common.push("tools");
+        common.push("blocks");
         isInfinityLight = buildBoolean(common, "Is Infinity Light", false, "The blocks near the infinity blocks are the brightest");
         common.pop();
         common.push("tools");
@@ -102,6 +103,7 @@ public class ModConfig {
         common.pop();
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
+        useModDifficulty = buildBoolean(common, "Use Mod Difficulty", true, "For some mods");
         common.pop();
         COMMON = common.build();
     }

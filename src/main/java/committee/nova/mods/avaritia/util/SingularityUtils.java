@@ -15,6 +15,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 
 /**
  * Description:
@@ -30,7 +32,11 @@ public class SingularityUtils {
         }
         var name = GsonHelper.getAsString(json, "name");
         var colors = GsonHelper.getAsJsonArray(json, "colors");
-        int materialCount = Const.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "materialCount", 1000);
+        int materialCount = ModConfig.useModDifficulty.get()
+                ? Const.isLoad("projecte")
+                ? 10000
+                : GsonHelper.getAsInt(json, "materialCount", 1000)
+                : GsonHelper.getAsInt(json, "materialCount", 1000);
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
@@ -72,6 +78,8 @@ public class SingularityUtils {
 
         JsonElement ingredient;
         if (singularity.getTag() != null) {
+            //var conditions = new ICondition[]{new NotCondition(new TagEmptyCondition(singularity.getTag()))};
+
             var obj = new JsonObject();
             obj.addProperty("tag", singularity.getTag());
             ingredient = obj;

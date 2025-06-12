@@ -11,10 +11,13 @@ import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTile extends BaseInventoryTileEntity {
+public class CompressorTile extends BaseInventoryTileEntity implements WorldlyContainer {
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
     private final SimpleContainerData data = new SimpleContainerData(1);
@@ -190,7 +193,7 @@ public class CompressorTile extends BaseInventoryTileEntity {
     }
 
     public boolean hasRecipe() {
-        return this.recipe != null;
+        return this.recipe.exists();
     }
 
     public ICompressorRecipe getActiveRecipe() {
@@ -208,13 +211,13 @@ public class CompressorTile extends BaseInventoryTileEntity {
 
     public int getMaterialsRequired() {
         if (this.hasRecipe())
-            return this.recipe.get().getInputCount();
+            return this.getActiveRecipe().getInputCount();
         return 0;
     }
 
     public int getTimeRequired() {
         if (this.hasRecipe())
-            return this.recipe.get().getTimeCost();
+            return this.getActiveRecipe().getTimeCost();
         return 0;
     }
 
@@ -227,5 +230,100 @@ public class CompressorTile extends BaseInventoryTileEntity {
         } else {
             this.inventory.setStackInSlot(0, ItemUtils.grow(result, stack.getCount()));
         }
+    }
+
+    @Override
+    public int @NotNull [] getSlotsForFace(@NotNull Direction direction) {
+        if (direction == Direction.UP) {
+            return new int[] { 1 }; //input
+        } else {
+            return new int[] { 0 }; //output
+        }
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, Direction direction) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        if (index == 1) { //input
+            if (this.getInventory().getStackInSlot(1).isEmpty()) {
+                return true;
+            }
+
+            if (!hasRecipe()) {
+                return false;
+            }
+
+            if (!this.materialStack.isEmpty()) {
+                return ItemStack.isSameItemSameComponents(this.getInventory().getStackInSlot(1), this.materialStack);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, @NotNull ItemStack stack, @NotNull Direction direction) {
+        return index == 0 && direction != Direction.UP;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return this.getInventory().getSlots();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.getInventory().getStacks().isEmpty();
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int slot) {
+        if (slot == 0) {
+            return this.getInventory().toRecipeInventory().getItem(0);
+        } else {
+            return this.getInventory().toRecipeInventory().getItem(1);
+        }
+    }
+
+    @Override
+    public @NotNull ItemStack removeItem(int slot, int amount) {
+        if (slot == 0) {
+            return this.getInventory().toRecipeInventory().removeItem(0, amount);
+        } else if (slot == 1) {
+            return this.getInventory().toRecipeInventory().removeItem(1, amount);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+        if (slot == 0) {
+            return this.getInventory().toRecipeInventory().removeItemNoUpdate(0);
+        } else if (slot == 1) {
+            return this.getInventory().toRecipeInventory().removeItemNoUpdate(1);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void setItem(int slot, @NotNull ItemStack stack) {
+        if (slot == 0) {
+            this.getInventory().toRecipeInventory().setItem(0, stack);
+        } else if (slot == 1) {
+            this.getInventory().toRecipeInventory().setItem(1, stack);
+        }
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        BlockPos blockPos = this.getBlockPos();
+        return player.distanceToSqr(blockPos.getX() + 0.5D,
+                blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 64.0D;
+    }
+
+    @Override
+    public void clearContent() {
+
     }
 }

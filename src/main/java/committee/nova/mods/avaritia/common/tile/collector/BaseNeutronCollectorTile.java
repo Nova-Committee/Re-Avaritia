@@ -9,13 +9,17 @@ import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 13:55
  * Version: 1.0
  */
-public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
+public class BaseNeutronCollectorTile extends BaseInventoryTileEntity implements WorldlyContainer {
     public final ItemStackWrapper inventory;
     public SimpleContainerData data = new SimpleContainerData(1);
     private int progress;
@@ -116,7 +120,85 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
         return tier.production_ticks;
     }
 
-    public Item getProduction() {
-        return tier.production.getItems()[0].getItem();
+    public ItemStack getProduction() {
+        return tier.production.getItems()[0];
+    }
+
+    @Override
+    public int @NotNull [] getSlotsForFace(@NotNull Direction direction) {
+        if (direction == Direction.DOWN) {
+            return new int[] { 0 };
+        } else {
+            return new int[] { 1 };
+        }
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int i, @NotNull ItemStack itemStack, @Nullable Direction direction) {
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, @NotNull ItemStack itemStack, @NotNull Direction direction) {
+        if (itemStack.isEmpty()) {
+            return false;
+        }
+        if (index == 0) { //output
+            var result = this.getInventory().getStackInSlot(0);
+            return ItemStack.isSameItemSameComponents(result, getProduction());
+        }
+        return false;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return this.getInventory().getSlots();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.getInventory().getStacks().isEmpty();
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int slot) {
+        if (slot == 0) {
+            return this.getInventory().toRecipeInventory().getItem(0);
+        } else return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItem(int slot, int amount) {
+        if (slot == 0) {
+            return this.getInventory().toRecipeInventory().removeItem(0, amount);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+        if (slot == 0) {
+            return this.getInventory().toRecipeInventory().removeItemNoUpdate(0);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void setItem(int slot, @NotNull ItemStack itemStack) {
+        if (slot == 0) {
+            this.getInventory().toRecipeInventory().setItem(0, itemStack);
+        }
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        BlockPos blockPos = this.getBlockPos();
+        return player.distanceToSqr(blockPos.getX() + 0.5D,
+                blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 64.0D;
+    }
+
+    @Override
+    public void clearContent() {
+
     }
 }
