@@ -57,7 +57,7 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentValue(@NotNull ItemStack stack) {
         return 0;
     }
 

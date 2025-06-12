@@ -7,17 +7,14 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @Project: Avaritia
+ * @Project: Re-Avaritia
  * @Author: cnlimiter
- * @CreateTime: 2024/11/22 01:42
+ * @CreateTime: 2025/6/12 上午12:41
  * @Description:
  */
-public class FakeSlot extends SlotItemHandler {
-    public int slotIndex;
-
-    public FakeSlot(IItemHandler itemHandler, int index, int x, int y) {
-        super(itemHandler, index, x, y);
-        this.slotIndex = index;
+public class PreviewSlot extends SlotItemHandler {
+    public PreviewSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+        super(itemHandler, index, xPosition, yPosition);
     }
 
     @Override
@@ -26,9 +23,8 @@ public class FakeSlot extends SlotItemHandler {
     }
 
     @Override
-    public void set(ItemStack stack) {
-        if (stack.isEmpty() || this.mayPlace(stack)) {
-            super.set(stack);
-        }
+    public boolean mayPlace(@NotNull ItemStack stack) {
+        return false;
     }
 }
+
