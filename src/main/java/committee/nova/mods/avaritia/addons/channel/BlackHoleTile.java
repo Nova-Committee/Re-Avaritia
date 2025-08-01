@@ -55,13 +55,6 @@ public class BlackHoleTile extends BaseTileEntity implements IChannelTerminal {
     private boolean waterlogged = false;
     private final HashSet<ServerPlayer> channelSelectors = new HashSet<>();
 
-
-    private boolean north = true;
-    private boolean south = true;
-    private boolean east = true;
-    private boolean west = true;
-    private boolean up = true;
-    private boolean down = true;
     @Getter private ServerChannel channel = NullChannel.INSTANCE;
     @Getter private LazyOptional<?> capability = LazyOptional.of(() -> channel);
 
@@ -83,12 +76,6 @@ public class BlackHoleTile extends BaseTileEntity implements IChannelTerminal {
 
     public void onBlockStateChange() {
         BlockState state = getBlockState();
-        north = state.getValue(BlockStateProperties.NORTH);
-        south = state.getValue(BlockStateProperties.SOUTH);
-        west = state.getValue(BlockStateProperties.WEST);
-        east = state.getValue(BlockStateProperties.EAST);
-        up = state.getValue(BlockStateProperties.UP);
-        down = state.getValue(BlockStateProperties.DOWN);
         waterlogged = state.getValue(BlockStateProperties.WATERLOGGED);
     }
 
@@ -141,13 +128,7 @@ public class BlackHoleTile extends BaseTileEntity implements IChannelTerminal {
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (channel.isRemoved()) return LazyOptional.empty();
-        if (side == Direction.NORTH && !north) return LazyOptional.empty();
-        else if (side == Direction.SOUTH && !south) return LazyOptional.empty();
-        else if (side == Direction.WEST && !west) return LazyOptional.empty();
-        else if (side == Direction.EAST && !east) return LazyOptional.empty();
-        else if (side == Direction.UP && !up) return LazyOptional.empty();
-        else if (side == Direction.DOWN && !down) return LazyOptional.empty();
-        else if (cap == ForgeCapabilities.ITEM_HANDLER
+        if (cap == ForgeCapabilities.ITEM_HANDLER
                 || cap == ForgeCapabilities.FLUID_HANDLER
                 || cap == ForgeCapabilities.ENERGY) {
             return capability.cast();

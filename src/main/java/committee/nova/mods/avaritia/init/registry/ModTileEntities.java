@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.addons.channel.BlackHoleChestRender;
 import committee.nova.mods.avaritia.addons.channel.BlackHoleTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
@@ -33,6 +34,7 @@ public class ModTileEntities {
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
+        BlockEntityRenderers.register(hole_tile.get(), BlackHoleChestRender::new);
     }
 
     public static RegistryObject<BlockEntityType<BaseNeutronCollectorTile>> neutron_collector_tile = blockEntity(
