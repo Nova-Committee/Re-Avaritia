@@ -27,13 +27,11 @@ import java.util.List;
  */
 public abstract class Channel implements IItemHandler, IFluidHandler, IEnergyStorage {
     private String channelName = "UnName";
-    public final HashMap<Item, Long> storageItems = new HashMap<>();
-    public final HashMap<Fluid, Long> storageFluids = new HashMap<>();
-    public final HashMap<String, Long> storageGas = new HashMap<>();//todo 兼容气体
+    //TODO:兼容mek气体和其他能量
+    public final HashMap<String, Long> storageItems = new HashMap<>();
+    public final HashMap<String, Long> storageFluids = new HashMap<>();
     public final HashMap<String, Long> storageEnergies = new HashMap<>();
-    @Getter
     private String[] itemKeys = new String[]{};
-    @Getter
     private String[] fluidKeys = new String[]{};
     private ItemStack[] slotItemTemp = {ItemStack.EMPTY};
     private FluidStack[] slotFluidTemp = {FluidStack.EMPTY};
@@ -41,32 +39,24 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
 
     public Channel() {}
 
-    public void onItemChanged(Item itemId, boolean listChanged) {
+    public void onItemChanged(String itemId, boolean listChanged) {
         if (listChanged) updateItemKeys();
     }
 
-    public void onFluidChanged(Fluid fluidId, boolean listChanged) {
+    public void onFluidChanged(String fluidId, boolean listChanged) {
         if (listChanged) updateFluidKeys();
     }
 
     public abstract void onEnergyChanged(String energyId, boolean listChanged);
 
     public void updateItemKeys() {
-        List<String> keys = new ArrayList<>();
-        storageItems.keySet().forEach(item -> {
-            keys.add(StorageUtils.getItemId(item));
-        });
-        itemKeys = keys.toArray(new String[]{});
+        itemKeys = storageItems.keySet().toArray(new String[]{});
         slotItemTemp = new ItemStack[itemKeys.length];
         for (int i = 0; i < itemKeys.length; i++) slotItemTemp[i] = new ItemStack(StorageUtils.getItem(itemKeys[i]));
     }
 
     public void updateFluidKeys() {
-        List<String> keys = new ArrayList<>();
-        storageFluids.keySet().forEach(fluid -> {
-            keys.add(StorageUtils.getFluidId(fluid));
-        });
-        fluidKeys = keys.toArray(new String[]{});
+        fluidKeys = storageFluids.keySet().toArray(new String[]{});
         slotFluidTemp = new FluidStack[fluidKeys.length];
         for (int i = 0; i < fluidKeys.length; i++) slotFluidTemp[i] = new FluidStack(StorageUtils.getFluid(fluidKeys[i]), 1);
     }
@@ -75,21 +65,21 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         return storageItems.size() + storageFluids.size() + storageEnergies.size();
     }
 
-    public boolean hasItem(Item item) { return storageItems.containsKey(item); }
+    public boolean hasItem(String item) { return storageItems.containsKey(item); }
 
-    public int getItemAmount(Item item) {
+    public int getItemAmount(String item) {
         return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(item, 0L));
     }
 
-    public long getRealItemAmount(Item item) {
+    public long getRealItemAmount(String item) {
         return storageItems.getOrDefault(item, 0L);
     }
 
-    public int getFluidAmount(Fluid fluid) {
+    public int getFluidAmount(String fluid) {
         return (int) Long.min(Integer.MAX_VALUE, storageFluids.getOrDefault(fluid, 0L));
     }
 
-    public long getRealFluidAmount(Fluid fluid) {
+    public long getRealFluidAmount(String fluid) {
         return storageFluids.getOrDefault(fluid, 0L);
     }
 
@@ -110,16 +100,16 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     }
 
     public int getStorageAmount(Item item) {
-        return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(item, 0L));
+        return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(StorageUtils.getItemId(item), 0L));
     }
 
     public int getStorageAmount(Fluid fluid) {
-        return (int) Long.min(Integer.MAX_VALUE, storageFluids.getOrDefault(fluid, 0L));
+        return (int) Long.min(Integer.MAX_VALUE, storageFluids.getOrDefault(StorageUtils.getFluidId(fluid), 0L));
     }
 
     public int canStorageAmount(ItemStack itemStack) {
         if (itemStack.hasTag()) return 0;
-        long a = storageItems.getOrDefault(itemStack.getItem(), 0L);
+        long a = storageItems.getOrDefault(StorageUtils.getItemId(itemStack.getItem()), 0L);
         if (a == 0L) {
             if (getChannelSize() >= maxChannelSize) return 0;
             else return Integer.MAX_VALUE;
@@ -129,7 +119,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
 
     public int canStorageAmount(FluidStack fluidStack) {
         if (fluidStack.hasTag()) return 0;
-        long a = storageFluids.getOrDefault(fluidStack.getFluid(), 0L);
+        long a = storageFluids.getOrDefault(StorageUtils.getFluidId(fluidStack.getFluid()), 0L);
         if (a == 0L) {
             if (getChannelSize() >= maxChannelSize) return 0;
             else return Integer.MAX_VALUE;
@@ -139,7 +129,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
 
     public long canStorageRealAmount(FluidStack fluidStack) {
         if (fluidStack.hasTag()) return 0;
-        long a = storageFluids.getOrDefault(fluidStack.getFluid(), 0L);
+        long a = storageFluids.getOrDefault(StorageUtils.getFluidId(fluidStack.getFluid()), 0L);
         if (a == 0L) {
             if (getChannelSize() >= maxChannelSize) return 0;
             else return Long.MAX_VALUE;
@@ -147,13 +137,13 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         return Long.MAX_VALUE - a;
     }
 
-    public boolean canStorageItem(Item item) {
+    public boolean canStorageItem(String item) {
         if (storageItems.containsKey(item)) {
             return storageItems.get(item) < Long.MAX_VALUE;
         } else return getChannelSize() < maxChannelSize;
     }
 
-    public int canStorageItemAmount(Item item) {
+    public int canStorageItemAmount(String item) {
         long a = storageItems.getOrDefault(item, 0L);
         if (a == 0L) {
             if (getChannelSize() >= maxChannelSize) return 0;
@@ -162,7 +152,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         return (int) Math.min(Integer.MAX_VALUE, Long.MAX_VALUE - a);
     }
 
-    public int canStorageFluidAmount(Fluid fluidId) {
+    public int canStorageFluidAmount(String fluidId) {
         long a = storageFluids.getOrDefault(fluidId, 0L);
         if (a == 0L) {
             if (getChannelSize() >= maxChannelSize) return 0;
@@ -186,13 +176,21 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         return (int) Math.min(Integer.MAX_VALUE, Long.MAX_VALUE - a);
     }
 
+    public String[] getItemKeys() {
+        return itemKeys;
+    }
+
+    public String[] getFluidKeys() {
+        return fluidKeys;
+    }
+
     /**
      * @param itemStack 会被修改，塞不进去会有余，
      * @return 存进去的量
      */
     public int addItem(ItemStack itemStack) {
         if (itemStack.hasTag() || itemStack.isEmpty()) return 0;
-        Item itemId = itemStack.getItem();
+        String itemId = StorageUtils.getItemId(itemStack.getItem());
         int count = itemStack.getCount();
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
@@ -223,7 +221,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
      */
     public int addFluid(FluidStack fluidStack) {
         if (fluidStack.hasTag() || fluidStack.isEmpty()) return 0;
-        Fluid fluidId = fluidStack.getFluid();
+        String fluidId = StorageUtils.getFluidId(fluidStack.getFluid());
         int count = fluidStack.getAmount();
         if (storageFluids.containsKey(fluidId)) {
             long storageAmount = storageFluids.get(fluidId);
@@ -251,8 +249,8 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     /**
      * @return 成功进入的
      */
-    public long addItem(Item itemId, long count) {
-        if (itemId.equals(Items.AIR) || count == 0) return 0L;
+    public long addItem(String itemId, long count) {
+        if (itemId.equals("minecraft:air") || count == 0) return 0L;
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
@@ -276,8 +274,8 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     /**
      * @return 成功进入的
      */
-    public long addFluid(Fluid fluidId, long count) {
-        if (fluidId.isSame(Fluids.EMPTY) || count == 0) return 0L;
+    public long addFluid(String fluidId, long count) {
+        if (fluidId.equals("minecraft:air") || count == 0) return 0L;
         if (storageFluids.containsKey(fluidId)) {
             long storageAmount = storageFluids.get(fluidId);
             long remainingSpaces = Long.MAX_VALUE - storageAmount;
@@ -379,7 +377,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
      */
     public void fillItemStack(ItemStack itemStack, int count) {
         if (itemStack.isEmpty() || count == 0 || itemStack.hasTag()) return;
-        Item itemId = itemStack.getItem();
+        String itemId = StorageUtils.getItemId(itemStack.getItem());
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
@@ -408,7 +406,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
 
     public void fillFluidStack(FluidStack fluidStack, int count) {
         if (fluidStack.isEmpty() || count == 0 || fluidStack.hasTag()) return;
-        Fluid fluidId = fluidStack.getFluid();
+        String fluidId = StorageUtils.getFluidId(fluidStack.getFluid());
         if (storageFluids.containsKey(fluidId)) {
             long storageCount = storageFluids.get(fluidId);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
@@ -438,7 +436,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     /**
      * 从频道获取物品，但不限制数量。
      */
-    public ItemStack takeItem(Item itemId, int count) {
+    public ItemStack takeItem(String itemId, int count) {
         if (!storageItems.containsKey(itemId) || itemId.equals("minecraft:air") || count == 0) return ItemStack.EMPTY;
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -449,11 +447,11 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
             count = (int) storageCount;
             onItemChanged(itemId, true);
         }
-        return new ItemStack(itemId, count);
+        return new ItemStack(StorageUtils.getItem(itemId), count);
     }
 
-    public FluidStack takeFluid(Fluid fluidId, int count) {
-        if (!storageFluids.containsKey(fluidId) || fluidId.isSame(Fluids.EMPTY) || count == 0) return FluidStack.EMPTY;
+    public FluidStack takeFluid(String fluidId, int count) {
+        if (!storageFluids.containsKey(fluidId) || fluidId.equals("minecraft:air") || count == 0) return FluidStack.EMPTY;
         long storageAmount = storageFluids.get(fluidId);
         if (count < storageAmount) {
             storageFluids.replace(fluidId, storageAmount - count);
@@ -463,15 +461,15 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
             count = (int) storageAmount;
             onFluidChanged(fluidId, true);
         }
-        return new FluidStack(fluidId, count);
+        return new FluidStack(StorageUtils.getFluid(fluidId), count);
     }
 
     /**
      * 从频道获取物品，数量限制在叠堆最大值。
      */
-    public ItemStack saveTakeItem(Item itemId, int count) {
-        if (!storageItems.containsKey(itemId) || itemId.equals(Items.AIR) || count == 0) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(itemId, 1);
+    public ItemStack saveTakeItem(String itemId, int count) {
+        if (!storageItems.containsKey(itemId) || itemId.equals("minecraft:air") || count == 0) return ItemStack.EMPTY;
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
         count = Integer.min(count, itemStack.getMaxStackSize());
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -486,9 +484,9 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         return itemStack;
     }
 
-    public ItemStack saveTakeItem(Item itemId, boolean half) {
+    public ItemStack saveTakeItem(String itemId, boolean half) {
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(itemId, 1);
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
         int count = half ? (itemStack.getMaxStackSize() + 1) / 2 : itemStack.getMaxStackSize();
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -505,7 +503,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
 
     public void removeItem(ItemStack itemStack) {
         if (itemStack.isEmpty()) return;
-        Item itemId = itemStack.getItem();
+        String itemId = StorageUtils.getItemId(itemStack.getItem());
         if (!storageItems.containsKey(itemId)) return;
         long storageCount = storageItems.get(itemId);
         if (itemStack.getCount() < storageCount) {
@@ -517,7 +515,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         }
     }
 
-    public void removeItem(Item itemId, long count) {
+    public void removeItem(String itemId, long count) {
         if (!storageItems.containsKey(itemId)) return;
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -577,14 +575,14 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     public @NotNull ItemStack getStackInSlot(int slot) {
         if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
         ItemStack itemStack = slotItemTemp[slot - 27];
-        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, storageItems.get(ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemKeys[slot - 27])))));
+        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, storageItems.get(itemKeys[slot - 27])));
         return itemStack;
     }
 
     @Override
     public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         if (stack.isEmpty() || stack.hasTag()) return stack;
-        Item itemId = stack.getItem();
+        String itemId = StorageUtils.getItemId(stack.getItem());
         ItemStack remainingStack = ItemStack.EMPTY;
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
@@ -610,9 +608,9 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
-        Item itemId = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemKeys[slot - 27]));
+        String itemId = itemKeys[slot - 27];
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(itemId, 1);
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
         int count = Math.min(itemStack.getMaxStackSize(), amount);
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -651,8 +649,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     public @NotNull FluidStack getFluidInTank(int tank) {
         if (tank >= fluidKeys.length + 9 || tank < 9) return FluidStack.EMPTY;
         FluidStack fluidStack = slotFluidTemp[tank - 9];
-        fluidStack.setAmount((int) Math.min(Integer.MAX_VALUE, storageFluids.get(
-                ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidKeys[tank - 9])))));
+        fluidStack.setAmount((int) Math.min(Integer.MAX_VALUE, storageFluids.get(fluidKeys[tank - 9])));
         return fluidStack;
     }
 
@@ -669,7 +666,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         if (resource.isEmpty() || resource.hasTag()) return 0;
-        Fluid fluidId = resource.getFluid();
+        String fluidId = StorageUtils.getFluidId(resource.getFluid());
         if (storageFluids.containsKey(fluidId)) {
             long storageAmount = storageFluids.get(fluidId);
             long remainingSpaces = Long.MAX_VALUE - storageAmount;
@@ -698,7 +695,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
 
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        Fluid fluidId = resource.getFluid();
+        String fluidId = StorageUtils.getFluidId(resource.getFluid());
         if (!storageFluids.containsKey(fluidId) || resource.getAmount() <= 0) return FluidStack.EMPTY;
         long storageAmount = storageFluids.get(fluidId);
         int count = resource.getAmount();
@@ -720,7 +717,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     @Override
     public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
         if (storageFluids.isEmpty() || maxDrain <= 0) return FluidStack.EMPTY;
-        Fluid fluidId = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidKeys[0]));
+        String fluidId = fluidKeys[0];
         long storageAmount = storageFluids.get(fluidId);
         if (maxDrain < storageAmount) {
             if (action == FluidAction.EXECUTE) {
@@ -734,7 +731,7 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
             }
             maxDrain = (int) storageAmount;
         }
-        return new FluidStack(fluidId, maxDrain);
+        return new FluidStack(StorageUtils.getFluid(fluidId), maxDrain);
     }
 
 

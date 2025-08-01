@@ -34,6 +34,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -130,7 +131,7 @@ public class ChannelMenu extends AbstractContainerMenu {
             this.blockPos = BlockPos.ZERO;
             this.blackHoleTile = null;
             this.panelItem = player.getInventory().getItem(panelItemSlotIndex);
-            CompoundTag nbt = panelItem.getTag();
+            CompoundTag nbt = panelItem.getOrCreateTag();
             this.owner = nbt.contains("owner") ? nbt.getUUID("owner") : player.getUUID();
             this.locked = nbt.getBoolean("locked");
             this.craftingMode = nbt.getBoolean("craftingMode");
@@ -211,7 +212,6 @@ public class ChannelMenu extends AbstractContainerMenu {
 
 
     //本类方法
-
     public void action(int actionId, String type, String id) {
         switch (actionId) {
             case Action.LEFT_CLICK_DUMMY_SLOT -> onLeftClickDummySlot(type, id);
@@ -231,15 +231,15 @@ public class ChannelMenu extends AbstractContainerMenu {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
             if (id.equals("minecraft:air")) return;
-            if (type.equals("item")) setCarried(channel.saveTakeItem(StorageUtils.getItem(id), false));
+            if (type.equals("item")) setCarried(channel.saveTakeItem(id, false));
             else if (type.equals("fluid")) {
-                if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
-                if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey(StorageUtils.getItem("minecraft:bucket"))) return;
+                if (!channel.storageFluids.containsKey(id)) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
-                channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
-                channel.takeItem(StorageUtils.getItem("minecraft:bucket"), 1);
+                channel.takeFluid(id, FluidType.BUCKET_VOLUME);
+                channel.takeItem("minecraft:bucket", 1);
                 setCarried(fluidBucket);
             }
         }
@@ -252,19 +252,23 @@ public class ChannelMenu extends AbstractContainerMenu {
             //特殊操作，比如取液体.
             //原版桶
             if (type.equals("fluid") && carried.getItem().equals(Items.BUCKET)) {
-                if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME) return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
-                channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
+                channel.takeFluid(id, FluidType.BUCKET_VOLUME);
                 setCarried(fluidBucket);
             }
             else {
+//                if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) {
+//                    channel.addItem(carried);
+//                    return;
+//                }
                 //其他容器
                 AtomicBoolean canal = new AtomicBoolean(false);
                 if (type.equals("fluid")) carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
-                    if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
-                    FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), (int) Math.min(FluidType.BUCKET_VOLUME, channel.storageFluids.get(StorageUtils.getFluid(id))));
+                    if (!channel.storageFluids.containsKey(id)) return;
+                    FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), (int) Math.min(FluidType.BUCKET_VOLUME, channel.storageFluids.get(id)));
                     int filledAmount = iFluidHandlerItem.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                     if (filledAmount != 0) {
                         boolean succeedInput = true;
@@ -282,11 +286,11 @@ public class ChannelMenu extends AbstractContainerMenu {
                                 break;
                             }
                         }
-                        if (succeedInput) channel.takeFluid(StorageUtils.getFluid(id), filledAmount);
+                        if (succeedInput) channel.takeFluid(id, filledAmount);
                     }
                     canal.set(true);
                 });
-                else if (type.equals("energy") && id.equals("avaritia:forge_energy"))
+                else if (type.equals("energy") && id.equals("blackholestorage:forge_energy"))
                     carried.getCapability(ForgeCapabilities.ENERGY).ifPresent(iEnergyStorage -> {
                         if (!iEnergyStorage.canReceive() || channel.getFEAmount() == 0) return;
                         int maxInputAmount = Math.min(1000000, channel.getFEAmount());
@@ -297,16 +301,16 @@ public class ChannelMenu extends AbstractContainerMenu {
                     });
                 else if (type.equals("item")) carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                     //TODO：这里需要做与流体一样的正确性检查防止刷物品，但需要一个有这个问题的容器才能做测试。
-                    if (!channel.storageItems.containsKey(StorageUtils.getItem(id))) return;
+                    if (!channel.storageItems.containsKey(id)) return;
                     int slots = iItemHandler.getSlots();
                     for (int i = 0; i < slots; i++) {
                         ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
                         if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty()) continue;
                         int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
                         if (remainingSlotSpace <= 0) continue;
-                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(StorageUtils.getItem(id)) / 2);
+                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(id) / 2);
                         transmitAmount = Math.max(transmitAmount, 64000);
-                        transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(StorageUtils.getItem(id)));
+                        transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(id));
                         transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
                         int markAmount = transmitAmount;
                         tryInsertItem.setCount(transmitAmount);
@@ -318,7 +322,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                         }
                         markAmount -= transmitAmount;
                         if (markAmount > 0) {
-                            channel.takeItem(StorageUtils.getItem(id), markAmount);
+                            channel.takeItem(id, markAmount);
                             canal.set(true);
                             return;
                         }
@@ -334,14 +338,14 @@ public class ChannelMenu extends AbstractContainerMenu {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
             if (id.equals("minecraft:air")) return;
-            if (type.equals("item")) setCarried(channel.saveTakeItem(StorageUtils.getItem(id), true));
+            if (type.equals("item")) setCarried(channel.saveTakeItem(id, true));
             if (type.equals("fluid")) {
-                if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey(StorageUtils.getItem("minecraft:bucket"))) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
-                channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
-                channel.takeItem(StorageUtils.getItem("minecraft:bucket"), 1);
+                channel.takeFluid(id, FluidType.BUCKET_VOLUME);
+                channel.takeItem("minecraft:bucket", 1);
                 setCarried(fluidBucket);
             }
         }
@@ -418,9 +422,9 @@ public class ChannelMenu extends AbstractContainerMenu {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
             if (type.equals("item")) {
-                if (!channel.storageItems.containsKey(StorageUtils.getItem(id))) return;
+                if (!channel.storageItems.containsKey(id)) return;
                 ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
-                itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), channel.storageItems.get(StorageUtils.getItem(id))));
+                itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), channel.storageItems.get(id)));
                 int i = itemStack.getCount();
                 if (craftingMode) moveItemStackTo(itemStack, 41, 50, false);
                 else moveItemStackTo(itemStack, 0, 36, false);
@@ -431,16 +435,16 @@ public class ChannelMenu extends AbstractContainerMenu {
                 }
             }
             else if (type.equals("fluid")) {
-                if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
-                if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey(StorageUtils.getItem("minecraft:bucket"))) return;
+                if (!channel.storageFluids.containsKey(id)) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
                 if (craftingMode) moveItemStackTo(fluidBucket, 41, 50, false);
                 else moveItemStackTo(fluidBucket, 0, 36, false);
                 if (fluidBucket.isEmpty()) {
-                    channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
-                    channel.takeItem(StorageUtils.getItem("minecraft:bucket"), 1);
+                    channel.takeFluid(id, FluidType.BUCKET_VOLUME);
+                    channel.takeItem("minecraft:bucket", 1);
                 }
             }
         }
@@ -450,11 +454,11 @@ public class ChannelMenu extends AbstractContainerMenu {
                 return;
             }
             if (type.equals("fluid") && carried.getItem().equals(Items.BUCKET)) {
-                if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME) return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
-                channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
+                channel.takeFluid(id, FluidType.BUCKET_VOLUME);
                 setCarried(fluidBucket);
             }
             else {
@@ -462,16 +466,16 @@ public class ChannelMenu extends AbstractContainerMenu {
                 AtomicBoolean canal = new AtomicBoolean(false);
                 //取一大堆，下限堆大小为64k桶，上限为存量的一半，防止败家行为。
                 if (type.equals("fluid")) carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
-                    if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
+                    if (!channel.storageFluids.containsKey(id)) return;
                     int tanks = iFluidHandlerItem.getTanks();
                     for (int i = 0; i < tanks; i++) {
                         FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1000);
                         if (!fluidStack.isFluidEqual(iFluidHandlerItem.getFluidInTank(i)) && !iFluidHandlerItem.getFluidInTank(i).isEmpty()) continue;
                         int remainingTankSpace = iFluidHandlerItem.getTankCapacity(i) - iFluidHandlerItem.getFluidInTank(i).getAmount();
                         if (remainingTankSpace <= 0) continue;
-                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageFluids.get(StorageUtils.getFluid(id)) / 2);
+                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageFluids.get(id) / 2);
                         transmitAmount = Math.max(transmitAmount, 64000000);
-                        transmitAmount = (int) Math.min(transmitAmount, channel.storageFluids.get(StorageUtils.getFluid(id)));
+                        transmitAmount = (int) Math.min(transmitAmount, channel.storageFluids.get(id));
                         transmitAmount = Math.min(transmitAmount, remainingTankSpace);
                         int markAmount = transmitAmount;
                         fluidStack.setAmount(transmitAmount);
@@ -500,14 +504,14 @@ public class ChannelMenu extends AbstractContainerMenu {
                         }
                         markAmount -= transmitAmount;
                         if (markAmount > 0) {
-                            channel.takeFluid(StorageUtils.getFluid(id), markAmount);
+                            channel.takeFluid(id, markAmount);
                             canal.set(true);
                         }
                         return;
                     }
                 });
                     //但电不需要防败家，因为不缺嘿嘿嘿。
-                else if (type.equals("energy") && id.equals("avaritia:forge_energy"))
+                else if (type.equals("energy") && id.equals("blackholestorage:forge_energy"))
                     carried.getCapability(ForgeCapabilities.ENERGY).ifPresent(iEnergyStorage -> {
                         if (!iEnergyStorage.canReceive() || channel.getFEAmount() == 0) return;
                         int maxInputAmount = channel.getFEAmount();
@@ -525,10 +529,10 @@ public class ChannelMenu extends AbstractContainerMenu {
                         }
                     });
                 else if (type.equals("item")) carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                    if (!channel.storageItems.containsKey(StorageUtils.getItem(id))) return;
-                    int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(StorageUtils.getItem(id)) / 2);
+                    if (!channel.storageItems.containsKey(id)) return;
+                    int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(id) / 2);
                     transmitAmount = Math.max(transmitAmount, 64000);
-                    transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(StorageUtils.getItem(id)));
+                    transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(id));
                     int markAmount = transmitAmount;
                     ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
                     int slots = iItemHandler.getSlots();
@@ -543,7 +547,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                     }
                     markAmount -= transmitAmount;
                     if (markAmount > 0) {
-                        channel.takeItem(StorageUtils.getItem(id), markAmount);
+                        channel.takeItem(id, markAmount);
                         canal.set(true);
                     }
                 });
@@ -558,23 +562,23 @@ public class ChannelMenu extends AbstractContainerMenu {
         if (carried.isEmpty()) {
             if (id.equals("minecraft:air")) return;
             if (type.equals("item")) {
-                if (!channel.storageItems.containsKey(StorageUtils.getItem(id))) return;
+                if (!channel.storageItems.containsKey(id)) return;
                 ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
                 if (craftingMode) moveItemStackTo(itemStack, 41, 50, false);
                 else moveItemStackTo(itemStack, 0, 36, false);
-                if (itemStack.isEmpty()) channel.takeItem(StorageUtils.getItem(id), 1);
+                if (itemStack.isEmpty()) channel.takeItem(id, 1);
             }
             else if (type.equals("fluid")) {
-                if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
-                if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey(StorageUtils.getItem("minecraft:bucket"))) return;
+                if (!channel.storageFluids.containsKey(id)) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
                 if (craftingMode) moveItemStackTo(fluidBucket, 41, 50, false);
                 else moveItemStackTo(fluidBucket, 0, 36, false);
                 if (fluidBucket.isEmpty()) {
-                    channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
-                    channel.takeItem(StorageUtils.getItem("minecraft:bucket"), 1);
+                    channel.takeFluid(id, FluidType.BUCKET_VOLUME);
+                    channel.takeItem("minecraft:bucket", 1);
                 }
             }
         }
@@ -583,7 +587,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                 channel.fillItemStack(carried, -1);
                 return;
             }
-            //if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) return;
+           // if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) return;
             AtomicBoolean canal = new AtomicBoolean(false);
             carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
                 FluidStack resultFluidStack = iFluidHandlerItem.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
@@ -593,7 +597,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                     return;
                 }
                 if (!resultFluidStack.isEmpty()) {
-                    Fluid fluid = resultFluidStack.getFluid();
+                    String fluid = StorageUtils.getFluidId(resultFluidStack.getFluid());
                     long canStoredAmount = channel.canStorageRealAmount(resultFluidStack);
                     if (canStoredAmount > 0L) {
                         long removedAmount = 0L;
@@ -667,19 +671,19 @@ public class ChannelMenu extends AbstractContainerMenu {
     public void tryThrowOneFromDummySlot(String type, String id) {
         if (id.equals("minecraft:air")) return;
         if (type.equals("item")) {
-            if (!channel.storageItems.containsKey(StorageUtils.getItem(id))) return;
-            ItemStack itemStack = channel.takeItem(StorageUtils.getItem(id), 1);
+            if (!channel.storageItems.containsKey(id)) return;
+            ItemStack itemStack = channel.takeItem(id, 1);
             player.drop(itemStack, false);
         }
         else if (type.equals("fluid")) {
             //笑死，对于流体这种空槽根本不触发扔事件。
-            if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
-            if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey(StorageUtils.getItem("minecraft:bucket"))) return;
+            if (!channel.storageFluids.containsKey(id)) return;
+            if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
             FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
             ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
             if (fluidBucket.isEmpty()) return;
-            channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
-            channel.takeItem(StorageUtils.getItem("minecraft:bucket"), 1);
+            channel.takeFluid(id, FluidType.BUCKET_VOLUME);
+            channel.takeItem("minecraft:bucket", 1);
             player.drop(fluidBucket, false);
         }
     }
@@ -687,18 +691,18 @@ public class ChannelMenu extends AbstractContainerMenu {
     public void tryThrowStickFromDummySlot(String type, String id) {
         if (id.equals("minecraft:air")) return;
         if (type.equals("item")) {
-            if (!channel.storageItems.containsKey(StorageUtils.getItem(id))) return;
-            ItemStack itemStack = channel.saveTakeItem(StorageUtils.getItem(id), false);
+            if (!channel.storageItems.containsKey(id)) return;
+            ItemStack itemStack = channel.saveTakeItem(id, false);
             player.drop(itemStack, false);
         }
         else if (type.equals("fluid")) {
-            if (!channel.storageFluids.containsKey(StorageUtils.getFluid(id))) return;
-            if (channel.storageFluids.get(StorageUtils.getFluid(id)) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey(StorageUtils.getItem("minecraft:bucket"))) return;
+            if (!channel.storageFluids.containsKey(id)) return;
+            if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
             FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
             ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
             if (fluidBucket.isEmpty()) return;
-            channel.takeFluid(StorageUtils.getFluid(id), FluidType.BUCKET_VOLUME);
-            channel.takeItem(StorageUtils.getItem("minecraft:bucket"), 1);
+            channel.takeFluid(id, FluidType.BUCKET_VOLUME);
+            channel.takeItem("minecraft:bucket", 1);
             player.drop(fluidBucket, false);
         }
     }
@@ -718,8 +722,8 @@ public class ChannelMenu extends AbstractContainerMenu {
     public void onCloneFormDummySlot(String type, String id) {
         if (id.equals("minecraft:air") || !player.isCreative()) return;
         switch (type) {
-            case "item" -> channel.addItem(StorageUtils.getItem(id), Long.max(channel.getRealItemAmount(StorageUtils.getItem(id)), 64L));
-            case "fluid" -> channel.addFluid(StorageUtils.getFluid(id), Long.max(channel.getRealFluidAmount(StorageUtils.getFluid(id)), 1000L));
+            case "item" -> channel.addItem(id, Long.max(channel.getRealItemAmount(id), 64L));
+            case "fluid" -> channel.addFluid(id, Long.max(channel.getRealFluidAmount(id), 1000L));
             case "energy" -> channel.addEnergy(id, Long.max(channel.getRealEnergyAmount(id), 1000L));
         }
     }
@@ -735,22 +739,22 @@ public class ChannelMenu extends AbstractContainerMenu {
     private void addSlots(Player player, Inventory playerInv) {
         //快捷栏0~8
         for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 230));
+            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 252));
         }
 
         //背包9~35
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
-                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 23 + i1 * 17, 173 + k * 17));
+                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 23 + i1 * 17, 195 + k * 17));
             }
         }
 
         //护甲36~40
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.HEAD, 39, 7, 71));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.CHEST, 38, 7, 89));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.LEGS, 37, 58, 71));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.FEET, 36, 58, 89));
-        this.addSlot(new Slot(playerInv, 40, 58, 106) {
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.HEAD, 39, 7, 139));
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.CHEST, 38, 7, 156));
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.LEGS, 37, 58, 139));
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.FEET, 36, 58, 156));
+        this.addSlot(new Slot(playerInv, 40, 7, 173) {
             @Override
             public boolean isActive() {
                 return craftingMode;
@@ -760,7 +764,7 @@ public class ChannelMenu extends AbstractContainerMenu {
         //合成格41~50
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                this.addSlot(new Slot(this.craftSlots, j + i * 3, 90 + j * 17, 80 + i * 17) {
+                this.addSlot(new Slot(this.craftSlots, j + i * 3, 92 + j * 17, 139 + i * 17) {
                     @Override
                     public boolean isActive() {
                         return craftingMode;
@@ -768,7 +772,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                 });
             }
         }
-        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 163, 96) {
+        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 177, 87) {
             @Override
             public boolean isActive() {
                 return craftingMode;
@@ -1126,7 +1130,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                     long count;
                     if (itemAmount.containsKey(item)) count = itemAmount.get(item);
                     else {
-                        count = channel.getRealItemAmount(item);
+                        count = channel.getRealItemAmount(StorageUtils.getItemId(item));
                         //9个合成格极限这么多，够了就没必要继续统计了。
                         if (count < 576) {
                             if (invItemCounter == null) invItemCounter = new InvItemCounter(inventory);
@@ -1186,9 +1190,9 @@ public class ChannelMenu extends AbstractContainerMenu {
                 }
             }
             else {
-                if (channel.getRealItemAmount(item) > 0) {
+                if (channel.getRealItemAmount(StorageUtils.getItemId(item)) > 0) {
                     craftSlots.setItem(gridIndex, new ItemStack(item));
-                    channel.removeItem(item, 1);
+                    channel.removeItem(StorageUtils.getItemId(item), 1);
                 }
                 else {
                     if (invItemCounter == null) invItemCounter = new InvItemCounter(inventory);
@@ -1218,18 +1222,19 @@ public class ChannelMenu extends AbstractContainerMenu {
                 ItemStack itemStack = craftSlots.getItem(i);
                 if (itemStack.isEmpty() || itemStack.hasTag() || itemStack.getMaxStackSize() == 1) continue;
                 Item item = itemStack.getItem();
+                String itemId = StorageUtils.getItemId(item);
                 long amount = itemAmount.getOrDefault(item, 0L);
                 int p = itemP.getOrDefault(item, 0);
                 int targetCount = (int) Long.min(itemStack.getMaxStackSize(), amount / p);
                 if (targetCount < 2) continue;
-                int channelHas = channel.getItemAmount(item);
+                int channelHas = channel.getItemAmount(itemId);
                 if (channelHas >= targetCount) {
-                    channel.removeItem(item, targetCount - itemStack.getCount());
+                    channel.removeItem(itemId, targetCount - itemStack.getCount());
                     itemStack.setCount(targetCount);
                 }
                 else {
                     if (channelHas > 0) {
-                        channel.removeItem(item, channelHas);
+                        channel.removeItem(itemId, channelHas);
                         itemStack.setCount(itemStack.getCount() + channelHas);
                     }
                     if (invItemCounter == null) invItemCounter = new InvItemCounter(inventory);
@@ -1270,10 +1275,9 @@ public class ChannelMenu extends AbstractContainerMenu {
         }
         else resultSlots.setItem(0, ItemStack.EMPTY);
     }
-
     public void receivedRecipe(Map<String, Integer> itemNeed) {
         itemNeed.forEach((s, integer) -> {
-            ItemStack itemStack = channel.takeItem(StorageUtils.getItem(s), integer);
+            ItemStack itemStack = channel.takeItem(s, integer);
             if (itemStack.isEmpty()) return;
             savePushToInventory(itemStack);
         });
@@ -1289,14 +1293,13 @@ public class ChannelMenu extends AbstractContainerMenu {
             int maxTry = max % resultItem.getCount() > 0 ? max / resultItem.getCount() + 1 : max / resultItem.getCount();
 
             int count = resultItem.getCount() * doCraft(resultItem, maxTry);
-            long notInCount = count - channel.addItem(resultItem.getItem(), count);
+            long notInCount = count - channel.addItem(StorageUtils.getItemId(resultItem.getItem()), count);
             if (notInCount > 0) {
                 resultItem.setCount((int) notInCount);
                 pushToInventory(resultItem);
             }
         }
     }
-
 
     //合成相关
 
@@ -1368,14 +1371,14 @@ public class ChannelMenu extends AbstractContainerMenu {
                         if (craftingStack.isEmpty() || maxStackSize == 1) continue;
                         if (craftingStack.getCount() < 2) {
                             if (!craftingStack.hasTag()) {
-                                int channelAmount = channel.getItemAmount(craftingStack.getItem());
+                                int channelAmount = channel.getItemAmount(StorageUtils.getItemId(craftingStack.getItem()));
                                 if (channelAmount >= maxStackSize - 1) {
                                     craftingStack.setCount(maxStackSize);
-                                    channel.removeItem(craftingStack.getItem(), maxStackSize - 1);
+                                    channel.removeItem(StorageUtils.getItemId(craftingStack.getItem()), maxStackSize - 1);
                                 }
                                 else {
                                     if (channelAmount > 0) {
-                                        channel.removeItem(craftingStack.getItem(), channelAmount);
+                                        channel.removeItem(StorageUtils.getItemId(craftingStack.getItem()), channelAmount);
                                         craftingStack.setCount(channelAmount + 1);
                                     }
                                     if (invItemCounter == null) invItemCounter = new InvItemCounter(player.getInventory());
@@ -1426,7 +1429,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                 Item item = entry.getKey();
                 Integer integer = entry.getValue();
                 int needAmount = integer * canTry;
-                int has = channel.getItemAmount(item);
+                int has = channel.getItemAmount(StorageUtils.getItemId(item));
                 if (has >= needAmount) continue;
                 canTry = has / integer;
                 if (canTry == 0) break;
@@ -1435,7 +1438,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                 for (Map.Entry<Item, Integer> entry : itemMap.entrySet()) {
                     Item item = entry.getKey();
                     Integer integer = entry.getValue();
-                    channel.removeItem(item, (long) integer * canTry);
+                    channel.removeItem(StorageUtils.getItemId(item), (long) integer * canTry);
                 }
             }
             return canTry;
@@ -1465,15 +1468,15 @@ public class ChannelMenu extends AbstractContainerMenu {
             if (!needStack.isEmpty()) {
                 if (needStack.hasTag()) moveSameItemToCraftingSlot(i, needStack);
                 else {
-                    int channelHas = channel.getItemAmount(needStack.getItem());
+                    int channelHas = channel.getItemAmount(StorageUtils.getItemId(needStack.getItem()));
                     if (channelHas >= needStack.getMaxStackSize()) {
-                        craftSlots.setItem(i, channel.takeItem(needStack.getItem(), needStack.getMaxStackSize()));
+                        craftSlots.setItem(i, channel.takeItem(StorageUtils.getItemId(needStack.getItem()), needStack.getMaxStackSize()));
                     }
                     else if (channelHas == 0) {
                         moveSameItemToCraftingSlot(i, needStack);
                     }
                     else {
-                        craftSlots.setItem(i, channel.takeItem(needStack.getItem(), channelHas));
+                        craftSlots.setItem(i, channel.takeItem(StorageUtils.getItemId(needStack.getItem()), channelHas));
                         fillStackFromInventory(craftSlots.getItem(i));
                     }
                 }
@@ -1486,7 +1489,7 @@ public class ChannelMenu extends AbstractContainerMenu {
             ArrayList<ItemStack> itemAmount = new ArrayList<>();
             beforeItems.forEach(beforeItem -> {
                 if (beforeItem.isEmpty()) return;
-                if (itemMark.isEmpty()) {
+                if (itemMark.size() == 0) {
                     ItemStack inItem = beforeItem.copy();
                     inItem.setCount(1);
                     itemMark.add(inItem);
@@ -1510,7 +1513,7 @@ public class ChannelMenu extends AbstractContainerMenu {
             for (int i = 0; i < 9; i++) {
                 ItemStack slotItem = craftSlots.getItem(i);
                 if (slotItem.isEmpty()) continue;
-                if (itemAmount.isEmpty()) {
+                if (itemAmount.size() == 0) {
                     ItemStack inItem = slotItem.copy();
                     itemAmount.add(inItem);
                 }

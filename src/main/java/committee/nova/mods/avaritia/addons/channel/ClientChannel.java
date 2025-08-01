@@ -33,13 +33,13 @@ public class ClientChannel extends Channel {
     }
 
     @Override
-    public void onItemChanged(Item itemId, boolean listChanged) {
+    public void onItemChanged(String itemId, boolean listChanged) {
         super.onItemChanged(itemId, listChanged);
         if (container != null) container.refreshContainer(listChanged);
     }
 
     @Override
-    public void onFluidChanged(Fluid fluidId, boolean listChanged) {
+    public void onFluidChanged(String fluidId, boolean listChanged) {
         super.onFluidChanged(fluidId,listChanged);
         if (container != null) container.refreshContainer(listChanged);
     }
@@ -58,44 +58,42 @@ public class ClientChannel extends Channel {
         AtomicBoolean fullUpdate = new AtomicBoolean(false);
         AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
         items.getAllKeys().forEach(itemId -> {
-            Item item = StorageUtils.getItem(itemId);
             long count = items.getLong(itemId);
             if (count <= 0L) {
-                if (storageItems.containsKey(item)) {
-                    storageItems.remove(item);
+                if (storageItems.containsKey(itemId)) {
+                    storageItems.remove(itemId);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
             } else {
-                if (storageItems.containsKey(item)) {
-                    if (storageItems.get(item) != count) {
-                        storageItems.replace(item, count);
+                if (storageItems.containsKey(itemId)) {
+                    if (storageItems.get(itemId) != count) {
+                        storageItems.replace(itemId, count);
                         needRefreshContainer.set(true);
                     }
                 } else {
-                    storageItems.put(item, count);
+                    storageItems.put(itemId, count);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
             }
         });
         fluids.getAllKeys().forEach(fluidId -> {
-            Fluid fluid = StorageUtils.getFluid(fluidId);
             long count = fluids.getLong(fluidId);
             if (count <= 0L ) {
-                if (storageFluids.containsKey(fluid)) {
-                    storageFluids.remove(fluid);
+                if (storageFluids.containsKey(fluidId)) {
+                    storageFluids.remove(fluidId);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
             } else {
-                if (storageFluids.containsKey(fluid)) {
-                    if (storageFluids.get(fluid) != count) {
-                        storageFluids.replace(fluid, count);
+                if (storageFluids.containsKey(fluidId)) {
+                    if (storageFluids.get(fluidId) != count) {
+                        storageFluids.replace(fluidId, count);
                         needRefreshContainer.set(true);
                     }
                 } else {
-                    storageFluids.put(fluid, count);
+                    storageFluids.put(fluidId, count);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
@@ -138,8 +136,8 @@ public class ClientChannel extends Channel {
         storageItems.clear();
         storageFluids.clear();
         storageEnergies.clear();
-        items.getAllKeys().forEach(itemId -> storageItems.put(StorageUtils.getItem(itemId), items.getLong(itemId)));
-        fluids.getAllKeys().forEach(fluidId -> storageFluids.put(StorageUtils.getFluid(fluidId), fluids.getLong(fluidId)));
+        items.getAllKeys().forEach(itemId -> storageItems.put(itemId, items.getLong(itemId)));
+        fluids.getAllKeys().forEach(fluidId -> storageFluids.put(fluidId, fluids.getLong(fluidId)));
         energies.getAllKeys().forEach(energyId -> storageEnergies.put(energyId, energies.getLong(energyId)));
         updateItemKeys();
         updateFluidKeys();

@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
+import committee.nova.mods.avaritia.common.block.chest.BlackHoleBlock;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
 import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.common.block.collector.BaseNeutronCollectorBlock;
@@ -59,6 +60,7 @@ public class ModBlocks {
     public static RegistryObject<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new ResourceBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static RegistryObject<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
+    public static RegistryObject<Block> black_hole_chest = itemBlock("black_hole_chest", BlackHoleBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> infinity_clock = itemBlock("infinity_clock", InfinityClockBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",

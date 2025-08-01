@@ -51,15 +51,15 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private String lastFormatCountTemp = "";
     private SortButton sortButton;
     private ItemScrollBar scrollBar;
-    private EditBox shortSearchBox;
+    private EditBox searchBox;
     private CraftToChannelButton craftToChannelButton;
     private CraftToInventoryButton craftToInventoryButton;
     private CraftAndDropButton craftAndDropButton;
 
     public BlackHoleScreen(ChannelMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        this.imageWidth = 202;
-        this.imageHeight = 236;
+        this.imageWidth = 218;
+        this.imageHeight = 256;
         this.ownerName = ClientChannelManager.getInstance().getUserName(this.getMenu().owner);
     }
 
@@ -77,23 +77,23 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         super.init();
         this.leftPos = (this.width - imageWidth + 4) / 2;
         this.topPos = (this.height - imageHeight) / 2;
-        this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 14, menu.craftingMode ? 118 : 152);
+        this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 16, menu.craftingMode ? 118 : 152);
         this.scrollBar.setScrolledOn(menu.dummyContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 201, this.topPos + 160));
-        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 201, this.topPos + 176));
-        this.addRenderableWidget(new ChannelButton(this.leftPos + 201, this.topPos + 192));
-        this.sortButton = new SortButton(this.leftPos + 201, this.topPos + 128);
+        this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 198, this.topPos + 192));
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 208));
+        this.addRenderableWidget(new ChannelButton(this.leftPos + 198, this.topPos + 224));
+        this.sortButton = new SortButton(this.leftPos + 198, this.topPos + 240);
         this.addRenderableWidget(sortButton);
-        this.addRenderableWidget(new ViewTypeButton(this.leftPos + 201, this.topPos + 144));
-        this.shortSearchBox = new EditBox(this.font, leftPos + 79, topPos + 4, 90, 12, Component.translatable("gui.avaritia.search"));
-        this.shortSearchBox.setMaxLength(64);
-        this.shortSearchBox.setBordered(false);
-        this.shortSearchBox.setValue(menu.filter);
-        this.addRenderableWidget(shortSearchBox);
-        this.craftToChannelButton = new CraftToChannelButton(leftPos + 91, topPos + 142);
-        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 108, topPos + 142);
-        this.craftAndDropButton = new CraftAndDropButton(leftPos + 125, topPos + 142);
+        this.addRenderableWidget(new ViewTypeButton(this.leftPos + 198, this.topPos + 256));
+        this.searchBox = new EditBox(this.font, leftPos + 104, topPos + 4, 90, 12, Component.translatable("gui.avaritia.search"));
+        this.searchBox.setMaxLength(64);
+        this.searchBox.setBordered(false);
+        this.searchBox.setValue(menu.filter);
+        this.addRenderableWidget(searchBox);
+        this.craftToChannelButton = new CraftToChannelButton(leftPos + 179, topPos + 146);
+        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 179, topPos + 159);
+        this.craftAndDropButton = new CraftAndDropButton(leftPos + 179, topPos + 172);
         this.craftToChannelButton.active = menu.craftingMode;
         this.craftToChannelButton.visible = menu.craftingMode;
         this.craftToInventoryButton.active = menu.craftingMode;
@@ -124,10 +124,10 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     protected void renderBg(GuiGraphics stack, float partialTick, int mouseX, int mouseY) {
         this.blit(stack, this.leftPos, this.topPos, 0, 0, imageWidth, 6);
         if (this.menu.craftingMode) {
-            this.blit(stack, this.leftPos, this.topPos, 0, 0, imageWidth, 68);
-            this.blit(stack, this.leftPos, this.topPos + 68, 0, 17, imageWidth, 51);
-            this.blit(stack, this.leftPos, this.topPos + 119, 0, 17, imageWidth, 17);
-            this.blit(stack, this.leftPos, this.topPos + 136, 0, 69, imageWidth, 141);
+            this.blit(stack, this.leftPos, this.topPos, 0, 0, imageWidth, 68);//前三行
+            this.blit(stack, this.leftPos, this.topPos + 68, 0, 17, imageWidth, 51);//再加三行
+            this.blit(stack, this.leftPos, this.topPos + 119, 0, 17, imageWidth, 17);//再加一行
+            this.blit(stack, this.leftPos, this.topPos + 136, 0, 69, imageWidth, 141);//物品栏
 
 //            Slot helmetSlot = this.menu.slots.get(36);
 //            if (helmetSlot.isActive() && helmetSlot.getItem().isEmpty()) {
@@ -151,10 +151,14 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
 //            }
 
         } else {
-            this.blit(stack, this.leftPos, this.topPos, 0, 0, imageWidth, 68);
-            this.blit(stack, this.leftPos, this.topPos + 68, 0, 17, imageWidth, 51);
-            this.blit(stack, this.leftPos, this.topPos + 119, 0, 17, imageWidth, 51);
-            this.blit(stack, this.leftPos, this.topPos + 170, 0, 125, imageWidth, 85);
+            this.blit(stack, this.leftPos, this.topPos, 0, 0, imageWidth, 68);//前三行
+            this.blit(stack, this.leftPos, this.topPos + 68, 0, 17, imageWidth, 51);//再加三行
+            this.blit(stack, this.leftPos, this.topPos + 119, 0, 17, imageWidth, 51);//再加三行
+            this.blit(stack, this.leftPos, this.topPos + 170, 0, 122, imageWidth, 6);//间隔
+            this.blit(stack, this.leftPos, this.topPos + 176, 0, 122, imageWidth, 6);//间隔
+            this.blit(stack, this.leftPos, this.topPos + 182, 0, 122, imageWidth, 6);//间隔
+            this.blit(stack, this.leftPos, this.topPos + 188, 0, 122, imageWidth, 4);//间隔
+            this.blit(stack, this.leftPos, this.topPos + 192, 0, 125, imageWidth, 85);//物品栏
         }
     }
 
@@ -217,11 +221,11 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         long count;
         if (hoveredObject[0].equals("item")) {
             components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
-            count = menu.channel.getRealItemAmount(StorageUtils.getItem(hoveredObject[1]));
+            count = menu.channel.getRealItemAmount(hoveredObject[1]);
         } else if (hoveredObject[0].equals("fluid")) {
             components.add(Component.translatable("block." + hoveredObject[1].replace(':', '.')));
             if (this.minecraft.options.advancedItemTooltips) components.add(Component.literal(hoveredObject[1]).withStyle(ChatFormatting.DARK_GRAY));
-            count = menu.channel.getRealFluidAmount(StorageUtils.getFluid(hoveredObject[1]));
+            count = menu.channel.getRealFluidAmount(hoveredObject[1]);
         } else {
             components.add(hoveredSlot.getItem().getHoverName());
             count = menu.channel.getRealEnergyAmount(hoveredObject[1]);
@@ -246,6 +250,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         }
         pPoseStack.renderTooltip(font, components, hoveredSlot.getItem().getTooltipImage(), pMouseX, pMouseY);
     }
+
 
     private void renderObjectStorageTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
         ItemStack carried = menu.getCarried();
@@ -273,7 +278,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     @Override
     public void containerTick() {
         super.containerTick();
-        if (shortSearchBox.isFocused()) shortSearchBox.tick();
+        if (searchBox.isFocused()) searchBox.tick();
     }
 
     @Override
@@ -287,13 +292,13 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
         boolean lshift = InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT);
         if (pButton == 1) {
-            //短搜索框
-            if (shortSearchBox.isMouseOver(pMouseX, pMouseY)) {
+            //搜索框
+            if (searchBox.isMouseOver(pMouseX, pMouseY)) {
                 menu.filter = "";
-                shortSearchBox.setValue("");
+                searchBox.setValue("");
                 menu.dummyContainer.refreshContainer(true);
-                shortSearchBox.setFocused(true);
-                shortSearchBox.setEditable(true);
+                searchBox.setFocused(true);
+                searchBox.setEditable(true);
             }
             else if (craftToChannelButton.isMouseOver(pMouseX, pMouseY)) {
                 if (lshift) minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 6);
@@ -334,7 +339,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
 
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if (shortSearchBox.isFocused()) {
+        if (searchBox.isFocused()) {
             if (pKeyCode >= InputConstants.KEY_0 && pKeyCode <= InputConstants.KEY_Z) return true;
         }
         if (pKeyCode == InputConstants.KEY_LSHIFT) menu.LShifting = true;
@@ -343,8 +348,8 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
 
     @Override
     public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
-        if (shortSearchBox.isFocused()) {
-            String s = shortSearchBox.getValue().toLowerCase();
+        if (searchBox.isFocused()) {
+            String s = searchBox.getValue().toLowerCase();
             if (!s.equals(menu.filter)) {
                 menu.filter = s;
                 menu.dummyContainer.refreshContainer(true);
@@ -359,7 +364,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
 
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-        if (pMouseX >= leftPos + 5 && pMouseX <= leftPos + 197 && pMouseY >= topPos + 5 && pMouseY <= topPos + 6 + (menu.craftingMode ? 119 : 153) && scrollBar.canScroll()) {
+        if (pMouseX >= leftPos + 5 && pMouseX <= leftPos + 214 && pMouseY >= topPos + 17 && pMouseY <= topPos + 18 + (menu.craftingMode ? 119 : 153) && scrollBar.canScroll()) {
             if (pDelta <= 0) scrollBar.setScrolledOn(menu.dummyContainer.onMouseScrolled(false));
             else scrollBar.setScrolledOn(menu.dummyContainer.onMouseScrolled(true));
             return true;
@@ -376,14 +381,13 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     }
 
     private boolean isInsideEditBox(double pMouseX, double pMouseY) {
-        if (menu.craftingMode && pMouseX >= leftPos + 74 && pMouseX <= leftPos + 141 && pMouseY >= topPos + 125 && pMouseY <= topPos + 135) return true;
-        return !menu.craftingMode && pMouseX >= leftPos + 40 && pMouseX <= leftPos + 124 && pMouseY >= topPos + 162 && pMouseY <= topPos + 172;
+        return pMouseX >= leftPos + 104 && pMouseX <= leftPos + 194 && pMouseY >= topPos + 4 && pMouseY <= topPos + 16;
     }
 
     private void toggleLock() {
         if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
             this.menu.locked = !this.menu.locked;
-            this.shortSearchBox.setFocused(false);
+            this.searchBox.setFocused(false);
             NetworkHandler.CHANNEL.sendToServer(new C2SFilterChannelPack(menu.containerId, menu.filter));
             this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 0);
         }
@@ -392,7 +396,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     protected void toggleCraftingMode() {
         this.menu.craftingMode = !this.menu.craftingMode;
         this.menu.dummyContainer.refreshContainer(true);
-        this.shortSearchBox.setFocused(false);
+        this.searchBox.setFocused(false);
         this.craftToChannelButton.active = menu.craftingMode;
         this.craftToChannelButton.visible = menu.craftingMode;
         this.craftToInventoryButton.active = menu.craftingMode;
@@ -465,7 +469,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class ToggleCraftingButton extends ImageButton {
 
         public ToggleCraftingButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 219, 0, GUI_IMG, pButton -> toggleCraftingMode());
+            super(pX, pY, 16, 16, 219, 27, GUI_IMG, pButton -> toggleCraftingMode());
         }
 
         @Override
@@ -480,7 +484,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class ToggleLockButton extends ImageButton {
 
         public ToggleLockButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 67, 215, GUI_IMG, pButton -> toggleLock());
+            super(pX, pY, 16, 16, 219, 43, GUI_IMG, pButton -> toggleLock());
             MutableComponent componentA = Component.translatable("gui.avaritia.owner", "§a" + menu.player.getGameProfile().getName());
             MutableComponent componentB = Component.translatable("gui.avaritia.owner", "§c" + ownerName);
             MutableComponent componentC = Component.translatable("gui.avaritia.owner", ownerName);
@@ -502,7 +506,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class SortButton extends ImageButton {
 
         public SortButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 202, 0, GUI_IMG, pButton -> cycleSort());
+            super(pX, pY, 16, 16, 219, 75, GUI_IMG, pButton -> cycleSort());
         }
 
         @Override
@@ -524,7 +528,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class ViewTypeButton extends ImageButton {
 
         public ViewTypeButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 105, 215, GUI_IMG, pButton -> changeViewType());
+            super(pX, pY, 16, 16, 219, 91, GUI_IMG, pButton -> changeViewType());
         }
 
         @Override
@@ -538,7 +542,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class ChannelButton extends ImageButton {
         private final List<FormattedCharSequence> tips = new ArrayList<>();
         public ChannelButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 48, 215, GUI_IMG, pButton -> channelButtonPress());
+            super(pX, pY, 16, 16, 219, 59, GUI_IMG, pButton -> channelButtonPress());
             if (menu.channelOwner.equals(menu.player.getUUID())) {
                 tips.add(Component.translatable("gui.avaritia.channel.tip1", "§a" + menu.channel.getName()).getVisualOrderText());
                 tips.add(Component.translatable("gui.avaritia.channel.tip2", "§a" + ClientChannelManager.getInstance().getUserName(menu.channelOwner)).getVisualOrderText());
@@ -565,7 +569,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         private final List<FormattedCharSequence> list = new ArrayList<>();
 
         public CraftToChannelButton (int x, int y) {
-            super(x, y, 16, 16, 0, 215, GUI_IMG, pButton -> {});
+            super(x, y, 16, 9, 219, 0, GUI_IMG, pButton -> {});
             list.add(Component.translatable("gui.avaritia.craft.channel").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
@@ -578,7 +582,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class CraftToInventoryButton extends ImageButton {
         private final List<FormattedCharSequence> list = new ArrayList<>();
         public CraftToInventoryButton (int x, int y) {
-            super(x, y, 16, 16, 16, 215, GUI_IMG, pButton -> {});
+            super(x, y, 16, 9, 219, 18, GUI_IMG, pButton -> {});
             list.add(Component.translatable("gui.avaritia.craft.inv").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
@@ -591,7 +595,7 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
     private class CraftAndDropButton extends ImageButton {
         private final List<FormattedCharSequence> list = new ArrayList<>();
         public CraftAndDropButton (int x, int y) {
-            super(x, y, 16, 16, 32, 215, GUI_IMG, pButton -> {});
+            super(x, y, 16, 9, 219, 9, GUI_IMG, pButton -> {});
             list.add(Component.translatable("gui.avaritia.craft.drop").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());

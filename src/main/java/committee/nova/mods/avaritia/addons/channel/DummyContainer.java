@@ -26,8 +26,8 @@ public class DummyContainer extends SimpleContainer {
     public final HashMap<Integer, FluidStack> fluidStacks = new HashMap<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
     private final ChannelMenu menu;
-    protected ArrayList<Item> sortedItems = new ArrayList<>();
-    protected ArrayList<Fluid> sortedFluids = new ArrayList<>();
+    protected ArrayList<String> sortedItems = new ArrayList<>();
+    protected ArrayList<String> sortedFluids = new ArrayList<>();
     protected ArrayList<String> sortedEnergies = new ArrayList<>();
     private double scrollTo = 0.0D;
 
@@ -40,13 +40,13 @@ public class DummyContainer extends SimpleContainer {
         sortedObject.clear();
         switch (this.menu.viewType) {
             case ViewType.ALL -> {
-                sortedItems.forEach(s -> sortedObject.add(new String[]{"item", StorageUtils.getItemId(s)}));
-                sortedFluids.forEach(s -> sortedObject.add(new String[]{"fluid", StorageUtils.getFluidId(s)}));
+                sortedItems.forEach(s -> sortedObject.add(new String[]{"item", s}));
+                sortedFluids.forEach(s -> sortedObject.add(new String[]{"fluid", s}));
                 sortedEnergies.forEach(s -> sortedObject.add(new String[]{"energy", s}));
             }
-            case ViewType.Items -> sortedItems.forEach(s -> sortedObject.add(new String[]{"item", StorageUtils.getItemId(s)}));
+            case ViewType.Items -> sortedItems.forEach(s -> sortedObject.add(new String[]{"item", s}));
             case ViewType.Fluids -> {
-                sortedFluids.forEach(s -> sortedObject.add(new String[]{"fluid", StorageUtils.getFluidId(s)}));
+                sortedFluids.forEach(s -> sortedObject.add(new String[]{"fluid", s}));
                 sortedEnergies.forEach(s -> sortedObject.add(new String[]{"energy", s}));
             }
         }
@@ -95,20 +95,20 @@ public class DummyContainer extends SimpleContainer {
             sortedFluids = new ArrayList<>(this.menu.channel.storageFluids.keySet());
             sortedEnergies = new ArrayList<>(this.menu.channel.storageEnergies.keySet());
             if (!this.menu.filter.isEmpty()) {
-                ArrayList<Item> temp = new ArrayList<>();
-                ArrayList<Fluid> temp1 = new ArrayList<>();
+                ArrayList<String> temp = new ArrayList<>();
+                ArrayList<String> temp1 = new ArrayList<>();
                 ArrayList<String> temp2 = new ArrayList<>();
                 char head = this.menu.filter.charAt(0);
                 if (head == '*') {
                     String s = this.menu.filter.substring(1);
-                    for (Item item : sortedItems) if (StorageUtils.getItemId(item).contains(s)) temp.add(item);
-                    for (Fluid fluid : sortedFluids) if (StorageUtils.getFluidId(fluid).contains(s)) temp1.add(fluid);
+                    for (String itemName : sortedItems) if (itemName.contains(s)) temp.add(itemName);
+                    for (String fluidName : sortedFluids) if (fluidName.contains(s)) temp1.add(fluidName);
                     for (String energyName : sortedEnergies) if (energyName.contains(s)) temp2.add(energyName);
                 }
                 else if (head == '$') {
                     String s = this.menu.filter.substring(1);
-                    for (Item itemName : sortedItems) {
-                        ItemStack itemStack = new ItemStack(itemName);
+                    for (String itemName : sortedItems) {
+                        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
                         ArrayList<String> tags = new ArrayList<>();
                         itemStack.getTags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
                         for (String tag : tags) {
@@ -120,18 +120,18 @@ public class DummyContainer extends SimpleContainer {
                     }
                 }
                 else {
-                    for (Item item : sortedItems) {
-                        if (StorageUtils.getItemId(item).contains(this.menu.filter)) temp.add(item);
+                    for (String itemName : sortedItems) {
+                        if (itemName.contains(this.menu.filter)) temp.add(itemName);
                         else {
-                            ItemStack itemStack = new ItemStack(item);
-                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp.add(item);
+                            ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
+                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp.add(itemName);
                         }
                     }
-                    for (Fluid fluid : sortedFluids) {
-                        if (StorageUtils.getFluidId(fluid).contains(this.menu.filter)) temp1.add(fluid);
+                    for (String fluidName : sortedFluids) {
+                        if (fluidName.contains(this.menu.filter)) temp1.add(fluidName);
                         else {
-                            FluidStack fluidStack = new FluidStack(fluid, 1);
-                            if (fluidStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp1.add(fluid);
+                            FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(fluidName), 1);
+                            if (fluidStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp1.add(fluidName);
                         }
                     }
                     for (String energyName : sortedEnergies) {
@@ -148,43 +148,43 @@ public class DummyContainer extends SimpleContainer {
             }
             switch (this.menu.sortType) {
                 case SortUtils.Sort.ID_ASCENDING -> {
-                    sortedItems.sort((a, b) -> SortUtils.sortFromRightID(StorageUtils.getItemId(a), StorageUtils.getItemId(b)));
-                    sortedFluids.sort((a, b) -> SortUtils.sortFromRightID(StorageUtils.getFluidId(a), StorageUtils.getFluidId(b)));
+                    sortedItems.sort(SortUtils::sortFromRightID);
+                    sortedFluids.sort(SortUtils::sortFromRightID);
                     sortedEnergies.sort(SortUtils::sortFromRightID);
                 }
                 case SortUtils.Sort.ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder((a, b) -> SortUtils.sortFromRightID(StorageUtils.getItemId(a), StorageUtils.getItemId(b))));
-                    sortedFluids.sort(Collections.reverseOrder((a, b) -> SortUtils.sortFromRightID(StorageUtils.getFluidId(a), StorageUtils.getFluidId(b))));
+                    sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
+                    sortedFluids.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
                     sortedEnergies.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
                 }
                 case SortUtils.Sort.NAMESPACE_ID_ASCENDING -> {
-                    sortedItems.sort(Comparator.comparing(StorageUtils::getItemId));
-                    sortedFluids.sort(Comparator.comparing(StorageUtils::getFluidId));
+                    sortedItems.sort(String::compareTo);
+                    sortedFluids.sort(String::compareTo);
                     sortedEnergies.sort(String::compareTo);
                 }
                 case SortUtils.Sort.NAMESPACE_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(Comparator.comparing(StorageUtils::getItemId)));
-                    sortedFluids.sort(Collections.reverseOrder(Comparator.comparing(StorageUtils::getFluidId)));
+                    sortedItems.sort(Collections.reverseOrder(String::compareTo));
+                    sortedFluids.sort(Collections.reverseOrder(String::compareTo));
                     sortedEnergies.sort(Collections.reverseOrder(String::compareTo));
                 }
                 case SortUtils.Sort.MIRROR_ID_ASCENDING -> {
-                    sortedItems.sort((a, b) -> SortUtils.sortFromMirrorID(StorageUtils.getItemId(a), StorageUtils.getItemId(b)));
-                    sortedFluids.sort((a, b) -> SortUtils.sortFromMirrorID(StorageUtils.getFluidId(a), StorageUtils.getFluidId(b)));
+                    sortedItems.sort(SortUtils::sortFromMirrorID);
+                    sortedFluids.sort(SortUtils::sortFromMirrorID);
                     sortedEnergies.sort(SortUtils::sortFromMirrorID);
                 }
                 case SortUtils.Sort.MIRROR_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder((a, b) -> SortUtils.sortFromMirrorID(StorageUtils.getItemId(a), StorageUtils.getItemId(b))));
-                    sortedFluids.sort(Collections.reverseOrder((a, b) -> SortUtils.sortFromMirrorID(StorageUtils.getFluidId(a), StorageUtils.getFluidId(b))));
+                    sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
+                    sortedFluids.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
                     sortedEnergies.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
                 }
                 case SortUtils.Sort.COUNT_ASCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder((a, b) -> SortUtils.sortFromCount(StorageUtils.getItemId(a), StorageUtils.getItemId(b), SortUtils.convertKeys(this.menu.channel.storageItems, StorageUtils::getItemId), false)));
-                    sortedFluids.sort((s1, s2) -> SortUtils.sortFromCount(StorageUtils.getFluidId(s1), StorageUtils.getFluidId(s2), SortUtils.convertKeys(this.menu.channel.storageFluids, StorageUtils::getFluidId), false));
+                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageItems, false));
+                    sortedFluids.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageFluids, false));
                     sortedEnergies.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageEnergies, false));
                 }
                 case SortUtils.Sort.COUNT_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder((a, b) -> SortUtils.sortFromCount(StorageUtils.getItemId(a), StorageUtils.getItemId(b), SortUtils.convertKeys(this.menu.channel.storageItems, StorageUtils::getItemId), true)));
-                    sortedFluids.sort((s1, s2) -> SortUtils.sortFromCount(StorageUtils.getFluidId(s1), StorageUtils.getFluidId(s2), SortUtils.convertKeys(this.menu.channel.storageFluids, StorageUtils::getFluidId), true));
+                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageItems, true));
+                    sortedFluids.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageFluids, true));
                     sortedEnergies.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageEnergies, true));
                 }
             }
@@ -193,6 +193,7 @@ public class DummyContainer extends SimpleContainer {
         }
         updateDummySlots(fullUpdate);
     }
+
 
     public void updateDummySlots(boolean fullUpdate) {
         formatCount.clear();
@@ -205,11 +206,11 @@ public class DummyContainer extends SimpleContainer {
                         this.setItem(j, new ItemStack(StorageUtils.getFluid(id).getBucket()));
                         fluidStacks.put(j, new FluidStack(StorageUtils.getFluid(id), 1));
                     }
-                    if (!this.menu.channel.storageFluids.containsKey(StorageUtils.getFluid(id))) {
+                    if (!this.menu.channel.storageFluids.containsKey(id)) {
                         formatCount.add(j, "§c0");
                         continue;
                     }
-                    long count = this.menu.channel.storageFluids.get(StorageUtils.getFluid(id));
+                    long count = this.menu.channel.storageFluids.get(id);
                     if (count < 1000L) formatCount.add(j, count + "mB");
                     else if (count < Long.MAX_VALUE) {
                         String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);
@@ -231,8 +232,8 @@ public class DummyContainer extends SimpleContainer {
                     if (fullUpdate) this.setItem(j, new ItemStack(StorageUtils.getItem(id)));
                     long count;
                     if (viewingObject.get(j)[0].equals("item")) {
-                        if (this.menu.channel.storageItems.containsKey(StorageUtils.getItem(id))) {
-                            count = this.menu.channel.storageItems.get(StorageUtils.getItem(id));
+                        if (this.menu.channel.storageItems.containsKey(id)) {
+                            count = this.menu.channel.storageItems.get(id);
                         }
                         else {
                             formatCount.add(j, "§c0");

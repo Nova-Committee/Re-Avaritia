@@ -22,8 +22,8 @@ import java.util.HashSet;
  */
 public class ServerChannel extends Channel{
 
-    private final HashSet<Item> changedItems = new HashSet<>();
-    private final HashSet<Fluid> changedFluids = new HashSet<>();
+    private final HashSet<String> changedItems = new HashSet<>();
+    private final HashSet<String> changedFluids = new HashSet<>();
     private final HashSet<String> changedEnergy = new HashSet<>();
     private boolean nameChanged = false;
     private final HashSet<ServerPlayer> players = new HashSet<>();
@@ -41,13 +41,13 @@ public class ServerChannel extends Channel{
     }
 
     @Override
-    public void onItemChanged(Item itemId, boolean listChanged) {
+    public void onItemChanged(String itemId, boolean listChanged) {
         super.onItemChanged(itemId, listChanged);
         changedItems.add(itemId);
     }
 
     @Override
-    public void onFluidChanged(Fluid fluidId, boolean listChanged) {
+    public void onFluidChanged(String fluidId, boolean listChanged) {
         super.onFluidChanged(fluidId,listChanged);
         changedFluids.add(fluidId);
     }
@@ -64,7 +64,7 @@ public class ServerChannel extends Channel{
             CompoundTag items = dat.getCompound("items");
             items.getAllKeys().forEach(itemId -> {
                 if (items.getLong(itemId) > 0 && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemId))) {
-                    storageItems.put(StorageUtils.getItem(itemId), items.getLong(itemId));
+                    storageItems.put(itemId, items.getLong(itemId));
                 }
             });
             updateItemKeys();
@@ -74,7 +74,7 @@ public class ServerChannel extends Channel{
             CompoundTag fluids = dat.getCompound("fluids");
             fluids.getAllKeys().forEach(fluidId -> {
                 if (fluids.getLong(fluidId) > 0 && ForgeRegistries.FLUIDS.containsKey(new ResourceLocation(fluidId))) {
-                    storageFluids.put(StorageUtils.getFluid(fluidId), fluids.getLong(fluidId));
+                    storageFluids.put(fluidId, fluids.getLong(fluidId));
                 }
             });
             updateFluidKeys();
@@ -105,11 +105,11 @@ public class ServerChannel extends Channel{
             CompoundTag tag = new CompoundTag();
 
             CompoundTag items = new CompoundTag();
-            changedItems.forEach(itemId -> items.putLong(StorageUtils.getItemId(itemId), storageItems.getOrDefault(itemId, 0L)));
+            changedItems.forEach(itemId -> items.putLong(itemId, storageItems.getOrDefault(itemId, 0L)));
             tag.put("items", items);
 
             CompoundTag fluids = new CompoundTag();
-            changedFluids.forEach(fluidId -> fluids.putLong(StorageUtils.getFluidId(fluidId), storageFluids.getOrDefault(fluidId, 0L)));
+            changedFluids.forEach(fluidId -> fluids.putLong(fluidId, storageFluids.getOrDefault(fluidId, 0L)));
             tag.put("fluids", fluids);
 
             CompoundTag energies = new CompoundTag();
@@ -150,9 +150,9 @@ public class ServerChannel extends Channel{
 
     public CompoundTag buildData() {
         CompoundTag items = new CompoundTag();
-        storageItems.forEach((itemId, count) -> items.putLong(StorageUtils.getItemId(itemId), count));
+        storageItems.forEach(items::putLong);
         CompoundTag fluids = new CompoundTag();
-        storageFluids.forEach((fluidId, count) -> fluids.putLong(StorageUtils.getFluidId(fluidId), count));
+        storageFluids.forEach(fluids::putLong);
         CompoundTag energies = new CompoundTag();
         storageEnergies.forEach(energies::putLong);
         CompoundTag data = new CompoundTag();
