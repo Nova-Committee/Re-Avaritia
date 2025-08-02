@@ -1,6 +1,7 @@
-package committee.nova.mods.avaritia.common.block.compressor;
+package committee.nova.mods.avaritia.common.block.collector;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
@@ -27,20 +28,20 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Description:
  * Author: cnlimiter
- * Date: 2022/4/2 17:57
+ * Date: 2022/4/2 12:07
  * Version: 1.0
  */
-public class CompressorBlock extends BaseTileEntityBlock {
+public class NeutronCollectorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
-    public CompressorBlock() {
-        super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);
+    public NeutronCollectorBlock() {
+        super(MapColor.METAL, SoundType.METAL, 50f, 2000f, true);
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new NeutronCompressorTile(pos, state);
+        return new NeutronCollectorTile(pos, state);
     }
 
     @Override
@@ -53,25 +54,13 @@ public class CompressorBlock extends BaseTileEntityBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
-    @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
-        if (!level.isClientSide()) {
-            var tile = level.getBlockEntity(pos);
-
-            if (tile instanceof NeutronCompressorTile compressor) {
-                NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
-            }
-        }
-
-        return InteractionResult.SUCCESS;
-    }
 
     @Override
     public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof NeutronCompressorTile compressor) {
+            if (tile instanceof NeutronCollectorTile compressor) {
                 Containers.dropContents(level, pos, compressor.getInventory().getStacks());
             }
         }
@@ -80,23 +69,30 @@ public class CompressorBlock extends BaseTileEntityBlock {
     }
 
     @Override
-    public @NotNull BlockState rotate(BlockState state, Rotation rot) {
+    public InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+        if (!level.isClientSide()) {
+            var tile = level.getBlockEntity(pos);
+
+            if (tile instanceof NeutronCollectorTile compressor) {
+                NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
+            }
+        }
+
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rot) {
         return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
     }
 
     @Override
-    public @NotNull BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.compressor_tile.get(), NeutronCompressorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), NeutronCollectorTile::serverTick);
     }
-
-    @Override
-    protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.compressor_tile.get(), NeutronCompressorTile::tick);
-    }
-
 }

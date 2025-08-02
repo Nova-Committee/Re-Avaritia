@@ -6,11 +6,14 @@ import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
@@ -35,11 +38,21 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     private int materialCount;
     private int progress;
     private boolean ejecting = false;
+    private CompressorTier tier;
 
     public NeutronCompressorTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.compressor_tile.get(), pos, state);
+        super(ModTileEntities.neutron_compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler();
         this.recipeInventory = new ItemStackWrapper(1);
+        if (state.is(ModBlocks.neutron_compressor.get())) {
+            tier = CompressorTier.DEFAULT;
+        } else if (state.is(ModBlocks.dense_neutron_compressor.get())) {
+            tier = CompressorTier.DENSE;
+        } else if (state.is(ModBlocks.denser_neutron_compressor.get())) {
+            tier = CompressorTier.DENSER;
+        } else if (state.is(ModBlocks.densest_neutron_compressor.get())) {
+            tier = CompressorTier.DENSEST;
+        }
     }
 
     public static ItemStackWrapper createInventoryHandler() {
@@ -66,11 +79,11 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
                     tile.setChangedFast();
                 }
 
-                if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount()) {
+                if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
                     if (ItemUtils.areStacksSameType(input, tile.materialStack)) {
                         int consumeAmount = input.getCount();
 
-                        consumeAmount = Math.min(consumeAmount, tile.recipe.getInputCount() - tile.materialCount);
+                        consumeAmount = Math.min(consumeAmount, Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier) - tile.materialCount);
 
 
                         input.shrink(consumeAmount);
@@ -83,16 +96,16 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
             }
 
             if (tile.recipe != null) {
-                if (tile.materialCount >= tile.recipe.getInputCount()) {
+                if (tile.materialCount >= tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
                     tile.progress++;
                     tile.data.set(0, tile.progress);
-                    if (tile.progress >= tile.recipe.getTimeCost()) {
+                    if (tile.progress >= tile.recipe.getTimeCost() * tile.tier.timeAmplifier) {
                         var result = tile.recipe.assemble(tile.inventory.toIInventory(), level.registryAccess());
 
                         if (ItemUtils.canCombineStacks(result, output)) {
-                            tile.updateResult(result);
+                            tile.updateResult(result, tile.tier.outputAmplifier);
                             tile.progress = 0;
-                            tile.materialCount -= tile.recipe.getInputCount();
+                            tile.materialCount -= Mth.ceil(tile.recipe.getInputCount()  * tile.tier.inputAmplifier);
 
                             if (tile.materialCount <= 0) {
                                 tile.materialStack = ItemStack.EMPTY;
@@ -110,7 +123,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
                     if (addCount > 0) {
                         var toAdd = ItemUtils.withSize(tile.materialStack, addCount, false);
 
-                        tile.updateResult(toAdd);
+                        tile.updateResult(toAdd, tile.tier.outputAmplifier);
                         tile.materialCount -= addCount;
 
                         if (tile.materialCount < 1) {
@@ -156,13 +169,21 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("container.compressor").build();
+        return Localizable.of("container." + tier.name).build();
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory) {
         return new CompressorMenu(windowId, playerInventory, this.inventory, this.getBlockPos(), this.data);
+    }
+
+    public CompressorTier getTier() {
+        return tier;
+    }
+
+    public void setTier(CompressorTier tier) {
+        this.tier = tier;
     }
 
     public ItemStack getMaterialStack() {
@@ -198,24 +219,24 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
     public int getMaterialsRequired() {
         if (this.hasRecipe())
-            return this.recipe.getInputCount();
+            return Mth.ceil(this.recipe.getInputCount() * tier.inputAmplifier);
         return 0;
     }
 
     public int getTimeRequired() {
         if (this.hasRecipe())
-            return this.recipe.getTimeCost();
+            return Mth.ceil(this.recipe.getTimeCost() * tier.timeAmplifier);
         return 0;
     }
 
 
-    private void updateResult(ItemStack stack) {
+    private void updateResult(ItemStack stack, int outputAmplifier) {
         var result = this.inventory.getStackInSlot(0);
 
         if (result.isEmpty()) {
-            this.inventory.setStackInSlot(0, stack);
+            this.inventory.setStackInSlot(0, stack.copyWithCount(outputAmplifier));
         } else {
-            this.inventory.setStackInSlot(0, ItemUtils.grow(result, stack.getCount()));
+            this.inventory.setStackInSlot(0, ItemUtils.grow(result, stack.getCount() * outputAmplifier));
         }
     }
 }

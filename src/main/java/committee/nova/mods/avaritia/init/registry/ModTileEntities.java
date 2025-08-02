@@ -34,30 +34,37 @@ public class ModTileEntities {
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
-        BlockEntityRenderers.register(hole_tile.get(), BlackHoleChestRender::new);
+        BlockEntityRenderers.register(black_hole_chest_tile.get(), BlackHoleChestRender::new);
     }
 
     public static RegistryObject<BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(
             "neutron_collector_tile",
-            (NeutronCollectorTile::new),
+            NeutronCollectorTile::new,
             () -> new Block[]{
                     ModBlocks.neutron_collector.get(),
                     ModBlocks.dense_neutron_collector.get(),
                     ModBlocks.denser_neutron_collector.get(),
                     ModBlocks.densest_neutron_collector.get()
-            }
-    );
-    public static RegistryObject<BlockEntityType<NeutronCompressorTile>> compressor_tile = blockEntity("compressor_tile", NeutronCompressorTile::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
+            });
+    public static RegistryObject<BlockEntityType<NeutronCompressorTile>> neutron_compressor_tile = blockEntity(
+            "neutron_compressor_tile",
+            NeutronCompressorTile::new,
+            () -> new Block[]{
+                    ModBlocks.neutron_compressor.get(),
+                    ModBlocks.dense_neutron_compressor.get(),
+                    ModBlocks.denser_neutron_compressor.get(),
+                    ModBlocks.densest_neutron_compressor.get()
+            });
     public static RegistryObject<BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,
             () -> new Block[]{
                     ModBlocks.sculk_crafting_table.get(),
                     ModBlocks.nether_crafting_table.get(),
                     ModBlocks.end_crafting_table.get(),
-                    ModBlocks.extreme_crafting_table.get()
+                    ModBlocks.extreme_crafting_table.get()//超立方体
             });
     public static RegistryObject<BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
     public static RegistryObject<BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
     public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.get()});
-    public static RegistryObject<BlockEntityType<BlackHoleChestTile>> hole_tile = blockEntity("hole_tile", BlackHoleChestTile::new, () -> new Block[]{ModBlocks.black_hole_chest.get()});
+    public static RegistryObject<BlockEntityType<BlackHoleChestTile>> black_hole_chest_tile = blockEntity("black_hole_chest_tile", BlackHoleChestTile::new, () -> new Block[]{ModBlocks.black_hole_chest.get()});
 
 }

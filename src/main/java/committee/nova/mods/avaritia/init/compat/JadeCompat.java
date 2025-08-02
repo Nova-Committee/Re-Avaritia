@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
+import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
@@ -25,7 +25,7 @@ import snownee.jade.api.config.IPluginConfig;
 public class JadeCompat implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
-        registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, CompressorBlock.class);
+        registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, NeutronCompressorBlock.class);
         registration.registerBlockComponent(CraftingComponentProvider.INSTANCE, TierCraftTableBlock.class);
         registration.registerBlockComponent(ExtremeSmithingComponentProvider.INSTANCE, ExtremeSmithingTableBlock.class);
     }

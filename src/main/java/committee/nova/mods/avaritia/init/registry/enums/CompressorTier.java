@@ -1,24 +1,23 @@
 package committee.nova.mods.avaritia.init.registry.enums;
 
-import committee.nova.mods.avaritia.init.registry.ModTags;
-import net.minecraft.world.item.crafting.Ingredient;
-
 /**
  * @author: cnlimiter
  */
 public enum CompressorTier {
-    DEFAULT("neutron_compressor", Ingredient.of(ModTags.NEUTRON_DUST), 3600),
-    DENSE("dense_neutron_compressor", Ingredient.of(ModTags.NEUTRON_NUGGET), 3600),
-    DENSER("denser_neutron_compressor", Ingredient.of(ModTags.NEUTRON_INGOT), 3600),
-    DENSEST("densest_neutron_compressor", Ingredient.of(ModTags.NEUTRON_INGOT), 200);
+    DEFAULT("neutron_compressor", 1f, 1f, 1),
+    DENSE("dense_neutron_compressor", 1/2f, 1f, 1),
+    DENSER("denser_neutron_compressor", 1/4f, 3/4f, 1),
+    DENSEST("densest_neutron_compressor", 1/8f, 1/2f, 2);
 
-    public final int production_ticks;
-    public final Ingredient production;
     public final String name;
+    public final float timeAmplifier;
+    public final float inputAmplifier;
+    public final int outputAmplifier;
 
-    CompressorTier(String name, Ingredient production, int production_ticks) {
-        this.production_ticks = production_ticks;
-        this.production = production;
+    CompressorTier(String name, float timeAmplifier, float inputAmplifier, int outputAmplifier) {
         this.name = name;
+        this.timeAmplifier = timeAmplifier;
+        this.inputAmplifier = inputAmplifier;
+        this.outputAmplifier = outputAmplifier;
     }
 }

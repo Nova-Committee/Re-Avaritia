@@ -2,10 +2,12 @@ package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.enums.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -48,35 +50,63 @@ public class InfinityUpgradeItem extends ResourceItem {
         var player = pContext.getPlayer();
         var itemInHand = pContext.getItemInHand();
 
-        if (tile instanceof NeutronCollectorTile collectorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
-            switch (collectorTile.getTier()) {
-                case DEFAULT -> {
-                    collectorTile.setTier(CollectorTier.DENSE);
-                    level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_collector.get().withPropertiesOf(blockstate));
-                    level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
-                    return InteractionResult.SUCCESS;
+        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+            if (tile instanceof NeutronCollectorTile collectorTile) {
+                switch (collectorTile.getTier()) {
+                    case DEFAULT -> {
+                        collectorTile.setTier(CollectorTier.DENSE);
+                        level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_collector.get().withPropertiesOf(blockstate));
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        return InteractionResult.SUCCESS;
+                    }
+                    case DENSE -> {
+                        collectorTile.setTier(CollectorTier.DENSER);
+                        level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        return InteractionResult.SUCCESS;
+                    }
+                    case DENSER -> {
+                        collectorTile.setTier(CollectorTier.DENSEST);
+                        level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_collector.get().withPropertiesOf(blockstate));
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
+                        return InteractionResult.SUCCESS;
+                    }
+                    default -> {
+                        return InteractionResult.PASS;
+                    }
                 }
-                case DENSE -> {
-                    collectorTile.setTier(CollectorTier.DENSER);
-                    level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
-                    level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
-                    return InteractionResult.SUCCESS;
-                }
-                case DENSER -> {
-                    collectorTile.setTier(CollectorTier.DENSEST);
-                    level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_collector.get().withPropertiesOf(blockstate));
-                    level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
-                    return InteractionResult.SUCCESS;
-                }
-                default -> {
-                    return InteractionResult.PASS;
+            } else if (tile instanceof NeutronCompressorTile compressorTile) {
+                switch (compressorTile.getTier()) {
+                    case DEFAULT -> {
+                        compressorTile.setTier(CompressorTier.DENSE);
+                        level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_compressor.get().withPropertiesOf(blockstate));
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        return InteractionResult.SUCCESS;
+                    }
+                    case DENSE -> {
+                        compressorTile.setTier(CompressorTier.DENSER);
+                        level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_compressor.get().withPropertiesOf(blockstate));
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                        return InteractionResult.SUCCESS;
+                    }
+                    case DENSER -> {
+                        compressorTile.setTier(CompressorTier.DENSEST);
+                        level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_compressor.get().withPropertiesOf(blockstate));
+                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
+                        return InteractionResult.SUCCESS;
+                    }
+                    default -> {
+                        return InteractionResult.PASS;
+                    }
                 }
             }
-        }
-//        else if (Const.isLoad("mekanism")){
+            //else if (Const.isLoad("mekanism")){
 //            if (tile instanceof TileEntityFactory tileEntityFactory && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
 //                switch (tileEntityFactory.tier) {
 //                    case BASIC -> {
@@ -109,7 +139,10 @@ public class InfinityUpgradeItem extends ResourceItem {
 //                return super.useOn(pContext);
 //            }
 //        }
-
+            else {
+                return super.useOn(pContext);
+            }
+        }
         else {
             return super.useOn(pContext);
         }

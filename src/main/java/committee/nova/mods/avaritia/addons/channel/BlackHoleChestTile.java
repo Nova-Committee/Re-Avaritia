@@ -60,7 +60,7 @@ public class BlackHoleChestTile extends BaseTileEntity implements IChannelTermin
 
 
     public BlackHoleChestTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.hole_tile.get(), pos, state);
+        super(ModTileEntities.black_hole_chest_tile.get(), pos, state);
         this.slotIndex = -2;
         onBlockStateChange();
     }

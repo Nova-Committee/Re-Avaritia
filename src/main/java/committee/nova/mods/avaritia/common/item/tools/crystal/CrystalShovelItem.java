@@ -58,7 +58,7 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
     @Override
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pLevel.isClientSide && pEntity instanceof Player player && pIsSelected) {
+        if (!pLevel.isClientSide && pEntity instanceof Player player) {
             if (pIsSelected) {
                 player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
                 player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
