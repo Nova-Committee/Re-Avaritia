@@ -1,0 +1,24 @@
+package committee.nova.mods.avaritia.util;
+
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.event.level.BlockEvent;
+
+/**
+ * @author: cnlimiter
+ */
+public class FuncUtils {
+    public static void upgradeMachine(Level level, Player player, BlockPos pos, Block to) {
+        level.setBlockAndUpdate(pos, to.withPropertiesOf(level.getBlockState(pos)));
+        level.playSound(player, pos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+    }
+}

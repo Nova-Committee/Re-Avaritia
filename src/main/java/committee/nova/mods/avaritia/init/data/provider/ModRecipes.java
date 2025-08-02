@@ -993,7 +993,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('A', ModItems.neutron_gear.get())
                 .define('B', ModItems.neutron_pile.get())
                 .define('C', ModItems.blaze_cube.get())
-                .define('D', ModItems.infinity_catalyst.get())
+                .define('D', SingularityUtils.getItemForSingularity(ModSingularities.GOLD))
                 .define('E', ModBlocks.blaze_cube_block.get())
                 .define('F', Blocks.GOLD_BLOCK)
                 .define('G', ModBlocks.dense_neutron_collector.get())

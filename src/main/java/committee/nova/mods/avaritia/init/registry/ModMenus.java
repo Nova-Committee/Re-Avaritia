@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleScreen;
+import committee.nova.mods.avaritia.addons.channel.BlackHoleChestScreen;
 import committee.nova.mods.avaritia.addons.channel.ChannelMenu;
 import committee.nova.mods.avaritia.addons.channel.ChannelSelectMenu;
 import committee.nova.mods.avaritia.addons.channel.ChannelSelectScreen;
@@ -43,7 +43,7 @@ public class ModMenus {
         MenuScreens.register(GENERIC_9x27.get(), CompressedChestScreen::new);
         MenuScreens.register(neutron_ring.get(), NeutronRingScreen::new);
         MenuScreens.register(infinity_chest.get(), InfinityChestScreen::new);
-        MenuScreens.register(channel_menu.get(), BlackHoleScreen::new);
+        MenuScreens.register(channel_menu.get(), BlackHoleChestScreen::new);
         MenuScreens.register(channel_select_menu.get(), ChannelSelectScreen::new);
         MenuScreens.register(extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         MenuScreens.register(extreme_anvil.get(), ExtremeAnvilScreen::new);

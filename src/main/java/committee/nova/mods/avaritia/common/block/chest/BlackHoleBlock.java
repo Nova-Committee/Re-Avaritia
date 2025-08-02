@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import com.google.common.collect.ImmutableMap;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleTile;
+import committee.nova.mods.avaritia.addons.channel.BlackHoleChestTile;
 import committee.nova.mods.avaritia.addons.channel.ChannelMenuProvider;
 import committee.nova.mods.avaritia.addons.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
@@ -150,7 +150,7 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
         if (!level.isClientSide() && !player.isSpectator()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof BlackHoleTile chestTile) {
+            if (tile instanceof BlackHoleChestTile chestTile) {
                 if (chestTile.getOwner() == null) {
                     chestTile.setOwner(player.getUUID());
                     chestTile.setLocked(false);
@@ -193,13 +193,13 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
 
     @Override
     public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        return new BlackHoleTile(pPos, pState);
+        return new BlackHoleChestTile(pPos, pState);
     }
 
     @Override
     public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
         if (pPlacer instanceof ServerPlayer player && !pStack.getOrCreateTag().contains("BlockEntityTag")) {
-            BlackHoleTile blockEntity = (BlackHoleTile) pLevel.getBlockEntity(pPos);
+            BlackHoleChestTile blockEntity = (BlackHoleChestTile) pLevel.getBlockEntity(pPos);
             if (blockEntity != null) {
                 blockEntity.setOwner(pPlacer.getUUID());
             }
@@ -210,8 +210,8 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
     public void entityInside(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Entity pEntity) {
         if (pLevel.isClientSide) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (blockentity instanceof BlackHoleTile blackHoleTile && pEntity instanceof ItemEntity itemEntity) {
-            blackHoleTile.inhaleItem(itemEntity);
+        if (blockentity instanceof BlackHoleChestTile blackHoleChestTile && pEntity instanceof ItemEntity itemEntity) {
+            blackHoleChestTile.inhaleItem(itemEntity);
         }
     }
 
@@ -270,7 +270,7 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
 
     @Override
     public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
-        BlackHoleTile blockEntity = (BlackHoleTile) level.getBlockEntity(pos);
+        BlackHoleChestTile blockEntity = (BlackHoleChestTile) level.getBlockEntity(pos);
         if (blockEntity != null) blockEntity.onBlockStateChange();
     }
 

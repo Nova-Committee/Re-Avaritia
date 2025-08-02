@@ -1,11 +1,14 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import mekanism.common.tier.FactoryTier;
+import mekanism.common.tile.factory.TileEntityFactory;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -68,7 +71,42 @@ public class InfinityUpgradeItem extends ResourceItem {
                     return InteractionResult.PASS;
                 }
             }
-        } else {
+        }
+//        else if (Const.isLoad("mekanism")){
+//            if (tile instanceof TileEntityFactory tileEntityFactory && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+//                switch (tileEntityFactory.tier) {
+//                    case BASIC -> {
+//                        tileEntityFactory.tier = FactoryTier.ADVANCED;
+//                        level.setBlockAndUpdate(blockpos, tileEntityFactory.getBlockType().withPropertiesOf(blockstate));
+//                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+//                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+//                        return InteractionResult.SUCCESS;
+//                    }
+//                    case ADVANCED -> {
+//                        tileEntityFactory.tier = FactoryTier.ELITE;
+//                        level.setBlockAndUpdate(blockpos, tileEntityFactory.getBlockType().withPropertiesOf(blockstate));
+//                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+//                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+//                        return InteractionResult.SUCCESS;
+//                    }
+//                    case ELITE -> {
+//                        tileEntityFactory.tier = FactoryTier.ULTIMATE;
+//                        level.setBlockAndUpdate(blockpos, tileEntityFactory.getBlockType().withPropertiesOf(blockstate));
+//                        level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+//                        itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+//                        return InteractionResult.SUCCESS;
+//                    }
+//                    default -> {
+//                        return InteractionResult.PASS;
+//                    }
+//                }
+//            }
+//            else {
+//                return super.useOn(pContext);
+//            }
+//        }
+
+        else {
             return super.useOn(pContext);
         }
     }

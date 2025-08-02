@@ -41,7 +41,7 @@ import java.util.UUID;
  * @CreateTime: 2025/1/31 15:28
  * @Description:
  */
-public class BlackHoleTile extends BaseTileEntity implements IChannelTerminal {
+public class BlackHoleChestTile extends BaseTileEntity implements IChannelTerminal {
     private static final Component CONTAINER_NAME = Component.translatable("container.infinity_chest");
     private final int slotIndex;
     @Getter private UUID owner;
@@ -59,13 +59,13 @@ public class BlackHoleTile extends BaseTileEntity implements IChannelTerminal {
     @Getter private LazyOptional<?> capability = LazyOptional.of(() -> channel);
 
 
-    public BlackHoleTile(BlockPos pos, BlockState state) {
+    public BlackHoleChestTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.hole_tile.get(), pos, state);
         this.slotIndex = -2;
         onBlockStateChange();
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, BlackHoleTile blockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, BlackHoleChestTile blockEntity) {
         if (level.isClientSide) return;
         if (blockEntity.channel.isRemoved()) {
             if (blockEntity.channelID >= 0) blockEntity.setChannel(null, -1);

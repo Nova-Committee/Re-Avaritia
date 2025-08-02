@@ -26,7 +26,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
@@ -34,7 +33,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -62,7 +60,7 @@ public class ChannelMenu extends AbstractContainerMenu {
     private final ItemStack panelItem;
     private final TransientCraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
-    public BlackHoleTile blackHoleTile;
+    public BlackHoleChestTile blackHoleChestTile;
     public DummyContainer dummyContainer;
     public boolean locked;
     public UUID channelOwner;
@@ -121,7 +119,7 @@ public class ChannelMenu extends AbstractContainerMenu {
     }
 
     //服务端用这个
-    public ChannelMenu(int containerId, Player player, BlackHoleTile blockEntity, int panelItemSlotIndex) {
+    public ChannelMenu(int containerId, Player player, BlackHoleChestTile blockEntity, int panelItemSlotIndex) {
         super(ModMenus.channel_menu.get(), containerId);
         this.level = player.level();
         this.player = player;
@@ -129,7 +127,7 @@ public class ChannelMenu extends AbstractContainerMenu {
 
         if (panelItemSlotIndex >= 0) {
             this.blockPos = BlockPos.ZERO;
-            this.blackHoleTile = null;
+            this.blackHoleChestTile = null;
             this.panelItem = player.getInventory().getItem(panelItemSlotIndex);
             CompoundTag nbt = panelItem.getOrCreateTag();
             this.owner = nbt.contains("owner") ? nbt.getUUID("owner") : player.getUUID();
@@ -146,7 +144,7 @@ public class ChannelMenu extends AbstractContainerMenu {
         }
         else {
             this.blockPos = blockEntity.getBlockPos();
-            this.blackHoleTile = blockEntity;
+            this.blackHoleChestTile = blockEntity;
             this.owner = blockEntity.getOwner() == null ? player.getUUID() : blockEntity.getOwner();
             this.locked = blockEntity.isLocked();
             this.craftingMode = blockEntity.isCraftingMode();
@@ -184,7 +182,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                         panelItem.setTag(nbt);
                     }
                     else {
-                        blackHoleTile.setLocked(locked);
+                        blackHoleChestTile.setLocked(locked);
                         if (locked) saveBlock();
                     }
                 }
@@ -739,7 +737,7 @@ public class ChannelMenu extends AbstractContainerMenu {
     private void addSlots(Player player, Inventory playerInv) {
         //快捷栏0~8
         for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 252));
+            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 258));
         }
 
         //背包9~35
@@ -842,10 +840,10 @@ public class ChannelMenu extends AbstractContainerMenu {
     }
 
     private void saveBlock() {
-        blackHoleTile.setCraftingMode(craftingMode);
-        blackHoleTile.setFilter(filter);
-        blackHoleTile.setSortType(sortType);
-        blackHoleTile.setViewType(viewType);
+        blackHoleChestTile.setCraftingMode(craftingMode);
+        blackHoleChestTile.setFilter(filter);
+        blackHoleChestTile.setSortType(sortType);
+        blackHoleChestTile.setViewType(viewType);
     }
 
     @Override
@@ -1018,11 +1016,11 @@ public class ChannelMenu extends AbstractContainerMenu {
                 nbt.remove("channel");
                 panelItem.setTag(nbt);
             }
-            else blackHoleTile.setChannel(null, -1);
+            else blackHoleChestTile.setChannel(null, -1);
             openChannelScreen();
         }
         if (panelItemSlotIndex >= 0) return panelItem == player.getInventory().getItem(panelItemSlotIndex);
-        else return !blackHoleTile.isRemoved() &&
+        else return !blackHoleChestTile.isRemoved() &&
                 player.distanceToSqr(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 32.0D;
     }
 
@@ -1050,7 +1048,7 @@ public class ChannelMenu extends AbstractContainerMenu {
             }
         }
         else {
-            if (!blackHoleTile.isLocked()) saveBlock();
+            if (!blackHoleChestTile.isLocked()) saveBlock();
         }
     }
 
@@ -1062,7 +1060,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                     buf -> {}
             );
         }
-        else NetworkHooks.openScreen((ServerPlayer) player, new ChannelSelectMenuProvider(blackHoleTile), buf -> {
+        else NetworkHooks.openScreen((ServerPlayer) player, new ChannelSelectMenuProvider(blackHoleChestTile), buf -> {
         });
     }
 

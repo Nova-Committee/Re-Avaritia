@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.addons.channel.BlackHoleChestRender;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleTile;
+import committee.nova.mods.avaritia.addons.channel.BlackHoleChestTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
@@ -58,6 +58,6 @@ public class ModTileEntities {
     public static RegistryObject<BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
     public static RegistryObject<BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
     public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.get()});
-    public static RegistryObject<BlockEntityType<BlackHoleTile>> hole_tile = blockEntity("hole_tile", BlackHoleTile::new, () -> new Block[]{ModBlocks.black_hole_chest.get()});
+    public static RegistryObject<BlockEntityType<BlackHoleChestTile>> hole_tile = blockEntity("hole_tile", BlackHoleChestTile::new, () -> new Block[]{ModBlocks.black_hole_chest.get()});
 
 }

@@ -17,10 +17,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 public class ChannelMenuProvider implements MenuProvider {
 
-    private final BlackHoleTile blockEntity;
+    private final BlackHoleChestTile blockEntity;
     private final int slotIndex;
 
-    public ChannelMenuProvider(BlackHoleTile blockEntity) {
+    public ChannelMenuProvider(BlackHoleChestTile blockEntity) {
         this.blockEntity = blockEntity;
         this.slotIndex = -2;
     }

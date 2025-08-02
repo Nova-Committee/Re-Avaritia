@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.net.channel.C2SFilterChannelPack;
@@ -39,24 +40,25 @@ import java.util.List;
  * @CreateTime: 2025/2/24 00:39
  * @Description:
  */
-public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
+public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
     @Setter
     @Getter
     private int blitOffset;
 
-    private static final ResourceLocation GUI_IMG = Const.rl("textures/gui/crafting_panel.png");
+    private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_PANEL;
     private final String ownerName;
     private String[] lastHoveredObject = new String[2];
     private long lastCount = 0;
     private String lastFormatCountTemp = "";
     private SortButton sortButton;
+    private ViewTypeButton viewTypeButton;
     private ItemScrollBar scrollBar;
     private EditBox searchBox;
     private CraftToChannelButton craftToChannelButton;
     private CraftToInventoryButton craftToInventoryButton;
     private CraftAndDropButton craftAndDropButton;
 
-    public BlackHoleScreen(ChannelMenu menu, Inventory inventory, Component title) {
+    public BlackHoleChestScreen(ChannelMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         this.imageWidth = 218;
         this.imageHeight = 256;
@@ -80,12 +82,13 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 16, menu.craftingMode ? 118 : 152);
         this.scrollBar.setScrolledOn(menu.dummyContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 198, this.topPos + 192));
-        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 208));
-        this.addRenderableWidget(new ChannelButton(this.leftPos + 198, this.topPos + 224));
-        this.sortButton = new SortButton(this.leftPos + 198, this.topPos + 240);
+        this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 198, this.topPos + 195));
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 211));
+        this.addRenderableWidget(new ChannelButton(this.leftPos + 198, this.topPos + 227));
+        this.sortButton = new SortButton(this.leftPos + 198, this.topPos + 243);
         this.addRenderableWidget(sortButton);
-        this.addRenderableWidget(new ViewTypeButton(this.leftPos + 198, this.topPos + 256));
+        this.viewTypeButton = new ViewTypeButton(this.leftPos + 198, this.topPos + 259);
+        this.addRenderableWidget(viewTypeButton);
         this.searchBox = new EditBox(this.font, leftPos + 104, topPos + 4, 90, 12, Component.translatable("gui.avaritia.search"));
         this.searchBox.setMaxLength(64);
         this.searchBox.setBordered(false);
@@ -475,11 +478,11 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int uOffset = menu.craftingMode ? 219 : 85;
-            //int vOffset = this.isHoveredOrFocused() ? 207 : 199;
-            this.renderTexture(pPoseStack, GUI_IMG, this.getX(), this.getY(),  uOffset, 0, this.yDiffTex, this.width, this.height, 256, 256);
+            int uOffset = menu.craftingMode ? 235 : 219;
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(),  uOffset, this.yTexStart, this.width, this.height, 256, 256);
         }
     }
+
 
     private class ToggleLockButton extends ImageButton {
 
@@ -496,46 +499,8 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int uOffset = menu.locked ? 86 : 67;
-            int vOffset = this.isHoveredOrFocused() ? 231 : 215;
-            this.renderTexture(pPoseStack, GUI_IMG, this.getX(), this.getY(),  uOffset, vOffset, this.yDiffTex, this.width, this.height, 256, 256);
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, vOffset, this.width, this.height, 256, 256);
-        }
-    }
-
-    private class SortButton extends ImageButton {
-
-        public SortButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 219, 75, GUI_IMG, pButton -> cycleSort());
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int uOffset = menu.sortType * 16;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 210, this.width, this.height, 256, 256);
-            List<FormattedCharSequence> list = new ArrayList<>();
-            list.add(Component.translatable(getSortKey(menu.sortType)).getVisualOrderText());
-            if (menu.sortType % 2 == 0) list.add(Component.translatable("gui.avaritia.sort.ascending").getVisualOrderText());
-            else list.add(Component.translatable("gui.avaritia.sort.descending").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
-            if (sortButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
-        }
-    }
-
-    private class ViewTypeButton extends ImageButton {
-
-        public ViewTypeButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 219, 91, GUI_IMG, pButton -> changeViewType());
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int uOffset = 16 * menu.viewType;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 226, this.width, this.height, 256, 256);
+            int uOffset = menu.locked ? 235 : 219;
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(),  uOffset, this.yTexStart, this.width, this.height, 256, 256);
         }
     }
 
@@ -559,49 +524,107 @@ public class BlackHoleScreen extends AbstractContainerScreen<ChannelMenu> {
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            float vOffset = this.isHoveredOrFocused() ? 231.0F : 215.0F;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), 48.0F, vOffset, this.width, this.height, 256, 256);
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
             if (this.isHovered) setTooltipForNextRenderPass(tips);
         }
     }
 
+    private class SortButton extends ImageButton {
+
+        public SortButton(int pX, int pY) {
+            super(pX, pY, 16, 16, 219, 75, GUI_IMG, pButton -> cycleSort());
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            List<FormattedCharSequence> list = new ArrayList<>();
+            int vOffset = menu.sortType * 16 + this.yTexStart;
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, vOffset, this.width, this.height, 256, 256);
+            list.add(Component.translatable(getSortKey(menu.sortType)).getVisualOrderText());
+            if (menu.sortType % 2 == 0) list.add(Component.translatable("gui.avaritia.sort.ascending").getVisualOrderText());
+            else list.add(Component.translatable("gui.avaritia.sort.descending").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
+            if (sortButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
+        }
+    }
+
+    private class ViewTypeButton extends ImageButton {
+
+        public ViewTypeButton(int pX, int pY) {
+            super(pX, pY, 16, 16, 219, 203, GUI_IMG, pButton -> changeViewType());
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            List<FormattedCharSequence> list = new ArrayList<>();
+            int vOffset = 16 * menu.viewType + this.yTexStart;
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, vOffset, this.width, this.height, 256, 256);
+            if (menu.viewType == 0) list.add(Component.translatable("gui.avaritia.view.all").getVisualOrderText());
+            else  if (menu.viewType == 1) list.add(Component.translatable("gui.avaritia.view.item").getVisualOrderText());
+            else list.add(Component.translatable("gui.avaritia.view.fluid").getVisualOrderText());
+            if (viewTypeButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
+        }
+    }
+
     private class CraftToChannelButton extends ImageButton {
-        private final List<FormattedCharSequence> list = new ArrayList<>();
 
         public CraftToChannelButton (int x, int y) {
             super(x, y, 16, 9, 219, 0, GUI_IMG, pButton -> {});
+
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            List<FormattedCharSequence> list = new ArrayList<>();
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
             list.add(Component.translatable("gui.avaritia.craft.channel").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip3").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip4").getVisualOrderText());
-            setTooltipForNextRenderPass(list);
+            if (this.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 
     private class CraftToInventoryButton extends ImageButton {
-        private final List<FormattedCharSequence> list = new ArrayList<>();
         public CraftToInventoryButton (int x, int y) {
             super(x, y, 16, 9, 219, 18, GUI_IMG, pButton -> {});
+        }
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            List<FormattedCharSequence> list = new ArrayList<>();
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
             list.add(Component.translatable("gui.avaritia.craft.inv").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip3").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip4").getVisualOrderText());
-            setTooltipForNextRenderPass(list);
+            if (this.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 
     private class CraftAndDropButton extends ImageButton {
-        private final List<FormattedCharSequence> list = new ArrayList<>();
         public CraftAndDropButton (int x, int y) {
             super(x, y, 16, 9, 219, 9, GUI_IMG, pButton -> {});
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            List<FormattedCharSequence> list = new ArrayList<>();
+            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
             list.add(Component.translatable("gui.avaritia.craft.drop").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip3").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.craft.tip4").getVisualOrderText());
-            setTooltipForNextRenderPass(list);
+            if (this.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 

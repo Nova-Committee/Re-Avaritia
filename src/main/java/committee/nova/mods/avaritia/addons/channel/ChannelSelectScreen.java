@@ -3,16 +3,22 @@ package committee.nova.mods.avaritia.addons.channel;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
+import committee.nova.mods.avaritia.api.utils.StringUtils;
 import committee.nova.mods.avaritia.common.net.channel.C2SAddChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SRenameChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SSetChannelPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -36,9 +42,9 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     @Setter
     @Getter
     private int blitOffset;
-    private static final ResourceLocation GUI_IMG = Const.rl("textures/gui/channel_select.png");
+    private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_SELECT;
     private EditBox searchBox;
-    private EditBox nameBox;
+    //private EditBox nameBox;
     private ChannelScrollBar scrollBar;
     private final ArrayList<int[]> filterChannels = new ArrayList<>();
     private int scrollAt = 0;
@@ -48,8 +54,8 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
     public ChannelSelectScreen(ChannelSelectMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
-        this.imageWidth = 202;
-        this.imageHeight = 249;
+        this.imageWidth = 88;
+        this.imageHeight = 190;
         channelManager.addScreen(this);
     }
 
@@ -67,22 +73,18 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         super.init();
         this.leftPos = (this.width - imageWidth + 4) / 2;
         this.topPos = (this.height - imageHeight) / 2;
-        this.scrollBar = new ChannelScrollBar(leftPos + 183, topPos + 7, 4, 182);
+        this.scrollBar = new ChannelScrollBar(leftPos + 74, topPos + 8, 9, 90);
         this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new AddChannelButton(leftPos + 92, topPos + 221));
-        this.addRenderableWidget(new RenameButton(leftPos + 116, topPos + 222));
-        this.addRenderableWidget(new DeleteButton(leftPos + 70, topPos + 222));
-        this.addRenderableWidget(new BackButton(leftPos + 175, topPos + 222));
-        this.searchBox = new EditBox(this.font, leftPos + 41, topPos + 192, 114, 10, Component.translatable("gui.avaritia.search"));
+        this.addRenderableWidget(new AddChannelButton(this, leftPos + 7, topPos + 131));
+        this.addRenderableWidget(new RenameButton(this, leftPos + 27, topPos + 131));
+        this.addRenderableWidget(new DeleteButton(leftPos + 47, topPos + 131));
+        this.addRenderableWidget(new BackButton(leftPos + 67, topPos + 131));
+        this.searchBox = new EditBox(this.font, leftPos + 7, topPos + 118, 76, 12, Component.translatable("gui.avaritia.search"));
         this.searchBox.setMaxLength(64);
         this.searchBox.setBordered(false);
         this.addRenderableWidget(searchBox);
-        this.nameBox = new EditBox(this.font, leftPos + 41, topPos + 209, 114, 10, Component.translatable("gui.avaritia.name"));
-        this.nameBox.setMaxLength(64);
-        this.nameBox.setBordered(false);
-        this.addRenderableWidget(nameBox);
-        for (int i = 0; i < 10; i++) {
-            this.addRenderableWidget(new ChannelButton(leftPos + 23, topPos + 9 + i * 18, i));
+        for (int i = 0; i < 9; i++) {
+            this.addRenderableWidget(new ChannelButton(leftPos + 7, topPos + 8 + i * 12, i));
         }
         this.updateChannelList();
     }
@@ -97,16 +99,16 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     @Override
     protected void containerTick() {
         super.containerTick();
-        nameBox.tick();
+        //nameBox.tick();
         searchBox.tick();
     }
 
     @Override
     @ParametersAreNonnullByDefault
     protected void renderBg(GuiGraphics poseStack, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, GUI_IMG);
-        this.blit(poseStack, this.leftPos, this.topPos, 0, 0, imageWidth, 98);
-        this.blit(poseStack, this.leftPos, this.topPos + 98, 0, 7, imageWidth, 151);
+        //RenderSystem.setShaderTexture(0, GUI_IMG);
+        this.blit(poseStack, this.leftPos, this.topPos, 0, 0, imageWidth, 154);
+        //this.blit(poseStack, this.leftPos, this.topPos + 98, 0, 7, imageWidth, 151);
     }
 
     public void updateChannelList() {
@@ -144,11 +146,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
                 searchBox.setFocused(true);
                 searchBox.setEditable(true);
                 updateChannelList();
-            }
-            if (nameBox.isMouseOver(pMouseX, pMouseY)) {
-                nameBox.setValue("");
-                nameBox.setFocused(true);
-                nameBox.setEditable(true);
             }
         }
         return super.mouseClicked(pMouseX, pMouseY, pButton);
@@ -218,7 +215,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         private final int buttonID;
 
         public ChannelButton(int pX, int pY, int id) {
-            super(pX, pY, 156, 16, 0, 158, GUI_IMG, button -> {
+            super(pX, pY, 64, 12, 0, 154, GUI_IMG, button -> {
                 int[] a = filterChannels.get(id + scrollAt);
                 NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SSetChannelPack(menu.containerId, (byte) a[0], a[1]));
             });
@@ -235,8 +232,8 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         @Override
         public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             int[] a = filterChannels.get(buttonID + scrollAt);
-            float vOffset = this.isHoveredOrFocused() ? 174.0F : 158.0F;
-            if (a[0] == channelManager.selectedChannelType && a[1] == channelManager.selectedChannelID) vOffset += 32;
+            float vOffset = this.isHoveredOrFocused() ? 166.0F : 154.0F;
+            if (a[0] == channelManager.selectedChannelType && a[1] == channelManager.selectedChannelID) vOffset += 24;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), 0.0F, vOffset, this.width, this.height, 256, 256);
             String channelName;
             switch (a[0]) {
@@ -250,12 +247,14 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     }
 
     private class AddChannelButton extends ImageButton {
-
-        public AddChannelButton(int pX, int pY) {
+        public AddChannelButton(ChannelSelectScreen pScreen, int pX, int pY) {
             super(pX, pY, 18, 18, 202, 0, GUI_IMG, pButton -> {
-                String channelName = nameBox.getValue();
-                if (channelName.isEmpty()) return;
-                NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SAddChannelPack(channelName, lShifting));
+                Minecraft.getInstance().setScreen(new StringInputScreen(pScreen, Text.i18n("请输入频道名称").setShadow(true), Text.i18n("请输入"), "\\d{0,12}", "默认的频道", input -> {
+                    if (!input.isEmpty()) {
+                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SAddChannelPack(input, lShifting));
+                        pScreen.updateChannelList();
+                    }
+                }));
             });
         }
 
@@ -265,7 +264,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
             float uOffset = this.isHoveredOrFocused() ? 220.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 0, this.width, this.height, 256, 256);
             List<FormattedCharSequence> list = new ArrayList<>();
-            list.add(Component.translatable("gui.avaritia.addChannel.tip1", nameBox.getValue()).getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.addChannel.tip2").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.addChannel.tip3").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.addChannel.tip4").getVisualOrderText());
@@ -275,20 +273,20 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
     private class RenameButton extends ImageButton {
 
-        public RenameButton(int pX, int pY) {
+        public RenameButton(ChannelSelectScreen pScreen, int pX, int pY) {
             super(pX, pY, 16, 16, 202, 34, GUI_IMG, pButton -> {
-                String name = nameBox.getValue();
-                if (name.isEmpty()) return;
-                NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SRenameChannelPack(menu.containerId, name));
+                Minecraft.getInstance().setScreen(new StringInputScreen(pScreen, Text.i18n("请输入新的频道名称").setShadow(true), Text.i18n("请输入"), "\\d{0,12}", "默认的频道", input -> {
+                    if (!input.isEmpty()) {
+                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SRenameChannelPack(menu.containerId, input));
+                        pScreen.updateChannelList();
+                    }
+                }));
             });
         }
 
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, GUI_IMG);
-            RenderSystem.enableDepthTest();
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 34, this.width, this.height, 256, 256);
             List<FormattedCharSequence> list = new ArrayList<>();
@@ -304,7 +302,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
                     permissions = false;
                 }
                 list.add(Component.translatable("gui.avaritia.renameChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
-                list.add(Component.translatable("gui.avaritia.renameChannel.tip2", flag1 + nameBox.getValue()).getVisualOrderText());
                 if (!permissions) list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
             }
             if (this.isHovered) setTooltipForNextRenderPass(list);
@@ -322,9 +319,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, GUI_IMG);
-            RenderSystem.enableDepthTest();
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 18, this.width, this.height, 256, 256);
             List<FormattedCharSequence> list = new ArrayList<>();
@@ -357,11 +351,11 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, GUI_IMG);
-            RenderSystem.enableDepthTest();
+            List<FormattedCharSequence> list = new ArrayList<>();
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 50, this.width, this.height, 256, 256);
+            list.add(Component.translatable("gui.avaritia.backChannel.tip1").getVisualOrderText());
+            if (this.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 }
