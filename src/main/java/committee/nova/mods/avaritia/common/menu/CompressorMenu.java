@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
-import committee.nova.mods.avaritia.common.tile.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,10 +23,10 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 18:09
  * Version: 1.0
  */
-public class CompressorMenu extends BaseTileMenu<CompressorTile> {
+public class CompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     private final ContainerData progressData;
     public CompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(id, playerInventory, CompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
+        this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
     }
 
     public CompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {

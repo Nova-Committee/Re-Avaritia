@@ -1,10 +1,11 @@
-package committee.nova.mods.avaritia.common.tile.collector;
+package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
+import committee.nova.mods.avaritia.init.registry.enums.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 13:55
  * Version: 1.0
  */
-public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
+public class NeutronCollectorTile extends BaseInventoryTileEntity {
 
 
     public final ItemStackWrapper inventory;
@@ -34,7 +35,7 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
     private int progress;
     private CollectorTier tier;
 
-    public BaseNeutronCollectorTile(BlockPos pos, BlockState state) {
+    public NeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile.get(), pos, state);
         this.inventory = createInventoryHandler();
         if (state.is(ModBlocks.neutron_collector.get())) {
@@ -48,7 +49,7 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity {
         }
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, BaseNeutronCollectorTile tile) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, NeutronCollectorTile tile) {
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
             var stack = tile.tier.production.getItems()[0];

@@ -31,7 +31,7 @@ public class AvaritiaRenderTypes {
             Const.rl("void_halo").toString(),
             DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256,
             RenderType.CompositeState.builder()
-                    .setShaderState(RenderType.POSITION_TEX_SHADER)
+                    .setShaderState(RenderType.POSITION_COLOR_TEX_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(Res.VOID_HALO, false, false))
                     .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                     .setWriteMaskState(RenderType.COLOR_WRITE)
@@ -75,24 +75,8 @@ public class AvaritiaRenderTypes {
         return RenderType.create(Const.rl("glow").toString(),
                 DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
                 RenderType.CompositeState.builder()
-                        //.setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
                         .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                         .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                        .setCullState(RenderStateShard.NO_CULL)
-                        .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
-                        .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                        .createCompositeState(true));
-    }
-
-    public static RenderType wing(ResourceLocation tex) {
-        return RenderType.create(Const.rl( "wing").toString(),
-                DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
-                RenderType.CompositeState.builder()
-                        //.setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
-                        .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                        .setTransparencyState(RenderStateShard.LIGHTNING_TRANSPARENCY)
                         .setCullState(RenderStateShard.NO_CULL)
                         .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
                         .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
@@ -103,14 +87,27 @@ public class AvaritiaRenderTypes {
         return RenderType.create(Const.rl( "armor_mask").toString(),
                 DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
                 RenderType.CompositeState.builder()
-                .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
-                .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-                .setLightmapState(RenderType.LIGHTMAP)
-                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                .setCullState(RenderType.NO_CULL)
-                .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
-                .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                .createCompositeState(true));
+                        .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
+                        .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
+                        .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                        .setLightmapState(RenderType.LIGHTMAP)
+                        .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                        .setCullState(RenderType.NO_CULL)
+                        .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
+                        .createCompositeState(true));
+    }
+
+    public static RenderType armorMask2(final ResourceLocation tex) {
+        return RenderType.create(Const.rl( "armor_mask2").toString(),
+                DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
+                RenderType.CompositeState.builder()
+                        .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
+                        .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
+                        .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                        .setLightmapState(RenderType.LIGHTMAP)
+                        .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                        .setCullState(RenderType.NO_CULL)
+                        .createCompositeState(true));
     }
 
 }

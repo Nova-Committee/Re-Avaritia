@@ -1,20 +1,17 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
-import committee.nova.mods.avaritia.api.client.render.buffer.TransformingVertexConsumer;
 import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
 import committee.nova.mods.avaritia.api.client.util.colour.Colour;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -23,8 +20,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-
-import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_SHADOW_SHADER;
 
 /**
  * Description:
@@ -69,14 +64,42 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         stack.pushPose();
         stack.mulPose(Axis.YP.rotationDegrees((float) (Math.atan2(dx, dz) * 57.29577951308232)));
         stack.mulPose(Axis.XP.rotationDegrees((float) (Math.atan2(Math.sqrt(dx * dx + dz * dz), dy) * 57.29577951308232 + 90.0)));
-        stack.pushPose();
         stack.mulPose(Axis.XP.rotationDegrees(90.0f));
-        final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(AvaritiaRenderTypes.VOID_HALO), stack);
-        cons.vertex(-halocoord, 0.0, -halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(0.0f, 0.0f).endVertex();
-        cons.vertex(-halocoord, 0.0, halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(0.0f, 1.0f).endVertex();
-        cons.vertex(halocoord, 0.0, halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(1.0f, 1.0f).endVertex();
-        cons.vertex(halocoord, 0.0, -halocoord).color(colour.r, colour.g, colour.b, colour.a).uv(1.0f, 0.0f).endVertex();
-        stack.popPose();
+
+        // 使用MultiBufferSource渲染光环，替代原来的Tesselator方式
+        VertexConsumer consumer = buf.getBuffer(RenderType.entityTranslucent(Res.VOID_HALO));
+        PoseStack.Pose pose = stack.last();
+
+        // 渲染光环的四个顶点
+        consumer.vertex(pose.pose(), (float) -halocoord, 0.0F, (float) -halocoord)
+                .color(colour.r, colour.g, colour.b, colour.a)
+                .uv(0.0F, 0.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+        consumer.vertex(pose.pose(), (float) -halocoord, 0.0F, (float) halocoord)
+                .color(colour.r, colour.g, colour.b, colour.a)
+                .uv(0.0F, 1.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+        consumer.vertex(pose.pose(), (float) halocoord, 0.0F, (float) halocoord)
+                .color(colour.r, colour.g, colour.b, colour.a)
+                .uv(1.0F, 1.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+        consumer.vertex(pose.pose(), (float) halocoord, 0.0F, (float) -halocoord)
+                .color(colour.r, colour.g, colour.b, colour.a)
+                .uv(1.0F, 0.0F)
+                .overlayCoords(0, 10)
+                .uv2(packedLightIn)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
+
         stack.scale((float) scale, (float) scale, (float) scale);
         final CCRenderState cc = CCRenderState.instance();
         cc.reset();
@@ -84,7 +107,5 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         cc.baseColour = colour.rgba();
         new OBJParser(Const.rl("models/hemisphere.obj")).parse().get("model").render(cc);
         stack.popPose();
-
     }
-
 }

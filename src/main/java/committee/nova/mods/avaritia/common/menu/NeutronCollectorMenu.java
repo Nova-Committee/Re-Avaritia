@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
-import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 15:13
  * Version: 1.0
  */
-public class NeutronCollectorMenu extends BaseTileMenu<BaseNeutronCollectorTile> {
+public class NeutronCollectorMenu extends BaseTileMenu<NeutronCollectorTile> {
     private final ContainerData data;
 
 

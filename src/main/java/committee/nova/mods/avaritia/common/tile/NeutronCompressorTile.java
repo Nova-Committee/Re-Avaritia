@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTile extends BaseInventoryTileEntity {
+public class NeutronCompressorTile extends BaseInventoryTileEntity {
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
     private final SimpleContainerData data = new SimpleContainerData(1);
@@ -36,7 +36,7 @@ public class CompressorTile extends BaseInventoryTileEntity {
     private int progress;
     private boolean ejecting = false;
 
-    public CompressorTile(BlockPos pos, BlockState state) {
+    public NeutronCompressorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler();
         this.recipeInventory = new ItemStackWrapper(1);
@@ -48,7 +48,7 @@ public class CompressorTile extends BaseInventoryTileEntity {
         return inventory;
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, CompressorTile tile) {
+    public static void tick(Level level, BlockPos pos, BlockState state, NeutronCompressorTile tile) {
         var output = tile.inventory.getStackInSlot(0);
         var input = tile.inventory.getStackInSlot(1);
 

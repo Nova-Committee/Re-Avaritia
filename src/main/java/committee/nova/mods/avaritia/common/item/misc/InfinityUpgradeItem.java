@@ -1,14 +1,11 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
-import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
-import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
+import committee.nova.mods.avaritia.init.registry.enums.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import mekanism.common.tier.FactoryTier;
-import mekanism.common.tile.factory.TileEntityFactory;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -51,7 +48,7 @@ public class InfinityUpgradeItem extends ResourceItem {
         var player = pContext.getPlayer();
         var itemInHand = pContext.getItemInHand();
 
-        if (tile instanceof BaseNeutronCollectorTile collectorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+        if (tile instanceof NeutronCollectorTile collectorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
             switch (collectorTile.getTier()) {
                 case DEFAULT -> {
                     collectorTile.setTier(CollectorTier.DENSE);
@@ -65,6 +62,13 @@ public class InfinityUpgradeItem extends ResourceItem {
                     level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
                     itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
+                    return InteractionResult.SUCCESS;
+                }
+                case DENSER -> {
+                    collectorTile.setTier(CollectorTier.DENSEST);
+                    level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_collector.get().withPropertiesOf(blockstate));
+                    level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                    itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
                     return InteractionResult.SUCCESS;
                 }
                 default -> {

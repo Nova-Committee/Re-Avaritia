@@ -770,7 +770,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                 });
             }
         }
-        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 177, 87) {
+        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 161, 156) {
             @Override
             public boolean isActive() {
                 return craftingMode;

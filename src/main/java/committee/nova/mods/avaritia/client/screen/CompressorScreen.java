@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
-import committee.nova.mods.avaritia.common.tile.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -85,7 +85,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             var container = this.getMenu();
             var tile = level.getBlockEntity(container.getBlockPos());
 
-            if (tile instanceof CompressorTile compressor) {
+            if (tile instanceof NeutronCompressorTile compressor) {
                 var materialStack = compressor.getMaterialStack();
 
                 return materialStack.getHoverName();
@@ -95,13 +95,13 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         return Component.literal("");
     }
 
-    private CompressorTile getTileEntity() {
+    private NeutronCompressorTile getTileEntity() {
         var level = this.getMinecraft().level;
 
         if (level != null) {
             var tile = level.getBlockEntity(this.getMenu().getBlockPos());
 
-            if (tile instanceof CompressorTile compressor)
+            if (tile instanceof NeutronCompressorTile compressor)
                 return compressor;
         }
 

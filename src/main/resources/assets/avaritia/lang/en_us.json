@@ -132,6 +132,7 @@
   "tooltip.avaritia.tool.infinity_bow_tracer": "Trace Attack",
   "tooltip.avaritia.tool.infinity_pickaxe_hammer": "Range Dig",
   "tooltip.avaritia.tool.infinity_shovel_destroyer": "Range/Endest Pearl Attack",
+  "tooltip.avaritia.tool.blaze_shovel_trans": "Material conversion",
   "tooltip.avaritia.more": "and %s more...",
   "tooltip.avaritia.durability": "Durability %s",
   "block.avaritia.neutron": "Neutronium Block",

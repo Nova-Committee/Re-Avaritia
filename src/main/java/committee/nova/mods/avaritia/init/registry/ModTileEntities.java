@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.addons.channel.BlackHoleChestRender;
 import committee.nova.mods.avaritia.addons.channel.BlackHoleChestTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
-import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -37,9 +37,9 @@ public class ModTileEntities {
         BlockEntityRenderers.register(hole_tile.get(), BlackHoleChestRender::new);
     }
 
-    public static RegistryObject<BlockEntityType<BaseNeutronCollectorTile>> neutron_collector_tile = blockEntity(
+    public static RegistryObject<BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(
             "neutron_collector_tile",
-            (BaseNeutronCollectorTile::new),
+            (NeutronCollectorTile::new),
             () -> new Block[]{
                     ModBlocks.neutron_collector.get(),
                     ModBlocks.dense_neutron_collector.get(),
@@ -47,7 +47,7 @@ public class ModTileEntities {
                     ModBlocks.densest_neutron_collector.get()
             }
     );
-    public static RegistryObject<BlockEntityType<CompressorTile>> compressor_tile = blockEntity("compressor_tile", CompressorTile::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
+    public static RegistryObject<BlockEntityType<NeutronCompressorTile>> compressor_tile = blockEntity("compressor_tile", NeutronCompressorTile::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
     public static RegistryObject<BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,
             () -> new Block[]{
                     ModBlocks.sculk_crafting_table.get(),

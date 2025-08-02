@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.block.collector;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,7 +52,7 @@ public class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new BaseNeutronCollectorTile(pos, state);
+        return new NeutronCollectorTile(pos, state);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof BaseNeutronCollectorTile compressor) {
+            if (tile instanceof NeutronCollectorTile compressor) {
                 Containers.dropContents(level, pos, compressor.getInventory().getStacks());
             }
         }
@@ -73,7 +73,7 @@ public class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof BaseNeutronCollectorTile compressor) {
+            if (tile instanceof NeutronCollectorTile compressor) {
                 NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
             }
         }
@@ -93,7 +93,7 @@ public class BaseNeutronCollectorBlock extends BaseTileEntityBlock {
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), BaseNeutronCollectorTile::serverTick);
+        return createTicker(type, ModTileEntities.neutron_collector_tile.get(), NeutronCollectorTile::serverTick);
     }
 
 }
