@@ -62,16 +62,17 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, NeutronCompressorTile tile) {
-        var output = tile.inventory.getStackInSlot(0);
-        var input = tile.inventory.getStackInSlot(1);
-
-        tile.recipeInventory.setStackInSlot(0, tile.materialStack);
-
-        if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
-            tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
-        }
-
         if (!level.isClientSide()) {
+            var output = tile.inventory.getStackInSlot(0);
+            var input = tile.inventory.getStackInSlot(1);
+
+            tile.recipeInventory.setStackInSlot(0, tile.materialStack);
+
+            if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
+                tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+            }
+
+
             if (!input.isEmpty()) {
                 if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
                     tile.materialStack = input.copy();

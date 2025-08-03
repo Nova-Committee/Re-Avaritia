@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.PackType;
@@ -9,6 +10,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -31,6 +33,7 @@ public class ResourceReloadHandler {
     @SubscribeEvent
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new SingularityResourceReloadListener(event.getServerResources()));
+        event.addListener(new RegisterRecipesReloadListener(event.getServerResources()));
     }
 
 
@@ -39,6 +42,14 @@ public class ResourceReloadHandler {
         @Override
         public void onResourceManagerReload(@NotNull ResourceManager manager) {
             SingularityRegistryHandler.getInstance().onResourceManagerReload(serverResources.getConditionContext());
+        }
+    }
+
+    private record RegisterRecipesReloadListener(
+            ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
+        @Override
+        public void onResourceManagerReload(@NotNull ResourceManager manager) {
+            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(serverResources.getRecipeManager()));
         }
     }
 

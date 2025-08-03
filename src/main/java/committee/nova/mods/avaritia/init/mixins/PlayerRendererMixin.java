@@ -21,7 +21,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void onInit(EntityRendererProvider.Context pContext, boolean pUseSlimModel, CallbackInfo ci) {
+    private void avaritia$onInit(EntityRendererProvider.Context pContext, boolean pUseSlimModel, CallbackInfo ci) {
         this.addLayer(new InfinityElytraLayer<>(this, pContext.getModelSet()));
     }
 }

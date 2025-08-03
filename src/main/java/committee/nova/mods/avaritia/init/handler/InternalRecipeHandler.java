@@ -52,6 +52,4 @@ public class InternalRecipeHandler {
         return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
     }
 
-
-
 }

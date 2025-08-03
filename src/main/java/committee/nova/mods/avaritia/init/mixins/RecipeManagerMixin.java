@@ -46,7 +46,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
             ProfilerFiller p_44039_,
             CallbackInfo ci,
             @Local(ordinal = 1) Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> map, // recipes
-            @Local ImmutableMap.Builder<ResourceLocation, Recipe<?>> builder // byName
+            @Local(name = "builder") ImmutableMap.Builder<ResourceLocation, Recipe<?>> builder // byName
     ) {
         RecipeUtils.fireRecipeManagerLoadedEvent((RecipeManager) (Object) this, (Map<RecipeType<?>, Object>) (Object) map, builder);
     }

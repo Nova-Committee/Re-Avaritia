@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @Description:
  */
 @Mixin(ClientPacketListener.class)
-public class ClientPacketListenerMixin {
+public abstract class ClientPacketListenerMixin {
     @Shadow
     @Final
     private RecipeManager recipeManager;

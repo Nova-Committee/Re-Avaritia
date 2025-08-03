@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @Description:
  */
 @Mixin(ReloadableServerResources.class)
-public class ReloadableServerResourcesMixin {
+public abstract class ReloadableServerResourcesMixin {
     @Shadow
     @Final
     private RecipeManager recipes;
