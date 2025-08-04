@@ -1,17 +1,15 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.common.container;
 
+import committee.nova.mods.avaritia.common.menu.ChannelMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import committee.nova.mods.avaritia.util.StorageUtils.ViewType;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -20,7 +18,7 @@ import java.util.HashMap;
  * @CreateTime: 2025/2/28 03:26
  * @Description:
  */
-public class DummyContainer extends SimpleContainer {
+public class ChannelDummyContainer extends SimpleContainer {
     public final ArrayList<String[]> sortedObject = new ArrayList<>();
     public final ArrayList<String[]> viewingObject = new ArrayList<>();
     public final HashMap<Integer, FluidStack> fluidStacks = new HashMap<>();
@@ -31,7 +29,7 @@ public class DummyContainer extends SimpleContainer {
     protected ArrayList<String> sortedEnergies = new ArrayList<>();
     private double scrollTo = 0.0D;
 
-    public DummyContainer(ChannelMenu menu) {
+    public ChannelDummyContainer(ChannelMenu menu) {
         super(99);
         this.menu = menu;
     }

@@ -1,10 +1,13 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
 import committee.nova.mods.avaritia.api.utils.game.CraftingRecipeGridIndexGetter;
 import committee.nova.mods.avaritia.api.utils.math.InvItemCounter;
+import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
+import committee.nova.mods.avaritia.common.menu.provider.ChannelSelectMenuProvider;
 import committee.nova.mods.avaritia.common.net.C2SWipChestActionPack;
+import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.util.StorageUtils;
@@ -61,7 +64,7 @@ public class ChannelMenu extends AbstractContainerMenu {
     private final TransientCraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
     public BlackHoleChestTile blackHoleChestTile;
-    public DummyContainer dummyContainer;
+    public ChannelDummyContainer channelDummyContainer;
     public boolean locked;
     public UUID channelOwner;
     public int channelID;
@@ -98,17 +101,17 @@ public class ChannelMenu extends AbstractContainerMenu {
 
         addSlots(playerInv.player, playerInv);
 
-        this.dummyContainer = new DummyContainer(this);
-        this.channel = ClientChannelManager.getInstance().getChannel(dummyContainer);
+        this.channelDummyContainer = new ChannelDummyContainer(this);
+        this.channel = ClientChannelManager.getInstance().getChannel(channelDummyContainer);
         //虚拟储存物品格51 ~ 149
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 11; j++) {
-                this.addSlot(new FakeSlot(dummyContainer, i * 11 + j, 7 + j * 17, 17 + i * 17));
+                this.addSlot(new FakeSlot(channelDummyContainer, i * 11 + j, 7 + j * 17, 17 + i * 17));
             }
         }
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 11; j++) {
-                this.addSlot(new FakeSlot(dummyContainer, 77 + i * 11 + j, 7 + j * 17, 136 + i * 17) {
+                this.addSlot(new FakeSlot(channelDummyContainer, 77 + i * 11 + j, 7 + j * 17, 136 + i * 17) {
                     @Override
                     public boolean isActive() {
                         return !craftingMode;
@@ -824,19 +827,19 @@ public class ChannelMenu extends AbstractContainerMenu {
     public void nextSort() {
         sortType += 2;
         if (sortType > 7) sortType %= 8;
-        if (level.isClientSide) dummyContainer.refreshContainer(true);
+        if (level.isClientSide) channelDummyContainer.refreshContainer(true);
     }
 
     public void reverseSort() {
         if (sortType % 2 == 0) sortType++;
         else sortType--;
-        if (level.isClientSide) dummyContainer.refreshContainer(true);
+        if (level.isClientSide) channelDummyContainer.refreshContainer(true);
     }
 
     public void changeViewType() {
         if (viewType == 2) viewType = 0;
         else viewType++;
-        if (level.isClientSide) dummyContainer.onChangeViewType();
+        if (level.isClientSide) channelDummyContainer.onChangeViewType();
     }
 
     private void saveBlock() {
@@ -852,7 +855,7 @@ public class ChannelMenu extends AbstractContainerMenu {
         if (pSlotId >= 51) {
             //仅客户端能触发
             String[] object;
-            if (pSlotId - 51 < dummyContainer.viewingObject.size()) object = dummyContainer.viewingObject.get(pSlotId - 51);
+            if (pSlotId - 51 < channelDummyContainer.viewingObject.size()) object = channelDummyContainer.viewingObject.get(pSlotId - 51);
             else object = new String[]{"item", "minecraft:air"};
 
             switch (pButton) {

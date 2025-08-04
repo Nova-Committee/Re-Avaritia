@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import com.google.common.collect.ImmutableMap;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleChestTile;
-import committee.nova.mods.avaritia.addons.channel.ChannelMenuProvider;
+import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
+import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
 import committee.nova.mods.avaritia.addons.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import net.minecraft.client.Minecraft;
@@ -56,7 +56,7 @@ import java.util.UUID;
  * @CreateTime: 2024/7/13 下午12:38
  * @Description:
  */
-public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
+public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
@@ -65,13 +65,13 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
     private final ImmutableMap<BlockState, VoxelShape> shapesCache;
-    public BlackHoleBlock() {
+    public BlackHoleChestBlock() {
         super(Properties.of()
                 .mapColor(MapColor.GOLD)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(30.0F, 1200.0F)
                 .sound(SoundType.GLASS)
-                .lightLevel(BlackHoleBlock::getLightLevel)
+                .lightLevel(BlackHoleChestBlock::getLightLevel)
                 .isValidSpawn((state, getter, pos, entityType) -> false)
                 .isSuffocating((state, getter, pos) -> false)
                 .ignitedByLava());
@@ -84,7 +84,7 @@ public class BlackHoleBlock extends BaseTileEntityBlock implements SimpleWaterlo
                 .setValue(DOWN, Boolean.TRUE)
                 .setValue(WATERLOGGED, Boolean.FALSE)
         );
-        this.shapesCache = this.getShapeForEachState(BlackHoleBlock::calculateShape);
+        this.shapesCache = this.getShapeForEachState(BlackHoleChestBlock::calculateShape);
     }
 
     private static VoxelShape calculateShape(BlockState state) {

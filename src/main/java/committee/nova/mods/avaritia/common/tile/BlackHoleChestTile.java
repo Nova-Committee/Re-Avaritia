@@ -1,7 +1,8 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
+import committee.nova.mods.avaritia.common.menu.ChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.ChannelAction;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;

@@ -1,9 +1,7 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.core.channel;
 
-import committee.nova.mods.avaritia.util.StorageUtils;
+import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.material.Fluid;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,11 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientChannel extends Channel {
 
     @Nullable
-    public DummyContainer container;
+    public ChannelDummyContainer container;
 
     public ClientChannel() {}
 
-    public void addListener(DummyContainer container) {
+    public void addListener(ChannelDummyContainer container) {
         this.container = container;
     }
 

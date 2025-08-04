@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleChestRender;
-import committee.nova.mods.avaritia.addons.channel.BlackHoleChestTile;
+import committee.nova.mods.avaritia.client.render.tile.BlackHoleChestRender;
+import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;

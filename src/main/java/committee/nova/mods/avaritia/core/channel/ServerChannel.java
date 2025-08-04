@@ -1,14 +1,11 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.common.net.channel.ChannelState;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelStatePack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 

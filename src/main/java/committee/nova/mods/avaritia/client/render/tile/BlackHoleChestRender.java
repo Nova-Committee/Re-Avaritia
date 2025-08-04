@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

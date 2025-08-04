@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.client.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -6,8 +6,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.addons.channel.ClientChannel;
+import committee.nova.mods.avaritia.addons.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
+import committee.nova.mods.avaritia.common.menu.ChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SFilterChannelPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.SortUtils;
@@ -80,7 +83,7 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
         this.leftPos = (this.width - imageWidth + 4) / 2;
         this.topPos = (this.height - imageHeight) / 2;
         this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 16, menu.craftingMode ? 118 : 152);
-        this.scrollBar.setScrolledOn(menu.dummyContainer.getScrollOn());
+        this.scrollBar.setScrolledOn(menu.channelDummyContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
         this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 198, this.topPos + 195));
         this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 211));
@@ -106,7 +109,7 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
         this.addRenderableWidget(craftToChannelButton);
         this.addRenderableWidget(craftToInventoryButton);
         this.addRenderableWidget(craftAndDropButton);
-        menu.dummyContainer.refreshContainer(true);
+        menu.channelDummyContainer.refreshContainer(true);
         menu.craftModeSetter = () -> {
             if (!menu.craftingMode) toggleCraftingMode();
         };
@@ -169,7 +172,7 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         poseStack.translate(leftPos, topPos, 300.0D);
-        menu.dummyContainer.fluidStacks.forEach((integer, fluidStack) -> {
+        menu.channelDummyContainer.fluidStacks.forEach((integer, fluidStack) -> {
             Slot slot = menu.slots.get(integer + 51);
             FluidItemRender.renderFluid(fluidStack, poseStack, slot.x, slot.y, 0);
         });
@@ -178,9 +181,9 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
 
     public void renderDummyCount(GuiGraphics guiGraphics) {
         PoseStack poseStack = guiGraphics.pose();
-        for (int i = 0; i < menu.dummyContainer.formatCount.size(); i++) {
+        for (int i = 0; i < menu.channelDummyContainer.formatCount.size(); i++) {
             Slot slot = menu.slots.get(i + 51);
-            String count = menu.dummyContainer.formatCount.get(i);
+            String count = menu.channelDummyContainer.formatCount.get(i);
             this.setBlitOffset(100);
             RenderSystem.enableDepthTest();
             float fontSize = 0.5F;
@@ -218,8 +221,8 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
     }
 
     private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
-        if ((hoveredSlot.index - 51) >= menu.dummyContainer.viewingObject.size()) return;
-        String[] hoveredObject = menu.dummyContainer.viewingObject.get(hoveredSlot.index - 51);
+        if ((hoveredSlot.index - 51) >= menu.channelDummyContainer.viewingObject.size()) return;
+        String[] hoveredObject = menu.channelDummyContainer.viewingObject.get(hoveredSlot.index - 51);
         List<Component> components = Lists.newArrayList();
         long count;
         if (hoveredObject[0].equals("item")) {
@@ -262,8 +265,8 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
                 || carried.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
         if (hasCapability) {
             List<Component> components = Lists.newArrayList();
-            if ((hoveredSlot.index - 51) < menu.dummyContainer.viewingObject.size()) {
-                String[] hoveredObject = menu.dummyContainer.viewingObject.get(hoveredSlot.index - 51);
+            if ((hoveredSlot.index - 51) < menu.channelDummyContainer.viewingObject.size()) {
+                String[] hoveredObject = menu.channelDummyContainer.viewingObject.get(hoveredSlot.index - 51);
                 if (hoveredObject[0].equals("fluid")) {
                     components.add(Component.translatable("gui.avaritia.capability.tip1",
                             Component.translatable("block." + hoveredObject[1].replace(':', '.')).getString()
@@ -299,7 +302,7 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
             if (searchBox.isMouseOver(pMouseX, pMouseY)) {
                 menu.filter = "";
                 searchBox.setValue("");
-                menu.dummyContainer.refreshContainer(true);
+                menu.channelDummyContainer.refreshContainer(true);
                 searchBox.setFocused(true);
                 searchBox.setEditable(true);
             }
@@ -355,12 +358,12 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
             String s = searchBox.getValue().toLowerCase();
             if (!s.equals(menu.filter)) {
                 menu.filter = s;
-                menu.dummyContainer.refreshContainer(true);
+                menu.channelDummyContainer.refreshContainer(true);
             }
         }
         if (pKeyCode == InputConstants.KEY_LSHIFT) {
             menu.LShifting = false;
-            menu.dummyContainer.refreshContainer(true);
+            menu.channelDummyContainer.refreshContainer(true);
         }
         return super.keyReleased(pKeyCode, pScanCode, pModifiers);
     }
@@ -368,8 +371,8 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
         if (pMouseX >= leftPos + 5 && pMouseX <= leftPos + 214 && pMouseY >= topPos + 17 && pMouseY <= topPos + 18 + (menu.craftingMode ? 119 : 153) && scrollBar.canScroll()) {
-            if (pDelta <= 0) scrollBar.setScrolledOn(menu.dummyContainer.onMouseScrolled(false));
-            else scrollBar.setScrolledOn(menu.dummyContainer.onMouseScrolled(true));
+            if (pDelta <= 0) scrollBar.setScrolledOn(menu.channelDummyContainer.onMouseScrolled(false));
+            else scrollBar.setScrolledOn(menu.channelDummyContainer.onMouseScrolled(true));
             return true;
         } else return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
@@ -398,7 +401,7 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
 
     protected void toggleCraftingMode() {
         this.menu.craftingMode = !this.menu.craftingMode;
-        this.menu.dummyContainer.refreshContainer(true);
+        this.menu.channelDummyContainer.refreshContainer(true);
         this.searchBox.setFocused(false);
         this.craftToChannelButton.active = menu.craftingMode;
         this.craftToChannelButton.visible = menu.craftingMode;
@@ -447,24 +450,24 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
         public ItemScrollBar(int x, int y, int weight, int height) {
             super(x, y, weight, height);
             this.setScrollTagSize();
-            this.lastObjectListSize = menu.dummyContainer.sortedObject.size();
+            this.lastObjectListSize = menu.channelDummyContainer.sortedObject.size();
         }
 
         public void setScrollTagSize() {
-            double v = (double) this.height * ((menu.craftingMode ? 7.0D : 9.0D) / Math.ceil(menu.dummyContainer.sortedObject.size() / 11.0D));
+            double v = (double) this.height * ((menu.craftingMode ? 7.0D : 9.0D) / Math.ceil(menu.channelDummyContainer.sortedObject.size() / 11.0D));
             this.setScrollTagSize(v);
         }
 
         @Override
         public void draggedTo(double scrolledOn) {
-            menu.dummyContainer.onScrollTo(scrolledOn);
+            menu.channelDummyContainer.onScrollTo(scrolledOn);
         }
 
         @Override
         public void beforeRender() {
-            if (menu.dummyContainer.sortedObject.size() != lastObjectListSize) {
+            if (menu.channelDummyContainer.sortedObject.size() != lastObjectListSize) {
                 setScrollTagSize();
-                this.lastObjectListSize = menu.dummyContainer.sortedObject.size();
+                this.lastObjectListSize = menu.channelDummyContainer.sortedObject.size();
             }
         }
     }

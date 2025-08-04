@@ -1,6 +1,8 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.screen.ChannelSelectScreen;
+import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -88,7 +90,7 @@ public class ClientChannelManager {
         return channel;
     }
 
-    public ClientChannel getChannel(DummyContainer container) {
+    public ClientChannel getChannel(ChannelDummyContainer container) {
         channel.addListener(container);
         return channel;
     }

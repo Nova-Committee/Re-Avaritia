@@ -1,5 +1,7 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.common.menu.provider;
 
+import committee.nova.mods.avaritia.addons.channel.IChannelTerminal;
+import committee.nova.mods.avaritia.common.menu.ChannelSelectMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,22 +14,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
- * @CreateTime: 2025/2/28 20:10
+ * @CreateTime: 2025/3/2 01:23
  * @Description:
  */
-public class ChannelMenuProvider implements MenuProvider {
+public class ChannelSelectMenuProvider implements MenuProvider {
 
-    private final BlackHoleChestTile blockEntity;
-    private final int slotIndex;
-
-    public ChannelMenuProvider(BlackHoleChestTile blockEntity) {
-        this.blockEntity = blockEntity;
-        this.slotIndex = -2;
-    }
-
-    public ChannelMenuProvider(int slotIndex) {
-        this.blockEntity = null;
-        this.slotIndex = slotIndex;
+    private final IChannelTerminal terminal;
+    public ChannelSelectMenuProvider(IChannelTerminal terminal) {
+        this.terminal = terminal;
     }
 
     @Override
@@ -38,6 +32,6 @@ public class ChannelMenuProvider implements MenuProvider {
     @Override
     @ParametersAreNonnullByDefault
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new ChannelMenu(pContainerId, pPlayer, blockEntity, slotIndex);
+        return new ChannelSelectMenu(pContainerId, pPlayer, terminal);
     }
 }

@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.addons.channel;
+package committee.nova.mods.avaritia.core.channel;
 
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
