@@ -62,17 +62,17 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, NeutronCompressorTile tile) {
+
+        var output = tile.inventory.getStackInSlot(0);
+        var input = tile.inventory.getStackInSlot(1);
+
+        tile.recipeInventory.setStackInSlot(0, tile.materialStack);
+
+        if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
+            tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+        }
+
         if (!level.isClientSide()) {
-            var output = tile.inventory.getStackInSlot(0);
-            var input = tile.inventory.getStackInSlot(1);
-
-            tile.recipeInventory.setStackInSlot(0, tile.materialStack);
-
-            if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
-                tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
-            }
-
-
             if (!input.isEmpty()) {
                 if (tile.materialStack.isEmpty() || tile.materialCount <= 0) {
                     tile.materialStack = input.copy();
@@ -106,7 +106,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
                         if (ItemUtils.canCombineStacks(result, output)) {
                             tile.updateResult(result, tile.tier.outputAmplifier);
                             tile.progress = 0;
-                            tile.materialCount -= Mth.ceil(tile.recipe.getInputCount()  * tile.tier.inputAmplifier);
+                            tile.materialCount -= Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier);
 
                             if (tile.materialCount <= 0) {
                                 tile.materialStack = ItemStack.EMPTY;
@@ -220,13 +220,13 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
     public int getMaterialsRequired() {
         if (this.hasRecipe())
-            return Mth.ceil(this.recipe.getInputCount() * tier.inputAmplifier);
+            return Mth.ceil(this.recipe.getInputCount() * this.tier.inputAmplifier);
         return 0;
     }
 
     public int getTimeRequired() {
         if (this.hasRecipe())
-            return Mth.ceil(this.recipe.getTimeCost() * tier.timeAmplifier);
+            return Mth.ceil(this.recipe.getTimeCost() * this.tier.timeAmplifier);
         return 0;
     }
 

@@ -102,4 +102,8 @@ public class NeutronCompressorBlock extends BaseTileEntityBlock {
         return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), NeutronCompressorTile::tick);
     }
 
+    @Override//提供配方至客户端以便渲染
+    protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), NeutronCompressorTile::tick);
+    }
 }
