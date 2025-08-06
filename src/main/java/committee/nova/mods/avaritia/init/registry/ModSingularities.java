@@ -15,6 +15,8 @@ import java.util.List;
  * Version: 1.0
  */
 public class ModSingularities {
+    public static final Singularity OBSIDIAN = new Singularity(new ResourceLocation(Const.MOD_ID, "obsidian"), "singularity.avaritia.obsidian", new int[]{0x3B2754, 0x100C1C}, Ingredient.of(Items.OBSIDIAN));
+    public static final Singularity BLUE_ICE = new Singularity(new ResourceLocation(Const.MOD_ID, "blue_ice"), "singularity.avaritia.blue_ice", new int[]{0x8EB8FE, 0x6B9DFB}, Ingredient.of(Items.BLUE_ICE));
     public static final Singularity COAL = new Singularity(new ResourceLocation(Const.MOD_ID, "coal"), "singularity.avaritia.coal", new int[]{0x363739, 0x261E24}, Ingredient.of(Items.COAL));
     public static final Singularity COPPER = new Singularity(new ResourceLocation(Const.MOD_ID, "copper"), "singularity.avaritia.copper", new int[]{0xFA977C, 0xBC5430}, Ingredient.of(Items.COPPER_INGOT));
     public static final Singularity IRON = new Singularity(new ResourceLocation(Const.MOD_ID, "iron"), "singularity.avaritia.iron", new int[]{0xE1E1E1, 0x6C6C6C}, Ingredient.of(Items.IRON_INGOT));
@@ -24,6 +26,8 @@ public class ModSingularities {
     public static final Singularity GOLD = new Singularity(new ResourceLocation(Const.MOD_ID, "gold"), "singularity.avaritia.gold", new int[]{0xFDF55F, 0xD98E04}, Ingredient.of(Items.GOLD_INGOT));
     public static final Singularity DIAMOND = new Singularity(new ResourceLocation(Const.MOD_ID, "diamond"), "singularity.avaritia.diamond", new int[]{0xA6FCE9, 0x1AACA8}, Ingredient.of(Items.DIAMOND));
     public static final Singularity EMERALD = new Singularity(new ResourceLocation(Const.MOD_ID, "emerald"), "singularity.avaritia.emerald", new int[]{0x7DF8AC, 0x008E1A}, Ingredient.of(Items.EMERALD));
+    public static final Singularity QUARTZ = new Singularity(new ResourceLocation(Const.MOD_ID, "quartz"), "singularity.avaritia.quartz", new int[]{0xEAE5DE, 0xB6A48E}, Ingredient.of(Items.QUARTZ));
+    public static final Singularity AMETHYST_SHARD = new Singularity(new ResourceLocation(Const.MOD_ID, "amethyst_shard"), "singularity.avaritia.amethyst_shard", new int[]{0xCFA0F3, 0x8D6ACC}, Ingredient.of(Items.AMETHYST_SHARD));
     public static final Singularity NETHERITE = new Singularity(new ResourceLocation(Const.MOD_ID, "netherite"), "singularity.avaritia.netherite", new int[]{0x443a3b, 0x1a1616}, Ingredient.of(Items.NETHERITE_INGOT));
 
     public static final Singularity ALUMINUM = new Singularity(new ResourceLocation(Const.MOD_ID, "aluminum"), "singularity.avaritia.aluminum", new int[]{0xCACCDA, 0x9A9CA6}, "forge:ingots/aluminum");
@@ -42,6 +46,8 @@ public class ModSingularities {
 
     public static List<Singularity> getDefaults() {
         return List.of(
+                OBSIDIAN,
+                BLUE_ICE,
                 COAL,
                 IRON,
                 LAPIS_LAZULI,
@@ -50,6 +56,8 @@ public class ModSingularities {
                 GOLD,
                 DIAMOND,
                 EMERALD,
+                QUARTZ,
+                AMETHYST_SHARD,
                 NETHERITE,
 
                 ALUMINUM,
