@@ -122,7 +122,7 @@ public class ServerChannelManager {
             } else {
                 this.initializeNameCache();
             }
-            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success").toString());
+            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success").getString());
 
             File[] channelDirs = saveDataPath.listFiles(pathname -> pathname.isDirectory() && pathname.getName()
                     .matches(StorageUtils.UUID_REGEX));
@@ -137,12 +137,12 @@ public class ServerChannelManager {
                         int channelID = Integer.parseInt(channelFile.getName().substring(0, channelFile.getName().length() - 4));
                         ServerChannel channel = new ServerChannel(channelDat);
                         playerChannels.put(channelID, channel);
-                        Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).toString());
+                        Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).getString());
                     }
                     channelList.put(player, playerChannels);
                 }
             }
-            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_finish").toString());
+            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_finish").getString());
 
         } catch (Exception e) {
             loadSuccess = false;
@@ -168,7 +168,7 @@ public class ServerChannelManager {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Const.LOGGER.info(Component.translatable( "info.avaritia.channel.save_success", uuid, id, channel.getName()).toString());
+                    Const.LOGGER.info(Component.translatable( "info.avaritia.channel.save_success", uuid, id, channel.getName()).getString());
                 });
             });
 
@@ -259,7 +259,7 @@ public class ServerChannelManager {
             if (playerChannels.containsKey(i)) continue;
             playerChannels.put(i, new ServerChannel(name));
             sendChannelAdd(uuid, name, i);
-            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.add_success", uuid, i, name).toString());
+            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.add_success", uuid, i, name).getString());
             break;
         }
     }

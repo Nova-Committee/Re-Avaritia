@@ -102,7 +102,7 @@ public class NetherCraftingTableCategory implements IRecipeCategory<ITierCraftin
                 int index = j + (i * 5);
 
                 if (index < inputs.size()) {
-                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2).addIngredients(inputs.get(index));
+                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 5, i * 18 + 5).addIngredients(inputs.get(index));
                 }
             }
         }
