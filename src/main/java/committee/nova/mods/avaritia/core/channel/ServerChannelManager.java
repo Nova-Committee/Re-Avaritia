@@ -79,7 +79,7 @@ public class ServerChannelManager {
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         this.userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
         NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
-        if (!loadSuccess) event.getEntity().getServer().getPlayerList().broadcastSystemMessage(Component.translatable("avaritia.load_error"), false);
+        if (!loadSuccess) event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
     }
 
     @SubscribeEvent
@@ -122,7 +122,7 @@ public class ServerChannelManager {
             } else {
                 this.initializeNameCache();
             }
-            Const.LOGGER.info("用户名缓存加载成功");
+            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success").toString());
 
             File[] channelDirs = saveDataPath.listFiles(pathname -> pathname.isDirectory() && pathname.getName()
                     .matches(StorageUtils.UUID_REGEX));
@@ -137,12 +137,12 @@ public class ServerChannelManager {
                         int channelID = Integer.parseInt(channelFile.getName().substring(0, channelFile.getName().length() - 4));
                         ServerChannel channel = new ServerChannel(channelDat);
                         playerChannels.put(channelID, channel);
-                        Const.LOGGER.info("成功加载频道： {}——{}——{}", dir.getName(), channelID, channel.getName());
+                        Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).toString());
                     }
                     channelList.put(player, playerChannels);
                 }
             }
-            Const.LOGGER.info("数据加载完毕");
+            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_finish").toString());
 
         } catch (Exception e) {
             loadSuccess = false;
@@ -156,7 +156,6 @@ public class ServerChannelManager {
             File userCache = new File(saveDataPath, "UserCache.dat");
             if (!userCache.exists()) userCache.createNewFile();
             NbtIo.writeCompressed(this.userCache, userCache);
-            Const.LOGGER.debug("成功保存用户名缓存");
 
             channelList.forEach((uuid, channels) -> {
                 File user = new File(saveDataPath, uuid.toString());
@@ -169,12 +168,11 @@ public class ServerChannelManager {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Const.LOGGER.info("成功保存频道： {}——{}——{}", uuid, id, channel.getName());
+                    Const.LOGGER.info(Component.translatable( "info.avaritia.channel.save_success", uuid, id, channel.getName()).toString());
                 });
             });
 
         } catch (Exception e) {
-            server.getPlayerList().broadcastSystemMessage(Component.translatable("avaritia.save_error"), false);
             throw new RuntimeException("在保存数据的时候出错了！ 什么情况呢？", e);
         }
     }
@@ -261,7 +259,7 @@ public class ServerChannelManager {
             if (playerChannels.containsKey(i)) continue;
             playerChannels.put(i, new ServerChannel(name));
             sendChannelAdd(uuid, name, i);
-            Const.LOGGER.info("添加了频道： {}——{}——{}", uuid, i, name);
+            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.add_success", uuid, i, name).toString());
             break;
         }
     }

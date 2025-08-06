@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net.channel;
 
-import committee.nova.mods.avaritia.addons.channel.ServerChannelManager;
+import committee.nova.mods.avaritia.core.channel.ServerChannelManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

@@ -67,7 +67,7 @@ public class ItemOverrideHandler {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / InfinityCrossBowItem.getChargeDuration();
+                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / 20;
                 }
             });
             setPropertyOverride(Items.CROSSBOW, Const.rl("pulling"), (itemStack, level, livingEntity, i) -> {

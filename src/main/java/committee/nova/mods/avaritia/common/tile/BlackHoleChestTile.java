@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
 import committee.nova.mods.avaritia.common.menu.ChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.ChannelAction;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
+import committee.nova.mods.avaritia.core.channel.*;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import lombok.Getter;

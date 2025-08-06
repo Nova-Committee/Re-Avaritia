@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.addons.channel.ClientChannelManager;
-import committee.nova.mods.avaritia.addons.channel.IChannelTerminal;
-import committee.nova.mods.avaritia.addons.channel.ServerChannelManager;
+import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
+import committee.nova.mods.avaritia.core.channel.IChannelTerminal;
+import committee.nova.mods.avaritia.core.channel.ServerChannelManager;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

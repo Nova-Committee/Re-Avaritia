@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
 import committee.nova.mods.avaritia.common.menu.provider.ChannelSelectMenuProvider;
 import committee.nova.mods.avaritia.common.net.C2SWipChestActionPack;
 import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
+import committee.nova.mods.avaritia.core.channel.*;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.util.StorageUtils;
