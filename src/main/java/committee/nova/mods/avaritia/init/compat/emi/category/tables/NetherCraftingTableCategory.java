@@ -92,7 +92,7 @@ public record NetherCraftingTableCategory(ITierCraftingRecipe recipe) implements
             for (int j = 0; j < 5; j++) {
                 int index = j + (i * 5);
                 if (index < inputs.size())
-                    widgetHolder.addSlot(EmiIngredient.of(inputs.get(index)), j * 18 + 2, i * 18 + 2).drawBack(false);
+                    widgetHolder.addSlot(EmiIngredient.of(inputs.get(index)), j * 18 + 5, i * 18 + 5).drawBack(false);
             }
         }
         widgetHolder.addTexture(EmiTexture.SHAPELESS, 102, 85);

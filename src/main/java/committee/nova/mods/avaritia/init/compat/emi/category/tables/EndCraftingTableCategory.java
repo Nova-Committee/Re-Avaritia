@@ -92,7 +92,7 @@ public record EndCraftingTableCategory(ITierCraftingRecipe recipe) implements Em
             for (int j = 0; j < 7; j++) {
                 int index = j + (i * 7);
                 if (index < inputs.size())
-                    widgetHolder.addSlot(EmiIngredient.of(inputs.get(index)), j * 18 + 2, i * 18 + 2).drawBack(false);
+                    widgetHolder.addSlot(EmiIngredient.of(inputs.get(index)), j * 18 + 5, i * 18 + 5).drawBack(false);
             }
         }
         widgetHolder.addTexture(EmiTexture.SHAPELESS, 173, 140);
