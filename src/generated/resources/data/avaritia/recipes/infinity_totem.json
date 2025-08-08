@@ -5,10 +5,10 @@
       "item": "minecraft:experience_bottle"
     },
     {
-      "item": "minecraft:beacon"
+      "item": "avaritia:enhancement_core"
     },
     {
-      "item": "avaritia:enhancement_core"
+      "item": "minecraft:beacon"
     }
   ],
   "base": {
