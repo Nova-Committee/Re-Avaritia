@@ -5,10 +5,10 @@
       "item": "minecraft:potion"
     },
     {
-      "item": "minecraft:blue_ice"
+      "item": "avaritia:enhancement_core"
     },
     {
-      "item": "avaritia:enhancement_core"
+      "item": "minecraft:blue_ice"
     }
   ],
   "base": {
