@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
+import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -34,7 +35,7 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float p_70097_2_) {
+    public boolean hurt(@NotNull DamageSource source, float amount) {
         return source == this.damageSources().fellOutOfWorld();
     }
 
