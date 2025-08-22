@@ -14,6 +14,7 @@ public class ModTooltips {
     public static final Tooltip ADDED_BY = new Tooltip("tooltip.avaritia.added_by");
     public static final Tooltip SINGULARITY_ID = new Tooltip("tooltip.avaritia.singularity_id");
     public static final Tooltip ACTIVE = new Tooltip("tooltip.avaritia.active");
+    public static final Tooltip CHANGED = new Tooltip("tooltip.avaritia.changed");
     public static final Tooltip INACTIVE = new Tooltip("tooltip.avaritia.inactive");
     public static final Tooltip SWITCH = new Tooltip("tooltip.avaritia.switch");
     public static final Tooltip EMPTY = new Tooltip("tooltip.avaritia.empty");

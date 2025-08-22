@@ -1,9 +1,8 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModMenus;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import committee.nova.mods.avaritia.init.registry.*;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -80,6 +79,8 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
         } else {
             ExtremeSmithingRecipe smithingrecipe = list.get(0);
             ItemStack itemstack = smithingrecipe.assemble(this.inputSlots, this.level.registryAccess());
+            //检测无瑕核心...合成给予tag交给你了,我不会)
+
             if (itemstack.isItemEnabled(this.level.enabledFeatures())) {
                 this.selectedRecipe = smithingrecipe;
                 this.resultSlots.setRecipeUsed(smithingrecipe);
@@ -153,4 +154,5 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
             return findSlotMatchingIngredient(smithingRecipe, pStack);
         }).anyMatch(Optional::isPresent);
     }
+
 }
