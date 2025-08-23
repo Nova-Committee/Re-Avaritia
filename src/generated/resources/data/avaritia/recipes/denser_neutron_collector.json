@@ -12,7 +12,10 @@
       "item": "avaritia:blaze_cube"
     },
     "D": {
-      "item": "avaritia:infinity_catalyst"
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "avaritia:singularity",
+      "nbt": "{Id:\"avaritia:gold\"}"
     },
     "E": {
       "item": "avaritia:blaze_cube_block"

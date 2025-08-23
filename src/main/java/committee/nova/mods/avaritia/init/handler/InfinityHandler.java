@@ -8,9 +8,7 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -316,5 +314,34 @@ public class InfinityHandler {
         ItemEntity entity = new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), drop);
         entity.setDefaultPickUpDelay();
         event.getDrops().add(entity);
+    }
+
+    //endless物品侦听
+    @SubscribeEvent
+    public static void onItemSpawn(ItemEvent event) {
+        ItemEntity entity = event.getEntity();
+        ItemStack stack = entity.getItem();
+
+        if (stack.is(ModTags.IMMORTAL_ITEM) && !(entity instanceof ImmortalItemEntity)) {
+            Level level = entity.level();
+
+            ImmortalItemEntity immortalEntity = ImmortalItemEntity.create(
+                    ModEntities.IMMORTAL.get(),
+                    level,
+                    entity.getX(),
+                    entity.getY(),
+                    entity.getZ(),
+                    stack
+            );
+
+            immortalEntity.setDeltaMovement(entity.getDeltaMovement());
+            immortalEntity.setDefaultPickUpDelay();
+            immortalEntity.setPickUpDelay(0);
+            if (!level.isClientSide) {
+                entity.discard();
+                level.addFreshEntity(immortalEntity);
+            }
+            event.setCanceled(true);
+        }
     }
 }

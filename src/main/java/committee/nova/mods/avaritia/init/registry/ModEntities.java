@@ -84,7 +84,24 @@ public class ModEntities {
                     .setUpdateInterval(10)
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "blade_slash").toString()));
-
+    public static final RegistryObject<EntityType<SunProEntity>> SUN_PRO = ENTITIES.register("sun_pro",
+            () -> EntityType.Builder.<SunProEntity>of(SunProEntity::new, MobCategory.MISC)
+                    .sized(0.75f, 0.75f)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(new ResourceLocation(Const.MOD_ID, "sun_pro").toString()));
+    public static final RegistryObject<EntityType<RainProEntity>> RAIN_PRO = ENTITIES.register("rain_pro",
+            () -> EntityType.Builder.<RainProEntity>of(RainProEntity::new, MobCategory.MISC)
+                    .sized(0.75f, 0.75f)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(new ResourceLocation(Const.MOD_ID, "rain_pro").toString()));
+    public static final RegistryObject<EntityType<StormProEntity>> STORM_PRO = ENTITIES.register("storm_pro",
+            () -> EntityType.Builder.<StormProEntity>of(StormProEntity::new, MobCategory.MISC)
+                    .sized(0.75f, 0.75f)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(new ResourceLocation(Const.MOD_ID, "storm_pro").toString()));
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);
@@ -96,6 +113,10 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRenderer::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
         EntityRenderers.register(ModEntities.BLADE_SLASH.get(), BladeSlashRender::new);
+        EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
+        EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
+        EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
+
     }
 
 }

@@ -19,6 +19,8 @@ import net.minecraft.world.level.block.Block;
 
 public class ModTags {
     public static final TagKey<Item> SINGULARITY = ItemTags.create(Const.rl("singularity"));
+    //2025.08.23 cu6
+    public static final TagKey<Item> IMMORTAL_ITEM = ItemTags.create(Const.rl("endless"));
     public static final TagKey<Item> DRAWERS = ItemTags.create(new ResourceLocation("storagedrawers", "drawers"));
 
     public static final TagKey<Item> NEUTRON_DUST = ItemTags.create(new ResourceLocation("forge", "dust/neutronium"));
