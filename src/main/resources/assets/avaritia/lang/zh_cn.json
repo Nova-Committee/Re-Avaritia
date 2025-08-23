@@ -48,6 +48,7 @@
   "item.avaritia.infinity_ring": "穹宇洞虚之戒（WIP）",
   "item.avaritia.infinity_umbrella": "长生万华之伞（WIP）",
   "tooltip.avaritia.changed": "切换为 %s 模式",
+  "tooltip.avaritia.infinity_umbrella.normal": "普通",
   "tooltip.avaritia.infinity_umbrella.sun": "晴天",
   "tooltip.avaritia.infinity_umbrella.rain": "雨天",
   "tooltip.avaritia.infinity_umbrella.storm": "雷暴",
