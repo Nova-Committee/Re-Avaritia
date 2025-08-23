@@ -336,13 +336,7 @@ public class InfinityHandler {
 
             immortalEntity.setDeltaMovement(entity.getDeltaMovement());
             immortalEntity.setDefaultPickUpDelay();
-            /*关于拾取速度:
-            // 方法1
-            immortalEntity.setPickUpDelay(entity.pickupDelay);
-            // 方式2
             immortalEntity.setPickUpDelay(0);
-            事实上这两种方法我都没试过(斜眼笑
-            */
             if (!level.isClientSide) {
                 entity.discard();
                 level.addFreshEntity(immortalEntity);

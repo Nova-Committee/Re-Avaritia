@@ -35,7 +35,7 @@ public class SunProRender extends EntityRenderer<SunProEntity> {
     public void render(SunProEntity entity, float entityYaw, float partialTicks,
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        poseStack.scale(2.0F, 2.0F, 2.0F);
+        poseStack.scale(1.0F, 1.0F, 1.0F);
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         PoseStack.Pose posestack$pose = poseStack.last();
