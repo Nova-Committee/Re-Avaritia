@@ -81,9 +81,12 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
     public boolean mineBlock(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockPos pPos, @NotNull LivingEntity pEntityLiving) {
         if (!pLevel.isClientSide) {
             if (pState.is(BlockTags.LOGS)) {
-                pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState()); //设置此坐标为空气
+                if (isActive(pStack, "smelt")) {
+                    pLevel.addFreshEntity(new ItemEntity(pLevel, pPos.getX() + 0.5, pPos.getY() + 0.5, pPos.getZ() + 0.5, new ItemStack(ModItems.refined_coal.get())));
+                    pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState());
+                    return true;
+                }
             }
-            pLevel.addFreshEntity(new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), new ItemStack(ModItems.refined_coal.get())));
         }
         return super.mineBlock(pStack, pLevel, pState, pPos, pEntityLiving);
     }

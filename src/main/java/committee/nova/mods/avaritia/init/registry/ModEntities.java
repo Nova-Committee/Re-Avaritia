@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
+import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayEntity;
+import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRenderer;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
@@ -102,6 +104,13 @@ public class ModEntities {
                     .setUpdateInterval(10)
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "storm_pro").toString()));
+
+    public static final RegistryObject<EntityType<AcceleratorDisplayEntity>> acceleratorDisplayEntity =
+            ENTITIES.register("accelerator_display", () -> EntityType.Builder.<AcceleratorDisplayEntity>of(
+                            AcceleratorDisplayEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .build(new ResourceLocation("avariita", "accelerator_display").toString())
+            );
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);
@@ -116,6 +125,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
         EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
+        EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRenderer::new);
 
     }
 

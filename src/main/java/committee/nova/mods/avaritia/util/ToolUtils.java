@@ -777,6 +777,7 @@ public class ToolUtils {
      * @param speed 速度
      * @param randomTicks 随机刻
      * from Torcherino
+     *已弃用
      */
     public static void speedBlockTick(BlockPos pos, ServerLevel level, int speed, int randomTicks) {
         int random_tick_rate = 4;

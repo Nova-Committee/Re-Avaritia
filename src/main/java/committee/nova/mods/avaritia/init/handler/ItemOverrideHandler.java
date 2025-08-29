@@ -36,6 +36,9 @@ public class ItemOverrideHandler {
             setPropertyOverride(ModItems.infinity_shovel.get(), Const.rl("destroyer"), (itemStack, world, livingEntity, d) -> {
                 return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_shovel_destroyer") ? 1 : 0;
             });
+            setPropertyOverride(ModItems.infinity_clock.get(), Const.rl("up"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_clock_up") ? 1 : 0;
+            });
             setPropertyOverride(ModItems.matter_cluster.get(), Const.rl("cap"), (itemStack, world, livingEntity, d) -> {
                 return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
             });

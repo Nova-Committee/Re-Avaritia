@@ -48,6 +48,7 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.NEUTRON_NUGGET).add(ModItems.neutron_nugget.get());
         tag(ModTags.NEUTRON_INGOT).add(ModItems.neutron_ingot.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_bow.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_crossbow.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_sword.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_pickaxe.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_axe.get());
