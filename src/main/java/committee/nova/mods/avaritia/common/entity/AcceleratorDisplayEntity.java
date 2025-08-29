@@ -1,5 +1,5 @@
 // committee/nova/mods/avaritia/common/entity/AcceleratorDisplayEntity.java
-package committee.nova.mods.avaritia.client.render.tile;
+package committee.nova.mods.avaritia.common.entity;
 
 import committee.nova.mods.avaritia.common.item.misc.InfinityClockItem;
 import committee.nova.mods.avaritia.init.registry.ModEntities;

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayEntity;
+import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
@@ -32,12 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-/**
- * @Project: Avaritia
- * @Author: Cu6,ChatGpt
- * @CreateTime: 2025/8/28
- * @Description: 开玩笑,我自己怎么可能写出这么高级的东西(雾
- */
+
 public class InfinityClockItem extends ResourceItem implements ISwitchable {
 
 
@@ -98,30 +93,76 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
         BlockPos pos = ctx.getClickedPos();
 
         if (!isActive(stack, "infinity_clock_up")) {
-            return InteractionResult.PASS;
+            // 关闭状态时移除加速和实体
+            removeAcceleration(level, pos);
+            return InteractionResult.CONSUME;
         }
+
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
         CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains("SpeedMultiplier")) {
-            tag.putInt("SpeedMultiplier", 1);
+        int multiplier = tag.getInt("SpeedMultiplier");
+        // 确保有默认值
+        if (multiplier == 0) {
+            multiplier = 1;
+            tag.putInt("SpeedMultiplier", multiplier);
         }
-        int multiplier = stack.getOrCreateTag().getInt("SpeedMultiplier");
 
+        // 处理1x的特殊情况 - 不加速也不显示实体
+        if (multiplier == 1) {
+            removeAcceleration(level, pos);
+            return InteractionResult.CONSUME;
+        }
+
+        // 更新加速倍数
         acceleratedBlocks
                 .computeIfAbsent(level.dimension(), k -> new HashMap<>())
                 .put(pos.immutable(), multiplier);
 
+        // 处理显示实体
         if (level instanceof ServerLevel serverLevel) {
-            // 移除旧实体（如果存在）
-            displayEntities.getOrDefault(level.dimension(), new HashMap<>()).remove(pos);
-            // 创建新实体并添加到世界
+            // 先移除旧实体（关键修复）
+            removeDisplayEntity(level, pos);
+
+            // 创建新实体
             AcceleratorDisplayEntity entity = new AcceleratorDisplayEntity(level, pos, multiplier);
             serverLevel.addFreshEntity(entity);
-            // 记录实体映射
             displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), entity);
         }
+
         return InteractionResult.CONSUME;
+    }
+
+    // 新增：移除方块的加速状态和实体
+    private void removeAcceleration(Level level, BlockPos pos) {
+        // 移除加速数据
+        ResourceKey<Level> dimension = level.dimension();
+        if (acceleratedBlocks.containsKey(dimension)) {
+            acceleratedBlocks.get(dimension).remove(pos);
+            // 如果维度下没有加速方块了，移除整个维度条目
+            if (acceleratedBlocks.get(dimension).isEmpty()) {
+                acceleratedBlocks.remove(dimension);
+            }
+        }
+
+        // 移除显示实体
+        removeDisplayEntity(level, pos);
+    }
+
+    // 新增：单独的移除实体方法
+    private void removeDisplayEntity(Level level, BlockPos pos) {
+        ResourceKey<Level> dimension = level.dimension();
+        if (displayEntities.containsKey(dimension)) {
+            AcceleratorDisplayEntity entity = displayEntities.get(dimension).get(pos);
+            if (entity != null && !entity.isRemoved()) {
+                entity.remove(AcceleratorDisplayEntity.RemovalReason.DISCARDED);
+            }
+            displayEntities.get(dimension).remove(pos);
+            // 清理空映射
+            if (displayEntities.get(dimension).isEmpty()) {
+                displayEntities.remove(dimension);
+            }
+        }
     }
 
 
@@ -140,8 +181,16 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
                 BlockPos pos = entry.getKey();
                 int times = entry.getValue();
 
+                // 1x倍数时不处理加速并移除
+                if (times == 1) {
+                    it.remove();
+                    removeDisplayEntity(level, pos);
+                    continue;
+                }
+
                 if (!level.isLoaded(pos)) {
                     it.remove();
+                    removeDisplayEntity(level, pos);
                     continue;
                 }
 
@@ -172,37 +221,60 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
                     InfinityClockItem.accelerateBlockEntity(level, pos, be, times);
                 } else {
                     it.remove();
+                    removeDisplayEntity(level, pos);
                 }
-                if (map.containsKey(pos)) {
-                    AcceleratorDisplayEntity entity = displayEntities.getOrDefault(level.dimension(), new HashMap<>()).get(pos);
-                    if (entity != null && entity.getSpeedMultiplier() != times) {
-                        entity.setSpeedMultiplier(times); // 实体数据会自动同步到客户端
+
+                // 更新实体显示
+                AcceleratorDisplayEntity entity = displayEntities.getOrDefault(level.dimension(), new HashMap<>()).get(pos);
+                if (entity != null) {
+                    if (entity.getSpeedMultiplier() != times) {
+                        entity.setSpeedMultiplier(times);
+                    }
+                } else {
+                    // 如果实体不存在但应该存在，创建它
+                    if (times > 1) {
+                        AcceleratorDisplayEntity newEntity = new AcceleratorDisplayEntity(level, pos, times);
+                        level.addFreshEntity(newEntity);
+                        displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), newEntity);
                     }
                 }
             }
+        }
 
+        // 静态版本的移除实体方法，供TickHandler使用
+        private static void removeDisplayEntity(Level level, BlockPos pos) {
+            ResourceKey<Level> dimension = level.dimension();
+            if (displayEntities.containsKey(dimension)) {
+                AcceleratorDisplayEntity entity = displayEntities.get(dimension).get(pos);
+                if (entity != null && !entity.isRemoved()) {
+                    entity.remove(AcceleratorDisplayEntity.RemovalReason.DISCARDED);
+                }
+                displayEntities.get(dimension).remove(pos);
+                if (displayEntities.get(dimension).isEmpty()) {
+                    displayEntities.remove(dimension);
+                }
+            }
         }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-        private static void accelerateBlockEntity(ServerLevel level, BlockPos pos, BlockEntity be, int times) {
-            if (be.isRemoved()) return;
-            BlockState state = level.getBlockState(pos);
-            Block block = state.getBlock();
+    private static void accelerateBlockEntity(ServerLevel level, BlockPos pos, BlockEntity be, int times) {
+        if (be.isRemoved()) return;
+        BlockState state = level.getBlockState(pos);
+        Block block = state.getBlock();
 
-            if (block instanceof EntityBlock entityBlock) {
-                BlockEntityType type = be.getType();
-                BlockEntityTicker ticker = entityBlock.getTicker(level, state, type);
+        if (block instanceof EntityBlock entityBlock) {
+            BlockEntityType type = be.getType();
+            BlockEntityTicker ticker = entityBlock.getTicker(level, state, type);
 
-                if (ticker != null) {
-                    for (int i = 0; i < times; i++) {
-                        ticker.tick(level, pos, state, be);
-                        if (be.isRemoved()) break;
-                    }
-                    be.setChanged();
-                    level.sendBlockUpdated(pos, state, state, 3);
+            if (ticker != null) {
+                for (int i = 0; i < times; i++) {
+                    ticker.tick(level, pos, state, be);
+                    if (be.isRemoved()) break;
                 }
+                be.setChanged();
+                level.sendBlockUpdated(pos, state, state, 3);
             }
         }
     }
-
+}
