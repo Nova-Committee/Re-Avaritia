@@ -47,6 +47,7 @@ public class ModMenus {
         MenuScreens.register(channel_select_menu.get(), ChannelSelectScreen::new);
         MenuScreens.register(extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         MenuScreens.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
+        MenuScreens.register(infinity_clock_menu.get(), InfinityClockScreen::new);
     }
 
     public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
@@ -66,5 +67,7 @@ public class ModMenus {
     public static RegistryObject<MenuType<ExtremeAnvilMenu>> extreme_anvil = menu("extreme_anvil", () -> IForgeMenuType.create(ExtremeAnvilMenu::new));
     public static RegistryObject<MenuType<ChannelSelectMenu>> channel_select_menu = menu("channel_select_menu", () -> IForgeMenuType.create(ChannelSelectMenu::new));
     public static RegistryObject<MenuType<ChannelMenu>> channel_menu = menu("channel", () -> IForgeMenuType.create(ChannelMenu::new));
+    public static RegistryObject<MenuType<InfinityClockMenu>> infinity_clock_menu =
+            menu("infinity_clock_menu", () -> IForgeMenuType.create((id, inv, buf) -> new InfinityClockMenu(id, inv)));
 
 }
