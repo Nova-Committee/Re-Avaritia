@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.IFilterItem;
+import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.KeyMapping;
@@ -15,6 +17,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
@@ -56,7 +59,6 @@ public class AvaritiaForgeClient {
     public static final KeyMapping SORT_9 = new KeyMapping("key.avaritia.infinity_chest.sort9", InputConstants.KEY_9, CATEGORIES);
 
     private static boolean keepFlying = false;
-    private static final double FLY_SPEED = 1.5;
     /**
      * 在客户端Tick事件触发时执行
      *
@@ -67,34 +69,50 @@ public class AvaritiaForgeClient {
         if (event.phase != TickEvent.Phase.END) return;
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return;
-
         Player player = mc.player;
+        Level level = mc.level;
+        if (player == null || level == null) return;
 
+        // region filter 过滤界面
+        while (FILTER_KEY.consumeClick()) {
+            if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof IFilterItem) {
+                Minecraft.getInstance().setScreen(new ItemFilterScreen());
+            }
+        }
+        // endregion
 
-        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        boolean wearingInfiniteElytra = (chest != null && chest.getItem() == ModItems.infinity_elytra.get());
+        handleInfinityElytraFallFlying(mc, player);
+    }
 
-        if (!wearingInfiniteElytra) {
+    /**
+     * 处理无限鞘翅飞行逻辑
+     *
+     * @param mc Minecraft客户端实例
+     * @param player 当前玩家对象
+     */
+    public static void handleInfinityElytraFallFlying(Minecraft mc, Player player) {
+        // 检查玩家是否装备了无限鞘翅
+        if (!(player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.infinity_elytra.get())) {
             keepFlying = false;
             return;
         }
 
-
         boolean isFlying = player.isFallFlying();
 
+        // 如果按下跳跃键，则停止飞行
         if (mc.options.keyJump.isDown()) {
             keepFlying = false;
             return;
         }
 
+        // 开始记录飞行状态
         if (isFlying && !keepFlying) {
             keepFlying = true;
         }
 
+        // 处理着陆逻辑：当玩家着陆时造成范围伤害
         if (keepFlying && player.onGround()) {
             keepFlying = false;
-
 
             double radius = 2.5;
             List<LivingEntity> nearby = player.level().getEntitiesOfClass(
@@ -106,18 +124,17 @@ public class AvaritiaForgeClient {
             for (LivingEntity target : nearby) {
                 target.hurt(player.damageSources().fellOutOfWorld(), 6.0F);
             }
-
             return;
         }
 
-
+        // 维持飞行状态并控制飞行速度
         if (keepFlying) {
             if (!player.isFallFlying()) {
                 player.startFallFlying();
             }
 
-
             Vec3 look = player.getLookAngle().normalize();
+            double FLY_SPEED = ModConfig.infinityElytraFlyingSpeed.get();
             player.setDeltaMovement(look.x * FLY_SPEED, look.y * FLY_SPEED, look.z * FLY_SPEED);
         }
     }
@@ -134,7 +151,6 @@ public class AvaritiaForgeClient {
     public static void getTooltip(ItemTooltipEvent evt) {
         Collections.addAll(evt.getToolTip(), tooltipExt);
     }
-
     // endregion
 
 

@@ -3,14 +3,12 @@ package committee.nova.mods.avaritia.util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.utils.InventoryUtils;
-import committee.nova.mods.avaritia.api.utils.math.RayTracer;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.handler.ItemCaptureHandler;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -40,6 +38,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Npc;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -58,11 +57,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -72,8 +69,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static committee.nova.mods.avaritia.util.ClustersUtils.defaultTrashOres;
 
 /**
  * @Project: Avaritia
@@ -159,11 +154,11 @@ public class ToolUtils {
     /**
      * 无尽镐And无尽铲破坏
      * @param player 玩家
-     * @param world 世界
      * @param startPos 起始坐标
      * @param range 挖掘范围
      */
-    public static void destroyOres(ServerPlayer player, ServerLevel world, BlockPos startPos, int range) {
+    public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
+        ServerLevel world = player.serverLevel();
         Set<BlockPos> processedPos = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
         queue.add(startPos);
@@ -177,17 +172,15 @@ public class ToolUtils {
             BlockState state = world.getBlockState(pos);
 
             // 仅处理可被镐挖掘的方块（不排除任何符合条件的方块）
-            if (ToolUtils.canUseTool(state, materialsPick) && state.getBlock().canHarvestBlock(state, world, pos, player)) {
+            if (ToolUtils.canUseTool(state, materials) && state.getBlock().canHarvestBlock(state, world, pos, player)) {
                 // 收集掉落物
                 List<ItemStack> blockDrops = Block.getDrops(state, world, pos, null);
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
-                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
-                    if (blockItem != Items.AIR) {
-                        drops.add(new ItemStack(blockItem));
-                    }
+                    ResourceLocation blockKey = ForgeRegistries.BLOCKS.getKey(state.getBlock());
+                    Item blockItem = ForgeRegistries.ITEMS.getValue(blockKey);
+                    if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
                 // 破坏方块
@@ -473,7 +466,7 @@ public class ToolUtils {
         toAttack.stream()
                 .filter(entity -> entity instanceof Mob)
                 .filter(entity -> !entity.getType().is(ModTags.NEUTRAL_CREATURES))
-                .filter(entity -> !(entity instanceof Villager))
+                .filter(entity -> !(entity instanceof Npc))
                 .forEach(entity -> {
                     if (entity instanceof Mob mob) {
                         if (mob instanceof Animal animal && hurtAnimal) {

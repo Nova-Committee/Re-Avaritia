@@ -26,7 +26,6 @@ import java.text.DecimalFormat;
  * @Description:
  */
 public class _NeutronRingScreen1 extends BaseContainerScreen<_NeutronRingMenu> {
-    private static final KeyMapping[] SORT_KEYS = new KeyMapping[]{AvaritiaForgeClient.SORT_0, AvaritiaForgeClient.SORT_1, AvaritiaForgeClient.SORT_2, AvaritiaForgeClient.SORT_3, AvaritiaForgeClient.SORT_4, AvaritiaForgeClient.SORT_5, AvaritiaForgeClient.SORT_6, AvaritiaForgeClient.SORT_7, AvaritiaForgeClient.SORT_8, AvaritiaForgeClient.SORT_9};
     private static final ResourceLocation MULTI_PAGE_TEXTURE = Const.rl("textures/gui/infinity_chest.png");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
 
