@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ModMatterClusterRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
-    private final RecipeCategory category; // 保留RecipeCategory用于获取路径
+    private final RecipeCategory category;
     private final Item result;
     private final int count;
     private final List<Ingredient> ingredients = Lists.newArrayList();
@@ -48,7 +48,7 @@ public class ModMatterClusterRecipeBuilder extends CraftingRecipeBuilder impleme
         return new ModMatterClusterRecipeBuilder(category, result, count);
     }
 
-    // 添加原料的系列方法（与ModCatalystRecipeBuilder一致）
+
     public ModMatterClusterRecipeBuilder requires(TagKey<Item> tag) {
         return this.requires(Ingredient.of(tag));
     }
@@ -83,7 +83,7 @@ public class ModMatterClusterRecipeBuilder extends CraftingRecipeBuilder impleme
 
     @Override
     public @NotNull Item getResult() {
-        return this.result; // 对应输出物品
+        return this.result;
     }
 
     @Override
@@ -93,11 +93,11 @@ public class ModMatterClusterRecipeBuilder extends CraftingRecipeBuilder impleme
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
                 .rewards(AdvancementRewards.Builder.recipe(id))
                 .requirements(RequirementsStrategy.OR);
-        // 使用RecipeCategory的getFolderName()构建路径，避免依赖CraftingBookCategory
+
         consumer.accept(new Result(
                 id,
                 this.group == null ? "" : this.group,
-                determineBookCategory(this.category), // 转换为CraftingBookCategory（父类逻辑）
+                determineBookCategory(this.category),
                 this.ingredients,
                 this.result,
                 this.count,
@@ -137,27 +137,25 @@ public class ModMatterClusterRecipeBuilder extends CraftingRecipeBuilder impleme
         @Override
         public void serializeRecipeData(@NotNull JsonObject json) {
             super.serializeRecipeData(json);
-            // 配方类型
+
             json.addProperty("type", "avaritia:full_matter_cluster");
-            // 分组（参考ModCatalystRecipeBuilder）
+
             if (!this.group.isEmpty()) {
                 json.addProperty("group", this.group);
             }
-            // 原料列表（与ModCatalystRecipeBuilder一致）
+
             JsonArray ingredients = new JsonArray();
             for (Ingredient ingredient : this.ingredients) {
                 ingredients.add(ingredient.toJson());
             }
             json.add("ingredients", ingredients);
-            // 数量和结果（根据需求添加）
+
             json.addProperty("count", this.count);
             JsonObject resultObj = new JsonObject();
             resultObj.addProperty("item", new ResourceLocation(
                     "avaritia", "full_matter_cluster"
             ).toString());
             json.add("result", resultObj);
-            // 不使用CraftingBookCategory.getFolderName()，如需category字段则用RecipeCategory的路径
-            // 例如：json.addProperty("category", this.advancementId.getPath()); // 或其他方式
         }
 
         @Override
