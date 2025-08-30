@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
+
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.data.provider.recipe.*;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
@@ -11,10 +11,7 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +31,8 @@ import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+
+import javax.json.JsonArray;
 
 import java.util.function.Consumer;
 
@@ -76,7 +75,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.MISC, Blocks.CRAFTING_TABLE, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(),
                 "crafting_table_from_compressed_crafting_table", "crafting_table");
 
-        MatterClusterRecipeBuilder.createFullMatterClusterRecipe(consumer, ModItems.full_matter_cluster.get(), ModItems.matter_cluster.get());
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.REINFORCED_DEEPSLATE, 1)
                 .pattern("ada")

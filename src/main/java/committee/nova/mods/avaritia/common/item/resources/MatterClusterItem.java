@@ -46,7 +46,6 @@ public class MatterClusterItem extends Item {
                 .rarity(ModRarities.RARE)
                 .stacksTo(1));
     }
-
     public static int getClusterSize(ItemStack cluster) {
         if (cluster.hasTag() || !cluster.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
             return Arrays.stream(readClusterInventory(cluster).items).mapToInt(ItemStack::getCount).sum();
