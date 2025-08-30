@@ -47,7 +47,7 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, 14000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22,4, 18000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22,5, 22000));
-
+        this.titleLabelX=62;
         timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
         timeInput.setMaxLength(10);
         addRenderableWidget(timeInput);

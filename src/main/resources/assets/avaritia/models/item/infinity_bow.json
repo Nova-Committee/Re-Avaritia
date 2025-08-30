@@ -6,6 +6,12 @@
   "overrides": [
     {
       "predicate": {
+        "avaritia:track": 1
+      },
+      "model": "avaritia:item/infinity_bow_idle"
+    },
+    {
+      "predicate": {
         "avaritia:pulling": 1
       },
       "model": "avaritia:item/infinity_bow_pulling_0"
@@ -26,21 +32,24 @@
     },
     {
       "predicate": {
-        "avaritia:tracing": 1
+        "avaritia:tracing": 1,
+        "avaritia:pulling": 1
       },
       "model": "avaritia:item/infinity_bow_tracing_0"
     },
     {
       "predicate": {
         "avaritia:tracing": 1,
-        "avaritia:tracer": 0.65
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.65
       },
       "model": "avaritia:item/infinity_bow_tracing_1"
     },
     {
       "predicate": {
         "avaritia:tracing": 1,
-        "avaritia:tracer": 0.9
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.9
       },
       "model": "avaritia:item/infinity_bow_tracing_2"
     }
