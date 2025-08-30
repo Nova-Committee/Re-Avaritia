@@ -13,18 +13,15 @@
     },
     "d": {
       "item": "avaritia:eternal_singularity"
-    },
-    "e": {
-      "item": "avaritia:refined_coal_block"
     }
   },
   "pattern": [
     "         ",
     "  aaaaa  ",
     " abbcbba ",
-    " abeeeba ",
-    " acedeca ",
-    " abeeeba ",
+    " abaaaba ",
+    " acadaca ",
+    " abaaaba ",
     " abbcbba ",
     "  aaaaa  ",
     "         "

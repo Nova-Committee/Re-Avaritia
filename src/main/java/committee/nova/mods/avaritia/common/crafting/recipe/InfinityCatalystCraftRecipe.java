@@ -1,8 +1,10 @@
+// ... existing code ...
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
+    private static final Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     private final String group;
     private final int count;
 
@@ -35,6 +38,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         return this.group;
     }
 
+
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
@@ -48,6 +52,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
             for (int i = 0; i < ingredients.size(); i++) {
                 inputs.add(Ingredient.fromJson(ingredients.get(i)));
+
             }
             int count = GsonHelper.getAsInt(json, "count", 1);
 

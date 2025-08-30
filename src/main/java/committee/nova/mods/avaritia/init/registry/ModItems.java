@@ -96,6 +96,7 @@ public class ModItems {
     public static RegistryObject<Item> refined_coal = item("refined_coal", RefinedCoalItem::new);
     public static RegistryObject<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
     public static RegistryObject<Item> matter_cluster = item("matter_cluster", MatterClusterItem::new);
+    public static RegistryObject<Item> full_matter_cluster = item("full_matter_cluster", ()-> new Item(new Item.Properties().stacksTo(1).rarity(ModRarities.RARE)));
     public static RegistryObject<Item> enhancement_core = item("enhancement_core", EnhancementCoreItem::new);
     public static RegistryObject<Item> upgrade_smithing_template = item("upgrade_smithing_template", UpgradeSmithingTemplateItem::new);
     public static RegistryObject<Item> infinity_upgrade = item("infinity_upgrade", InfinityUpgradeItem::new);

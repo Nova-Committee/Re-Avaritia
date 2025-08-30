@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.data.provider.recipe.*;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
@@ -74,6 +75,8 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 "compressed_crafting_table_from_double_compressed_crafting_table", "compressed_crafting_table");
         nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.MISC, Blocks.CRAFTING_TABLE, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(),
                 "crafting_table_from_compressed_crafting_table", "crafting_table");
+
+        MatterClusterRecipeBuilder.createFullMatterClusterRecipe(consumer, ModItems.full_matter_cluster.get(), ModItems.matter_cluster.get());
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.REINFORCED_DEEPSLATE, 1)
                 .pattern("ada")
@@ -149,6 +152,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('b', Items.END_CRYSTAL)
                 .define('c', Items.DRAGON_EGG)
                 .unlockedBy("", lul).save(consumer);
+
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.TRIDENT, 1)
                 .pattern(" ba")
@@ -346,9 +350,9 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .pattern("         ")
                 .pattern("  aaaaa  ")
                 .pattern(" abbcbba ")
-                .pattern(" abeeeba ")
-                .pattern(" acedeca ")
-                .pattern(" abeeeba ")
+                .pattern(" abaaaba ")
+                .pattern(" acadaca ")
+                .pattern(" abaaaba ")
                 .pattern(" abbcbba ")
                 .pattern("  aaaaa  ")
                 .pattern("         ")
@@ -356,8 +360,8 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('b', Blocks.MAGMA_BLOCK)
                 .define('c', Items.LAVA_BUCKET)
                 .define('d', ModItems.eternal_singularity.get())
-                .define('e', ModBlocks.refined_coal_block.get())
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer);
+
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
                 .pattern(" n ")
@@ -414,8 +418,17 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
+                        Ingredient.of(Items.CLOCK),
+                        CompoundIngredient.of(Ingredient.of(Items.ENCHANTED_GOLDEN_APPLE), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModItems.eternal_singularity.get())),
+                        RecipeCategory.MISC,
+                        ModItems.infinity_clock.get().asItem())
+                .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
+                .save(consumer);
+
+        ModExtremeSmithingRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.ANVIL),
-                        CompoundIngredient.of(Ingredient.of(ModItems.matter_cluster.get()), Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(ModItems.full_matter_cluster.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.neutron.get())),
                         RecipeCategory.MISC,
                         ModBlocks.extreme_anvil.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -787,6 +800,29 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('X', ModItems.infinity_catalyst.get())
                 .define('A', ModBlocks.crystal_matrix.get())
                 .define('C', ModItems.crystal_matrix_ingot.get())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_umbrella.get())
+                .pattern(" IBNND  C")
+                .pattern(" INENNNA ")
+                .pattern(" XINNNBN ")
+                .pattern("  INNFNND")
+                .pattern("   INNNNN")
+                .pattern("   NINNGN")
+                .pattern("  N  IINB")
+                .pattern(" B    XII")
+                .pattern("ACC      ")
+                .define('I', ModItems.infinity_ingot.get())
+                .define('N', ModItems.neutron_ingot.get())
+                .define('X', ModItems.infinity_nugget.get())
+                .define('A', ModBlocks.crystal_matrix.get())
+                .define('B', ModBlocks.neutron.get())
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('D', ModItems.neutron_nugget.get())
+                .define('E', Items.FLINT_AND_STEEL)
+                .define('F', Items.WATER_BUCKET)
+                .define('G', Items.TRIDENT)
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
