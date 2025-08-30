@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.crafting.recipe.FullMatterClusterRecipe;
 import committee.nova.mods.avaritia.init.data.provider.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -74,7 +75,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 "compressed_crafting_table_from_double_compressed_crafting_table", "compressed_crafting_table");
         nineBlockStorageRecipesRecipesWithCustomUnpacking(consumer, RecipeCategory.MISC, Blocks.CRAFTING_TABLE, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(),
                 "crafting_table_from_compressed_crafting_table", "crafting_table");
-
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.REINFORCED_DEEPSLATE, 1)
                 .pattern("ada")
@@ -569,6 +569,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .requires(ModItems.eternal_singularity.get())
                 .group("eternal_singularity")
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Const.rl("infinity_catalyst_eternal"));
+
+        ModMatterClusterRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.full_matter_cluster.get(), 1)
+                .group("matter_cluster")
+                .requires(ModItems.matter_cluster.get())
+                .unlockedBy("has_matter_cluster", has(ModItems.matter_cluster.get()))
+                .save(consumer, new ResourceLocation("avaritia", "full_matter_cluster"));
+
 
         ModEternalRecipeBuilder.shapeless(RecipeCategory.MISC)
                 .unlockedBy("has_item", has(ModItems.singularity.get())).save(consumer);
