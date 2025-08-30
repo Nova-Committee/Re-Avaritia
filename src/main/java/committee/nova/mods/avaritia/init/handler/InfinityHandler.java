@@ -341,7 +341,6 @@ public class InfinityHandler {
             if (!level.isClientSide) {
                 entity.discard();
                 level.addFreshEntity(immortalEntity);
-
             }
             event.setCanceled(true);
         }
