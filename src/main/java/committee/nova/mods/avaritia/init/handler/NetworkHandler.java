@@ -51,6 +51,8 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SOpenRingPack.class, C2SOpenRingPack::write, C2SOpenRingPack::new, C2SOpenRingPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SSetTimePacket.class, C2SSetTimePacket::write, C2SSetTimePacket::new, C2SSetTimePacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
     }
 
     public static void sendNbtDataToServer(CompoundTag tag) {

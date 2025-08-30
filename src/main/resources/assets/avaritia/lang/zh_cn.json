@@ -54,6 +54,8 @@
   "tooltip.avaritia.infinity_umbrella.rain": "雨天",
   "tooltip.avaritia.infinity_umbrella.storm": "雷暴",
   "item.avaritia.infinity_clock": "时序僭越之钟",
+  "tooltip.avaritia.infinity_clock.overclock_enabled": "切换到 时序模式",
+  "tooltip.avaritia.infinity_clock.overclock_disabled": "切换到 超频模式",
   "tooltip.blaze_cube.desc": "火焰风暴.",
   "item.avaritia.infinity_upgrade": "无尽升级组件",
   "item.avaritia.refined_coal": "精炼煤炭",

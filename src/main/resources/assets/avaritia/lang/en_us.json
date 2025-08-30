@@ -50,6 +50,8 @@
   "tooltip.avaritia.infinity_umbrella.rain": "Rain",
   "tooltip.avaritia.infinity_umbrella.storm": "Storm",
   "item.avaritia.infinity_clock": "Infinity Clock",
+  "tooltip.avaritia.infinity_clock.overclock_enabled": "Set to TimeUp Mode",
+  "tooltip.avaritia.infinity_clock.overclock_disabled": "Set to SpeedUp Mode",
   "item.avaritia.neutron_horse_armor": "Neutronium Horse Armor",
   "item.avaritia.neutron_gear": "Neutronium Gear",
   "item.avaritia.enhancement_core": "Enhancement Core",

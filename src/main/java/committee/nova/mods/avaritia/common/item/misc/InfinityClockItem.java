@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import committee.nova.mods.avaritia.api.iface.IInfinityClockSwitchable;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.client.screen.InfinityClockScreen;
 import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
@@ -8,6 +9,7 @@ import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class InfinityClockItem extends ResourceItem implements ISwitchable {
+public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
 
 
     public static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
@@ -65,43 +67,42 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (level.isClientSide) {
-            if (!player.isCrouching()) {
-                if (!isActive(stack, "infinity_clock_up")){
-                    NetworkHooks.openScreen((ServerPlayer) player,
-                            new SimpleMenuProvider(
-                                    (id, inv, buf) -> new InfinityClockMenu(id, inv),
-                                    Component.literal("Infinity Clock")
-                            )
-                    );
-                }
-                return InteractionResultHolder.success(stack);
-            }
-        } else {
-            if (player.isCrouching()) {
-                switchMode(level, player, hand, "infinity_clock_up");
-                return InteractionResultHolder.success(stack);
-            }
+        if (level.isClientSide) return InteractionResultHolder.pass(stack);
 
-            if (isActive(stack, "infinity_clock_up")) {
-                int current = stack.getOrCreateTag().getInt("SpeedMultiplier");
-                int next;
+        boolean upMode = isActive(stack, "infinity_clock_up");
 
-                switch (current) {
-                    case 1 -> next = 4;
-                    case 4 -> next = 16;
-                    case 16 -> next = 64;
-                    case 64 -> next = 256;
-                    case 256 -> next = 512;
-                    default -> next = 1;
-                }
-                stack.getOrCreateTag().putInt("SpeedMultiplier", next);
-                player.displayClientMessage(Component.literal(next + "x"), true);
-                return InteractionResultHolder.success(stack);
-            }
+        if (player.isCrouching()) {
+            switchClockMode(level, player, hand, "infinity_clock_up");
+            return InteractionResultHolder.success(stack);
         }
 
-        return super.use(level, player, hand);
+        if (upMode) {
+            int current = stack.getOrCreateTag().getInt("SpeedMultiplier");
+            int next;
+
+            switch (current) {
+                case 1 -> next = 4;
+                case 4 -> next = 16;
+                case 16 -> next = 64;
+                case 64 -> next = 256;
+                case 256 -> next = 512;
+                default -> next = 1;
+            }
+
+            stack.getOrCreateTag().putInt("SpeedMultiplier", next);
+            player.displayClientMessage(Component.literal(next + "x"), true);
+            return InteractionResultHolder.success(stack);
+        }
+
+
+        NetworkHooks.openScreen((ServerPlayer) player,
+                new SimpleMenuProvider(
+                        (id, inv, buf) -> new InfinityClockMenu(id, inv),
+                        Component.translatable("item.avaritia.infinity_clock")
+                )
+        );
+
+        return InteractionResultHolder.success(stack);
     }
 
     @Override
@@ -109,6 +110,7 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
         ItemStack stack = ctx.getItemInHand();
         Level level = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
+        Direction face = ctx.getClickedFace(); // 获取点击的面
 
         if (!isActive(stack, "infinity_clock_up")) {
 
@@ -143,7 +145,7 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
             removeDisplayEntity(level, pos);
 
 
-            AcceleratorDisplayEntity entity = new AcceleratorDisplayEntity(level, pos, multiplier);
+            AcceleratorDisplayEntity entity = new AcceleratorDisplayEntity(level, pos, multiplier, face); // 传递面信息
             serverLevel.addFreshEntity(entity);
             displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), entity);
         }
@@ -251,13 +253,15 @@ public class InfinityClockItem extends ResourceItem implements ISwitchable {
                 } else {
 
                     if (times > 1) {
-                        AcceleratorDisplayEntity newEntity = new AcceleratorDisplayEntity(level, pos, times);
+                        // 修复：使用默认面（北面）创建实体，因为我们无法知道原始点击的面
+                        AcceleratorDisplayEntity newEntity = new AcceleratorDisplayEntity(level, pos, times, net.minecraft.core.Direction.NORTH);
                         level.addFreshEntity(newEntity);
                         displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), newEntity);
                     }
                 }
             }
         }
+
 
 
         private static void removeDisplayEntity(Level level, BlockPos pos) {

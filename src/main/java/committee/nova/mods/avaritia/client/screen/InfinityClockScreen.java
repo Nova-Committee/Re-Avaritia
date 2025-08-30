@@ -2,6 +2,9 @@ package committee.nova.mods.avaritia.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
+import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -37,25 +40,20 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
         int startX = guiLeft + 17;
         int startY = guiTop + 22;
 
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 0, startY,17, 22, 0, b -> setTime(0)));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, b -> setTime(6000)));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, b -> setTime(12000)));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, b -> setTime(14000)));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, b -> setTime(18000)));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, b -> setTime(22000)));
+        // 修复按钮点击事件，添加玩家参数
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 0, startY, 17, 22, 0, 0));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, 6000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, 12000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, 14000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22,4, 18000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22,5, 22000));
 
         timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
         timeInput.setMaxLength(10);
         addRenderableWidget(timeInput);
     }
 
-    private void setTime(int time) {
-        if (this.minecraft != null && this.minecraft.level != null) {
-            this.minecraft.level.setDayTime(time);
-        }
-    }
-
-@Override
+    @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(g);
         super.render(g, mouseX, mouseY, partialTicks);
@@ -65,23 +63,25 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1) {
         RenderSystem.setShaderTexture(0, TEXTURE);
-        // 绘制背景图（左上角位置 leftPos, topPos）
+
         guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (timeInput.isFocused() && keyCode == 257) {
+        if (timeInput.isFocused() && keyCode == 257) { // 回车键
             try {
-                int customTime = Integer.parseInt(timeInput.getValue());
-                if (this.minecraft != null && this.minecraft.level != null) {
-                    this.minecraft.level.setDayTime(customTime);
-                }
-            } catch (NumberFormatException ignored) {}
-            return true;
+                int time = Integer.parseInt(timeInput.getValue());
+                // 发送网络包到服务端
+                NetworkHandler.CHANNEL.sendToServer(new C2SSetTimePacket(time));
+                return true;
+            } catch (NumberFormatException e) {
+                // 输入不是有效数字，忽略
+            }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
+
 
     @Override
     public boolean isPauseScreen() {
@@ -92,16 +92,16 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
     class TimeButton extends AbstractWidget {
         private final int texU, texV;
         private final int index;
-        private final OnPress onPress;
+        private final int timeValue; // 存储时间值
         private final int w = 22;
         private final int h = 24;
 
-        public TimeButton(int x, int y, int texU, int texV, int index, OnPress press) {
+        public TimeButton(int x, int y, int texU, int texV, int index, int timeValue) {
             super(x, y, 22, 24, Component.empty());
             this.texU = texU;
             this.texV = texV;
             this.index = index;
-            this.onPress = press;
+            this.timeValue = timeValue;
         }
 
         @Override
@@ -118,16 +118,13 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
 
         @Override
         public void onClick(double mouseX, double mouseY) {
-            this.onPress.onPress(this);
+            // 发送网络包到服务端
+            NetworkHandler.CHANNEL.sendToServer(new C2SSetTimePacket(timeValue));
         }
 
         @Override
         protected void updateWidgetNarration(NarrationElementOutput output) {
             defaultButtonNarrationText(output);
-        }
-
-        public interface OnPress {
-            void onPress(TimeButton btn);
         }
     }
 }

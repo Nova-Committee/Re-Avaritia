@@ -9,6 +9,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -18,7 +19,6 @@ import org.joml.Vector3f;
 public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDisplayEntity> {
     private final Font font;
     private static final float SCALE = 0.02f;
-    private static final float OFFSET = 0.51f; // 文字与方块的距离
 
     public AcceleratorDisplayRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -32,37 +32,55 @@ public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDispla
         String text = "x" + entity.getSpeedMultiplier();
         float textWidth = font.width(text) * SCALE / 2;
 
-        // 获取玩家视角（相机）
-        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        // 获取点击的面
+        Direction face = entity.getFace();
 
-        // 计算实体到相机的方向向量
-        Vector3f entityToCamera = new Vector3f(
-                (float)(camera.getPosition().x - entity.getX()),
-                (float)(camera.getPosition().y - entity.getY()),
-                (float)(camera.getPosition().z - entity.getZ())
-        ).normalize();
-
-        // 计算文字应该面对的水平旋转角度（绕Y轴）
-        float yRot = (float) Math.toDegrees(Math.atan2(entityToCamera.x, entityToCamera.z));
-
-        // 只渲染一个面向玩家的文字（无需六个面）
-        drawFacingText(poseStack, buffer, text,
-                new Vector3f(-textWidth, 1, OFFSET), // 基础位置（可调整高度）
-                yRot, packedLight);
+        // 根据面确定文字的位置和旋转
+        drawTextOnFace(poseStack, buffer, text, face, textWidth, packedLight);
     }
 
-    private void drawFacingText(PoseStack poseStack, MultiBufferSource buffer, String text,
-                                Vector3f pos, float yRotation, int light) {
+    private void drawTextOnFace(PoseStack poseStack, MultiBufferSource buffer, String text,
+                                Direction face, float textWidth, int light) {
         poseStack.pushPose();
 
-        // 移动到方块表面位置
-        poseStack.translate(pos.x, pos.y + 0.1f, pos.z); // +0.1f 可以稍微抬高文字
-
-        // 关键：让文字绕Y轴旋转，始终面向玩家
-        poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
+        // 根据面应用变换，确保文字始终面向玩家
+        switch (face) {
+            case UP -> {
+                // 在顶部面显示，文字面向上方的玩家
+                poseStack.translate(0, 0.51, 0);
+                poseStack.mulPose(Axis.XP.rotationDegrees(-90));
+            }
+            case DOWN -> {
+                // 在底部面显示，文字面向下方的玩家
+                poseStack.translate(0, -0.51, 0);
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            }
+            case NORTH -> {
+                // 在北面显示，文字面向北方的玩家
+                poseStack.translate(0, 0, -0.51);
+                poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            }
+            case SOUTH -> {
+                // 在南面显示，文字面向南方的玩家
+                poseStack.translate(0, 0, 0.51);
+            }
+            case WEST -> {
+                // 在西面显示，文字面向西方的玩家
+                poseStack.translate(-0.51, 0, 0);
+                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+            }
+            case EAST -> {
+                // 在东面显示，文字面向东方的玩家
+                poseStack.translate(0.51, 0, 0);
+                poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            }
+        }
 
         // 应用缩放
         poseStack.scale(SCALE, -SCALE, SCALE);
+
+        // 居中文字
+        poseStack.translate(-textWidth, 0, 0);
 
         // 绘制文字
         font.drawInBatch(text, 0, 0, 0xFFFFFF, false,
@@ -76,4 +94,3 @@ public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDispla
         return null;
     }
 }
-    
