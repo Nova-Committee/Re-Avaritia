@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
+
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.crafting.recipe.FullMatterClusterRecipe;
 import committee.nova.mods.avaritia.init.data.provider.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -10,10 +12,7 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +32,8 @@ import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+
+import javax.json.JsonArray;
 
 import java.util.function.Consumer;
 
@@ -149,6 +150,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('b', Items.END_CRYSTAL)
                 .define('c', Items.DRAGON_EGG)
                 .unlockedBy("", lul).save(consumer);
+
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.TRIDENT, 1)
                 .pattern(" ba")
@@ -346,9 +348,9 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .pattern("         ")
                 .pattern("  aaaaa  ")
                 .pattern(" abbcbba ")
-                .pattern(" abeeeba ")
-                .pattern(" acedeca ")
-                .pattern(" abeeeba ")
+                .pattern(" abaaaba ")
+                .pattern(" acadaca ")
+                .pattern(" abaaaba ")
                 .pattern(" abbcbba ")
                 .pattern("  aaaaa  ")
                 .pattern("         ")
@@ -356,8 +358,21 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('b', Blocks.MAGMA_BLOCK)
                 .define('c', Items.LAVA_BUCKET)
                 .define('d', ModItems.eternal_singularity.get())
-                .define('e', ModBlocks.refined_coal_block.get())
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.star_fuel.get(), 4)
+                .pattern("         ")
+                .pattern("         ")
+                .pattern("         ")
+                .pattern("   aaa   ")
+                .pattern("   aba   ")
+                .pattern("   aaa   ")
+                .pattern("         ")
+                .pattern("         ")
+                .pattern("         ")
+                .define('a', ModBlocks.refined_coal_block.get())
+                .define('b', ModItems.eternal_singularity.get())
+                .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Const.rl("star_fuel_alternate"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
                 .pattern(" n ")
@@ -414,8 +429,17 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
+                        Ingredient.of(Items.CLOCK),
+                        CompoundIngredient.of(Ingredient.of(Items.ENCHANTED_GOLDEN_APPLE), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModItems.eternal_singularity.get())),
+                        RecipeCategory.MISC,
+                        ModItems.infinity_clock.get().asItem())
+                .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
+                .save(consumer);
+
+        ModExtremeSmithingRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.ANVIL),
-                        CompoundIngredient.of(Ingredient.of(ModItems.matter_cluster.get()), Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(ModItems.full_matter_cluster.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.neutron.get())),
                         RecipeCategory.MISC,
                         ModBlocks.extreme_anvil.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -524,7 +548,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.EMERALD_BLOCK)
+                .requires(Items.BEDROCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -535,7 +559,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.EMERALD_BLOCK)
+                .requires(Items.BEDROCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -545,6 +569,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .requires(ModItems.eternal_singularity.get())
                 .group("eternal_singularity")
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Const.rl("infinity_catalyst_eternal"));
+
+        ModMatterClusterRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.full_matter_cluster.get(), 1)
+                .group("matter_cluster")
+                .requires(ModItems.matter_cluster.get())
+                .unlockedBy("has_matter_cluster", has(ModItems.matter_cluster.get()))
+                .save(consumer, new ResourceLocation("avaritia", "full_matter_cluster"));
+
 
         ModEternalRecipeBuilder.shapeless(RecipeCategory.MISC)
                 .unlockedBy("has_item", has(ModItems.singularity.get())).save(consumer);
@@ -790,6 +821,29 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_umbrella.get())
+                .pattern(" IBNND  C")
+                .pattern(" INENNNA ")
+                .pattern(" XINNNBN ")
+                .pattern("  INNFNND")
+                .pattern("   INNNNN")
+                .pattern("   NINNGN")
+                .pattern("  N  IINB")
+                .pattern(" B    XII")
+                .pattern("ACC      ")
+                .define('I', ModItems.infinity_ingot.get())
+                .define('N', ModItems.neutron_ingot.get())
+                .define('X', ModItems.infinity_nugget.get())
+                .define('A', ModBlocks.crystal_matrix.get())
+                .define('B', ModBlocks.neutron.get())
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('D', ModItems.neutron_nugget.get())
+                .define('E', Items.FLINT_AND_STEEL)
+                .define('F', Items.WATER_BUCKET)
+                .define('G', Items.TRIDENT)
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_pickaxe.get())
                 .pattern(" IIIIII B")
                 .pattern("    IIAA ")
@@ -1019,6 +1073,44 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.dense_neutron_compressor.get())
+                .pattern("AAC   CAA")
+                .pattern("AB     BA")
+                .pattern("C DEEED C")
+                .pattern("  EGGGE  ")
+                .pattern("  EGFGE  ")
+                .pattern("  EGGGE  ")
+                .pattern("C DEEED C")
+                .pattern("AB     BA")
+                .pattern("AAC   CAA")
+                .define('A', Items.ENDER_PEARL)
+                .define('B', Items.NETHER_STAR)
+                .define('C', ModItems.diamond_lattice.get())
+                .define('D', ModItems.neutron_ingot.get())
+                .define('E', Blocks.EMERALD_BLOCK)
+                .define('F', ModItems.endest_pearl.get())
+                .define('G', ModBlocks.neutron_compressor.get())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.neutron_compressor.get())).save(consumer);
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.denser_neutron_compressor.get())
+                .pattern("ABB F BBA")
+                .pattern("BCC   CCB")
+                .pattern("BCDEEEDCB")
+                .pattern("  EGGGE  ")
+                .pattern("F EGEGE F")
+                .pattern("  EGGGE  ")
+                .pattern("BCDEEEDCB")
+                .pattern("BCC   CCB")
+                .pattern("ABB F BBA")
+                .define('A', ModItems.neutron_gear.get())
+                .define('B', ModItems.neutron_pile.get())
+                .define('C', ModItems.blaze_cube.get())
+                .define('D', SingularityUtils.getItemForSingularity(ModSingularities.GOLD))
+                .define('E', ModBlocks.blaze_cube_block.get())
+                .define('F', Blocks.GOLD_BLOCK)
+                .define('G', ModBlocks.dense_neutron_compressor.get())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.dense_neutron_compressor.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.densest_neutron_collector.get())
                 .pattern("CC     CC")
@@ -1037,6 +1129,24 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE))
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModBlocks.denser_neutron_collector.get())).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.densest_neutron_compressor.get())
+                .pattern("CC     CC")
+                .pattern("C  BBB  C")
+                .pattern("  AAAAA  ")
+                .pattern(" BAXXXAB ")
+                .pattern(" BAXYXAB ")
+                .pattern(" BAXXXAB ")
+                .pattern("  AAAAA  ")
+                .pattern("C  BBB  C")
+                .pattern("CC     CC")
+                .define('A', Items.REDSTONE_BLOCK)
+                .define('B', ModItems.neutron_ingot.get())
+                .define('C', ModItems.neutron_gear.get())
+                .define('X', ModBlocks.denser_neutron_compressor.get())
+                .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE))
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.denser_neutron_compressor.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_ingot.get())
                 .pattern("NNNNNNNNN")

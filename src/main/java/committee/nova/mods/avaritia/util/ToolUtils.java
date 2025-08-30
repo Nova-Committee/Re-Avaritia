@@ -45,6 +45,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -154,61 +155,59 @@ public class ToolUtils {
         }
         return true;
     }
-
     /**
-     * 破坏范围方块
-     *
-     * @param player      玩家
-     * @param stack       手中工具
-     * @param pos         点击坐标
-     * @param range       范围
-     * @param keySets     满足的方块
-     * @param filterTrash 使用黑名单
+     * 无尽镐And无尽铲破坏
+     * @param player 玩家
+     * @param world 世界
+     * @param startPos 起始坐标
+     * @param range 挖掘范围
      */
-    public static void breakRangeBlocks(Player player, ItemStack stack, BlockPos pos, int range, Set<TagKey<Block>> keySets, boolean filterTrash) {
-        BlockHitResult traceResult = RayTracer.retrace(player, range);
-        var world = player.level();
-        var state = world.getBlockState(pos);
+    public static void destroyOres(ServerPlayer player, ServerLevel world, BlockPos startPos, int range) {
+        Set<BlockPos> processedPos = new HashSet<>();
+        Queue<BlockPos> queue = new LinkedList<>();
+        queue.add(startPos);
+        processedPos.add(startPos);
 
-        if (state.isAir()) {
-            return;
-        }
-
-        if (world.isClientSide()) {
-            return;
-        }
-
-        var doY = traceResult.getDirection().getAxis() != Direction.Axis.Y;
-
-        var minOffset = new BlockPos(-range, doY ? -1 : -range, -range);
-        var maxOffset = new BlockPos(range, doY ? range * 2 - 2 : range, range);
-
-        ToolUtils.breakBlocks((ServerLevel) world, player, stack, pos, minOffset, maxOffset, keySets, filterTrash);
-    }
-
-    private static void breakBlocks(ServerLevel world, Player player,
-                                    ItemStack stack,
-                                    BlockPos origin, BlockPos min, BlockPos max,
-                                    Set<TagKey<Block>> validMaterials, boolean filterTrash
-    ) {
+        // 收集所有掉落物
         Set<ItemStack> drops = Sets.newHashSet();
 
-        for (int lx = min.getX(); lx < max.getX(); lx++) {
-            for (int ly = min.getY(); ly < max.getY(); ly++) {
-                for (int lz = min.getZ(); lz < max.getZ(); lz++) {
-                    BlockPos pos = origin.offset(lx, ly, lz);
-                    removeBlockWithDrops(world, player, pos, stack, drops, validMaterials);
+        while (!queue.isEmpty()) {
+            BlockPos pos = queue.poll();
+            BlockState state = world.getBlockState(pos);
+
+            // 仅处理可被镐挖掘的方块（不排除任何符合条件的方块）
+            if (ToolUtils.canUseTool(state, materialsPick) && state.getBlock().canHarvestBlock(state, world, pos, player)) {
+                // 收集掉落物
+                List<ItemStack> blockDrops = Block.getDrops(state, world, pos, null);
+                if (!blockDrops.isEmpty()) {
+                    drops.addAll(blockDrops);
+                } else {
+                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    if (blockItem != Items.AIR) {
+                        drops.add(new ItemStack(blockItem));
+                    }
+                }
+
+                // 破坏方块
+                world.levelEvent(2001, pos, Block.getId(state));
+                destroy(world, player, pos);
+
+                // 递归处理周围方块（范围限制内）
+                for (Direction dir : Direction.values()) {
+                    BlockPos neighborPos = pos.relative(dir);
+                    if (!processedPos.contains(neighborPos) &&
+                            neighborPos.distManhattan(startPos) <= range &&
+                            world.isLoaded(neighborPos)) {
+                        processedPos.add(neighborPos);
+                        queue.add(neighborPos);
+                    }
                 }
             }
         }
 
-        ClustersUtils.spawnClusters(world, player,
-                filterTrash ? ClustersUtils.removeTrash(ItemCaptureHandler.getCapturedDrops(),
-                        stack.getOrCreateTag().contains("filters")
-                                ? stack.getOrCreateTag().getCompound("filters").getAllKeys()
-                                : defaultTrashOres)
-                : ItemCaptureHandler.getCapturedDrops());
-
+        // 将所有掉落物合并为物质团
+        ClustersUtils.spawnClusters(world, player, drops);
     }
 
     public static void removeBlockWithDrops(ServerLevel world, Player player,
@@ -777,6 +776,7 @@ public class ToolUtils {
      * @param speed 速度
      * @param randomTicks 随机刻
      * from Torcherino
+     *已弃用
      */
     public static void speedBlockTick(BlockPos pos, ServerLevel level, int speed, int randomTicks) {
         int random_tick_rate = 4;

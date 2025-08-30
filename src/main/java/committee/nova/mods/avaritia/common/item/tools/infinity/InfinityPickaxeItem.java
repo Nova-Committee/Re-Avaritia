@@ -16,6 +16,7 @@ import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -112,8 +113,8 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (miningEntity instanceof Player player && isActive(stack, "infinity_pickaxe_hammer")) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick, true);
+        if (miningEntity instanceof ServerPlayer player && isActive(stack, "infinity_pickaxe_hammer")) {
+            ToolUtils.destroyOres(player, (ServerLevel) level, pos, ModConfig.pickAxeBreakRange.get());
         }
         return false;
     }

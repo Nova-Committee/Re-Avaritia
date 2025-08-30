@@ -2,20 +2,20 @@ package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.iface.IFilterItem;
-import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
-import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
-import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -55,8 +55,8 @@ public class AvaritiaForgeClient {
     public static final KeyMapping SORT_8 = new KeyMapping("key.avaritia.infinity_chest.sort8", InputConstants.KEY_8, CATEGORIES);
     public static final KeyMapping SORT_9 = new KeyMapping("key.avaritia.infinity_chest.sort9", InputConstants.KEY_9, CATEGORIES);
 
-    private static int infinityElytraCooldown = 0;
-
+    private static boolean keepFlying = false;
+    private static final double FLY_SPEED = 1.5;
     /**
      * 在客户端Tick事件触发时执行
      *
@@ -64,25 +64,63 @@ public class AvaritiaForgeClient {
      */
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        // 检测并消费点击事件
-        while (FILTER_KEY.consumeClick() && player != null) {
-            // 打开界面
-            if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof IFilterItem) {
-                Minecraft.getInstance().setScreen(new ItemFilterScreen());
-            }
-        }
-        while (RING_KEY.consumeClick() && player != null) {
-            NetworkHandler.CHANNEL.sendToServer(new C2SOpenRingPack());
+        if (event.phase != TickEvent.Phase.END) return;
+
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return;
+
+        Player player = mc.player;
+
+
+        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+        boolean wearingInfiniteElytra = (chest != null && chest.getItem() == ModItems.infinity_elytra.get());
+
+        if (!wearingInfiniteElytra) {
+            keepFlying = false;
+            return;
         }
 
-        infinityElytraCooldown = Math.max(infinityElytraCooldown - 1, 0);
-        if (Minecraft.getInstance().options.keyJump.isDown() && infinityElytraCooldown <= 0) {
-            infinityElytraCooldown = 50;
-            NetworkHandler.CHANNEL.sendToServer(new C2SElytraSpeedUpPacket());
+
+        boolean isFlying = player.isFallFlying();
+
+        if (mc.options.keyJump.isDown()) {
+            keepFlying = false;
+            return;
+        }
+
+        if (isFlying && !keepFlying) {
+            keepFlying = true;
+        }
+
+        if (keepFlying && player.onGround()) {
+            keepFlying = false;
+
+
+            double radius = 2.5;
+            List<LivingEntity> nearby = player.level().getEntitiesOfClass(
+                    LivingEntity.class,
+                    player.getBoundingBox().inflate(radius),
+                    e -> e != player // 不伤害自己
+            );
+
+            for (LivingEntity target : nearby) {
+                target.hurt(player.damageSources().fellOutOfWorld(), 6.0F);
+            }
+
+            return;
+        }
+
+
+        if (keepFlying) {
+            if (!player.isFallFlying()) {
+                player.startFallFlying();
+            }
+
+
+            Vec3 look = player.getLookAngle().normalize();
+            player.setDeltaMovement(look.x * FLY_SPEED, look.y * FLY_SPEED, look.z * FLY_SPEED);
         }
     }
-
 
 
     // region tooltipExt

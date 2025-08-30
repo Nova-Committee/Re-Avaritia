@@ -31,6 +31,8 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue bladeSlashDamage;
     public static final ForgeConfigSpec.IntValue bladeSlashRadius;
     public static final ForgeConfigSpec.BooleanValue internalInfinityCatalystCraft;
+    public static final ForgeConfigSpec.DoubleValue endlessItemEntitySpeed;
+    public static final ForgeConfigSpec.DoubleValue endlessItemEntityRange;
 
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
     public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
@@ -95,6 +97,8 @@ public class ModConfig {
         common.pop();
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
+        endlessItemEntitySpeed = buildDouble(common, "Endless Item Speed", 10,1,50, "Tracking Endless Item Speed");
+        endlessItemEntityRange = buildDouble(common, "Endless Item Range", 100,1,1000, "Tracking Endless Item Range");
         common.pop();
         COMMON = common.build();
     }

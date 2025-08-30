@@ -2,7 +2,7 @@
   "type": "avaritia:extreme_smithing",
   "addition": [
     {
-      "item": "avaritia:matter_cluster"
+      "item": "avaritia:full_matter_cluster"
     },
     {
       "item": "avaritia:enhancement_core"

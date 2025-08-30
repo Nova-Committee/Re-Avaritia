@@ -291,7 +291,7 @@ public class InfinityHandler {
         Block block = event.getState().getBlock();
         BlockState state = event.getState();
         if (
-                (tool.is(ModItems.blaze_axe.get()) || tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
+                ( tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
                         && tool.getItem() instanceof ISwitchable switchable
         ) {
             if (switchable.isActive(tool, "smelt"))
@@ -321,6 +321,7 @@ public class InfinityHandler {
     public static void onItemSpawn(ItemEvent event) {
         ItemEntity entity = event.getEntity();
         ItemStack stack = entity.getItem();
+        Player player = null;
 
         if (stack.is(ModTags.IMMORTAL_ITEM) && !(entity instanceof ImmortalItemEntity)) {
             Level level = entity.level();

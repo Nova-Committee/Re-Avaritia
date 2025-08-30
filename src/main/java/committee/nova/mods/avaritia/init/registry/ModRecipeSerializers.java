@@ -29,7 +29,8 @@ public class ModRecipeSerializers {
     public static RegistryObject<RecipeSerializer<?>> SHAPELESS_CRAFT_SERIALIZER = serializer("shapeless_table", ShapelessTableCraftingRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> COMPRESSOR_SERIALIZER = serializer("compressor", CompressorRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> EXTREME_SMITHING_SERIALIZER = serializer("extreme_smithing", ExtremeSmithingRecipe.Serializer::new);
-
+    public static RegistryObject<RecipeSerializer<?>> FULL_MATTER_CLUSTER_SERIALIZER =
+            serializer("full_matter_cluster", FullMatterClusterRecipe.Serializer::new);
 
     public static RegistryObject<RecipeSerializer<?>> serializer(String name, Supplier<RecipeSerializer<?>> serializer) {
         return SERIALIZERS.register(name, serializer);
