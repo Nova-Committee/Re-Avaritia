@@ -66,29 +66,12 @@ public class StringInputScreen extends Screen {
      */
     private Text errorText;
 
-
     public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, Consumer<String> onDataReceived) {
-        super(Component.literal("StringInputScreen"));
-        this.previousScreen = callbackScreen;
-        this.onDataReceived1 = onDataReceived;
-        this.onDataReceived2 = null;
-        this.titleText = titleText;
-        this.messageText = messageText;
-        this.validator = validator;
-        this.defaultValue = "";
-        this.shouldClose = null;
+        this(callbackScreen, titleText, messageText, validator, "", onDataReceived);
     }
 
     public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Consumer<String> onDataReceived) {
-        super(Component.literal("StringInputScreen"));
-        this.previousScreen = callbackScreen;
-        this.onDataReceived1 = onDataReceived;
-        this.onDataReceived2 = null;
-        this.titleText = titleText;
-        this.messageText = messageText;
-        this.validator = validator;
-        this.defaultValue = defaultValue;
-        this.shouldClose = null;
+        this(callbackScreen, titleText, messageText, validator, defaultValue, onDataReceived, null);
     }
 
     public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Consumer<String> onDataReceived, Supplier<Boolean> shouldClose) {
@@ -104,27 +87,11 @@ public class StringInputScreen extends Screen {
     }
 
     public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, Function<String, String> onDataReceived) {
-        super(Component.literal("StringInputScreen"));
-        this.previousScreen = callbackScreen;
-        this.onDataReceived1 = null;
-        this.onDataReceived2 = onDataReceived;
-        this.titleText = titleText;
-        this.messageText = messageText;
-        this.validator = validator;
-        this.defaultValue = "";
-        this.shouldClose = null;
+        this(callbackScreen, titleText, messageText, validator, "", onDataReceived);
     }
 
     public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Function<String, String> onDataReceived) {
-        super(Component.literal("StringInputScreen"));
-        this.previousScreen = callbackScreen;
-        this.onDataReceived1 = null;
-        this.onDataReceived2 = onDataReceived;
-        this.titleText = titleText;
-        this.messageText = messageText;
-        this.validator = validator;
-        this.defaultValue = defaultValue;
-        this.shouldClose = null;
+        this(callbackScreen, titleText, messageText, validator, defaultValue, onDataReceived, null);
     }
 
     public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Function<String, String> onDataReceived, Supplier<Boolean> shouldClose) {
@@ -153,7 +120,7 @@ public class StringInputScreen extends Screen {
         this.inputField.setValue(defaultValue);
         this.addRenderableWidget(this.inputField);
         // 创建提交按钮
-        this.submitButton = GuiUtils.newButton(this.width / 2 + 5, this.height / 2 + 10, 95, 20, Component.literal(("取消")), button -> {
+        this.submitButton = GuiUtils.newButton(this.width / 2 + 5, this.height / 2 + 10, 95, 20, Component.literal(("提交")), button -> {
             String value = this.inputField.getValue();
             if (StringUtils.isNullOrEmpty(value)) {
                 // 关闭当前屏幕并返回到调用者的 Screen

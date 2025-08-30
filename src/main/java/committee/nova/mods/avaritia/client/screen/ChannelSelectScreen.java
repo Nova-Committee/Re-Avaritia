@@ -47,7 +47,10 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     private int scrollAt = 0;
     private final ClientChannelManager channelManager = ClientChannelManager.getInstance();
     private boolean lShifting = false;
-
+    // 添加一个字段来跟踪上次频道数量
+    private int lastMyChannelsCount = 0;
+    private int lastOtherChannelsCount = 0;
+    private int lastPublicChannelsCount = 0;
 
     public ChannelSelectScreen(ChannelSelectMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -98,6 +101,16 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         super.containerTick();
         //nameBox.tick();
         searchBox.tick();
+        // 检查频道数量是否发生变化
+        if (channelManager.myChannels.size() != lastMyChannelsCount ||
+                channelManager.otherChannels.size() != lastOtherChannelsCount ||
+                channelManager.publicChannels.size() != lastPublicChannelsCount) {
+
+            updateChannelList();
+            lastMyChannelsCount = channelManager.myChannels.size();
+            lastOtherChannelsCount = channelManager.otherChannels.size();
+            lastPublicChannelsCount = channelManager.publicChannels.size();
+        }
     }
 
     @Override
@@ -257,13 +270,13 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             float uOffset = this.isHoveredOrFocused() ? 220.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 0, this.width, this.height, 256, 256);
             List<FormattedCharSequence> list = new ArrayList<>();
             list.add(Component.translatable("gui.avaritia.addChannel.tip2").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.addChannel.tip3").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.addChannel.tip4").getVisualOrderText());
+            //list.add(Component.translatable("gui.avaritia.addChannel.tip4").getVisualOrderText());
             if (this.isHovered) setTooltipForNextRenderPass(list);
         }
     }
@@ -283,7 +296,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 34, this.width, this.height, 256, 256);
             List<FormattedCharSequence> list = new ArrayList<>();
@@ -315,7 +328,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 18, this.width, this.height, 256, 256);
             List<FormattedCharSequence> list = new ArrayList<>();
@@ -347,7 +360,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(@NotNull GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             List<FormattedCharSequence> list = new ArrayList<>();
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 50, this.width, this.height, 256, 256);
