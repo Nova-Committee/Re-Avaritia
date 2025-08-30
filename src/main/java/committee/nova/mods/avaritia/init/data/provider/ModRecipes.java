@@ -362,6 +362,19 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('d', ModItems.eternal_singularity.get())
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.star_fuel.get(), 4)
+                .pattern("         ")
+                .pattern("         ")
+                .pattern("         ")
+                .pattern("   aaa   ")
+                .pattern("   aba   ")
+                .pattern("   aaa   ")
+                .pattern("         ")
+                .pattern("         ")
+                .pattern("         ")
+                .define('a', ModBlocks.refined_coal_block.get())
+                .define('b', ModItems.eternal_singularity.get())
+                .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Const.rl("star_fuel_alternate"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
                 .pattern(" n ")
@@ -537,7 +550,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.EMERALD_BLOCK)
+                .requires(Items.BEDROCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -548,7 +561,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.EMERALD_BLOCK)
+                .requires(Items.BEDROCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -1055,6 +1068,44 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.dense_neutron_compressor.get())
+                .pattern("AAC   CAA")
+                .pattern("AB     BA")
+                .pattern("C DEEED C")
+                .pattern("  EGGGE  ")
+                .pattern("  EGFGE  ")
+                .pattern("  EGGGE  ")
+                .pattern("C DEEED C")
+                .pattern("AB     BA")
+                .pattern("AAC   CAA")
+                .define('A', Items.ENDER_PEARL)
+                .define('B', Items.NETHER_STAR)
+                .define('C', ModItems.diamond_lattice.get())
+                .define('D', ModItems.neutron_ingot.get())
+                .define('E', Blocks.EMERALD_BLOCK)
+                .define('F', ModItems.endest_pearl.get())
+                .define('G', ModBlocks.neutron_compressor.get())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.neutron_compressor.get())).save(consumer);
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.denser_neutron_compressor.get())
+                .pattern("ABB F BBA")
+                .pattern("BCC   CCB")
+                .pattern("BCDEEEDCB")
+                .pattern("  EGGGE  ")
+                .pattern("F EGEGE F")
+                .pattern("  EGGGE  ")
+                .pattern("BCDEEEDCB")
+                .pattern("BCC   CCB")
+                .pattern("ABB F BBA")
+                .define('A', ModItems.neutron_gear.get())
+                .define('B', ModItems.neutron_pile.get())
+                .define('C', ModItems.blaze_cube.get())
+                .define('D', SingularityUtils.getItemForSingularity(ModSingularities.GOLD))
+                .define('E', ModBlocks.blaze_cube_block.get())
+                .define('F', Blocks.GOLD_BLOCK)
+                .define('G', ModBlocks.dense_neutron_compressor.get())
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.dense_neutron_compressor.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.densest_neutron_collector.get())
                 .pattern("CC     CC")
@@ -1073,6 +1124,24 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE))
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModBlocks.denser_neutron_collector.get())).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.densest_neutron_compressor.get())
+                .pattern("CC     CC")
+                .pattern("C  BBB  C")
+                .pattern("  AAAAA  ")
+                .pattern(" BAXXXAB ")
+                .pattern(" BAXYXAB ")
+                .pattern(" BAXXXAB ")
+                .pattern("  AAAAA  ")
+                .pattern("C  BBB  C")
+                .pattern("CC     CC")
+                .define('A', Items.REDSTONE_BLOCK)
+                .define('B', ModItems.neutron_ingot.get())
+                .define('C', ModItems.neutron_gear.get())
+                .define('X', ModBlocks.denser_neutron_compressor.get())
+                .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE))
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModBlocks.denser_neutron_compressor.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_ingot.get())
                 .pattern("NNNNNNNNN")
