@@ -1,13 +1,11 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.api.iface.IInfinityClockSwitchable;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.client.screen.InfinityClockScreen;
 import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import net.minecraft.client.Minecraft;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -25,10 +23,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.TickEvent;
@@ -238,7 +233,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
 
                 BlockEntity be = level.getBlockEntity(pos);
                 if (be != null) {
-                    InfinityClockItem.accelerateBlockEntity(level, pos, be, times);
+                    ToolUtils.accelerateBlockEntity(level, pos, be, times);
                 } else {
                     it.remove();
                     removeDisplayEntity(level, pos);
@@ -279,24 +274,4 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void accelerateBlockEntity(ServerLevel level, BlockPos pos, BlockEntity be, int times) {
-        if (be.isRemoved()) return;
-        BlockState state = level.getBlockState(pos);
-        Block block = state.getBlock();
-
-        if (block instanceof EntityBlock entityBlock) {
-            BlockEntityType type = be.getType();
-            BlockEntityTicker ticker = entityBlock.getTicker(level, state, type);
-
-            if (ticker != null) {
-                for (int i = 0; i < times; i++) {
-                    ticker.tick(level, pos, state, be);
-                    if (be.isRemoved()) break;
-                }
-                be.setChanged();
-                level.sendBlockUpdated(pos, state, state, 3);
-            }
-        }
-    }
 }

@@ -54,6 +54,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
@@ -778,6 +779,7 @@ public class ToolUtils {
      * from Torcherino
      *已弃用
      */
+    @Deprecated
     public static void speedBlockTick(BlockPos pos, ServerLevel level, int speed, int randomTicks) {
         int random_tick_rate = 4;
         var targetState = level.getBlockState(pos);
@@ -801,6 +803,34 @@ public class ToolUtils {
                     break;
                 }
                 ticker.tick(level, pos, targetState, blockEntity);
+            }
+        }
+    }
+
+    /**
+     * 加速方块实体和更新
+     * @param level 世界
+     * @param pos 被加速方块位置
+     * @param be 被加速的实体
+     * @param times 随机刻
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void accelerateBlockEntity(ServerLevel level, BlockPos pos, BlockEntity be, int times) {
+        if (be.isRemoved()) return;
+        BlockState state = level.getBlockState(pos);
+        Block block = state.getBlock();
+
+        if (block instanceof EntityBlock entityBlock) {
+            BlockEntityType type = be.getType();
+            BlockEntityTicker ticker = entityBlock.getTicker(level, state, type);
+
+            if (ticker != null) {
+                for (int i = 0; i < times; i++) {
+                    ticker.tick(level, pos, state, be);
+                    if (be.isRemoved()) break;
+                }
+                be.setChanged();
+                level.sendBlockUpdated(pos, state, state, 3);
             }
         }
     }
