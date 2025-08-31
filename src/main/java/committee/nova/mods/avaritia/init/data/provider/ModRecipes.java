@@ -501,6 +501,26 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get())
+                .pattern("         ")
+                .pattern(" abbbbba ")
+                .pattern(" bdcccdb ")
+                .pattern(" bceeecb ")
+                .pattern(" bcefecb ")
+                .pattern(" bceeecb ")
+                .pattern(" bdcccdb ")
+                .pattern(" accecca ")
+                .pattern("         ")
+                .define('b', ModItems.crystal_matrix_ingot.get())
+                .define('a', ModBlocks.crystal_matrix.get())
+                .define('c', ModItems.neutron_ingot.get())
+                .define('d', ModItems.neutron_pile.get())
+                .define('e', ModItems.infinity_catalyst.get())
+                .define('f',ModItems.upgrade_smithing_template.get())
+
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer,Const.rl("upgrade_smithing_template_too"));
+
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)
                 .requires(Items.BEEF)
