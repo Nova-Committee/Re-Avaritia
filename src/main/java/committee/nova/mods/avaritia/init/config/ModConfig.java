@@ -98,8 +98,8 @@ public class ModConfig {
         common.pop();
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
-        endlessItemEntitySpeed = buildDouble(common, "Endless Item Speed", 10,1,50, "Tracking Endless Item Speed");
-        endlessItemEntityRange = buildDouble(common, "Endless Item Range", 100,1,1000, "Tracking Endless Item Range");
+        endlessItemEntitySpeed = buildDouble(common, "Endless Item Speed", 3,1,50, "Tracking Endless Item Speed");
+        endlessItemEntityRange = buildDouble(common, "Endless Item Range", 1000,1,10000, "Tracking Endless Item Range");
         infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5,1,10, "Speed of Infinity Elytra");
         common.pop();
         COMMON = common.build();

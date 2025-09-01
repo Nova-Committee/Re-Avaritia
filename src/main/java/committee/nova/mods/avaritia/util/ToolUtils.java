@@ -159,22 +159,25 @@ public class ToolUtils {
      */
     public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
         ServerLevel world = player.serverLevel();
-        Set<BlockPos> processedPos = new HashSet<>();
-        Queue<BlockPos> queue = new LinkedList<>();
-        queue.add(startPos);
-        processedPos.add(startPos);
 
-        // 收集所有掉落物
+        // 计算方形范围
+        int halfRange = range / 2;
+        BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
+        BlockPos maxPos = startPos.offset(halfRange, halfRange, halfRange);
+
+
         Set<ItemStack> drops = Sets.newHashSet();
 
-        while (!queue.isEmpty()) {
-            BlockPos pos = queue.poll();
-            BlockState state = world.getBlockState(pos);
 
-            // 仅处理可被镐挖掘的方块（不排除任何符合条件的方块）
-            if (ToolUtils.canUseTool(state, materials) && state.getBlock().canHarvestBlock(state, world, pos, player)) {
+        for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+
+            BlockPos currentPos = pos.immutable();
+            BlockState state = world.getBlockState(currentPos);
+
+            // 仅处理可被工具挖掘的方块
+            if (ToolUtils.canUseTool(state, materials) && state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
                 // 收集掉落物
-                List<ItemStack> blockDrops = Block.getDrops(state, world, pos, null);
+                List<ItemStack> blockDrops = Block.getDrops(state, world, currentPos, null);
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
@@ -183,20 +186,14 @@ public class ToolUtils {
                     if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
-                // 破坏方块
-                world.levelEvent(2001, pos, Block.getId(state));
-                destroy(world, player, pos);
+                // 破坏方块并优化粒子效果和声音
+                world.destroyBlock(currentPos, false, player);
 
-                // 递归处理周围方块（范围限制内）
-                for (Direction dir : Direction.values()) {
-                    BlockPos neighborPos = pos.relative(dir);
-                    if (!processedPos.contains(neighborPos) &&
-                            neighborPos.distManhattan(startPos) <= range &&
-                            world.isLoaded(neighborPos)) {
-                        processedPos.add(neighborPos);
-                        queue.add(neighborPos);
-                    }
-                }
+                // 播放更清晰的破坏声音
+                world.playSound(null, currentPos, state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 0.5F, 1.0F);
+
+                // 显示破坏粒子效果
+                world.levelEvent(2001, currentPos, Block.getId(state));
             }
         }
 
