@@ -86,39 +86,48 @@ public class MatterClusterItem extends Item {
     public static boolean mergeClusters(ItemStack spawnCluster, ItemStack slotCluster) {
         NoMenuContainer receivingInv = readClusterInventory(slotCluster);
         int recipientCount = Arrays.stream(receivingInv.items).mapToInt(ItemStack::getCount).sum();
+
         if (recipientCount >= CAPACITY) {
             return false;
-        } else {
-            boolean mergedAny = false;
-            NoMenuContainer spawnClusterInv = readClusterInventory(spawnCluster);
-            for (ItemStack stack : spawnClusterInv.items) {
-                if (stack.isEmpty()) {
-                    break;
-                }
-
-                int remainder = ContainerUtils.insertItem(receivingInv, stack, false);
-                if (remainder <= stack.getCount()) {
-                    mergedAny = true;
-                }
-
-                recipientCount += stack.getCount() - remainder;
-                stack.setCount(remainder);
-                if (recipientCount >= CAPACITY) {
-                    break;
-                }
-            }
-
-            writeClusterInventory(slotCluster, receivingInv);
-            int spawnClusterRemaining = Arrays.stream(spawnClusterInv.items).mapToInt(ItemStack::getCount).sum();
-            if (spawnClusterRemaining == 0) {
-                spawnCluster.setTag(null);
-                spawnCluster.setCount(0);
-            } else {
-                writeClusterInventory(spawnCluster, spawnClusterInv);
-            }
-
-            return mergedAny;
         }
+
+        boolean mergedAny = false;
+        NoMenuContainer spawnClusterInv = readClusterInventory(spawnCluster);
+        int remainingCapacity = CAPACITY - recipientCount; // 计算目标物质团的剩余容量
+
+        for (ItemStack stack : spawnClusterInv.items) {
+            if (stack.isEmpty() || remainingCapacity <= 0) {
+                break;
+            }
+
+            int insertCount = Math.min(stack.getCount(), remainingCapacity);
+            ItemStack insertStack = stack.copy();
+            insertStack.setCount(insertCount);
+
+
+            int remainder = ContainerUtils.insertItem(receivingInv, insertStack, false);
+            int actualInserted = insertCount - remainder;
+
+            if (actualInserted > 0) {
+                mergedAny = true;
+                recipientCount += actualInserted;
+                remainingCapacity -= actualInserted; // 更新剩余容量
+                stack.setCount(stack.getCount() - actualInserted); // 更新源物品的剩余数量
+            }
+        }
+
+
+        writeClusterInventory(slotCluster, receivingInv);
+        int spawnClusterRemaining = Arrays.stream(spawnClusterInv.items).mapToInt(ItemStack::getCount).sum();
+
+        if (spawnClusterRemaining == 0) {
+            spawnCluster.setTag(null);
+            spawnCluster.setCount(0);
+        } else {
+            writeClusterInventory(spawnCluster, spawnClusterInv);
+        }
+
+        return mergedAny;
     }
 
 
@@ -173,15 +182,6 @@ public class MatterClusterItem extends Item {
         return InteractionResultHolder.success(ItemStack.EMPTY);
     }
 
-    @Override
-    public boolean hasCustomEntity(ItemStack stack) {
-        return true;
-    }
 
-    @Nullable
-    @Override
-    public Entity createEntity(Level level, Entity location, ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
-    }
 
 }

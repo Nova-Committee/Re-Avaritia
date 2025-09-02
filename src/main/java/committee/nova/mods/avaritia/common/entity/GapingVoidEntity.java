@@ -69,7 +69,7 @@ public class GapingVoidEntity extends Entity {
 
     public GapingVoidEntity(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-        setSharedFlagOnFire(true);
+//        setSharedFlagOnFire(true);
         noCulling = true;
         if (level() instanceof ServerLevel) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);

@@ -4,11 +4,13 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.client.model.CosmicModelLoader;
+import committee.nova.mods.avaritia.client.model.EternalModelLoader;
 import committee.nova.mods.avaritia.client.model.HaloModelLoader;
 import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -16,6 +18,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -49,6 +52,8 @@ public class AvaritiaModClient {
         event.register(RING_KEY);
     }
 
+
+
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
         ModEntities.onClientSetup();
@@ -77,16 +82,16 @@ public class AvaritiaModClient {
                 ModItems.eternal_singularity.get()
         );
     }
-
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
-
+        event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "endest_pearl_darkness", AvaritiaForgeClient.DARKNESS_OVERLAY);
     }
 
     @SubscribeEvent
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register("cosmic", CosmicModelLoader.INSTANCE);
         event.register("halo", HaloModelLoader.INSTANCE);
+        event.register("eternal", EternalModelLoader.INSTANCE);
     }
 
     @SubscribeEvent

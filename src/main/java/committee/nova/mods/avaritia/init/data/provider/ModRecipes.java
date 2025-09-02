@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.crafting.recipe.FullMatterClusterRecipe;
 import committee.nova.mods.avaritia.init.data.provider.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -213,6 +212,35 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('e', Items.NETHERITE_INGOT)
                 .define('f', Items.NETHER_STAR)
                 .unlockedBy("has_block", has(ModBlocks.sculk_crafting_table.get())).save(consumer);
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.HEART_OF_THE_SEA, 1)
+                .pattern("bdb")
+                .pattern("dcd")
+                .pattern("bdb")
+                .define('b', Items.PRISMARINE_SHARD)
+                .define('c', Items.ENDER_EYE)
+                .define('d', Items.NAUTILUS_SHELL)
+                .unlockedBy("has_block", has(Items.PRISMARINE_SHARD)).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.NETHERITE_INGOT, 1)
+                .pattern(" ab")
+                .pattern(" ab")
+                .pattern("   ")
+                .define('a', Items.NETHERITE_SCRAP)
+                .define('b', Items.GOLD_INGOT)
+                .unlockedBy("has_item", has(Items.NETHERITE_INGOT)).save(consumer);
+        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC,Items.ECHO_SHARD,1,1)
+                .requires(Blocks.SCULK)
+                .unlockedBy("has_item", has(Blocks.SCULK)).save(consumer);
+
+        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.ANCIENT_DEBRIS, 8)
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.infinity_catalyst.get())
+                .define('b', Items.NETHERITE_SCRAP)
+                .define('c', Items.DIAMOND)
+                .tier(1)
+                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer,Const.rl("ancient_debris_eight"));
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.end_crafting_table.get(), 2)
                 .pattern("bcccb")
@@ -500,6 +528,25 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
+
+      NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(),2)
+                .pattern("         ")
+                .pattern(" abbbbba ")
+                .pattern(" bdcccdb ")
+                .pattern(" bceeecb ")
+                .pattern(" bcefecb ")
+                .pattern(" bceeecb ")
+                .pattern(" bdcccdb ")
+                .pattern(" abbbbba ")
+                .pattern("         ")
+                .define('b', ModItems.crystal_matrix_ingot.get())
+                .define('a', ModBlocks.crystal_matrix.get())
+                .define('c', ModItems.neutron_ingot.get())
+                .define('d', ModItems.neutron_pile.get())
+                .define('e', ModItems.infinity_catalyst.get())
+                .define('f',ModItems.upgrade_smithing_template.get())
+                .tier(4)
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer,Const.rl("upgrade_smithing_template_too"));
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)

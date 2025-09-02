@@ -5,14 +5,14 @@
       "item": "minecraft:lava_bucket"
     },
     {
-      "item": "avaritia:enhancement_core"
+      "item": "minecraft:powder_snow_bucket"
     },
     {
-      "item": "minecraft:powder_snow_bucket"
+      "item": "avaritia:enhancement_core"
     }
   ],
   "base": {
-    "item": "minecraft:water_bucket"
+    "item": "minecraft:bucket"
   },
   "result": {
     "item": "avaritia:infinity_bucket"
