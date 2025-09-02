@@ -58,34 +58,30 @@ public class EternalBakeModel extends WrappedItemModel {
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
 
-        AvaritiaShaders.cosmicTime
+        // 使用Eternal专用的uniform变量
+        AvaritiaShaders.eternalTime
                 .set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
-        AvaritiaShaders.cosmicYaw.set(yaw);
-        AvaritiaShaders.cosmicPitch.set(pitch);
-        AvaritiaShaders.cosmicExternalScale.set(scale);
+        AvaritiaShaders.eternalYaw.set(yaw);
+        AvaritiaShaders.eternalPitch.set(pitch);
+        AvaritiaShaders.eternalExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.cosmicOpacity.set(1.0F);
+            AvaritiaShaders.eternalOpacity.set(1.5F); // 提高透明度以增加可见性
         }
 
-
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Const.rl("misc/cosmic_0"));
-        float u0 = sprite.getU0();
-        float v0 = sprite.getV0();
-        float u1 = sprite.getU1();
-        float v1 = sprite.getV1();
-
+        // 使用10个不同的纹理
         for (int i = 0; i < 10; ++i) {
-            ETERNAL_UVS[i * 4] = u0;
-            ETERNAL_UVS[i * 4 + 1] = v0;
-            ETERNAL_UVS[i * 4 + 2] = u1;
-            ETERNAL_UVS[i * 4 + 3] = v1;
+            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Const.rl("misc/cosmic_" + i));
+            ETERNAL_UVS[i * 4] = sprite.getU0();
+            ETERNAL_UVS[i * 4 + 1] = sprite.getV0();
+            ETERNAL_UVS[i * 4 + 2] = sprite.getU1();
+            ETERNAL_UVS[i * 4 + 3] = sprite.getV1();
         }
 
-        if (AvaritiaShaders.cosmicUVs != null) {
-            AvaritiaShaders.cosmicUVs.set(ETERNAL_UVS);
+        if (AvaritiaShaders.eternalUVs != null) {
+            AvaritiaShaders.eternalUVs.set(ETERNAL_UVS);
         }
 
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.ETERNAL);

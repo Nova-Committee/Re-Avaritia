@@ -43,6 +43,13 @@ public class AvaritiaShaders {
     public static Uniform cosmicUVs;
 
 
+    public static Uniform eternalTime;
+    public static Uniform eternalYaw;
+    public static Uniform eternalPitch;
+    public static Uniform eternalExternalScale;
+    public static Uniform eternalOpacity;
+    public static Uniform eternalUVs;
+
     public static void onRegisterShaders(RegisterShadersEvent event) {
         COSMIC_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK);
         COSMIC_ARMOR_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.NEW_ENTITY);
@@ -50,6 +57,7 @@ public class AvaritiaShaders {
 
         event.registerShader(COSMIC_SHADER, AvaritiaShaders::cosmicShader);
         event.registerShader(COSMIC_ARMOR_SHADER, AvaritiaShaders::cosmicShader);
+        event.registerShader(ETERNAL_SHADER, AvaritiaShaders::eternalShader);
     }
 
     public static void cosmicShader(ShaderInstance e){
@@ -67,6 +75,21 @@ public class AvaritiaShaders {
         cosmicTime.set((float) renderTime + renderFrame);
         COSMIC_SHADER.onApply(() -> {
             cosmicTime.set((float) renderTime + renderFrame);
+        });
+    }
+
+
+    public static void eternalShader(ShaderInstance e){
+        ETERNAL_SHADER = (CCShaderInstance) e;
+        eternalTime = Objects.requireNonNull(ETERNAL_SHADER.getUniform("time"));
+        eternalYaw = Objects.requireNonNull(ETERNAL_SHADER.getUniform("yaw"));
+        eternalPitch = Objects.requireNonNull(ETERNAL_SHADER.getUniform("pitch"));
+        eternalExternalScale = Objects.requireNonNull(ETERNAL_SHADER.getUniform("externalScale"));
+        eternalOpacity = Objects.requireNonNull(ETERNAL_SHADER.getUniform("opacity"));
+        eternalUVs = Objects.requireNonNull(ETERNAL_SHADER.getUniform("cosmicuvs"));
+        eternalTime.set((float) renderTime + renderFrame);
+        ETERNAL_SHADER.onApply(() -> {
+            eternalTime.set((float) renderTime + renderFrame);
         });
     }
 
