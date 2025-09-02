@@ -62,6 +62,10 @@ public class AvaritiaShaders {
 
     public static void cosmicShader(ShaderInstance e){
         COSMIC_SHADER = (CCShaderInstance) e;
+        ETERNAL_SHADER = (CCShaderInstance) e;
+        ETERNAL_SHADER.onApply(() -> {
+            cosmicTime.set((float) renderTime + renderFrame);
+        });
         cosmicTime = Objects.requireNonNull(COSMIC_SHADER.getUniform("time"));
         cosmicYaw = Objects.requireNonNull(COSMIC_SHADER.getUniform("yaw"));
         cosmicPitch = Objects.requireNonNull(COSMIC_SHADER.getUniform("pitch"));
