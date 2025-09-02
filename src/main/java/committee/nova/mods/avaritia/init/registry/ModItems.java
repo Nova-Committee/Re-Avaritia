@@ -29,7 +29,7 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Const.MOD_ID);
 
     //test
-    public static RegistryObject<Item> test_sword = item("test_sword", ()-> new Item(new Item.Properties()));
+    public static RegistryObject<Item> test_sword = item("test_sword", ()-> new Item(new Item.Properties()), false);
     //curios
     public static RegistryObject<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
