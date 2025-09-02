@@ -1,31 +1,56 @@
 package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.render.CCRenderState;
+import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
+import committee.nova.mods.avaritia.api.client.util.colour.Colour;
+import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
+import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
+import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
+import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +66,7 @@ import java.util.TreeSet;
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
-
+    private static float darknessIntensity = 0.0f;
     // 定义按键绑定
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
             InputConstants.KEY_H, CATEGORIES);
@@ -82,6 +107,9 @@ public class AvaritiaForgeClient {
         // endregion
 
         handleInfinityElytraFallFlying(mc, player);
+
+        //计算黑暗强度
+        calculateDarknessIntensity(player, level);
     }
 
     /**
@@ -196,4 +224,58 @@ public class AvaritiaForgeClient {
             }
         }
     }
+    /**
+     * 渲染黑暗遮罩
+     *
+     * @param guiGraphics GUI图形对象
+     * @param width 屏幕宽度
+     * @param height 屏幕高度
+     * @param intensity 黑暗强度
+     */
+    private static void renderDarknessOverlay(GuiGraphics guiGraphics, int width, int height, float intensity) {
+        // 使用纯黑色渲染一个覆盖整个屏幕的矩形，透明度由intensity决定
+        int alpha = (int) (intensity * 255);
+        if (alpha > 255) alpha = 255;
+        guiGraphics.fill(0, 0, width, height, (alpha << 24) | 0x000000);
+    }
+
+    public static final IGuiOverlay DARKNESS_OVERLAY = (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
+        if (darknessIntensity > 0.01f) {
+            renderDarknessOverlay(guiGraphics, screenWidth, screenHeight, darknessIntensity);
+        }
+    };
+    /**
+     * 计算玩家附近终望珍珠的黑暗强度
+     *
+     * @param player 玩家
+     * @param level 世界
+     */
+    private static void calculateDarknessIntensity(Player player, Level level) {
+
+        Vec3 playerPos = player.position();
+        double maxDistance = 10.0;  //渲染最大距离
+        float maxIntensity = 0.0f;
+
+
+        for (GapingVoidEntity pearl : level.getEntitiesOfClass(GapingVoidEntity.class, player.getBoundingBox().inflate(maxDistance))) {
+            double distance = playerPos.distanceTo(pearl.position());
+            if (distance < maxDistance) {
+
+            //(distance-x)/y,x是完全黑屏的距离,y则是maxDistance-x
+                float intensity = (float) Math.max(0.0, 1.0 - Math.max(0.0, (distance - 4.0) / 6.0));
+                if (intensity > maxIntensity) {
+                    maxIntensity = intensity;
+                }
+            }
+        }
+
+        // 平滑过渡效果
+        if (maxIntensity > darknessIntensity) {
+            darknessIntensity = Math.min(maxIntensity, darknessIntensity + 0.05f); // 渐强
+        } else if (maxIntensity < darknessIntensity) {
+            darknessIntensity = Math.max(maxIntensity, darknessIntensity - 0.05f); // 渐弱
+        }
+    }
+
+
 }

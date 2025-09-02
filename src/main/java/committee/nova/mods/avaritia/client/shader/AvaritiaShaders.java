@@ -33,6 +33,7 @@ public class AvaritiaShaders {
 
     public static CCShaderInstance COSMIC_SHADER;
     public static CCShaderInstance COSMIC_ARMOR_SHADER;
+    public static CCShaderInstance ETERNAL_SHADER;
 
     public static Uniform cosmicTime;
     public static Uniform cosmicYaw;
@@ -45,12 +46,18 @@ public class AvaritiaShaders {
     public static void onRegisterShaders(RegisterShadersEvent event) {
         COSMIC_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK);
         COSMIC_ARMOR_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.NEW_ENTITY);
+        ETERNAL_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "eternal"), DefaultVertexFormat.BLOCK);
+
         event.registerShader(COSMIC_SHADER, AvaritiaShaders::cosmicShader);
         event.registerShader(COSMIC_ARMOR_SHADER, AvaritiaShaders::cosmicShader);
     }
 
     public static void cosmicShader(ShaderInstance e){
         COSMIC_SHADER = (CCShaderInstance) e;
+        ETERNAL_SHADER = (CCShaderInstance) e;
+        ETERNAL_SHADER.onApply(() -> {
+            cosmicTime.set((float) renderTime + renderFrame);
+        });
         cosmicTime = Objects.requireNonNull(COSMIC_SHADER.getUniform("time"));
         cosmicYaw = Objects.requireNonNull(COSMIC_SHADER.getUniform("yaw"));
         cosmicPitch = Objects.requireNonNull(COSMIC_SHADER.getUniform("pitch"));
