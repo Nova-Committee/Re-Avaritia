@@ -111,6 +111,12 @@ public class ModEntities {
                     .sized(0.1f, 0.1f)
                     .build(new ResourceLocation("avariita", "accelerator_display").toString())
             );
+    public static final RegistryObject<EntityType<TNTProEntity>> tntProEntity =
+            ENTITIES.register("tnt_pro", () -> EntityType.Builder.<TNTProEntity>of(
+                            TNTProEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .build(new ResourceLocation("avariita", "tnt_pro").toString())
+            );
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);
@@ -126,6 +132,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
         EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRenderer::new);
+        EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
 
     }
 

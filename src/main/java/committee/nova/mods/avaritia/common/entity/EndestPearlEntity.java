@@ -35,6 +35,14 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         super(entityType, level);
     }
 
+    public EndestPearlEntity(Level level, LivingEntity shooter) {
+        this(ModEntities.ENDER_PEARL.get(), level);
+        setOwner(shooter);
+        setPos(shooter.getX(), shooter.getY() + shooter.getEyeHeight() - 0.10000000149011612D, shooter.getZ());
+        setDeltaMovement(shooter.getDeltaMovement());
+        this.shooter = shooter;
+    }
+
     public EndestPearlEntity(Level level, double x, double y, double z) {
         this(ModEntities.ENDER_PEARL.get(), level);
         setPos(x, y, z);

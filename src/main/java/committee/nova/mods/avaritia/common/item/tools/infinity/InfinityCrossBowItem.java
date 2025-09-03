@@ -2,7 +2,10 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
+import committee.nova.mods.avaritia.common.entity.TNTProEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.network.chat.Component;
@@ -23,8 +26,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -115,6 +116,15 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             shootFireworkRocket(level, player, ammo, 3.0F, 1.0F);
         } else if (ammo.is(Items.TRIDENT)){
             shootTrident(level, player, ammo,3.0F, 1.0F);
+        } else if (ammo.is(Items.SNOWBALL)) {
+            shootSnowball(level, player);
+        } else if (ammo.is(Items.EGG)) {
+            shootEgg(level, player);
+        } else if (ammo.is(ModItems.endest_pearl.get())){
+            shootEndestPearl(level, player);
+        }
+        else if (ammo.is(Items.TNT)){
+            shootTNT(level, player);
         }
         else {
             shootInfnityArrow(level, player, 3.0F, 1.0F);
@@ -132,6 +142,20 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     }
 
     //需要在这里声明物品是否可以充当发射物
+
+    /*目前已有:
+     * 箭
+     * 末影珍珠
+     * 烈焰弹
+     * 光灵箭
+     * 药水箭
+     * 烟花火箭
+     * 三叉戟
+     * 雪球
+     * 鸡蛋
+     * 终望珍珠
+     * TNT
+    **/
     private boolean isAmmo(ItemStack stack) {
         return stack.is(Items.ARROW) ||
                 stack.is(Items.ENDER_PEARL) ||
@@ -139,7 +163,12 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
                 stack.is(Items.SPECTRAL_ARROW) ||
                 stack.is(Items.TIPPED_ARROW) ||
                 stack.is(Items.FIREWORK_ROCKET) ||
-                stack.is(Items.TRIDENT);
+                stack.is(Items.TRIDENT) ||
+                stack.is(Items.SNOWBALL) ||
+                stack.is(Items.EGG) ||
+                stack.is(ModItems.endest_pearl.get())||
+                stack.is(Items.TNT);
+
     }
     //天堂箭
     private void shootInfnityArrow(Level level, Player player, float velocity, float inaccuracy) {
@@ -228,7 +257,39 @@ private void shootFireworkRocket(Level level, Player player, ItemStack fireworkI
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-
+    //雪球
+    private void shootSnowball(Level level, Player player) {
+        Snowball snowball = new Snowball(level, player);
+        snowball.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+        level.addFreshEntity(snowball);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+    //鸡蛋
+    private void shootEgg(Level level, Player player) {
+        ThrownEgg egg = new ThrownEgg(level, player);
+        egg.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+        level.addFreshEntity(egg);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.EGG_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+    //终望珍珠
+    private void shootEndestPearl(Level level, Player player) {
+        EndestPearlEntity pearl = new EndestPearlEntity(level, player);
+        pearl.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+        level.addFreshEntity(pearl);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.ENDER_PEARL_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+    //TNT
+    private void shootTNT(Level level, Player player) {
+        TNTProEntity tnt = new TNTProEntity(level, player.getX(), player.getEyeY(), player.getZ(), player);
+        Vec3 lookVec = player.getLookAngle();
+        tnt.setDeltaMovement(lookVec.scale(1.5D));
+        level.addFreshEntity(tnt);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
     @Override
     public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
         return enchantment == Enchantments.INFINITY_ARROWS ? 10 : 0;
