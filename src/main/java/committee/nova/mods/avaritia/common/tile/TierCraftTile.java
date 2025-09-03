@@ -38,6 +38,7 @@ public class TierCraftTile extends BaseInventoryTileEntity {
             tier = ModCraftTier.EXTREME;
         }
         this.inventory = new ItemStackWrapper(tier.size * tier.size, Integer.MAX_VALUE, this::setChangedAndDispatch);
+        this.inventory.setOutputSlots(tier.size * tier.size);
     }
 
     @Override
