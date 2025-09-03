@@ -1,0 +1,28 @@
+{
+  "type": "avaritia:infinity_catalyst",
+  "category": "misc",
+  "group": "default",
+  "ingredients": [
+    {
+      "item": "minecraft:bedrock"
+    },
+    {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    {
+      "item": "avaritia:neutron_ingot"
+    },
+    {
+      "item": "avaritia:cosmic_meatballs"
+    },
+    {
+      "item": "avaritia:ultimate_stew"
+    },
+    {
+      "item": "avaritia:endest_pearl"
+    },
+    {
+      "item": "avaritia:record_fragment"
+    }
+  ]
+}
