@@ -2,12 +2,13 @@ package committee.nova.mods.avaritia.common.item.singularity;
 
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.loading.FMLLoader;
 
 /**
  * Description:
@@ -37,7 +38,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
+        this(id, name, colors, ingredient, -1, !FabricLoader.getInstance().isDevelopmentEnvironment() ? ModConfig.singularityTimeRequired.get() : 240);
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
@@ -51,7 +52,7 @@ public class Singularity {
     }
 
     public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
+        this(id, name, colors, tag, -1, !FabricLoader.getInstance().isDevelopmentEnvironment() ? ModConfig.singularityTimeRequired.get() : 240);
     }
 
     public static Singularity read(FriendlyByteBuf buffer) {
@@ -103,7 +104,7 @@ public class Singularity {
 
     public Ingredient getIngredient() {
         if (this.tag != null && this.ingredient == Ingredient.EMPTY) {
-            var tag = ItemTags.create(new ResourceLocation(this.tag));
+            var tag = TagKey.create(Registries.ITEM, new ResourceLocation(this.tag));
             this.ingredient = Ingredient.of(tag);
         }
 

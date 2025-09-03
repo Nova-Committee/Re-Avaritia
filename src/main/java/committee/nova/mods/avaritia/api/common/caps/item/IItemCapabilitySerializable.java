@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.common.caps.item;
 
+import io.github.fabricators_of_create.porting_lib.core.util.INBTSerializable;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * @Project: Avaritia

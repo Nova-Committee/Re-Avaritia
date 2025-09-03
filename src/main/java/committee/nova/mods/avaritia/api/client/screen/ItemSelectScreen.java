@@ -29,7 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -73,7 +72,7 @@ public class ItemSelectScreen extends Screen {
      * 背包模式
      */
     private final boolean useInventoryMode;
-    private  boolean inventoryMode = false;
+    private boolean inventoryMode = false;
     /**
      * 输入框
      */
@@ -190,7 +189,6 @@ public class ItemSelectScreen extends Screen {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
         this.renderBackground(graphics);
@@ -448,7 +446,7 @@ public class ItemSelectScreen extends Screen {
                                         list1.add(1, modeTab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
                                     }
                                 }
-                                context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
+                                context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), (int) context.mouseX(), (int) context.mouseY());
                             }
                         });
                     } else {

@@ -3,9 +3,10 @@ package committee.nova.mods.avaritia.core.channel;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.screen.ChannelSelectScreen;
 import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,7 +22,7 @@ import java.util.UUID;
  * @CreateTime: 2025/2/28 12:32
  * @Description:
  */
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientChannelManager {
 

@@ -10,7 +10,6 @@ import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -53,7 +52,6 @@ public class AvaritiaModClient {
     }
 
 
-
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
         ModEntities.onClientSetup();
@@ -82,6 +80,7 @@ public class AvaritiaModClient {
                 ModItems.eternal_singularity.get()
         );
     }
+
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "endest_pearl_darkness", AvaritiaForgeClient.DARKNESS_OVERLAY);

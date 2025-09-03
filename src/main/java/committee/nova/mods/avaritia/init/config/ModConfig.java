@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
 
 /**
  * Description:
@@ -87,20 +86,20 @@ public class ModConfig {
         slotStackLimit = buildLong(common, "Slot Stack Limit", 4294967295L, 64L, 4294967295L, "Stack size limit of slot");
         maxPageLimit = buildInt(common, "Max Page Limit", 79536431, 2, 79536431, "Maximum page limit");
         resetMaxPage = buildInt(common, "Reset Max Page", 1, 1, 79536431, "*Recovery options* Reset the max page that is 0.");
-        inventoryRows =buildInt(common, "Inventory Rows", 6, 1, 6, "Inventory rows for multi page mode");
+        inventoryRows = buildInt(common, "Inventory Rows", 6, 1, 6, "Inventory rows for multi page mode");
         common.pop();
         common.push("channel");
         MAX_SIZE_PRE_CHANNEL = buildInt(common, "Channel Size", 32768, 2048, Integer.MAX_VALUE, "");
         MAX_CHANNELS_PRE_PLAYER = buildInt(common, "MaxPlayer Channels", 16, 4, 64, "");
         MAX_PUBLIC_CHANNELS = buildInt(common, "MaxPublic Channels", 128, 32, 1024, "");
-        CHANNEL_FAST_UPDATE_RATE = buildInt(common,  "FastUpdate Rate", 1, 1, 40, "");
+        CHANNEL_FAST_UPDATE_RATE = buildInt(common, "FastUpdate Rate", 1, 1, 40, "");
         CHANNEL_FULL_UPDATE_RATE = buildInt(common, "FullUpdate Rate", 40, 20, 1200, "");
         common.pop();
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
-        endlessItemEntitySpeed = buildDouble(common, "Endless Item Speed", 3,1,50, "Tracking Endless Item Speed");
-        endlessItemEntityRange = buildDouble(common, "Endless Item Range", 1000,1,10000, "Tracking Endless Item Range");
-        infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5,1,10, "Speed of Infinity Elytra");
+        endlessItemEntitySpeed = buildDouble(common, "Endless Item Speed", 3, 1, 50, "Tracking Endless Item Speed");
+        endlessItemEntityRange = buildDouble(common, "Endless Item Range", 1000, 1, 10000, "Tracking Endless Item Range");
+        infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5, 1, 10, "Speed of Infinity Elytra");
         common.pop();
         COMMON = common.build();
     }

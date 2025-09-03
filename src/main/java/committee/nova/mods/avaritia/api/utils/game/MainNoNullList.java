@@ -21,6 +21,7 @@ public class MainNoNullList extends NonNullList<ItemStack> {
     private final ISortContainer sortContainer;
     private final ItemStack initialElement;
     public final List<ItemStack> delegate;
+
     public static MainNoNullList of(List<ItemStack> list, ItemStack defaultValue, ISortContainer playerInventory) {
         Validate.notNull(defaultValue);
         return new MainNoNullList(list, defaultValue, playerInventory);
@@ -29,7 +30,7 @@ public class MainNoNullList extends NonNullList<ItemStack> {
     public static MainNoNullList ofSize(int size, ItemStack defaultValue, ISortContainer playerInventory) {
         Validate.notNull(defaultValue);
         ArrayList<ItemStack> list = Lists.newArrayList();
-        for (int i=0; i<size; ++i)
+        for (int i = 0; i < size; ++i)
             list.add(defaultValue);
         return new MainNoNullList(list, defaultValue, playerInventory);
     }

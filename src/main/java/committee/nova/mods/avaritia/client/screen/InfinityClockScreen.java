@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -41,13 +40,13 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
         int startY = guiTop + 22;
 
         // 修复按钮点击事件，添加玩家参数
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 0, startY, 17, 22, 0, 0));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, 6000));
+        addRenderableWidget(new TimeButton(startX + 0, startY, 17, 22, 0, 0));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing), startY, 41, 22, 1, 6000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, 12000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, 14000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22,4, 18000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22,5, 22000));
-        this.titleLabelX=62;
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, 18000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, 22000));
+        this.titleLabelX = 62;
         timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
         timeInput.setMaxLength(10);
         addRenderableWidget(timeInput);

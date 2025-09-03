@@ -1,9 +1,7 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
-import org.jetbrains.annotations.Nullable;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 
 /**
  * Description:
@@ -18,11 +16,7 @@ public class StarFuelItem extends ResourceItem {
 
     public StarFuelItem() {
         super(ModRarities.RARE, "star_fuel", true, new Properties().stacksTo(16));
-    }
-
-    @Override
-    public int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
-        return BURN_TIME;
+        FuelRegistry.INSTANCE.add(this, BURN_TIME);
     }
 
 }

@@ -13,6 +13,8 @@ import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTags;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -39,7 +41,6 @@ import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Npc;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
@@ -59,11 +60,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -111,9 +108,9 @@ public class ToolUtils {
     /**
      * 破坏方块
      *
-     * @param world    世界
-     * @param player   玩家
-     * @param pos      点击坐标
+     * @param world  世界
+     * @param player 玩家
+     * @param pos    点击坐标
      */
     public static void destroy(ServerLevel world, Player player, BlockPos pos) {
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -151,11 +148,13 @@ public class ToolUtils {
         }
         return true;
     }
+
     /**
      * 无尽镐And无尽铲破坏
-     * @param player 玩家
+     *
+     * @param player   玩家
      * @param startPos 起始坐标
-     * @param range 挖掘范围
+     * @param range    挖掘范围
      */
     public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
         ServerLevel world = player.serverLevel();
@@ -181,8 +180,8 @@ public class ToolUtils {
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
-                    ResourceLocation blockKey = ForgeRegistries.BLOCKS.getKey(state.getBlock());
-                    Item blockItem = ForgeRegistries.ITEMS.getValue(blockKey);
+                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
                     if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
@@ -285,7 +284,7 @@ public class ToolUtils {
             }
         }
 
-        if (owner != null && projectileAntiImmuneEntities.contains(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(target.getType())).toString())) {
+        if (owner != null && projectileAntiImmuneEntities.contains(Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType())).toString())) {
             damagesource = ModDamageTypes.causeRandomDamage(owner);
         }
         return damagesource;
@@ -485,7 +484,7 @@ public class ToolUtils {
                             player.level().addFreshEntity(lightningbolt);
                         }
                     }
-        });
+                });
     }
 
 
@@ -556,12 +555,12 @@ public class ToolUtils {
             Block block = state.getBlock();
             if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock)
                     && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state, false)
-                    && ForgeHooks.onCropsGrowPre(serverLevel, pos, state, true)
+//                    && ForgeHooks.onCropsGrowPre(serverLevel, pos, state, true)
             ) {
                 for (int i = 0; i < cost; i++) {
                     bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, pos, state);
                     serverLevel.levelEvent(2005, pos, 0);
-                    ForgeHooks.onCropsGrowPost(serverLevel, pos, state);
+//                    ForgeHooks.onCropsGrowPost(serverLevel, pos, state);
                 }
             }
         }
@@ -587,10 +586,10 @@ public class ToolUtils {
     /**
      * 连锁砍树
      *
-     * @param player   玩家
-     * @param world    世界
-     * @param pos      点击坐标
-     * @param state    方块状态
+     * @param player 玩家
+     * @param world  世界
+     * @param pos    点击坐标
+     * @param state  方块状态
      */
     public static void destroyTree(Player player, ServerLevel world, BlockPos pos, BlockState state) {
         List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
@@ -738,7 +737,7 @@ public class ToolUtils {
      */
     public static void shootBladeSlash(ItemStack stack, Player player) {
         Level world = player.level();
-        BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack));
+        BladeSlashEntity projectile = new BladeSlashEntity(world, player, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack));
         world.addFreshEntity(projectile);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
         player.swing(player.getUsedItemHand());
@@ -762,12 +761,13 @@ public class ToolUtils {
 
     /**
      * 加速方块实体和更新
-     * @param pos 被加速方块位置
-     * @param level 世界
-     * @param speed 速度
+     *
+     * @param pos         被加速方块位置
+     * @param level       世界
+     * @param speed       速度
      * @param randomTicks 随机刻
-     * from Torcherino
-     *已弃用
+     *                    from Torcherino
+     *                    已弃用
      */
     @Deprecated
     public static void speedBlockTick(BlockPos pos, ServerLevel level, int speed, int randomTicks) {
@@ -799,9 +799,10 @@ public class ToolUtils {
 
     /**
      * 加速方块实体和更新
+     *
      * @param level 世界
-     * @param pos 被加速方块位置
-     * @param be 被加速的实体
+     * @param pos   被加速方块位置
+     * @param be    被加速的实体
      * @param times 随机刻
      */
     @SuppressWarnings({"rawtypes", "unchecked"})

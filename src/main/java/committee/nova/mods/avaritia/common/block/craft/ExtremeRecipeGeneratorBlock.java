@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,7 @@ public class ExtremeRecipeGeneratorBlock extends BaseTileEntityBlock {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
             if (tile instanceof TierCraftTile table) {
-                NetworkHooks.openScreen(serverPlayer, table, pos);
+                serverPlayer.openMenu(table);
             }
         }
         return InteractionResult.SUCCESS;

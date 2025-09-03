@@ -4,13 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import committee.nova.mods.avaritia.api.utils.data.RawValue;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -38,7 +38,7 @@ public class Const {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
     public static final GameProfile AVARITIA_FAKE_PLAYER = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
-    public static final boolean curios = ModList.get().isLoaded("curios");
+    public static final boolean curios = FabricLoader.getInstance().isModLoaded("curios");
 
 
     public static ResourceLocation rl(String path) {
@@ -46,7 +46,7 @@ public class Const {
     }
 
     public static boolean isLoad(String name) {
-        return ModList.get().isLoaded(name);
+        return FabricLoader.getInstance().isModLoaded(name);
     }
 
     public static Ingredient getIngredient(String modid, String name) {
@@ -54,16 +54,16 @@ public class Const {
     }
 
     public static Item getItem(String modid, String name) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, name));
+        return BuiltInRegistries.ITEM.get(new ResourceLocation(modid, name));
     }
 
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {
-        if(curios) {
+        if (curios) {
             AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
             CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
                 s.set(curiosInventory.findCurios(is));
             });
-            if(!s.get().isEmpty())return map.apply(s.get().get(0).stack());
+            if (!s.get().isEmpty()) return map.apply(s.get().get(0).stack());
         }
         return def;
     }

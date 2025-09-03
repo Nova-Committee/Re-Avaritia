@@ -284,10 +284,9 @@ public class Cuboid6 implements Copyable<Cuboid6> {
         if (super.equals(obj)) {
             return true;
         }
-        if (!(obj instanceof Cuboid6)) {
+        if (!(obj instanceof Cuboid6 c)) {
             return false;
         }
-        Cuboid6 c = (Cuboid6) obj;
         return min.equals(c.min) && max.equals(c.max);
     }
 

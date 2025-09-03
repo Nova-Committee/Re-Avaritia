@@ -8,7 +8,7 @@ package committee.nova.mods.avaritia.api.common.crafting;
  */
 public interface ITierRecipe {
 
-    public int getTier();
+    int getTier();
 
-    public boolean hasRequiredTier();
+    boolean hasRequiredTier();
 }

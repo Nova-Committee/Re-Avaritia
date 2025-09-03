@@ -22,8 +22,9 @@ public interface ISwitchable {
         if (!stack.getOrCreateTagElement("mode").contains(funcName)) return false;
         return stack.getOrCreateTagElement("mode").getBoolean(funcName);
     }
+
     default boolean isActive(ItemStack stack, String funcName) {
-       return isMode(stack, funcName);
+        return isMode(stack, funcName);
     }
 
     default void switchMode(@NotNull Level world, Player player, @NotNull InteractionHand hand, String funcName) {
@@ -33,8 +34,8 @@ public interface ISwitchable {
         tags.putBoolean(funcName, !tags.getBoolean(funcName));
         if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
             serverPlayer.sendSystemMessage(
-                tags.getBoolean(funcName) ? ModTooltips.ACTIVE.args(funcTooltip).build() : ModTooltips.INACTIVE.args(funcTooltip).build()
-                , true);
+                    tags.getBoolean(funcName) ? ModTooltips.ACTIVE.args(funcTooltip).build() : ModTooltips.INACTIVE.args(funcTooltip).build()
+                    , true);
         player.swing(hand);
     }
 }

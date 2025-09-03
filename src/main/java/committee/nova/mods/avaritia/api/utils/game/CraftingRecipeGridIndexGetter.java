@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.api.utils.game;
 
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import java.util.ArrayList;
 

@@ -71,7 +71,7 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
-            if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
+            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
                 ItemUtils.clearEnchants(stack);
                 stack.enchant(Enchantments.BLOCK_FORTUNE, 3);
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
@@ -90,7 +90,7 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
 
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+    public @NotNull Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(@NotNull EquipmentSlot slot) {
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));

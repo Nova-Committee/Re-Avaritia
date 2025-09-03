@@ -1,8 +1,7 @@
 package committee.nova.mods.avaritia.api.common.caps.item;
 
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
 /**
  * @Project: Avaritia
@@ -32,7 +31,7 @@ public abstract class ItemCapability<CAP> {
     }
 
     protected CAP getItem() {
-        return (CAP)this.getStack().getItem();
+        return (CAP) this.getStack().getItem();
     }
 }
 

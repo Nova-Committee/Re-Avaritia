@@ -59,6 +59,7 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     public @NotNull IDrawable getIcon() {
         return icon;
     }
+
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull ExtremeSmithingRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 27, 23)

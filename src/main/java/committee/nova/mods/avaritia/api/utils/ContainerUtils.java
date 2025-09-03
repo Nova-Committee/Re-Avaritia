@@ -22,7 +22,6 @@ public class ContainerUtils {
     /**
      * Static default implementation for IInventory method
      */
-    @Nonnull
     public static ItemStack decrStackSize(Container inv, int slot, int size) {
         ItemStack item = inv.getItem(slot);
 
@@ -57,7 +56,7 @@ public class ContainerUtils {
     /**
      * @return The quantity of items from additions that can be added to base
      */
-    public static int incrStackSize(@Nonnull ItemStack base, @Nonnull ItemStack addition) {
+    public static int incrStackSize(ItemStack base, ItemStack addition) {
         if (canStack(base, addition)) {
             return incrStackSize(base, addition.getCount());
         }
@@ -68,7 +67,7 @@ public class ContainerUtils {
     /**
      * @return The quantity of items from additions that can be added to base
      */
-    public static int incrStackSize(@Nonnull ItemStack base, int addition) {
+    public static int incrStackSize(ItemStack base, int addition) {
         int totalSize = base.getCount() + addition;
 
         if (totalSize <= base.getMaxStackSize()) {
@@ -80,7 +79,7 @@ public class ContainerUtils {
         return 0;
     }
 
-    public static boolean areStacksIdentical(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {
+    public static boolean areStacksIdentical(ItemStack stack1, ItemStack stack2) {
         if (stack1.isEmpty() || stack2.isEmpty()) {
             return stack1 == stack2;
         }
@@ -88,7 +87,7 @@ public class ContainerUtils {
         return stack1.getItem() == stack2.getItem() && stack1.getDamageValue() == stack2.getDamageValue() && stack1.getCount() == stack2.getCount() && Objects.equal(stack1.getTag(), stack2.getTag());
     }
 
-    public static boolean canStack(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {
+    public static boolean canStack(ItemStack stack1, ItemStack stack2) {
         return stack1.isEmpty() || stack2.isEmpty() || (stack1.getItem() == stack2.getItem() && (stack2.getDamageValue() == stack1.getDamageValue()) && ItemStack.isSameItemSameTags(stack2, stack1)) && stack1.isStackable();
     }
 

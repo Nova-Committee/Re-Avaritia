@@ -62,7 +62,7 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
         );
         tag(ModTags.NEUTRON_BLOCK).add(ModBlocks.neutron.get());
         tag(ModTags.EXTREME_ANVIL_UNBREAK).add(
-          ModBlocks.dense_neutron_collector.get(), ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
+                ModBlocks.dense_neutron_collector.get(), ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
                 ModBlocks.extreme_crafting_table.get(), ModBlocks.extreme_smithing_table.get(), ModBlocks.neutron_compressor.get(),
                 ModBlocks.neutron.get(), ModBlocks.infinity.get(),
                 ModBlocks.infinity_chest.get(), ModBlocks.endless_cake.get(), ModBlocks.extreme_anvil.get()

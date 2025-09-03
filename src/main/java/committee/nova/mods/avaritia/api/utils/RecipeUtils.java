@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.Lib;
 import committee.nova.mods.avaritia.api.init.event.RecipeManagerLoadingEvent;
-import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -21,8 +20,9 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,7 +50,7 @@ public class RecipeUtils {
         recipeManager = manager;
     }
 
-    public static RecipeManager getRecipeManager(){
+    public static RecipeManager getRecipeManager() {
         return recipeManager;
     }
 

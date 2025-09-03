@@ -5,7 +5,6 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.widget.GradatedSlider;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
@@ -22,7 +21,10 @@ public class ValueSelectScreen extends Screen {
     private static final int screenHeight = 123;
 
     private final Component cached_title;
-    private int range, value, left, top;
+    private final int range;
+    private int value;
+    private int left;
+    private int top;
 
     protected ValueSelectScreen(Component pTitle, int range, int value) {
         super(pTitle);
@@ -60,8 +62,8 @@ public class ValueSelectScreen extends Screen {
         context.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
         RenderSystem.setShaderTexture(0, SCREEN_TEXTURE);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        context.blit(SCREEN_TEXTURE,left, top, 0, 0, screenWidth,screenHeight);
-        context.drawString(font, cached_title.getVisualOrderText(), (int) ((width - font.width(cached_title)) / 2.0f), top + 6, 4210752,false);
+        context.blit(SCREEN_TEXTURE, left, top, 0, 0, screenWidth, screenHeight);
+        context.drawString(font, cached_title.getVisualOrderText(), (int) ((width - font.width(cached_title)) / 2.0f), top + 6, 4210752, false);
         super.render(context, x, y, partialTicks);
     }
 

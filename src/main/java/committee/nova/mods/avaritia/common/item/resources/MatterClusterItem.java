@@ -4,8 +4,6 @@ import committee.nova.mods.avaritia.api.common.container.NoMenuContainer;
 import committee.nova.mods.avaritia.api.utils.ContainerUtils;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.api.utils.NBTUtils;
-import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -17,14 +15,12 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +42,7 @@ public class MatterClusterItem extends Item {
                 .rarity(ModRarities.RARE)
                 .stacksTo(1));
     }
+
     public static int getClusterSize(ItemStack cluster) {
         if (cluster.hasTag() || !cluster.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
             return Arrays.stream(readClusterInventory(cluster).items).mapToInt(ItemStack::getCount).sum();
@@ -181,7 +178,6 @@ public class MatterClusterItem extends Item {
         player.setItemInHand(hand, ItemStack.EMPTY);
         return InteractionResultHolder.success(ItemStack.EMPTY);
     }
-
 
 
 }

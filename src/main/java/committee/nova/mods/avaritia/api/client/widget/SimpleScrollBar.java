@@ -2,16 +2,14 @@ package committee.nova.mods.avaritia.api.client.widget;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @Project: Avaritia
@@ -19,7 +17,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @CreateTime: 2024/11/22 02:09
  * @Description:
  */
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public abstract class SimpleScrollBar extends AbstractWidget {
 
     @Getter
@@ -105,7 +103,6 @@ public abstract class SimpleScrollBar extends AbstractWidget {
     abstract public void beforeRender();
 
     @Override
-    @ParametersAreNonnullByDefault
     public void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.beforeRender();
         if (!this.visible) return;
@@ -115,7 +112,6 @@ public abstract class SimpleScrollBar extends AbstractWidget {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
         this.defaultButtonNarrationText(pNarrationElementOutput);
     }

@@ -30,7 +30,9 @@ public class NumberFormatUtil {
         assert number >= 0;
         String numberString = Long.toString(number);
         int numberSize = numberString.length();
-        if (numberSize <= width) { return numberString; }
+        if (numberSize <= width) {
+            return numberString;
+        }
 
         long base = number;
         double last = base * 1000;
@@ -48,7 +50,7 @@ public class NumberFormatUtil {
         }
 
         String withPrecision = format.format(last / DIVISION_BASE) + postFix;
-        String withoutPrecision = Long.toString(base) + postFix;
+        String withoutPrecision = base + postFix;
 
         String slimResult = (withPrecision.length() <= width) ? withPrecision : withoutPrecision;
         assert slimResult.length() <= width;

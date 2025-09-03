@@ -9,33 +9,45 @@ import committee.nova.mods.avaritia.api.utils.math.SortingType;
  * @Description:
  */
 public interface ISortContainer {
-    public int getDifferenceInAdditionalSlots();
+    int getDifferenceInAdditionalSlots();
 
-    /**Get additional slots for this player - always multiple of 9*/
-    public int getAdditionalSlots();
+    /**
+     * Get additional slots for this player - always multiple of 9
+     */
+    int getAdditionalSlots();
 
-    public void setAdditionalSlots(int additionalSlots);
+    void setAdditionalSlots(int additionalSlots);
 
-    /**Mark as needing to update additional slots of infinitory*/
-    public void needToUpdateInfinitorySize();
+    /**
+     * Mark as needing to update additional slots of infinitory
+     */
+    void needToUpdateInfinitorySize();
 
-    /**Mark as needing to sort inventory*/
-    public void needToSort();
+    /**
+     * Mark as needing to sort inventory
+     */
+    void needToSort();
 
-    /**Mark as needing to update client*/
+    /**
+     * Mark as needing to update client
+     */
     void needToUpdateClient();
 
-    public SortingType getSortingType();
+    SortingType getSortingType();
 
-    public void setSortingType(SortingType type);
+    void setSortingType(SortingType type);
 
-    public boolean getSortingAscending();
+    boolean getSortingAscending();
 
-    public void setSortAscending(boolean sortAscending);
+    void setSortAscending(boolean sortAscending);
 
-    /**Recalculate additional slots based on main and infinitory sizes / fullness*/
-    public void updateInfinitorySize();
+    /**
+     * Recalculate additional slots based on main and infinitory sizes / fullness
+     */
+    void updateInfinitorySize();
 
-    /**Sync additional slots, sorting type, and sorting ascending server -> client*/
-    public void syncInfinitoryValues();
+    /**
+     * Sync additional slots, sorting type, and sorting ascending server -> client
+     */
+    void syncInfinitoryValues();
 }

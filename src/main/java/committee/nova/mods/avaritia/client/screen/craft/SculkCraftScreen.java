@@ -28,6 +28,7 @@ public class SculkCraftScreen extends BaseContainerScreen<TierCraftMenu> {
         stack.drawString(font, title, 15, 72, 4210752, false);
         //stack.drawString(font, this.playerInventoryTitle, 39, this.imageHeight - 94, 4210752, false);
     }
+
     @Override
     protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
 

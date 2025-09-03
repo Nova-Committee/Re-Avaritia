@@ -93,7 +93,6 @@ public class EternalBakeModel extends WrappedItemModel {
     }
 
 
-
     @Override
     public @Nullable PerspectiveModelState getModelState() {
         return (PerspectiveModelState) this.parentState;

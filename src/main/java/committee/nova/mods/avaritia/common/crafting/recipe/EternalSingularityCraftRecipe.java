@@ -38,6 +38,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public static void invalidate() {
         INGREDIENTS_LOADED.clear();
     }
+
     @Override
     public boolean matches(@NotNull Container input, @NotNull Level level) {
         var ingredients = this.getIngredients();
@@ -63,6 +64,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         }
         return super.getIngredients();
     }
+
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();

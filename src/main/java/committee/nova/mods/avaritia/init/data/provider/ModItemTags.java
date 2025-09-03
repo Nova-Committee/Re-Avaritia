@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.core.HolderLookup;
@@ -10,7 +9,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 

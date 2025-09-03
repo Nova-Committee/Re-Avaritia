@@ -1,5 +1,7 @@
 package committee.nova.mods.avaritia.common.net;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
@@ -7,8 +9,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -48,7 +48,7 @@ public class S2CTotemPack {
     }
 
     //播放图腾动画，声音，粒子
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static void playTotem(ItemStack stack, int entityId) {
         Minecraft instance = Minecraft.getInstance();
         ClientLevel world = instance.level;

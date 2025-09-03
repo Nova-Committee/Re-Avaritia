@@ -18,8 +18,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 /**
  * Description:
  * Author: cnlimiter

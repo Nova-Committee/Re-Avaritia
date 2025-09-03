@@ -83,7 +83,7 @@ public class Matrix4 extends Transformation {
         Vector3 winPos = new Vector3();
         winPos.z = o.z();
 
-        winPos.x = o.x() * viewport.get(viewport.position() + 2) + viewport.get(viewport.position() + 0);
+        winPos.x = o.x() * viewport.get(viewport.position() + 2) + viewport.get(viewport.position());
         winPos.y = o.y() * viewport.get(viewport.position() + 3) + viewport.get(viewport.position() + 1);
         return winPos;
     }

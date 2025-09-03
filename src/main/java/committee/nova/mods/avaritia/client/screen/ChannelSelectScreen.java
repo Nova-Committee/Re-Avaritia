@@ -22,10 +22,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,12 +58,12 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     }
 
     public void blit(GuiGraphics pPoseStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        pPoseStack.blit(GUI_IMG, pX, pY, this.blitOffset, (float)pUOffset, (float)pVOffset, pUWidth, pVHeight, 256, 256);
+        pPoseStack.blit(GUI_IMG, pX, pY, this.blitOffset, (float) pUOffset, (float) pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void renderLabels(GuiGraphics stack, int i, int j) {}
+    protected void renderLabels(GuiGraphics stack, int i, int j) {
+    }
 
 
     @Override
@@ -90,7 +88,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pPoseStack);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
@@ -114,7 +111,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     protected void renderBg(GuiGraphics poseStack, float partialTick, int mouseX, int mouseY) {
         //RenderSystem.setShaderTexture(0, GUI_IMG);
         this.blit(poseStack, this.leftPos, this.topPos, 0, 0, imageWidth, 154);
@@ -145,7 +141,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         temp.sort((o1, o2) -> channelManager.publicChannels.get(o1[1]).compareTo(channelManager.publicChannels.get(o2[1])));
         filterChannels.addAll(temp);
 
-        scrollBar.setScrollTagSize( 10.0D / filterChannels.size() * 182);
+        scrollBar.setScrollTagSize(10.0D / filterChannels.size() * 182);
     }
 
     @Override
@@ -212,7 +208,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         @Override
         public void draggedTo(double scrolledOn) {
             if (filterChannels.size() <= 10) scrollAt = 0;
-            else scrollAt = Math.round((float) ( scrolledOn * (filterChannels.size() - 10) ));
+            else scrollAt = Math.round((float) (scrolledOn * (filterChannels.size() - 10)));
         }
 
         @Override
@@ -233,7 +229,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         }
 
         @Override
-        @ParametersAreNonnullByDefault
         public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             this.visible = buttonID + scrollAt < filterChannels.size();
             super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
@@ -269,7 +264,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         }
 
         @Override
-        @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             float uOffset = this.isHoveredOrFocused() ? 220.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 0, this.width, this.height, 256, 256);
@@ -295,7 +289,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         }
 
         @Override
-        @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 34, this.width, this.height, 256, 256);
@@ -312,7 +305,8 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
                     permissions = false;
                 }
                 list.add(Component.translatable("gui.avaritia.renameChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
-                if (!permissions) list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
+                if (!permissions)
+                    list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
             }
             if (this.isHovered) setTooltipForNextRenderPass(list);
         }
@@ -327,7 +321,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         }
 
         @Override
-        @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;
             pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, 18, this.width, this.height, 256, 256);
@@ -344,7 +337,8 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
                 }
                 list.add(Component.translatable("gui.avaritia.removeChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
                 list.add(Component.translatable("gui.avaritia.removeChannel.tip2").getVisualOrderText());
-                if (!permissions) list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
+                if (!permissions)
+                    list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
             }
             if (this.isHovered) setTooltipForNextRenderPass(list);
         }
@@ -359,7 +353,6 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
         }
 
         @Override
-        @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             List<FormattedCharSequence> list = new ArrayList<>();
             float uOffset = this.isHoveredOrFocused() ? 218.0F : 202.0F;

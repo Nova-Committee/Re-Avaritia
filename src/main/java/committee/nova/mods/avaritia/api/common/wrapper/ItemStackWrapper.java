@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.common.wrapper;
 
-
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.NonNullList;
@@ -10,7 +10,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -29,9 +29,11 @@ public class ItemStackWrapper implements BaseItemWrapper {
 
     private final Runnable onContentsChanged;
     private final Map<Integer, Integer> slotSizeMap;
-    @Setter private BiFunction<Integer, ItemStack, Boolean> slotValidator;
+    @Setter
+    private BiFunction<Integer, ItemStack, Boolean> slotValidator;
     private int maxStackSize;
-    @Getter private int[] outputSlots;
+    @Getter
+    private int[] outputSlots;
 
     public ItemStackWrapper(int size) {
         this(size, null);
@@ -71,8 +73,7 @@ public class ItemStackWrapper implements BaseItemWrapper {
         this.slotSizeMap = new HashMap<>();
     }
 
-    public void setSize(int size)
-    {
+    public void setSize(int size) {
         this.stacks = NonNullList.withSize(size, ItemStack.EMPTY);
     }
 
@@ -97,10 +98,8 @@ public class ItemStackWrapper implements BaseItemWrapper {
     @Override
     public CompoundTag serializeNBT() {
         ListTag nbtTagList = new ListTag();
-        for (int i = 0; i < stacks.size(); i++)
-        {
-            if (!stacks.get(i).isEmpty())
-            {
+        for (int i = 0; i < stacks.size(); i++) {
+            if (!stacks.get(i).isEmpty()) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt("Slot", i);
                 stacks.get(i).save(itemTag);
@@ -117,13 +116,11 @@ public class ItemStackWrapper implements BaseItemWrapper {
     public void deserializeNBT(CompoundTag nbt) {
         setSize(nbt.contains("Size", Tag.TAG_INT) ? nbt.getInt("Size") : stacks.size());
         ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); i++)
-        {
+        for (int i = 0; i < tagList.size(); i++) {
             CompoundTag itemTags = tagList.getCompound(i);
             int slot = itemTags.getInt("Slot");
 
-            if (slot >= 0 && slot < stacks.size())
-            {
+            if (slot >= 0 && slot < stacks.size()) {
                 stacks.set(slot, ItemStack.of(itemTags));
             }
         }
@@ -214,17 +211,15 @@ public class ItemStackWrapper implements BaseItemWrapper {
         if (!simulate) {
             if (existing.isEmpty()) {
                 this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
-            }
-            else {
+            } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
             onContentsChanged(slot);
         }
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount()- limit) : ItemStack.EMPTY;
+        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
-    public ItemStack extractItemSuper(int slot, int amount, boolean simulate)
-    {
+    public ItemStack extractItemSuper(int slot, int amount, boolean simulate) {
         if (amount == 0)
             return ItemStack.EMPTY;
         validateSlotIndex(slot);
@@ -237,12 +232,10 @@ public class ItemStackWrapper implements BaseItemWrapper {
                 this.stacks.set(slot, ItemStack.EMPTY);
                 onContentsChanged(slot);
                 return existing;
-            }
-            else {
+            } else {
                 return existing.copy();
             }
-        }
-        else {
+        } else {
             if (!simulate) {
                 this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
                 onContentsChanged(slot);
@@ -252,13 +245,11 @@ public class ItemStackWrapper implements BaseItemWrapper {
     }
 
 
-    protected int getStackLimit(int slot, @NotNull ItemStack stack)
-    {
+    protected int getStackLimit(int slot, @NotNull ItemStack stack) {
         return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
     }
 
-    protected void validateSlotIndex(int slot)
-    {
+    protected void validateSlotIndex(int slot) {
         if (slot < 0 || slot >= stacks.size())
             throw new RuntimeException("Slot " + slot + " not in valid range - [0," + stacks.size() + ")");
     }

@@ -18,6 +18,8 @@ import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
+import dev.architectury.registry.registries.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,9 +33,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -60,7 +59,7 @@ public class ModBlocks {
     public static RegistryObject<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> black_hole_chest = itemBlock("black_hole_chest", BlackHoleChestBlock::new, ModRarities.LEGEND);
-//    public static RegistryObject<Block> infinity_clock.json = itemBlock("infinity_clock.json", InfinityClockBlock::new, ModRarities.LEGEND);
+    //    public static RegistryObject<Block> infinity_clock.json = itemBlock("infinity_clock.json", InfinityClockBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
             () -> new BaseBlock(BlockBehaviour.Properties.of()
@@ -68,17 +67,17 @@ public class ModBlocks {
                     .sound(SoundType.GLASS)
             ), true,
             new Item.Properties().rarity(ModRarities.UNCOMMON)
-            );
+    );
     public static RegistryObject<Block> star_fuel_block = itemBurnBlock("star_fuel_block", () -> new BaseBlock(BlockBehaviour.Properties.of()
                     .strength(100F, 200F)
                     .sound(SoundType.STONE)
-            ),  true,
+            ), true,
             new Item.Properties().rarity(ModRarities.RARE), Integer.MAX_VALUE);
 
     public static RegistryObject<Block> refined_coal_block = itemBurnBlock("refined_coal_block", () -> new BaseBlock(BlockBehaviour.Properties.of()
                     .strength(50F, 50F)
                     .sound(SoundType.STONE)
-            ),  true,
+            ), true,
             new Item.Properties().rarity(ModRarities.UNCOMMON), RefinedCoalItem.BURN_TIME * 9);
 
     //MACHINE
@@ -102,13 +101,13 @@ public class ModBlocks {
     public static RegistryObject<Block> endless_cake = itemBlock("endless_cake", EndlessCakeBlock::new, ModRarities.UNCOMMON);
 
 
-    public static RegistryObject<Block> fake_bedrock = itemBlock("fake_bedrock", ()-> new Block(
+    public static RegistryObject<Block> fake_bedrock = itemBlock("fake_bedrock", () -> new Block(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .strength(1000F, 3600000.0F)
                     .isValidSpawn((state, level, pos, value) -> false)), false);
-    public static RegistryObject<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", ()-> new EndPortalFrameBlock(
+    public static RegistryObject<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new EndPortalFrameBlock(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
                     .instrument(NoteBlockInstrument.BASEDRUM)
@@ -148,7 +147,7 @@ public class ModBlocks {
 
     public static RegistryObject<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
         var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties){
+        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties) {
             @Override
             public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                 return burnTime;

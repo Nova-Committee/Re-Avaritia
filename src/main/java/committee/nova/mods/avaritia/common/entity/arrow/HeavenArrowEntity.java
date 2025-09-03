@@ -32,7 +32,7 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     public HeavenArrowEntity(Level world, Entity pShooter) {
-        this(world, pShooter, pShooter.getX(), pShooter.getEyeY() - (double)0.1F, pShooter.getZ());
+        this(world, pShooter, pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
         if (pShooter instanceof Player) {
             this.pickup = AbstractArrow.Pickup.ALLOWED;
         }

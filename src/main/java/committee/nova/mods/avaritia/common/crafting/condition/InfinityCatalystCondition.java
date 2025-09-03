@@ -3,8 +3,6 @@ package committee.nova.mods.avaritia.common.crafting.condition;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
 /**
  * Description:

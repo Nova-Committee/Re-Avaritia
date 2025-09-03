@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 import static net.minecraft.client.renderer.RenderStateShard.*;
-import static net.minecraft.client.renderer.RenderStateShard.NO_CULL;
 
 /**
  * @Project: Avaritia
@@ -94,7 +93,7 @@ public class AvaritiaRenderTypes {
     }
 
     public static RenderType armorMask(final ResourceLocation tex) {
-        return RenderType.create(Const.rl( "armor_mask").toString(),
+        return RenderType.create(Const.rl("armor_mask").toString(),
                 DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
                 RenderType.CompositeState.builder()
                         .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
@@ -108,7 +107,7 @@ public class AvaritiaRenderTypes {
     }
 
     public static RenderType armorMask2(final ResourceLocation tex) {
-        return RenderType.create(Const.rl( "armor_mask2").toString(),
+        return RenderType.create(Const.rl("armor_mask2").toString(),
                 DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
                 RenderType.CompositeState.builder()
                         .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))

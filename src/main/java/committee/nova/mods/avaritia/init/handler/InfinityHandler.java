@@ -22,7 +22,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
@@ -34,10 +33,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -46,13 +41,10 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
-
-import java.util.Set;
 
 /**
  * Description:
@@ -68,13 +60,13 @@ public class InfinityHandler {
         var level = event.getLevel();
         var pos = event.getPos();
         var state = level.getBlockState(pos);
-        var player= event.getEntity();
+        var player = event.getEntity();
         var face = event.getFace();
         if (face == null || level.isClientSide || item.isEmpty() || player.isCreative()) {
             return;
         }
 
-        if (item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get())){
+        if (item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get())) {
             if (state.is(Blocks.BEDROCK)) {
                 level.setBlock(pos, ModBlocks.fake_bedrock.get().defaultBlockState(), 2);
             } else if (state.is(Blocks.END_PORTAL_FRAME)) {
@@ -84,7 +76,7 @@ public class InfinityHandler {
             }
         }
 
-        if (!(item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get()))){
+        if (!(item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get()))) {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
@@ -94,6 +86,7 @@ public class InfinityHandler {
             }
         }
     }
+
     @SubscribeEvent
     public static void onPlayerMine(BlockEvent.BreakEvent event) {
         if (event.getLevel().isClientSide()) return;
@@ -125,7 +118,7 @@ public class InfinityHandler {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
                 if (ISwitchable.isMode(held, "infinity_pickaxe_hammer")
-                        ||  ISwitchable.isMode(held,"infinity_shovel_destroyer")) {
+                        || ISwitchable.isMode(held, "infinity_shovel_destroyer")) {
                     event.setNewSpeed(event.getNewSpeed() * 0.5F);
                 }
             }
@@ -162,7 +155,7 @@ public class InfinityHandler {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
         if (ModConfig.isSwordAttackEndless.get() && event.getItemStack().getItem() instanceof InfinitySwordItem swordItem) {
@@ -291,7 +284,7 @@ public class InfinityHandler {
         Block block = event.getState().getBlock();
         BlockState state = event.getState();
         if (
-                ( tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
+                (tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
                         && tool.getItem() instanceof ISwitchable switchable
         ) {
             if (switchable.isActive(tool, "smelt"))

@@ -4,18 +4,18 @@ import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.shader.CCShaderInstance;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -66,7 +66,7 @@ public class AvaritiaShaders {
         event.registerShader(ETERNAL_SHADER, AvaritiaShaders::eternalShader);
     }
 
-    public static void cosmicShader(ShaderInstance e){
+    public static void cosmicShader(ShaderInstance e) {
         COSMIC_SHADER = (CCShaderInstance) e;
         cosmicTime = Objects.requireNonNull(COSMIC_SHADER.getUniform("time"));
         cosmicYaw = Objects.requireNonNull(COSMIC_SHADER.getUniform("yaw"));
@@ -80,7 +80,7 @@ public class AvaritiaShaders {
         });
     }
 
-    public static void cosmicArmorShader(ShaderInstance e){
+    public static void cosmicArmorShader(ShaderInstance e) {
         COSMIC_ARMOR_SHADER = (CCShaderInstance) e;
         cosmicArmorTime = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("time"));
         cosmicArmorYaw = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("yaw"));
@@ -94,7 +94,7 @@ public class AvaritiaShaders {
         });
     }
 
-    public static void eternalShader(ShaderInstance e){
+    public static void eternalShader(ShaderInstance e) {
         ETERNAL_SHADER = (CCShaderInstance) e;
         eternalTime = Objects.requireNonNull(ETERNAL_SHADER.getUniform("time"));
         eternalYaw = Objects.requireNonNull(ETERNAL_SHADER.getUniform("yaw"));
@@ -122,13 +122,13 @@ public class AvaritiaShaders {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @SubscribeEvent
     public static void drawScreenPre(final ScreenEvent.Render.Pre e) {
         AvaritiaShaders.inventoryRender = true;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @SubscribeEvent
     public static void drawScreenPost(final ScreenEvent.Render.Post e) {
         AvaritiaShaders.inventoryRender = false;

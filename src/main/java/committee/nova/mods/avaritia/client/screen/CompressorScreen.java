@@ -31,8 +31,8 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
     @Override
     protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+        int x = this.leftPos;
+        int y = this.topPos;
         if (pMouseX > x + 63 && pMouseX < x + 79 && pMouseY > y + 35 && pMouseY < y + 51) {
             List<Component> tooltip = new ArrayList<>();
 
@@ -62,8 +62,8 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
     @Override
     protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+        int x = this.leftPos;
+        int y = this.topPos;
 
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
@@ -79,7 +79,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     }
 
     private Component getMaterialStackDisplayName() {
-        var level = this.getMinecraft().level;
+        var level = this.minecraft.level;
 
         if (level != null) {
             var container = this.getMenu();
@@ -96,7 +96,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
     }
 
     private NeutronCompressorTile getTileEntity() {
-        var level = this.getMinecraft().level;
+        var level = this.minecraft.level;
 
         if (level != null) {
             var tile = level.getBlockEntity(this.getMenu().getBlockPos());

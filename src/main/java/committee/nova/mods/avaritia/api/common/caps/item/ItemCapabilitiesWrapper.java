@@ -1,11 +1,9 @@
 package committee.nova.mods.avaritia.api.common.caps.item;
 
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +24,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
         this.itemStack = stack;
         this.capabilities = new ItemCapability[capabilities.size()];
 
-        for(int i = 0; i < capabilities.size(); ++i) {
+        for (int i = 0; i < capabilities.size(); ++i) {
             ItemCapability<?> cap = (capabilities.get(i)).get();
             this.capabilities[i] = cap;
             cap.setWrapper(this);
@@ -38,7 +36,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
         this.itemStack = stack;
         this.capabilities = capabilities;
 
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             cap.setWrapper(this);
         }
 
@@ -50,7 +48,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
 
     @Override
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             if (capability == cap.getCapability()) {
                 return cap.getLazyCapability().cast();
             }
@@ -63,7 +61,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
     public CompoundTag serializeNBT() {
         CompoundTag serializedNBT = new CompoundTag();
 
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             if (cap instanceof IItemCapabilitySerializable serializableCap) {
                 serializedNBT.put(serializableCap.getStorageKey(), serializableCap.serializeNBT());
             }
@@ -74,7 +72,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             if (cap instanceof IItemCapabilitySerializable serializableCap) {
                 if (nbt.contains(serializableCap.getStorageKey())) {
                     serializableCap.deserializeNBT(nbt.get(serializableCap.getStorageKey()));

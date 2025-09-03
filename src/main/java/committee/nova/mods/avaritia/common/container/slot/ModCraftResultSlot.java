@@ -59,9 +59,7 @@ public class ModCraftResultSlot extends Slot {
     @Override
     public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
         this.checkTakeAchievements(stack);
-        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(player);
         NonNullList<ItemStack> remaining = player.level().getRecipeManager().getRemainingItemsFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), this.craftSlots, player.level());
-        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
 
         for (int i = 0; i < remaining.size(); i++) {
             var slotStack = this.craftSlots.getItem(i);
@@ -88,10 +86,8 @@ public class ModCraftResultSlot extends Slot {
 
     @Override
     protected void checkTakeAchievements(@NotNull ItemStack pStack) {
-        if (this.removeCount > 0) {
+        if (this.removeCount > 0)
             pStack.onCraftedBy(this.player.level(), this.player, this.removeCount);
-            net.minecraftforge.event.ForgeEventFactory.firePlayerCraftingEvent(this.player, pStack, this.craftSlots);
-        }
 
         if (this.container instanceof RecipeHolder recipeholder) {
             recipeholder.awardUsedRecipes(this.player, this.craftSlots.getItems());

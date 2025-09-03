@@ -15,18 +15,16 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.searchtree.SearchTree;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.*;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Quaternionf;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -122,12 +120,12 @@ public class EntitySelectScreen extends Screen {
     // endregion 滚动条相关
 
     public EntitySelectScreen(@NonNull Screen callbackScreen, @NonNull Consumer<EntityType<?>> onDataReceived
-                            ) {
+    ) {
         this(callbackScreen, onDataReceived, null);
     }
 
     public EntitySelectScreen(@NonNull Screen callbackScreen, @NonNull Consumer<EntityType<?>> onDataReceived,
-                             Supplier<Boolean> shouldClose
+                              Supplier<Boolean> shouldClose
 
     ) {
         super(Component.literal("SelectScreen"));
@@ -171,7 +169,6 @@ public class EntitySelectScreen extends Screen {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
         this.renderBackground(graphics);
@@ -281,7 +278,7 @@ public class EntitySelectScreen extends Screen {
     }
 
     private List<EntityType<?>> getAllItemList() {
-        return new ArrayList<>(ForgeRegistries.ENTITY_TYPES.getValues().stream().toList());
+        return new ArrayList<>(BuiltInRegistries.ENTITY_TYPE.stream().toList());
     }
 
     /**
@@ -337,7 +334,7 @@ public class EntitySelectScreen extends Screen {
                         double itemY = itemBgY + i1 * (GuiUtils.ENTITY_ICON_SIZE + margin);
                         // 绘制背景
                         int bgColor;
-                        if (context.button().isHovered() || entityType.getDescriptionId().equalsIgnoreCase(this.getSelectedEntityId().toString())) {
+                        if (context.button().isHovered() || entityType.getDescriptionId().equalsIgnoreCase(this.getSelectedEntityId())) {
                             bgColor = 0xEE7CAB7C;
                         } else {
                             bgColor = 0xEE707070;
@@ -346,14 +343,14 @@ public class EntitySelectScreen extends Screen {
                                 .setId(entityType.getDescriptionId());
 
                         GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), bgColor);
-                        InventoryScreen.renderEntityInInventory(context.graphics(), (int) context.button().getX() + 1, (int) context.button().getY() + 1, 50, ARMOR_STAND_ANGLE, (Quaternionf) null, (LivingEntity) entityType.create(Minecraft.getInstance().level));
+                        InventoryScreen.renderEntityInInventory(context.graphics(), (int) context.button().getX() + 1, (int) context.button().getY() + 1, 50, ARMOR_STAND_ANGLE, null, (LivingEntity) entityType.create(Minecraft.getInstance().level));
                         //context.graphics().renderItem(itemStack, (int) context.button().getX() + 1, (int) context.button().getY() + 1);
                         // 绘制物品详情悬浮窗
                         context.button().setCustomPopupFunction(() -> {
                             if (context.button().isHovered()) {
                                 List<Component> list1 = Lists.newArrayList(entityType.getDescription());
-                                
-                               // context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
+
+                                // context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
                             }
                         });
                     } else {
@@ -401,7 +398,7 @@ public class EntitySelectScreen extends Screen {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             this.selectedEntityId = bt.getId();
             if (StringUtils.isNotNullOrEmpty(this.selectedEntityId)) {
-                this.currentEntity = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(selectedEntityId));
+                this.currentEntity = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(selectedEntityId));
                 //LOGGER.debug("Select item: {}", ItemRewardParser.getDisplayName(this.currentItem));
                 flag.set(true);
 

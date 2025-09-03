@@ -3,7 +3,9 @@ package committee.nova.mods.avaritia.common.item.misc;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.wrappers.InfinityBucketWrapper;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -24,14 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,7 +85,7 @@ public class InfinityBucketItem extends ResourceItem {
         }
 
         ResourceLocation fluidName = new ResourceLocation(nbt.getString(FLUID_ID_KEY));
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
+        Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
         if (fluid == null) {
             return FluidStack.EMPTY;
         }
@@ -110,7 +104,7 @@ public class InfinityBucketItem extends ResourceItem {
     @NotNull
     public static String getFluidName(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidName = ForgeRegistries.FLUIDS.getKey(fluid);
+        ResourceLocation fluidName = BuiltInRegistries.FLUID.getKey(fluid);
         if (fluidName == null) return "";
         return fluidName.toString();
     }

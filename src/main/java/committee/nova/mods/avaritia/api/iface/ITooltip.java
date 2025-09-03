@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface ITooltip {
 
-    public default void appendTooltip(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced, @NotNull String name) {
+    default void appendTooltip(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced, @NotNull String name) {
         pTooltipComponents.add(Component.literal(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + I18n.get("tooltip." + name + ".desc")));
     }
 }

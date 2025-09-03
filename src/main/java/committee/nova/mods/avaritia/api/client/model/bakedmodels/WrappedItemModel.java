@@ -22,10 +22,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -105,11 +104,6 @@ public abstract class WrappedItemModel implements PerspectiveModel {
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
         return this.wrapped.getParticleIcon();
-    }
-
-    @Override
-    public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        return this.wrapped.getParticleIcon(data);
     }
 
     @Override

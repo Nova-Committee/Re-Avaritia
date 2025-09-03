@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.client.shader.objects;
 
-import committee.nova.mods.avaritia.api.client.shader.*;
+import committee.nova.mods.avaritia.api.client.shader.ShaderConstantCache;
 import committee.nova.mods.avaritia.api.client.shader.base.ConstantCache;
 import committee.nova.mods.avaritia.api.client.shader.base.UniformPair;
 import committee.nova.mods.avaritia.api.client.shader.types.BinaryType;

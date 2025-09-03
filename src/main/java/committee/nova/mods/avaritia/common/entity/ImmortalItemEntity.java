@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.entity;
 
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -10,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeConfigSpec;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,13 +20,13 @@ import org.jetbrains.annotations.NotNull;
 public class ImmortalItemEntity extends ItemEntity {
 
 
-
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
         this.pickupDelay = 5;
         this.lifespan = 3600;
         this.setUnlimitedLifetime();
     }
+
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
         ImmortalItemEntity entity = type.create(level);
         if (entity != null) {
@@ -70,6 +68,7 @@ public class ImmortalItemEntity extends ItemEntity {
             }
         }
     }
+
     @Override
     public void remove(@NotNull RemovalReason pReason) {
         super.remove(pReason);

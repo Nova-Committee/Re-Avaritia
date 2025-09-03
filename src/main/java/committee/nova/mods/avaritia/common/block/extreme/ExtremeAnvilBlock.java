@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.block.extreme;
 
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
-import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTags;
+import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * @CreateTime: 2024/12/21 17:12
  * @Description:
  */
-public class ExtremeAnvilBlock extends FallingBlock{
+public class ExtremeAnvilBlock extends FallingBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape BASE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D);
     private static final VoxelShape X_LEG1 = Block.box(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D);

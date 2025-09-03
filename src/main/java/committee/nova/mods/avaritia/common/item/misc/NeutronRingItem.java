@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * @CreateTime: 2024/8/2 上午12:32
  * @Description:
  */
-public class NeutronRingItem extends ResourceItem{
+public class NeutronRingItem extends ResourceItem {
     public NeutronRingItem() {
         super(ModRarities.EPIC, "neutron_ring", true, new Properties().stacksTo(1));
     }
@@ -33,7 +33,7 @@ public class NeutronRingItem extends ResourceItem{
     public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, @NotNull Player playerIn, @NotNull InteractionHand handIn) {
         if (!worldIn.isClientSide && !playerIn.isCrouching()) {
             int slot = handIn == InteractionHand.MAIN_HAND ? playerIn.getInventory().selected : 40;
-            NetworkHooks.openScreen((ServerPlayer) playerIn,
+            playerIn.openMenu((ServerPlayer) playerIn,
                     new SimpleMenuProvider((id, playerInventory, player) -> new NeutronRingMenu(id, playerInventory, slot), Component.translatable("item.avaritia.neutron_ring")),
                     buf -> buf.writeInt(slot));
         }

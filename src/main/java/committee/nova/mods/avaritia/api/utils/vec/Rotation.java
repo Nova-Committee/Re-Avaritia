@@ -18,7 +18,8 @@ public class Rotation extends Transformation {
             new Vector3(0, 0, 1),
             new Vector3(-1, 0, 0),
             new Vector3(1, 0, 0)
-    };    /**
+    };
+    /**
      * Clockwise pi/2 about y looking down
      */
     public static Transformation[] quarterRotations = new Transformation[]{
@@ -71,7 +72,8 @@ public class Rotation extends Transformation {
             1, 4, 0, 5,
             1, 2, 0, 3,
             1, 3, 0, 2
-    };    public static Transformation[] sideRotations = new Transformation[]{
+    };
+    public static Transformation[] sideRotations = new Transformation[]{
             RedundantTransformation.INSTANCE,
             new VariableTransformation(new Matrix4(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)) {
                 @Override
@@ -309,8 +311,6 @@ public class Rotation extends Transformation {
     public Rotation copy() {
         return new Rotation(this);
     }
-
-
 
 
 }

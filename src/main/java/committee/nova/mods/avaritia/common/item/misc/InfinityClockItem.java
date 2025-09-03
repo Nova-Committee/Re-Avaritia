@@ -9,9 +9,9 @@ import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -25,11 +25,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -90,8 +88,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         }
 
 
-        NetworkHooks.openScreen((ServerPlayer) player,
-                new SimpleMenuProvider(
+        player.openMenu(new SimpleMenuProvider(
                         (id, inv, buf) -> new InfinityClockMenu(id, inv),
                         Component.translatable("item.avaritia.infinity_clock")
                 )
@@ -256,7 +253,6 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                 }
             }
         }
-
 
 
         private static void removeDisplayEntity(Level level, BlockPos pos) {

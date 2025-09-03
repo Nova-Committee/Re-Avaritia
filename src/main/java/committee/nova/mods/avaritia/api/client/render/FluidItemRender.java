@@ -2,6 +2,9 @@ package committee.nova.mods.avaritia.api.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
@@ -9,10 +12,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -22,7 +21,7 @@ import org.lwjgl.opengl.GL11;
  * @CreateTime: 2025/2/28 13:55
  * @Description:
  */
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public final class FluidItemRender {
 
     private final ResourceLocation texture;
@@ -147,7 +146,7 @@ public final class FluidItemRender {
         } else {
             RenderSystem.disableBlend();
         }
-       // RenderSystem.enableTexture();
+        // RenderSystem.enableTexture();
         BufferUploader.drawWithShader(bufferbuilder.end());
     }
 

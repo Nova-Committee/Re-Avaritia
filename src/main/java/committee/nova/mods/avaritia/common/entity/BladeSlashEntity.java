@@ -12,7 +12,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -108,7 +107,7 @@ public class BladeSlashEntity extends Projectile {
         }
         this.hitEntities(this.level(), start, end);
 
-        if (blockCollision && !ForgeEventFactory.onProjectileImpact(this, blockResult)) {
+        if (blockCollision) { //&& !ForgeEventFactory.onProjectileImpact(this, blockResult)) {
             this.onHitBlock(blockResult);
         }
     }
@@ -119,7 +118,7 @@ public class BladeSlashEntity extends Projectile {
 
     protected void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
         EntityUtils.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
-                .filter(result -> !ForgeEventFactory.onProjectileImpact(this, result))
+//                .filter(result -> !ForgeEventFactory.onProjectileImpact(this, result))
                 .forEach(this::onHitEntity);
     }
 }

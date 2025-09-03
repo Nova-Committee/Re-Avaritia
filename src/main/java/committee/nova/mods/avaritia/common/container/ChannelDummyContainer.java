@@ -4,9 +4,9 @@ import committee.nova.mods.avaritia.common.menu.ChannelMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import committee.nova.mods.avaritia.util.StorageUtils.ViewType;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,8 +64,7 @@ public class ChannelDummyContainer extends SimpleContainer {
         if (sortedObject.size() <= (this.menu.craftingMode ? 77 : 99)) {
             viewingObject.clear();
             viewingObject.addAll(sortedObject);
-        }
-        else {
+        } else {
             int i = (int) Math.ceil(sortedObject.size() / 11.0D);
             i -= this.menu.craftingMode ? 7 : 9;
             int j = Math.round(i * (float) scrollTo);
@@ -102,8 +101,7 @@ public class ChannelDummyContainer extends SimpleContainer {
                     for (String itemName : sortedItems) if (itemName.contains(s)) temp.add(itemName);
                     for (String fluidName : sortedFluids) if (fluidName.contains(s)) temp1.add(fluidName);
                     for (String energyName : sortedEnergies) if (energyName.contains(s)) temp2.add(energyName);
-                }
-                else if (head == '$') {
+                } else if (head == '$') {
                     String s = this.menu.filter.substring(1);
                     for (String itemName : sortedItems) {
                         ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
@@ -116,27 +114,29 @@ public class ChannelDummyContainer extends SimpleContainer {
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     for (String itemName : sortedItems) {
                         if (itemName.contains(this.menu.filter)) temp.add(itemName);
                         else {
                             ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
-                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp.add(itemName);
+                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter))
+                                temp.add(itemName);
                         }
                     }
                     for (String fluidName : sortedFluids) {
                         if (fluidName.contains(this.menu.filter)) temp1.add(fluidName);
                         else {
                             FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(fluidName), 1);
-                            if (fluidStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp1.add(fluidName);
+                            if (fluidStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter))
+                                temp1.add(fluidName);
                         }
                     }
                     for (String energyName : sortedEnergies) {
                         if (energyName.contains(this.menu.filter)) temp2.add(energyName);
                         else {
                             ItemStack itemStack = new ItemStack(StorageUtils.getItem(energyName));
-                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter)) temp2.add(energyName);
+                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter))
+                                temp2.add(energyName);
                         }
                     }
                 }
@@ -222,27 +222,22 @@ public class ChannelDummyContainer extends SimpleContainer {
                         else if (count < 1000000000000000000L) stringCount += "T";
                         else stringCount += "P";
                         formatCount.add(j, stringCount);
-                    }
-                    else formatCount.add(j, "MAX");
-                }
-                else {
+                    } else formatCount.add(j, "MAX");
+                } else {
                     //叠堆数为1避开原版的数字渲染
                     if (fullUpdate) this.setItem(j, new ItemStack(StorageUtils.getItem(id)));
                     long count;
                     if (viewingObject.get(j)[0].equals("item")) {
                         if (this.menu.channel.storageItems.containsKey(id)) {
                             count = this.menu.channel.storageItems.get(id);
-                        }
-                        else {
+                        } else {
                             formatCount.add(j, "§c0");
                             continue;
                         }
-                    }
-                    else {
+                    } else {
                         if (this.menu.channel.storageEnergies.containsKey(id)) {
                             count = this.menu.channel.storageEnergies.get(id);
-                        }
-                        else {
+                        } else {
                             formatCount.add(j, "§c0");
                             continue;
                         }
@@ -262,11 +257,9 @@ public class ChannelDummyContainer extends SimpleContainer {
                         formatCount.add(j, stringCount);
                         // 9,223,372,036,854,775,807L
                         // e  p   t   g   m   k
-                    }
-                    else formatCount.add(j, "MAX");
+                    } else formatCount.add(j, "MAX");
                 }
-            }
-            else this.setItem(j, ItemStack.EMPTY);
+            } else this.setItem(j, ItemStack.EMPTY);
         }
     }
 

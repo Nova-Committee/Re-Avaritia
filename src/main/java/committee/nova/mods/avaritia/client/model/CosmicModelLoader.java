@@ -4,15 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,7 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(BlockModel context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation, boolean b) {
             BakedModel baseBakedModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, true);
             List<ResourceLocation> textures = new ArrayList<>();
             this.maskTextures.forEach(mask -> textures.add(new ResourceLocation(mask)));
@@ -69,9 +68,8 @@ public class CosmicModelLoader implements IGeometryLoader<CosmicModelLoader.Cosm
         }
 
         @Override
-        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, BlockModel context) {
             this.baseModel.resolveParents(modelGetter);
         }
-
     }
 }

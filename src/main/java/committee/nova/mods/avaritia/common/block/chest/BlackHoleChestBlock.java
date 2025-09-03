@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import com.google.common.collect.ImmutableMap;
-import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
-import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
+import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
+import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -43,7 +43,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +64,7 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
     private final ImmutableMap<BlockState, VoxelShape> shapesCache;
+
     public BlackHoleChestBlock() {
         super(Properties.of()
                 .mapColor(MapColor.GOLD)
@@ -138,7 +138,8 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
                 UUID ownerUUID = nbt.getUUID("owner");
                 String ownerName = ClientChannelManager.getInstance().getUserName(nbt.getUUID("owner"));
                 boolean lock = nbt.getBoolean("locked");
-                if (selfUUID.equals(ownerUUID)) pTooltip.add(Component.translatable("gui.avaritia.owner", "§a" + ownerName));
+                if (selfUUID.equals(ownerUUID))
+                    pTooltip.add(Component.translatable("gui.avaritia.owner", "§a" + ownerName));
                 else if (lock) pTooltip.add(Component.translatable("gui.avaritia.owner", "§c" + ownerName));
                 else pTooltip.add(Component.translatable("gui.avaritia.owner", ownerName));
             }
@@ -162,10 +163,10 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
                 }
 
                 if (chestTile.getChannelInfo() == null)
-                    NetworkHooks.openScreen((ServerPlayer) player, new ChannelMenuProvider(chestTile), buf -> {
-                    });
+                    player.openMenu(new ChannelMenuProvider(chestTile, buf -> {
+                    }));
                 else {
-                    NetworkHooks.openScreen((ServerPlayer) player, new ChannelMenuProvider(chestTile), buf -> {
+                    player.openMenu(new ChannelMenuProvider(chestTile, buf -> {
                         buf.writeBlockPos(pos);
                         buf.writeInt(-2);
                         buf.writeUUID(chestTile.getOwner());
@@ -176,7 +177,7 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
                         buf.writeByte(chestTile.getViewType());
                         buf.writeUUID(chestTile.getChannelOwner());
                         buf.writeInt(chestTile.getChannelID());
-                    });
+                    }));
                 }
             }
         }

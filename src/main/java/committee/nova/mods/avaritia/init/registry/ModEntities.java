@@ -2,23 +2,21 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
-import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRenderer;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import dev.architectury.registry.registries.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Description:
@@ -47,7 +45,6 @@ public class ModEntities {
                     .sized(0.5F, 0.5F)
                     .clientTrackingRange(4)
                     .updateInterval(20)
-                    .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "heaven_arrow").toString()));
 
     public static final RegistryObject<EntityType<HeavenSubArrowEntity>> HEAVEN_SUB_ARROW = ENTITIES.register("heaven_sub_arrow",
@@ -55,7 +52,6 @@ public class ModEntities {
                     .sized(0.5F, 0.5F)
                     .clientTrackingRange(4)
                     .updateInterval(20)
-                    .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "heaven_sub_arrow").toString()));
 
     public static final RegistryObject<EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
@@ -63,7 +59,6 @@ public class ModEntities {
                     .sized(0.5F, 0.5F)
                     .fireImmune()
                     .noSummon()
-                    .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "trace_arrow").toString()));
 
     public static final RegistryObject<EntityType<InfinityGolem>> INFINITY_GOLEM = ENTITIES.register("infinity_golem",
@@ -71,37 +66,36 @@ public class ModEntities {
                     .sized(1.4F, 2.7F)
                     .clientTrackingRange(10)
                     .fireImmune()
-                    .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "infinity_golem").toString()));
 
     public static final RegistryObject<EntityType<FireBallEntity>> FIRE_BALL = ENTITIES.register("fire_ball",
             () -> EntityType.Builder.of(FireBallEntity::new, MobCategory.MISC)
-                    .setTrackingRange(256)
-                    .setUpdateInterval(10)
+                    .clientTrackingRange(256)
+                    .updateInterval(10)
                     .build(new ResourceLocation(Const.MOD_ID, "fire_ball").toString()));
 
     public static final RegistryObject<EntityType<BladeSlashEntity>> BLADE_SLASH = ENTITIES.register("blade_slash",
             () -> EntityType.Builder.<BladeSlashEntity>of(BladeSlashEntity::new, MobCategory.MISC)
                     .sized(3F, 0.5F)
-                    .setUpdateInterval(10)
+                    .updateInterval(10)
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "blade_slash").toString()));
     public static final RegistryObject<EntityType<SunProEntity>> SUN_PRO = ENTITIES.register("sun_pro",
-            () -> EntityType.Builder.<SunProEntity>of(SunProEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.of(SunProEntity::new, MobCategory.MISC)
                     .sized(0.75f, 0.75f)
-                    .setUpdateInterval(10)
+                    .updateInterval(10)
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "sun_pro").toString()));
     public static final RegistryObject<EntityType<RainProEntity>> RAIN_PRO = ENTITIES.register("rain_pro",
-            () -> EntityType.Builder.<RainProEntity>of(RainProEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.of(RainProEntity::new, MobCategory.MISC)
                     .sized(0.75f, 0.75f)
-                    .setUpdateInterval(10)
+                    .updateInterval(10)
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "rain_pro").toString()));
     public static final RegistryObject<EntityType<StormProEntity>> STORM_PRO = ENTITIES.register("storm_pro",
-            () -> EntityType.Builder.<StormProEntity>of(StormProEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.of(StormProEntity::new, MobCategory.MISC)
                     .sized(0.75f, 0.75f)
-                    .setUpdateInterval(10)
+                    .updateInterval(10)
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "storm_pro").toString()));
 
@@ -111,7 +105,8 @@ public class ModEntities {
                     .sized(0.1f, 0.1f)
                     .build(new ResourceLocation("avariita", "accelerator_display").toString())
             );
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public static void onClientSetup() {
         EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);
         EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);

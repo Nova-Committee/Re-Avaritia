@@ -12,7 +12,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +38,6 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,7 +112,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof InfinityChestTile chestTile) {
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {buf.writeBlockPos(pos);});
+                player.openMenu(chestTile);
             }
         }
 

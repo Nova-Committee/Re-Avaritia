@@ -7,6 +7,8 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.Quad;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -18,10 +20,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
-import net.minecraftforge.client.RenderTypeGroup;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -76,7 +74,6 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
         private final String texture;
         private final int color;
         private final int size;
-        ;
         private final boolean pulse;
 
 
@@ -98,7 +95,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
                 faceQuads.put(face, transformQuads(model.getQuads(null, face, RandomSource.create()), layerColors));
             }
             final List<BakedQuad> unculled = transformQuads(model.getQuads(null, null, RandomSource.create()), layerColors);
-            return new SimpleBakedModel(unculled, faceQuads, model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), ItemOverrides.EMPTY, RenderTypeGroup.EMPTY);
+            return new SimpleBakedModel(unculled, faceQuads, model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), ItemOverrides.EMPTY);
         }
 
         static List<BakedQuad> transformQuads(final List<BakedQuad> quads, final IntList layerColors) {
@@ -120,7 +117,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
             final int length = Math.min(4, to.length);
             final VertexFormatElement element = formatFrom.getElements().get(e);
             final int vertexStart = v * formatFrom.getVertexSize() + formatFrom.getOffset(e);
-            final int count = element.getElementCount();
+            final int count = element.getCount();
             final VertexFormatElement.Type type = element.getType();
             final VertexFormatElement.Usage usage = element.getUsage();
             final int size = type.getSize();
@@ -223,7 +220,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
         }
 
         @Override
-        public BakedModel bake(final IGeometryBakingContext owner, final ModelBaker bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
+        public BakedModel bake(BlockModel owner, final ModelBaker bakery, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation, boolean b) {
             final BakedModel bakedBaseModel = this.baseModel.bake(bakery, this.baseModel, spriteGetter, modelTransform, modelLocation, false);
             //Static.LOGGER.info("test0"+ this.texture);
             Material particleLocation = this.baseModel.getMaterial(this.texture);
@@ -235,7 +232,7 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
         }
 
         @Override
-        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, BlockModel context) {
             this.baseModel.resolveParents(modelGetter);
         }
 

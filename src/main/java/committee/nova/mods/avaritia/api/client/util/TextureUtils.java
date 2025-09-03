@@ -12,12 +12,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -195,6 +195,7 @@ public class TextureUtils {
 
     /**
      * 获取指定命名空间的方块贴图
+     *
      * @param location 命名空间
      * @return 贴图
      */
@@ -275,7 +276,7 @@ public class TextureUtils {
      */
     public static ResourceLocation getEffectTexture(MobEffectInstance mobEffectInstance) {
         ResourceLocation effectIcon;
-        ResourceLocation registryName = ForgeRegistries.MOB_EFFECTS.getKey(mobEffectInstance.getEffect());
+        ResourceLocation registryName = BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.getEffect());
         if (registryName != null) {
             effectIcon = new ResourceLocation(registryName.getNamespace(), DEFAULT_EFFECT_DIR + registryName.getPath() + ".png");
         } else {
@@ -283,7 +284,6 @@ public class TextureUtils {
         }
         return effectIcon;
     }
-
 
 
 }

@@ -10,11 +10,11 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.blaze.*;
 import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
+import dev.architectury.registry.registries.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,10 +26,10 @@ import java.util.function.Supplier;
  * Version: 1.0
  */
 public class ModItems {
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Const.MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Const.MOD_ID, Registries.ITEM);
 
     //test
-    public static RegistryObject<Item> test_sword = item("test_sword", ()-> new Item(new Item.Properties()), false);
+    public static RegistryObject<Item> test_sword = item("test_sword", () -> new Item(new Item.Properties()), false);
     //curios
     public static RegistryObject<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
@@ -98,7 +98,7 @@ public class ModItems {
     public static RegistryObject<Item> refined_coal = item("refined_coal", RefinedCoalItem::new);
     public static RegistryObject<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
     public static RegistryObject<Item> matter_cluster = item("matter_cluster", MatterClusterItem::new);
-    public static RegistryObject<Item> full_matter_cluster = item("full_matter_cluster", ()-> new Item(new Item.Properties().stacksTo(1).rarity(ModRarities.RARE)));
+    public static RegistryObject<Item> full_matter_cluster = item("full_matter_cluster", () -> new Item(new Item.Properties().stacksTo(1).rarity(ModRarities.RARE)));
     public static RegistryObject<Item> enhancement_core = item("enhancement_core", EnhancementCoreItem::new);
     public static RegistryObject<Item> upgrade_smithing_template = item("upgrade_smithing_template", UpgradeSmithingTemplateItem::new);
     public static RegistryObject<Item> infinity_upgrade = item("infinity_upgrade", InfinityUpgradeItem::new);
@@ -106,6 +106,7 @@ public class ModItems {
     public static RegistryObject<Item> ultimate_stew = item("ultimate_stew", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.ultimate_stew)));
     public static RegistryObject<Item> cosmic_meatballs = item("cosmic_meatballs", () -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs)));
     public static RegistryObject<Item> forge_energy = item("forge_energy", false);
+
     public static RegistryObject<Item> item(String name) {
         return item(name, true);
     }

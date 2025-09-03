@@ -3,11 +3,10 @@ package committee.nova.mods.avaritia.api.common.wrapper;
 import committee.nova.mods.avaritia.common.wrappers.StorageItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.IntSupplier;
@@ -59,7 +58,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
         IntIterator it = containers.keySet().iterator();
 
         int slots;
-        for(slots = -1; it.hasNext(); slots = Math.max(slots, it.nextInt())) {
+        for (slots = -1; it.hasNext(); slots = Math.max(slots, it.nextInt())) {
         }
 
         return create(containers, 0, slots + 1);
@@ -69,7 +68,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
         IntIterator it = containers.keySet().iterator();
 
         int slots;
-        for(slots = -1; it.hasNext(); slots = Math.max(slots, it.nextInt())) {
+        for (slots = -1; it.hasNext(); slots = Math.max(slots, it.nextInt())) {
         }
 
         int page = slots / 54 + 1;
@@ -127,7 +126,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
         if (stack.isEmpty()) {
             this.removeContainerInSlot(slot);
         } else {
-            int size = (int)Math.min(stack.getCount(), this.getSlotLimitLong(slot));
+            int size = (int) Math.min(stack.getCount(), this.getSlotLimitLong(slot));
             this.setContainerInSlot(slot, StorageItem.create(stack, size));
         }
 
@@ -137,7 +136,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
     public @NotNull ItemStack getStackInSlot(int slot) {
         StorageItem container = this.getContainerInSlot(slot);
         ItemStack stack = container.getStack();
-        int size = (int)Math.min(container.getCount(), stack.getMaxStackSize());
+        int size = (int) Math.min(container.getCount(), stack.getMaxStackSize());
         return ItemHandlerHelper.copyStackWithSize(stack, container.getCount() > 64 ? (int) container.getCount() : size);
     }
 
@@ -162,7 +161,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
             if (limit <= 0L) {
                 return stack;
             } else {
-                int toInsert = (int)Math.min(stack.getCount(), limit);
+                int toInsert = (int) Math.min(stack.getCount(), limit);
                 if (!simulate) {
                     if (container.isEmpty()) {
                         this.setContainerInSlot(slot, StorageItem.create(stack, toInsert));
@@ -187,9 +186,9 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
             } else {
                 ItemStack stackInSlot = container.getStack();
                 long stackCount = container.getCount();
-                int toExtract = (int)Math.min(Math.min(amount, stackCount), stackInSlot.getMaxStackSize());
+                int toExtract = (int) Math.min(Math.min(amount, stackCount), stackInSlot.getMaxStackSize());
                 if (!simulate) {
-                    if (stackCount > (long)toExtract) {
+                    if (stackCount > (long) toExtract) {
                         container.shrink(toExtract);
                     } else {
                         this.removeContainerInSlot(slot);
@@ -203,7 +202,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
 
     @Override
     public int getSlotLimit(int slot) {
-        return (int)Math.min(Integer.MAX_VALUE, this.getSlotLimitLong(slot));
+        return (int) Math.min(Integer.MAX_VALUE, this.getSlotLimitLong(slot));
     }
 
     @Override

@@ -3,19 +3,19 @@ package committee.nova.mods.avaritia.api.client.screen.component;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */
 @Setter
 @Accessors(chain = true)
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class Text {
     /**
      * 矩阵栈

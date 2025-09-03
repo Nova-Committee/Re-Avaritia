@@ -5,12 +5,10 @@ import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.FuncUtils;
-import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -60,7 +58,7 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
             Map.entry(Blocks.LANTERN, Blocks.SOUL_LANTERN),
             Map.entry(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE),
             Map.entry(Blocks.DEAD_BUSH, Blocks.WITHER_ROSE)
-            );
+    );
 
     private final String name;
 
@@ -108,12 +106,12 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
         var level = pContext.getLevel();
         var blockpos = pContext.getClickedPos();
         if (isActive(stack, "blaze_shovel_trans")) {
-           return FuncUtils.transBlock(level, player, blockpos, TRANS_MAP);
+            return FuncUtils.transBlock(level, player, blockpos, TRANS_MAP);
         } else return super.useOn(pContext);
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+    public @NotNull Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(@NotNull EquipmentSlot slot) {
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));

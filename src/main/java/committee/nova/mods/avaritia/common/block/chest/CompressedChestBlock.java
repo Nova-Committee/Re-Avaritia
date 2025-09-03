@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -55,7 +56,7 @@ public class CompressedChestBlock extends ChestBlock {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof CompressedChestTile chestTile) {
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, pos);
+                player.openMenu(chestTile);
             }
         }
         return InteractionResult.SUCCESS;
@@ -99,7 +100,7 @@ public class CompressedChestBlock extends ChestBlock {
             Container container = (Container) blockentity;
             for (String index : nameTag.getAllKeys()) {
                 var name = nameTag.getString(index);
-                var newItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
+                var newItem = BuiltInRegistries.ITEM.get(new ResourceLocation(name));
                 if (newItem == null) continue;
                 ItemStack is = new ItemStack(newItem);
                 is.setCount(countTag.getInt(index));
@@ -125,7 +126,7 @@ public class CompressedChestBlock extends ChestBlock {
                     var item = container.getItem(i);
                     if (item.isEmpty()) continue;
                     stackCount++;
-                    nameTag.putString(String.valueOf(i), ForgeRegistries.ITEMS.getResourceKey(item.getItem()).get().location().toString());
+                    nameTag.putString(String.valueOf(i), BuiltInRegistries.ITEM.getResourceKey(item.getItem()).get().location().toString());
                     countTag.putInt(String.valueOf(i), item.getCount());
                     if (item.getTag() != null) {
                         nbtTag.put(String.valueOf(i), item.getTag());

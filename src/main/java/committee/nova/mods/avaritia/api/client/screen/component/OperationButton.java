@@ -8,12 +8,12 @@ import committee.nova.mods.avaritia.api.client.util.TextureUtils;
 import committee.nova.mods.avaritia.api.utils.StringUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.Consumer;
 
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  */
 @Data
 @Accessors(chain = true)
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class OperationButton {
     /**
      * 渲染辅助类：用于向自定义渲染函数传递上下文

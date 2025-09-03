@@ -2,19 +2,16 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.BlackHoleChestRender;
-import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
+import dev.architectury.registry.registries.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -31,7 +28,7 @@ public class ModTileEntities {
         return BLOCK_ENTITIES.register(name, () -> BlockEntityType.Builder.of(tile, blocks.get()).build(null));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static void onClientSetup() {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
         BlockEntityRenderers.register(black_hole_chest_tile.get(), BlackHoleChestRender::new);
@@ -64,7 +61,7 @@ public class ModTileEntities {
             });
     public static RegistryObject<BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
     public static RegistryObject<BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
-//    public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.json.get()});
+    //    public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.json.get()});
     public static RegistryObject<BlockEntityType<BlackHoleChestTile>> black_hole_chest_tile = blockEntity("black_hole_chest_tile", BlackHoleChestTile::new, () -> new Block[]{ModBlocks.black_hole_chest.get()});
 
 }

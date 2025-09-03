@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.wrappers;
 
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 /**
  * @Project: Avaritia
@@ -10,7 +10,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
  * @CreateTime: 2025/1/28 02:22
  * @Description:
  */
-public class StorageItem{
+public class StorageItem {
     public static final StorageItem EMPTY = new StorageItem(ItemStack.EMPTY, 0L);
     private boolean empty;
     private final ItemStack stack;
@@ -86,7 +86,7 @@ public class StorageItem{
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         nbt.put("Stack", this.stack.serializeNBT());
-        nbt.putInt("Count", (int)this.count);
+        nbt.putInt("Count", (int) this.count);
         return nbt;
     }
 }

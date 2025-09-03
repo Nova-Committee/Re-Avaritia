@@ -1,23 +1,16 @@
 package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.util.StorageUtils;
-import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @Project: Avaritia
@@ -37,7 +30,8 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     private FluidStack[] slotFluidTemp = {FluidStack.EMPTY};
     public final int maxChannelSize = 2000;
 
-    public Channel() {}
+    public Channel() {
+    }
 
     public void onItemChanged(String itemId, boolean listChanged) {
         if (listChanged) updateItemKeys();
@@ -58,14 +52,17 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     public void updateFluidKeys() {
         fluidKeys = storageFluids.keySet().toArray(new String[]{});
         slotFluidTemp = new FluidStack[fluidKeys.length];
-        for (int i = 0; i < fluidKeys.length; i++) slotFluidTemp[i] = new FluidStack(StorageUtils.getFluid(fluidKeys[i]), 1);
+        for (int i = 0; i < fluidKeys.length; i++)
+            slotFluidTemp[i] = new FluidStack(StorageUtils.getFluid(fluidKeys[i]), 1);
     }
 
     public int getChannelSize() {
         return storageItems.size() + storageFluids.size() + storageEnergies.size();
     }
 
-    public boolean hasItem(String item) { return storageItems.containsKey(item); }
+    public boolean hasItem(String item) {
+        return storageItems.containsKey(item);
+    }
 
     public int getItemAmount(String item) {
         return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(item, 0L));
@@ -451,7 +448,8 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
     }
 
     public FluidStack takeFluid(String fluidId, int count) {
-        if (!storageFluids.containsKey(fluidId) || fluidId.equals("minecraft:air") || count == 0) return FluidStack.EMPTY;
+        if (!storageFluids.containsKey(fluidId) || fluidId.equals("minecraft:air") || count == 0)
+            return FluidStack.EMPTY;
         long storageAmount = storageFluids.get(fluidId);
         if (count < storageAmount) {
             storageFluids.replace(fluidId, storageAmount - count);
@@ -733,7 +731,6 @@ public abstract class Channel implements IItemHandler, IFluidHandler, IEnergySto
         }
         return new FluidStack(StorageUtils.getFluid(fluidId), maxDrain);
     }
-
 
 
     @Override

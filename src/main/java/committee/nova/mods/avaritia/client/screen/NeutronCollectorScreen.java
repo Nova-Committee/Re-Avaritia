@@ -36,7 +36,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     private NeutronCollectorTile getTileEntity() {
-        var level = this.getMinecraft().level;
+        var level = this.minecraft.level;
 
         if (level != null) {
             var tile = level.getBlockEntity(this.getMenu().getBlockPos());
@@ -51,8 +51,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     @Override
     public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
         super.render(stack, mouseX, mouseY, partialTicks);
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+        int x = this.leftPos;
+        int y = this.topPos;
 
         if (mouseX > x + 99 && mouseX < x + 104 && mouseY > y + 30 && mouseY < y + 50) {
             List<Component> tooltip = new ArrayList<>();
@@ -77,8 +77,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
 
     @Override
     protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
-        int i = this.getGuiLeft();
-        int j = this.getGuiTop();
+        int i = this.leftPos;
+        int j = this.topPos;
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(18);
             pGuiGraphics.blit(BACKGROUND, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);

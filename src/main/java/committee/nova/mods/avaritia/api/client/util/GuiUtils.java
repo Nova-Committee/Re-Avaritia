@@ -9,6 +9,8 @@ import committee.nova.mods.avaritia.api.utils.StringUtils;
 import committee.nova.mods.avaritia.api.utils.WorldUtils;
 import lombok.Getter;
 import lombok.NonNull;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,8 +24,6 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 
 import java.util.*;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */
 @SuppressWarnings("unused")
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class GuiUtils {
 
     public final static int ITEM_ICON_SIZE = 16;
@@ -594,7 +594,7 @@ public class GuiUtils {
                         break;
                 }
                 GuiGraphics graphics = text.getGraphics();
-                graphics.drawString(font, GuiUtils.textToComponent(text.copy().setText(line)).getVisualOrderText(), (float) x + xOffset, (float) y + index * font.lineHeight, text.getColor(), text.isShadow());
+                graphics.drawString(font, GuiUtils.textToComponent(text.copy().setText(line)).getVisualOrderText(), (int) (x + xOffset), (int) y + index * font.lineHeight, text.getColor(), text.isShadow());
                 index++;
             }
         }

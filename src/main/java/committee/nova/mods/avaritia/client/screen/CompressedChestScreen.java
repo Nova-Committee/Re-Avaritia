@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
  * @CreateTime: 2024/7/13 上午11:32
  * @Description:
  */
-public class CompressedChestScreen extends BaseContainerScreen<CompressedChestMenu>{
+public class CompressedChestScreen extends BaseContainerScreen<CompressedChestMenu> {
     private static final ResourceLocation CONTAINER_BACKGROUND = Const.rl("textures/gui/generic_243.png");
 
     public CompressedChestScreen(CompressedChestMenu pMenu, Inventory pPlayerInventory, Component pTitle) {

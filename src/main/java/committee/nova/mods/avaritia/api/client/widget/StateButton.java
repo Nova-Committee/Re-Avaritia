@@ -21,10 +21,11 @@ public abstract class StateButton extends Button {
     private static final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
     private final Screen screen;
     private Component narrationMessage;
-    private Font font;
+    private final Font font;
 
     public StateButton(Screen screen, int x, int y, Font font) {
-        super(x, y, 20, 20, Component.empty(), (b) -> {}, Button.DEFAULT_NARRATION);
+        super(x, y, 20, 20, Component.empty(), (b) -> {
+        }, Button.DEFAULT_NARRATION);
         this.screen = screen;
         this.font = font;
         this.initialize();
@@ -43,9 +44,9 @@ public abstract class StateButton extends Button {
     public void render(GuiGraphics context, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             super.render(context, mouseX, mouseY, partialTicks);
-            context.renderItem(this.getButtonIcon(),getX() + 2, getY() + 2);
+            context.renderItem(this.getButtonIcon(), getX() + 2, getY() + 2);
             if (this.isHovered) {
-                context.renderTooltip(this.getFont(), narrationMessage ,getX() + 14, getY() + 18);
+                context.renderTooltip(this.getFont(), narrationMessage, getX() + 14, getY() + 18);
             }
         }
     }

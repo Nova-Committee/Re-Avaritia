@@ -4,8 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ContainerRange
@@ -56,11 +55,11 @@ public class FaceContainer {
         }
     }
 
-    public boolean canInsertItem(int slot, @Nonnull ItemStack item) {
+    public boolean canInsertItem(int slot, @NotNull ItemStack item) {
         return sidedInv == null ? inv.canPlaceItem(slot, item) : sidedInv.canPlaceItemThroughFace(slot, item, face);
     }
 
-    public boolean canExtractItem(int slot, @Nonnull ItemStack item) {
+    public boolean canExtractItem(int slot, @NotNull ItemStack item) {
         return sidedInv == null ? inv.canPlaceItem(slot, item) : sidedInv.canTakeItemThroughFace(slot, item, face);
     }
 

@@ -21,6 +21,7 @@
 			"com.example.AvaritiaDataGenerator"
 		]
 	},
+	"accessWidener": "avaritia.accesswidener",
 	"mixins": [
 		"avaritia.mixins.json"
 	],

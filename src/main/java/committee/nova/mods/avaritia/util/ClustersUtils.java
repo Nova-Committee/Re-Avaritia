@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.common.wrapper.StrictItemStack;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -13,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -74,7 +74,7 @@ public class ClustersUtils {
     private static boolean isTrash(ItemStack suspect, Set<String> defaultTrashOres) {
         boolean isTrash = false;
         for (String ore : defaultTrashOres) {
-            if (suspect.is(ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(ore)))) {
+            if (suspect.is(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(ore)))) {
                 return true;
             }
         }

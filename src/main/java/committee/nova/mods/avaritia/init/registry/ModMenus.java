@@ -1,25 +1,19 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.screen.BlackHoleChestScreen;
-import committee.nova.mods.avaritia.common.menu.ChannelMenu;
-import committee.nova.mods.avaritia.common.menu.ChannelSelectMenu;
-import committee.nova.mods.avaritia.client.screen.ChannelSelectScreen;
 import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
 import committee.nova.mods.avaritia.common.menu.*;
+import dev.architectury.registry.registries.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -32,7 +26,7 @@ import java.util.function.Supplier;
 public class ModMenus {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Const.MOD_ID);
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static void onClientSetup() {
         MenuScreens.register(sculk_crafting_tile_table.get(), SculkCraftScreen::new);
         MenuScreens.register(nether_crafting_tile_table.get(), NetherCraftScreen::new);

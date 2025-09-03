@@ -2,15 +2,14 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
+import dev.architectury.registry.registries.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;

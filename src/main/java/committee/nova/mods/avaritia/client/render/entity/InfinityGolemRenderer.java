@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IronGolemRenderer;

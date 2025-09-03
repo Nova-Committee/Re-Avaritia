@@ -7,9 +7,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Objects;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -68,19 +68,19 @@ public class NoMenuContainer implements Container {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public ItemStack getItem(int slot) {
         return items[slot];
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public ItemStack removeItem(int slot, int amount) {
         return ContainerUtils.decrStackSize(this, slot, amount);
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public ItemStack removeItemNoUpdate(int slot) {
         return ContainerUtils.removeStackFromSlot(this, slot);
     }

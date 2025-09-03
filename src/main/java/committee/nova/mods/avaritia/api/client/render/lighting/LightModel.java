@@ -21,8 +21,8 @@ public class LightModel implements IVertexOperation {
         //@formatter:on
     }
 
-    private Vector3 ambient = new Vector3();
-    private Light[] lights = new Light[8];
+    private final Vector3 ambient = new Vector3();
+    private final Light[] lights = new Light[8];
     private int lightCount;
 
     public LightModel addLight(Light light) {

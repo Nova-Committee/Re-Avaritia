@@ -22,13 +22,16 @@ public class RainProRender extends EntityRenderer<RainProEntity> {
     public RainProRender(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
+
     private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, int pY, int pU, int pV) {
         pConsumer.vertex(pPose, pX - 0.5F, (float) pY - 0.25F, 0.0F).color(255, 255, 255, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
     }
+
     @Override
     protected int getBlockLightLevel(@NotNull RainProEntity pEntity, @NotNull BlockPos pPos) {
         return 15;
     }
+
     @Override
     public void render(RainProEntity entity, float entityYaw, float partialTicks,
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
@@ -39,7 +42,7 @@ public class RainProRender extends EntityRenderer<RainProEntity> {
         PoseStack.Pose posestack$pose = poseStack.last();
         Matrix4f matrix4f = posestack$pose.pose();
         Matrix3f matrix3f = posestack$pose.normal();
-        VertexConsumer vertexconsumer =  buffer.getBuffer(RENDER_TYPE);
+        VertexConsumer vertexconsumer = buffer.getBuffer(RENDER_TYPE);
         vertex(vertexconsumer, matrix4f, matrix3f, packedLight, 0.0F, 0, 0, 1);
         vertex(vertexconsumer, matrix4f, matrix3f, packedLight, 1.0F, 0, 1, 1);
         vertex(vertexconsumer, matrix4f, matrix3f, packedLight, 1.0F, 1, 1, 0);
@@ -47,6 +50,7 @@ public class RainProRender extends EntityRenderer<RainProEntity> {
         poseStack.popPose();
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
+
     @Override
     public ResourceLocation getTextureLocation(RainProEntity rainProEntity) {
         return Res.RAIN_PRO_TEXTURE;

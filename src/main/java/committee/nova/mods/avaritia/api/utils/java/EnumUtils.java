@@ -14,17 +14,21 @@ public class EnumUtils {
         if (clazz != null && string != null && !string.isEmpty()) {
             try {
                 ret = Enum.valueOf(clazz, string.trim());
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
             try {
                 ret = Enum.valueOf(clazz, string.trim().toUpperCase());
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
             try {
                 ret = Enum.valueOf(clazz,
                         string.trim().substring(0, 1).toUpperCase() + string.trim().substring(1).toLowerCase());
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
             try {
                 ret = Enum.valueOf(clazz, string.trim().toLowerCase());
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
         }
         return Optional.ofNullable(ret);
     }

@@ -5,11 +5,10 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,11 +26,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
 
@@ -72,7 +66,7 @@ public class GapingVoidEntity extends Entity {
 //        setSharedFlagOnFire(true);
         noCulling = true;
         if (level() instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
+            fakePlayer = FakePlayer.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
         }
     }
 
@@ -124,7 +118,7 @@ public class GapingVoidEntity extends Entity {
     protected void readAdditionalSaveData(CompoundTag tag) {
         setAge(tag.getInt("age"));
         if (level() instanceof ServerLevel) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
+            fakePlayer = FakePlayer.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
         }
     }
 
@@ -134,10 +128,10 @@ public class GapingVoidEntity extends Entity {
 
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     public void tick() {
@@ -248,7 +242,7 @@ public class GapingVoidEntity extends Entity {
         if (age % 10 == 0) {
             Vec3 posFloor = this.position();
 
-            int blockrange = (int) Math.round(nomrange);
+            int blockrange = Math.round(nomrange);
 
             for (int y = -blockrange; y <= blockrange; y++) {
                 for (int z = -blockrange; z <= blockrange; z++) {
@@ -264,15 +258,11 @@ public class GapingVoidEntity extends Entity {
                         double dist = pos2.lengthSqr();
                         if (dist <= nomrange && !level().getBlockState(blockPos).isAir()) {
                             BlockState state = level().getBlockState(blockPos);
-                            BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level(), blockPos, state, fakePlayer);
-                            MinecraftForge.EVENT_BUS.post(event);
-                            if (!event.isCanceled()) {
-                                float resist = state.getBlock().getExplosionResistance();
-                                if (resist <= 10.0) {
-                                    state.getBlock().canDropFromExplosion(state, level(), blockPos, new Explosion(level(), null, blockPos.getX(),
-                                            blockPos.getY(), blockPos.getZ(), 6.0f, false, Explosion.BlockInteraction.DESTROY));
-                                    level().setBlock(blockPos, Blocks.AIR.defaultBlockState(), 2);
-                                }
+                            float resist = state.getBlock().getExplosionResistance();
+                            if (resist <= 10.0) {
+                                state.getBlock().canDropFromExplosion(state, level(), blockPos, new Explosion(level(), null, blockPos.getX(),
+                                        blockPos.getY(), blockPos.getZ(), 6.0f, false, Explosion.BlockInteraction.DESTROY));
+                                level().setBlock(blockPos, Blocks.AIR.defaultBlockState(), 2);
                             }
                         }
                     }

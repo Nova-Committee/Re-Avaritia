@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.util;
 
 import committee.nova.mods.avaritia.common.wrappers.StorageItem;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.AbstractMap;
 import java.util.Comparator;
@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
  */
 public class SortUtils {
     public static final Comparator<StorageItem> ITEM_REGISTRY_NAME = (item1, item2) -> {
-        ResourceLocation registryName1 = ForgeRegistries.ITEMS.getKey(item1.getStack().getItem());
-        ResourceLocation registryName2 = ForgeRegistries.ITEMS.getKey(item2.getStack().getItem());
+        ResourceLocation registryName1 = BuiltInRegistries.ITEM.getKey(item1.getStack().getItem());
+        ResourceLocation registryName2 = BuiltInRegistries.ITEM.getKey(item2.getStack().getItem());
         if (registryName1 != null && registryName2 != null) {
             return registryName1.getPath().compareTo(registryName2.getPath());
         } else if (registryName1 == null && registryName2 == null) {
@@ -31,8 +31,8 @@ public class SortUtils {
     };
     public static final Comparator<StorageItem> ITEM_COUNT = Comparator.comparingLong(StorageItem::getCount);
     public static final Comparator<StorageItem> MOD_ID = (item1, item2) -> {
-        ResourceLocation registryName1 = ForgeRegistries.ITEMS.getKey(item1.getStack().getItem());
-        ResourceLocation registryName2 = ForgeRegistries.ITEMS.getKey(item2.getStack().getItem());
+        ResourceLocation registryName1 = BuiltInRegistries.ITEM.getKey(item1.getStack().getItem());
+        ResourceLocation registryName2 = BuiltInRegistries.ITEM.getKey(item2.getStack().getItem());
         if (registryName1 != null && registryName2 != null) {
             return registryName1.getNamespace().compareTo(registryName2.getNamespace());
         } else if (registryName1 == null && registryName2 == null) {
@@ -103,7 +103,8 @@ public class SortUtils {
         for (int i = 0; i < min; i++) {
             l = Character.compare(a[j], b[k]);
             if (l != 0) return l;
-            j--; k--;
+            j--;
+            k--;
         }
         return Integer.compare(a.length, b.length);
     }

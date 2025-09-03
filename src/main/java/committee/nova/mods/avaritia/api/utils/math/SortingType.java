@@ -28,8 +28,8 @@ public enum SortingType {
         return ret;
     });
 
-    private Comparator<ItemStack> comparatorAscending;
-    private Comparator<ItemStack> comparatorDescending;
+    private final Comparator<ItemStack> comparatorAscending;
+    private final Comparator<ItemStack> comparatorDescending;
 
     SortingType(Comparator<ItemStack> comparatorAscending, Comparator<ItemStack> comparatorDescending) {
         this.comparatorAscending = comparatorAscending;
@@ -41,8 +41,9 @@ public enum SortingType {
         if (comparator != null)
             list.sort(comparator);
     }
+
     public SortingType getNextType() {
-        int ordinal = this.ordinal()+1;
+        int ordinal = this.ordinal() + 1;
         if (ordinal >= SortingType.values().length)
             ordinal = 0;
         return SortingType.values()[ordinal];

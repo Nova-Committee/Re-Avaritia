@@ -6,6 +6,10 @@ import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.*;
@@ -16,15 +20,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -37,11 +35,13 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
                 .fireResistant()
         );
     }
+
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.INFINITY_ARROWS.getFullname(10)).build());
     }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
@@ -96,10 +96,9 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         }
 
 
-
     }
 
-//在这里添加方法到发射,默认发射天堂箭
+    //在这里添加方法到发射,默认发射天堂箭
     private void shootBasedOnAmmo(Level level, Player player, ItemStack ammo) {
         if (ammo.is(Items.ARROW)) {
             shootArrow(level, player, 3.0F, 1.0F);
@@ -113,10 +112,9 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             shootTippedArrow(level, player, ammo, 3.0F, 1.0F);
         } else if (ammo.is(Items.FIREWORK_ROCKET)) {
             shootFireworkRocket(level, player, ammo, 3.0F, 1.0F);
-        } else if (ammo.is(Items.TRIDENT)){
-            shootTrident(level, player, ammo,3.0F, 1.0F);
-        }
-        else {
+        } else if (ammo.is(Items.TRIDENT)) {
+            shootTrident(level, player, ammo, 3.0F, 1.0F);
+        } else {
             shootInfnityArrow(level, player, 3.0F, 1.0F);
         }
     }
@@ -141,6 +139,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
                 stack.is(Items.FIREWORK_ROCKET) ||
                 stack.is(Items.TRIDENT);
     }
+
     //天堂箭
     private void shootInfnityArrow(Level level, Player player, float velocity, float inaccuracy) {
         HeavenArrowEntity arrow = new HeavenArrowEntity(level, player);
@@ -148,8 +147,9 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         level.addFreshEntity(arrow);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
-}
-//箭
+    }
+
+    //箭
     private void shootArrow(Level level, Player player, float velocity, float inaccuracy) {
         Arrow arrow = new Arrow(level, player);
         arrow.setEffectsFromItem(new ItemStack(Items.ARROW));
@@ -158,7 +158,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-//末影珍珠
+
+    //末影珍珠
     private void shootEnderPearl(Level level, Player player) {
         ThrownEnderpearl pearl = new ThrownEnderpearl(level, player);
         pearl.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
@@ -166,7 +167,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENDER_PEARL_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-//烈焰弹
+
+    //烈焰弹
     private void shootFireball(Level level, Player player) {
         SmallFireball fireball = new SmallFireball(level, player,
                 player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z);
@@ -176,7 +178,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-//光灵箭
+
+    //光灵箭
     private void shootSpectralArrow(Level level, Player player, float velocity, float inaccuracy) {
         SpectralArrow arrow = new SpectralArrow(level, player);
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity, inaccuracy);
@@ -184,7 +187,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-//药水箭
+
+    //药水箭
     private void shootTippedArrow(Level level, Player player, ItemStack ammo, float velocity, float inaccuracy) {
         Arrow arrow = new Arrow(level, player);
         arrow.setEffectsFromItem(ammo);
@@ -193,35 +197,37 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-//烟花火箭
-private void shootFireworkRocket(Level level, Player player, ItemStack fireworkItem, float velocity, float inaccuracy) {
-    FireworkRocketEntity firework = new FireworkRocketEntity(
-            level, fireworkItem, player,
-            player.getX(), player.getEyeY(), player.getZ(),
-            true
-    );
 
-    Vec3 lookVec = player.getLookAngle();
-    Vec3 motion = lookVec.scale(velocity);
-
-    if (inaccuracy > 0) {
-        motion = motion.add(
-                level.random.nextGaussian() * 0.0075F * inaccuracy,
-                level.random.nextGaussian() * 0.0075F * inaccuracy,
-                level.random.nextGaussian() * 0.0075F * inaccuracy
+    //烟花火箭
+    private void shootFireworkRocket(Level level, Player player, ItemStack fireworkItem, float velocity, float inaccuracy) {
+        FireworkRocketEntity firework = new FireworkRocketEntity(
+                level, fireworkItem, player,
+                player.getX(), player.getEyeY(), player.getZ(),
+                true
         );
+
+        Vec3 lookVec = player.getLookAngle();
+        Vec3 motion = lookVec.scale(velocity);
+
+        if (inaccuracy > 0) {
+            motion = motion.add(
+                    level.random.nextGaussian() * 0.0075F * inaccuracy,
+                    level.random.nextGaussian() * 0.0075F * inaccuracy,
+                    level.random.nextGaussian() * 0.0075F * inaccuracy
+            );
+        }
+
+        firework.setDeltaMovement(motion);
+        firework.setPos(player.getX(), player.getEyeY(), player.getZ());
+
+        level.addFreshEntity(firework);
+
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.FIREWORK_ROCKET_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
-    firework.setDeltaMovement(motion);
-    firework.setPos(player.getX(), player.getEyeY(), player.getZ());
-
-    level.addFreshEntity(firework);
-
-    level.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.FIREWORK_ROCKET_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
-}
     //三叉戟
-    private void shootTrident(Level level, Player player, ItemStack trident, float velocity, float inaccuracy){
+    private void shootTrident(Level level, Player player, ItemStack trident, float velocity, float inaccuracy) {
         ThrownTrident tridentEntity = new ThrownTrident(level, player, trident);
         tridentEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity, inaccuracy);
         level.addFreshEntity(tridentEntity);

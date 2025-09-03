@@ -6,13 +6,12 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class InfinityClockMenu extends AbstractContainerMenu {
     private final Container container;
+
     public InfinityClockMenu(int id, Inventory playerInventory) {
         super(ModMenus.infinity_clock_menu.get(), id);
         this.container = new SimpleContainer(0);
@@ -48,6 +47,7 @@ public class InfinityClockMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     private static final int TE_INVENTORY_SLOT_COUNT = 0;
+
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);

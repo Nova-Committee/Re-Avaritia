@@ -8,6 +8,8 @@ import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
 import committee.nova.mods.avaritia.core.channel.*;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,11 +28,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,19 +43,29 @@ import java.util.UUID;
 public class BlackHoleChestTile extends BaseTileEntity implements IChannelTerminal {
     private static final Component CONTAINER_NAME = Component.translatable("container.infinity_chest");
     private final int slotIndex;
-    @Getter private UUID owner;
-    @Getter private boolean locked = false;
-    @Getter private boolean craftingMode = false;
-    @Getter private String filter = "";
-    @Getter private byte sortType = 4;
-    @Getter private byte viewType = 0;
-    @Getter private UUID channelOwner;
-    @Getter private int channelID = -1;
+    @Getter
+    private UUID owner;
+    @Getter
+    private boolean locked = false;
+    @Getter
+    private boolean craftingMode = false;
+    @Getter
+    private String filter = "";
+    @Getter
+    private byte sortType = 4;
+    @Getter
+    private byte viewType = 0;
+    @Getter
+    private UUID channelOwner;
+    @Getter
+    private int channelID = -1;
     private boolean waterlogged = false;
     private final HashSet<ServerPlayer> channelSelectors = new HashSet<>();
 
-    @Getter private ServerChannel channel = NullChannel.INSTANCE;
-    @Getter private LazyOptional<?> capability = LazyOptional.of(() -> channel);
+    @Getter
+    private ServerChannel channel = NullChannel.INSTANCE;
+    @Getter
+    private LazyOptional<?> capability = LazyOptional.of(() -> channel);
 
 
     public BlackHoleChestTile(BlockPos pos, BlockState state) {
@@ -110,7 +117,7 @@ public class BlackHoleChestTile extends BaseTileEntity implements IChannelTermin
         pTag.putByte("sortType", sortType);
         pTag.putByte("viewType", viewType);
         if (channelID >= 0) {
-            CompoundTag channel =  new CompoundTag();
+            CompoundTag channel = new CompoundTag();
             channel.putUUID("channelOwner", channelOwner);
             channel.putInt("channelID", channelID);
             pTag.put("channel", channel);

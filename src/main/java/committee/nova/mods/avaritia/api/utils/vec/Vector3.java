@@ -516,10 +516,9 @@ public class Vector3 implements Copyable<Vector3> {
         if (super.equals(o)) {
             return true;
         }
-        if (!(o instanceof Vector3)) {
+        if (!(o instanceof Vector3 v)) {
             return false;
         }
-        Vector3 v = (Vector3) o;
         return x == v.x && y == v.y && z == v.z;
     }
 

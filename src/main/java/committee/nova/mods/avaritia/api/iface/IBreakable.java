@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
  * @Description:
  */
 public interface IBreakable {
-    public default boolean breakAll(ItemStack stack, BlockPos pos, Player player) {
+    default boolean breakAll(ItemStack stack, BlockPos pos, Player player) {
         return true;
     }
 }

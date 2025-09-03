@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.init.compat.emi;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.init.compat.emi.category.CompressorCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.ExtremeSmithingRecipeCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.EndCraftingTableCategory;

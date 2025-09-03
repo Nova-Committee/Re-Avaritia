@@ -2,14 +2,15 @@ package committee.nova.mods.avaritia.common.menu.provider;
 
 import committee.nova.mods.avaritia.common.menu.ChannelMenu;
 import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
+import dev.architectury.registry.menu.ExtendedMenuProvider;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.function.Consumer;
 
 /**
  * @Project: Avaritia
@@ -17,13 +18,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @CreateTime: 2025/2/28 20:10
  * @Description:
  */
-public class ChannelMenuProvider implements MenuProvider {
+public class ChannelMenuProvider implements ExtendedMenuProvider {
 
     private final BlackHoleChestTile blockEntity;
+    private Consumer<FriendlyByteBuf> writer;
     private final int slotIndex;
 
-    public ChannelMenuProvider(BlackHoleChestTile blockEntity) {
+    public ChannelMenuProvider(BlackHoleChestTile blockEntity, Consumer<FriendlyByteBuf> writer) {
         this.blockEntity = blockEntity;
+        this.writer = writer;
         this.slotIndex = -2;
     }
 
@@ -38,8 +41,12 @@ public class ChannelMenuProvider implements MenuProvider {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new ChannelMenu(pContainerId, pPlayer, blockEntity, slotIndex);
+    }
+
+    @Override
+    public void saveExtraData(FriendlyByteBuf friendlyByteBuf) {
+        this.writer.accept(friendlyByteBuf);
     }
 }

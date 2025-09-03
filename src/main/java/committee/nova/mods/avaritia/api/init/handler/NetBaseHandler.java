@@ -1,13 +1,9 @@
 package committee.nova.mods.avaritia.api.init.handler;
 
 import committee.nova.mods.avaritia.api.common.net.IPacket;
+import io.github.fabricators_of_create.porting_lib.util.NetworkDirection;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.Objects;
 

@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class ModApi {
             }
         }
 
-        return new ShapelessTableCraftingRecipe(ForgeRegistries.ITEMS.getKey(result.getItem()), getList(arraylist), result, tier);
+        return new ShapelessTableCraftingRecipe(BuiltInRegistries.ITEM.getKey(result.getItem()), getList(arraylist), result, tier);
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {

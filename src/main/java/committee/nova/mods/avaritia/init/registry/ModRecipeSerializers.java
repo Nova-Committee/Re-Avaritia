@@ -33,6 +33,7 @@ public class ModRecipeSerializers {
             serializer("full_matter_cluster", FullMatterClusterRecipe.Serializer::new);
     public static RegistryObject<RecipeSerializer<?>> NO_CONSUME_CATALYST_SHAPED_SERIALIZER =
             serializer("no_consume_catalyst_shaped", NoConsumeCatalystShapedRecipe.Serializer::new);
+
     public static RegistryObject<RecipeSerializer<?>> serializer(String name, Supplier<RecipeSerializer<?>> serializer) {
         return SERIALIZERS.register(name, serializer);
     }

@@ -23,7 +23,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,10 +73,10 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
         var targetBlock = targetState.getBlock();
         if (level instanceof ServerLevel serverLevel && targetBlock instanceof BonemealableBlock growable
         ) {
-            if (growable.isValidBonemealTarget(serverLevel, pos, targetState, false) && ForgeHooks.onCropsGrowPre(serverLevel, pos, targetState, true)) {
+            if (growable.isValidBonemealTarget(serverLevel, pos, targetState, false)) {// && ForgeHooks.onCropsGrowPre(serverLevel, pos, targetState, true)) {
                 growable.performBonemeal(serverLevel, level.random, pos, targetState);
                 serverLevel.levelEvent(2005, pos, 0);
-                ForgeHooks.onCropsGrowPost(serverLevel, pos, targetState);
+//                ForgeHooks.onCropsGrowPost(serverLevel, pos, targetState);
                 return InteractionResult.CONSUME;
             }
         }
@@ -94,7 +93,7 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+    public @NotNull Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(@NotNull EquipmentSlot slot) {
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getTier().getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));

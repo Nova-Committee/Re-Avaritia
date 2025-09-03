@@ -1,13 +1,13 @@
 package committee.nova.mods.avaritia.api.client.model;
 
 import com.mojang.math.Transformation;
+import io.github.fabricators_of_create.porting_lib.models.UnbakedGeometryHelper;
+import io.github.fabricators_of_create.porting_lib.models.geometry.SimpleModelState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.SimpleModelState;
-import net.minecraftforge.client.model.geometry.UnbakedGeometryHelper;
 
 import java.util.LinkedList;
 import java.util.List;

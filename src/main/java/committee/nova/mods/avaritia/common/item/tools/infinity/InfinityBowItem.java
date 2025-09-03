@@ -9,14 +9,11 @@ import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -115,8 +112,8 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
-        if (ret != null) return ret;
+//        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
+//        if (ret != null) return ret;
         if (player.isCrouching()) {
             switchMode(level, player, hand, "infinity_bow_tracer");
             return InteractionResultHolder.success(itemstack);
@@ -130,10 +127,10 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
         if (!level.isClientSide) {
             if (entity instanceof Player player) {
                 int drawTime = this.getUseDuration(stack) - timeLeft;
-                drawTime = ForgeEventFactory.onArrowLoose(stack, level, player, drawTime, true);
-                if (drawTime < 0) {
-                    return;
-                }
+//                drawTime = ForgeEventFactory.onArrowLoose(stack, level, player, drawTime, true);
+//                if (drawTime < 0) {
+//                    return;
+//                }
 
                 float VELOCITY_MULTIPLIER = 1.2F;
                 float DAMAGE_MULTIPLIER = 5000.0F;
@@ -161,17 +158,17 @@ public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, I
     }
 
     private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
-        int j = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.POWER_ARROWS, stack);//力量箭矢
+        int j = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, stack);//力量箭矢
         if (j > 0) {
             arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() + (double) j * 0.5D + 0.5D);
         }
 
-        int k = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.PUNCH_ARROWS, stack);
+        int k = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, stack);
         if (k > 0) {
             arrowEntity.setKnockback(k);
         }
 
-        if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FLAMING_ARROWS, stack) > 0) {//火焰箭矢
+        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, stack) > 0) {//火焰箭矢
             arrowEntity.setSecondsOnFire(100);
         }
         stack.hurtAndBreak(1, player, (livingEntity) -> livingEntity.broadcastBreakEvent(player.getUsedItemHand()));

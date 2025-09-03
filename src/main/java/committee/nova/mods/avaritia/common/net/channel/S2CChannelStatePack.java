@@ -37,7 +37,7 @@ public class S2CChannelStatePack {
 
     public void run(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            switch(channelState) {
+            switch (channelState) {
                 case COMMON -> ClientChannelManager.getInstance().updateChannel(tag);
                 case FULL -> ClientChannelManager.getInstance().fullUpdateChannel(tag);
                 case NAME -> ClientChannelManager.getInstance().setUserCache(tag);

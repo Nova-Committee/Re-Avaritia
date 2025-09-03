@@ -29,6 +29,7 @@ public class ChannelSelectMenu extends AbstractContainerMenu {
         this.player = playerInv.player;
         this.terminal = null;
     }
+
     public ChannelSelectMenu(int containerId, Player player, IChannelTerminal terminal) {
         super(ModMenus.channel_select_menu.get(), containerId);
         this.player = player;

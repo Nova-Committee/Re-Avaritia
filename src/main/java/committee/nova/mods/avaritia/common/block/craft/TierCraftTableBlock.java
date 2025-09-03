@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TierCraftTableBlock extends BaseTileEntityBlock {
     ModCraftTier tier;
+
     public TierCraftTableBlock(ModCraftTier tier) {
         super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true);
         this.tier = tier;
@@ -39,7 +39,7 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             var tile = level.getBlockEntity(pos);
             if (tile instanceof TierCraftTile table) {
-                NetworkHooks.openScreen(serverPlayer, table, pos);
+                serverPlayer.openMenu(table);
             }
         }
         return InteractionResult.SUCCESS;
@@ -68,7 +68,7 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
         // 遍历方向列表，检查每个方向的方块状态
         for (Direction direction : Direction.values()) {
             BlockPos offsetPos = pos.relative(direction);
-            if (level.getBlockState(offsetPos).is( ModBlocks.infinity.get())) {
+            if (level.getBlockState(offsetPos).is(ModBlocks.infinity.get())) {
                 return 15;
             }
         }

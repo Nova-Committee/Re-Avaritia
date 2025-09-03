@@ -23,7 +23,7 @@ import java.util.Optional;
  * @CreateTime: 2024/12/19 13:14
  * @Description:
  */
-public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu>  {
+public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu> {
     private static final ResourceLocation SMITHING_LOCATION = Const.rl("textures/gui/extreme_smithing_table_gui.png");
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
     private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
@@ -32,6 +32,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
     private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = new ResourceLocation("item/empty_slot_smithing_template_netherite_upgrade");
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
+
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, SMITHING_LOCATION);
         this.titleLabelX = 72;

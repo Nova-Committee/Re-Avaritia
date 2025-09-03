@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;

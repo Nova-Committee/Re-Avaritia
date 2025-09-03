@@ -86,16 +86,15 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if (Stream.of(SORT_KEYS).anyMatch(key -> key.matches(pKeyCode, pScanCode))){
+        if (Stream.of(SORT_KEYS).anyMatch(key -> key.matches(pKeyCode, pScanCode))) {
             for (int i = 0; i < SORT_KEYS.length; i++) {
-               if (SORT_KEYS[i].matches(pKeyCode, pScanCode)) {
-                   super.slotClicked(null, 0, i, ClickType.CLONE);
-                   return true;
-               }
+                if (SORT_KEYS[i].matches(pKeyCode, pScanCode)) {
+                    super.slotClicked(null, 0, i, ClickType.CLONE);
+                    return true;
+                }
             }
             return false;
-        }
-        else {
+        } else {
             return super.keyPressed(pKeyCode, pScanCode, pModifiers);
         }
     }
@@ -136,6 +135,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             }
         }
     }
+
     @Override
     protected void slotClicked(@Nullable Slot slotIn, int slotId, int mouseButton, @NotNull ClickType type) {
         if (type == ClickType.CLONE) {

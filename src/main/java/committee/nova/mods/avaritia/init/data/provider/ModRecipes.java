@@ -11,7 +11,10 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,8 +34,6 @@ import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-
-import javax.json.JsonArray;
 
 import java.util.function.Consumer;
 
@@ -228,7 +229,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('a', Items.NETHERITE_SCRAP)
                 .define('b', Items.GOLD_INGOT)
                 .unlockedBy("has_item", has(Items.NETHERITE_INGOT)).save(consumer);
-        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC,Items.ECHO_SHARD,1,1)
+        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.ECHO_SHARD, 1, 1)
                 .requires(Blocks.SCULK)
                 .unlockedBy("has_item", has(Blocks.SCULK)).save(consumer);
 
@@ -240,7 +241,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('b', Items.NETHERITE_SCRAP)
                 .define('c', Items.DIAMOND)
                 .tier(1)
-                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer,Const.rl("ancient_debris_eight"));
+                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer, Const.rl("ancient_debris_eight"));
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.end_crafting_table.get(), 2)
                 .pattern("bcccb")
@@ -420,11 +421,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(Blocks.CHEST)).save(consumer);
 
         ModExtremeSmithingRecipeBuilder.smithing(
-                Ingredient.of(ModItems.upgrade_smithing_template.get()),
-                Ingredient.of(Items.TOTEM_OF_UNDYING),
-                CompoundIngredient.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), Ingredient.of(Items.BEACON), Ingredient.of(ModItems.enhancement_core.get())),
-                RecipeCategory.MISC,
-                ModItems.infinity_totem.get())
+                        Ingredient.of(ModItems.upgrade_smithing_template.get()),
+                        Ingredient.of(Items.TOTEM_OF_UNDYING),
+                        CompoundIngredient.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), Ingredient.of(Items.BEACON), Ingredient.of(ModItems.enhancement_core.get())),
+                        RecipeCategory.MISC,
+                        ModItems.infinity_totem.get())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
                 .save(consumer);
 
@@ -529,7 +530,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-      NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(),2)
+        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(), 2)
                 .pattern("         ")
                 .pattern(" abbbbba ")
                 .pattern(" bdcccdb ")
@@ -544,9 +545,9 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('c', ModItems.neutron_ingot.get())
                 .define('d', ModItems.neutron_pile.get())
                 .define('e', ModItems.infinity_catalyst.get())
-                .define('f',ModItems.upgrade_smithing_template.get())
+                .define('f', ModItems.upgrade_smithing_template.get())
                 .tier(4)
-                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer,Const.rl("upgrade_smithing_template_too"));
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer, Const.rl("upgrade_smithing_template_too"));
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)

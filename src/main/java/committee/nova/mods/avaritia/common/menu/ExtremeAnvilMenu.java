@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.menu;
 
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -20,7 +19,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -32,6 +30,7 @@ import java.util.Map;
 public class ExtremeAnvilMenu extends ItemCombinerMenu {
     private String itemName;
     public int repairItemCountCost;
+
     public ExtremeAnvilMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf buf) {
         this(pContainerId, pPlayerInventory, ContainerLevelAccess.NULL);
     }
@@ -98,7 +97,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                     }
 
                     int i3;
-                    for(i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
+                    for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
                         int j3 = itemstack1.getDamageValue() - l2;
                         itemstack1.setDamageValue(j3);
                         ++i;
@@ -128,7 +127,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                     }
 
                     Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(itemstack2);
-                    for(Enchantment enchantment1 : map1.keySet()) {
+                    for (Enchantment enchantment1 : map1.keySet()) {
                         if (enchantment1 != null) {
                             int i2 = map.getOrDefault(enchantment1, 0);
                             int j2 = map1.get(enchantment1);
@@ -214,7 +213,6 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
         }
     }
 
-    @Nullable
     private static String validateName(String pItemName) {
         String s = SharedConstants.filterText(pItemName);
         return s.length() <= 100 ? s : null;

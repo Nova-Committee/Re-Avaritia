@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -151,7 +150,6 @@ public class StringInputScreen extends Screen {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         this.renderBackground(graphics);
         // 绘制背景

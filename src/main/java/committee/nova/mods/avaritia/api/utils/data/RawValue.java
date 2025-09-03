@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.api.utils.data;
 
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ public class RawValue implements Ingredient.Value {
     @NotNull
     @Override
     public Collection<ItemStack> getItems() {
-        return Collections.singleton(new ItemStack(ForgeRegistries.ITEMS.getValue(this.item)));
+        return Collections.singleton(new ItemStack(BuiltInRegistries.ITEM.get(this.item)));
     }
 
     @NotNull

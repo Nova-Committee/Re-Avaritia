@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.api.utils.io;
 
-import javax.annotation.WillNotClose;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,7 +45,7 @@ public class IOUtil {
      * @param os The {@link OutputStream}.
      * @throws IOException If something is bork.
      */
-    public static void copy(@WillNotClose InputStream is, @WillNotClose OutputStream os) throws IOException {
+    public static void copy(InputStream is, OutputStream os) throws IOException {
         byte[] buffer = arrayCache.get();
         int len;
         while ((len = is.read(buffer)) != -1) {
@@ -63,7 +62,7 @@ public class IOUtil {
      * @param wc The {@link WritableByteChannel} to copy to.
      * @throws IOException If an IO Error occurred whilst copying.
      */
-    public static void copy(@WillNotClose ReadableByteChannel rc, @WillNotClose WritableByteChannel wc) throws IOException {
+    public static void copy(ReadableByteChannel rc, WritableByteChannel wc) throws IOException {
         ByteBuffer buffer = directBufferCache.get();
         buffer.clear();
         while (rc.read(buffer) != -1) {
@@ -87,7 +86,7 @@ public class IOUtil {
      * @param channel The channel to read from.
      * @param buffer  The buffer to fill.
      */
-    public static void fill(@WillNotClose ReadableByteChannel channel, ByteBuffer buffer) throws IOException {
+    public static void fill(ReadableByteChannel channel, ByteBuffer buffer) throws IOException {
         int toRead = buffer.remaining();
         int read = 0;
         int len;
@@ -106,7 +105,7 @@ public class IOUtil {
      * @return The bytes.
      * @throws IOException If something is bork.
      */
-    public static byte[] toBytes(@WillNotClose InputStream is) throws IOException {
+    public static byte[] toBytes(InputStream is) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         copy(is, os);
         return os.toByteArray();

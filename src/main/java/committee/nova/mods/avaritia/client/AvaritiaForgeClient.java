@@ -1,48 +1,26 @@
 package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.render.CCRenderState;
-import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
-import committee.nova.mods.avaritia.api.client.util.colour.Colour;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
-import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
-import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -50,7 +28,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,6 +61,7 @@ public class AvaritiaForgeClient {
     public static final KeyMapping SORT_9 = new KeyMapping("key.avaritia.infinity_chest.sort9", InputConstants.KEY_9, CATEGORIES);
 
     private static boolean keepFlying = false;
+
     /**
      * 在客户端Tick事件触发时执行
      *
@@ -115,7 +93,7 @@ public class AvaritiaForgeClient {
     /**
      * 处理无限鞘翅飞行逻辑
      *
-     * @param mc Minecraft客户端实例
+     * @param mc     Minecraft客户端实例
      * @param player 当前玩家对象
      */
     public static void handleInfinityElytraFallFlying(Minecraft mc, Player player) {
@@ -183,12 +161,12 @@ public class AvaritiaForgeClient {
 
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onItemTooltip(final ItemTooltipEvent e){
+    public static void onItemTooltip(final ItemTooltipEvent e) {
         if (!FMLLoader.isProduction() || ModConfig.useAdvanceTooltips.get()) {
             var stack = e.getItemStack();
             var tooltips = e.getToolTip();
             if (Screen.hasAltDown()) {
-                CompoundTag tag=stack.getTag();
+                CompoundTag tag = stack.getTag();
                 if (tag != null) {
                     addTagCompound("  ", tooltips, tag);
                 }
@@ -198,39 +176,40 @@ public class AvaritiaForgeClient {
 
     private static void addTagCompound(String prefix, List<Component> list, CompoundTag tag) {
         TreeSet<String> sortedKeys = new TreeSet<>(tag.getAllKeys());
-        for (String key: sortedKeys) {
-            Tag elem=tag.get(key);
-            switch(elem.getId()) {
-                case Tag.TAG_SHORT -> list.add(Component.literal(prefix+key+": §2"+tag.getShort(key)));
-                case Tag.TAG_INT -> list.add(Component.literal(prefix+key+": §3"+tag.getInt(key)));
-                case Tag.TAG_DOUBLE -> list.add(Component.literal(prefix+key+": §6"+tag.getDouble(key)));
-                case Tag.TAG_STRING -> list.add(Component.literal(prefix+key+": §8"+tag.getString(key)));
-                case Tag.TAG_BYTE -> list.add(Component.literal(prefix+key+": §9"+tag.getByte(key)));
+        for (String key : sortedKeys) {
+            Tag elem = tag.get(key);
+            switch (elem.getId()) {
+                case Tag.TAG_SHORT -> list.add(Component.literal(prefix + key + ": §2" + tag.getShort(key)));
+                case Tag.TAG_INT -> list.add(Component.literal(prefix + key + ": §3" + tag.getInt(key)));
+                case Tag.TAG_DOUBLE -> list.add(Component.literal(prefix + key + ": §6" + tag.getDouble(key)));
+                case Tag.TAG_STRING -> list.add(Component.literal(prefix + key + ": §8" + tag.getString(key)));
+                case Tag.TAG_BYTE -> list.add(Component.literal(prefix + key + ": §9" + tag.getByte(key)));
                 case Tag.TAG_LIST -> {
-                    list.add(Component.literal(prefix+key+": §9List, "+((ListTag)elem).size()+" items"));
+                    list.add(Component.literal(prefix + key + ": §9List, " + ((ListTag) elem).size() + " items"));
                     if (Screen.hasShiftDown()) {
-                        for (Tag key1 : (ListTag)elem) {
-                            addTagCompound(prefix+"    ", list, (CompoundTag)key1);
+                        for (Tag key1 : (ListTag) elem) {
+                            addTagCompound(prefix + "    ", list, (CompoundTag) key1);
                         }
                     }
                 }
                 case Tag.TAG_COMPOUND -> {
-                    list.add(Component.literal(prefix+key+": §aCompound"));
+                    list.add(Component.literal(prefix + key + ": §aCompound"));
                     if (Screen.hasShiftDown()) {
-                        addTagCompound(prefix + "    ", list, (CompoundTag)elem);
+                        addTagCompound(prefix + "    ", list, (CompoundTag) elem);
                     }
                 }
-                default -> list.add(Component.literal(prefix + key + ": Type "+ elem.getType()));
+                default -> list.add(Component.literal(prefix + key + ": Type " + elem.getType()));
             }
         }
     }
+
     /**
      * 渲染黑暗遮罩
      *
      * @param guiGraphics GUI图形对象
-     * @param width 屏幕宽度
-     * @param height 屏幕高度
-     * @param intensity 黑暗强度
+     * @param width       屏幕宽度
+     * @param height      屏幕高度
+     * @param intensity   黑暗强度
      */
     private static void renderDarknessOverlay(GuiGraphics guiGraphics, int width, int height, float intensity) {
         // 使用纯黑色渲染一个覆盖整个屏幕的矩形，透明度由intensity决定
@@ -244,11 +223,12 @@ public class AvaritiaForgeClient {
             renderDarknessOverlay(guiGraphics, screenWidth, screenHeight, darknessIntensity);
         }
     };
+
     /**
      * 计算玩家附近终望珍珠的黑暗强度
      *
      * @param player 玩家
-     * @param level 世界
+     * @param level  世界
      */
     private static void calculateDarknessIntensity(Player player, Level level) {
 
@@ -261,7 +241,7 @@ public class AvaritiaForgeClient {
             double distance = playerPos.distanceTo(pearl.position());
             if (distance < maxDistance) {
 
-            //(distance-x)/y,x是完全黑屏的距离,y则是maxDistance-x
+                //(distance-x)/y,x是完全黑屏的距离,y则是maxDistance-x
                 float intensity = (float) Math.max(0.0, 1.0 - Math.max(0.0, (distance - 4.0) / 6.0));
                 if (intensity > maxIntensity) {
                     maxIntensity = intensity;

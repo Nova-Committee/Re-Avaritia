@@ -1,8 +1,7 @@
 package committee.nova.mods.avaritia.api.common.wrapper;
 
+import io.github.fabricators_of_create.porting_lib.core.util.INBTSerializable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandlerModifiable;
 
 /**
  * @Project: Avaritia

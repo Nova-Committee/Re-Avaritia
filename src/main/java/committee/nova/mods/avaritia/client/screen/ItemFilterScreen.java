@@ -51,7 +51,7 @@ public class ItemFilterScreen extends Screen {
     /**
      * 储存的物品
      */
-    private List<ItemStack> itemList = new ArrayList<>();
+    private final List<ItemStack> itemList = new ArrayList<>();
     /**
      * 显示的标签
      */
@@ -143,13 +143,13 @@ public class ItemFilterScreen extends Screen {
                 , GuiUtils.textToComponent(Text.i18n("删除"))
                 , button -> {
                     this.itemList.remove(this.currentItem);
-                    if (this.currentItem != null) NetworkHandler.CHANNEL.sendToServer(new C2SItemFilterPack(1, this.currentItem));
+                    if (this.currentItem != null)
+                        NetworkHandler.CHANNEL.sendToServer(new C2SItemFilterPack(1, this.currentItem));
                     Minecraft.getInstance().setScreen(null);
                 }));
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
         this.renderBackground(graphics);
@@ -243,9 +243,9 @@ public class ItemFilterScreen extends Screen {
     }
 
 
-        /**
-         * 更新物品列表
-         */
+    /**
+     * 更新物品列表
+     */
     private void updateItems() {
         if (Minecraft.getInstance().player != null) {
             this.itemList.clear();

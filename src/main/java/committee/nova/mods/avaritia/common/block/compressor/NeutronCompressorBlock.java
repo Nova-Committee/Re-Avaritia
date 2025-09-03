@@ -3,10 +3,8 @@ package committee.nova.mods.avaritia.common.block.compressor;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
-import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,11 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.RedstoneSide;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NeutronCompressorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+
     public NeutronCompressorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);
         this.registerDefaultState(
@@ -67,7 +63,7 @@ public class NeutronCompressorBlock extends BaseTileEntityBlock {
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof NeutronCompressorTile compressor) {
-                NetworkHooks.openScreen((ServerPlayer) player, compressor, pos);
+                player.openMenu(compressor);
             }
         }
 

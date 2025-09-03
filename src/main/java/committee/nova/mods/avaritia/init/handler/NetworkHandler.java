@@ -31,7 +31,6 @@ public class NetworkHandler {
         return true;
     });
     public static int id = 0;
-    ;
 
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {

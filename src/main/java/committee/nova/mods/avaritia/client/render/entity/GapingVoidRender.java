@@ -11,14 +11,14 @@ import committee.nova.mods.avaritia.api.client.util.colour.Colour;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/3 10:34
  * Version: 1.0
  */
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);

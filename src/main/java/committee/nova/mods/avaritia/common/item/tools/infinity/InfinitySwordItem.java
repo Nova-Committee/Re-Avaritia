@@ -61,7 +61,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
         if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
             var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
-            if (victim instanceof EnderDragon dragon ) {
+            if (victim instanceof EnderDragon dragon) {
                 dragon.hurt(dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());
             } else if (victim instanceof Player pvp) {
                 if (ToolUtils.isInfinite(pvp)) {
@@ -112,7 +112,6 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
             victim.hurtTime = victim.hurtDuration;
 
 
-
             Entity entity1 = pSource.getEntity();
             if (entity1 != null) {
                 if (entity1 instanceof LivingEntity livingentity1) {
@@ -147,7 +146,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
                 double d0 = entity1.getX() - victim.getX();
 
                 double d1;
-                for(d1 = entity1.getZ() - victim.getZ(); d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
+                for (d1 = entity1.getZ() - victim.getZ(); d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
                     d0 = (Math.random() - Math.random()) * 0.01D;
                 }
 
@@ -169,11 +168,11 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
             victim.lastDamageStamp = victim.level().getGameTime();
 
             if (victim instanceof ServerPlayer) {
-                CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer)victim, pSource, pAmount, pAmount, flag);
+                CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) victim, pSource, pAmount, pAmount, flag);
             }
 
             if (entity1 instanceof ServerPlayer) {
-                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer)entity1, victim, pSource, pAmount, pAmount, flag);
+                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) entity1, victim, pSource, pAmount, pAmount, flag);
             }
 
             return flag2;
@@ -181,7 +180,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
     }
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {
-        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(victim, pDamageSource)) return;
+//        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(victim, pDamageSource)) return;
         if (!victim.isRemoved() && !victim.dead) {
             Entity entity = pDamageSource.getEntity();
             LivingEntity livingentity = victim.getKillCredit();
@@ -207,7 +206,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
                     this.createWitherRose(victim, livingentity);
                 }
 
-                victim.level().broadcastEntityEvent(victim, (byte)3);
+                victim.level().broadcastEntityEvent(victim, (byte) 3);
             }
 
             victim.setPose(Pose.DYING);
@@ -218,14 +217,14 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
         if (!victim.level().isClientSide) {
             boolean flag = false;
             if (pEntitySource instanceof WitherBoss) {
-                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(victim.level(), pEntitySource)) {
-                    BlockPos blockpos = victim.blockPosition();
-                    BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
-                    if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
-                        victim.level().setBlock(blockpos, blockstate, 3);
-                        flag = true;
-                    }
+//                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(victim.level(), pEntitySource)) {
+                BlockPos blockpos = victim.blockPosition();
+                BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
+                if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
+                    victim.level().setBlock(blockpos, blockstate, 3);
+                    flag = true;
                 }
+//                }
 
                 if (!flag) {
                     ItemEntity itementity = new ItemEntity(victim.level(), victim.getX(), victim.getY(), victim.getZ(), new ItemStack(Items.WITHER_ROSE));
@@ -235,6 +234,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
 
         }
     }
+
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);

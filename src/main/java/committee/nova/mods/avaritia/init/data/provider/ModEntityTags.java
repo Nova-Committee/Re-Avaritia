@@ -10,7 +10,6 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.util.ProviderActivator;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -23,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
  * Description
  */
 
-public class ModEntityTags extends  EntityTypeTagsProvider {
+public class ModEntityTags extends EntityTypeTagsProvider {
 
     public ModEntityTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, future, Const.MOD_ID, existingFileHelper);
@@ -39,7 +38,7 @@ public class ModEntityTags extends  EntityTypeTagsProvider {
         //vanilla
         tag(EntityTypeTags.IMPACT_PROJECTILES).add(ModEntities.ENDER_PEARL.get());
         ForgeRegistries.ENTITY_TYPES.getValues().forEach(entityType -> {
-            if (entityType.getCategory() == MobCategory.CREATURE){
+            if (entityType.getCategory() == MobCategory.CREATURE) {
                 tag(ModTags.NEUTRAL_CREATURES).add(entityType);
             }
         });
