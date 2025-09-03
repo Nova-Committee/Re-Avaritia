@@ -1,0 +1,46 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "avaritia:neutron_gear"
+    },
+    "B": {
+      "item": "avaritia:neutron_pile"
+    },
+    "C": {
+      "item": "avaritia:blaze_cube"
+    },
+    "D": {
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "avaritia:singularity",
+      "nbt": "{Id:\"avaritia:gold\"}"
+    },
+    "E": {
+      "item": "avaritia:blaze_cube_block"
+    },
+    "F": {
+      "item": "minecraft:gold_block"
+    },
+    "G": {
+      "item": "avaritia:dense_neutron_compressor"
+    }
+  },
+  "pattern": [
+    "ABB F BBA",
+    "BCC   CCB",
+    "BCDEEEDCB",
+    "  EGGGE  ",
+    "F EGEGE F",
+    "  EGGGE  ",
+    "BCDEEEDCB",
+    "BCC   CCB",
+    "ABB F BBA"
+  ],
+  "result": {
+    "item": "avaritia:denser_neutron_compressor"
+  },
+  "show_notification": true,
+  "tier": 4
+}
