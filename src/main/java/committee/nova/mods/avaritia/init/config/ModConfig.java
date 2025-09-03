@@ -18,7 +18,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.BooleanValue isMergeMatterCluster;
     public static final ForgeConfigSpec.IntValue swordRangeDamage;
     public static final ForgeConfigSpec.IntValue swordAttackRange;
-    public static final ForgeConfigSpec.BooleanValue isSwordAttackAnimal;
+//    public static final ForgeConfigSpec.BooleanValue isSwordAttackAnimal;
     public static final ForgeConfigSpec.BooleanValue isSwordAttackLightning;
     public static final ForgeConfigSpec.BooleanValue isSwordAttackEndless;
     public static final ForgeConfigSpec.IntValue subArrowDamage;
@@ -62,7 +62,7 @@ public class ModConfig {
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", true, "Whether to merge matter cluster");
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
-        isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
+//        isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
         isSwordAttackLightning = buildBoolean(common, "Is Sword Cause Lightning", false, "Does the right key spawn lightning with range of attack");
         isSwordAttackEndless = buildBoolean(common, "Is Sword Cause Endless damage", true, "Does the right key cause infinity damage");
         subArrowDamage = buildInt(common, "Sub Arrow Damage", 10000, 100, 100000, "Infinity bow scattering light arrow damage");

@@ -1,11 +1,13 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.ToolUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -46,7 +48,7 @@ import java.util.List;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
+public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISwitchable {
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY, 900, 0F, (new Properties())
                 .rarity(ModRarities.COSMIC)
@@ -237,9 +239,19 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
     }
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
+        var itemstack = player.getItemInHand(hand);
+        if (player.isCrouching()) {
+            switchMode(level, player, hand, "infinity_sword_kill");
+            return InteractionResultHolder.success(itemstack);
+        }
         var heldItem = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), ModConfig.isSwordAttackAnimal.get(), ModConfig.isSwordAttackLightning.get());
+            if (isActive(itemstack, "infinity_sword_kill")){
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
+            }
+            else {
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());
+            }
             player.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
         level.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
@@ -282,5 +294,9 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem {
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.MOB_LOOTING.getFullname(10)).build());
+
+        if (isActive(stack, "infinity_sword_kill")) {
+            tooltipComponents.add(Component.translatable("tooltip.avaritia.sword_kill_mode.active").withStyle(net.minecraft.ChatFormatting.RED));
+        }
     }
 }

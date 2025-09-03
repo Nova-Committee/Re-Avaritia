@@ -9,15 +9,27 @@ import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.Util;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddPackFindersEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forgespi.locating.IModFile;
 import org.jetbrains.annotations.NotNull;
+
+import java.nio.file.Path;
 
 /**
  * Description:
@@ -33,9 +45,9 @@ public class Avaritia {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(ModDataGen::gatherData);
-
+        bus.addListener(this::addPackFinders);
         var forgeBus = MinecraftForge.EVENT_BUS;
-
+        forgeBus.addListener(this::onServerAboutToStart);
 
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
@@ -58,5 +70,26 @@ public class Avaritia {
             }
         });
     }
+    private void addPackFinders(AddPackFindersEvent event) {
+        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
+            IModFile modFile = ModList.get().getModFileById(Const.MOD_ID).getFile();
+            Path resourcePath = modFile.findResource("resourcepacks", "avaritia");
+            var pack = Pack.readMetaAndCreate(
+                    "avaritia:default",
+                    Component.literal("Avaritia Default Resources"),
+                    false,
+                    (path) -> new net.minecraft.server.packs.PathPackResources("avaritia", resourcePath, false),
+                    PackType.CLIENT_RESOURCES,
+                    Pack.Position.TOP,
+                    PackSource.BUILT_IN
+            );
+            if (pack != null) {
+                event.addRepositorySource((infoConsumer) -> infoConsumer.accept(pack));
+            }
+        }
+    }
 
+    private void onServerAboutToStart(ServerAboutToStartEvent event) {
+
+    }
 }

@@ -3,10 +3,7 @@ package committee.nova.mods.avaritia.client;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
-import committee.nova.mods.avaritia.client.model.CosmicModelLoader;
-import committee.nova.mods.avaritia.client.model.EternalModelLoader;
-import committee.nova.mods.avaritia.client.model.HaloModelLoader;
-import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
+import committee.nova.mods.avaritia.client.model.*;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -92,6 +89,7 @@ public class AvaritiaModClient {
         event.register("cosmic", CosmicModelLoader.INSTANCE);
         event.register("halo", HaloModelLoader.INSTANCE);
         event.register("eternal", EternalModelLoader.INSTANCE);
+        event.register("hell", HellModelLoader.INSTANCE);
     }
 
     @SubscribeEvent

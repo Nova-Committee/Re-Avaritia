@@ -12,8 +12,8 @@
       "model": "avaritia:item/infinity_sword_kill"
     }
   ],
-  "loader": "avaritia:cosmic",
-  "cosmic": {
+  "loader": "avaritia:eternal",
+  "eternal": {
     "mask": "avaritia:mask/infinity_sword_mask"
   }
 }

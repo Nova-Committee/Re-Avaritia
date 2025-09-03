@@ -34,6 +34,7 @@ public class AvaritiaShaders {
     public static CCShaderInstance COSMIC_SHADER;
     public static CCShaderInstance COSMIC_ARMOR_SHADER;
     public static CCShaderInstance ETERNAL_SHADER;
+    public static CCShaderInstance HELL_SHADER;
 
     public static Uniform cosmicTime;
     public static Uniform cosmicYaw;
@@ -56,14 +57,23 @@ public class AvaritiaShaders {
     public static Uniform eternalOpacity;
     public static Uniform eternalUVs;
 
+    public static Uniform hellTime;
+    public static Uniform hellYaw;
+    public static Uniform hellPitch;
+    public static Uniform hellExternalScale;
+    public static Uniform hellOpacity;
+    public static Uniform hellUVs;
+
     public static void onRegisterShaders(RegisterShadersEvent event) {
         COSMIC_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK);
         COSMIC_ARMOR_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.NEW_ENTITY);
         ETERNAL_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "eternal"), DefaultVertexFormat.BLOCK);
+        HELL_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "hell"), DefaultVertexFormat.BLOCK);
 
         event.registerShader(COSMIC_SHADER, AvaritiaShaders::cosmicShader);
         event.registerShader(COSMIC_ARMOR_SHADER, AvaritiaShaders::cosmicArmorShader);
         event.registerShader(ETERNAL_SHADER, AvaritiaShaders::eternalShader);
+        event.registerShader(HELL_SHADER, AvaritiaShaders::hellShader);
     }
 
     public static void cosmicShader(ShaderInstance e){
@@ -107,6 +117,22 @@ public class AvaritiaShaders {
             eternalTime.set((float) renderTime + renderFrame);
         });
     }
+
+    public static void hellShader(ShaderInstance e){
+        HELL_SHADER = (CCShaderInstance) e;
+        hellTime = Objects.requireNonNull(HELL_SHADER.getUniform("time"));
+        hellYaw = Objects.requireNonNull(HELL_SHADER.getUniform("yaw"));
+        hellPitch = Objects.requireNonNull(HELL_SHADER.getUniform("pitch"));
+        hellExternalScale = Objects.requireNonNull(HELL_SHADER.getUniform("externalScale"));
+        hellOpacity = Objects.requireNonNull(HELL_SHADER.getUniform("opacity"));
+        hellUVs = Objects.requireNonNull(HELL_SHADER.getUniform("cosmicuvs"));
+        hellTime.set((float) renderTime + renderFrame);
+        HELL_SHADER.onApply(() -> {
+            hellTime.set((float) renderTime + renderFrame);
+        });
+    }
+
+
 
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
