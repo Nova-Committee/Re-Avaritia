@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${mod_version}",
+	"name": "${mod_name}",
+	"description": "${mod_description}",
+	"authors": [
+		"${mod_authors}"
+	],
+	"contact": {
+		"issues": "${issue_tracker}"
+	},
+	"license": "${mod_license}",
+	"icon": "logo.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.Avaritia"
+		],
+		"fabric-datagen": [
+			"com.example.AvaritiaDataGenerator"
+		]
+	},
+	"mixins": [
+		"avaritia.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "${mc_range}",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
