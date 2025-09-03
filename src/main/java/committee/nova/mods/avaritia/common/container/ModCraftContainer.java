@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class ModCraftContainer extends TransientCraftingContainer {
-    private final AbstractContainerMenu container;
+    private final AbstractContainerMenu menu;
     private final ItemStackWrapper inventory;
     private final boolean autoTable;
 
@@ -24,7 +24,7 @@ public class ModCraftContainer extends TransientCraftingContainer {
 
     public ModCraftContainer(AbstractContainerMenu menu, ItemStackWrapper inventory, int size, boolean autoTable) {
         super(menu, size, size);
-        this.container = menu;
+        this.menu = menu;
         this.inventory = inventory;
         this.autoTable = autoTable;
     }
@@ -52,25 +52,21 @@ public class ModCraftContainer extends TransientCraftingContainer {
     @Override
     public @NotNull ItemStack removeItem(int slot, int amount) {
         var stack = this.inventory.extractItemSuper(slot, amount, false);
-
-        this.container.slotsChanged(this);
-
+        this.menu.slotsChanged(this);
         return stack;
     }
 
     @Override
     public @NotNull ItemStack removeItemNoUpdate(int slot) {
         var stack = this.inventory.getStackInSlot(slot);
-
         this.inventory.setStackInSlot(slot, ItemStack.EMPTY);
-
         return stack;
     }
 
     @Override
     public void setItem(int slot, @NotNull ItemStack stack) {
         this.inventory.setStackInSlot(slot, stack);
-        this.container.slotsChanged(this);
+        this.menu.slotsChanged(this);
     }
 
     @Override

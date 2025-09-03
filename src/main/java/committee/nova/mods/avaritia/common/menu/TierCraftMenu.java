@@ -46,7 +46,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
         var matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
 
-        this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, 0, tier.outX, tier.outY));
+        this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, tier.size * tier.size, tier.outX, tier.outY));
 
         int i, j;
         for (i = 0; i < tier.size; i++) {
@@ -102,9 +102,12 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
+        if (this.level.isClientSide) {
+            return;
+        }
         var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), matrix, this.world);
 
-        if (recipe.isPresent()) {
+        if (recipe.isPresent() && !matrix.isEmpty()) {
             var result = recipe.get().assemble(matrix, this.world.registryAccess());
             this.result.setItem(0, result);
         } else {
