@@ -15,6 +15,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -117,18 +118,33 @@ public class ExtremeAnvilBlock extends FallingBlock{
         if (!pFallingBlock.isSilent()) {
             pLevel.levelEvent(1031, pPos, 0);
         }
+
+        // 当铁砧落地时，重新放置方块而不是破坏它
+        if (!pLevel.isClientSide) {
+            pLevel.setBlock(pPos, pState, 3);
+        }
     }
 
     @Override
     public void onBrokenAfterFall(@NotNull Level pLevel, @NotNull BlockPos pPos, FallingBlockEntity pFallingBlock) {
+
         if (!pFallingBlock.isSilent()) {
             pLevel.levelEvent(1029, pPos, 0);
+        }
+
+        if (!pLevel.isClientSide) {
+            pLevel.setBlock(pPos, this.defaultBlockState(), 3);
         }
     }
 
     @Override
     public @NotNull DamageSource getFallDamageSource(Entity pEntity) {
-        return pEntity.damageSources().anvil(pEntity);
+        return pEntity.damageSources().fallingBlock(pEntity);
+    }
+
+    @Override
+    public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
+        super.stepOn(pLevel, pPos, pState, pEntity);
     }
 
     @Override
@@ -149,5 +165,10 @@ public class ExtremeAnvilBlock extends FallingBlock{
     @Override
     public int getDustColor(BlockState pState, @NotNull BlockGetter pReader, @NotNull BlockPos pPos) {
         return pState.getMapColor(pReader, pPos).col;
+    }
+
+    @Override
+    public boolean dropFromExplosion(net.minecraft.world.level.Explosion pExplosion) {
+        return false;
     }
 }

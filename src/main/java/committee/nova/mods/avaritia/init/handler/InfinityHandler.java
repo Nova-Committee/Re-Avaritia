@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
+import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
@@ -20,9 +21,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
@@ -343,6 +347,25 @@ public class InfinityHandler {
                 level.addFreshEntity(immortalEntity);
             }
             event.setCanceled(true);
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void onEntityHurting(LivingHurtEvent event) {
+        if (event.getSource().is(DamageTypes.FALLING_BLOCK)) {
+            Entity sourceEntity = event.getSource().getDirectEntity();
+            if (sourceEntity instanceof FallingBlockEntity fallingBlock) {
+                Block block = fallingBlock.getBlockState().getBlock();
+
+                if (block instanceof ExtremeAnvilBlock) {
+                    LivingEntity entity = event.getEntity();
+                    float damage = event.getAmount();
+                    float newHealth = Math.max(0.0F, entity.getHealth() - damage);
+                    entity.setHealth(newHealth);
+                    event.setCanceled(true);
+                }
+            }
         }
     }
 }

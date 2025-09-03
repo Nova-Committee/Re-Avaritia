@@ -40,7 +40,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ITierCrafti
     private final IDrawable icon;
 
     public ExtremeCraftingTableCategory(IGuiHelper helper) {
-        this.background = helper.createDrawable(TEXTURE, 0, 0, 190, 163);
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 256, 256);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.extreme_crafting_table.get()));
     }
 
