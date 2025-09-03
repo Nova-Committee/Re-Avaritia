@@ -76,7 +76,7 @@ public class Avaritia {
             Path resourcePath = modFile.findResource("resourcepacks", "avaritia");
             var pack = Pack.readMetaAndCreate(
                     "avaritia:default",
-                    Component.literal("Avaritia Default Resources"),
+                    Component.translatable("title.avaritia.resourcepack"),
                     false,
                     (path) -> new net.minecraft.server.packs.PathPackResources("avaritia", resourcePath, false),
                     PackType.CLIENT_RESOURCES,
