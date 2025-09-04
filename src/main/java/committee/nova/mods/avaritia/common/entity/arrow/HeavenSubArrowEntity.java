@@ -74,6 +74,9 @@ public class HeavenSubArrowEntity extends Arrow {
         Entity entity = result.getEntity();
         final float HEAVEN_ARROW_DAMAGE = 200f;
         if (getOwner() != null) {
+            if (entity == getOwner()) {
+                return;
+            }
             entity.hurt(ModDamageTypes.causeRandomDamage(this.getOwner()), HEAVEN_ARROW_DAMAGE);
         }
         this.discard();

@@ -1,6 +1,7 @@
 {
   "itemGroup.tab.Infinity": "Re:Avaritia",
   "itemGroup.tab.Singularity": "Avaritia:Singularity",
+  "title.avaritia.resourcepack": "Avaritia Old Resourcepack",
   "item.avaritia.matter_cluster": "Matter Cluster",
   "item.avaritia.full_matter_cluster": "Full Matter Cluster",
   "item.avaritia.infinity_helmet": "Infinity Helmet",
@@ -8,6 +9,8 @@
   "item.avaritia.infinity_pants": "Infinity Pants",
   "item.avaritia.infinity_boots": "Infinity Boots",
   "item.avaritia.infinity_sword": "Sword of the Cosmos",
+  "tooltip.avaritia.sword_kill_mode.active": "Kill all you can see.",
+  "tooltip.avaritia.tool.infinity_sword_kill": "Slaughter",
   "item.avaritia.infinity_shovel": "Planet Eater",
   "item.avaritia.infinity_pickaxe": "World Breaker",
   "item.avaritia.infinity_axe": "Nature's Ruin",

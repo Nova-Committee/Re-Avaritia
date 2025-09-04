@@ -3,8 +3,8 @@
   "textures": {
     "layer0": "avaritia:item/test_sword"
   },
-  "loader": "avaritia:eternal",
-  "eternal": {
+  "loader": "avaritia:hell",
+  "hell": {
     "mask": "avaritia:mask/test_sword_mask"
   }
 }

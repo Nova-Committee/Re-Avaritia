@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "avaritia:item/resource/singularity/eternal_singularity",
+    "layer1": "avaritia:item/resource/singularity/eternal_singularity2"
+  },
+  "loader": "avaritia:eternal",
+  "eternal": {
+    "mask": "avaritia:mask/eternal_singularity_mask"
+  }
+}

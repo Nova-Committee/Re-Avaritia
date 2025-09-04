@@ -42,6 +42,9 @@ public class ItemOverrideHandler {
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("track"), (itemStack, world, livingEntity, d) -> {
                 return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer") ? 1 : 0;
             });
+            setPropertyOverride(ModItems.infinity_sword.get(), Const.rl("kill"), (itemStack, world, livingEntity, d) -> {
+                return itemStack.getOrCreateTagElement("mode").getBoolean("infinity_sword_kill") ? 1 : 0;
+            });
             setPropertyOverride(ModItems.matter_cluster.get(), Const.rl("cap"), (itemStack, world, livingEntity, d) -> {
                 return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
             });

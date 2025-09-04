@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -12,6 +13,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,7 +54,6 @@ public class BladeSlashEntity extends Projectile {
         this(worldIn, livingEntityIn, damageModifier);
         this.duration += durationModifier;
     }
-
     @Override
     protected void defineSynchedData() {
 
@@ -66,7 +67,14 @@ public class BladeSlashEntity extends Projectile {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
-        result.getEntity().hurt(level().damageSources().fellOutOfWorld(), damage);
+
+        if (this.getOwner() instanceof Player player) {
+            result.getEntity().hurt(this.damageSources().playerAttack(player), damage);
+        } else if (this.getOwner() instanceof LivingEntity livingEntity) {
+            result.getEntity().hurt(this.damageSources().mobAttack(livingEntity), damage);
+        } else {
+            result.getEntity().hurt(this.damageSources().generic(), damage);
+        }
     }
 
     @Override

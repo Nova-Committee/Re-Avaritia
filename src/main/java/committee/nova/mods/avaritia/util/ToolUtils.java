@@ -38,6 +38,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Npc;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -457,35 +458,43 @@ public class ToolUtils {
      */
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
         if (player.level().isClientSide) return;
-        AABB aabb = player.getBoundingBox().deflate(range);
+        AABB aabb = player.getBoundingBox().inflate(range, range, range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
         toAttack.stream()
-                .filter(entity -> entity instanceof Mob)
-                .filter(entity -> !entity.getType().is(ModTags.NEUTRAL_CREATURES))
-                .filter(entity -> !(entity instanceof Npc))
+//                .filter(entity -> entity instanceof LivingEntity)
+//                .filter(entity -> !(entity instanceof Npc))
+                .filter(entity -> !(entity instanceof ItemEntity))
+                .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
+                .filter(entity -> {
+                    if (hurtAnimal) {
+                        return true;
+                    } else {
+                        return entity instanceof Enemy && !entity.getType().is(ModTags.NEUTRAL_CREATURES);
+                    }
+                })
                 .forEach(entity -> {
-                    if (entity instanceof Mob mob) {
-                        if (mob instanceof Animal animal && hurtAnimal) {
-                            animal.hurt(src, damage);
-                        } else if (mob instanceof EnderDragon dragon) {
+                    if (entity instanceof LivingEntity livingEntity) {
+                        if (livingEntity instanceof EnderDragon dragon) {
                             dragon.hurt(dragon.head, src, Float.POSITIVE_INFINITY);
-                        } else if (mob instanceof WitherBoss wither) {
+                        } else if (livingEntity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
                             wither.hurt(src, damage);
-                        } else if (!(mob instanceof Animal)) {
-                            mob.hurt(src, damage);
+                        } else {
+                            livingEntity.hurt(src, damage);
                         }
+                    } else if (entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
+                        entity.discard();
+                    } else if (entity instanceof Entity) {
+                        entity.hurt(src, damage);
                     }
                     LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
                     if (lightOn && lightningbolt != null) {
-                        if (!(entity instanceof Animal && hurtAnimal)) {
-                            lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
-                            lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
-                            player.level().addFreshEntity(lightningbolt);
-                        }
+                        lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
+                        lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
+                        player.level().addFreshEntity(lightningbolt);
                     }
-        });
+                });
     }
 
 

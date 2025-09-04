@@ -18,8 +18,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 /**
  * Description:
  * Author: cnlimiter
@@ -56,7 +54,7 @@ public class ResourceReloadHandler {
     @SubscribeEvent
     public static void addPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            var resourcePath = ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia_vanilla");
+            var resourcePath = ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia");
             var pack = new PathPackResources(ModList.get().getModFileById(Const.MOD_ID).getFile().getFileName() + ":" + resourcePath, resourcePath, false);
             Pack.ResourcesSupplier resourcesSupplier = (string) -> pack;
             Pack.Info info = Pack.readPackInfo("avaritia_vanilla", resourcesSupplier);

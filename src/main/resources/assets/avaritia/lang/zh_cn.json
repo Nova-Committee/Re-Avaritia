@@ -1,6 +1,7 @@
 {
   "itemGroup.tab.Infinity": "无尽：重生",
   "itemGroup.tab.Singularity": "无尽：奇点",
+  "title.avaritia.resourcepack": "无尽贪婪旧版纹理",
   "item.avaritia.matter_cluster": "物质团",
   "item.avaritia.full_matter_cluster": "满载物质团",
   "item.avaritia.infinity_helmet": "无尽头盔",
@@ -8,6 +9,8 @@
   "item.avaritia.infinity_pants": "无尽护腿",
   "item.avaritia.infinity_boots": "无尽靴子",
   "item.avaritia.infinity_sword": "寰宇支配之剑",
+  "tooltip.avaritia.sword_kill_mode.active": "戮杀你所看到的一切",
+  "tooltip.avaritia.tool.infinity_sword_kill": "杀戮",
   "item.avaritia.infinity_shovel": "星球吞噬之铲",
   "item.avaritia.infinity_pickaxe": "世界崩解之镐",
   "item.avaritia.infinity_axe": "自然荒芜之斧",
