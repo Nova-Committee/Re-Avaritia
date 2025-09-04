@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
 import committee.nova.mods.avaritia.api.client.util.colour.Colour;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
+import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
@@ -71,6 +72,7 @@ public class AvaritiaForgeClient {
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
             InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
+    public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);
 
     public static final KeyMapping SORT_0 = new KeyMapping("key.avaritia.infinity_chest.sort0", InputConstants.KEY_0, CATEGORIES);
     public static final KeyMapping SORT_1 = new KeyMapping("key.avaritia.infinity_chest.sort1", InputConstants.KEY_1, CATEGORIES);
@@ -97,6 +99,10 @@ public class AvaritiaForgeClient {
         Player player = mc.player;
         Level level = mc.level;
         if (player == null || level == null) return;
+
+        if (CONFIG_KEY.consumeClick()) {
+            mc.setScreen(new AvaritiaConfigScreen(mc.screen));
+        }
 
         // region filter 过滤界面
         while (FILTER_KEY.consumeClick()) {
@@ -261,7 +267,7 @@ public class AvaritiaForgeClient {
             double distance = playerPos.distanceTo(pearl.position());
             if (distance < maxDistance) {
 
-            //(distance-x)/y,x是完全黑屏的距离,y则是maxDistance-x
+                //(distance-x)/y,x是完全黑屏的距离,y则是maxDistance-x
                 float intensity = (float) Math.max(0.0, 1.0 - Math.max(0.0, (distance - 4.0) / 6.0));
                 if (intensity > maxIntensity) {
                     maxIntensity = intensity;

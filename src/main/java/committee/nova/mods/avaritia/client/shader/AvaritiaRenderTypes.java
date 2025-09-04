@@ -61,7 +61,7 @@ public class AvaritiaRenderTypes {
     );
 
     public static RenderType HELL = RenderType.create(
-            Const.rl("eternal").toString(), DefaultVertexFormat.BLOCK,
+            Const.rl("hell").toString(), DefaultVertexFormat.BLOCK,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
                     .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.HELL_SHADER))

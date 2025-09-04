@@ -164,6 +164,32 @@ ServerEvents.recipes(
   ]
 }
 ```
+### **Dependencies:**
+```groovy
+plugins {
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+repositories {
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        url = "https://repo.spongepowered.org/repository/maven-public"
+    }
+}
+
+dependencies {
+
+    implementation fg.deobf("curse.maven:re-avaritia-623969:${avaritia_version}")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1"))
+}
+
+```
 
 
 

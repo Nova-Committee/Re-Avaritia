@@ -240,11 +240,11 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
+        var heldItem = player.getItemInHand(hand);
         if (player.isCrouching()) {
             switchMode(level, player, hand, "infinity_sword_kill");
             return InteractionResultHolder.success(itemstack);
         }
-        var heldItem = player.getItemInHand(hand);
         if (!level.isClientSide) {
             if (isActive(itemstack, "infinity_sword_kill")){
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());

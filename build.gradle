@@ -122,7 +122,7 @@ dependencies {
     implementation fg.deobf("curse.maven:mekanism-268560:${mek_version}")
     runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:${ae2_version}")
 
-    implementation fg.deobf("curse.maven:configured-457570:${configured_version}")
+//    implementation fg.deobf("curse.maven:configured-457570:${configured_version}")
     compileOnly ("org.projectlombok:lombok:$lombok_version")
     annotationProcessor ("org.projectlombok:lombok:$lombok_version")
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
