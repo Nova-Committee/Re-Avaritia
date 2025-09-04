@@ -26,7 +26,7 @@ public class AvaritiaConfigScreen extends Screen {
     private Button backButton;
 
     public AvaritiaConfigScreen(Screen parent) {
-        super(Component.translatable("screen.avaritia.config.title"));
+        super(Component.translatable("title.avaritia.config.title"));
         this.parent = parent;
         initConfigEntries();
     }
