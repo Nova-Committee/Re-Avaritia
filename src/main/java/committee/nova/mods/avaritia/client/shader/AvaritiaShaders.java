@@ -71,7 +71,7 @@ public class AvaritiaShaders {
         HELL_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "hell"), DefaultVertexFormat.BLOCK);
 
         event.registerShader(COSMIC_SHADER, AvaritiaShaders::cosmicShader);
-        event.registerShader(COSMIC_ARMOR_SHADER, AvaritiaShaders::cosmicArmorShader);
+        event.registerShader(COSMIC_ARMOR_SHADER, AvaritiaShaders::cosmicShader);
         event.registerShader(ETERNAL_SHADER, AvaritiaShaders::eternalShader);
         event.registerShader(HELL_SHADER, AvaritiaShaders::hellShader);
     }
