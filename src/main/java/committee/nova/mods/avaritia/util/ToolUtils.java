@@ -464,9 +464,9 @@ public class ToolUtils {
         toAttack.stream()
 //                .filter(entity -> entity instanceof LivingEntity)
 //                .filter(entity -> !(entity instanceof Npc))
+                .filter(entity -> !(entity instanceof ItemEntity))
                 .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
                 .filter(entity -> {
-
                     if (hurtAnimal) {
                         return true;
                     } else {
@@ -483,7 +483,7 @@ public class ToolUtils {
                         } else {
                             livingEntity.hurt(src, damage);
                         }
-                    } else if (entity instanceof ItemEntity || entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
+                    } else if (entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
                         entity.discard();
                     } else if (entity instanceof Entity) {
                         entity.hurt(src, damage);
