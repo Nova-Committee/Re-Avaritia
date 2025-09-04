@@ -45,7 +45,6 @@ public class Avaritia {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(ModDataGen::gatherData);
-        bus.addListener(this::addPackFinders);
         var forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(this::onServerAboutToStart);
 
@@ -70,24 +69,7 @@ public class Avaritia {
             }
         });
     }
-    private void addPackFinders(AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            IModFile modFile = ModList.get().getModFileById(Const.MOD_ID).getFile();
-            Path resourcePath = modFile.findResource("resourcepacks", "avaritia");
-            var pack = Pack.readMetaAndCreate(
-                    "avaritia:default",
-                    Component.translatable("title.avaritia.resourcepack"),
-                    false,
-                    (path) -> new net.minecraft.server.packs.PathPackResources("avaritia", resourcePath, false),
-                    PackType.CLIENT_RESOURCES,
-                    Pack.Position.TOP,
-                    PackSource.BUILT_IN
-            );
-            if (pack != null) {
-                event.addRepositorySource((infoConsumer) -> infoConsumer.accept(pack));
-            }
-        }
-    }
+
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
 
