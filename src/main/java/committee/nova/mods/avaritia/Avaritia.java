@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia;
 
+import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.init.compat.projecte.ModEMCHandler;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -19,13 +20,18 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.locating.IModFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +53,9 @@ public class Avaritia {
         bus.addListener(ModDataGen::gatherData);
         var forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(this::onServerAboutToStart);
-
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            registerConfigScreen();
+        }
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
         ModCreativeModeTabs.TABS.register(bus);
@@ -69,7 +77,13 @@ public class Avaritia {
             }
         });
     }
-
+    @OnlyIn(Dist.CLIENT)
+    private void registerConfigScreen() {
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory(
+                        (mc, parent) -> new AvaritiaConfigScreen(parent)
+                ));
+    }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
 

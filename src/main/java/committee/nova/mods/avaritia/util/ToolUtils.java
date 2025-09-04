@@ -464,7 +464,13 @@ public class ToolUtils {
         toAttack.stream()
 //                .filter(entity -> entity instanceof LivingEntity)
 //                .filter(entity -> !(entity instanceof Npc))
-                .filter(entity -> !(entity instanceof ItemEntity))
+                .filter(entity -> {
+                    boolean attack = ModConfig.isSwordAttackItemEntity.get();
+                  if (attack == false){
+                      return !(entity instanceof ItemEntity);
+                  }
+                  else return true;
+                })
                 .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
                 .filter(entity -> {
                     if (hurtAnimal) {
