@@ -95,6 +95,7 @@ public class AvaritiaModClient {
         event.register("halo", HaloModelLoader.INSTANCE);
         event.register("eternal", EternalModelLoader.INSTANCE);
         event.register("hell", HellModelLoader.INSTANCE);
+        event.register("unstable", UnstableModelLoader.INSTANCE);
     }
 
     @SubscribeEvent

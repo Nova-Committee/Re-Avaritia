@@ -35,6 +35,7 @@ public class AvaritiaShaders {
     public static CCShaderInstance COSMIC_ARMOR_SHADER;
     public static CCShaderInstance ETERNAL_SHADER;
     public static CCShaderInstance HELL_SHADER;
+    public static CCShaderInstance UNSTABLE_SHADER;
 
     public static Uniform cosmicTime;
     public static Uniform cosmicYaw;
@@ -57,16 +58,25 @@ public class AvaritiaShaders {
     public static Uniform hellOpacity;
     public static Uniform hellUVs;
 
+    public static Uniform unstableTime;
+    public static Uniform unstableYaw;
+    public static Uniform unstablePitch;
+    public static Uniform unstableExternalScale;
+    public static Uniform unstableOpacity;
+    public static Uniform unstableUVs;
+
     public static void onRegisterShaders(RegisterShadersEvent event) {
         COSMIC_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.BLOCK);
         COSMIC_ARMOR_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "cosmic"), DefaultVertexFormat.NEW_ENTITY);
         ETERNAL_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "eternal"), DefaultVertexFormat.BLOCK);
         HELL_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "hell"), DefaultVertexFormat.BLOCK);
+        UNSTABLE_SHADER = CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Const.MOD_ID, "unstable"), DefaultVertexFormat.BLOCK);
 
         event.registerShader(COSMIC_SHADER, AvaritiaShaders::cosmicShader);
         event.registerShader(COSMIC_ARMOR_SHADER, AvaritiaShaders::cosmicShader);
         event.registerShader(ETERNAL_SHADER, AvaritiaShaders::eternalShader);
         event.registerShader(HELL_SHADER, AvaritiaShaders::hellShader);
+        event.registerShader(UNSTABLE_SHADER, AvaritiaShaders::unstableShader);
     }
 
     public static void cosmicShader(ShaderInstance e){
@@ -108,6 +118,20 @@ public class AvaritiaShaders {
         hellTime.set((float) renderTime + renderFrame);
         HELL_SHADER.onApply(() -> {
             hellTime.set((float) renderTime + renderFrame);
+        });
+    }
+
+    public static void unstableShader(ShaderInstance e){
+        UNSTABLE_SHADER = (CCShaderInstance) e;
+        unstableTime = Objects.requireNonNull(UNSTABLE_SHADER.getUniform("time"));
+        unstableYaw = Objects.requireNonNull(UNSTABLE_SHADER.getUniform("yaw"));
+        unstablePitch = Objects.requireNonNull(UNSTABLE_SHADER.getUniform("pitch"));
+        unstableExternalScale = Objects.requireNonNull(UNSTABLE_SHADER.getUniform("externalScale"));
+        unstableOpacity = Objects.requireNonNull(UNSTABLE_SHADER.getUniform("opacity"));
+        unstableUVs = Objects.requireNonNull(UNSTABLE_SHADER.getUniform("cosmicuvs"));
+        unstableTime.set((float) renderTime + renderFrame);
+        UNSTABLE_SHADER.onApply(() -> {
+            unstableTime.set((float) renderTime + renderFrame);
         });
     }
 

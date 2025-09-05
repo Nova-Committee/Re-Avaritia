@@ -55,11 +55,10 @@ void main (void)
 
     int uvtiles = 16;
 
-
+    // background colour
     vec4 col = vec4(0.2, 0.0, 0.0, 1.0);
 
     float pulse = mod(time,400)/400.0;
-
 
     col.g = sin(pulse*M_PI*2) * 0.025 + 0.075;
 
@@ -103,6 +102,7 @@ void main (void)
         // get UV scaled for layers and offset by time;
         float scale = mult*0.5 + 2.75;
         float u = rawu * scale * externalScale;
+        //float v = (rawv + time * 0.00006) * scale * 0.6;
         float v = (rawv + time * 0.0002 * oneOverExternalScale) * scale * 0.6 * externalScale;
 
         vec2 tex = vec2( u, v );
@@ -112,7 +112,8 @@ void main (void)
         int tv = int(mod(floor(v*uvtiles),uvtiles));
 
         // get pseudorandom variants
-        int position = ((171 * tu) + (489 * tv) + (303 * (i+31)) + 17209 ) ^ 10;
+        //int position = ((1777541 * tu) + (7649689 * tv) + (3612703 * (i+31)) + 1723609 ) ^ 50943779;
+        int position = ((171 * tu) + (489 * tv) + (303 * (i+31)) + 17209 ) ^ 50943779;
         int symbol = int(mod(position, cosmicoutof));
         int rotation = int(mod(pow(tu,float(tv)) + tu + 3 + tv*i, 8));
         bool flip = false;
@@ -171,6 +172,7 @@ void main (void)
             float b = (mod(rand1, 17.0)/17.0) * 0.2;
 
             // mix the colours
+            //col = col*(1-a) + vec4(r,g,b,1)*a;
             col = col + vec4(r,g,b,1)*a;
         }
     }
