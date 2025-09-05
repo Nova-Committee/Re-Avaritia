@@ -43,13 +43,6 @@ public class AvaritiaShaders {
     public static Uniform cosmicOpacity;
     public static Uniform cosmicUVs;
 
-    public static Uniform cosmicArmorTime;
-    public static Uniform cosmicArmorYaw;
-    public static Uniform cosmicArmorPitch;
-    public static Uniform cosmicArmorExternalScale;
-    public static Uniform cosmicArmorOpacity;
-    public static Uniform cosmicArmorUVs;
-
     public static Uniform eternalTime;
     public static Uniform eternalYaw;
     public static Uniform eternalPitch;
@@ -87,20 +80,6 @@ public class AvaritiaShaders {
         cosmicTime.set((float) renderTime + renderFrame);
         COSMIC_SHADER.onApply(() -> {
             cosmicTime.set((float) renderTime + renderFrame);
-        });
-    }
-
-    public static void cosmicArmorShader(ShaderInstance e){
-        COSMIC_ARMOR_SHADER = (CCShaderInstance) e;
-        cosmicArmorTime = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("time"));
-        cosmicArmorYaw = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("yaw"));
-        cosmicArmorPitch = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("pitch"));
-        cosmicArmorExternalScale = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("externalScale"));
-        cosmicArmorOpacity = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("opacity"));
-        cosmicArmorUVs = Objects.requireNonNull(COSMIC_ARMOR_SHADER.getUniform("cosmicuvs"));
-        cosmicArmorTime.set((float) renderTime + renderFrame);
-        COSMIC_ARMOR_SHADER.onApply(() -> {
-            cosmicArmorTime.set((float) renderTime + renderFrame);
         });
     }
 

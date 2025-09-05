@@ -36,111 +36,111 @@ public class AvaritiaConfigScreen extends Screen {
 
         addBooleanEntry("is_keep_stone", ModConfig.isKeepStone,
                 Component.translatable("config.avaritia.is_keep_stone.tooltip"),
-                val -> ModConfig.isKeepStone.set(val));
+                ModConfig.isKeepStone::set);
 
         addBooleanEntry("is_merge_matter_cluster", ModConfig.isMergeMatterCluster,
                 Component.translatable("config.avaritia.is_merge_matter_cluster.tooltip"),
-                val -> ModConfig.isMergeMatterCluster.set(val));
+                ModConfig.isMergeMatterCluster::set);
 
         addIntEntry("sword_range_damage", ModConfig.swordRangeDamage, 100, 100000,
                 Component.translatable("config.avaritia.sword_range_damage.tooltip"),
-                val -> ModConfig.swordRangeDamage.set(val));
+                ModConfig.swordRangeDamage::set);
 
         addIntEntry("sword_attack_range", ModConfig.swordAttackRange, 8, 64,
                 Component.translatable("config.avaritia.sword_attack_range.tooltip"),
-                val -> ModConfig.swordAttackRange.set(val));
+                ModConfig.swordAttackRange::set);
 
         addBooleanEntry("is_sword_attack_item_entity", ModConfig.isSwordAttackItemEntity,
                 Component.translatable("config.avaritia.is_sword_attack_item_entity.tooltip"),
-                val -> ModConfig.isSwordAttackItemEntity.set(val));
+                ModConfig.isSwordAttackItemEntity::set);
 
         addBooleanEntry("is_sword_attack_lightning", ModConfig.isSwordAttackLightning,
                 Component.translatable("config.avaritia.is_sword_attack_lightning.tooltip"),
-                val -> ModConfig.isSwordAttackLightning.set(val));
+                ModConfig.isSwordAttackLightning::set);
 
         addBooleanEntry("is_sword_attack_endless", ModConfig.isSwordAttackEndless,
                 Component.translatable("config.avaritia.is_sword_attack_endless.tooltip"),
-                val -> ModConfig.isSwordAttackEndless.set(val));
+                ModConfig.isSwordAttackEndless::set);
 
         addIntEntry("sub_arrow_damage", ModConfig.subArrowDamage, 100, 100000,
                 Component.translatable("config.avaritia.sub_arrow_damage.tooltip"),
-                val -> ModConfig.subArrowDamage.set(val));
+                ModConfig.subArrowDamage::set);
 
         addIntEntry("axe_chain_count", ModConfig.axeChainCount, 16, 128,
                 Component.translatable("config.avaritia.axe_chain_count.tooltip"),
-                val -> ModConfig.axeChainCount.set(val));
+                ModConfig.axeChainCount::set);
 
         addDoubleEntry("food_time", ModConfig.foodTime, 0.1, 5.0,
                 Component.translatable("config.avaritia.food_time.tooltip"),
-                val -> ModConfig.foodTime.set(val));
+                ModConfig.foodTime::set);
 
         addIntEntry("pickaxe_break_range", ModConfig.pickAxeBreakRange, 2, 32,
                 Component.translatable("config.avaritia.pickaxe_break_range.tooltip"),
-                val -> ModConfig.pickAxeBreakRange.set(val));
+                ModConfig.pickAxeBreakRange::set);
 
         addIntEntry("shovel_break_range", ModConfig.shovelBreakRange, 2, 32,
                 Component.translatable("config.avaritia.shovel_break_range.tooltip"),
-                val -> ModConfig.shovelBreakRange.set(val));
+                ModConfig.shovelBreakRange::set);
 
         addIntEntry("neutron_collector_product_tick", ModConfig.neutronCollectorProductTick, 1200, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.neutron_collector_product_tick.tooltip"),
-                val -> ModConfig.neutronCollectorProductTick.set(val));
+                ModConfig.neutronCollectorProductTick::set);
 
         addIntEntry("singularity_time_required", ModConfig.singularityTimeRequired, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.singularity_time_required.tooltip"),
-                val -> ModConfig.singularityTimeRequired.set(val));
+                ModConfig.singularityTimeRequired::set);
 
         addDoubleEntry("growth_soul_farmland", ModConfig.growthSoulFarmland, 0.0, 1.0,
                 Component.translatable("config.avaritia.growth_soul_farmland.tooltip"),
-                val -> ModConfig.growthSoulFarmland.set(val));
+                ModConfig.growthSoulFarmland::set);
 
         addIntEntry("blade_slash_damage", ModConfig.bladeSlashDamage, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.blade_slash_damage.tooltip"),
-                val -> ModConfig.bladeSlashDamage.set(val));
+                ModConfig.bladeSlashDamage::set);
 
         addIntEntry("blade_slash_radius", ModConfig.bladeSlashRadius, 5, 100,
                 Component.translatable("config.avaritia.blade_slash_radius.tooltip"),
-                val -> ModConfig.bladeSlashRadius.set(val));
+                ModConfig.bladeSlashRadius::set);
 
         addBooleanEntry("internal_infinity_catalyst_craft", ModConfig.internalInfinityCatalystCraft,
                 Component.translatable("config.avaritia.internal_infinity_catalyst_craft.tooltip"),
-                val -> ModConfig.internalInfinityCatalystCraft.set(val));
+                ModConfig.internalInfinityCatalystCraft::set);
 
         addCategoryHeader("config.avaritia.category.emc");
 
         addIntEntry("neutron_pile_emc", ModConfig.neutronPileEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.neutron_pile_emc.tooltip"),
-                val -> ModConfig.neutronPileEmc.set(val));
+                ModConfig.neutronPileEmc::set);
 
         addIntEntry("vanilla_totem_emc", ModConfig.vanillaTotemEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
-                val -> ModConfig.vanillaTotemEmc.set(val));
+                ModConfig.vanillaTotemEmc::set);
 
         addCategoryHeader("config.avaritia.category.storage");
 
         addIntEntry("chest_max_item_size", ModConfig.chestMaxItemSize, 2048, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.chest_max_item_size.tooltip"),
-                val -> ModConfig.chestMaxItemSize.set(val));
+                ModConfig.chestMaxItemSize::set);
 
         addBooleanEntry("use_single_page_mode", ModConfig.useSinglePageMode,
                 Component.translatable("config.avaritia.use_single_page_mode.tooltip"),
-                val -> ModConfig.useSinglePageMode.set(val));
+                ModConfig.useSinglePageMode::set);
 
         addLongEntry("slot_stack_limit", ModConfig.slotStackLimit, 64L, 4294967295L,
                 Component.translatable("config.avaritia.slot_stack_limit.tooltip"),
-                val -> ModConfig.slotStackLimit.set(val));
+                ModConfig.slotStackLimit::set);
 
         addIntEntry("max_page_limit", ModConfig.maxPageLimit, 2, 79536431,
                 Component.translatable("config.avaritia.max_page_limit.tooltip"),
-                val -> ModConfig.maxPageLimit.set(val));
+                ModConfig.maxPageLimit::set);
 
         addIntEntry("reset_max_page", ModConfig.resetMaxPage, 1, 79536431,
                 Component.translatable("config.avaritia.reset_max_page.tooltip"),
-                val -> ModConfig.resetMaxPage.set(val));
+                ModConfig.resetMaxPage::set);
 
         addIntEntry("inventory_rows", ModConfig.inventoryRows, 1, 6,
                 Component.translatable("config.avaritia.inventory_rows.tooltip"),
-                val -> ModConfig.inventoryRows.set(val));
+                ModConfig.inventoryRows::set);
 
         addCategoryHeader("config.avaritia.category.channel");
 
@@ -168,19 +168,19 @@ public class AvaritiaConfigScreen extends Screen {
 
         addBooleanEntry("use_advance_tooltips", ModConfig.useAdvanceTooltips,
                 Component.translatable("config.avaritia.use_advance_tooltips.tooltip"),
-                val -> ModConfig.useAdvanceTooltips.set(val));
+                ModConfig.useAdvanceTooltips::set);
 
         addDoubleEntry("endless_item_entity_speed", ModConfig.endlessItemEntitySpeed, 1.0, 50.0,
                 Component.translatable("config.avaritia.endless_item_entity_speed.tooltip"),
-                val -> ModConfig.endlessItemEntitySpeed.set(val));
+                ModConfig.endlessItemEntitySpeed::set);
 
         addDoubleEntry("endless_item_entity_range", ModConfig.endlessItemEntityRange, 1.0, 10000.0,
                 Component.translatable("config.avaritia.endless_item_entity_range.tooltip"),
-                val -> ModConfig.endlessItemEntityRange.set(val));
+                ModConfig.endlessItemEntityRange::set);
 
         addDoubleEntry("infinity_elytra_flying_speed", ModConfig.infinityElytraFlyingSpeed, 1.0, 10.0,
                 Component.translatable("config.avaritia.infinity_elytra_flying_speed.tooltip"),
-                val -> ModConfig.infinityElytraFlyingSpeed.set(val));
+                ModConfig.infinityElytraFlyingSpeed::set);
     }
 
     private void addBooleanEntry(String titleKey, ForgeConfigSpec.BooleanValue configValue,
