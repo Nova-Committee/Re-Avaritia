@@ -23,14 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * InfinityHorseArmorItem
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/4/5 20:04
- */
 public class NeutronHorseArmorItem extends HorseArmorItem implements ITooltip, InitEnchantItem {
     public NeutronHorseArmorItem() {
         super(Integer.MAX_VALUE, new ResourceLocation(Const.MOD_ID, Res.NEUTRON_HORSE_ARMOR.getPath()),
@@ -73,6 +65,7 @@ public class NeutronHorseArmorItem extends HorseArmorItem implements ITooltip, I
         else if (enchantment == Enchantments.FALL_PROTECTION) return 10;
         else return 0;
     }
+
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
