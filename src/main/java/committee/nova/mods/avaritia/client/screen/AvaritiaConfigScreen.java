@@ -14,7 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
+import java.util.function.Supplier;
+/*
+每次添加配置的时候都需要在initConfigEntries添加一个配置项,然后在resetToDefaults中添加一个默认值
+关于默认值的自动化我没太搞懂...
+ */
 public class AvaritiaConfigScreen extends Screen {
     private final Screen parent;
     private final List<ConfigEntry<?>> configEntries = new ArrayList<>();
@@ -22,7 +26,7 @@ public class AvaritiaConfigScreen extends Screen {
     private static final int ENTRY_HEIGHT = 40;
     private static final int MARGIN = 20;
     private static final int START_Y = 50;
-    private Button saveButton;
+    private Button resetButton;
     private Button backButton;
 
     public AvaritiaConfigScreen(Screen parent) {
@@ -36,196 +40,202 @@ public class AvaritiaConfigScreen extends Screen {
 
         addBooleanEntry("is_keep_stone", ModConfig.isKeepStone,
                 Component.translatable("config.avaritia.is_keep_stone.tooltip"),
-                ModConfig.isKeepStone::set);
+                ModConfig.isKeepStone::set, ModConfig.isKeepStone);
 
         addBooleanEntry("is_merge_matter_cluster", ModConfig.isMergeMatterCluster,
                 Component.translatable("config.avaritia.is_merge_matter_cluster.tooltip"),
-                ModConfig.isMergeMatterCluster::set);
+                ModConfig.isMergeMatterCluster::set, ModConfig.isMergeMatterCluster);
 
         addIntEntry("sword_range_damage", ModConfig.swordRangeDamage, 100, 100000,
                 Component.translatable("config.avaritia.sword_range_damage.tooltip"),
-                ModConfig.swordRangeDamage::set);
+                ModConfig.swordRangeDamage::set, ModConfig.swordRangeDamage);
 
         addIntEntry("sword_attack_range", ModConfig.swordAttackRange, 8, 64,
                 Component.translatable("config.avaritia.sword_attack_range.tooltip"),
-                ModConfig.swordAttackRange::set);
+                ModConfig.swordAttackRange::set, ModConfig.swordAttackRange);
 
         addBooleanEntry("is_sword_attack_item_entity", ModConfig.isSwordAttackItemEntity,
                 Component.translatable("config.avaritia.is_sword_attack_item_entity.tooltip"),
-                ModConfig.isSwordAttackItemEntity::set);
+                ModConfig.isSwordAttackItemEntity::set, ModConfig.isSwordAttackItemEntity);
 
         addBooleanEntry("is_sword_attack_lightning", ModConfig.isSwordAttackLightning,
                 Component.translatable("config.avaritia.is_sword_attack_lightning.tooltip"),
-                ModConfig.isSwordAttackLightning::set);
+                ModConfig.isSwordAttackLightning::set, ModConfig.isSwordAttackLightning);
 
         addBooleanEntry("is_sword_attack_endless", ModConfig.isSwordAttackEndless,
                 Component.translatable("config.avaritia.is_sword_attack_endless.tooltip"),
-                ModConfig.isSwordAttackEndless::set);
+                ModConfig.isSwordAttackEndless::set, ModConfig.isSwordAttackEndless);
 
         addIntEntry("sub_arrow_damage", ModConfig.subArrowDamage, 100, 100000,
                 Component.translatable("config.avaritia.sub_arrow_damage.tooltip"),
-                ModConfig.subArrowDamage::set);
+                ModConfig.subArrowDamage::set, ModConfig.subArrowDamage);
 
         addIntEntry("axe_chain_count", ModConfig.axeChainCount, 16, 128,
                 Component.translatable("config.avaritia.axe_chain_count.tooltip"),
-                ModConfig.axeChainCount::set);
+                ModConfig.axeChainCount::set, ModConfig.axeChainCount);
 
         addDoubleEntry("food_time", ModConfig.foodTime, 0.1, 5.0,
                 Component.translatable("config.avaritia.food_time.tooltip"),
-                ModConfig.foodTime::set);
+                ModConfig.foodTime::set, ModConfig.foodTime);
 
         addIntEntry("pickaxe_break_range", ModConfig.pickAxeBreakRange, 2, 32,
                 Component.translatable("config.avaritia.pickaxe_break_range.tooltip"),
-                ModConfig.pickAxeBreakRange::set);
+                ModConfig.pickAxeBreakRange::set, ModConfig.pickAxeBreakRange);
 
         addIntEntry("shovel_break_range", ModConfig.shovelBreakRange, 2, 32,
                 Component.translatable("config.avaritia.shovel_break_range.tooltip"),
-                ModConfig.shovelBreakRange::set);
+                ModConfig.shovelBreakRange::set, ModConfig.shovelBreakRange);
 
         addIntEntry("neutron_collector_product_tick", ModConfig.neutronCollectorProductTick, 1200, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.neutron_collector_product_tick.tooltip"),
-                ModConfig.neutronCollectorProductTick::set);
+                ModConfig.neutronCollectorProductTick::set, ModConfig.neutronCollectorProductTick);
 
         addIntEntry("singularity_time_required", ModConfig.singularityTimeRequired, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.singularity_time_required.tooltip"),
-                ModConfig.singularityTimeRequired::set);
+                ModConfig.singularityTimeRequired::set, ModConfig.singularityTimeRequired);
 
         addDoubleEntry("growth_soul_farmland", ModConfig.growthSoulFarmland, 0.0, 1.0,
                 Component.translatable("config.avaritia.growth_soul_farmland.tooltip"),
-                ModConfig.growthSoulFarmland::set);
+                ModConfig.growthSoulFarmland::set, ModConfig.growthSoulFarmland);
 
         addIntEntry("blade_slash_damage", ModConfig.bladeSlashDamage, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.blade_slash_damage.tooltip"),
-                ModConfig.bladeSlashDamage::set);
+                ModConfig.bladeSlashDamage::set, ModConfig.bladeSlashDamage);
 
         addIntEntry("blade_slash_radius", ModConfig.bladeSlashRadius, 5, 100,
                 Component.translatable("config.avaritia.blade_slash_radius.tooltip"),
-                ModConfig.bladeSlashRadius::set);
+                ModConfig.bladeSlashRadius::set, ModConfig.bladeSlashRadius);
 
         addBooleanEntry("internal_infinity_catalyst_craft", ModConfig.internalInfinityCatalystCraft,
                 Component.translatable("config.avaritia.internal_infinity_catalyst_craft.tooltip"),
-                ModConfig.internalInfinityCatalystCraft::set);
+                ModConfig.internalInfinityCatalystCraft::set, ModConfig.internalInfinityCatalystCraft);
+
+
 
         addCategoryHeader("config.avaritia.category.emc");
 
         addIntEntry("neutron_pile_emc", ModConfig.neutronPileEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.neutron_pile_emc.tooltip"),
-                ModConfig.neutronPileEmc::set);
+                ModConfig.neutronPileEmc::set, ModConfig.neutronPileEmc);
 
         addIntEntry("vanilla_totem_emc", ModConfig.vanillaTotemEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
-                ModConfig.vanillaTotemEmc::set);
+                ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
         addCategoryHeader("config.avaritia.category.storage");
 
         addIntEntry("chest_max_item_size", ModConfig.chestMaxItemSize, 2048, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.chest_max_item_size.tooltip"),
-                ModConfig.chestMaxItemSize::set);
+                ModConfig.chestMaxItemSize::set, ModConfig.chestMaxItemSize);
 
         addBooleanEntry("use_single_page_mode", ModConfig.useSinglePageMode,
                 Component.translatable("config.avaritia.use_single_page_mode.tooltip"),
-                ModConfig.useSinglePageMode::set);
+                ModConfig.useSinglePageMode::set, ModConfig.useSinglePageMode);
 
         addLongEntry("slot_stack_limit", ModConfig.slotStackLimit, 64L, 4294967295L,
                 Component.translatable("config.avaritia.slot_stack_limit.tooltip"),
-                ModConfig.slotStackLimit::set);
+                ModConfig.slotStackLimit::set, ModConfig.slotStackLimit);
 
         addIntEntry("max_page_limit", ModConfig.maxPageLimit, 2, 79536431,
                 Component.translatable("config.avaritia.max_page_limit.tooltip"),
-                ModConfig.maxPageLimit::set);
+                ModConfig.maxPageLimit::set, ModConfig.maxPageLimit);
 
         addIntEntry("reset_max_page", ModConfig.resetMaxPage, 1, 79536431,
                 Component.translatable("config.avaritia.reset_max_page.tooltip"),
-                ModConfig.resetMaxPage::set);
+                ModConfig.resetMaxPage::set, ModConfig.resetMaxPage);
 
         addIntEntry("inventory_rows", ModConfig.inventoryRows, 1, 6,
                 Component.translatable("config.avaritia.inventory_rows.tooltip"),
-                ModConfig.inventoryRows::set);
+                ModConfig.inventoryRows::set, ModConfig.inventoryRows);
 
         addCategoryHeader("config.avaritia.category.channel");
 
         addIntEntry("max_size_pre_channel", ModConfig.MAX_SIZE_PRE_CHANNEL, 2048, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.max_size_pre_channel.tooltip"),
-                val -> ModConfig.MAX_SIZE_PRE_CHANNEL.set(val));
+                val -> ModConfig.MAX_SIZE_PRE_CHANNEL.set(val), ModConfig.MAX_SIZE_PRE_CHANNEL);
 
         addIntEntry("max_channels_pre_player", ModConfig.MAX_CHANNELS_PRE_PLAYER, 4, 64,
                 Component.translatable("config.avaritia.max_channels_pre_player.tooltip"),
-                val -> ModConfig.MAX_CHANNELS_PRE_PLAYER.set(val));
+                val -> ModConfig.MAX_CHANNELS_PRE_PLAYER.set(val), ModConfig.MAX_CHANNELS_PRE_PLAYER);
 
         addIntEntry("max_public_channels", ModConfig.MAX_PUBLIC_CHANNELS, 32, 1024,
                 Component.translatable("config.avaritia.max_public_channels.tooltip"),
-                val -> ModConfig.MAX_PUBLIC_CHANNELS.set(val));
+                val -> ModConfig.MAX_PUBLIC_CHANNELS.set(val), ModConfig.MAX_PUBLIC_CHANNELS);
 
         addIntEntry("channel_fast_update_rate", ModConfig.CHANNEL_FAST_UPDATE_RATE, 1, 40,
                 Component.translatable("config.avaritia.channel_fast_update_rate.tooltip"),
-                val -> ModConfig.CHANNEL_FAST_UPDATE_RATE.set(val));
+                val -> ModConfig.CHANNEL_FAST_UPDATE_RATE.set(val), ModConfig.CHANNEL_FAST_UPDATE_RATE);
 
         addIntEntry("channel_full_update_rate", ModConfig.CHANNEL_FULL_UPDATE_RATE, 20, 1200,
                 Component.translatable("config.avaritia.channel_full_update_rate.tooltip"),
-                val -> ModConfig.CHANNEL_FULL_UPDATE_RATE.set(val));
+                val -> ModConfig.CHANNEL_FULL_UPDATE_RATE.set(val), ModConfig.CHANNEL_FULL_UPDATE_RATE);
 
         addCategoryHeader("config.avaritia.category.misc");
 
         addBooleanEntry("use_advance_tooltips", ModConfig.useAdvanceTooltips,
                 Component.translatable("config.avaritia.use_advance_tooltips.tooltip"),
-                ModConfig.useAdvanceTooltips::set);
+                ModConfig.useAdvanceTooltips::set, ModConfig.useAdvanceTooltips);
 
         addDoubleEntry("endless_item_entity_speed", ModConfig.endlessItemEntitySpeed, 1.0, 50.0,
                 Component.translatable("config.avaritia.endless_item_entity_speed.tooltip"),
-                ModConfig.endlessItemEntitySpeed::set);
+                ModConfig.endlessItemEntitySpeed::set, ModConfig.endlessItemEntitySpeed);
 
         addDoubleEntry("endless_item_entity_range", ModConfig.endlessItemEntityRange, 1.0, 10000.0,
                 Component.translatable("config.avaritia.endless_item_entity_range.tooltip"),
-                ModConfig.endlessItemEntityRange::set);
+                ModConfig.endlessItemEntityRange::set, ModConfig.endlessItemEntityRange);
 
         addDoubleEntry("infinity_elytra_flying_speed", ModConfig.infinityElytraFlyingSpeed, 1.0, 10.0,
                 Component.translatable("config.avaritia.infinity_elytra_flying_speed.tooltip"),
-                ModConfig.infinityElytraFlyingSpeed::set);
+                ModConfig.infinityElytraFlyingSpeed::set, ModConfig.infinityElytraFlyingSpeed);
     }
 
     private void addBooleanEntry(String titleKey, ForgeConfigSpec.BooleanValue configValue,
-                                 Component description, Consumer<Boolean> onValueChange) {
+                                 Component description, Consumer<Boolean> onValueChange, Supplier<Boolean> valueSupplier) {
         configEntries.add(new BooleanConfigEntry(
                 Component.translatable("config.avaritia." + titleKey),
                 description,
                 configValue.get(),
-                onValueChange
+                onValueChange,
+                valueSupplier
         ));
     }
 
     private void addIntEntry(String titleKey, ForgeConfigSpec.IntValue configValue, int min, int max,
-                             Component description, Consumer<Integer> onValueChange) {
+                             Component description, Consumer<Integer> onValueChange, Supplier<Integer> valueSupplier) {
         configEntries.add(new IntConfigEntry(
                 Component.translatable("config.avaritia." + titleKey),
                 description,
                 configValue.get(),
                 min,
                 max,
-                onValueChange
+                onValueChange,
+                valueSupplier
         ));
     }
 
     private void addDoubleEntry(String titleKey, ForgeConfigSpec.DoubleValue configValue, double min, double max,
-                                Component description, Consumer<Double> onValueChange) {
+                                Component description, Consumer<Double> onValueChange, Supplier<Double> valueSupplier) {
         configEntries.add(new DoubleConfigEntry(
                 Component.translatable("config.avaritia." + titleKey),
                 description,
                 configValue.get(),
                 min,
                 max,
-                onValueChange
+                onValueChange,
+                valueSupplier
         ));
     }
 
     private void addLongEntry(String titleKey, ForgeConfigSpec.LongValue configValue, long min, long max,
-                              Component description, Consumer<Long> onValueChange) {
+                              Component description, Consumer<Long> onValueChange, Supplier<Long> valueSupplier) {
         configEntries.add(new LongConfigEntry(
                 Component.translatable("config.avaritia." + titleKey),
                 description,
                 configValue.get(),
                 min,
                 max,
-                onValueChange
+                onValueChange,
+                valueSupplier
         ));
     }
 
@@ -240,10 +250,11 @@ public class AvaritiaConfigScreen extends Screen {
         super.init();
         clearWidgets();
 
-        saveButton = addRenderableWidget(Button.builder(
-                Component.translatable("gui.save"),
+        resetButton = addRenderableWidget(Button.builder(
+                Component.translatable("controls.reset"),
                 btn -> {
-                    ModConfig.COMMON.save();
+                    resetToDefaults();
+                    updateWidgetValues();
                 }
         ).bounds(width / 2 - 102, height - 30, 100, 20).build());
 
@@ -259,6 +270,60 @@ public class AvaritiaConfigScreen extends Screen {
             if (y + ENTRY_HEIGHT > START_Y && y < height - 40) {
                 entry.initWidgets(this, x, y, width - 2 * MARGIN);
             }
+        }
+    }
+
+
+    private void resetToDefaults() {
+        // Tools 配置项
+        ModConfig.isKeepStone.set(ModConfig.isKeepStone.getDefault());
+        ModConfig.isMergeMatterCluster.set(ModConfig.isMergeMatterCluster.getDefault());
+        ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
+        ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
+        ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
+        ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
+        ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
+        ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
+        ModConfig.axeChainCount.set(ModConfig.axeChainCount.getDefault());
+        ModConfig.foodTime.set(ModConfig.foodTime.getDefault());
+        ModConfig.pickAxeBreakRange.set(ModConfig.pickAxeBreakRange.getDefault());
+        ModConfig.shovelBreakRange.set(ModConfig.shovelBreakRange.getDefault());
+        ModConfig.neutronCollectorProductTick.set(ModConfig.neutronCollectorProductTick.getDefault());
+        ModConfig.singularityTimeRequired.set(ModConfig.singularityTimeRequired.getDefault());
+        ModConfig.growthSoulFarmland.set(ModConfig.growthSoulFarmland.getDefault());
+        ModConfig.bladeSlashDamage.set(ModConfig.bladeSlashDamage.getDefault());
+        ModConfig.bladeSlashRadius.set(ModConfig.bladeSlashRadius.getDefault());
+        ModConfig.internalInfinityCatalystCraft.set(ModConfig.internalInfinityCatalystCraft.getDefault());
+
+        // EMC 配置项
+        ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
+        ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
+
+        // Storage 配置项
+        ModConfig.chestMaxItemSize.set(ModConfig.chestMaxItemSize.getDefault());
+        ModConfig.useSinglePageMode.set(ModConfig.useSinglePageMode.getDefault());
+        ModConfig.slotStackLimit.set(ModConfig.slotStackLimit.getDefault());
+        ModConfig.maxPageLimit.set(ModConfig.maxPageLimit.getDefault());
+        ModConfig.resetMaxPage.set(ModConfig.resetMaxPage.getDefault());
+        ModConfig.inventoryRows.set(ModConfig.inventoryRows.getDefault());
+
+        // Channel 配置项
+        ModConfig.MAX_SIZE_PRE_CHANNEL.set(ModConfig.MAX_SIZE_PRE_CHANNEL.getDefault());
+        ModConfig.MAX_CHANNELS_PRE_PLAYER.set(ModConfig.MAX_CHANNELS_PRE_PLAYER.getDefault());
+        ModConfig.MAX_PUBLIC_CHANNELS.set(ModConfig.MAX_PUBLIC_CHANNELS.getDefault());
+        ModConfig.CHANNEL_FAST_UPDATE_RATE.set(ModConfig.CHANNEL_FAST_UPDATE_RATE.getDefault());
+        ModConfig.CHANNEL_FULL_UPDATE_RATE.set(ModConfig.CHANNEL_FULL_UPDATE_RATE.getDefault());
+
+        // Misc 配置项
+        ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
+        ModConfig.endlessItemEntitySpeed.set(ModConfig.endlessItemEntitySpeed.getDefault());
+        ModConfig.endlessItemEntityRange.set(ModConfig.endlessItemEntityRange.getDefault());
+        ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
+    }
+
+    private void updateWidgetValues() {
+        for (ConfigEntry<?> entry : configEntries) {
+            entry.updateWidgetValue();
         }
     }
 
@@ -284,8 +349,8 @@ public class AvaritiaConfigScreen extends Screen {
             guiGraphics.fill(width - 8, scrollBarY, width - 4, scrollBarY + scrollBarHeight, 0x88888888);
         }
 
-        // 重新渲染按钮以确保它们在最上层
-        saveButton.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         backButton.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
@@ -307,17 +372,21 @@ public class AvaritiaConfigScreen extends Screen {
         final Component description;
         T currentValue;
         final Consumer<T> onValueChange;
+        final Supplier<T> valueSupplier;
 
-        ConfigEntry(Component title, Component description, T initialValue, Consumer<T> onValueChange) {
+        ConfigEntry(Component title, Component description, T initialValue, Consumer<T> onValueChange, Supplier<T> valueSupplier) {
             this.title = title;
             this.description = description;
             this.currentValue = initialValue;
             this.onValueChange = onValueChange;
+            this.valueSupplier = valueSupplier;
         }
 
         abstract void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width);
 
         abstract void render(GuiGraphics gui, int mouseX, int mouseY, int x, int y, int width, int height, Font font);
+
+        abstract void updateWidgetValue();
 
         void updateValue(T newValue) {
             this.currentValue = newValue;
@@ -329,7 +398,7 @@ public class AvaritiaConfigScreen extends Screen {
 
     private static class CategoryHeaderEntry extends ConfigEntry<Void> {
         CategoryHeaderEntry(Component title) {
-            super(title, Component.empty(), null, null);
+            super(title, Component.empty(), null, null, null);
         }
 
         @Override
@@ -341,13 +410,17 @@ public class AvaritiaConfigScreen extends Screen {
             gui.drawString(font, title, x, y + 5, 0xFFFFA0);
             gui.fill(x, y + 20, x + width, y + 22, 0xFFA0A0A0);
         }
+
+        @Override
+        void updateWidgetValue() {
+        }
     }
 
     private static class BooleanConfigEntry extends ConfigEntry<Boolean> {
         private Button checkBox;
 
-        BooleanConfigEntry(Component title, Component description, Boolean initialValue, Consumer<Boolean> onValueChange) {
-            super(title, description, initialValue, onValueChange);
+        BooleanConfigEntry(Component title, Component description, Boolean initialValue, Consumer<Boolean> onValueChange, Supplier<Boolean> valueSupplier) {
+            super(title, description, initialValue, onValueChange, valueSupplier);
         }
 
         @Override
@@ -377,6 +450,15 @@ public class AvaritiaConfigScreen extends Screen {
                     Component.translatable("gui.yes") :
                     Component.translatable("gui.no");
         }
+
+
+        @Override
+        void updateWidgetValue() {
+            if (checkBox != null) {
+                currentValue = valueSupplier.get();
+                checkBox.setMessage(getButtonText());
+            }
+        }
     }
 
     private static class IntConfigEntry extends ConfigEntry<Integer> {
@@ -385,8 +467,8 @@ public class AvaritiaConfigScreen extends Screen {
         private final int max;
 
         IntConfigEntry(Component title, Component description, Integer initialValue,
-                       int min, int max, Consumer<Integer> onValueChange) {
-            super(title, description, initialValue, onValueChange);
+                       int min, int max, Consumer<Integer> onValueChange, Supplier<Integer> valueSupplier) {
+            super(title, description, initialValue, onValueChange, valueSupplier);
             this.min = min;
             this.max = max;
         }
@@ -423,6 +505,15 @@ public class AvaritiaConfigScreen extends Screen {
                 gui.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
             }
         }
+
+
+        @Override
+        void updateWidgetValue() {
+            if (editBox != null) {
+                currentValue = valueSupplier.get();
+                editBox.setValue(String.valueOf(currentValue));
+            }
+        }
     }
 
     private static class DoubleConfigEntry extends ConfigEntry<Double> {
@@ -431,8 +522,8 @@ public class AvaritiaConfigScreen extends Screen {
         private final double max;
 
         DoubleConfigEntry(Component title, Component description, Double initialValue,
-                          double min, double max, Consumer<Double> onValueChange) {
-            super(title, description, initialValue, onValueChange);
+                          double min, double max, Consumer<Double> onValueChange, Supplier<Double> valueSupplier) {
+            super(title, description, initialValue, onValueChange, valueSupplier);
             this.min = min;
             this.max = max;
         }
@@ -470,6 +561,14 @@ public class AvaritiaConfigScreen extends Screen {
                 gui.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
             }
         }
+
+        @Override
+        void updateWidgetValue() {
+            if (editBox != null) {
+                currentValue = valueSupplier.get();
+                editBox.setValue(String.valueOf(currentValue));
+            }
+        }
     }
 
     private static class LongConfigEntry extends ConfigEntry<Long> {
@@ -478,8 +577,8 @@ public class AvaritiaConfigScreen extends Screen {
         private final long max;
 
         LongConfigEntry(Component title, Component description, Long initialValue,
-                        long min, long max, Consumer<Long> onValueChange) {
-            super(title, description, initialValue, onValueChange);
+                        long min, long max, Consumer<Long> onValueChange, Supplier<Long> valueSupplier) {
+            super(title, description, initialValue, onValueChange, valueSupplier);
             this.min = min;
             this.max = max;
         }
@@ -514,6 +613,14 @@ public class AvaritiaConfigScreen extends Screen {
             List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
             for (int i = 0; i < wrappedDesc.size(); i++) {
                 gui.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
+            }
+        }
+
+        @Override
+        void updateWidgetValue() {
+            if (editBox != null) {
+                currentValue = valueSupplier.get();
+                editBox.setValue(String.valueOf(currentValue));
             }
         }
     }

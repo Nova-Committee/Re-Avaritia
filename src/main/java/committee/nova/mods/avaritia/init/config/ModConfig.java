@@ -35,6 +35,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue endlessItemEntityRange;
     public static final ForgeConfigSpec.DoubleValue infinityElytraFlyingSpeed;
 
+
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
     public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
 
