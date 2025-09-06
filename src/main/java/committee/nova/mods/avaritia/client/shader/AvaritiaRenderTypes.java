@@ -71,6 +71,17 @@ public class AvaritiaRenderTypes {
                     .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
                     .createCompositeState(true)
     );
+    public static RenderType UNSTABLE = RenderType.create(
+            Const.rl("unstable").toString(), DefaultVertexFormat.BLOCK,
+            VertexFormat.Mode.QUADS, 2097152, true, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.UNSTABLE_SHADER))
+                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .createCompositeState(true)
+    );
 
     public static final RenderType COSMIC_ARMOR = RenderType.create(
             Const.rl("cosmic").toString(), DefaultVertexFormat.NEW_ENTITY,

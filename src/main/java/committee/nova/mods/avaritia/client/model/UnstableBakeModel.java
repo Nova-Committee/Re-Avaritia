@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EternalBakeModel extends WrappedItemModel {
-    public static final float[] ETERNAL_UVS = new float[40];
+public class UnstableBakeModel extends WrappedItemModel {
+    public static final float[] UNSTABLE_UVS = new float[40];
     private final List<ResourceLocation> maskSprite;
 
-    public EternalBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
+    public UnstableBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
     }
@@ -59,32 +59,32 @@ public class EternalBakeModel extends WrappedItemModel {
         }
 
 
-        AvaritiaShaders.eternalTime
+        AvaritiaShaders.unstableTime
                 .set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
-        AvaritiaShaders.eternalYaw.set(yaw);
-        AvaritiaShaders.eternalPitch.set(pitch);
-        AvaritiaShaders.eternalExternalScale.set(scale);
+        AvaritiaShaders.unstableYaw.set(yaw);
+        AvaritiaShaders.unstablePitch.set(pitch);
+        AvaritiaShaders.unstableExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.unstableOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.eternalOpacity.set(1.5F);
+            AvaritiaShaders.unstableOpacity.set(1.5F);
         }
 
 
         for (int i = 0; i < 10; ++i) {
             TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Const.rl("misc/cosmic_" + i));
-            ETERNAL_UVS[i * 4] = sprite.getU0();
-            ETERNAL_UVS[i * 4 + 1] = sprite.getV0();
-            ETERNAL_UVS[i * 4 + 2] = sprite.getU1();
-            ETERNAL_UVS[i * 4 + 3] = sprite.getV1();
+            UNSTABLE_UVS[i * 4] = sprite.getU0();
+            UNSTABLE_UVS[i * 4 + 1] = sprite.getV0();
+            UNSTABLE_UVS[i * 4 + 2] = sprite.getU1();
+            UNSTABLE_UVS[i * 4 + 3] = sprite.getV1();
         }
 
-        if (AvaritiaShaders.eternalUVs != null) {
-            AvaritiaShaders.eternalUVs.set(ETERNAL_UVS);
+        if (AvaritiaShaders.unstableUVs != null) {
+            AvaritiaShaders.unstableUVs.set(UNSTABLE_UVS);
         }
 
-        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.ETERNAL);
+        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.UNSTABLE);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
