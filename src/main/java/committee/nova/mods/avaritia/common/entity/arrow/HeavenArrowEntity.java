@@ -66,6 +66,11 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     @Override
+    protected float getWaterInertia() {
+        return 1.0F;
+    }
+
+    @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putDouble("damage", Float.POSITIVE_INFINITY);
