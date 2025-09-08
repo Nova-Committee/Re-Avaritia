@@ -7,11 +7,13 @@ import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -21,8 +23,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 
 import java.util.List;
 
@@ -89,5 +96,46 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
+    }
+//饰品功能
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag unused) {
+        if (ModList.get().isLoaded("curios")) {
+            return CuriosApi.createCurioProvider(new ICurio() {
+                @Override
+                public ItemStack getStack() {
+                    return stack;
+                }
+
+                @Override
+                public void curioTick(SlotContext slotContext) {
+                    LivingEntity entity = slotContext.entity();
+                    if (entity instanceof Player player && !player.level().isClientSide) {
+
+                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+
+
+                        List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
+                        for (MobEffectInstance potion : Collections2.filter(effects, potion ->
+                                (potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN) ||
+                                        potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)))) {
+                            player.removeEffect(potion.getEffect());
+                        }
+                    }
+                }
+
+                @Override
+                public boolean canEquip(SlotContext slotContext) {
+                    return true;
+                }
+
+                @Override
+                public boolean canUnequip(SlotContext slotContext) {
+                    return true;
+                }
+            });
+        }
+        return super.initCapabilities(stack, unused);
     }
 }

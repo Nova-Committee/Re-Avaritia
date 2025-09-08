@@ -9,8 +9,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -20,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +45,31 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
                         .stacksTo(1)
                         .fireResistant());
         this.name = name;
+    }
+    @Override
+    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+        boolean isJumpAttack = this.isJumpAttack(attacker);
+
+        if (!target.level().isClientSide) {
+            if (isJumpAttack) {
+
+                DamageSource voidDamage = target.level().damageSources().fellOutOfWorld();
+
+                target.hurt(voidDamage, 54.0F);
+
+                Vec3 pos = target.position();
+                target.level().addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
+                        pos.x, pos.y + target.getBbHeight() / 2, pos.z,
+                        (target.level().random.nextDouble() - 0.5) * 2.0,
+                        (target.level().random.nextDouble() - 0.5) * 2.0,
+                        (target.level().random.nextDouble() - 0.5) * 2.0);
+            }
+        }
+        return super.hurtEnemy(stack, target, attacker);
+    }
+
+    private boolean isJumpAttack(LivingEntity attacker) {
+        return !attacker.onGround() && attacker.getDeltaMovement().y() < -0.1;
     }
 
     @Override
