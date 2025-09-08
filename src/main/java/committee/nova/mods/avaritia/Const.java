@@ -57,6 +57,10 @@ public class Const {
         return ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, name));
     }
 
+    public static ResourceLocation getItemName(Item item) {
+        return ForgeRegistries.ITEMS.getKey(item);
+    }
+
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {
         if(curios) {
             AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
