@@ -55,14 +55,10 @@ void main (void)
 
     int uvtiles = 16;
 
-    // background colour
-    vec4 col = vec4(0.2, 0.0, 0.0, 1.0);
+    // background colour - changed to pure black
+    vec4 col = vec4(0.0, 0.0, 0.0, 1.0);
 
     float pulse = mod(time,400)/400.0;
-
-    col.g = sin(pulse*M_PI*2) * 0.025 + 0.075;
-
-    col.b = cos(pulse*M_PI*2) * 0.02 + 0.05;
 
     // get ray from camera to fragment
     vec4 dir = normalize(vec4(-fPos, 0));
@@ -166,13 +162,12 @@ void main (void)
             // set the alpha, blending out at the bunched ends
             float a = tcol.r * (0.5 + (1.0/mult) * 1.0) * (1.0-smoothstep(0.15, 0.48, abs(rawv-0.5)));
 
-            // get fancy colours
-            float r = (mod(rand1, 29.0)/29.0) * 0.4 + 0.6;
-            float g = (mod(rand2, 35.0)/35.0) * 0.3;
-            float b = (mod(rand1, 17.0)/17.0) * 0.2;
+            // use only red color for particles
+            float r = 1.0;
+            float g = 0.0;
+            float b = 0.0;
 
             // mix the colours
-            //col = col*(1-a) + vec4(r,g,b,1)*a;
             col = col + vec4(r,g,b,1)*a;
         }
     }
