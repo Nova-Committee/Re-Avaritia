@@ -111,6 +111,10 @@ public class ModShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier, CompoundTag nbt) {
         return new ModShapedRecipeBuilder(category, itemLike, itemLocation, count, tier, nbt);
     }
+    @Contract("_,_,_,_ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, int count, int tier) {
+        return shaped(category, itemLike, null, count, tier, new CompoundTag());
+    }
 
     public ModShapedRecipeBuilder define(Character character, TagKey<Item> tagKey) {
         return this.define(character, Ingredient.of(tagKey));

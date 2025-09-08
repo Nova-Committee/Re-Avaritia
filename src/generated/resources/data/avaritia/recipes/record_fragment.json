@@ -11,14 +11,15 @@
   },
   "pattern": [
     "       ",
+    "       ",
     "   a   ",
-    "  aaa  ",
-    " aabaa ",
-    "  aaa  ",
+    "  aba  ",
     "   a   ",
+    "       ",
     "       "
   ],
   "result": {
+    "count": 4,
     "item": "avaritia:record_fragment"
   },
   "show_notification": true,

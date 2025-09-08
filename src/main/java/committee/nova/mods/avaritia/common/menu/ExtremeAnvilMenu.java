@@ -6,6 +6,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -55,9 +57,99 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
 
     @Override
     protected boolean mayPickup(Player pPlayer, boolean pHasStack) {
-        return pPlayer.getAbilities().instabuild;
+        return (pPlayer.getAbilities().instabuild || pPlayer.experienceLevel >= this.calculateXpCost()) && this.calculateXpCost() >= 0;
     }
+    private int calculateXpCost() {
+        ItemStack itemstack = this.inputSlots.getItem(0);
+        ItemStack itemstack1 = this.inputSlots.getItem(1);
+        if (itemstack.isEmpty()) {
+            return -1;
+        } else {
+            int i = 0;
+            int k = 0;
+            Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
 
+            if (!itemstack1.isEmpty()) {
+                boolean flag = itemstack1.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantments(itemstack1).isEmpty();
+                if (itemstack.isDamageableItem() && itemstack.getItem().isValidRepairItem(itemstack, itemstack1)) {
+                    int l2 = Math.min(itemstack.getDamageValue(), itemstack.getMaxDamage() / 4);
+                    if (l2 <= 0) {
+                        return -1;
+                    }
+
+                    int i3;
+                    for(i3 = 0; l2 > 0 && i3 < itemstack1.getCount(); ++i3) {
+                        int j3 = itemstack.getDamageValue() - l2;
+                        itemstack.setDamageValue(j3);
+                        ++i;
+                        l2 = Math.min(itemstack.getDamageValue(), itemstack.getMaxDamage() / 4);
+                    }
+                } else {
+                    if (!flag && (!itemstack.is(itemstack1.getItem()) || !itemstack.isDamageableItem())) {
+                        return -1;
+                    }
+
+                    if (itemstack.isDamageableItem() && !flag) {
+                        int l = itemstack.getMaxDamage() - itemstack.getDamageValue();
+                        int i1 = itemstack1.getMaxDamage() - itemstack1.getDamageValue();
+                        int j1 = i1 + itemstack.getMaxDamage() * 12 / 100;
+                        int k1 = l + j1;
+                        int l1 = itemstack.getMaxDamage() - k1;
+                        if (l1 < 0) {
+                            l1 = 0;
+                        }
+
+                        if (l1 < itemstack.getDamageValue()) {
+                            i += 2;
+                        }
+                    }
+
+                    Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(itemstack1);
+                    for(Enchantment enchantment1 : map1.keySet()) {
+                        if (enchantment1 != null) {
+                            int i2 = map.getOrDefault(enchantment1, 0);
+                            int j2 = map1.get(enchantment1);
+                            j2 = i2 + j2;
+                            if (j2 > enchantment1.getMaxLevel()) {
+                                j2 = enchantment1.getMaxLevel();
+                            }
+
+                            map.put(enchantment1, j2);
+                            int k3 = 0;
+                            switch (enchantment1.getRarity()) {
+                                case COMMON -> k3 = 1;
+                                case UNCOMMON -> k3 = 2;
+                                case RARE -> k3 = 4;
+                                case VERY_RARE -> k3 = 8;
+                            }
+
+                            if (flag) {
+                                k3 = Math.max(1, k3 / 2);
+                            }
+
+                            i += k3 * j2;
+                            if (itemstack.getCount() > 1) {
+                                i = 40;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            if (this.itemName != null && !Util.isBlank(this.itemName)) {
+                if (!this.itemName.equals(itemstack.getHoverName().getString())) {
+                    k = 1;
+                    i += k;
+                }
+            } else if (itemstack.hasCustomHoverName()) {
+                k = 1;
+                i += k;
+            }
+
+            return i;
+        }
+    }
     @Override
     protected void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
         this.inputSlots.setItem(0, ItemStack.EMPTY);
@@ -72,6 +164,10 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
         } else {
             this.inputSlots.setItem(1, ItemStack.EMPTY);
         }
+
+        this.access.execute((level, blockPos) -> {
+            level.playSound(null, blockPos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+        });
     }
 
     @Override
