@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:block/cube_all",
 	"textures": {
-		"all": "avaritia:block/chest/black_hole_chest_cover"
+		"all": "avaritia:block/chest/tesseract_cover"
 	},
 	"elements": [
 		{

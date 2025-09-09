@@ -1,5 +1,5 @@
 {
-	"parent": "avaritia:block/chest/black_hole/black_hole_chest",
+	"parent": "avaritia:block/chest/tesseract/tesseract",
 	"display": {
 		"gui": {
 			"rotation": [
