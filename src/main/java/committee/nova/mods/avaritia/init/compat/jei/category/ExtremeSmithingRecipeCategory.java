@@ -3,15 +3,18 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -51,14 +54,15 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     }
 
     @Override
-    public @NotNull IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
     public @NotNull IDrawable getIcon() {
         return icon;
     }
+
+    @Override
+    public void draw(@NotNull ExtremeSmithingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        this.background.draw(guiGraphics);
+    }
+
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull ExtremeSmithingRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 27, 23)
