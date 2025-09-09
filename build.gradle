@@ -1,197 +1,409 @@
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'java-library'
-    id 'maven-publish'
-    id "me.shedaniel.unified-publishing" version "0.1.+"
-    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id "net.neoforged.moddev.legacyforge"
+    id "maven-publish"
 }
 
-version = mc_version + "-" + mod_version + "-" + mod_version_tag
-group = mod_group_id
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+    test {
+    }
+    buildtools
+}
 
+
+// All jar files from this folder will be added automatically as runtime mod dependencies
+def extraModsDir = "extra-mods-${mc_version}"
+file(extraModsDir).mkdir()
+
+dependencies {
+
+    // compile against provided APIs
+    modImplementation "com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}"
+
+    modImplementation("top.theillusivec4.curios:curios-forge:${curios_version}")
+
+    modImplementation("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    modImplementation("dev.latvian.mods:rhino-forge:${rhino_version}")
+    modImplementation "dev.architectury:architectury-forge:${architectury_version}"
+
+    modImplementation("curse.maven:charm-of-undying-316873:${cou_version}")
+    modImplementation("curse.maven:projecte-226410:${projecte_version}")
+    modImplementation("curse.maven:mekanism-268560:${mek_version}")
+    modImplementation("curse.maven:applied-energistics-2-223794:${ae2_version}")
+
+    // compile against the JEI API but do not include it at runtime
+    modCompileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+    modCompileOnly("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+
+    // REI
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:${rei_version}")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
+
+    // EMI
+    modCompileOnly("dev.emi:emi-forge:${emi_version}")
+
+    if (recipe_viewer == 'jei')
+        modRuntimeOnly("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+    else if (recipe_viewer == 'rei')
+        modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
+    else if (recipe_viewer == 'emi')
+        modRuntimeOnly("dev.emi:emi-forge:${emi_version}")
+    else
+        println("unknown recipe viewer: $recipe_viewer")
+
+    // Locally sourced extra mods for runtime (i.e. testing)
+    for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
+        def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
+        def versionSep = basename.lastIndexOf('-')
+        assert versionSep != -1
+        def artifactId = basename.substring(0, versionSep)
+        def version = basename.substring(versionSep + 1)
+        modRuntimeOnly "extra-mods:$artifactId:$version"
+    }
+
+    if (runtime_tooltip_mod == "wthit") {
+        modRuntimeOnly "mcp.mobius.waila:wthit:forge-${wthit_version}"
+        modRuntimeOnly "lol.bai:badpackets:forge-0.1.2"
+    } else {
+        modCompileOnly "mcp.mobius.waila:wthit-api:forge-${wthit_version}"
+    }
+
+    if (runtime_tooltip_mod == "jade") {
+        modImplementation "curse.maven:jade-324717:${jade_id}"
+    } else {
+        modCompileOnly "curse.maven:jade-324717:${jade_id}"
+    }
+
+    def topDependency = "curse.maven:the-one-probe-245211:4159743"
+    if (runtime_tooltip_mod == "top") {
+        modImplementation topDependency
+    } else {
+        compileOnly topDependency
+    }
+
+    compileOnly ("org.projectlombok:lombok:$lombok_version")
+    annotationProcessor ("org.projectlombok:lombok:$lombok_version")
+    // unit test dependencies
+    testImplementation(platform("org.junit:junit-bom:${project.junit_version}"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.assertj:assertj-core:3.19.0")
+    testImplementation("com.google.guava:guava-testlib:21.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.3.1")
+
+    compileOnly 'org.apache.commons:commons-configuration2:2.9.0'
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+    testCompileOnly 'org.jetbrains:annotations:24.1.0'
+
+    // Annotation Processors
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+group = mod_group_id
 base {
     archivesName = mod_name
+}
+
+
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.deprecation = false
+    options.compilerArgs << "-Xmaxerrs" << "9999"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
-
-minecraft {
-    //mappings channel: 'official', version: mc_version
-    mappings channel: mapping_channel, version: mapping_version
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    copyIdeResources = true
-
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            args "-mixin.config=${mod_id}.mixins.json"
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://maven.shedaniel.me/"
+        content {
+            includeGroup "me.shedaniel"
+            includeGroup "me.shedaniel.cloth"
+            includeGroup "dev.architectury"
         }
-        client {
-            if (project.hasProperty('mc_uuid')) {
-                args '--uuid', project.getProperty('mc_uuid')
-            }
-            if (project.hasProperty('mc_username')) {
-                args '--username', project.getProperty('mc_username')
-            }
-            if (project.hasProperty('mc_accessToken')) {
-                args '--accessToken', project.getProperty('mc_accessToken')
-            }
-            property 'forge.enabledGameTestNamespaces', mod_id
+    }
+    maven {
+        url "https://maven2.bai.lol"
+        content {
+            includeGroup "mcp.mobius.waila"
+            includeGroup "lol.bai"
         }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
+    }
+    maven {
+        url "https://maven.parchmentmc.net/"
+        content {
+            includeGroup "org.parchmentmc.data"
         }
-
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+    }
+    // For the "No Indium?" mod
+    maven {
+        url 'https://maven.cafeteria.dev/releases/'
+        content {
+            includeGroup "me.luligabi"
         }
     }
 
-}
+    maven {
+        name 'modmaven'
+        url "https://modmaven.dev/"
+        content {
+            includeGroup "mezz.jei"
+        }
+    }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+    maven {
+        name 'cursemaven'
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-    debug.verbose = true
-    debug.export = true
-}
+    maven {
+        url "https://maven.blamejared.com"
+        content {
+            includeGroup "vazkii.patchouli"
+            includeGroup "com.blamejared.crafttweaker"
+        }
+    }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
+    flatDir {
+        name "extra-mods"
+        dir file(extraModsDir)
+    }
+    maven { // for TOP
+        url "https://maven.k-4u.nl/"
+        content {
+            includeGroup "mcjty"
+        }
+    }
+    maven {
+        url "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+    maven { url = 'https://repo.spongepowered.org/maven' }
     maven { url = "https://maven.covers1624.net/" }
-    maven { url = 'https://maven.blamejared.com' }
     maven { url = 'https://maven.theillusivec4.top/' }
     maven { url = 'https://maven.melanx.de/' }
     maven { url = "https://maven.architectury.dev" }
     maven { url = "https://maven.saps.dev/minecraft" }
     maven { url = 'https://www.jitpack.io' }
     maven { url = "https://maven.terraformersmc.com/" }
-    maven {
-        name = 'Twilight Forest'
-        url = 'https://modmaven.dev/'
+
+}
+
+///////////////////
+// Version Number
+
+ext.pr = System.getenv('PR_NUMBER') ?: ""
+if (ext.pr) {
+    version = version + "+pr." + ext.pr
+}
+
+ext.branch = System.getenv('BRANCH') ?: ""
+if (ext.branch) {
+    version = version + "+branch." + ext.branch
+}
+
+ext.tag = System.getenv('TAG') ?: ""
+if (ext.tag) {
+    if (!ext.tag.startsWith("forge/v")) {
+        throw new GradleException("Tags for the forge version should start with forge/: ${ext.tag}")
     }
-    maven {
-        url = "https://maven.latvian.dev/releases"
-        content {
-            includeGroup "dev.latvian.mods"
-            includeGroup "dev.latvian.apps"
+
+    version = ext.tag.substring("forge/v".length())
+    // Validate that the rest is a semver version
+    if (version ==~ /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/) {
+        if (System.getenv("GITHUB_ENV")) {
+            def envFile = new File(System.getenv("GITHUB_ENV"))
+            envFile.append("VERSION=${version}")
+        }
+    } else {
+        throw new GradleException("Invalid semver: $version")
+    }
+}
+
+ext.isAlpha = project.version.contains("alpha")
+ext.isBeta = project.version.contains("beta")
+
+test {
+    useJUnitPlatform()
+}
+
+/**
+ * Configures properties common to all run configurations
+ */
+Map<String, String> commonSystemProperties = [
+        'forge.logging.console.level': 'debug'
+]
+
+legacyForge {
+    version = "${mc_version}-${forge_version}"
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
         }
     }
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
+
+    runs {
+        configureEach {
+            gameDirectory = project.file('run')
+            systemProperties.putAll(commonSystemProperties)
+            // property "mixin.debug.export", "true"
+            jvmArguments.addAll(
+                    "--add-opens", "java.base/sun.security.util=ALL-UNNAMED",
+                    "--add-opens", "java.base/java.util.jar=ALL-UNNAMED"
+            )
+        }
+        client {
+            client()
+        }
+        gametestWorld {
+            client()
+            programArguments.addAll(
+                    "--username", "Dev", "--quickPlaySingleplayer", "GametestWorld"
+            )
+        }
+        server {
+            server()
+        }
+        data {
+            data()
+            programArguments.addAll(
+                    '--mod', "${mod_id}",
+                    '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+            )
+        }
+        // Use to run the tests
+        gametest {
+            type = "gameTestServer"
+            gameDirectory = project.file("build/gametest")
+        }
+    }
+
+    addModdingDependenciesTo(sourceSets.test)
+}
+
+
+//////////////
+// Artifacts
+Map<String, String> expansionVariables = [
+        "project_version"        : project.version,
+        'minecraft_version'      : project.mc_version,
+        'mc_range'               : project.mc_range,
+        'forge_version'          : project.forge_version,
+        'forge_version_range'    : project.forge_version_range,
+        'loader_range'           : project.loader_version_range,
+        'mod_id': mod_id, 'mod_name': mod_name, 'mod_license': mod_license,
+        'issue_tracker'          : issue_tracker,
+        'mod_authors'            : mod_authors,
+        'mod_description'        : mod_description
+]
+
+processResources {
+    exclude '.cache'
+    for (var entry : expansionVariables.entrySet()) {
+        inputs.property(entry.key, entry.value)
+    }
+    filesMatching("META-INF/mods.toml") {
+        expand expansionVariables
+        filter { line ->
+            line.replace('version="0.0.0"', "version=\"${expansionVariables['project_version']}\"")
         }
     }
 }
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}")
-    implementation fg.deobf("curse.maven:jade-324717:${jade_id}")
-
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-
-    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
-    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
-    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
-
-    implementation fg.deobf("curse.maven:charm-of-undying-316873:${cou_version}")
-    implementation fg.deobf("curse.maven:projecte-226410:${projecte_version}")
-    implementation fg.deobf("curse.maven:mekanism-268560:${mek_version}")
-    runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:${ae2_version}")
-
-//    implementation fg.deobf("curse.maven:configured-457570:${configured_version}")
-    compileOnly ("org.projectlombok:lombok:$lombok_version")
-    annotationProcessor ("org.projectlombok:lombok:$lombok_version")
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {
-        jarJar.ranged(it, "[0.4.1,)")
-    }
-
-    // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-
-    // REI
-    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-api-forge:${project.rei_version}")
-    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}")
-
-    // EMI
-    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}")
-
-    if (project.recipe_viewer == 'jei')
-        runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-    else if (project.recipe_viewer == 'rei')
-        runtimeOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}")
-    else if (project.recipe_viewer == 'emi')
-        runtimeOnly fg.deobf("dev.emi:emi-forge:${project.emi_version}")
-    else
-        println("unknown recipe viewer: $recipe_viewer")
+///////////
+// Mixins
+mixin {
+    var refmap = add sourceSets.main, "${mod_id}.refmap.json"
+    jar.from refmap
+    config "${mod_id}.mixins.json"
 }
 
-tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: mc_version, mc_range: mc_range,
-            forge_version    : "${mc_version}-${forge_version}", forge_version_range: forge_version_range,
-            loader_range     : loader_version_range,
-            mod_id           : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            issue_tracker    : issue_tracker,
-            mod_authors      : mod_authors, mod_description: mod_description
-    ]
-
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-
-tasks.named('jar', Jar).configure {
+jar {
     manifest {
         attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "MixinConfigs"          : "${mod_id}.mixins.json"
         ])
     }
-
-    finalizedBy 'reobfJar'
 }
 
+def publicApiIncludePatterns = {
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+}
+javadoc publicApiIncludePatterns
+
+task javadocJar(type: Jar, dependsOn: javadoc, group: "build") {
+    archiveClassifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = "sources"
+    from sourceSets.main.allJava
+}
+
+task apiJar(type: Jar, group: "build") {
+    archiveClassifier = "api"
+    // api jar ist just a development aid and serves as both a binary and source jar simultaneously
+    from sourceSets.main.output
+    from sourceSets.main.allJava
+    manifest {
+        attributes("Fabric-Loom-Remap": true)
+    }
+}
+apiJar publicApiIncludePatterns
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+    archives apiJar
+}
+
+//////////////////
+// Maven publish
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.base.archivesName
+            version = project.version
+
             artifact jar
+            artifact sourcesJar
+            artifact javadocJar
+            artifact apiJar
         }
     }
     repositories {
+        maven {
+            name = "Local"
+            url = file("build/repo").toURI()
+        }
         if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
             maven {
                 name 'S3'
@@ -206,44 +418,7 @@ publishing {
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-    options.compilerArgs.add("-Xlint:-removal")
-}
 
-unifiedPublishing {
-    project {
-        displayName = mod_name
-        version = mc_version + "-" + mod_version // Optional, Inferred from project by default
-        changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
-        releaseType = release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20", "1.20.1"]
-        gameLoaders = ["forge"]
-
-        mainPublication tasks.jar // Declares the publicated jar
-        //secondaryPublications.builtBy(tasks.apiJar)
-
-        if (System.getenv('CURSE_TOKEN') != null){
-            curseforge {
-              token = System.getenv("CURSE_TOKEN")
-              id = "623969" // Required, must be a string, ID of CurseForge project
-//
-////            relations { // Optional, Inferred from the relations above by default
-////                optional "jei"
-////            }
-            }
-        }
-
-
-
-        modrinth {
-            token = System.getenv("MODRINTH_TOKEN")
-            id = "QeB3NRC5" // Required, must be a string, ID of Modrinth project
-            displayName = mod_name
-
-//            relations { // Optional, Inferred from the relations above by default
-//                optional "jei"
-//            }
-        }
-    }
+tasks.withType(GenerateModuleMetadata).configureEach {
+    enabled = false
 }
