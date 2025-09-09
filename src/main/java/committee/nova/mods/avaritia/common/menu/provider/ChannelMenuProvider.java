@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.menu.provider;
 
-import committee.nova.mods.avaritia.common.menu.ChannelMenu;
-import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
+import committee.nova.mods.avaritia.common.menu.TesseractMenu;
+import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,10 +19,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 public class ChannelMenuProvider implements MenuProvider {
 
-    private final BlackHoleChestTile blockEntity;
+    private final TesseractTile blockEntity;
     private final int slotIndex;
 
-    public ChannelMenuProvider(BlackHoleChestTile blockEntity) {
+    public ChannelMenuProvider(TesseractTile blockEntity) {
         this.blockEntity = blockEntity;
         this.slotIndex = -2;
     }
@@ -40,6 +40,6 @@ public class ChannelMenuProvider implements MenuProvider {
     @Override
     @ParametersAreNonnullByDefault
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new ChannelMenu(pContainerId, pPlayer, blockEntity, slotIndex);
+        return new TesseractMenu(pContainerId, pPlayer, blockEntity, slotIndex);
     }
 }

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
-import committee.nova.mods.avaritia.common.menu.ChannelMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.ChannelAction;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
 import committee.nova.mods.avaritia.core.channel.*;
@@ -43,7 +43,7 @@ import java.util.UUID;
  * @CreateTime: 2025/1/31 15:28
  * @Description:
  */
-public class BlackHoleChestTile extends BaseTileEntity implements IChannelTerminal {
+public class TesseractTile extends BaseTileEntity implements IChannelTerminal {
     private static final Component CONTAINER_NAME = Component.translatable("container.infinity_chest");
     private final int slotIndex;
     @Getter private UUID owner;
@@ -61,13 +61,13 @@ public class BlackHoleChestTile extends BaseTileEntity implements IChannelTermin
     @Getter private LazyOptional<?> capability = LazyOptional.of(() -> channel);
 
 
-    public BlackHoleChestTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.black_hole_chest_tile.get(), pos, state);
+    public TesseractTile(BlockPos pos, BlockState state) {
+        super(ModTileEntities.tesseract_tile.get(), pos, state);
         this.slotIndex = -2;
         onBlockStateChange();
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, BlackHoleChestTile blockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, TesseractTile blockEntity) {
         if (level.isClientSide) return;
         if (blockEntity.channel.isRemoved()) {
             if (blockEntity.channelID >= 0) blockEntity.setChannel(null, -1);
@@ -119,7 +119,7 @@ public class BlackHoleChestTile extends BaseTileEntity implements IChannelTermin
 
     @Override
     public @NotNull AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory, @NotNull Player pPlayer) {
-        return new ChannelMenu(pContainerId, pInventory.player, this, slotIndex);
+        return new TesseractMenu(pContainerId, pInventory.player, this, slotIndex);
     }
 
     @Override

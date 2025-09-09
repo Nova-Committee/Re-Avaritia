@@ -19,18 +19,18 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2025/2/28 20:25
  * @Description:
  */
-public class ChannelSelectMenu extends AbstractContainerMenu {
+public class TesseractChannelMenu extends AbstractContainerMenu {
 
     private final Player player;
     public final IChannelTerminal terminal;
 
-    public ChannelSelectMenu(int containerId, Inventory playerInv, FriendlyByteBuf extraData) {
-        super(ModMenus.channel_select_menu.get(), containerId);
+    public TesseractChannelMenu(int containerId, Inventory playerInv, FriendlyByteBuf extraData) {
+        super(ModMenus.tesseract_channel.get(), containerId);
         this.player = playerInv.player;
         this.terminal = null;
     }
-    public ChannelSelectMenu(int containerId, Player player, IChannelTerminal terminal) {
-        super(ModMenus.channel_select_menu.get(), containerId);
+    public TesseractChannelMenu(int containerId, Player player, IChannelTerminal terminal) {
+        super(ModMenus.tesseract_channel.get(), containerId);
         this.player = player;
         this.terminal = terminal;
         ServerChannelManager.getInstance().addChannelSelector((ServerPlayer) player, terminal.getTerminalOwner());

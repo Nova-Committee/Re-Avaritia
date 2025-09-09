@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.screen.ChannelSelectScreen;
+import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
 import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
@@ -65,7 +65,7 @@ public class ClientChannelManager {
     public int selectedChannelID = -1;
     public String selectedChannelName = "";
     @Nullable
-    private ChannelSelectScreen screen;
+    private TesseractChannelScreen screen;
 
 
     public ClientChannelManager() {
@@ -137,7 +137,7 @@ public class ClientChannelManager {
         selectedChannelName = name;
     }
 
-    public void addScreen(ChannelSelectScreen screen) {
+    public void addScreen(TesseractChannelScreen screen) {
         this.screen = screen;
     }
 

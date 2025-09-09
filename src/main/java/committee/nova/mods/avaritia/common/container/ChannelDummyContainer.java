@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.container;
 
-import committee.nova.mods.avaritia.common.menu.ChannelMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import committee.nova.mods.avaritia.util.StorageUtils.ViewType;
@@ -23,13 +23,13 @@ public class ChannelDummyContainer extends SimpleContainer {
     public final ArrayList<String[]> viewingObject = new ArrayList<>();
     public final HashMap<Integer, FluidStack> fluidStacks = new HashMap<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
-    private final ChannelMenu menu;
+    private final TesseractMenu menu;
     protected ArrayList<String> sortedItems = new ArrayList<>();
     protected ArrayList<String> sortedFluids = new ArrayList<>();
     protected ArrayList<String> sortedEnergies = new ArrayList<>();
     private double scrollTo = 0.0D;
 
-    public ChannelDummyContainer(ChannelMenu menu) {
+    public ChannelDummyContainer(TesseractMenu menu) {
         super(99);
         this.menu = menu;
     }

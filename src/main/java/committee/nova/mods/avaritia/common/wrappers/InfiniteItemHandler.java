@@ -21,28 +21,30 @@ import java.util.stream.Collectors;
 public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable {
     // 每页的槽位数
     public static final int SLOTS_PER_PAGE = 54;
-    // 最大页数（近乎无限）
+    // 最大页数（近似无限）
     public static final int MAX_PAGES = 1000000;
+    // 最大物品数量（可根据需要调整）
+    public static final int MAX_ITEMS = 1000000;
 
     // 存储所有物品的列表
     private final List<ItemStack> items;
-    // 当前页码
-    private int currentPage;
+    // 当前滚动位置
+    private int scrollPosition = 0;
     // 搜索关键词
     private String searchQuery = "";
     // 分类方式
     private SortType sortType = SortType.NONE;
-    // 是否自动整理
-    private boolean autoOrganize = false;
+    // 按模组分类的物品
+    private Map<String, List<ItemStack>> modItemsMap;
+    // 是否需要重建模组物品映射
+    private boolean rebuildModMap = true;
 
     public enum SortType {
-        NONE, NAME, COUNT, MOD
+        NONE, NAME, COUNT, MOD, CATEGORY
     }
 
     public InfiniteItemHandler() {
         this.items = new ArrayList<>();
-        this.currentPage = 0;
-        // 初始化第一页的槽位
         initializeSlots();
     }
 
@@ -55,48 +57,67 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
 
     @Override
     public int getSlots() {
-        // 返回当前页的槽位数
+        // 返回可见的槽位数
         return SLOTS_PER_PAGE;
     }
 
-    @Nonnull
     @Override
+    @Nonnull
     public ItemStack getStackInSlot(int slot) {
         // 计算实际槽位索引
-        int actualSlot = currentPage * SLOTS_PER_PAGE + slot;
+        int actualSlot = scrollPosition + slot;
         if (actualSlot < 0 || actualSlot >= items.size()) {
             return ItemStack.EMPTY;
         }
         return items.get(actualSlot);
     }
 
-    @Nonnull
     @Override
+    @Nonnull
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;
         }
 
-        int actualSlot = currentPage * SLOTS_PER_PAGE + slot;
-
-        // 如果槽位超出当前范围，扩展列表
-        while (actualSlot >= items.size()) {
-            items.add(ItemStack.EMPTY);
+        // 检查是否超过最大物品数量
+        if (getNonEmptyItemCount() >= MAX_ITEMS) {
+            return stack;
         }
 
-        ItemStack existing = items.get(actualSlot);
+        // 尝试与现有物品合并
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack existing = items.get(i);
+            if (!existing.isEmpty() && ItemStack.isSameItemSameTags(existing, stack)) {
+                int spaceLeft = existing.getMaxStackSize() - existing.getCount();
+                if (spaceLeft > 0) {
+                    int amountToInsert = Math.min(stack.getCount(), spaceLeft);
+                    if (!simulate) {
+                        existing.grow(amountToInsert);
+                        rebuildModMap = true;
+                    }
+                    return stack.copyWithCount(stack.getCount() - amountToInsert);
+                }
+            }
+        }
 
-        if (existing.isEmpty()) {
+        // 找到空槽位插入
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).isEmpty()) {
+                int amountToInsert = Math.min(stack.getCount(), stack.getMaxStackSize());
+                if (!simulate) {
+                    items.set(i, stack.copyWithCount(amountToInsert));
+                    rebuildModMap = true;
+                }
+                return stack.copyWithCount(stack.getCount() - amountToInsert);
+            }
+        }
+
+        // 如果没有空槽位，添加新槽位
+        if (items.size() < MAX_ITEMS) {
             int amountToInsert = Math.min(stack.getCount(), stack.getMaxStackSize());
             if (!simulate) {
-                items.set(actualSlot, new ItemStack(stack.getItem(), amountToInsert));
-            }
-            return stack.copyWithCount(stack.getCount() - amountToInsert);
-        } else if (ItemStack.isSameItemSameTags(existing, stack)) {
-            int spaceLeft = existing.getMaxStackSize() - existing.getCount();
-            int amountToInsert = Math.min(stack.getCount(), spaceLeft);
-            if (!simulate) {
-                existing.grow(amountToInsert);
+                items.add(stack.copyWithCount(amountToInsert));
+                rebuildModMap = true;
             }
             return stack.copyWithCount(stack.getCount() - amountToInsert);
         }
@@ -111,7 +132,7 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
             return ItemStack.EMPTY;
         }
 
-        int actualSlot = currentPage * SLOTS_PER_PAGE + slot;
+        int actualSlot = scrollPosition + slot;
         if (actualSlot < 0 || actualSlot >= items.size()) {
             return ItemStack.EMPTY;
         }
@@ -128,10 +149,8 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
             existing.shrink(amountToExtract);
             if (existing.isEmpty()) {
                 items.set(actualSlot, ItemStack.EMPTY);
-                if (autoOrganize) {
-                    CompletableFuture.runAsync(this::organizeItems);
-                }
             }
+            rebuildModMap = true;
         }
 
         return extracted;
@@ -149,34 +168,36 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        int actualSlot = currentPage * SLOTS_PER_PAGE + slot;
+        int actualSlot = scrollPosition + slot;
         while (actualSlot >= items.size()) {
             items.add(ItemStack.EMPTY);
         }
         items.set(actualSlot, stack);
-        if (autoOrganize) {
-            CompletableFuture.runAsync(this::organizeItems);
-        }
+        rebuildModMap = true;
     }
 
-    // 分页相关方法
-    public int getCurrentPage() {
-        return currentPage;
+    // 滚动位置控制
+    public int getScrollPosition() {
+        return scrollPosition;
     }
 
-    public void setCurrentPage(int page) {
-        if (page >= 0 && page < MAX_PAGES) {
-            this.currentPage = page;
-            // 确保当前页有足够的槽位
-            while ((currentPage + 1) * SLOTS_PER_PAGE > items.size()) {
-                items.add(ItemStack.EMPTY);
+    public void setScrollPosition(int position) {
+        this.scrollPosition = Math.max(0, Math.min(position, Math.max(0, items.size() - SLOTS_PER_PAGE)));
+    }
+
+    public int getMaxScrollPosition() {
+        return Math.max(0, items.size() - SLOTS_PER_PAGE);
+    }
+
+    // 获取非空物品数量
+    public int getNonEmptyItemCount() {
+        int count = 0;
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                count++;
             }
-            debugPrintCurrentPage();
         }
-    }
-
-    public int getTotalPages() {
-        return (items.size() + SLOTS_PER_PAGE - 1) / SLOTS_PER_PAGE;
+        return count;
     }
 
     // 搜索功能
@@ -186,6 +207,21 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
 
     public String getSearchQuery() {
         return searchQuery;
+    }
+
+    // 获取过滤后的物品列表（用于搜索）
+    public List<ItemStack> getFilteredItems() {
+        if (searchQuery.isEmpty()) {
+            return new ArrayList<>(items);
+        }
+
+        List<ItemStack> filtered = new ArrayList<>();
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty() && stack.getDisplayName().getString().toLowerCase().contains(searchQuery)) {
+                filtered.add(stack);
+            }
+        }
+        return filtered;
     }
 
     // 分类功能
@@ -200,49 +236,33 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
         return sortType;
     }
 
-    // 自动整理开关
-    public void setAutoOrganize(boolean enabled) {
-        this.autoOrganize = enabled;
-        if (enabled) {
-            CompletableFuture.runAsync(this::organizeItems);
-        }
-    }
-
-    public boolean isAutoOrganize() {
-        return autoOrganize;
-    }
-
-    // 获取过滤后的物品列表（用于搜索）
-    public List<ItemStack> getFilteredItems() {
-        if (searchQuery.isEmpty()) {
-            return new ArrayList<>(items);
-        }
-
-        return items.stream()
-                .filter(stack -> !stack.isEmpty())
-                .filter(stack -> stack.getDisplayName().getString().toLowerCase().contains(searchQuery))
-                .collect(Collectors.toList());
-    }
-
     // 排序物品
     private void sortItems() {
-        List<ItemStack> nonEmptyItems = items.stream()
-                .filter(stack -> !stack.isEmpty())
-                .sorted((stack1, stack2) -> {
-                    switch (sortType) {
-                        case NAME:
-                            return stack1.getDisplayName().getString().compareTo(stack2.getDisplayName().getString());
-                        case COUNT:
-                            return Integer.compare(stack2.getCount(), stack1.getCount());
-                        case MOD:
-                            String modId1 = Const.getItemName(stack1.getItem()).getNamespace();
-                            String modId2 = Const.getItemName(stack2.getItem()).getNamespace();
-                            return modId1.compareTo(modId2);
-                        default:
-                            return 0;
-                    }
-                })
-                .toList();
+        List<ItemStack> nonEmptyItems = new ArrayList<>();
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                nonEmptyItems.add(stack);
+            }
+        }
+
+        // 根据排序类型排序
+        nonEmptyItems.sort((stack1, stack2) -> {
+            switch (sortType) {
+                case NAME:
+                    return stack1.getDisplayName().getString().compareTo(stack2.getDisplayName().getString());
+                case COUNT:
+                    return Integer.compare(stack2.getCount(), stack1.getCount());
+                case MOD:
+                    String modId1 = Const.getItemName(stack1.getItem()).getNamespace();
+                    String modId2 = Const.getItemName(stack2.getItem()).getNamespace();
+                    return modId1.compareTo(modId2);
+                case CATEGORY:
+                    // 这里可以根据物品类别进行排序
+                    return stack1.getItem().getDescription().getString().compareTo(stack2.getItem().getDescription().getString());
+                default:
+                    return 0;
+            }
+        });
 
         // 清空列表并重新添加排序后的物品
         items.clear();
@@ -250,48 +270,27 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
 
         // 确保至少有一页的槽位
         initializeSlots();
+
+        rebuildModMap = true;
     }
 
-    // 自动整理物品
-    public void organizeItems() {
-        // 按物品类型分组
-        Map<ItemStack, Integer> itemCounts = new HashMap<>();
+    // 按模组分类获取物品
+    public Map<String, List<ItemStack>> getItemsByMod() {
+        if (rebuildModMap || modItemsMap == null) {
+            rebuildModItemsMap();
+        }
+        return modItemsMap;
+    }
 
+    private void rebuildModItemsMap() {
+        modItemsMap = new HashMap<>();
         for (ItemStack stack : items) {
             if (!stack.isEmpty()) {
-                boolean found = false;
-                for (Map.Entry<ItemStack, Integer> entry : itemCounts.entrySet()) {
-                    if (ItemStack.isSameItemSameTags(entry.getKey(), stack)) {
-                        itemCounts.put(entry.getKey(), entry.getValue() + stack.getCount());
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    itemCounts.put(stack.copy(), stack.getCount());
-                }
+                String modId = Const.getItemName(stack.getItem()).getNamespace();
+                modItemsMap.computeIfAbsent(modId, k -> new ArrayList<>()).add(stack);
             }
         }
-
-        // 清空列表
-        items.clear();
-
-        // 重新添加整理后的物品
-        for (Map.Entry<ItemStack, Integer> entry : itemCounts.entrySet()) {
-            ItemStack stack = entry.getKey();
-            int totalCount = entry.getValue();
-
-            while (totalCount > 0) {
-                int stackSize = Math.min(totalCount, stack.getMaxStackSize());
-                ItemStack newStack = stack.copy();
-                newStack.setCount(stackSize);
-                items.add(newStack);
-                totalCount -= stackSize;
-            }
-        }
-
-        // 确保至少有一页的槽位
-        initializeSlots();
+        rebuildModMap = false;
     }
 
     // NBT 数据持久化
@@ -308,10 +307,9 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
         }
 
         tag.put("Items", itemsList);
-        tag.putInt("CurrentPage", currentPage);
+        tag.putInt("ScrollPosition", scrollPosition);
         tag.putString("SearchQuery", searchQuery);
         tag.putString("SortType", sortType.name());
-        tag.putBoolean("AutoOrganize", autoOrganize);
         return tag;
     }
 
@@ -328,13 +326,13 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
             }
         }
 
-        currentPage = nbt.getInt("CurrentPage");
+        scrollPosition = nbt.getInt("ScrollPosition");
         searchQuery = nbt.getString("SearchQuery");
         sortType = SortType.valueOf(nbt.getString("SortType"));
-        autoOrganize = nbt.getBoolean("AutoOrganize");
+        rebuildModMap = true;
     }
 
-    // 获取所有物品（用于 AE2 兼容）
+    // 获取所有物品
     public List<ItemStack> getAllItems() {
         List<ItemStack> allItems = new ArrayList<>();
         for (ItemStack stack : items) {
@@ -343,32 +341,5 @@ public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable
             }
         }
         return allItems;
-    }
-
-    // 按模组分类获取物品
-    public Map<String, List<ItemStack>> getItemsByMod() {
-        Map<String, List<ItemStack>> modItems = new HashMap<>();
-
-        for (ItemStack stack : items) {
-            if (!stack.isEmpty()) {
-                String modId = Const.getItemName(stack.getItem()).getNamespace();
-                modItems.computeIfAbsent(modId, k -> new ArrayList<>()).add(stack);
-            }
-        }
-
-        return modItems;
-    }
-
-    // 在InfiniteItemHandler类中添加调试方法
-    public void debugPrintCurrentPage() {
-        System.out.println("当前页: " + currentPage);
-        System.out.println("总页数: " + getTotalPages());
-        System.out.println("当前页物品:");
-        for (int i = 0; i < SLOTS_PER_PAGE; i++) {
-            int actualSlot = currentPage * SLOTS_PER_PAGE + i;
-            if (actualSlot < items.size() && !items.get(actualSlot).isEmpty()) {
-                System.out.println("槽位 " + i + ": " + items.get(actualSlot).getDisplayName().getString() + " x" + items.get(actualSlot).getCount());
-            }
-        }
     }
 }

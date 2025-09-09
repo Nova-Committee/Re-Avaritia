@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
-import committee.nova.mods.avaritia.common.menu.ChannelSelectMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SAddChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SRenameChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SSetChannelPack;
@@ -35,7 +35,7 @@ import java.util.List;
  * @CreateTime: 2025/3/1 15:00
  * @Description:
  */
-public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMenu> {
+public class TesseractChannelScreen extends AbstractContainerScreen<TesseractChannelMenu> {
     @Setter
     @Getter
     private int blitOffset;
@@ -52,7 +52,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     private int lastOtherChannelsCount = 0;
     private int lastPublicChannelsCount = 0;
 
-    public ChannelSelectScreen(ChannelSelectMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
+    public TesseractChannelScreen(TesseractChannelMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
         this.imageWidth = 88;
         this.imageHeight = 190;
@@ -257,7 +257,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
     }
 
     private class AddChannelButton extends ImageButton {
-        public AddChannelButton(ChannelSelectScreen pScreen, int pX, int pY) {
+        public AddChannelButton(TesseractChannelScreen pScreen, int pX, int pY) {
             super(pX, pY, 18, 18, 202, 0, GUI_IMG, pButton -> {
                 Minecraft.getInstance().setScreen(new StringInputScreen(pScreen, Text.i18n("请输入频道名称").setShadow(true), Text.i18n("请输入"), "\\d{0,12}", "默认的频道", input -> {
                     if (!input.isEmpty()) {
@@ -283,7 +283,7 @@ public class ChannelSelectScreen extends AbstractContainerScreen<ChannelSelectMe
 
     private class RenameButton extends ImageButton {
 
-        public RenameButton(ChannelSelectScreen pScreen, int pX, int pY) {
+        public RenameButton(TesseractChannelScreen pScreen, int pX, int pY) {
             super(pX, pY, 16, 16, 202, 34, GUI_IMG, pButton -> {
                 Minecraft.getInstance().setScreen(new StringInputScreen(pScreen, Text.i18n("请输入新的频道名称").setShadow(true), Text.i18n("请输入"), "\\d{0,12}", "默认的频道", input -> {
                     if (!input.isEmpty()) {

@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
-import committee.nova.mods.avaritia.common.menu.ChannelMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SFilterChannelPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannel;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
@@ -43,7 +43,7 @@ import java.util.List;
  * @CreateTime: 2025/2/24 00:39
  * @Description:
  */
-public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
+public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     @Setter
     @Getter
     private int blitOffset;
@@ -61,7 +61,7 @@ public class BlackHoleChestScreen extends AbstractContainerScreen<ChannelMenu> {
     private CraftToInventoryButton craftToInventoryButton;
     private CraftAndDropButton craftAndDropButton;
 
-    public BlackHoleChestScreen(ChannelMenu menu, Inventory inventory, Component title) {
+    public TesseractScreen(TesseractMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         this.imageWidth = 218;
         this.imageHeight = 256;

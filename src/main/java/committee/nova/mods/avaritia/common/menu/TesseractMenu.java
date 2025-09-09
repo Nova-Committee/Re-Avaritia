@@ -7,7 +7,7 @@ import committee.nova.mods.avaritia.api.utils.math.InvItemCounter;
 import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
 import committee.nova.mods.avaritia.common.menu.provider.ChannelSelectMenuProvider;
 import committee.nova.mods.avaritia.common.net.C2SWipChestActionPack;
-import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
+import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import committee.nova.mods.avaritia.core.channel.*;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @CreateTime: 2025/2/4 14:41
  * @Description:
  */
-public class ChannelMenu extends AbstractContainerMenu {
+public class TesseractMenu extends AbstractContainerMenu {
 
     public final Channel channel;
     public final UUID owner;
@@ -64,7 +64,7 @@ public class ChannelMenu extends AbstractContainerMenu {
     private final ItemStack panelItem;
     private final TransientCraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
-    public BlackHoleChestTile blackHoleChestTile;
+    public TesseractTile tesseractTile;
     public ChannelDummyContainer channelDummyContainer;
     public boolean locked;
     public UUID channelOwner;
@@ -80,8 +80,8 @@ public class ChannelMenu extends AbstractContainerMenu {
 
 
     //客户端调用这个
-    public ChannelMenu(int containerId, Inventory playerInv, FriendlyByteBuf extraData) {
-        super(ModMenus.channel_menu.get(), containerId);
+    public TesseractMenu(int containerId, Inventory playerInv, FriendlyByteBuf extraData) {
+        super(ModMenus.tesseract.get(), containerId);
         this.level = playerInv.player.level();
         this.player = playerInv.player;
 
@@ -123,15 +123,15 @@ public class ChannelMenu extends AbstractContainerMenu {
     }
 
     //服务端用这个
-    public ChannelMenu(int containerId, Player player, BlackHoleChestTile blockEntity, int panelItemSlotIndex) {
-        super(ModMenus.channel_menu.get(), containerId);
+    public TesseractMenu(int containerId, Player player, TesseractTile blockEntity, int panelItemSlotIndex) {
+        super(ModMenus.tesseract.get(), containerId);
         this.level = player.level();
         this.player = player;
         this.panelItemSlotIndex = panelItemSlotIndex;
 
         if (panelItemSlotIndex >= 0) {
             this.blockPos = BlockPos.ZERO;
-            this.blackHoleChestTile = null;
+            this.tesseractTile = null;
             this.panelItem = player.getInventory().getItem(panelItemSlotIndex);
             CompoundTag nbt = panelItem.getOrCreateTag();
             this.owner = nbt.contains("owner") ? nbt.getUUID("owner") : player.getUUID();
@@ -148,7 +148,7 @@ public class ChannelMenu extends AbstractContainerMenu {
         }
         else {
             this.blockPos = blockEntity.getBlockPos();
-            this.blackHoleChestTile = blockEntity;
+            this.tesseractTile = blockEntity;
             this.owner = blockEntity.getOwner() == null ? player.getUUID() : blockEntity.getOwner();
             this.locked = blockEntity.isLocked();
             this.craftingMode = blockEntity.isCraftingMode();
@@ -186,7 +186,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                         panelItem.setTag(nbt);
                     }
                     else {
-                        blackHoleChestTile.setLocked(locked);
+                        tesseractTile.setLocked(locked);
                         if (locked) saveBlock();
                     }
                 }
@@ -844,10 +844,10 @@ public class ChannelMenu extends AbstractContainerMenu {
     }
 
     private void saveBlock() {
-        blackHoleChestTile.setCraftingMode(craftingMode);
-        blackHoleChestTile.setFilter(filter);
-        blackHoleChestTile.setSortType(sortType);
-        blackHoleChestTile.setViewType(viewType);
+        tesseractTile.setCraftingMode(craftingMode);
+        tesseractTile.setFilter(filter);
+        tesseractTile.setSortType(sortType);
+        tesseractTile.setViewType(viewType);
     }
 
     @Override
@@ -1020,11 +1020,11 @@ public class ChannelMenu extends AbstractContainerMenu {
                 nbt.remove("channel");
                 panelItem.setTag(nbt);
             }
-            else blackHoleChestTile.setChannel(null, -1);
+            else tesseractTile.setChannel(null, -1);
             openChannelScreen();
         }
         if (panelItemSlotIndex >= 0) return panelItem == player.getInventory().getItem(panelItemSlotIndex);
-        else return !blackHoleChestTile.isRemoved() &&
+        else return !tesseractTile.isRemoved() &&
                 player.distanceToSqr(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 32.0D;
     }
 
@@ -1052,7 +1052,7 @@ public class ChannelMenu extends AbstractContainerMenu {
             }
         }
         else {
-            if (!blackHoleChestTile.isLocked()) saveBlock();
+            if (!tesseractTile.isLocked()) saveBlock();
         }
     }
 
@@ -1064,7 +1064,7 @@ public class ChannelMenu extends AbstractContainerMenu {
                     buf -> {}
             );
         }
-        else NetworkHooks.openScreen((ServerPlayer) player, new ChannelSelectMenuProvider(blackHoleChestTile), buf -> {
+        else NetworkHooks.openScreen((ServerPlayer) player, new ChannelSelectMenuProvider(tesseractTile), buf -> {
         });
     }
 

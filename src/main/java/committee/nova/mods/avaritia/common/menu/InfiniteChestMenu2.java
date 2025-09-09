@@ -11,8 +11,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static committee.nova.mods.avaritia.common.wrappers.InfiniteItemHandler.SLOTS_PER_PAGE;
 
@@ -23,7 +28,6 @@ public class InfiniteChestMenu2 extends BaseTileMenu<InfiniteChestBlockEntity> {
 
     public InfiniteChestMenu2(int containerId, Inventory inventory, BlockPos pos) {
         super(ModMenus.infinity_chest2.get(), containerId, inventory, pos);
-
         // 添加箱子槽位（6x9 = 54个槽位）
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 9; col++) {
@@ -45,12 +49,11 @@ public class InfiniteChestMenu2 extends BaseTileMenu<InfiniteChestBlockEntity> {
     }
 
     public static InfiniteChestMenu2 fromNetwork(int containerId, Inventory inventory, FriendlyByteBuf buf) {
-        // 这里应该从 buf 中读取方块实体位置，但为了简化，我们假设已经传递了正确的方块实体
         return new InfiniteChestMenu2(containerId, inventory, buf.readBlockPos());
     }
 
     @Override
-    public ItemStack quickMoveStack(@Nonnull Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(@Nonnull Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = getSlot(index);
 
@@ -85,37 +88,26 @@ public class InfiniteChestMenu2 extends BaseTileMenu<InfiniteChestBlockEntity> {
         return getTileEntity() == null || getTileEntity().canAccess(player, true);
     }
 
-    // 分页控制方法
-    public void nextPage() {
+    // 滚动控制
+    public void scroll(int direction) {
         if (getTileEntity() != null) {
-            int currentPage = getTileEntity().getItemHandler().getCurrentPage();
-            getTileEntity().getItemHandler().setCurrentPage(currentPage + 1);
-            for (int i = 0; i < SLOTS_PER_PAGE; i++) {
-                slots.get(i).setChanged();
-            }
-            broadcastChanges();
-        }
-    }
+            InfiniteItemHandler handler = getTileEntity().getItemHandler();
+            int currentPos = handler.getScrollPosition();
+            int maxPos = handler.getMaxScrollPosition();
+            int newPos = currentPos + direction;
 
-    public void previousPage() {
-        if (getTileEntity() != null) {
-            int currentPage = getTileEntity().getItemHandler().getCurrentPage();
-            if (currentPage > 0) {
-                getTileEntity().getItemHandler().setCurrentPage(currentPage - 1);
-                for (int i = 0; i < SLOTS_PER_PAGE; i++) {
+            // 限制滚动范围
+            newPos = Math.max(0, Math.min(newPos, maxPos));
+
+            if (newPos != currentPos) {
+                handler.setScrollPosition(newPos);
+                // 强制刷新所有槽位
+                for (int i = 0; i < 54; i++) {
                     slots.get(i).setChanged();
                 }
                 broadcastChanges();
             }
         }
-    }
-
-    public int getCurrentPage() {
-        return getTileEntity() != null ? getTileEntity().getItemHandler().getCurrentPage() : 0;
-    }
-
-    public int getTotalPages() {
-        return getTileEntity() != null ? getTileEntity().getItemHandler().getTotalPages() : 0;
     }
 
     // 搜索功能
@@ -134,6 +126,8 @@ public class InfiniteChestMenu2 extends BaseTileMenu<InfiniteChestBlockEntity> {
     public void setSortType(InfiniteItemHandler.SortType type) {
         if (getTileEntity() != null) {
             getTileEntity().getItemHandler().setSortType(type);
+            // 重置滚动位置
+            getTileEntity().getItemHandler().setScrollPosition(0);
             broadcastChanges();
         }
     }
@@ -142,24 +136,17 @@ public class InfiniteChestMenu2 extends BaseTileMenu<InfiniteChestBlockEntity> {
         return getTileEntity() != null ? getTileEntity().getItemHandler().getSortType() : InfiniteItemHandler.SortType.NONE;
     }
 
-    // 自动整理
-    public void toggleAutoOrganize() {
-        if (getTileEntity() != null) {
-            boolean current = getTileEntity().getItemHandler().isAutoOrganize();
-            getTileEntity().getItemHandler().setAutoOrganize(!current);
-            broadcastChanges();
-        }
+    // 获取滚动信息
+    public int getScrollPosition() {
+        return getTileEntity() != null ? getTileEntity().getItemHandler().getScrollPosition() : 0;
     }
 
-    public boolean isAutoOrganize() {
-        return getTileEntity() != null && getTileEntity().getItemHandler().isAutoOrganize();
+    public int getMaxScrollPosition() {
+        return getTileEntity() != null ? getTileEntity().getItemHandler().getMaxScrollPosition() : 0;
     }
 
-    // 手动整理
-    public void organizeItems() {
-        if (getTileEntity() != null) {
-            getTileEntity().getItemHandler().organizeItems();
-            broadcastChanges();
-        }
+    // 获取模组分类
+    public Map<String, List<ItemStack>> getItemsByMod() {
+        return getTileEntity() != null ? getTileEntity().getItemHandler().getItemsByMod() : new HashMap<>();
     }
 }

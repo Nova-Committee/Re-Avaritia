@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.menu.provider;
 
-import committee.nova.mods.avaritia.common.menu.ChannelSelectMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.core.channel.IChannelTerminal;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
@@ -32,6 +32,6 @@ public class ChannelSelectMenuProvider implements MenuProvider {
     @Override
     @ParametersAreNonnullByDefault
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new ChannelSelectMenu(pContainerId, pPlayer, terminal);
+        return new TesseractChannelMenu(pContainerId, pPlayer, terminal);
     }
 }

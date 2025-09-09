@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import com.google.common.collect.ImmutableMap;
-import committee.nova.mods.avaritia.common.tile.BlackHoleChestTile;
+import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
@@ -56,7 +56,7 @@ import java.util.UUID;
  * @CreateTime: 2024/7/13 下午12:38
  * @Description:
  */
-public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
+public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
@@ -65,13 +65,13 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
     private final ImmutableMap<BlockState, VoxelShape> shapesCache;
-    public BlackHoleChestBlock() {
+    public TesseractBlock() {
         super(Properties.of()
                 .mapColor(MapColor.GOLD)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(30.0F, 1200.0F)
                 .sound(SoundType.GLASS)
-                .lightLevel(BlackHoleChestBlock::getLightLevel)
+                .lightLevel(TesseractBlock::getLightLevel)
                 .isValidSpawn((state, getter, pos, entityType) -> false)
                 .isSuffocating((state, getter, pos) -> false)
                 .ignitedByLava());
@@ -84,7 +84,7 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
                 .setValue(DOWN, Boolean.TRUE)
                 .setValue(WATERLOGGED, Boolean.FALSE)
         );
-        this.shapesCache = this.getShapeForEachState(BlackHoleChestBlock::calculateShape);
+        this.shapesCache = this.getShapeForEachState(TesseractBlock::calculateShape);
     }
 
     private static VoxelShape calculateShape(BlockState state) {
@@ -150,7 +150,7 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
         if (!level.isClientSide() && !player.isSpectator()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof BlackHoleChestTile chestTile) {
+            if (tile instanceof TesseractTile chestTile) {
                 if (chestTile.getOwner() == null) {
                     chestTile.setOwner(player.getUUID());
                     chestTile.setLocked(false);
@@ -193,13 +193,13 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
 
     @Override
     public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        return new BlackHoleChestTile(pPos, pState);
+        return new TesseractTile(pPos, pState);
     }
 
     @Override
     public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
         if (pPlacer instanceof ServerPlayer player && !pStack.getOrCreateTag().contains("BlockEntityTag")) {
-            BlackHoleChestTile blockEntity = (BlackHoleChestTile) pLevel.getBlockEntity(pPos);
+            TesseractTile blockEntity = (TesseractTile) pLevel.getBlockEntity(pPos);
             if (blockEntity != null) {
                 blockEntity.setOwner(pPlacer.getUUID());
             }
@@ -210,8 +210,8 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
     public void entityInside(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Entity pEntity) {
         if (pLevel.isClientSide) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (blockentity instanceof BlackHoleChestTile blackHoleChestTile && pEntity instanceof ItemEntity itemEntity) {
-            blackHoleChestTile.inhaleItem(itemEntity);
+        if (blockentity instanceof TesseractTile tesseractTile && pEntity instanceof ItemEntity itemEntity) {
+            tesseractTile.inhaleItem(itemEntity);
         }
     }
 
@@ -270,7 +270,7 @@ public class BlackHoleChestBlock extends BaseTileEntityBlock implements SimpleWa
 
     @Override
     public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
-        BlackHoleChestTile blockEntity = (BlackHoleChestTile) level.getBlockEntity(pos);
+        TesseractTile blockEntity = (TesseractTile) level.getBlockEntity(pos);
         if (blockEntity != null) blockEntity.onBlockStateChange();
     }
 

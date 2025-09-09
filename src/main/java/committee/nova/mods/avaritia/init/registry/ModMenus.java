@@ -1,10 +1,10 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.screen.BlackHoleChestScreen;
-import committee.nova.mods.avaritia.common.menu.ChannelMenu;
-import committee.nova.mods.avaritia.common.menu.ChannelSelectMenu;
-import committee.nova.mods.avaritia.client.screen.ChannelSelectScreen;
+import committee.nova.mods.avaritia.client.screen.TesseractScreen;
+import committee.nova.mods.avaritia.common.menu.TesseractMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
+import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
 import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
@@ -43,8 +43,8 @@ public class ModMenus {
         MenuScreens.register(GENERIC_9x27.get(), CompressedChestScreen::new);
         MenuScreens.register(neutron_ring.get(), NeutronRingScreen::new);
         MenuScreens.register(infinity_chest.get(), InfinityChestScreen::new);
-        MenuScreens.register(channel_menu.get(), BlackHoleChestScreen::new);
-        MenuScreens.register(channel_select_menu.get(), ChannelSelectScreen::new);
+        MenuScreens.register(tesseract.get(), TesseractScreen::new);
+        MenuScreens.register(tesseract_channel.get(), TesseractChannelScreen::new);
         MenuScreens.register(extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         MenuScreens.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
         MenuScreens.register(infinity_clock_menu.get(), InfinityClockScreen::new);
@@ -66,8 +66,8 @@ public class ModMenus {
     public static RegistryObject<MenuType<InfinityChestMenu>> infinity_chest = menu("infinity_chest", () -> IForgeMenuType.create(InfinityChestMenu::new));
     public static RegistryObject<MenuType<CompressedChestMenu>> GENERIC_9x27 = menu("generic_9x27", () -> IForgeMenuType.create(CompressedChestMenu::new));
     public static RegistryObject<MenuType<ExtremeAnvilMenu>> extreme_anvil = menu("extreme_anvil", () -> IForgeMenuType.create(ExtremeAnvilMenu::new));
-    public static RegistryObject<MenuType<ChannelSelectMenu>> channel_select_menu = menu("channel_select_menu", () -> IForgeMenuType.create(ChannelSelectMenu::new));
-    public static RegistryObject<MenuType<ChannelMenu>> channel_menu = menu("channel", () -> IForgeMenuType.create(ChannelMenu::new));
+    public static RegistryObject<MenuType<TesseractChannelMenu>> tesseract_channel = menu("tesseract_channel", () -> IForgeMenuType.create(TesseractChannelMenu::new));
+    public static RegistryObject<MenuType<TesseractMenu>> tesseract = menu("tesseract", () -> IForgeMenuType.create(TesseractMenu::new));
     public static RegistryObject<MenuType<InfinityClockMenu>> infinity_clock_menu =
             menu("infinity_clock_menu", () -> IForgeMenuType.create((id, inv, buf) -> new InfinityClockMenu(id, inv)));
     public static RegistryObject<MenuType<InfiniteChestMenu2>> infinity_chest2 = menu("infinity_chest2", () -> IForgeMenuType.create(InfiniteChestMenu2::fromNetwork));

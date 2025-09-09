@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.net.channel;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.menu.ChannelSelectMenu;
+import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -42,7 +42,7 @@ public class C2SRenameChannelPack {
             if (!player.containerMenu.stillValid(player)) {
                 Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
             } else {
-                ((ChannelSelectMenu) player.containerMenu).renameChannel(name);
+                ((TesseractChannelMenu) player.containerMenu).renameChannel(name);
             }
         });
         context.get().setPacketHandled(true);
