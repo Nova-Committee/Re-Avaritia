@@ -52,7 +52,6 @@ public class ModCreativeModeTabs {
                         }
                     })
                     .build());
-
     private static ItemStack makeIcon() {
         ItemStack stack = new ItemStack(ModItems.singularity.get());
         CompoundTag tag = new CompoundTag();

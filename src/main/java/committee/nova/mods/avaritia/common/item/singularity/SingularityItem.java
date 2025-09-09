@@ -4,12 +4,14 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,14 +23,27 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/2 12:42
- * Version: 1.0
- */
 public class SingularityItem extends Item implements IColored {
+    private static final AtomicInteger currentSingularityIndex = new AtomicInteger(0);
+    private static final Timer singularityIconTimer = new Timer("Singularity Icon Timer");
+    private static List<Singularity> enabledSingularities = null;
+
+    static {
+        // 初始化定时器，每秒切换一次奇点显示
+        singularityIconTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (enabledSingularities != null && !enabledSingularities.isEmpty()) {
+                    currentSingularityIndex.set((currentSingularityIndex.get() + 1) % enabledSingularities.size());
+                }
+            }
+        }, 0, 1000); // 每1秒切换一次
+    }
+
     public SingularityItem() {
         super(new Properties().rarity(ModRarities.UNCOMMON));
     }
@@ -62,6 +77,23 @@ public class SingularityItem extends Item implements IColored {
 
     @Override
     public int getColor(int i, ItemStack stack) {
+        // 检查是否是创造模式标签页的图标
+        if (stack.hasTag() && stack.getTag().getBoolean("IsCreativeTab")) {
+            // 初始化奇点列表（如果尚未初始化）
+            if (enabledSingularities == null) {
+                enabledSingularities = SingularityRegistryHandler.getInstance().getSingularities()
+                        .stream()
+                        .filter(s -> s.isEnabled() && s.getIngredient() != net.minecraft.world.item.crafting.Ingredient.EMPTY)
+                        .toList();
+            }
+
+            // 如果有可用的奇点，则使用当前索引的奇点颜色
+            if (!enabledSingularities.isEmpty()) {
+                Singularity currentSingularity = enabledSingularities.get(currentSingularityIndex.get());
+                return i == 0 ? currentSingularity.getUnderlayColor() : i == 1 ? currentSingularity.getOverlayColor() : -1;
+            }
+        }
+
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity == null)
