@@ -2,19 +2,20 @@
   "type": "avaritia:shaped_table",
   "category": "misc",
   "key": {
-    "x": {
-      "item": "avaritia:diamond_lattice"
+    "a": {
+      "item": "minecraft:soul_soil"
     },
-    "y": {
-      "item": "minecraft:nether_star"
+    "b": {
+      "item": "minecraft:sand"
     }
   },
   "pattern": [
-    "xyx",
-    "xyx"
+    "ab ",
+    "ba "
   ],
   "result": {
-    "item": "avaritia:crystal_matrix_ingot"
+    "count": 4,
+    "item": "minecraft:soul_sand"
   },
   "show_notification": true,
   "tier": 1

@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:diamond_lattice"
+              "minecraft:netherite_scrap"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:crystal_matrix_ingot"
+        "recipe": "avaritia:netherite_ingot_too"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:crystal_matrix_ingot"
+      "avaritia:netherite_ingot_too"
     ]
   },
   "sends_telemetry_event": true

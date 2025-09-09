@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
@@ -105,6 +106,7 @@ public class InfinityHoeItem extends HoeItem {
         var targetBlock = world.getBlockState(blockpos).getBlock();
         var player = context.getPlayer();
         var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7);
+        var soulFarmState = ModBlocks.soul_farmland.get().defaultBlockState();
         int rang = 5;
         var minPos = blockpos.offset(-rang, 0, -rang);
         var maxPos = blockpos.offset(rang, 0, rang);
@@ -150,9 +152,49 @@ public class InfinityHoeItem extends HoeItem {
             }
             world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             return InteractionResult.sidedSuccess(world.isClientSide);
+        }else if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
+                (targetBlock instanceof SoulSandBlock || targetBlock.equals(Blocks.SOUL_SOIL) )) {
+            if (player != null && !world.isClientSide) {
+                if (player.isCrouching() && stack.getOrCreateTag().getBoolean("sow")) {
+                    var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
+                    for (BlockPos pos : boxMutable) {
+                        var state = world.getBlockState(pos);
+                        var block = state.getBlock();
+
+                        if (!world.isEmptyBlock(pos.above())) {
+                            for (int i = 1; i <= 3; i++) {
+                                harvest(world, pos.above(i));
+                            }
+                        }
+
+                        if (world.isEmptyBlock(pos.above()) && (block instanceof SoulSandBlock || block.equals(Blocks.SOUL_SOIL))) {
+                            world.setBlock(pos, soulFarmState, 11);
+                        }
+                        if (world.isEmptyBlock(pos) && !world.isEmptyBlock(pos.below())) {
+                            world.setBlock(pos, soulFarmState, 11);
+                        }
+                        if (state.getMapColor(world, pos) == MapColor.WATER || state.getBlock() instanceof LiquidBlockContainer) {
+                            world.setBlock(pos, soulFarmState, 11);
+                        }
+                    }
+
+                    Iterable<BlockPos> inBoxMutable = BlockPos.betweenClosed(minPos, maxPos.offset(0, 3, 0));
+                    Iterable<BlockPos> allInBoxMutable = BlockPos.betweenClosed(minPos.offset(-1, 0, -1), maxPos.offset(1, 4, 1));
+                    for (BlockPos pos : allInBoxMutable) {
+                        if (!hasBox(pos, inBoxMutable)) { //外壳坐标
+                            var state = world.getBlockState(pos);
+                            if (state.getMapColor(world, pos) == MapColor.WATER || state.getBlock() instanceof LiquidBlockContainer)
+                                world.setBlockAndUpdate(pos, Blocks.SOUL_SOIL.defaultBlockState());
+                        }
+                    }
+                } else world.setBlock(blockpos, soulFarmState, 11); //未潜行耕种一个方块
+            }
+            world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+            return InteractionResult.sidedSuccess(world.isClientSide);
         }
         return InteractionResult.PASS;
     }
+
 
     private boolean hasBox(BlockPos pos, Iterable<BlockPos> box) {
         for (BlockPos pos1 : box) {

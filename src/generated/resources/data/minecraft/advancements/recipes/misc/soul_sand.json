@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:diamond_lattice"
+              "minecraft:soul_soil"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:crystal_matrix_ingot"
+        "recipe": "minecraft:soul_sand"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:crystal_matrix_ingot"
+      "minecraft:soul_sand"
     ]
   },
   "sends_telemetry_event": true

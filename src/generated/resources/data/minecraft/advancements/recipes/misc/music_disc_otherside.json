@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "avaritia:diamond_lattice"
+              "avaritia:record_fragment"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "avaritia:crystal_matrix_ingot"
+        "recipe": "minecraft:music_disc_otherside"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "avaritia:crystal_matrix_ingot"
+      "minecraft:music_disc_otherside"
     ]
   },
   "sends_telemetry_event": true

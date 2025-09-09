@@ -2,19 +2,20 @@
   "type": "avaritia:shaped_table",
   "category": "misc",
   "key": {
-    "x": {
-      "item": "avaritia:diamond_lattice"
+    "a": {
+      "item": "avaritia:record_fragment"
     },
-    "y": {
-      "item": "minecraft:nether_star"
+    "b": {
+      "item": "minecraft:echo_shard"
     }
   },
   "pattern": [
-    "xyx",
-    "xyx"
+    "a a",
+    " b ",
+    "a a"
   ],
   "result": {
-    "item": "avaritia:crystal_matrix_ingot"
+    "item": "minecraft:music_disc_5"
   },
   "show_notification": true,
   "tier": 1

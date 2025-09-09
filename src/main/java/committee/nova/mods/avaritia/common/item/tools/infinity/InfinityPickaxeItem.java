@@ -4,7 +4,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -29,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,13 +46,14 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable {
-
-    public InfinityPickaxeItem() {
+public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable , ITooltip {
+    private final String name;
+    public InfinityPickaxeItem(String name) {
         super(ModToolTiers.INFINITY, -50, 0F, (new Properties())
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant());
+        this.name = name;
     }
 
     @Override
@@ -94,7 +98,15 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
             switchMode(world, player, hand, "infinity_pickaxe_hammer");
             return InteractionResultHolder.success(stack);
         }
-        return super.use(world, player, hand);
+        if(EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0){
+            ItemUtils.clearEnchants(stack);
+            stack.enchant(Enchantments.BLOCK_FORTUNE, 10);
+            return InteractionResultHolder.success(stack);
+        }else{
+            ItemUtils.clearEnchants(stack);
+            stack.enchant(Enchantments.SILK_TOUCH, 1);
+            return InteractionResultHolder.success(stack);
+        }
     }
 
     @Override
@@ -122,9 +134,9 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.BLOCK_FORTUNE.getFullname(10)).build());
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
     }
 
     @Override

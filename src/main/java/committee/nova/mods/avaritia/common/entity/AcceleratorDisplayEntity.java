@@ -5,21 +5,26 @@ import committee.nova.mods.avaritia.common.item.misc.InfinityClockItem;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.HashMap;
 
 public class AcceleratorDisplayEntity extends Entity {
- 
+
     private static final EntityDataAccessor<Integer> SPEED_MULTIPLIER =
             SynchedEntityData.defineId(AcceleratorDisplayEntity.class, EntityDataSerializers.INT);
     // 同步面信息
@@ -27,6 +32,7 @@ public class AcceleratorDisplayEntity extends Entity {
             SynchedEntityData.defineId(AcceleratorDisplayEntity.class, EntityDataSerializers.INT);
     // 关联的方块位置
     private BlockPos targetPos;
+    private int particleTimer = 0;
 
     public AcceleratorDisplayEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -96,6 +102,47 @@ public class AcceleratorDisplayEntity extends Entity {
         if (!level().isClientSide && (targetPos == null ||
                 !InfinityClockItem.acceleratedBlocks.getOrDefault(level().dimension(), new HashMap<>()).containsKey(targetPos))) {
             this.remove(RemovalReason.KILLED);
+        }
+
+        // 客户端粒子效果
+        if (level().isClientSide && targetPos != null) {
+            renderEffects();
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void renderEffects() {
+        if (targetPos == null) return;
+
+        particleTimer++;
+        Level level = this.level();
+        long gameTime = level.getGameTime();
+        if (particleTimer % 2 == 0) {
+            for (int i = 0; i < 10; i++) {
+                double hAngle = (gameTime * 0.5 + i * 40) % 360;
+                double hRadius = 0.6;
+                double hX = targetPos.getX() + 0.5 + Math.cos(Math.toRadians(hAngle)) * hRadius;
+                double hZ = targetPos.getZ() + 0.5 + Math.sin(Math.toRadians(hAngle)) * hRadius;
+                double hY = targetPos.getY() + 0.5 + (i % 3 - 1) * 0.2;
+
+                level.addParticle(
+                        ParticleTypes.ENCHANT,
+                        hX, hY, hZ,
+                        0, 0, 0
+                );
+
+                double vAngle = (gameTime * 0.7 + i * 60) % 360;
+                double vRadius = 0.6;
+                double vX = targetPos.getX() + 0.5 + Math.cos(Math.toRadians(vAngle)) * vRadius;
+                double vY = targetPos.getY() + 0.5 + Math.sin(Math.toRadians(vAngle)) * vRadius;
+                double vZ = targetPos.getZ() + 0.5 + (i % 2 - 0.5) * 0.2;
+
+                level.addParticle(
+                        ParticleTypes.ENCHANT,
+                        vX, vY, vZ,
+                        0, 0, 0
+                );
+            }
         }
     }
 
