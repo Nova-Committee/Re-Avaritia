@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.iface.IFourModeSwitchable;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.common.item.misc.InfinityUmbrellaItem;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityCrossBowItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -15,8 +16,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-
-import static committee.nova.mods.avaritia.common.item.misc.InfinityUmbrellaItem.MODE_KEY;
 
 /**
  * Description:
@@ -51,7 +50,7 @@ public class ItemOverrideHandler {
             ItemProperties.register(ModItems.infinity_umbrella.get(),
                     new ResourceLocation("mode"),
                     (stack, world, entity, seed) -> {
-                        return IFourModeSwitchable.getMode(stack, MODE_KEY);
+                        return ISwitchable.getCurrentMode(stack, InfinityUmbrellaItem.MODES);
                     });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
                 if (livingEntity == null) {

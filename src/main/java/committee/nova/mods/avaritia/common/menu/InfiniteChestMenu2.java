@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static committee.nova.mods.avaritia.common.wrappers.InfiniteItemHandler.SLOTS_PER_PAGE;
-
 /**
  * @author: cnlimiter
  */

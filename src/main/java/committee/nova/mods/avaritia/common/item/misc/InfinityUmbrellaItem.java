@@ -1,6 +1,6 @@
     package committee.nova.mods.avaritia.common.item.misc;
 
-    import committee.nova.mods.avaritia.api.iface.IFourModeSwitchable;
+    import committee.nova.mods.avaritia.api.iface.ISwitchable;
     import committee.nova.mods.avaritia.common.entity.*;
     import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
     import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -15,15 +15,18 @@
     import net.minecraft.world.level.Level;
     import org.jetbrains.annotations.NotNull;
 
+    import java.util.Arrays;
+    import java.util.List;
+
     /**
      * @Project: Avaritia
      * @Author: cnlimiter,cu6
      * @CreateTime: 2025/08/23
      * @Description: Now,We Did it,Four Modes
      */
-    public class InfinityUmbrellaItem extends ResourceItem implements IFourModeSwitchable {
+    public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable {
 
-        public static final String MODE_KEY = "srs";
+        public static final List<String> MODES = Arrays.asList("infinity_umbrella_normal", "infinity_umbrella_sun", "infinity_umbrella_rain", "infinity_umbrella_storm");
 
         private static final int MODE_NORMAL = 0;
         private static final int MODE_SUN = 1;
@@ -45,7 +48,7 @@
             if (!level.isClientSide) {
                 float pitch = player.getXRot();
 
-                int currentMode = IFourModeSwitchable.getMode(stack, MODE_KEY);
+                int currentMode = ISwitchable.getCurrentMode(stack, MODES);
                 int duration = getRandomDuration(level);
                 switch (currentMode) {
                     case MODE_NORMAL:
@@ -107,12 +110,7 @@
         public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
             ItemStack stack = player.getItemInHand(hand);
             if (player.isCrouching()) {
-                cycleMode(world, player, hand, MODE_KEY, new String[]{
-                        "tooltip.avaritia.infinity_umbrella.normal",
-                        "tooltip.avaritia.infinity_umbrella.sun",
-                        "tooltip.avaritia.infinity_umbrella.rain",
-                        "tooltip.avaritia.infinity_umbrella.storm"
-                });
+                cycleMode(world, player, hand, MODES);
                 return InteractionResultHolder.success(stack);
             }
             onUse(world, player, stack, hand);
