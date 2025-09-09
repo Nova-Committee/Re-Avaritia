@@ -40,6 +40,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
                     ordinal = 0
             )},
             method = {"apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V"}
+
     )
     public void avaritia$apply(
             Map<ResourceLocation, JsonElement> p_44037_,
