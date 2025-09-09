@@ -278,7 +278,7 @@ legacyForge {
         gametestWorld {
             client()
             programArguments.addAll(
-                    "--username", "Dev", "--quickPlaySingleplayer", "GametestWorld"
+                    "--username", "Dev", "--quickPlaySingleplayer", "New World"
             )
         }
         server {
