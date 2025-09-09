@@ -33,6 +33,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,6 +41,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -183,7 +185,6 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {
-        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(victim, pDamageSource)) return;
         if (!victim.isRemoved() && !victim.dead) {
             Entity entity = pDamageSource.getEntity();
             LivingEntity livingentity = victim.getKillCredit();
@@ -220,14 +221,13 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
         if (!victim.level().isClientSide) {
             boolean flag = false;
             if (pEntitySource instanceof WitherBoss) {
-                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(victim.level(), pEntitySource)) {
-                    BlockPos blockpos = victim.blockPosition();
-                    BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
-                    if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
-                        victim.level().setBlock(blockpos, blockstate, 3);
-                        flag = true;
-                    }
+                BlockPos blockpos = victim.blockPosition();
+                BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
+                if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
+                    victim.level().setBlock(blockpos, blockstate, 3);
+                    flag = true;
                 }
+
 
                 if (!flag) {
                     ItemEntity itementity = new ItemEntity(victim.level(), victim.getX(), victim.getY(), victim.getZ(), new ItemStack(Items.WITHER_ROSE));

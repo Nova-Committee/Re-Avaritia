@@ -3,10 +3,13 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
+import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -16,6 +19,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -53,9 +57,10 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         return Localizable.of("jei.category.avaritia.compressor").build();
     }
 
+
     @Override
-    public @NotNull IDrawable getBackground() {
-        return this.background;
+    public void draw(@NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        this.background.draw(guiGraphics);
     }
 
     @Override
@@ -75,14 +80,13 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     }
 
     @Override
-    public @NotNull List<Component> getTooltipStrings(@NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (mouseX > 62 && mouseX < 77 && mouseY > 21 && mouseY < 36) {
-            return Collections.singletonList(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.LIGHT_PURPLE).build());
+            tooltip.addAll(Collections.singletonList(ModTooltips.NUM_ITEMS.args(recipe.getInputCount()).color(ChatFormatting.LIGHT_PURPLE).build()));
         }
 
         if (mouseX > 86 && mouseX < 107 && mouseY > 22 && mouseY < 36) {
-            return Collections.singletonList(ModTooltips.TIME_CONSUME.args(recipe.getTimeCost()).color(ChatFormatting.BLUE).build());
+            tooltip.addAll(Collections.singletonList(ModTooltips.TIME_CONSUME.args(recipe.getTimeCost()).color(ChatFormatting.BLUE).build()));
         }
-        return List.of();
     }
 }
