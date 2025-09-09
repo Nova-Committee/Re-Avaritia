@@ -64,6 +64,16 @@ public class EndCraftingTableCategory implements IRecipeCategory<ITierCraftingRe
     }
 
     @Override
+    public int getWidth() {
+        return 194;
+    }
+
+    @Override
+    public int getHeight() {
+        return 134;
+    }
+
+    @Override
     public void draw(@NotNull ITierCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
     }

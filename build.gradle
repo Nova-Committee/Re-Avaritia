@@ -9,9 +9,6 @@ sourceSets {
             srcDir 'src/generated/resources'
         }
     }
-    test {
-    }
-    buildtools
 }
 
 
@@ -206,7 +203,6 @@ repositories {
     maven { url = "https://maven.saps.dev/minecraft" }
     maven { url = 'https://www.jitpack.io' }
     maven { url = "https://maven.terraformersmc.com/" }
-
 }
 
 
@@ -218,7 +214,9 @@ test {
  * Configures properties common to all run configurations
  */
 Map<String, String> commonSystemProperties = [
-        'forge.logging.console.level': 'debug'
+        'forge.logging.console.level': 'debug',
+        "mixin.debug.export": "true",
+        "mixin.config":"${mod_id}.mixins.json"
 ]
 
 legacyForge {
@@ -234,7 +232,6 @@ legacyForge {
         configureEach {
             gameDirectory = project.file('run')
             systemProperties.putAll(commonSystemProperties)
-            // property "mixin.debug.export", "true"
             jvmArguments.addAll(
                     "--add-opens", "java.base/sun.security.util=ALL-UNNAMED",
                     "--add-opens", "java.base/java.util.jar=ALL-UNNAMED"
@@ -299,7 +296,6 @@ processResources {
         expand expansionVariables
     }
 }
-
 
 ///////////
 // Mixins
