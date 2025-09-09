@@ -85,6 +85,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('d', Blocks.SCULK_CATALYST)
                 .unlockedBy("", lul).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(),1)
+                .pattern("xyx")
+                .pattern("xyx")
+                .define('x', ModItems.diamond_lattice.get())
+                .define('y', Items.NETHER_STAR)
+                .unlockedBy("has_item", has(ModItems.diamond_lattice.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.CRYING_OBSIDIAN, 1)
                 .pattern("bab")
                 .pattern("aba")
@@ -294,14 +301,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('c', Items.FIRE_CHARGE)
                 .unlockedBy("has_item", has(Items.BLAZE_ROD)).save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get())
-                .pattern("xyx")
-                .pattern("xyx")
-                .define('x', ModItems.diamond_lattice.get())
-                .define('y', Items.NETHER_STAR)
-
-                .unlockedBy("has_item", has(ModItems.diamond_lattice.get())).save(consumer);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.sculk_crafting_table.get())
                 .pattern("aba")
                 .pattern("cxc")
@@ -332,6 +331,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('c', Items.ENDER_EYE)
                 .define('d', Items.NAUTILUS_SHELL)
                 .unlockedBy("has_block", has(Items.PRISMARINE_SHARD)).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC,Blocks.SOUL_SAND, 4,1)
+            .pattern("ab ")
+            .pattern("ba ")
+            .define('a', Blocks.SOUL_SOIL)
+            .define('b', Blocks.SAND)
+            .unlockedBy("has_item", has(Blocks.SOUL_SOIL)).save(consumer);
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC,Items.ECHO_SHARD,1,1)
                 .requires(Blocks.SCULK)
@@ -524,6 +530,22 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('c', Blocks.CHEST)
                 .define('g', ModItems.neutron_gear.get())
                 .unlockedBy("has_item", has(Blocks.CHEST)).save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.crystal_matrix_ingot.get())
+                .pattern("iai")
+                .pattern("iai")
+                .pattern("iai")
+                .define('i', ModItems.diamond_lattice.get())
+                .define('a', Items.NETHER_STAR)
+                .unlockedBy("has_item", has(Items.NETHER_STAR)).save(consumer,Const.rl("crystal_matrix_ingot_normal"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.diamond_lattice.get())
+                .pattern("iii")
+                .pattern("iai")
+                .pattern("iii")
+                .define('i', Items.DIAMOND)
+                .define('a', Items.NETHERITE_SCRAP)
+                .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer, Const.rl("diamond_lattice_normal"));
 
         ModExtremeSmithingRecipeBuilder.smithing(
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),

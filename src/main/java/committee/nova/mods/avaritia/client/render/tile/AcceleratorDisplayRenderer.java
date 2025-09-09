@@ -88,7 +88,6 @@ public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDispla
 
         poseStack.popPose();
     }
-
     @Override
     public ResourceLocation getTextureLocation(AcceleratorDisplayEntity entity) {
         return null;

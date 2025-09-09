@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -23,8 +24,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ToolActions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,7 +93,33 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable {
         }
         return false;
     }
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+        if (entity instanceof ServerPlayer livingEntity && !livingEntity.level().isClientSide()) {
+            if (livingEntity.isUsingItem() && livingEntity.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
+                ItemStack shieldStack = livingEntity.getUseItem();
+                ShieldItem shieldItem = (ShieldItem) shieldStack.getItem();
 
+                livingEntity.stopUsingItem();
+
+                if (livingEntity.level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.EXPLOSION,
+                            livingEntity.getX(),
+                            livingEntity.getY() + livingEntity.getBbHeight() / 2,
+                            livingEntity.getZ(),
+                            1, 0.0D, 0.0D, 0.0D, 0.0D);
+                }
+
+                if (shieldStack.getDamageValue() >= shieldStack.getMaxDamage() - 1) {
+                    livingEntity.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                } else {
+                    shieldStack.setDamageValue(shieldStack.getMaxDamage() - 1);
+                }
+                livingEntity.getCooldowns().addCooldown(shieldItem, 1200);
+            }
+        }
+        return super.onLeftClickEntity(stack, player, entity);
+    }
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();

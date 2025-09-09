@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "avaritia:black_hole_chest"
+          "name": "avaritia:tesseract"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "avaritia:blocks/black_hole_chest"
+  "random_sequence": "avaritia:blocks/tesseract"
 }

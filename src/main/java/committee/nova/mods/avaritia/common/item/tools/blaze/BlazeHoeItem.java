@@ -83,18 +83,28 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext pContext) {
         var level = pContext.getLevel();
+        var stack = pContext.getItemInHand();
         var blockpos = pContext.getClickedPos();
         var blockstate = level.getBlockState(blockpos);
         var player = pContext.getPlayer();
-        if (blockstate.is(Blocks.SOUL_SAND)) {
-            level.setBlockAndUpdate(blockpos, Blocks.SOUL_SOIL.defaultBlockState());
-            level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            return InteractionResult.SUCCESS;
-        } else if (blockstate.is(Blocks.SOUL_SOIL)) {
-            level.setBlockAndUpdate(blockpos, ModBlocks.soul_farmland.get().defaultBlockState());
-            level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            return InteractionResult.SUCCESS;
-        } else return super.useOn(pContext);
+        if (isActive(stack,"smelt")) {
+            if (blockstate.is(Blocks.SOUL_SAND)) {
+                level.setBlockAndUpdate(blockpos, Blocks.SOUL_SOIL.defaultBlockState());
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return InteractionResult.SUCCESS;
+            } else if (blockstate.is(Blocks.SOUL_SOIL)) {
+                level.setBlockAndUpdate(blockpos, ModBlocks.soul_farmland.get().defaultBlockState());
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return InteractionResult.SUCCESS;
+            }else if (blockstate.is(ModBlocks.soul_farmland.get())){
+                return InteractionResult.PASS;
+            }
+        }else if (!isActive(stack,"smelt")) {
+            if (blockstate.is(ModBlocks.soul_farmland.get())){
+                return InteractionResult.PASS;
+            }
+        }
+        return super.useOn(pContext);
     }
 
     @Override

@@ -9,8 +9,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-public class InfinityElytraItem extends ElytraItem {
+public class InfinityElytraItem extends ElytraItem implements ICurioItem {
     public InfinityElytraItem() {
         super(new Item.Properties()
                 .rarity(ModRarities.COSMIC)
