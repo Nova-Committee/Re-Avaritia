@@ -63,6 +63,16 @@ public class SculkCraftingTableCategory implements IRecipeCategory<ITierCrafting
     }
 
     @Override
+    public int getWidth() {
+        return 117;
+    }
+
+    @Override
+    public int getHeight() {
+        return 56;
+    }
+
+    @Override
     public void draw(@NotNull ITierCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
     }

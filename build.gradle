@@ -9,9 +9,6 @@ sourceSets {
             srcDir 'src/generated/resources'
         }
     }
-    test {
-    }
-    buildtools
 }
 
 
@@ -108,6 +105,7 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
+version = mc_version + "-" + mod_version + "-" + mod_version_tag
 group = mod_group_id
 base {
     archivesName = mod_name
@@ -205,42 +203,8 @@ repositories {
     maven { url = "https://maven.saps.dev/minecraft" }
     maven { url = 'https://www.jitpack.io' }
     maven { url = "https://maven.terraformersmc.com/" }
-
 }
 
-///////////////////
-// Version Number
-
-ext.pr = System.getenv('PR_NUMBER') ?: ""
-if (ext.pr) {
-    version = version + "+pr." + ext.pr
-}
-
-ext.branch = System.getenv('BRANCH') ?: ""
-if (ext.branch) {
-    version = version + "+branch." + ext.branch
-}
-
-ext.tag = System.getenv('TAG') ?: ""
-if (ext.tag) {
-    if (!ext.tag.startsWith("forge/v")) {
-        throw new GradleException("Tags for the forge version should start with forge/: ${ext.tag}")
-    }
-
-    version = ext.tag.substring("forge/v".length())
-    // Validate that the rest is a semver version
-    if (version ==~ /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/) {
-        if (System.getenv("GITHUB_ENV")) {
-            def envFile = new File(System.getenv("GITHUB_ENV"))
-            envFile.append("VERSION=${version}")
-        }
-    } else {
-        throw new GradleException("Invalid semver: $version")
-    }
-}
-
-ext.isAlpha = project.version.contains("alpha")
-ext.isBeta = project.version.contains("beta")
 
 test {
     useJUnitPlatform()
@@ -250,7 +214,9 @@ test {
  * Configures properties common to all run configurations
  */
 Map<String, String> commonSystemProperties = [
-        'forge.logging.console.level': 'debug'
+        'forge.logging.console.level': 'debug',
+        "mixin.debug.export": "true",
+        "mixin.config":"${mod_id}.mixins.json"
 ]
 
 legacyForge {
@@ -266,7 +232,6 @@ legacyForge {
         configureEach {
             gameDirectory = project.file('run')
             systemProperties.putAll(commonSystemProperties)
-            // property "mixin.debug.export", "true"
             jvmArguments.addAll(
                     "--add-opens", "java.base/sun.security.util=ALL-UNNAMED",
                     "--add-opens", "java.base/java.util.jar=ALL-UNNAMED"
@@ -313,7 +278,10 @@ Map<String, String> expansionVariables = [
         'forge_version'          : project.forge_version,
         'forge_version_range'    : project.forge_version_range,
         'loader_range'           : project.loader_version_range,
-        'mod_id': mod_id, 'mod_name': mod_name, 'mod_license': mod_license,
+        'mod_id'                 : mod_id,
+        'mod_name'               : mod_name,
+        'mod_license'            : mod_license,
+        'mod_version'            : mod_version,
         'issue_tracker'          : issue_tracker,
         'mod_authors'            : mod_authors,
         'mod_description'        : mod_description
@@ -326,12 +294,8 @@ processResources {
     }
     filesMatching("META-INF/mods.toml") {
         expand expansionVariables
-        filter { line ->
-            line.replace('version="0.0.0"', "version=\"${expansionVariables['project_version']}\"")
-        }
     }
 }
-
 
 ///////////
 // Mixins

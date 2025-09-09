@@ -57,6 +57,15 @@ public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
         return Localizable.of("jei.category.avaritia.compressor").build();
     }
 
+    @Override
+    public int getWidth() {
+        return 170;
+    }
+
+    @Override
+    public int getHeight() {
+        return 63;
+    }
 
     @Override
     public void draw(@NotNull ICompressorRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {

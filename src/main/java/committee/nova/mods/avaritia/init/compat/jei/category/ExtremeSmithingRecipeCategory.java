@@ -59,6 +59,16 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     }
 
     @Override
+    public int getWidth() {
+        return 170;
+    }
+
+    @Override
+    public int getHeight() {
+        return 64;
+    }
+
+    @Override
     public void draw(@NotNull ExtremeSmithingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
     }
