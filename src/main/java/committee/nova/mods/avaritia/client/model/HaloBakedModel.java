@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemMode
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -72,6 +73,11 @@ public class HaloBakedModel extends WrappedItemModel {
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
+        if (stack.getItem() == ModItems.infinity_umbrella.get()) {
+            this.parentState = TransformUtils.DEFAULT_TOOL;
+        }else {
+            this.parentState = TransformUtils.DEFAULT_ITEM;
+        }
         if (transformType == ItemDisplayContext.GUI) {
             Minecraft.getInstance().getItemRenderer()
                     .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
@@ -85,12 +91,11 @@ public class HaloBakedModel extends WrappedItemModel {
                 pStack.popPose();
             }
         }
-
         this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
     }
 
     @Override
     public PerspectiveModelState getModelState() {
-        return TransformUtils.DEFAULT_ITEM;
+        return (PerspectiveModelState) this.parentState;
     }
 }
