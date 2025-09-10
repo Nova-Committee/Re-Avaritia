@@ -1,5 +1,7 @@
     package committee.nova.mods.avaritia.common.item.misc;
 
+    import com.google.common.collect.Collections2;
+    import com.google.common.collect.Lists;
     import committee.nova.mods.avaritia.api.iface.ISwitchable;
     import committee.nova.mods.avaritia.common.entity.*;
     import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
@@ -10,6 +12,9 @@
     import net.minecraft.sounds.SoundSource;
     import net.minecraft.world.InteractionHand;
     import net.minecraft.world.InteractionResultHolder;
+    import net.minecraft.world.effect.MobEffectInstance;
+    import net.minecraft.world.effect.MobEffects;
+    import net.minecraft.world.entity.Entity;
     import net.minecraft.world.entity.player.Player;
     import net.minecraft.world.item.ItemStack;
     import net.minecraft.world.level.Level;
@@ -116,5 +121,15 @@
             onUse(world, player, stack, hand);
             return super.use(world, player, hand);
         }
-
+        @Override
+        public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
+            super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
+            if (!pLevel.isClientSide && pEntity instanceof Player player) {
+                if (pIsSelected) {
+                    player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, -1, 0, false, false));
+                } else {
+                    player.removeEffect(MobEffects.SLOW_FALLING);
+                }
+            }
+        }
     }

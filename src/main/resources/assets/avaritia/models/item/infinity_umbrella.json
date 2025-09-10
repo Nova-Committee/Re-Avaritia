@@ -1,7 +1,8 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "avaritia:item/misc/infinity_umbrella"
+    "layer0": "avaritia:item/misc/infinity_umbrella",
+    "halo": "avaritia:misc/halo"
   },
   "overrides": [
     {
@@ -29,5 +30,12 @@
       },
       "model": "avaritia:item/infinity_umbrella_storm"
     }
-  ]
+  ],
+  "loader": "avaritia:halo",
+  "halo": {
+    "texture": "#halo",
+    "color": -16777216,
+    "size": 6,
+    "pulse": false
+  }
 }
