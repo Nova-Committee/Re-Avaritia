@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-public class InfinityElytraItem extends ElytraItem implements ICurioItem {
+public class InfinityElytraItem extends ElytraItem {
     public InfinityElytraItem() {
         super(new Item.Properties()
                 .rarity(ModRarities.COSMIC)
@@ -25,15 +25,11 @@ public class InfinityElytraItem extends ElytraItem implements ICurioItem {
     }
 
 
-//    @Override
-//    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-//        // 只在服务器/客户端都设置 NBT 无妨，会持久化
-//
-//    }
     @Override
-    public void onArmorTick(ItemStack stack, Level level, Player player) {
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (!stack.hasTag() || !stack.getTag().getBoolean("Unbreakable")) {
             stack.getOrCreateTag().putBoolean("Unbreakable", true);
         }
+
     }
 }
