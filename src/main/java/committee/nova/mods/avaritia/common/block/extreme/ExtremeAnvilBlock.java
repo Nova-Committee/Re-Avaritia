@@ -171,4 +171,5 @@ public class ExtremeAnvilBlock extends FallingBlock{
     public boolean dropFromExplosion(net.minecraft.world.level.Explosion pExplosion) {
         return false;
     }
+
 }

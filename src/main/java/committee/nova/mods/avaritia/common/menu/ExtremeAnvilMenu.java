@@ -57,7 +57,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
 
     @Override
     protected boolean mayPickup(Player pPlayer, boolean pHasStack) {
-        return (pPlayer.getAbilities().instabuild || pPlayer.experienceLevel >= this.calculateXpCost()) && this.calculateXpCost() >= 0;
+        return true;
     }
     private int calculateXpCost() {
         ItemStack itemstack = this.inputSlots.getItem(0);
@@ -110,10 +110,6 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                             int i2 = map.getOrDefault(enchantment1, 0);
                             int j2 = map1.get(enchantment1);
                             j2 = i2 + j2;
-                            if (j2 > enchantment1.getMaxLevel()) {
-                                j2 = enchantment1.getMaxLevel();
-                            }
-
                             map.put(enchantment1, j2);
                             int k3 = 0;
                             switch (enchantment1.getRarity()) {
@@ -229,10 +225,6 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                             int i2 = map.getOrDefault(enchantment1, 0);
                             int j2 = map1.get(enchantment1);
                             j2 = i2 + j2;
-                            if (j2 > enchantment1.getMaxLevel()) {
-                                j2 = enchantment1.getMaxLevel();
-                            }
-
                             map.put(enchantment1, j2);
                             int k3 = 0;
                             switch (enchantment1.getRarity()) {
@@ -252,7 +244,6 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                             }
                         }
                     }
-
                 }
             }
 
