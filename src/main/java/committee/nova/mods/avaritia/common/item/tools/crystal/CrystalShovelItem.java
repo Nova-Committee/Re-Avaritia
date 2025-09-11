@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
+import committee.nova.mods.avaritia.api.utils.InventoryUtils;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.nbt.CompoundTag;
@@ -97,45 +98,9 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
         }
         return multimap;
     }
-//饰品功能
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag unused) {
-        if (ModList.get().isLoaded("curios")) {
-            return CuriosApi.createCurioProvider(new ICurio() {
-                @Override
-                public ItemStack getStack() {
-                    return stack;
-                }
-
-                @Override
-                public void curioTick(SlotContext slotContext) {
-                    LivingEntity entity = slotContext.entity();
-                    if (entity instanceof Player player && !player.level().isClientSide) {
-
-                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
-
-
-                        List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
-                        for (MobEffectInstance potion : Collections2.filter(effects, potion ->
-                                (potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN) ||
-                                        potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)))) {
-                            player.removeEffect(potion.getEffect());
-                        }
-                    }
-                }
-
-                @Override
-                public boolean canEquip(SlotContext slotContext) {
-                    return true;
-                }
-
-                @Override
-                public boolean canUnequip(SlotContext slotContext) {
-                    return true;
-                }
-            });
-        }
-        return super.initCapabilities(stack, unused);
+        ICapabilityProvider provider = InventoryUtils.createCurioProvider(stack, unused);
+        return provider != null ? provider : super.initCapabilities(stack, unused);
     }
 }

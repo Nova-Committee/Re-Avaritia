@@ -1,13 +1,22 @@
 package committee.nova.mods.avaritia.api.utils;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.ItemHandlerHelper;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,5 +179,50 @@ public class InventoryUtils {
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    /**
+     * 为物品创建Curios能力提供者
+     * @param stack 物品堆
+     * @param unused 未使用的NBT标签
+     * @return ICapabilityProvider
+     */
+    public static ICapabilityProvider createCurioProvider(ItemStack stack, CompoundTag unused) {
+        if (curios) {
+            return CuriosApi.createCurioProvider(new ICurio() {
+                @Override
+                public ItemStack getStack() {
+                    return stack;
+                }
+
+                @Override
+                public void curioTick(SlotContext slotContext) {
+                    LivingEntity entity = slotContext.entity();
+                    if (entity instanceof Player player && !player.level().isClientSide) {
+
+                        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
+                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+
+                        List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
+                        for (MobEffectInstance potion : Collections2.filter(effects, potion ->
+                                (potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN) ||
+                                        potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)))) {
+                            player.removeEffect(potion.getEffect());
+                        }
+                    }
+                }
+
+                @Override
+                public boolean canEquip(SlotContext slotContext) {
+                    return true;
+                }
+
+                @Override
+                public boolean canUnequip(SlotContext slotContext) {
+                    return true;
+                }
+            });
+        }
+        return null;
     }
 }
