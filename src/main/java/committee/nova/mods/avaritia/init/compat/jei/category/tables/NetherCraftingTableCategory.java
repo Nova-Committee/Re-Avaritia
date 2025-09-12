@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -31,9 +32,9 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/5/16 23:46
  * Version: 1.0
  */
-public class NetherCraftingTableCategory implements IRecipeCategory<ITierCraftingRecipe> {
+public class NetherCraftingTableCategory implements IRecipeCategory<RecipeHolder<ITierCraftingRecipe>> {
 
-    public static final RecipeType<ITierCraftingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "nether_craft", ITierCraftingRecipe.class);
+    public static final RecipeType<RecipeHolder<ITierCraftingRecipe>> RECIPE_TYPE = RecipeType.createRecipeHolderType(Const.rl("nether_craft"));
     private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/tables/nether_jei.png");
     private final IDrawable background;
     private final IDrawable icon;
@@ -45,7 +46,7 @@ public class NetherCraftingTableCategory implements IRecipeCategory<ITierCraftin
 
 
     @Override
-    public @NotNull RecipeType<ITierCraftingRecipe> getRecipeType() {
+    public @NotNull RecipeType<RecipeHolder<ITierCraftingRecipe>> getRecipeType() {
         return RECIPE_TYPE;
     }
 
@@ -66,7 +67,8 @@ public class NetherCraftingTableCategory implements IRecipeCategory<ITierCraftin
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ITierCraftingRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, RecipeHolder<ITierCraftingRecipe> recipeHolder, @NotNull IFocusGroup focuses) {
+        var recipe = recipeHolder.value();
         var level = Minecraft.getInstance().level;
         assert level != null;
         var inputs = recipe.getIngredients();
@@ -110,7 +112,8 @@ public class NetherCraftingTableCategory implements IRecipeCategory<ITierCraftin
     }
 
     @Override
-    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull ITierCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RecipeHolder<ITierCraftingRecipe> recipeHolder, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        var recipe = recipeHolder.value();
         var shapeless = recipe instanceof ShapelessTableCraftingRecipe;
         int sX = (shapeless ? 340 : 306) / 2, sY = 200 / 2;
 

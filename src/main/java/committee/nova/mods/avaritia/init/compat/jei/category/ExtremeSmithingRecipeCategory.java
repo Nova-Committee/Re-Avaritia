@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -31,8 +32,8 @@ import java.util.Arrays;
  * @CreateTime: 2024/12/21 14:27
  * @Description:
  */
-public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmithingRecipe> {
-    public static final RecipeType<ExtremeSmithingRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "extreme_smithing", ExtremeSmithingRecipe.class);
+public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHolder<ExtremeSmithingRecipe>> {
+    public static final RecipeType<RecipeHolder<ExtremeSmithingRecipe>> RECIPE_TYPE = RecipeType.createRecipeHolderType(Const.rl("extreme_smithing"));
     private static final ResourceLocation TEXTURE = Const.rl( "textures/gui/jei/extreme_smithing_jei.png");
     private final IDrawable icon;
     private final IDrawable background;
@@ -43,7 +44,7 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     }
 
     @Override
-    public @NotNull RecipeType<ExtremeSmithingRecipe> getRecipeType() {
+    public @NotNull RecipeType<RecipeHolder<ExtremeSmithingRecipe>> getRecipeType() {
         return RECIPE_TYPE;
     }
 
@@ -63,7 +64,8 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, @NotNull ExtremeSmithingRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, @NotNull RecipeHolder<ExtremeSmithingRecipe> recipeHolder, @NotNull IFocusGroup focuses) {
+        var recipe = recipeHolder.value();
         builder.addSlot(RecipeIngredientRole.INPUT, 27, 23)
                 .addIngredients(recipe.template);
 
@@ -95,7 +97,8 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<ExtremeSmi
 
 
     @Override
-    public boolean isHandled(@NotNull ExtremeSmithingRecipe recipe) {
+    public boolean isHandled(@NotNull RecipeHolder<ExtremeSmithingRecipe> recipeHolder) {
+        var recipe = recipeHolder.value();
         if (recipe.isIncomplete()) {
             return false;
         }
