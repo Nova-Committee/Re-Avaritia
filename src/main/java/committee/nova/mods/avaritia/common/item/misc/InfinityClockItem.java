@@ -17,7 +17,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -40,6 +43,7 @@ import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.event.TickEvent;
@@ -194,6 +198,107 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         }
     }
 
+    public static class AcceleratedBlocksSavedData extends SavedData {
+        public static final String NAME = "avaritia_accelerated_blocks";
+        private final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
+
+        public AcceleratedBlocksSavedData() {
+        }
+
+        public AcceleratedBlocksSavedData(CompoundTag nbt) {
+            ListTag dimensionsList = nbt.getList("Dimensions", Tag.TAG_COMPOUND);
+            for (int i = 0; i < dimensionsList.size(); i++) {
+                CompoundTag dimensionTag = dimensionsList.getCompound(i);
+                ResourceLocation dimensionLocation = new ResourceLocation(dimensionTag.getString("Dimension"));
+                ResourceKey<Level> dimensionKey = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimensionLocation);
+
+                Map<BlockPos, Integer> blocksMap = new HashMap<>();
+                ListTag blocksList = dimensionTag.getList("Blocks", Tag.TAG_COMPOUND);
+
+                for (int j = 0; j < blocksList.size(); j++) {
+                    CompoundTag blockTag = blocksList.getCompound(j);
+                    BlockPos pos = BlockPos.of(blockTag.getLong("Pos"));
+                    int multiplier = blockTag.getInt("Multiplier");
+                    blocksMap.put(pos, multiplier);
+                }
+
+                this.acceleratedBlocks.put(dimensionKey, blocksMap);
+            }
+        }
+
+        @Override
+        public CompoundTag save(CompoundTag compound) {
+            ListTag dimensionsList = new ListTag();
+
+            for (Map.Entry<ResourceKey<Level>, Map<BlockPos, Integer>> dimensionEntry : acceleratedBlocks.entrySet()) {
+                CompoundTag dimensionTag = new CompoundTag();
+                dimensionTag.putString("Dimension", dimensionEntry.getKey().location().toString());
+
+                ListTag blocksList = new ListTag();
+                for (Map.Entry<BlockPos, Integer> blockEntry : dimensionEntry.getValue().entrySet()) {
+                    CompoundTag blockTag = new CompoundTag();
+                    blockTag.putLong("Pos", blockEntry.getKey().asLong());
+                    blockTag.putInt("Multiplier", blockEntry.getValue());
+                    blocksList.add(blockTag);
+                }
+
+                dimensionTag.put("Blocks", blocksList);
+                dimensionsList.add(dimensionTag);
+            }
+
+            compound.put("Dimensions", dimensionsList);
+            return compound;
+        }
+
+        public Map<ResourceKey<Level>, Map<BlockPos, Integer>> getAcceleratedBlocks() {
+            return acceleratedBlocks;
+        }
+
+        public void setAcceleratedBlocks(Map<ResourceKey<Level>, Map<BlockPos, Integer>> blocks) {
+            this.acceleratedBlocks.clear();
+            this.acceleratedBlocks.putAll(blocks);
+            setDirty();
+        }
+    }
+
+    public static AcceleratedBlocksSavedData getSavedData(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(
+                AcceleratedBlocksSavedData::new,
+                AcceleratedBlocksSavedData::new,
+                AcceleratedBlocksSavedData.NAME
+        );
+    }
+
+    public static void loadAcceleratedBlocksFromSavedData(ServerLevel level) {
+        AcceleratedBlocksSavedData savedData = getSavedData(level);
+        acceleratedBlocks.clear();
+        acceleratedBlocks.putAll(savedData.getAcceleratedBlocks());
+
+        // 为每个加载的加速方块创建显示实体
+        for (Map.Entry<ResourceKey<Level>, Map<BlockPos, Integer>> dimensionEntry : acceleratedBlocks.entrySet()) {
+            ResourceKey<Level> dimension = dimensionEntry.getKey();
+            Map<BlockPos, Integer> blocks = dimensionEntry.getValue();
+
+            for (Map.Entry<BlockPos, Integer> blockEntry : blocks.entrySet()) {
+                BlockPos pos = blockEntry.getKey();
+                int multiplier = blockEntry.getValue();
+
+                // 检查方块是否仍然存在并且有效
+                if (level.isLoaded(pos) && multiplier > 1) {
+                    // 创建显示实体
+                    AcceleratorDisplayEntity entity = new AcceleratorDisplayEntity(level, pos, multiplier, Direction.NORTH);
+                    level.addFreshEntity(entity);
+                    displayEntities.computeIfAbsent(dimension, k -> new HashMap<>()).put(pos.immutable(), entity);
+                }
+            }
+        }
+    }
+
+    public static void saveAcceleratedBlocksToSavedData(ServerLevel level) {
+        AcceleratedBlocksSavedData savedData = getSavedData(level);
+        savedData.setAcceleratedBlocks(acceleratedBlocks);
+    }
+
 
     @Mod.EventBusSubscriber
     public static class TickHandler {
@@ -202,7 +307,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
             if (event.phase != TickEvent.Phase.END) return;
             if (!(event.level instanceof ServerLevel level)) return;
             Map<BlockPos, Integer> map = acceleratedBlocks.get(level.dimension());
-            if (map == null) return;
+            if (map == null || map.isEmpty()) return;
 
             Iterator<Map.Entry<BlockPos, Integer>> it = map.entrySet().iterator();
             while (it.hasNext()) {
@@ -218,8 +323,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                 }
 
                 if (!level.isLoaded(pos)) {
-                    it.remove();
-                    removeDisplayEntity(level, pos);
+                    // 不要移除未加载的方块，它们可能在其他区块中
                     continue;
                 }
 
@@ -259,8 +363,9 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                         addAccelerationParticles(level, pos, times);
                     }
                 } else {
-                    it.remove();
-                    removeDisplayEntity(level, pos);
+                    // 只有当方块实体不存在时才移除加速
+                    // it.remove();
+                    // removeDisplayEntity(level, pos);
                 }
 
                 // 更新实体显示
@@ -272,7 +377,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                 } else {
 
                     if (times > 1) {
-                        // 修复：使用默认面（北面）创建实体，因为我们无法知道原始点击的面
+
                         AcceleratorDisplayEntity newEntity = new AcceleratorDisplayEntity(level, pos, times, net.minecraft.core.Direction.NORTH);
                         level.addFreshEntity(newEntity);
                         displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), newEntity);

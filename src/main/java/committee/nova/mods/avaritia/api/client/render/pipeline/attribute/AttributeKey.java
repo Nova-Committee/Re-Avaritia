@@ -65,7 +65,7 @@ public abstract class AttributeKey<T> {
     /**
      * Copy and resize the attribute.
      * <p>
-     * The attribute will either be {@link Copyable} or an array,
+     * The attribute will either be{@link Copyable} or an array,
      * which may also hold objects which are {@link Copyable}.
      *
      * @param src    The object to copy.
