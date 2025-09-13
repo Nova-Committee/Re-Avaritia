@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
+import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.RecipeGeneratorMenu;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
@@ -32,7 +33,7 @@ public class RecipeGeneratorTile extends BaseTileEntity {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.literal("Recipe Generator");
+        return Localizable.of("block.avaritia.recipe_generator_table").build();
     }
 
     @Override

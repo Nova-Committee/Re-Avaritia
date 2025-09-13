@@ -79,7 +79,7 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
         } else {
             ExtremeSmithingRecipe smithingrecipe = list.get(0);
             ItemStack itemstack = smithingrecipe.assemble(this.inputSlots, this.level.registryAccess());
-            //检测无瑕核心...合成给予tag交给你了,我不会)
+            //todo 检测无瑕核心...合成给予tag交给你了,我不会)
 
             if (itemstack.isItemEnabled(this.level.enabledFeatures())) {
                 this.selectedRecipe = smithingrecipe;

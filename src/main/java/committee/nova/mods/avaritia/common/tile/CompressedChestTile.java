@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.tile;
 
+import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.CompressedChestMenu;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
@@ -97,7 +98,7 @@ public class CompressedChestTile extends ChestBlockEntity {
 
     @Override
     protected @NotNull Component getDefaultName() {
-        return Component.translatable("block.avaritia.compressed_chest");
+        return Localizable.of("block.avaritia.compressed_chest").build();
     }
 
     @Override

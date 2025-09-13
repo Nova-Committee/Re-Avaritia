@@ -48,21 +48,21 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         // 添加选择模式切换按钮
         this.addRenderableWidget(
                 GuiUtils.newButton(centerX + 2, centerY + 185, 40, 15,
-                        Component.literal(this.selectMode ? "选择" : "画刷"),
+                        Component.translatable(this.selectMode ? "gui.avaritia.recipe_generator.select" : "gui.avaritia.recipe_generator.brush"),
                         button -> {
                             this.selectMode = !this.selectMode;
                             updateButtonVisibility();
-                            button.setMessage(Component.literal(this.selectMode ? "选择" : "画刷"));
+                            button.setMessage(Component.translatable(this.selectMode ? "gui.avaritia.recipe_generator.select" : "gui.avaritia.recipe_generator.brush"));
                         })
         );
         // 添加有序无序按钮
         this.addRenderableWidget(
                 GuiUtils
                         .newButton(centerX + 42, centerY + 185, 40, 15,
-                                Component.literal(this.shaped ? "有序" : "无序"),
+                                Component.translatable(this.shaped ? "gui.avaritia.recipe_generator.shape" : "gui.avaritia.recipe_generator.shapeless"),
                                 button -> {
                                     this.shaped = !this.shaped;
-                                    button.setMessage(Component.literal(this.shaped ? "有序" : "无序"));
+                                    button.setMessage(Component.translatable(this.shaped ? "gui.avaritia.recipe_generator.shape" : "gui.avaritia.recipe_generator.shapeless"));
                                 })
         );
         // 添加等级选择按钮
@@ -71,7 +71,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                         .withValues("1", "2", "3", "4")
                         .withInitialValue(String.valueOf(this.tier))
                         .create(centerX + 82, centerY + 185, 40, 15,
-                                Component.literal("等级"),
+                                Component.translatable("gui.avaritia.recipe_generator.tier"),
                                 (button, value) -> {
                                     this.tier = Integer.parseInt(value);
                                 })
@@ -90,7 +90,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                         .withValues("1", "2", "3")
                         .withInitialValue(String.valueOf(this.outType))
                         .create(centerX + 122, centerY + 185, 60, 15,
-                                Component.literal("方式"),
+                                Component.translatable("gui.avaritia.recipe_generator.type"),
                                 (button, value) -> {
                                     this.outType = Integer.parseInt(value);
                                 })
@@ -99,7 +99,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         this.addRenderableWidget(
                 GuiUtils
                         .newButton(centerX + 182, centerY + 185, 40, 15,
-                                Component.literal("生成"),
+                                Component.translatable("gui.avaritia.recipe_generator.generate"),
                                 button -> {
                                 switch (this.outType) {
                                     case 1 -> generateKubeJSRecipe();
@@ -132,7 +132,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     @Override
     protected void renderLabels(GuiGraphics pGuiGraphics, int pX, int pY) {
         pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        if (!this.selectMode) pGuiGraphics.drawString(this.font, Component.literal("画刷"), 180, 16, 4210752, false);
+        if (!this.selectMode) pGuiGraphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.brush"), 180, 16, 4210752, false);
     }
 
     @Override
