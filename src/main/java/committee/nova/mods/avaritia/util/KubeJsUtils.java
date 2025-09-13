@@ -223,7 +223,7 @@ public class KubeJsUtils {
         return script.toString();
     }
 
-    public static void exportJSRecipe(RecipeGeneratorMenu menu,  boolean shaped, int tier, boolean useNbt, String name) {
+    public static void exportTableJS(RecipeGeneratorMenu menu, boolean shaped, int tier, boolean useNbt, String name) {
         try {
             Path scriptsDir = FMLPaths.GAMEDIR.get().resolve("kubejs/server_scripts");
             Files.createDirectories(scriptsDir);

@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.common.menu.RecipeGeneratorMenu;
+import committee.nova.mods.avaritia.util.CrtUtils;
 import committee.nova.mods.avaritia.util.KubeJsUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,13 +20,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author: cnlimiter
  */
 public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMenu> {
-    private boolean shaped = false; // 有序/无序
+    private boolean shaped = true; // 有序/无序
     private int tier = 1; // 等级 (1-4)
     private int outType = 1; // 生成方式
     private boolean selectMode = false; // 模式
@@ -47,7 +47,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         int centerY = (this.height - this.imageHeight) / 2;
         // 添加选择模式切换按钮
         this.addRenderableWidget(
-                GuiUtils.newButton(centerX + 5, centerY + 185, 40, 15,
+                GuiUtils.newButton(centerX + 2, centerY + 185, 40, 15,
                         Component.literal(this.selectMode ? "选择" : "画刷"),
                         button -> {
                             this.selectMode = !this.selectMode;
@@ -58,7 +58,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         // 添加有序无序按钮
         this.addRenderableWidget(
                 GuiUtils
-                        .newButton(centerX + 45, centerY + 185, 40, 15,
+                        .newButton(centerX + 42, centerY + 185, 40, 15,
                                 Component.literal(this.shaped ? "有序" : "无序"),
                                 button -> {
                                     this.shaped = !this.shaped;
@@ -70,7 +70,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 CycleButton.builder(Component::literal)
                         .withValues("1", "2", "3", "4")
                         .withInitialValue(String.valueOf(this.tier))
-                        .create(centerX + 85, centerY + 185, 40, 15,
+                        .create(centerX + 82, centerY + 185, 40, 15,
                                 Component.literal("等级"),
                                 (button, value) -> {
                                     this.tier = Integer.parseInt(value);
@@ -89,7 +89,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                         })
                         .withValues("1", "2", "3")
                         .withInitialValue(String.valueOf(this.outType))
-                        .create(centerX + 125, centerY + 185, 60, 15,
+                        .create(centerX + 122, centerY + 185, 60, 15,
                                 Component.literal("方式"),
                                 (button, value) -> {
                                     this.outType = Integer.parseInt(value);
@@ -98,12 +98,19 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         // 添加生成按钮
         this.addRenderableWidget(
                 GuiUtils
-                        .newButton(centerX + 185, centerY + 185, 40, 15,
+                        .newButton(centerX + 182, centerY + 185, 40, 15,
                                 Component.literal("生成"),
-                                button -> this.generateKubeJSRecipe())
+                                button -> {
+                                switch (this.outType) {
+                                    case 1 -> generateKubeJSRecipe();
+                                    case 2 -> generateZSRecipe();
+                                    default -> {
+                                    }
+                                }
+                                })
         );
 
-        this.brushButton = this.addRenderableWidget(GuiUtils.newButton(centerX + 202, centerY + 60, 20, 20,
+        this.brushButton = this.addRenderableWidget(GuiUtils.newButton(centerX + 202, centerY + 10, 20, 20,
                 brushItem.getDisplayName(),
                 button -> {
                     this.minecraft.setScreen(new ItemSelectScreen(
@@ -125,6 +132,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     @Override
     protected void renderLabels(GuiGraphics pGuiGraphics, int pX, int pY) {
         pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+        if (!this.selectMode) pGuiGraphics.drawString(this.font, Component.literal("画刷"), 180, 16, 4210752, false);
     }
 
     @Override
@@ -310,12 +318,23 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
             if (Screen.hasShiftDown()) {
                 Minecraft.getInstance().setScreen(new StringInputScreen(this, Text.i18n("请输入自定义文件名").setShadow(true), Text.i18n("请输入"), "", "generated_recipe", input -> {
                     if (!input.isEmpty()) {
-                        KubeJsUtils.exportJSRecipe(this.menu, this.shaped, this.tier, true, input);
+                        KubeJsUtils.exportTableJS(this.menu, this.shaped, this.tier, true, input);
                     }
                 }));
             } else {
-                KubeJsUtils.exportJSRecipe(this.menu, this.shaped, this.tier, true, "generated_recipe");
+                KubeJsUtils.exportTableJS(this.menu, this.shaped, this.tier, true, "generated_recipe");
             }
+        }
+    }
+
+    private void generateZSRecipe() {
+        // 使用CrtUtils生成代码
+        if (!this.menu.slots.isEmpty()
+                && !this.menu.getSlotItem(81).isEmpty()
+        ) {
+
+                CrtUtils.exportTableZS(this.menu, this.shaped, this.tier, true, "generated_recipe");
+
         }
     }
 
