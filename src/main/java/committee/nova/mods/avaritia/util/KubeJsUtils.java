@@ -18,12 +18,16 @@ import java.util.Map;
  * @author: cnlimiter
  */
 public class KubeJsUtils {
-    public static String generateShapeTableJS(RecipeGeneratorMenu menu, int tier, boolean useNbt) {
+    public static int getSize(int tier) {
         int size = 0;
         if (tier == 1) { size = 9;}
         else if (tier == 2) { size = 25;}
         else if (tier == 3) { size = 49;}
         else if (tier == 5) { size = 81;}
+        return size;
+    }
+    public static String generateShapeTableJS(RecipeGeneratorMenu menu, int tier, boolean useNbt) {
+        int size = getSize(tier);
         List<ItemStack> inputs = new ArrayList<>();
         ItemStack output = menu.getSlotItem(size); // 输出槽位
 
@@ -33,7 +37,6 @@ public class KubeJsUtils {
         }
 
         StringBuilder script = new StringBuilder();
-        script.append("    const { avaritia } = event.recipes;\n");
         script.append("    avaritia.shaped_table(\n");
         script.append("        ").append(tier).append(",\n");
 
@@ -123,11 +126,7 @@ public class KubeJsUtils {
     }
 
     public static String generateShapelessTableJS(RecipeGeneratorMenu menu, int tier, boolean useNbt) {
-        int size = 0;
-        if (tier == 1) { size = 9;}
-        else if (tier == 2) { size = 25;}
-        else if (tier == 3) { size = 49;}
-        else if (tier == 5) { size = 81;}
+        int size = getSize(tier);
         List<ItemStack> inputs = new ArrayList<>();
         ItemStack output = menu.getSlotItem(size); // 输出槽位
 
@@ -140,7 +139,6 @@ public class KubeJsUtils {
         }
 
         StringBuilder script = new StringBuilder();
-        script.append("    const { avaritia } = event.recipes;\n");
         script.append("    avaritia.shapeless_table(\n");
         script.append("        ").append(tier).append(",\n");
 
@@ -220,7 +218,11 @@ public class KubeJsUtils {
             }
 
             if (!existingContent.contains("ServerEvents.recipes")) {
-                existingContent = "ServerEvents.recipes(event => {\n\n});\n";
+                existingContent = """
+                        ServerEvents.recipes(event => {
+                                const { avaritia } = event.recipes;
+                        });
+                        """;
             }
 
             if (!existingContent.contains(newRecipe.trim())) {

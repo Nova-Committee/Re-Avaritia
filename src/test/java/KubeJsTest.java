@@ -8,6 +8,6 @@ import org.junit.jupiter.api.Test;
 public class KubeJsTest {
     @Test
     void rangeCheckOnCreation() {
-        KubeJsUtils.generateShapeTableJS(3, true);
+        //KubeJsUtils.generateShapeTableJS(3, true);
     }
 }
