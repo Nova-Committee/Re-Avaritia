@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.common.menu.RecipeGeneratorMenu;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.nio.file.Files;
@@ -18,22 +19,29 @@ import java.util.Map;
  * @author: cnlimiter
  */
 public class KubeJsUtils {
-    public static int getSize(int tier) {
-        int size = 0;
-        if (tier == 1) { size = 9;}
-        else if (tier == 2) { size = 25;}
-        else if (tier == 3) { size = 49;}
-        else if (tier == 5) { size = 81;}
-        return size;
-    }
     public static String generateShapeTableJS(RecipeGeneratorMenu menu, int tier, boolean useNbt) {
-        int size = getSize(tier);
-        List<ItemStack> inputs = new ArrayList<>();
-        ItemStack output = menu.getSlotItem(size); // 输出槽位
+        ItemStack output = menu.getSlotItem(81); // 输出槽位
 
-        // 收集输入槽位的物品 (81个输入槽)
-        for (int i = 0; i < size; i++) {
-            inputs.add(menu.getSlotItem(i));
+        // 根据等级确定网格大小
+        int gridSize = switch (tier) {
+            case 1 -> 3;   // 3x3
+            case 2 -> 5;   // 5x5
+            case 3 -> 7;   // 7x7
+            case 4 -> 9;   // 9x9
+            default -> 9;
+        };
+
+        // 计算起始位置（从中心向外扩散）
+        int startRow = (9 - gridSize) / 2;
+        int startCol = (9 - gridSize) / 2;
+
+        // 收集输入槽位的物品
+        List<ItemStack> inputs = new ArrayList<>();
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                int slotIndex = (startRow + row) * 9 + (startCol + col);
+                inputs.add(menu.getSlotItem(slotIndex));
+            }
         }
 
         StringBuilder script = new StringBuilder();
@@ -69,10 +77,11 @@ public class KubeJsUtils {
         char currentKey = 'A';
         Map<String, Character> itemToKey = new HashMap<>();
 
-        for (int row = 0; row < size; row++) {
+        for (int row = 0; row < gridSize; row++) {
             script.append("            '");
-            for (int col = 0; col < size; col++) {
-                ItemStack stack = inputs.get(row * size + col);
+            for (int col = 0; col < gridSize; col++) {
+                int index = row * gridSize + col;
+                ItemStack stack = index < inputs.size() ? inputs.get(index) : ItemStack.EMPTY;
                 if (!stack.isEmpty()) {
                     ResourceLocation itemId = Const.getItemName(stack.getItem());
                     if (itemId != null) {
@@ -95,7 +104,7 @@ public class KubeJsUtils {
                     script.append(" ");
                 }
             }
-            script.append(row < size - 1 ? "',\n" : "'\n");
+            script.append(row < gridSize - 1 ? "',\n" : "'\n");
         }
         script.append("        ],\n");
 
@@ -121,20 +130,35 @@ public class KubeJsUtils {
         script.append("\n        }\n    )");
 
 
-        System.out.println(script);
+        //System.out.println(script);
         return script.toString();
     }
 
     public static String generateShapelessTableJS(RecipeGeneratorMenu menu, int tier, boolean useNbt) {
-        int size = getSize(tier);
-        List<ItemStack> inputs = new ArrayList<>();
-        ItemStack output = menu.getSlotItem(size); // 输出槽位
+        ItemStack output = menu.getSlotItem(81); // 输出槽位
 
-        // 收集输入槽位的物品 (只收集非空的物品)
-        for (int i = 0; i < size; i++) {
-            ItemStack stack = menu.getSlotItem(i);
-            if (!stack.isEmpty()) {
-                inputs.add(stack);
+        // 根据等级确定网格大小
+        int gridSize = switch (tier) {
+            case 1 -> 3;   // 3x3
+            case 2 -> 5;   // 5x5
+            case 3 -> 7;   // 7x7
+            case 4 -> 9;   // 9x9
+            default -> 9;
+        };
+
+        // 计算起始位置（从中心向外扩散）
+        int startRow = (9 - gridSize) / 2;
+        int startCol = (9 - gridSize) / 2;
+
+        // 收集输入槽位的物品 (只收集非空物品)
+        List<ItemStack> inputs = new ArrayList<>();
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                int slotIndex = (startRow + row) * 9 + (startCol + col);
+                ItemStack stack = menu.getSlotItem(slotIndex);
+                if (!stack.isEmpty() && stack.getItem() != Items.AIR) {
+                    inputs.add(stack);
+                }
             }
         }
 

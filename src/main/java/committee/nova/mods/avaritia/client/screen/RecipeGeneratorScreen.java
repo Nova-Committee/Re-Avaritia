@@ -14,6 +14,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.Set;
+
 /**
  * @author: cnlimiter
  */
@@ -26,6 +28,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     private int selectedSlot = -1; // 当前选择的槽位索引
 
     private Button brushButton; // 当前选择的槽位索引
+    private CycleButton<String> tierButton; // 等级按钮
 
     public RecipeGeneratorScreen(RecipeGeneratorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, Res.RECIPE_GENERATOR_TEX, 223, 234);
@@ -58,14 +61,14 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                                 })
         );
         // 添加等级选择按钮
-        this.addRenderableWidget(
+        this.tierButton = this.addRenderableWidget(
                 CycleButton.builder(Component::literal)
                         .withValues("1", "2", "3", "4")
-                        .withInitialValue(String.valueOf(this.tier + 1))
+                        .withInitialValue(String.valueOf(this.tier))
                         .create(centerX + 85, centerY + 185, 40, 15,
                                 Component.literal("等级"),
                                 (button, value) -> {
-                                    this.tier = Integer.parseInt(value) - 1;
+                                    this.tier = Integer.parseInt(value);
                                 })
         );
         // 添加生成方式选择按钮
@@ -80,11 +83,11 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                             }
                         })
                         .withValues("1", "2", "3")
-                        .withInitialValue(String.valueOf(this.outType + 1))
+                        .withInitialValue(String.valueOf(this.outType))
                         .create(centerX + 125, centerY + 185, 60, 15,
                                 Component.literal("方式"),
                                 (button, value) -> {
-                                    this.outType = Integer.parseInt(value) - 1;
+                                    this.outType = Integer.parseInt(value);
                                 })
         );
         // 添加生成按钮
@@ -95,7 +98,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                                 button -> this.generateKubeJSRecipe())
         );
 
-        this.brushButton = GuiUtils.newButton(centerX + 182, centerY + 69, 20, 20,
+        this.brushButton = this.addRenderableWidget(GuiUtils.newButton(centerX + 202, centerY + 60, 20, 20,
                 brushItem.getDisplayName(),
                 button -> {
                     this.minecraft.setScreen(new ItemSelectScreen(
@@ -106,8 +109,8 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                             },
                             ItemStack.EMPTY
                     ));
-                });
-        this.addRenderableWidget(this.brushButton);
+                }));
+        updateButtonVisibility();
     }
 
     private void updateButtonVisibility() {
@@ -141,6 +144,23 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
             pGuiGraphics.fill(slotX, slotY, slotX + 1, slotY + 18, 0xFF00FF00);
             pGuiGraphics.fill(slotX + 17, slotY, slotX + 18, slotY + 18, 0xFF00FF00);
         }
+        // 渲染不可用槽位的遮罩
+        renderDisabledSlotsOverlay(pGuiGraphics);
+    }
+
+    // 渲染不可用槽位的遮罩
+    private void renderDisabledSlotsOverlay(GuiGraphics graphics) {
+        Set<Integer> availableSlots = this.menu.getAvailableSlotsSetForTier(this.tier);
+        for (int i = 0; i < 81; i++) {
+            if (!availableSlots.contains(i)) {
+                // 槽位不可用，绘制半透明遮罩
+                int row = i / 9;
+                int col = i % 9;
+                int slotX = this.leftPos + 8 + col * 18;
+                int slotY = this.topPos + 18 + row * 18;
+                graphics.fill(slotX, slotY, slotX + 16, slotY + 16, 0x80000000); // 半透明黑色
+            }
+        }
     }
 
     @Override
@@ -155,9 +175,12 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 if (gridX >= 0 && gridX < 9 && gridY >= 0 && gridY < 9) {
                     // 点击了输入槽位
                     int slotIndex = gridY * 9 + gridX;
-                    this.selectedSlot = slotIndex;
-                    this.openItemSelectScreen(slotIndex);
-                    return true;
+                    // 检查槽位是否在当前等级的可用范围内
+                    if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                        this.selectedSlot = slotIndex;
+                        this.openItemSelectScreen(slotIndex);
+                        return true;
+                    }
                 }
 
                 // 检查输出槽位
@@ -178,8 +201,13 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 if (gridX >= 0 && gridX < 9 && gridY >= 0 && gridY < 9) {
                     // 点击了输入槽位
                     int slotIndex = gridY * 9 + gridX;
-                    if (!this.menu.getSlotItem(slotIndex).isEmpty()) this.menu.getSlot(slotIndex).set(ItemStack.EMPTY);
-                    return true;
+                    // 检查槽位是否在当前等级的可用范围内
+                    if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                        if (!this.menu.getSlotItem(slotIndex).isEmpty()) {
+                            this.menu.getSlot(slotIndex).set(ItemStack.EMPTY);
+                        }
+                        return true;
+                    }
                 }
                 // 检查输出槽位
                 int outputX = (int) ((mouseX - (this.leftPos + 202)) / 18);
@@ -201,9 +229,12 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 if (gridX >= 0 && gridX < 9 && gridY >= 0 && gridY < 9) {
                     // 点击了输入槽位
                     int slotIndex = gridY * 9 + gridX;
-                    this.selectedSlot = slotIndex;
-                    this.menu.getSlot(slotIndex).set(this.brushItem.copy());
-                    return true;
+                    // 检查槽位是否在当前等级的可用范围内
+                    if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                        this.selectedSlot = slotIndex;
+                        this.menu.getSlot(slotIndex).set(this.brushItem.copy());
+                        return true;
+                    }
                 }
 
                 // 检查输出槽位
@@ -224,8 +255,13 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 if (gridX >= 0 && gridX < 9 && gridY >= 0 && gridY < 9) {
                     // 点击了输入槽位
                     int slotIndex = gridY * 9 + gridX;
-                    if (!this.menu.getSlotItem(slotIndex).isEmpty()) this.menu.getSlot(slotIndex).set(ItemStack.EMPTY);
-                    return true;
+                    // 检查槽位是否在当前等级的可用范围内
+                    if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                        if (!this.menu.getSlotItem(slotIndex).isEmpty()) {
+                            this.menu.getSlot(slotIndex).set(ItemStack.EMPTY);
+                        }
+                        return true;
+                    }
                 }
                 // 检查输出槽位
                 int outputX = (int) ((mouseX - (this.leftPos + 202)) / 18);
@@ -234,7 +270,9 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 if (outputX == 0 && outputY == 0) {
                     // 点击了输出槽位
                     this.selectedSlot = 81;
-                    if (!this.menu.getSlotItem(81).isEmpty()) this.menu.getSlot(81).set(ItemStack.EMPTY);
+                    if (!this.menu.getSlotItem(81).isEmpty()) {
+                        this.menu.getSlot(81).set(ItemStack.EMPTY);
+                    }
                     return true;
                 }
             }
@@ -264,6 +302,11 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         if (!this.menu.slots.isEmpty()
                 && !this.menu.getSlotItem(81).isEmpty()
         ) KubeJsUtils.exportJSRecipe(this.menu, this.shaped, this.tier, true, "generated_recipe");
+    }
+
+    // 提供获取当前等级的方法
+    public int getCurrentTier() {
+        return this.tier;
     }
 
 }
