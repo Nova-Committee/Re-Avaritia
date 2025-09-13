@@ -3,31 +3,36 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.client.screen.ItemSelectScreen;
+import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.common.menu.RecipeGeneratorMenu;
 import committee.nova.mods.avaritia.util.KubeJsUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author: cnlimiter
  */
 public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMenu> {
-    private boolean shaped = false; // 无序有序
-    private int tier = 1; // 等级
+    private boolean shaped = false; // 有序/无序
+    private int tier = 1; // 等级 (1-4)
     private int outType = 1; // 生成方式
     private boolean selectMode = false; // 模式
     private ItemStack brushItem = ItemStack.EMPTY; // 画刷物品
     private int selectedSlot = -1; // 当前选择的槽位索引
 
-    private Button brushButton; // 当前选择的槽位索引
+    private Button brushButton; // 画刷按钮
     private CycleButton<String> tierButton; // 等级按钮
 
     public RecipeGeneratorScreen(RecipeGeneratorMenu container, Inventory inventory, Component title) {
@@ -301,12 +306,18 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         // 使用KubeJsUtils生成代码
         if (!this.menu.slots.isEmpty()
                 && !this.menu.getSlotItem(81).isEmpty()
-        ) KubeJsUtils.exportJSRecipe(this.menu, this.shaped, this.tier, true, "generated_recipe");
+        ) {
+            if (Screen.hasShiftDown()) {
+                Minecraft.getInstance().setScreen(new StringInputScreen(this, Text.i18n("请输入自定义文件名").setShadow(true), Text.i18n("请输入"), "", "generated_recipe", input -> {
+                    if (!input.isEmpty()) {
+                        KubeJsUtils.exportJSRecipe(this.menu, this.shaped, this.tier, true, input);
+                    }
+                }));
+            } else {
+                KubeJsUtils.exportJSRecipe(this.menu, this.shaped, this.tier, true, "generated_recipe");
+            }
+        }
     }
 
-    // 提供获取当前等级的方法
-    public int getCurrentTier() {
-        return this.tier;
-    }
 
 }
