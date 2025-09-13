@@ -25,7 +25,7 @@ public class ModTags {
 
     public static final TagKey<Item> NEUTRON_DUST = ItemTags.create(new ResourceLocation("forge", "dust/neutronium"));
     public static final TagKey<Item> NEUTRON_NUGGET = ItemTags.create(new ResourceLocation("forge", "nuggets/neutronium"));
-    public static final TagKey<Item> NEUTRON_INGOT = ItemTags.create(new ResourceLocation("forge", "ingot/neutronium"));
+    public static final TagKey<Item> NEUTRON_INGOT = ItemTags.create(new ResourceLocation("forge", "ingots/neutronium"));
     public static final TagKey<Block> NEUTRON_BLOCK = BlockTags.create(new ResourceLocation("forge", "storage_blocks/neutronium"));
 
     public static final TagKey<Block> EXTREME_ANVIL_UNBREAK = BlockTags.create(Const.rl("extreme_anvil_unbreak"));

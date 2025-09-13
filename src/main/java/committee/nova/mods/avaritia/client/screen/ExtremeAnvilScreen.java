@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.net.C2SRenamePack;
@@ -23,11 +24,10 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
-    private static final ResourceLocation ANVIL_LOCATION = Const.rl("textures/gui/extreme_anvil_gui.png");
     private EditBox name;
 
     public ExtremeAnvilScreen(ExtremeAnvilMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle, ANVIL_LOCATION);
+        super(pMenu, pPlayerInventory, pTitle, Res.EXTREME_ANVIL_TEX);
         this.titleLabelX = 60;
     }
 
@@ -85,11 +85,6 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
         }
     }
 
-    @Override
-    protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
-        super.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
-        pGuiGraphics.blit(ANVIL_LOCATION, this.leftPos + 59, this.topPos + 23, 0, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
-    }
 
     @Override
     public void renderFg(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
@@ -97,9 +92,10 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
     }
 
     @Override
-    protected void renderBgOthers(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void renderBgs(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+        pGuiGraphics.blit(Res.EXTREME_ANVIL_TEX, this.leftPos + 59, this.topPos + 23, 0, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
         if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem()) && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
-            pGuiGraphics.blit(ANVIL_LOCATION, pX + 99, pY + 47, this.imageWidth, 0, 28, 21);
+            pGuiGraphics.blit(Res.EXTREME_ANVIL_TEX, pX + 99, pY + 47, this.imageWidth, 0, 28, 21);
         }
 
     }

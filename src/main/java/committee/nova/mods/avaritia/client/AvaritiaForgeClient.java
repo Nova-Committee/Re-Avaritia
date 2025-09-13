@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
-import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
+import committee.nova.mods.avaritia.api.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -28,7 +28,6 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.Collections;

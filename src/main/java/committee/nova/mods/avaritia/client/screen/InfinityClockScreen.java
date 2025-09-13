@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -13,24 +15,22 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 
-public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMenu> {
-    public static final ResourceLocation TEXTURE =
-            new ResourceLocation("avaritia", "textures/gui/infinity_clock_time.png");
-
+public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> {
     private int guiLeft, guiTop;
     private final int imageWidth = 176;
     private final int imageHeight = 166;
 
     private EditBox timeInput;
 
-    public InfinityClockScreen(InfinityClockMenu menu, Inventory inv, Component title) {
-        super(menu, inv, title);
+    public InfinityClockScreen(InfinityClockMenu container, Inventory inventory, Component title) {
+        super(container, inventory, title, Res.INFINITY_CLOCK_TIME_TEX, 176, 166);
     }
 
     @Override
-    protected void init() {
-        super.init();
+    protected void subInit() {
+        super.subInit();
         guiLeft = (this.width - imageWidth) / 2;
         guiTop = (this.height - imageHeight) / 2;
 
@@ -45,26 +45,18 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 1, startY, 41, 22, 1, 6000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 2, startY, 65, 22, 2, 12000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, 14000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22,4, 18000));
-        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22,5, 22000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, 18000));
+        addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, 22000));
         this.titleLabelX=62;
         timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
         timeInput.setMaxLength(10);
         addRenderableWidget(timeInput);
     }
 
-    @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(g);
-        super.render(g, mouseX, mouseY, partialTicks);
-        timeInput.render(g, mouseX, mouseY, partialTicks);
-    }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1) {
-        RenderSystem.setShaderTexture(0, TEXTURE);
-
-        guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+        timeInput.render(pGuiGraphics, pX, pY, pPartialTick);
     }
 
     @Override
@@ -82,14 +74,8 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
-
     // 自定义按钮
-    class TimeButton extends AbstractWidget {
+    static class TimeButton extends AbstractWidget {
         private final int texU, texV;
         private final int index;
         private final int timeValue; // 存储时间值
@@ -106,13 +92,13 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
 
         @Override
         protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTicks) {
-            RenderSystem.setShaderTexture(0, TEXTURE);
+            RenderSystem.setShaderTexture(0, Res.INFINITY_CLOCK_TIME_TEX);
             if (isHovered) {
                 int hoverU = 177 + (index % 2) * (w + 1);
                 int hoverV = 1 + (index / 2) * (h + 1);
-                g.blit(TEXTURE, getX(), getY(), hoverU, hoverV, w, h);
+                g.blit(Res.INFINITY_CLOCK_TIME_TEX, getX(), getY(), hoverU, hoverV, w, h);
             } else {
-                g.blit(TEXTURE, getX(), getY(), texU, texV, w, h);
+                g.blit(Res.INFINITY_CLOCK_TIME_TEX, getX(), getY(), texU, texV, w, h);
             }
         }
 
@@ -123,7 +109,7 @@ public class InfinityClockScreen extends AbstractContainerScreen<InfinityClockMe
         }
 
         @Override
-        protected void updateWidgetNarration(NarrationElementOutput output) {
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
             defaultButtonNarrationText(output);
         }
     }

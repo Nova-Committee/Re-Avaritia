@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,16 +19,10 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
  * @Description:
  */
 public class NeutronRingScreen extends BaseContainerScreen<NeutronRingMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Const.MOD_ID, "textures/gui/neutron_ring.png");
 
     public NeutronRingScreen(NeutronRingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle, BACKGROUND, 256, 276, 256, 276);
+        super(pMenu, pPlayerInventory, pTitle, Res.NEUTRON_RING_TEX, 256, 276, 256, 276);
         this.inventoryLabelY = this.imageHeight - 94;
-    }
-
-    @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
-
     }
 
     @Override
