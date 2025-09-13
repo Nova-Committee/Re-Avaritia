@@ -73,15 +73,14 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         ClientLevel world = Minecraft.getInstance().level;
         if (world != null) {
             var manager = world.getRecipeManager();
-            registration.addRecipes(CompressorCategory.RECIPE_TYPE, RecipeUtils.byTypeValues(manager, ModRecipeTypes.COMPRESSOR_RECIPE.get()));
+            registration.addRecipes(CompressorCategory.RECIPE_TYPE, RecipeUtils.byType(manager, ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList());
 
-            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, RecipeUtils.byTypeValues(manager, ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()));
+            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, RecipeUtils.byType(manager, ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList());
 
             var recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
                     RecipeUtils.byType(manager, ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
                             .stream()
-                            .map(RecipeHolder::value)
-                            .filter(recipe -> recipe.hasRequiredTier() ? tier == recipe.getTier() : tier >= recipe.getTier())
+                            .filter(recipe -> recipe.value().hasRequiredTier() ? tier == recipe.value().getTier() : tier >= recipe.value().getTier())
                             .toList()
             ));
 
