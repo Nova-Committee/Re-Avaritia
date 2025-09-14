@@ -6,6 +6,8 @@ import committee.nova.mods.avaritia.api.client.screen.ItemSelectScreen;
 import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.menu.RecipeGeneratorMenu;
 import committee.nova.mods.avaritia.util.CrtUtils;
 import committee.nova.mods.avaritia.util.KubeJsUtils;
@@ -14,11 +16,17 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -110,7 +118,14 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                                 })
         );
 
-        this.brushButton = this.addRenderableWidget(GuiUtils.newButton(centerX + 202, centerY + 10, 20, 20,
+        // 添加配方选择按钮
+        this.addRenderableWidget(
+                GuiUtils.newButton(centerX + 202, centerY + 10, 20, 20,
+                        Component.translatable("gui.avaritia.recipe_generator.select_recipe"),
+                        button -> this.openRecipeSelectScreen())
+        );
+
+        this.brushButton = this.addRenderableWidget(GuiUtils.newButton(centerX + 202, centerY + 30, 20, 20,
                 brushItem.getDisplayName(),
                 button -> {
                     this.minecraft.setScreen(new ItemSelectScreen(
@@ -132,7 +147,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     @Override
     protected void renderLabels(GuiGraphics pGuiGraphics, int pX, int pY) {
         pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        if (!this.selectMode) pGuiGraphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.brush"), 180, 16, 4210752, false);
+        if (!this.selectMode) pGuiGraphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.brush"), 180, 36, 4210752, false);
     }
 
     @Override
@@ -338,5 +353,181 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         }
     }
 
+
+    // 添加配方选择相关方法
+    private void openRecipeSelectScreen() {
+        this.minecraft.setScreen(new RecipeSelectScreen(this, this::onRecipeSelected));
+    }
+
+    private void onRecipeSelected(Recipe<?> recipe) {
+        // 将选中的配方填充到输入输出槽中
+        this.fillRecipeIntoSlots(recipe);
+        // 返回当前界面
+        this.minecraft.setScreen(this);
+    }
+
+    private void fillRecipeIntoSlots(Recipe<?> recipe) {
+        // 清空现有槽位
+        for (int i = 0; i < 82; i++) {
+            this.menu.getSlot(i).set(ItemStack.EMPTY);
+        }
+
+        ItemStack result = recipe.getResultItem(this.minecraft.level.registryAccess());
+        if (!result.isEmpty()) {
+            // 设置输出槽
+            this.menu.getSlot(81).set(result.copy());
+        }
+
+        // 根据具体配方类型填充输入槽并更新参数
+        if (recipe instanceof ShapedTableCraftingRecipe shapedRecipe) {
+            // 处理有序配方
+            this.shaped = true;
+            this.tier = shapedRecipe.getTier();
+
+            try {
+                NonNullList<Ingredient> ingredients = shapedRecipe.getIngredients();
+                int width = shapedRecipe.getWidth();
+                int height = shapedRecipe.getHeight();
+
+                // 计算起始位置（居中）
+                int startRow = (9 - height) / 2;
+                int startCol = (9 - width) / 2;
+
+                int index = 0;
+                for (int y = 0; y < height && y < 9; y++) {
+                    for (int x = 0; x < width && x < 9; x++) {
+                        if (index < ingredients.size()) {
+                            Ingredient ingredient = ingredients.get(index);
+                            if (ingredient != null && !ingredient.isEmpty()) {
+                                ItemStack[] items = ingredient.getItems();
+                                if (items.length > 0) {
+                                    int slotIndex = (startRow + y) * 9 + (startCol + x);
+                                    // 确保槽位在当前等级的可用范围内
+                                    if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                                        this.menu.getSlot(slotIndex).set(items[0].copy());
+                                    }
+                                }
+                            }
+                        }
+                        index++;
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略异常
+            }
+        } else if (recipe instanceof ShapelessTableCraftingRecipe shapelessRecipe) {
+            // 处理无序配方
+            this.shaped = false;
+            this.tier = shapelessRecipe.getTier();
+
+            try {
+                // 获取配方材料列表
+                java.util.List<Ingredient> ingredients = shapelessRecipe.getIngredients();
+
+                // 简单排列在中心区域
+                int gridSize = (int) Math.sqrt(this.menu.getAvailableSlotsForTier(this.tier));
+                int startRow = (9 - gridSize) / 2;
+                int startCol = (9 - gridSize) / 2;
+
+                for (int i = 0; i < Math.min(ingredients.size(), gridSize * gridSize); i++) {
+                    Ingredient ingredient = ingredients.get(i);
+                    if (!ingredient.isEmpty()) {
+                        ItemStack[] items = ingredient.getItems();
+                        if (items.length > 0) {
+                            int row = i / gridSize;
+                            int col = i % gridSize;
+                            int slotIndex = (startRow + row) * 9 + (startCol + col);
+                            // 确保槽位在当前等级的可用范围内
+                            if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                                this.menu.getSlot(slotIndex).set(items[0].copy());
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略异常
+            }
+        } else if (recipe instanceof ShapedRecipe) {
+            // 处理原版有序配方
+            this.shaped = true;
+            // 设置默认等级
+            this.tier = 1;
+
+            try {
+                ShapedRecipe shapedRecipe = (ShapedRecipe) recipe;
+                NonNullList<Ingredient> ingredients = shapedRecipe.getIngredients();
+                // 假设是3x3配方
+                int width = 3;
+                int height = ingredients.size() / width;
+
+                // 计算起始位置（居中）
+                int startRow = (9 - height) / 2;
+                int startCol = (9 - width) / 2;
+
+                int index = 0;
+                for (int y = 0; y < height && y < 9; y++) {
+                    for (int x = 0; x < width && x < 9; x++) {
+                        if (index < ingredients.size()) {
+                            Ingredient ingredient = ingredients.get(index);
+                            if (ingredient != null && !ingredient.isEmpty()) {
+                                ItemStack[] items = ingredient.getItems();
+                                if (items.length > 0) {
+                                    int slotIndex = (startRow + y) * 9 + (startCol + x);
+                                    // 确保槽位在当前等级的可用范围内
+                                    if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                                        this.menu.getSlot(slotIndex).set(items[0].copy());
+                                    }
+                                }
+                            }
+                        }
+                        index++;
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略异常
+            }
+        } else if (recipe instanceof ShapelessRecipe) {
+            // 处理原版无序配方
+            this.shaped = false;
+            // 设置默认等级
+            this.tier = 1;
+
+            try {
+                ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
+                // 获取配方材料列表
+                java.util.List<Ingredient> ingredients = shapelessRecipe.getIngredients();
+
+                // 简单排列在中心区域
+                int gridSize = 3; // 原版配方通常较小
+                int startRow = (9 - gridSize) / 2;
+                int startCol = (9 - gridSize) / 2;
+
+                for (int i = 0; i < Math.min(ingredients.size(), gridSize * gridSize); i++) {
+                    Ingredient ingredient = ingredients.get(i);
+                    if (!ingredient.isEmpty()) {
+                        ItemStack[] items = ingredient.getItems();
+                        if (items.length > 0) {
+                            int row = i / gridSize;
+                            int col = i % gridSize;
+                            int slotIndex = (startRow + row) * 9 + (startCol + col);
+                            // 确保槽位在当前等级的可用范围内
+                            if (this.menu.isSlotAvailableForTier(slotIndex, this.tier)) {
+                                this.menu.getSlot(slotIndex).set(items[0].copy());
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略异常
+            }
+        }
+
+
+        // 更新UI组件状态
+        if (this.tierButton != null) {
+            // 注意：CycleButton没有直接设置值的方法，这里只是示意
+            // 实际应用中可能需要重新创建按钮或使用其他方式更新
+        }
+    }
 
 }
