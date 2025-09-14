@@ -187,6 +187,34 @@ public class AvaritiaConfigScreen extends Screen {
         addDoubleEntry("infinity_elytra_flying_speed", ModConfig.infinityElytraFlyingSpeed, 1.0, 10.0,
                 Component.translatable("config.avaritia.infinity_elytra_flying_speed.tooltip"),
                 ModConfig.infinityElytraFlyingSpeed::set, ModConfig.infinityElytraFlyingSpeed);
+
+        addDoubleEntry("boot_speed_base", ModConfig.bootSpeedBase, 0.01, 1.0,
+                Component.translatable("config.avaritia.boot_speed_base.tooltip"),
+                ModConfig.bootSpeedBase::set, ModConfig.bootSpeedBase);
+
+        addDoubleEntry("boot_speed_flying_multiplier", ModConfig.bootSpeedFlyingMultiplier, 0.1, 5.0,
+                Component.translatable("config.avaritia.boot_speed_flying_multiplier.tooltip"),
+                ModConfig.bootSpeedFlyingMultiplier::set, ModConfig.bootSpeedFlyingMultiplier);
+
+        addDoubleEntry("boot_speed_swimming_multiplier", ModConfig.bootSpeedSwimmingMultiplier, 0.1, 5.0,
+                Component.translatable("config.avaritia.boot_speed_swimming_multiplier.tooltip"),
+                ModConfig.bootSpeedSwimmingMultiplier::set, ModConfig.bootSpeedSwimmingMultiplier);
+
+        addDoubleEntry("boot_speed_sneaking_multiplier", ModConfig.bootSpeedSneakingMultiplier, 0.01, 1.0,
+                Component.translatable("config.avaritia.boot_speed_sneaking_multiplier.tooltip"),
+                ModConfig.bootSpeedSneakingMultiplier::set, ModConfig.bootSpeedSneakingMultiplier);
+
+        addDoubleEntry("boot_speed_backward_multiplier", ModConfig.bootSpeedBackwardMultiplier, 0.01, 1.0,
+                Component.translatable("config.avaritia.boot_speed_backward_multiplier.tooltip"),
+                ModConfig.bootSpeedBackwardMultiplier::set, ModConfig.bootSpeedBackwardMultiplier);
+
+        addDoubleEntry("boot_speed_strafing_multiplier", ModConfig.bootSpeedStrafingMultiplier, 0.01, 1.0,
+                Component.translatable("config.avaritia.boot_speed_strafing_multiplier.tooltip"),
+                ModConfig.bootSpeedStrafingMultiplier::set, ModConfig.bootSpeedStrafingMultiplier);
+
+        addDoubleEntry("boot_speed_sprinting_multiplier", ModConfig.bootSpeedSprintingMultiplier, 0.01, 1.0,
+                Component.translatable("config.avaritia.boot_speed_sprinting_multiplier.tooltip"),
+                ModConfig.bootSpeedSprintingMultiplier::set, ModConfig.bootSpeedSprintingMultiplier);
     }
 
     private void addBooleanEntry(String titleKey, ForgeConfigSpec.BooleanValue configValue,
@@ -319,6 +347,13 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.endlessItemEntitySpeed.set(ModConfig.endlessItemEntitySpeed.getDefault());
         ModConfig.endlessItemEntityRange.set(ModConfig.endlessItemEntityRange.getDefault());
         ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
+        ModConfig.bootSpeedSwimmingMultiplier.set(ModConfig.bootSpeedSwimmingMultiplier.getDefault());
+        ModConfig.bootSpeedBackwardMultiplier.set(ModConfig.bootSpeedBackwardMultiplier.getDefault());
+        ModConfig.bootSpeedSprintingMultiplier.set(ModConfig.bootSpeedSprintingMultiplier.getDefault());
+        ModConfig.bootSpeedSneakingMultiplier.set(ModConfig.bootSpeedSneakingMultiplier.getDefault());
+        ModConfig.bootSpeedStrafingMultiplier.set(ModConfig.bootSpeedStrafingMultiplier.getDefault());
+        ModConfig.bootSpeedBase.set(ModConfig.bootSpeedBase.getDefault());
+        ModConfig.bootSpeedFlyingMultiplier.set(ModConfig.bootSpeedFlyingMultiplier.getDefault());
     }
 
     private void updateWidgetValues() {

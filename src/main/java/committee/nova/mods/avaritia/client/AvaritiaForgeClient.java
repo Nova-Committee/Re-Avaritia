@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.api.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
@@ -19,10 +20,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -87,8 +90,9 @@ public class AvaritiaForgeClient {
                 Minecraft.getInstance().setScreen(new ItemFilterScreen());
             }
         }
-        // endregion
 
+
+        // endregion
         handleInfinityElytraFallFlying(mc, player);
 
         //计算黑暗强度

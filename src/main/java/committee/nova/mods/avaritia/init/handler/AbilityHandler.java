@@ -4,6 +4,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import committee.nova.mods.avaritia.api.utils.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -141,24 +142,24 @@ public class AbilityHandler {
                 boolean sneaking = player.isCrouching();
                 if (player.onGround() || flying || swimming) {
 
-                    float speed = 0.1f * (flying ? 1.1f : 1.0f)
-                            * (swimming ? 1.2f : 1.0f)
-                            * (sneaking ? 0.1f : 1.0f);
+                    float speed = (float) (ModConfig.bootSpeedBase.get() * (flying ? ModConfig.bootSpeedFlyingMultiplier.get() : 1.0f)
+                            * (swimming ? ModConfig.bootSpeedSwimmingMultiplier.get() : 1.0f)
+                            * (sneaking ? ModConfig.bootSpeedSneakingMultiplier.get() : 1.0f));
 
                     if (player.zza > 0f) {
                         player.moveRelative(speed, new Vec3(0, 0, 1));
                     } else if (player.zza < 0f) {
-                        player.moveRelative(-speed * 0.25f, new Vec3(0, 0, 1));
+                        player.moveRelative((float) (-speed * ModConfig.bootSpeedBackwardMultiplier.get()), new Vec3(0, 0, 1));
                     }
 
                     if (player.xxa != 0f) {
-                        player.moveRelative(speed * 0.45f * Math.signum(player.xxa), new Vec3(1, 0, 0));
+                        player.moveRelative((float) (speed * ModConfig.bootSpeedStrafingMultiplier.get() * Math.signum(player.xxa)), new Vec3(1, 0, 0));
                     }
                 }
 
                 if (player.isSprinting()) {
                     float f = player.getYRot() * ((float) Math.PI / 180F);
-                    player.setDeltaMovement(player.getDeltaMovement().add(-Mth.sin(f) * 0.2F, 0.0D, Mth.cos(f) * 0.2F));
+                    player.setDeltaMovement(player.getDeltaMovement().add(-Mth.sin(f) * ModConfig.bootSpeedSprintingMultiplier.get(), 0.0D, Mth.cos(f) * ModConfig.bootSpeedSprintingMultiplier.get()));
                 }
 
             } else {
