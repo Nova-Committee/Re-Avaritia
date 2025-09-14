@@ -34,7 +34,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
 
-        super(pMenu, pPlayerInventory, pTitle, SMITHING_LOCATION);
+        super(pMenu, pPlayerInventory, pTitle, Res.EXTREME_SMITHING_TEX);
         this.titleLabelX = 74;
         this.titleLabelY = 6;
     }
