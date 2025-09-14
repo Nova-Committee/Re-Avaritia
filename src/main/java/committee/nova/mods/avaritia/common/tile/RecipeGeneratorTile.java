@@ -24,6 +24,13 @@ import org.jetbrains.annotations.Nullable;
  * @author: cnlimiter
  */
 public class RecipeGeneratorTile extends BaseTileEntity {
+    public boolean shaped = true; // 有序/无序
+    public int tier = 1; // 等级 (1-4)
+    public int outType = 1; // 生成方式
+    public boolean selectMode = false; // 模式
+    public ItemStack brushItem = ItemStack.EMPTY; // 画刷物品
+    public int selectedSlot = -1; // 当前选择的槽位索引
+
     public final SimpleContainer containers = new SimpleContainer(82);
 
 
@@ -53,6 +60,12 @@ public class RecipeGeneratorTile extends BaseTileEntity {
     @Override
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
+        this.shaped = tag.getBoolean("shaped");
+        this.tier = tag.getInt("tier");
+        this.outType = tag.getInt("outType");
+        this.selectMode = tag.getBoolean("selectMode");
+        this.brushItem = ItemStack.of(tag.getCompound("brushItem"));
+        this.selectedSlot = tag.getInt("selectedSlot");
         this.containers.clearContent();
         ListTag listtag = tag.getList("Items", 10);
         for(int i = 0; i < listtag.size(); ++i) {
@@ -67,6 +80,12 @@ public class RecipeGeneratorTile extends BaseTileEntity {
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
+        tag.putBoolean("shaped", shaped);
+        tag.putInt("tier", tier);
+        tag.putInt("outType", outType);
+        tag.putBoolean("selectMode", selectMode);
+        tag.put("brushItem", brushItem.save(new CompoundTag()));
+        tag.putInt("selectedSlot", selectedSlot);
         ContainerHelper.saveAllItems(tag, this.containers.items);
     }
 }
