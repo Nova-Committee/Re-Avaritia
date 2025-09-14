@@ -29,6 +29,14 @@ public class AvaritiaConfigScreen extends Screen {
     private Button resetButton;
     private Button backButton;
 
+    // 滚动条变量
+    private boolean isDraggingScrollbar = false;
+    private int scrollbarX;
+    private int scrollbarY;
+    private int scrollbarHeight;
+    private int scrollbarHandleHeight;
+    private int maxScrollOffset;
+
     public AvaritiaConfigScreen(Screen parent) {
         super(Component.translatable("title.avaritia.config.title"));
         this.parent = parent;
@@ -378,12 +386,20 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         if (configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
-            int scrollBarHeight = (height - START_Y - 40) * (height - START_Y - 40) / (configEntries.size() * ENTRY_HEIGHT);
-            scrollBarHeight = Math.max(20, scrollBarHeight);
-            int scrollBarY = START_Y + (scrollOffset * (height - START_Y - 40 - scrollBarHeight)) / (configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-            guiGraphics.fill(width - 8, scrollBarY, width - 4, scrollBarY + scrollBarHeight, 0x88888888);
-        }
+            // 计算滚动条参数
+            maxScrollOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
+            int visibleHeight = height - START_Y - 40;
+            scrollbarHeight = visibleHeight;
+            scrollbarHandleHeight = Math.max(20, visibleHeight * visibleHeight / (configEntries.size() * ENTRY_HEIGHT));
+            int scrollBarYOffset = (int) ((double) scrollOffset / maxScrollOffset * (visibleHeight - scrollbarHandleHeight));
+            scrollbarY = START_Y + scrollBarYOffset;
+            scrollbarX = width - 8;
 
+            // 绘制滚动条背景
+            guiGraphics.fill(scrollbarX, START_Y, scrollbarX + 4, START_Y + scrollbarHeight, 0x88888888);
+            // 绘制滚动条手柄
+            guiGraphics.fill(scrollbarX, scrollbarY, scrollbarX + 4, scrollbarY + scrollbarHandleHeight, 0xFFAAAAAA);
+        }
 
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         backButton.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -395,6 +411,52 @@ public class AvaritiaConfigScreen extends Screen {
         scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset - delta * 20));
         init();
         return true;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
+            // 检查是否点击了滚动条手柄
+            if (mouseX >= scrollbarX && mouseX <= scrollbarX + 4 &&
+                    mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarHandleHeight) {
+                isDraggingScrollbar = true;
+                return true;
+            }
+            // 检查是否点击了滚动条背景
+            else if (mouseX >= scrollbarX && mouseX <= scrollbarX + 4 &&
+                    mouseY >= START_Y && mouseY <= START_Y + scrollbarHeight) {
+                // 点击滚动条背景时，跳转到该位置
+                int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
+                double clickPosition = (mouseY - START_Y) / scrollbarHeight;
+                scrollOffset = (int) (clickPosition * maxOffset);
+                scrollOffset = Math.max(0, Math.min(maxOffset, scrollOffset));
+                init();
+                isDraggingScrollbar = true;
+                return true;
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (isDraggingScrollbar && configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
+            int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
+            double positionRatio = (mouseY - START_Y - (double) scrollbarHandleHeight / 2) / (scrollbarHeight - scrollbarHandleHeight);
+            scrollOffset = (int) (positionRatio * maxOffset);
+            scrollOffset = Math.max(0, Math.min(maxOffset, scrollOffset));
+            init();
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            isDraggingScrollbar = false;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -496,8 +558,10 @@ public class AvaritiaConfigScreen extends Screen {
         }
     }
 
+
+
     private static class IntConfigEntry extends ConfigEntry<Integer> {
-        private EditBox editBox;
+        private RangedEditBox editBox;
         private final int min;
         private final int max;
 
@@ -510,14 +574,14 @@ public class AvaritiaConfigScreen extends Screen {
 
         @Override
         void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
-            editBox = new EditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty());
+            editBox = new RangedEditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty(), min, max, true);
             editBox.setMaxLength(10);
             editBox.setValue(String.valueOf(currentValue));
             editBox.setFilter(text -> {
                 if (text.isEmpty()) return true;
                 try {
-                    int val = Integer.parseInt(text);
-                    return val >= min && val <= max;
+                    Integer.parseInt(text);
+                    return true;
                 } catch (NumberFormatException e) {
                     return false;
                 }
@@ -552,7 +616,7 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
     private static class DoubleConfigEntry extends ConfigEntry<Double> {
-        private EditBox editBox;
+        private RangedEditBox editBox;
         private final double min;
         private final double max;
 
@@ -565,15 +629,15 @@ public class AvaritiaConfigScreen extends Screen {
 
         @Override
         void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
-            editBox = new EditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty());
+            editBox = new RangedEditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty(), min, max, false);
             editBox.setMaxLength(10);
             editBox.setValue(String.valueOf(currentValue));
             editBox.setFilter(text -> {
                 if (text.isEmpty()) return true;
                 if (text.contains(".") && text.indexOf(".") != text.lastIndexOf(".")) return false;
                 try {
-                    double val = Double.parseDouble(text);
-                    return val >= min && val <= max;
+                    Double.parseDouble(text);
+                    return true;
                 } catch (NumberFormatException e) {
                     return false;
                 }
@@ -607,7 +671,7 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
     private static class LongConfigEntry extends ConfigEntry<Long> {
-        private EditBox editBox;
+        private RangedEditBox editBox;
         private final long min;
         private final long max;
 
@@ -620,14 +684,14 @@ public class AvaritiaConfigScreen extends Screen {
 
         @Override
         void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
-            editBox = new EditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty());
+            editBox = new RangedEditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty(), min, max, false);
             editBox.setMaxLength(15);
             editBox.setValue(String.valueOf(currentValue));
             editBox.setFilter(text -> {
                 if (text.isEmpty()) return true;
                 try {
-                    long val = Long.parseLong(text);
-                    return val >= min && val <= max;
+                    Long.parseLong(text);
+                    return true;
                 } catch (NumberFormatException e) {
                     return false;
                 }
@@ -656,6 +720,78 @@ public class AvaritiaConfigScreen extends Screen {
             if (editBox != null) {
                 currentValue = valueSupplier.get();
                 editBox.setValue(String.valueOf(currentValue));
+            }
+        }
+    }
+
+
+    private static class RangedEditBox extends EditBox {
+        private final double min;
+        private final double max;
+        private final boolean isInteger;
+        private String lastValue = "";
+
+        public RangedEditBox(Font font, int x, int y, int width, int height, Component component, double min, double max, boolean isInteger) {
+            super(font, x, y, width, height, component);
+            this.min = min;
+            this.max = max;
+            this.isInteger = isInteger;
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+
+            String currentValue = getValue();
+            if (!currentValue.equals(lastValue)) {
+                lastValue = currentValue;
+            }
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            boolean result = super.keyPressed(keyCode, scanCode, modifiers);
+
+            if (keyCode == 257 || keyCode == 335) {
+                validateAndCorrectValue();
+            }
+            return result;
+        }
+
+        @Override
+        public void setFocused(boolean focused) {
+            if (!focused && this.isFocused()) {
+                validateAndCorrectValue();
+            }
+            super.setFocused(focused);
+        }
+
+        private void validateAndCorrectValue() {
+            String text = getValue();
+            if (!text.isEmpty()) {
+                try {
+                    if (isInteger) {
+                        long val = Long.parseLong(text);
+                        if (val > max) {
+                            setValue(String.valueOf((long)max));
+                            moveCursorTo(0);
+                        } else if (val < min) {
+                            setValue(String.valueOf((long)min));
+                            moveCursorTo(0);
+                        }
+                    } else {
+                        double val = Double.parseDouble(text);
+                        if (val > max) {
+                            setValue(String.valueOf(max));
+                            moveCursorTo(0);
+                        } else if (val < min) {
+                            setValue(String.valueOf(min));
+                            moveCursorTo(0);
+                        }
+                    }
+                } catch (NumberFormatException ignored) {
+
+                }
             }
         }
     }
