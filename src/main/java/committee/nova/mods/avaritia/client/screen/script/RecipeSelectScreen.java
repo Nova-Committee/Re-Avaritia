@@ -1,8 +1,5 @@
-package committee.nova.mods.avaritia.client.screen;
+package committee.nova.mods.avaritia.client.screen.script;
 
-import com.google.common.collect.Lists;
-import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.api.client.screen.component.OperationButton;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.api.utils.StringUtils;
