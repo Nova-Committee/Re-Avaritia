@@ -62,7 +62,6 @@ public class ModBlocks {
     public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> infinity_chest2 = itemBlock("infinity_chest2", InfinityChestBlock2::new, ModRarities.LEGEND);
     public static RegistryObject<Block> tesseract = itemBlock("tesseract", TesseractBlock::new, ModRarities.LEGEND);
-//    public static RegistryObject<Block> infinity_clock.json = itemBlock("infinity_clock.json", InfinityClockBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
             () -> new BaseBlock(BlockBehaviour.Properties.of()

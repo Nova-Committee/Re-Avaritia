@@ -550,7 +550,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
                 Ingredient.of(Items.TOTEM_OF_UNDYING),
-                CompoundIngredient.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), Ingredient.of(Items.BEACON), Ingredient.of(ModItems.enhancement_core.get())),
+                CompoundIngredient.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(Items.BEACON)),
                 RecipeCategory.MISC,
                 ModItems.infinity_totem.get())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -559,7 +559,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.CAKE),
-                        CompoundIngredient.of(Ingredient.of(Items.GOLDEN_CARROT), Ingredient.of(Items.DRAGON_EGG), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(Items.GOLDEN_CARROT), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(Items.DRAGON_EGG)),
                         RecipeCategory.MISC,
                         ModBlocks.endless_cake.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -568,7 +568,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.DIAMOND_HORSE_ARMOR),
-                        CompoundIngredient.of(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.SWIFTNESS)), Ingredient.of(Items.BLUE_ICE), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.SWIFTNESS)), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(Items.BLUE_ICE)),
                         RecipeCategory.MISC,
                         ModItems.neutron_horse_armor.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -577,7 +577,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.BUCKET),
-                        CompoundIngredient.of(Ingredient.of(Items.LAVA_BUCKET), Ingredient.of(Items.POWDER_SNOW_BUCKET), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(Items.LAVA_BUCKET), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(Items.POWDER_SNOW_BUCKET)),
                         RecipeCategory.MISC,
                         ModItems.infinity_bucket.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -604,7 +604,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.ELYTRA),
-                        CompoundIngredient.of(Ingredient.of(ModBlocks.crystal_matrix.get()), Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(ModBlocks.crystal_matrix.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.neutron.get())),
                         RecipeCategory.MISC,
                         ModItems.infinity_elytra.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -613,7 +613,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(ModBlocks.compressed_chest.get()),
-                        CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModBlocks.infinity.get()), Ingredient.of(ModItems.enhancement_core.get())),
+                        CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get()),Ingredient.of(ModBlocks.infinity.get())),
                         RecipeCategory.MISC,
                         ModBlocks.infinity_chest.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))

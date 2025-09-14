@@ -34,6 +34,13 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue endlessItemEntitySpeed;
     public static final ForgeConfigSpec.DoubleValue endlessItemEntityRange;
     public static final ForgeConfigSpec.DoubleValue infinityElytraFlyingSpeed;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedBase;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedFlyingMultiplier;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedSwimmingMultiplier;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedSneakingMultiplier;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedBackwardMultiplier;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedStrafingMultiplier;
+    public static final ForgeConfigSpec.DoubleValue bootSpeedSprintingMultiplier;
 
 
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
@@ -102,6 +109,13 @@ public class ModConfig {
         endlessItemEntitySpeed = buildDouble(common, "config.avaritia.endless_item_entity_speed", 3,1,50, "config.avaritia.endless_item_entity_speed.tooltip");
         endlessItemEntityRange = buildDouble(common, "config.avaritia.endless_item_entity_range", 1000,1,10000, "config.avaritia.endless_item_entity_range.tooltip");
         infinityElytraFlyingSpeed = buildDouble(common, "config.avaritia.infinity_elytra_flying_speed", 1.5,1,10, "config.avaritia.infinity_elytra_flying_speed.tooltip");
+        bootSpeedBase = buildDouble(common, "config.avaritia.boot_speed_base", 0.1, 0.01, 1.0, "config.avaritia.boot_speed_base.tooltip");
+        bootSpeedFlyingMultiplier = buildDouble(common, "config.avaritia.boot_speed_flying_multiplier", 1.1, 0.1, 5.0, "config.avaritia.boot_speed_flying_multiplier.tooltip");
+        bootSpeedSwimmingMultiplier = buildDouble(common, "config.avaritia.boot_speed_swimming_multiplier", 1.2, 0.1, 5.0, "config.avaritia.boot_speed_swimming_multiplier.tooltip");
+        bootSpeedSneakingMultiplier = buildDouble(common, "config.avaritia.boot_speed_sneaking_multiplier", 0.1, 0.01, 1.0, "config.avaritia.boot_speed_sneaking_multiplier");
+        bootSpeedBackwardMultiplier = buildDouble(common, "config.avaritia.boot_speed_backward_multiplier", 0.25, 0.01, 1.0, "config.avaritia.boot_speed_backward_multiplier.tooltip");
+        bootSpeedStrafingMultiplier = buildDouble(common, "config.avaritia.boot_speed_strafing_multiplier", 0.45, 0.01, 1.0, "config.avaritia.boot_speed_strafing_multiplier");
+        bootSpeedSprintingMultiplier = buildDouble(common, "config.avaritia.boot_speed_sprinting_multiplier", 0.2, 0.01, 1.0, "config.avaritia.boot_speed_sprinting_multiplier");
         common.pop();
         COMMON = common.build();
     }
