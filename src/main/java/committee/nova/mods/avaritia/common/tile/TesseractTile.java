@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
+import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.ChannelAction;
 import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
@@ -124,7 +125,7 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return CONTAINER_NAME;
+        return Localizable.of("block.avaritia.infinity_chest").build();
     }
 
     @Override

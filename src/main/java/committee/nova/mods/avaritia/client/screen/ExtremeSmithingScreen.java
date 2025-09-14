@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.common.item.resources.UpgradeSmithingTemplateItem;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +25,6 @@ import java.util.Optional;
  * @Description:
  */
 public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu>  {
-    private static final ResourceLocation SMITHING_LOCATION = Const.rl("textures/gui/extreme_smithing_table_gui.png");
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
     private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
@@ -33,6 +33,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = new ResourceLocation("item/empty_slot_smithing_template_netherite_upgrade");
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
+
         super(pMenu, pPlayerInventory, pTitle, SMITHING_LOCATION);
         this.titleLabelX = 74;
         this.titleLabelY = 6;
@@ -47,7 +48,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     @Override
     protected void renderErrorIcon(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
         if (this.hasRecipeError()) {
-            pGuiGraphics.blit(SMITHING_LOCATION, pX + 65, pY + 46, this.imageWidth, 0, 28, 21);
+            pGuiGraphics.blit(Res.EXTREME_SMITHING_TEX, pX + 65, pY + 46, this.imageWidth, 0, 28, 21);
         }
     }
 

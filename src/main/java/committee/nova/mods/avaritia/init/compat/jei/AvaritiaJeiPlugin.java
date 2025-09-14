@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.screen.CompressorScreen;
+import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
@@ -117,7 +117,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(CompressorScreen.class, 84, 35, 31, 12, CompressorCategory.RECIPE_TYPE);
+        registration.addRecipeClickArea(NeutronCompressorScreen.class, 84, 35, 31, 12, CompressorCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(SculkCraftScreen.class, 90, 40, 22, 12, SculkCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(NetherCraftScreen.class, 105, 58, 22, 12, NetherCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(EndCraftScreen.class, 135, 76, 22, 12, EndCraftingTableCategory.RECIPE_TYPE);

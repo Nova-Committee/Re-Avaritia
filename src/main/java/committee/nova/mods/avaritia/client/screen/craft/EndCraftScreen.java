@@ -28,9 +28,4 @@ public class EndCraftScreen extends BaseContainerScreen<TierCraftMenu> {
 
         stack.drawString(font, title, 27, 148, 4210752, false);
     }
-
-    @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
-
-    }
 }

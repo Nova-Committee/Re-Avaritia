@@ -52,7 +52,7 @@ public class _NeutronRingScreen1 extends BaseContainerScreen<_NeutronRingMenu> {
     }
 
     @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         pGuiGraphics.blit(MULTI_PAGE_TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.inventoryRows * 18 + 35);
         pGuiGraphics.blit(MULTI_PAGE_TEXTURE, this.leftPos, this.topPos + this.inventoryRows * 18 + 35, 0, 143, this.imageWidth, 97);
         int index = this.menu.getSwapIndex();

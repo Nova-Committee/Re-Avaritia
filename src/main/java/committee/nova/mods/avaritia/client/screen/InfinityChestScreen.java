@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
@@ -32,13 +33,12 @@ import java.util.stream.Stream;
  */
 public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
     private static final KeyMapping[] SORT_KEYS = new KeyMapping[]{AvaritiaForgeClient.SORT_0, AvaritiaForgeClient.SORT_1, AvaritiaForgeClient.SORT_2, AvaritiaForgeClient.SORT_3, AvaritiaForgeClient.SORT_4, AvaritiaForgeClient.SORT_5, AvaritiaForgeClient.SORT_6, AvaritiaForgeClient.SORT_7, AvaritiaForgeClient.SORT_8, AvaritiaForgeClient.SORT_9};
-    private static final ResourceLocation MULTI_PAGE_TEXTURE = Const.rl("textures/gui/infinity_chest.png");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
 
     private final int inventoryRows;
 
     public InfinityChestScreen(InfinityChestMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, MULTI_PAGE_TEXTURE);
+        super(container, inventory, title, Res.INFINITY_CHEST_TEX);
         this.inventoryRows = ModConfig.inventoryRows.get();
         this.imageHeight = 132 + this.inventoryRows * 18;
         this.inventoryLabelY = this.imageHeight - 93;
@@ -51,16 +51,16 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     protected void subInit() {
-        this.addRenderableWidget(new ImageButton(this.leftPos + 121, this.topPos + 6, 11, 11, 187, 22, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 10))));
-        this.addRenderableWidget(new ImageButton(this.leftPos + 134, this.topPos + 6, 7, 11, 183, 0, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 1))));
-        this.addRenderableWidget(new ImageButton(this.leftPos + 149, this.topPos + 6, 7, 11, 176, 0, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 1))));
-        this.addRenderableWidget(new ImageButton(this.leftPos + 158, this.topPos + 6, 11, 11, 176, 22, 11, MULTI_PAGE_TEXTURE, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 10))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 121, this.topPos + 6, 11, 11, 187, 22, 11, Res.INFINITY_CHEST_TEX, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 10))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 134, this.topPos + 6, 7, 11, 183, 0, 11, Res.INFINITY_CHEST_TEX, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() - 1))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 149, this.topPos + 6, 7, 11, 176, 0, 11, Res.INFINITY_CHEST_TEX, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 1))));
+        this.addRenderableWidget(new ImageButton(this.leftPos + 158, this.topPos + 6, 11, 11, 176, 22, 11, Res.INFINITY_CHEST_TEX, (button) -> NetworkHandler.CHANNEL.sendToServer(new C2SChangePagePack((this.menu).getCurrentPage() + 10))));
     }
 
     @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
-        pGuiGraphics.blit(MULTI_PAGE_TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.inventoryRows * 18 + 35);
-        pGuiGraphics.blit(MULTI_PAGE_TEXTURE, this.leftPos, this.topPos + this.inventoryRows * 18 + 35, 0, 143, this.imageWidth, 97);
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+        pGuiGraphics.blit(Res.INFINITY_CHEST_TEX, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.inventoryRows * 18 + 35);
+        pGuiGraphics.blit(Res.INFINITY_CHEST_TEX, this.leftPos, this.topPos + this.inventoryRows * 18 + 35, 0, 143, this.imageWidth, 97);
         int index = this.menu.getSwapIndex();
         Slot slot = index >= 0 && index < this.menu.slots.size() ? this.menu.getSlot(index) : null;
         if (slot != null && Objects.equals(slot.container, this.menu.getChestContainer())) {

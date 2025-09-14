@@ -12,6 +12,7 @@ import committee.nova.mods.avaritia.common.block.collector.NeutronCollectorBlock
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
+import committee.nova.mods.avaritia.common.block.craft.RecipeGeneratorBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
@@ -61,6 +62,7 @@ public class ModBlocks {
     public static RegistryObject<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> infinity_chest2 = itemBlock("infinity_chest2", InfinityChestBlock2::new, ModRarities.LEGEND);
+    public static RegistryObject<Block> recipe_generator = itemBlock("recipe_generator_table", RecipeGeneratorBlock::new);
     public static RegistryObject<Block> tesseract = itemBlock("tesseract", TesseractBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
@@ -134,16 +136,24 @@ public class ModBlocks {
     }
 
     public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem) {
-        return itemBlock(name, block, hasItem, new Item.Properties());
+        return itemBlock(name, block, hasItem, true, new Item.Properties());
+    }
+
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist) {
+        return itemBlock(name, block, hasItem, exist, new Item.Properties());
     }
 
     public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, Rarity rarity) {
-        return itemBlock(name, block, true, new Item.Properties().rarity(rarity));
+        return itemBlock(name, block, true, true, new Item.Properties().rarity(rarity));
     }
 
-    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block,  boolean hasItem, Item.Properties properties) {
+        return itemBlock(name, block, hasItem, true, properties);
+    }
+
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist, Item.Properties properties) {
         var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties));
+        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties), exist);
         return reg;
     }
 

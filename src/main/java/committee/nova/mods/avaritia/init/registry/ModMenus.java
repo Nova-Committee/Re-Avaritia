@@ -39,7 +39,7 @@ public class ModMenus {
         MenuScreens.register(end_crafting_tile_table.get(), EndCraftScreen::new);
         MenuScreens.register(extreme_crafting_table.get(), ExtremeCraftScreen::new);
         MenuScreens.register(neutron_collector.get(), NeutronCollectorScreen::new);
-        MenuScreens.register(compressor.get(), CompressorScreen::new);
+        MenuScreens.register(compressor.get(), NeutronCompressorScreen::new);
         MenuScreens.register(GENERIC_9x27.get(), CompressedChestScreen::new);
         MenuScreens.register(neutron_ring.get(), NeutronRingScreen::new);
         MenuScreens.register(infinity_chest.get(), InfinityChestScreen::new);
@@ -49,6 +49,7 @@ public class ModMenus {
         MenuScreens.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
         MenuScreens.register(infinity_clock_menu.get(), InfinityClockScreen::new);
         MenuScreens.register(infinity_chest2.get(), InfiniteChestScreen2::new);
+        MenuScreens.register(recipe_generator.get(), RecipeGeneratorScreen::new);
     }
 
     public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
@@ -71,5 +72,6 @@ public class ModMenus {
     public static RegistryObject<MenuType<InfinityClockMenu>> infinity_clock_menu =
             menu("infinity_clock_menu", () -> IForgeMenuType.create((id, inv, buf) -> new InfinityClockMenu(id, inv)));
     public static RegistryObject<MenuType<InfiniteChestMenu2>> infinity_chest2 = menu("infinity_chest2", () -> IForgeMenuType.create(InfiniteChestMenu2::fromNetwork));
+    public static RegistryObject<MenuType<RecipeGeneratorMenu>> recipe_generator = menu("recipe_generator", () -> IForgeMenuType.create(RecipeGeneratorMenu::fromNetwork));
 
 }

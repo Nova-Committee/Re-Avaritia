@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
@@ -8,7 +8,6 @@ import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +21,9 @@ import java.util.List;
  * Date: 2022/4/2 18:16
  * Version: 1.0
  */
-public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(Const.MOD_ID, "textures/gui/compressor.png");
-
-    public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, BACKGROUND);
+public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu> {
+    public NeutronCompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
+        super(container, inventory, title, Res.NEUTRON_COMPRESSOR_TEX);
     }
 
     @Override
@@ -61,19 +58,19 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
 
 
     @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
 
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
                 int i2 = this.getMaterialBarScaled(16);
-                pGuiGraphics.blit(BACKGROUND, x + 63, y + 35, 176, 18, i2 + 1, 16);
+                pGuiGraphics.blit(Res.NEUTRON_COMPRESSOR_TEX, x + 63, y + 35, 176, 18, i2 + 1, 16);
             }
 
             if (this.getProgress() > 0 && this.getMaterialCount() >= this.getMaterialsRequired()) {
                 int i2 = this.getProgressBarScaled(22);
-                pGuiGraphics.blit(BACKGROUND, x + 89, y + 35, 176, 0, i2 + 1, 16);
+                pGuiGraphics.blit(Res.NEUTRON_COMPRESSOR_TEX, x + 89, y + 35, 176, 0, i2 + 1, 16);
             }
         }
     }
@@ -93,19 +90,6 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         }
 
         return Component.literal("");
-    }
-
-    private NeutronCompressorTile getTileEntity() {
-        var level = this.getMinecraft().level;
-
-        if (level != null) {
-            var tile = level.getBlockEntity(this.getMenu().getBlockPos());
-
-            if (tile instanceof NeutronCompressorTile compressor)
-                return compressor;
-        }
-
-        return null;
     }
 
     public boolean isEjecting() {

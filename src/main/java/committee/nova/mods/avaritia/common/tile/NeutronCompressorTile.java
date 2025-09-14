@@ -170,7 +170,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("container." + tier.name).build();
+        return Localizable.of("block.avaritia." + tier.name).build();
     }
 
     @Nullable
