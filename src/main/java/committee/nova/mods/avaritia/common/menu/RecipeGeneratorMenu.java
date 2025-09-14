@@ -28,7 +28,7 @@ public class RecipeGeneratorMenu extends BaseTileMenu<RecipeGeneratorTile> {
         for(int row = 0; row < 9; ++row) {
             for(int col = 0; col < 9; ++col) {
                 // 在GUI中的位置: 8 + col*18, 18 + row*18
-                this.addSlot(new Slot(getTileEntity().containers, row * 9 + col, 8 + col * 18, 18 + row * 18));
+                this.addSlot(new Slot(getTileEntity().containers, row * 9 + col, 87 + col * 18, 18 + row * 18));
             }
         }
 

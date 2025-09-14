@@ -1,54 +1,38 @@
-package committee.nova.mods.avaritia.client.screen;
+package committee.nova.mods.avaritia.client.screen.script;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.client.screen.ItemSelectScreen;
-import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
-import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.menu.RecipeGeneratorMenu;
-import committee.nova.mods.avaritia.util.CrtUtils;
-import committee.nova.mods.avaritia.util.KubeJsUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author: cnlimiter
  */
 public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMenu> {
-    // 配方类型枚举
-    public enum RecipeType {
-        VALLIA_SHAPED,      // 原版有序工作台
-        VALLIA_SHAPELESS,   // 原版无序工作台
-        VALLIA_SMITHING,    // 原版锻造台
-        VALLIA_SMELTING,    // 原版熔炉
-        VALLIA_BLASTING,    // 原版高炉
-        AVARITIA_SHAPED,    // 无尽有序工作台
-        AVARITIA_SHAPELESS, // 无尽无序工作台
-        AVARITIA_SMITHING,  // 无尽锻造台
-        AVARITIA_COMPRESSOR;// 无尽压缩机
-
-        RecipeType() {
-        }
-    }
-
+    // UI状态
     private RecipeType type = RecipeType.VALLIA_SHAPED; // 配方类型
     private int tier = 1; // 等级 (1-4)
     private int outType = 1; // 生成方式
@@ -56,46 +40,80 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     private ItemStack brushItem = ItemStack.EMPTY; // 画刷物品
     private int selectedSlot = -1; // 当前选择的槽位索引
 
+    // 增强功能相关
+    private List<ScriptFile> scriptFiles = new ArrayList<>();
+    private ScriptFile selectedFile = null;
+    private ScriptEntry selectedScript = null;
+    private List<ScriptEntry> currentScripts = new ArrayList<>();
+    private String currentScriptName = "";
+    private String currentScriptContent = "";
+
+    // 滚动相关
+    private int fileScrollOffset = 0;
+    private int scriptScrollOffset = 0;
+
+    // 按钮和组件
     private Button brushButton; // 画刷按钮
     private CycleButton<String> tierButton; // 等级按钮
     private CycleButton<String> typeButton; // 类型按钮
+    private Button saveButton; // 保存按钮
+    private Button applyButton; // 应用按钮
+
+    // UI布局参数
+    private static final int FILE_LIST_WIDTH = 40;
+    private static final int SCRIPT_LIST_WIDTH = 40;
+    private static final int EDITOR_WIDTH = 220;
+    private static final int EDITOR_HEIGHT = 215;
+    private static final int LIST_ITEM_HEIGHT = 15;
+
+    private int bgX;
+    private int bgY;
+    private int scriptStartX;
+    private int editorStartX;
 
     public RecipeGeneratorScreen(RecipeGeneratorMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, Res.RECIPE_GENERATOR_TEX, 223, 234);
+        super(container, inventory, title, Res.RECIPE_GENERATOR_TEX, 300, 215, 384, 384);
+        this.loadScriptFiles();
     }
-
 
     @Override
     protected void subInit() {
-        super.subInit();
-        int centerX = (this.width - this.imageWidth) / 2;
-        int centerY = (this.height - this.imageHeight) / 2;
-
+        this.updateLayout();
         // 添加选择模式切换按钮
-        this.addRenderableWidget(createModeButton(centerX, centerY));
+        this.addRenderableWidget(createModeButton(bgX, bgY));
 
         // 添加类型选择按钮
-        this.typeButton = this.addRenderableWidget(createTypeButton(centerX, centerY));
+        this.typeButton = this.addRenderableWidget(createTypeButton(bgX, bgY));
 
         // 添加等级选择按钮
-        this.tierButton = this.addRenderableWidget(createTierButton(centerX, centerY));
+        this.tierButton = this.addRenderableWidget(createTierButton(bgX, bgY));
 
-        // 添加生成方式选择按钮
-        this.addRenderableWidget(createFormatButton(centerX, centerY));
+        // 添加格式选择按钮
+        this.addRenderableWidget(createFormatButton(bgX, bgY));
 
-        // 添加生成按钮
-        this.addRenderableWidget(createGenerateButton(centerX, centerY));
+        // 添加保存按钮（替代生成按钮）
+        this.saveButton = this.addRenderableWidget(createSaveButton(bgX, bgY));
+
+        // 添加应用按钮
+        this.applyButton = this.addRenderableWidget(createApplyButton(bgX, bgY));
 
         // 添加配方选择按钮
-        this.addRenderableWidget(createRecipeSelectButton(centerX, centerY));
+        this.addRenderableWidget(createRecipeSelectButton(bgX, bgY));
 
-        this.brushButton = this.addRenderableWidget(createBrushButton(centerX, centerY));
+        this.brushButton = this.addRenderableWidget(createBrushButton(bgX, bgY));
         updateButtonVisibility();
+    }
+
+    private void updateLayout() {
+        this.bgX = (this.width - this.imageWidth) / 2;
+        this.bgY = (this.height - this.imageHeight) / 2;
+        this.scriptStartX = this.bgX + FILE_LIST_WIDTH;
+        this.editorStartX = this.bgX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH;
     }
 
     // 创建模式切换按钮
     private Button createModeButton(int centerX, int centerY) {
-        return GuiUtils.newButton(centerX + 2, centerY + 185, 40, 15,
+        return GuiUtils.newButton(editorStartX + 2, centerY +  + 185, 40, 15,
                 Component.translatable(this.selectMode ? "gui.avaritia.recipe_generator.select" : "gui.avaritia.recipe_generator.brush"),
                 button -> {
                     this.selectMode = !this.selectMode;
@@ -119,7 +137,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                         RecipeType.AVARITIA_COMPRESSOR.name()
                 )
                 .withInitialValue(this.type.name())
-                .create(centerX + 42, centerY + 185, 40, 15,
+                .create(editorStartX + 42, centerY + 185, 40, 15,
                         Component.translatable("gui.avaritia.recipe_generator.type"),
                         (button, value) -> {
                             this.type = RecipeType.valueOf(value);
@@ -132,7 +150,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         return CycleButton.builder(Component::literal)
                 .withValues("1", "2", "3", "4")
                 .withInitialValue(String.valueOf(this.tier))
-                .create(centerX + 82, centerY + 185, 40, 15,
+                .create(editorStartX + 82, centerY + 185, 40, 15,
                         Component.translatable("gui.avaritia.recipe_generator.tier"),
                         (button, value) -> this.tier = Integer.parseInt(value));
     }
@@ -150,35 +168,35 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
                 })
                 .withValues("1", "2", "3")
                 .withInitialValue(String.valueOf(this.outType))
-                .create(centerX + 122, centerY + 185, 60, 15,
+                .create(editorStartX + 122, centerY + 185, 60, 15,
                         Component.translatable("gui.avaritia.recipe_generator.type"),
                         (button, value) -> this.outType = Integer.parseInt(value));
     }
 
-    // 创建生成按钮
-    private Button createGenerateButton(int centerX, int centerY) {
-        return GuiUtils.newButton(centerX + 182, centerY + 185, 40, 15,
-                Component.translatable("gui.avaritia.recipe_generator.generate"),
-                button -> {
-                    switch (this.outType) {
-                        case 1 -> generateKubeJSRecipe();
-                        case 2 -> generateZSRecipe();
-                        default -> {
-                        }
-                    }
-                });
+    // 创建保存按钮
+    private Button createSaveButton(int centerX, int centerY) {
+        return GuiUtils.newButton(editorStartX + 182, centerY + 170, 40, 15,
+                Component.translatable("gui.avaritia.save"),
+                button -> this.saveScript());
+    }
+
+    // 创建应用按钮
+    private Button createApplyButton(int centerX, int centerY) {
+        return GuiUtils.newButton(editorStartX + 182, centerY + 185, 40, 15,
+                Component.translatable("gui.avaritia.apply"),
+                button -> this.applyScript());
     }
 
     // 创建配方选择按钮
     private Button createRecipeSelectButton(int centerX, int centerY) {
-        return GuiUtils.newButton(centerX + 202, centerY + 10, 20, 20,
+        return GuiUtils.newButton(editorStartX + 202, centerY + 10, 20, 20,
                 Component.translatable("gui.avaritia.recipe_generator.select_recipe"),
                 button -> this.openRecipeSelectScreen());
     }
 
     // 创建画刷按钮
     private Button createBrushButton(int centerX, int centerY) {
-        return GuiUtils.newButton(centerX + 202, centerY + 30, 20, 20,
+        return GuiUtils.newButton(editorStartX + 202, centerY + 30, 20, 20,
                 brushItem.getDisplayName(),
                 button -> this.minecraft.setScreen(new ItemSelectScreen(
                         this,
@@ -196,34 +214,189 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     }
 
     @Override
-    protected void renderLabels(GuiGraphics pGuiGraphics, int pX, int pY) {
-        pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+    protected void renderLabels(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
         if (!this.selectMode)
             pGuiGraphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.brush"), 180, 36, 4210752, false);
     }
 
     @Override
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+    protected void renderBgs(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+
+        // 绘制背景
+        //graphics.fill(bgX, bgY, bgX + 500, bgY + 250, 0xFFC6C6C6);
+        //graphics.fill(bgX + 1, bgY + 1, bgX + 499, bgY + 249, 0xFFAAAAAA);
+
+        // 绘制分割线
+        //graphics.fill(bgX + FILE_LIST_WIDTH, bgY, bgX + FILE_LIST_WIDTH + 1, bgY + 250, 0xFF000000);
+        //graphics.fill(bgX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH, bgY, bgX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + 1, bgY + 250, 0xFF000000);
+        //graphics.fill(bgX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + EDITOR_WIDTH, bgY, bgX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + EDITOR_WIDTH + 1, bgY + 250, 0xFF000000);
+
+        // 绘制各区域标题
+        graphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.files"), bgX + 2, bgY + 5, 0x404040, false);
+        graphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.scripts"), this.scriptStartX + 2, bgY + 5, 0x404040, false);
+        graphics.drawString(this.font, Component.translatable("gui.avaritia.recipe_generator.editor"), this.editorStartX + 2, bgY + 5, 0x404040, false);
+
+        // 渲染文件列表
+        renderFileList(graphics, bgX, bgY, mouseX, mouseY);
+
+        // 渲染脚本列表
+        renderScriptList(graphics, bgX, bgY, mouseX, mouseY);
+
+        // 渲染编辑器
+        renderEditor(graphics, bgX, bgY, mouseX, mouseY);
+
         // 渲染槽位选择指示器
-        renderSlotSelectionIndicator(pGuiGraphics);
+        renderSlotSelectionIndicator(graphics);
+
         // 渲染不可用槽位的遮罩
-        renderDisabledSlotsOverlay(pGuiGraphics);
+        renderDisabledSlotsOverlay(graphics);
+    }
+
+    // 渲染文件列表
+    private void renderFileList(GuiGraphics graphics, int baseX, int baseY, int mouseX, int mouseY) {
+        int listStartY = baseY + 20;
+        int maxVisibleItems = (230) / LIST_ITEM_HEIGHT;
+
+        for (int i = 0; i < Math.min(maxVisibleItems, this.scriptFiles.size() - this.fileScrollOffset); i++) {
+            int index = this.fileScrollOffset + i;
+            if (index < this.scriptFiles.size()) {
+                ScriptFile file = this.scriptFiles.get(index);
+                int itemY = listStartY + i * LIST_ITEM_HEIGHT;
+
+                // 绘制背景
+                int bgColor = (file == this.selectedFile) ? 0xFF7CAB7C : 0xFF707070;
+                if (mouseX >= baseX && mouseX < baseX + FILE_LIST_WIDTH &&
+                        mouseY >= itemY && mouseY < itemY + LIST_ITEM_HEIGHT) {
+                    bgColor = 0xFFAAAAAA;
+                }
+                graphics.fill(baseX + 2, itemY, baseX + FILE_LIST_WIDTH - 2, itemY + LIST_ITEM_HEIGHT, bgColor);
+
+                // 绘制文件名
+                String fileName = file.getFile().getName();
+                if (fileName.length() > 12) {
+                    fileName = fileName.substring(0, 9) + "...";
+                }
+                graphics.drawString(this.font, fileName, baseX + 5, itemY + 3, 0xFFFFFF, false);
+            }
+        }
+    }
+
+    // 渲染脚本列表
+    private void renderScriptList(GuiGraphics graphics, int baseX, int baseY, int mouseX, int mouseY) {
+        int listStartX = baseX + FILE_LIST_WIDTH + 1;
+        int listStartY = baseY + 20;
+        int maxVisibleItems = (230) / LIST_ITEM_HEIGHT;
+
+        for (int i = 0; i < Math.min(maxVisibleItems, this.currentScripts.size() - this.scriptScrollOffset); i++) {
+            int index = this.scriptScrollOffset + i;
+            if (index < this.currentScripts.size()) {
+                ScriptEntry script = this.currentScripts.get(index);
+                int itemY = listStartY + i * LIST_ITEM_HEIGHT;
+
+                // 绘制背景
+                int bgColor = (script == this.selectedScript) ? 0xFF7CAB7C : 0xFF707070;
+                if (mouseX >= listStartX && mouseX < listStartX + SCRIPT_LIST_WIDTH &&
+                        mouseY >= itemY && mouseY < itemY + LIST_ITEM_HEIGHT) {
+                    bgColor = 0xFFAAAAAA;
+                }
+                graphics.fill(listStartX + 2, itemY, listStartX + SCRIPT_LIST_WIDTH - 2, itemY + LIST_ITEM_HEIGHT, bgColor);
+
+                // 绘制脚本名
+                String scriptName = script.getName();
+                if (scriptName.length() > 12) {
+                    scriptName = scriptName.substring(0, 9) + "...";
+                }
+                graphics.drawString(this.font, scriptName, listStartX + 5, itemY + 3, 0xFFFFFF, false);
+            }
+        }
+    }
+
+    // 渲染编辑器
+    private void renderEditor(GuiGraphics graphics, int baseX, int baseY, int mouseX, int mouseY) {
+        int editorStartX = baseX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + 1;
+        int editorStartY = baseY + 20;
+
+        // 如果有选中的脚本，显示其内容
+        if (this.selectedScript != null) {
+            // 显示脚本名称
+            graphics.drawString(this.font, this.selectedScript.getName(), editorStartX + 5, editorStartY + 5, 0xFFFFFF, false);
+
+            // 显示配方类型
+            graphics.drawString(this.font,
+                    Component.translatable("gui.avaritia.recipe_generator.recipe_type", this.selectedScript.getRecipeType().name()),
+                    editorStartX + 5, editorStartY + 20, 0xFFFFFF, false);
+
+            // 显示等级（如果适用）
+            if (isAvaritiaTableRecipe(this.selectedScript.getRecipeType())) {
+                graphics.drawString(this.font,
+                        Component.translatable("gui.avaritia.recipe_generator.tier", this.selectedScript.getTier()),
+                        editorStartX + 5, editorStartY + 35, 0xFFFFFF, false);
+            }
+
+            // 显示配方预览
+            if (this.selectedScript.getRecipe() != null) {
+                renderRecipePreview(graphics, editorStartX + 5, editorStartY + 50, this.selectedScript.getRecipe());
+            }
+        } else {
+            // 显示提示信息
+            graphics.drawCenteredString(this.font,
+                    Component.translatable("gui.avaritia.recipe_generator.select_script"),
+                    editorStartX + EDITOR_WIDTH / 2, editorStartY + EDITOR_HEIGHT / 2, 0xAAAAAA);
+        }
+    }
+
+    // 渲染配方预览
+    private void renderRecipePreview(GuiGraphics graphics, int startX, int startY, Recipe<?> recipe) {
+        // 绘制输出物品
+        ItemStack result = recipe.getResultItem(Minecraft.getInstance().level.registryAccess());
+        if (!result.isEmpty()) {
+            graphics.renderItem(result, startX, startY);
+            graphics.drawString(this.font, result.getDisplayName(), startX + 20, startY + 5, 0xFFFFFF, false);
+        }
+
+        // 绘制配方网格预览
+        renderRecipeGridPreview(graphics, startX, startY + 25, recipe);
+    }
+
+    // 渲染配方网格预览
+    private void renderRecipeGridPreview(GuiGraphics graphics, int startX, int startY, Recipe<?> recipe) {
+        int gridSize = 3; // 默认3x3网格
+
+        if (recipe instanceof ShapedTableCraftingRecipe) {
+            gridSize = getGridSizeForTier(((ShapedTableCraftingRecipe) recipe).getTier());
+        } else if (recipe instanceof ShapelessTableCraftingRecipe) {
+            gridSize = getGridSizeForTier(((ShapelessTableCraftingRecipe) recipe).getTier());
+        }
+
+        // 绘制网格背景
+        for (int y = 0; y < gridSize; y++) {
+            for (int x = 0; x < gridSize; x++) {
+                int cellX = startX + x * 18;
+                int cellY = startY + y * 18;
+                graphics.fill(cellX, cellY, cellX + 16, cellY + 16, 0xFF555555);
+            }
+        }
+
+        // 填充配方内容（简化实现）
+        // 实际实现中需要根据具体配方类型绘制材料
     }
 
     // 渲染槽位选择指示器
     private void renderSlotSelectionIndicator(GuiGraphics graphics) {
         if (this.selectedSlot >= 0 && this.selectedSlot < 82) {
+            int baseX = (this.width - 500) / 2 + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + 1;
+            int baseY = (this.height - 250) / 2;
             int slotX, slotY;
             if (this.selectedSlot < 81) {
                 // 输入槽位
                 int row = this.selectedSlot / 9;
                 int col = this.selectedSlot % 9;
-                slotX = this.leftPos + 8 + col * 18 - 1;
-                slotY = this.topPos + 18 + row * 18 - 1;
+                slotX = baseX + 8 + col * 18 - 1;
+                slotY = baseY + 18 + row * 18 - 1;
             } else {
                 // 输出槽位
-                slotX = this.leftPos + 202 - 1;
-                slotY = this.topPos + 89 - 1;
+                slotX = baseX + 202 - 1;
+                slotY = baseY + 89 - 1;
             }
             // 绘制选择指示器 (绿色边框)
             graphics.fill(slotX, slotY, slotX + 18, slotY + 1, 0xFF00FF00);
@@ -235,14 +408,17 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
 
     // 渲染不可用槽位的遮罩
     private void renderDisabledSlotsOverlay(GuiGraphics graphics) {
+        int baseX = this.editorStartX - 1;
+        int baseY = this.bgY;
+
         Set<Integer> availableSlots = this.getAvailableSlotsForType(this.type, this.tier);
         for (int i = 0; i < 81; i++) {
             if (!availableSlots.contains(i)) {
                 // 槽位不可用，绘制半透明遮罩
                 int row = i / 9;
                 int col = i % 9;
-                int slotX = this.leftPos + 8 + col * 18;
-                int slotY = this.topPos + 18 + row * 18;
+                int slotX = baseX + 8 + col * 18;
+                int slotY = baseY + 18 + row * 18;
                 graphics.fill(slotX, slotY, slotX + 16, slotY + 16, 0x80000000); // 半透明黑色
             }
         }
@@ -311,6 +487,27 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        int baseX = (this.width - 500) / 2;
+        int baseY = (this.height - 250) / 2;
+
+        // 检查文件列表点击
+        if (mouseX >= baseX && mouseX < baseX + FILE_LIST_WIDTH &&
+                mouseY >= baseY + 20 && mouseY < baseY + 250) {
+            return handleFileListClick(mouseX, mouseY, button);
+        }
+
+        // 检查脚本列表点击
+        if (mouseX >= baseX + FILE_LIST_WIDTH + 1 && mouseX < baseX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH &&
+                mouseY >= baseY + 20 && mouseY < baseY + 250) {
+            return handleScriptListClick(mouseX, mouseY, button);
+        }
+
+        // 检查编辑器区域点击
+        if (mouseX >= baseX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + 1 && mouseX < baseX + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + EDITOR_WIDTH &&
+                mouseY >= baseY + 20 && mouseY < baseY + 250) {
+            return handleEditorClick(mouseX, mouseY, button);
+        }
+
         // 检查是否点击了槽位
         if (selectMode) {
             if (button == 0) { // 左键点击
@@ -329,11 +526,65 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    // 处理文件列表点击
+    private boolean handleFileListClick(double mouseX, double mouseY, int button) {
+        int baseX = (this.width - 500) / 2;
+        int baseY = (this.height - 250) / 2;
+        int listStartY = baseY + 20;
+        int maxVisibleItems = (230) / LIST_ITEM_HEIGHT;
+
+        for (int i = 0; i < Math.min(maxVisibleItems, this.scriptFiles.size() - this.fileScrollOffset); i++) {
+            int index = this.fileScrollOffset + i;
+            if (index < this.scriptFiles.size()) {
+                int itemY = listStartY + i * LIST_ITEM_HEIGHT;
+                if (mouseY >= itemY && mouseY < itemY + LIST_ITEM_HEIGHT) {
+                    this.selectedFile = this.scriptFiles.get(index);
+                    this.currentScripts = this.selectedFile.getScripts();
+                    this.selectedScript = null;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 处理脚本列表点击
+    private boolean handleScriptListClick(double mouseX, double mouseY, int button) {
+        int baseX = (this.width - 500) / 2;
+        int baseY = (this.height - 250) / 2;
+        int listStartX = baseX + FILE_LIST_WIDTH + 1;
+        int listStartY = baseY + 20;
+        int maxVisibleItems = (230) / LIST_ITEM_HEIGHT;
+
+        for (int i = 0; i < Math.min(maxVisibleItems, this.currentScripts.size() - this.scriptScrollOffset); i++) {
+            int index = this.scriptScrollOffset + i;
+            if (index < this.currentScripts.size()) {
+                int itemY = listStartY + i * LIST_ITEM_HEIGHT;
+                if (mouseY >= itemY && mouseY < itemY + LIST_ITEM_HEIGHT) {
+                    this.selectedScript = this.currentScripts.get(index);
+                    // 加载脚本到编辑器
+                    loadScriptToEditor(this.selectedScript);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // 处理编辑器点击
+    private boolean handleEditorClick(double mouseX, double mouseY, int button) {
+        // 编辑器区域的点击处理
+        return false;
+    }
+
     // 处理左键点击
     private boolean handleLeftClick(double mouseX, double mouseY) {
+        int baseX = (this.width - 500) / 2 + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + 1;
+        int baseY = (this.height - 250) / 2;
+
         // 检查输入槽位区域 (9x9网格)
-        int gridX = (int) ((mouseX - (this.leftPos + 8)) / 18);
-        int gridY = (int) ((mouseY - (this.topPos + 18)) / 18);
+        int gridX = (int) ((mouseX - (baseX + 8)) / 18);
+        int gridY = (int) ((mouseY - (baseY + 18)) / 18);
 
         if (gridX >= 0 && gridX < 9 && gridY >= 0 && gridY < 9) {
             // 点击了输入槽位
@@ -351,8 +602,8 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         }
 
         // 检查输出槽位
-        int outputX = (int) ((mouseX - (this.leftPos + 202)) / 18);
-        int outputY = (int) ((mouseY - (this.topPos + 89)) / 18);
+        int outputX = (int) ((mouseX - (baseX + 202)) / 18);
+        int outputY = (int) ((mouseY - (baseY + 89)) / 18);
 
         if (outputX == 0 && outputY == 0) {
             // 点击了输出槽位
@@ -366,9 +617,12 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
 
     // 处理右键点击
     private boolean handleRightClick(double mouseX, double mouseY) {
+        int baseX = (this.width - 500) / 2 + FILE_LIST_WIDTH + SCRIPT_LIST_WIDTH + 1;
+        int baseY = (this.height - 250) / 2;
+
         // 检查输入槽位区域 (9x9网格)
-        int gridX = (int) ((mouseX - (this.leftPos + 8)) / 18);
-        int gridY = (int) ((mouseY - (this.topPos + 18)) / 18);
+        int gridX = (int) ((mouseX - (baseX + 8)) / 18);
+        int gridY = (int) ((mouseY - (baseY + 18)) / 18);
 
         if (gridX >= 0 && gridX < 9 && gridY >= 0 && gridY < 9) {
             // 点击了输入槽位
@@ -383,8 +637,8 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         }
 
         // 检查输出槽位
-        int outputX = (int) ((mouseX - (this.leftPos + 202)) / 18);
-        int outputY = (int) ((mouseY - (this.topPos + 89)) / 18);
+        int outputX = (int) ((mouseX - (baseX + 202)) / 18);
+        int outputY = (int) ((mouseY - (baseY + 89)) / 18);
 
         if (outputX == 0 && outputY == 0) {
             // 点击了输出槽位
@@ -410,27 +664,87 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         ));
     }
 
-    private void generateKubeJSRecipe() {
-        // 使用KubeJsUtils生成代码
-        if (!this.menu.slots.isEmpty() && !this.menu.getSlotItem(81).isEmpty()) {
-            if (Screen.hasShiftDown()) {
-                Minecraft.getInstance().setScreen(new StringInputScreen(this,
-                        Text.i18n("请输入自定义文件名").setShadow(true),
-                        Text.i18n("请输入"), "", "generated_recipe", input -> {
-                    if (!input.isEmpty()) {
-                        KubeJsUtils.exportTableJS(this.menu, this.type == RecipeType.AVARITIA_SHAPED, this.tier, true, input);
-                    }
-                }));
-            } else {
-                KubeJsUtils.exportTableJS(this.menu, this.type == RecipeType.AVARITIA_SHAPED, this.tier, true, "generated_recipe");
-            }
+    // 保存脚本
+    private void saveScript() {
+        if (this.selectedFile != null && this.selectedScript != null) {
+            // 生成脚本内容
+            String scriptContent = generateScriptContent();
+            this.selectedScript.setScriptContent(scriptContent);
+
+            // 保存到文件
+            this.selectedFile.save();
+        } else if (this.selectedFile != null) {
+            // 创建新脚本
+            String scriptName = "NewScript_" + System.currentTimeMillis();
+            String scriptContent = generateScriptContent();
+            ScriptEntry newScript = new ScriptEntry(scriptName, this.type, this.tier, null, scriptContent);
+            this.selectedFile.addScript(newScript);
+            this.selectedFile.save();
+            this.currentScripts = this.selectedFile.getScripts();
         }
     }
 
-    private void generateZSRecipe() {
-        // 使用CrtUtils生成代码
-        if (!this.menu.slots.isEmpty() && !this.menu.getSlotItem(81).isEmpty()) {
-            CrtUtils.exportTableZS(this.menu, this.type == RecipeType.AVARITIA_SHAPED, this.tier, true, "generated_recipe");
+    // 应用脚本
+    private void applyScript() {
+        if (this.selectedScript != null) {
+            // 将脚本应用到指定位置
+            // 这里应该实现具体的脚本应用逻辑
+        }
+    }
+
+    // 生成脚本内容
+    private String generateScriptContent() {
+        StringBuilder content = new StringBuilder();
+
+        switch (this.outType) {
+            case 1: // KubeJs
+                content.append("// KubeJS Recipe Script\n");
+                break;
+            case 2: // Crt
+                content.append("// CraftTweaker Recipe Script\n");
+                break;
+            default:
+                content.append("// Recipe Script\n");
+                break;
+        }
+
+        // 添加配方信息
+        content.append("// Recipe Type: ").append(this.type.name()).append("\n");
+        if (isAvaritiaTableRecipe(this.type)) {
+            content.append("// Tier: ").append(this.tier).append("\n");
+        }
+
+        // 添加槽位信息
+        content.append("// Slots:\n");
+        for (int i = 0; i < 82; i++) {
+            ItemStack item = this.menu.getSlotItem(i);
+            if (!item.isEmpty()) {
+                content.append("// Slot ").append(i).append(": ")
+                        .append(item.getItem().toString()).append("\n");
+            }
+        }
+
+        return content.toString();
+    }
+
+    // 加载脚本到编辑器
+    private void loadScriptToEditor(ScriptEntry script) {
+        this.currentScriptName = script.getName();
+        this.currentScriptContent = script.getScriptContent();
+        this.type = script.getRecipeType();
+        this.tier = script.getTier();
+
+        // 更新UI组件
+        if (this.typeButton != null) {
+            this.typeButton.setValue(this.type.name());
+        }
+        if (this.tierButton != null && isAvaritiaTableRecipe(this.type)) {
+            this.tierButton.setValue(String.valueOf(this.tier));
+        }
+
+        // 加载配方到槽位
+        if (script.getRecipe() != null) {
+            this.fillRecipeIntoSlots(script.getRecipe());
         }
     }
 
@@ -480,7 +794,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
         if (this.typeButton != null) {
             this.typeButton.setValue(this.type.name());
         }
-        if (this.tierButton != null && isAvaritiaTableRecipe()) {
+        if (this.tierButton != null && isAvaritiaTableRecipe(this.type)) {
             this.tierButton.setValue(String.valueOf(this.tier));
         }
     }
@@ -572,7 +886,7 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     // 填充无序配方的通用方法
     private void fillShapelessRecipe(java.util.List<Ingredient> ingredients) {
         try {
-            if (isAvaritiaTableRecipe()) {
+            if (isAvaritiaTableRecipe(this.type)) {
                 // 无尽工作台配方
                 int gridSize = (int) Math.sqrt(this.menu.getAvailableSlotsForTier(this.tier));
                 int startRow = (9 - gridSize) / 2;
@@ -633,8 +947,40 @@ public class RecipeGeneratorScreen extends BaseContainerScreen<RecipeGeneratorMe
     }
 
     // 判断是否为无尽工作台配方
-    private boolean isAvaritiaTableRecipe() {
-        return this.type == RecipeType.AVARITIA_SHAPED || this.type == RecipeType.AVARITIA_SHAPELESS;
+    private boolean isAvaritiaTableRecipe(RecipeType type) {
+        return type == RecipeType.AVARITIA_SHAPED || type == RecipeType.AVARITIA_SHAPELESS;
+    }
+
+    // 根据等级获取网格大小
+    private int getGridSizeForTier(int tier) {
+        return switch (tier) {
+            case 1 -> 3;
+            case 2 -> 5;
+            case 3 -> 7;
+            case 4 -> 9;
+            default -> 3;
+        };
+    }
+
+    // 加载脚本文件
+    private void loadScriptFiles() {
+        try {
+            Path configPath = Paths.get("config", "avaritia", "recipe");
+            if (!Files.exists(configPath)) {
+                Files.createDirectories(configPath);
+            }
+
+            // 加载所有脚本文件
+            Files.walk(configPath)
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".js") || path.toString().endsWith(".zs"))
+                    .forEach(path -> {
+                        ScriptFile scriptFile = new ScriptFile(path.toFile());
+                        this.scriptFiles.add(scriptFile);
+                    });
+        } catch (Exception e) {
+            // 忽略异常
+        }
     }
 
 }
