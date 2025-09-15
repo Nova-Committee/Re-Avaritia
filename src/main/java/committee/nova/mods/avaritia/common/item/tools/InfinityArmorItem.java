@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
 import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
  * Date: 2022/4/21 15:12
  * Version: 1.0
  */
-public class InfinityArmorItem extends ArmorItem {
+public class InfinityArmorItem extends ArmorItem implements IUndamageable {
     public InfinityArmorItem(Type pSlot) {
         super(
                 ModArmorMaterial.infinite_armor,

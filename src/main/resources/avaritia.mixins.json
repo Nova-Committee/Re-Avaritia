@@ -7,7 +7,9 @@
     "EnchantmentHelperMixin",
     "FrostWalkerEnchantmentMixin",
     "NetherWartBlockMixin",
-    "RecipeManagerMixin"
+    "RecipeManagerMixin",
+    "ItemStackMixin"
+
   ],
   "client": [
     "ItemRendererMixin",

@@ -2,10 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import committee.nova.mods.avaritia.api.iface.IFilterItem;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.*;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -46,7 +43,7 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable , ITooltip {
+public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable , ITooltip, IUndamageable {
     private final String name;
     public InfinityPickaxeItem(String name) {
         super(ModToolTiers.INFINITY, -50, 0F, (new Properties())
@@ -55,6 +52,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
                 .fireResistant());
         this.name = name;
     }
+
 
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
