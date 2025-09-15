@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 16:33
  * Version: 1.0
  */
-public class InfinityShovelItem extends ShovelItem implements ISwitchable {
+public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUndamageable {
 
     public InfinityShovelItem() {
         super(ModToolTiers.INFINITY, 0, -50f, (new Properties())

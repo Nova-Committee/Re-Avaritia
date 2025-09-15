@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -42,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/5/15 16:47
  * Version: 1.0
  */
-public class InfinityHoeItem extends HoeItem {
+public class InfinityHoeItem extends HoeItem implements IUndamageable {
 
     public InfinityHoeItem() {
         super(ModToolTiers.INFINITY, -50, 0f, (new Properties())

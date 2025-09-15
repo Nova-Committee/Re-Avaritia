@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
+import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.entity.TNTProEntity;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ITooltip, ISwitchable {
+public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ITooltip, ISwitchable, IUndamageable {
 
     public InfinityCrossBowItem() {
         super(new Properties()

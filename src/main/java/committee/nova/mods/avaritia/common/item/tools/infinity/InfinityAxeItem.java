@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -40,7 +41,7 @@ import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
  * Date: 2022/5/15 17:11
  * Version: 1.0
  */
-public class InfinityAxeItem extends AxeItem implements ISwitchable {
+public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageable {
 
     public InfinityAxeItem() {
         super(ModToolTiers.INFINITY, 100, -50f, (new Properties())
