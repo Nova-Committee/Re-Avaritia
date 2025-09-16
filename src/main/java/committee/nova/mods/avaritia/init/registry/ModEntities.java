@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -109,13 +110,19 @@ public class ModEntities {
             ENTITIES.register("accelerator_display", () -> EntityType.Builder.<AcceleratorDisplayEntity>of(
                             AcceleratorDisplayEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
-                    .build(new ResourceLocation("avariita", "accelerator_display").toString())
+                    .build(new ResourceLocation("avaritia", "accelerator_display").toString())
             );
     public static final RegistryObject<EntityType<TNTProEntity>> tntProEntity =
             ENTITIES.register("tnt_pro", () -> EntityType.Builder.<TNTProEntity>of(
                             TNTProEntity::new, MobCategory.MISC)
                     .sized(1f, 1f)
-                    .build(new ResourceLocation("avariita", "tnt_pro").toString())
+                    .build(new ResourceLocation("avaritia", "tnt_pro").toString())
+            );
+    public static final RegistryObject<EntityType<InfinityThrownTrident>> infinity_thrown_trident =
+            ENTITIES.register("infinity_thrown_trident", () -> EntityType.Builder.<InfinityThrownTrident>of(
+                            InfinityThrownTrident::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .build(new ResourceLocation("avaritia", "infinity_thrown_trident").toString())
             );
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
@@ -133,7 +140,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
         EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRenderer::new);
         EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
-
+        EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityTridentRender::new);
     }
 
 }
