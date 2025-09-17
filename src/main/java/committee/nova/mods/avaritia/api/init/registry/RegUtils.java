@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -31,19 +32,18 @@ import java.util.function.Supplier;
  * @author: cnlimiter
  */
 public class RegUtils {
-    public final DeferredRegister<Block> BLOCKS;
-    public final DeferredRegister<Item> ITEMS;
-    public final DeferredRegister<CreativeModeTab> TABS;
-    public final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES;
-    public final DeferredRegister<EntityType<?>> ENTITIES;
-    public final DeferredRegister<MenuType<?>> MENUS;
-    public final DeferredRegister<Enchantment> ENCHANTMENT;
-    public final DeferredRegister<RecipeType<?>> RECIPES;
-    public final DeferredRegister<RecipeSerializer<?>> SERIALIZERS;
-    public final List<RegistryObject<Item>> ACCEPT_ITEM = new ArrayList<>();
+    public static DeferredRegister<Block> BLOCKS;
+    public static DeferredRegister<Item> ITEMS;
+    public static DeferredRegister<CreativeModeTab> TABS;
+    public static DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES;
+    public static DeferredRegister<EntityType<?>> ENTITIES;
+    public static DeferredRegister<MenuType<?>> MENUS;
+    public static DeferredRegister<Enchantment> ENCHANTMENT;
+    public static DeferredRegister<RecipeType<?>> RECIPES;
+    public static DeferredRegister<RecipeSerializer<?>> SERIALIZERS;
+    public static final List<RegistryObject<Item>> ACCEPT_ITEM = new ArrayList<>();
 
-    public RegUtils(String modid){
-        var bus = FMLJavaModLoadingContext.get().getModEventBus();
+    public static void init(String modid, IEventBus bus) {
         BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, modid);
         ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, modid);
         TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, modid);
@@ -53,11 +53,6 @@ public class RegUtils {
         ENCHANTMENT = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, modid);
         RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, modid);
         SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, modid);
-
-    }
-
-    public void init() {
-        var bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         TABS.register(bus);
@@ -69,63 +64,63 @@ public class RegUtils {
         SERIALIZERS.register(bus);
     }
 
-    public RegistryObject<Item> item(String name) {
+    public static RegistryObject<Item> item(String name) {
         return item(name, true);
     }
 
-    public RegistryObject<Item> item(String name, boolean exist) {
+    public static RegistryObject<Item> item(String name, boolean exist) {
         return item(name, (e) -> new BaseItem(), exist);
     }
 
-    public RegistryObject<Item> item(String name, Function<String, Item> item) {
+    public static RegistryObject<Item> item(String name, Function<String, Item> item) {
         return item(name, item, true);
     }
 
-    public RegistryObject<Item> item(String name, Function<String, Item> item, boolean exist) {
+    public static RegistryObject<Item> item(String name, Function<String, Item> item, boolean exist) {
         return item(name, () -> item.apply(name), exist);
     }
 
-    public RegistryObject<Item> item(String name, Supplier<Item> item) {
+    public static RegistryObject<Item> item(String name, Supplier<Item> item) {
         return item(name, item, true);
     }
 
-    public RegistryObject<Item> item(String name, Supplier<Item> item, boolean exist) {
+    public static RegistryObject<Item> item(String name, Supplier<Item> item, boolean exist) {
         var regItem = ITEMS.register(name, item);
         if (exist) ACCEPT_ITEM.add(regItem);
         return regItem;
     }
 
-    private RegistryObject<Block> baseBlock(String name, Supplier<Block> block) {
+    private static RegistryObject<Block> baseBlock(String name, Supplier<Block> block) {
         return BLOCKS.register(name, block);
     }
 
-    public RegistryObject<Block> itemBlock(String name, Supplier<Block> block) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block) {
         return itemBlock(name, block, true);
     }
 
-    public RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem) {
         return itemBlock(name, block, hasItem, true, new Item.Properties());
     }
 
-    public RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist) {
         return itemBlock(name, block, hasItem, exist, new Item.Properties());
     }
 
-    public RegistryObject<Block> itemBlock(String name, Supplier<Block> block, Rarity rarity) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, Rarity rarity) {
         return itemBlock(name, block, true, true, new Item.Properties().rarity(rarity));
     }
 
-    public RegistryObject<Block> itemBlock(String name, Supplier<Block> block,  boolean hasItem, Item.Properties properties) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block,  boolean hasItem, Item.Properties properties) {
         return itemBlock(name, block, hasItem, true, properties);
     }
 
-    public RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist, Item.Properties properties) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, boolean exist, Item.Properties properties) {
         var reg = BLOCKS.register(name, block);
         if (hasItem) item(name, () -> new BlockItem(reg.get(), properties), exist);
         return reg;
     }
 
-    public RegistryObject<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
+    public static RegistryObject<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
         var reg = BLOCKS.register(name, block);
         if (hasItem) item(name, () -> new BlockItem(reg.get(), properties){
             @Override
@@ -136,23 +131,23 @@ public class RegUtils {
         return reg;
     }
 
-    public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> blockEntity(String name, BlockEntityType.BlockEntitySupplier<T> tile, Supplier<Block[]> blocks) {
+    public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> blockEntity(String name, BlockEntityType.BlockEntitySupplier<T> tile, Supplier<Block[]> blocks) {
         return BLOCK_ENTITIES.register(name, () -> BlockEntityType.Builder.of(tile, blocks.get()).build(null));
     }
 
-    public <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, IContainerFactory<T> container) {
+    public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, IContainerFactory<T> container) {
         return MENUS.register(name, () -> IForgeMenuType.create(container));
     }
 
-    public RegistryObject<Enchantment> enchant(String name, Supplier<Enchantment> enchantment) {
+    public static RegistryObject<Enchantment> enchant(String name, Supplier<Enchantment> enchantment) {
         return ENCHANTMENT.register(name, enchantment);
     }
 
-    public <T extends Recipe<Container>> RegistryObject<RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
+    public static <T extends Recipe<Container>> RegistryObject<RecipeType<T>> recipe(String name, Supplier<RecipeType<T>> type) {
         return RECIPES.register(name, type);
     }
 
-    public RegistryObject<RecipeSerializer<?>> serializer(String name, Supplier<RecipeSerializer<?>> serializer) {
+    public static RegistryObject<RecipeSerializer<?>> serializer(String name, Supplier<RecipeSerializer<?>> serializer) {
         return SERIALIZERS.register(name, serializer);
     }
 }

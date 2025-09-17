@@ -26,7 +26,6 @@ public class Res {
     public static final ResourceLocation WING_TEX = Const.rl("textures/models/infinity_armor_wing.png");
     public static final ResourceLocation WING_GLOW_TEX = Const.rl("textures/models/infinity_armor_wing_glow.png");
 
-    public static final ResourceLocation RECIPE_GENERATOR_TEX = Const.rl("textures/gui/craft/recipe_generator.png");
     public static final ResourceLocation INFINITY_CLOCK_TIME_TEX = Const.rl("textures/gui/machine/infinity_clock_time.png");
     public static final ResourceLocation NEUTRON_COLLECTOR_TEX = Const.rl("textures/gui/machine/neutron_collector.png");
     public static final ResourceLocation NEUTRON_COMPRESSOR_TEX = Const.rl("textures/gui/machine/neutron_compressor.png");
