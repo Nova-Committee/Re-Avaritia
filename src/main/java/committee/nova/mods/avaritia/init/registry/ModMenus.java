@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.screen.TesseractScreen;
-import committee.nova.mods.avaritia.client.screen.script.RecipeGeneratorScreen;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
@@ -50,7 +49,6 @@ public class ModMenus {
         MenuScreens.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
         MenuScreens.register(infinity_clock_menu.get(), InfinityClockScreen::new);
         MenuScreens.register(infinity_chest2.get(), InfiniteChestScreen2::new);
-        MenuScreens.register(recipe_generator.get(), RecipeGeneratorScreen::new);
     }
 
     public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
@@ -73,6 +71,4 @@ public class ModMenus {
     public static RegistryObject<MenuType<InfinityClockMenu>> infinity_clock_menu =
             menu("infinity_clock_menu", () -> IForgeMenuType.create((id, inv, buf) -> new InfinityClockMenu(id, inv)));
     public static RegistryObject<MenuType<InfiniteChestMenu2>> infinity_chest2 = menu("infinity_chest2", () -> IForgeMenuType.create(InfiniteChestMenu2::fromNetwork));
-    public static RegistryObject<MenuType<RecipeGeneratorMenu>> recipe_generator = menu("recipe_generator", () -> IForgeMenuType.create(RecipeGeneratorMenu::fromNetwork));
-
 }

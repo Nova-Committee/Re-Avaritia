@@ -53,6 +53,11 @@ public class RegUtils {
         ENCHANTMENT = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, modid);
         RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, modid);
         SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, modid);
+
+    }
+
+    public void init() {
+        var bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         TABS.register(bus);

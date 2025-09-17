@@ -223,7 +223,10 @@ Map<String, String> commonSystemProperties = [
 
 legacyForge {
     version = "${mc_version}-${forge_version}"
-
+    validateAccessTransformers = true
+    accessTransformers = [
+            "src/main/resources/META-INF/accesstransformer.cfg"
+    ]
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
@@ -359,7 +362,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = project.group
-            artifactId = project.base.archivesName
+            artifactId = project.mod_name
             version = project.version
 
             artifact jar
@@ -369,19 +372,14 @@ publishing {
         }
     }
     repositories {
+        mavenLocal()
         maven {
-            name = "Local"
-            url = file("build/repo").toURI()
-        }
-        if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
-            maven {
-                name 'S3'
-                url = 'https://maven.nova-committee.cn/s3'
+            name 'S3'
+            url = 'https://maven.nova-committee.cn/s3'
 
-                credentials {
-                    username System.getenv('MAVEN_USERNAME')
-                    password System.getenv('MAVEN_PASSWORD')
-                }
+            credentials {
+                username System.getenv('MAVEN_USERNAME')
+                password System.getenv('MAVEN_PASSWORD')
             }
         }
     }

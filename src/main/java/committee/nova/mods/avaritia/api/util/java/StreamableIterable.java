@@ -283,7 +283,7 @@ public interface StreamableIterable<T> extends Iterable<T> {
      *
      * @param max The limit. -1 for infinite.
      * @return A wrapped {@link StreamableIterable} with the max filter applied.
-     * In the event <code>-1<</code> is supplied, the same {@link StreamableIterable} will be provided.
+     * In the event <code>-1</code> is supplied, the same {@link StreamableIterable} will be provided.
      * In the event <code>0</code> is supplied, an empty {@link StreamableIterable} will be provided.
      */
     default StreamableIterable<T> limit(@Range(from = -1, to = Integer.MAX_VALUE) int max) {

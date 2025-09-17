@@ -1,8 +1,7 @@
 <p align="center">
-    <img width="200" src="web/avaritia.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">  
 </p>
 <hr>
-<p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
 <p align="center">
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
         <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions">

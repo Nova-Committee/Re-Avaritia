@@ -12,7 +12,6 @@ import committee.nova.mods.avaritia.common.block.collector.NeutronCollectorBlock
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
-import committee.nova.mods.avaritia.common.block.craft.RecipeGeneratorBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
@@ -62,7 +61,6 @@ public class ModBlocks {
     public static RegistryObject<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> infinity_chest2 = itemBlock("infinity_chest2", InfinityChestBlock2::new, ModRarities.LEGEND);
-    public static RegistryObject<Block> recipe_generator = itemBlock("recipe_generator_table", RecipeGeneratorBlock::new);
     public static RegistryObject<Block> tesseract = itemBlock("tesseract", TesseractBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",

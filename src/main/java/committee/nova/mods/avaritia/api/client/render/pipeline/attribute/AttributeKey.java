@@ -65,8 +65,8 @@ public abstract class AttributeKey<T> {
     /**
      * Copy and resize the attribute.
      * <p>
-     * The attribute will either be{@link Copyable} or an array,
-     * which may also hold objects which are {@link Copyable}.
+     * The attribute will either be{@link committee.nova.mods.avaritia.api.util.java.Copyable} or an array,
+     * which may also hold objects which are {@link committee.nova.mods.avaritia.api.util.java.Copyable}.
      *
      * @param src    The object to copy.
      * @param length The new length of vertices.
