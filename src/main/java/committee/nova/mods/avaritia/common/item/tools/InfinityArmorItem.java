@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
-import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
+import committee.nova.mods.avaritia.api.util.lang.TextUtils;
 import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;

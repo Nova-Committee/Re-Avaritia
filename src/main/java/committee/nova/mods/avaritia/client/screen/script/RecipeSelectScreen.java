@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.client.screen.script;
 
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
-import committee.nova.mods.avaritia.api.utils.ItemUtils;
-import committee.nova.mods.avaritia.api.utils.StringUtils;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
+import committee.nova.mods.avaritia.api.util.StringUtils;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import net.minecraft.client.Minecraft;

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
 import committee.nova.mods.avaritia.api.common.slot.BlackListSlot;
-import committee.nova.mods.avaritia.api.utils.InventoryUtils;
+import committee.nova.mods.avaritia.api.util.InventoryUtils;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.network.FriendlyByteBuf;

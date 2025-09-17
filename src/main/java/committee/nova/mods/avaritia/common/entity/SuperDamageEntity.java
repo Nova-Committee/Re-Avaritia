@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
-import committee.nova.mods.avaritia.api.utils.EntityUtils;
+import committee.nova.mods.avaritia.api.util.EntityUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.world.entity.EntityType;

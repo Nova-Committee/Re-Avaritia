@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.client.util.colour;
 
-import committee.nova.mods.avaritia.api.utils.java.Copyable;
-import committee.nova.mods.avaritia.api.utils.math.MathUtils;
+import committee.nova.mods.avaritia.api.util.java.Copyable;
+import committee.nova.mods.avaritia.api.util.math.MathUtils;
 
 import static java.lang.Math.max;
 

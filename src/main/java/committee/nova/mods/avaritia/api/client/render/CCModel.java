@@ -9,17 +9,17 @@ import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexSource;
 import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.*;
 import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.AttributeKey.AttributeKeyRegistry;
 import committee.nova.mods.avaritia.api.client.util.VectorUtils;
-import committee.nova.mods.avaritia.api.utils.java.Copyable;
-import committee.nova.mods.avaritia.api.utils.vec.*;
-import committee.nova.mods.avaritia.api.utils.vec.uv.UV;
-import committee.nova.mods.avaritia.api.utils.vec.uv.UVTransformation;
-import committee.nova.mods.avaritia.api.utils.vec.uv.UVTranslation;
+import committee.nova.mods.avaritia.api.util.java.Copyable;
+import committee.nova.mods.avaritia.api.util.vec.*;
+import committee.nova.mods.avaritia.api.util.vec.uv.UV;
+import committee.nova.mods.avaritia.api.util.vec.uv.UVTransformation;
+import committee.nova.mods.avaritia.api.util.vec.uv.UVTranslation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static committee.nova.mods.avaritia.api.utils.SneakyUtils.unsafeCast;
-import static committee.nova.mods.avaritia.api.utils.vec.Rotation.sideRotations;
+import static committee.nova.mods.avaritia.api.util.SneakyUtils.unsafeCast;
+import static committee.nova.mods.avaritia.api.util.vec.Rotation.sideRotations;
 
 public class CCModel implements IVertexSource, Copyable<CCModel> {
 

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.client.shader.base;
 
-import committee.nova.mods.avaritia.api.utils.vec.Matrix4;
+import committee.nova.mods.avaritia.api.util.vec.Matrix4;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 

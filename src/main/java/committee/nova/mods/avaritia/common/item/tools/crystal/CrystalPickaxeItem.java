@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.crystal;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.utils.ItemUtils;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.network.chat.Component;

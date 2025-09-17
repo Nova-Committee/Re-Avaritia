@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.util;
 
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.common.wrapper.StrictItemStack;
-import committee.nova.mods.avaritia.api.utils.ItemUtils;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;

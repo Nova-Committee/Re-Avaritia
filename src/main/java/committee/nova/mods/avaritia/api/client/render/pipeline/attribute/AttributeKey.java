@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.pipeline.attribute;
 
 
 import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
-import committee.nova.mods.avaritia.api.utils.java.ArrayUtils;
+import committee.nova.mods.avaritia.api.util.java.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
-import static committee.nova.mods.avaritia.api.utils.SneakyUtils.unsafeCast;
+import static committee.nova.mods.avaritia.api.util.SneakyUtils.unsafeCast;
 
 /**
  * Represents a Key for abstract data storage on an {@link committee.nova.mods.avaritia.api.client.render.pipeline.IVertexSource}
