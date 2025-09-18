@@ -13,13 +13,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class InfinityTridentItem extends TridentItem implements IUndamageable, ISwitchable {
 
@@ -30,25 +33,25 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 .fireResistant());
     }
     @Override
-    public void releaseUsing(ItemStack p_43394_, Level p_43395_, LivingEntity p_43396_, int p_43397_) {
-        if (p_43396_ instanceof Player player) {
-            int i = this.getUseDuration(p_43394_) - p_43397_;
+    public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
+        if (livingEntity instanceof Player player) {
+            int i = this.getUseDuration(itemStack) - timeLeft;
             if (i >= 10) {
-                int j = EnchantmentHelper.getRiptide(p_43394_);
+                int j = EnchantmentHelper.getRiptide(itemStack);
                 if (j <= 0 || player.isInWaterOrRain()) {
-                    if (!p_43395_.isClientSide) {
-                        p_43394_.hurtAndBreak(1, player, (p_43388_) -> p_43388_.broadcastBreakEvent(p_43396_.getUsedItemHand()));
+                    if (!level.isClientSide) {
+                        itemStack.hurtAndBreak(1, player, (player1) -> player1.broadcastBreakEvent(livingEntity.getUsedItemHand()));
                         if (j == 0) {
-                            InfinityThrownTrident throwntrident = new InfinityThrownTrident(p_43395_, player, p_43394_);
+                            InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack);
                             throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
                             if (player.getAbilities().instabuild) {
                                 throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                             }
 
-                            p_43395_.addFreshEntity(throwntrident);
-                            p_43395_.playSound((Player)null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+                            level.addFreshEntity(throwntrident);
+                            level.playSound((Player)null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
                             if (!player.getAbilities().instabuild) {
-                                player.getInventory().removeItem(p_43394_);
+                                player.getInventory().removeItem(itemStack);
                             }
                         }
                     }
@@ -81,11 +84,15 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                             soundevent = SoundEvents.TRIDENT_RIPTIDE_1;
                         }
 
-                        p_43395_.playSound((Player)null, player, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        level.playSound(null, player, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
                 }
             }
         }
+    }
 
+    @Override
+    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
+        super.initializeClient(consumer);
     }
 }
