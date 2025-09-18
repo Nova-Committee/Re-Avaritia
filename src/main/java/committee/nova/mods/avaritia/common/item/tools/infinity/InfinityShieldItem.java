@@ -25,42 +25,4 @@ public class InfinityShieldItem extends ShieldItem implements IUndamageable {
                 .fireResistant());
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
-
-        if (player.isUsingItem() && player.getUsedItemHand() == hand) {
-
-            player.releaseUsingItem();
-            return InteractionResultHolder.success(itemstack);
-        } else {
-
-            player.startUsingItem(hand);
-
-
-            if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
-
-                for (Entity entity : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(4.0D))) {
-                    if (entity instanceof Player attacker && entity != player) {
-
-                        if (attacker.getLastHurtMob() == player && attacker.getAttackStrengthScale(0.0F) > 0.5F) {
-
-                            serverLevel.sendParticles(ParticleTypes.ENCHANTED_HIT,
-                                    player.getX(),
-                                    player.getY() + player.getBbHeight() / 2,
-                                    player.getZ(),
-                                    10,
-                                    0.5D, 0.5D, 0.5D, 0.1D);
-                        }
-                    }
-                }
-            }
-
-            return InteractionResultHolder.consume(itemstack);
-        }
-    }
-    @Override
-    public boolean canDisableShield(ItemStack stack, ItemStack attackerStack, LivingEntity attacker, LivingEntity blocker) {
-        return false;
-    }
 }

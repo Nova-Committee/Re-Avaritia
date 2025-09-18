@@ -15,6 +15,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -113,6 +115,11 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
                             livingEntity.getY() + livingEntity.getBbHeight() / 2,
                             livingEntity.getZ(),
                             1, 0.0D, 0.0D, 0.0D, 0.0D);
+
+                    serverLevel.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(),
+                            SoundEvents.GENERIC_EXPLODE,
+                            SoundSource.BLOCKS,
+                            1.0F, 1.0F);
                 }
 
                 // 如果是无尽盾，只产生粒子效果
