@@ -33,7 +33,7 @@ import java.util.Collections;
  */
 public class CompressorCategory implements IRecipeCategory<ICompressorRecipe> {
     public static final RecipeType<ICompressorRecipe> RECIPE_TYPE = RecipeType.create(Const.MOD_ID, "compressor", ICompressorRecipe.class);
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Const.MOD_ID, "textures/gui/jei/neutron_compressor.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Const.MOD_ID, "textures/gui/jei/compressor.png");
     private final IDrawable background;
     private final IDrawable icon;
 
