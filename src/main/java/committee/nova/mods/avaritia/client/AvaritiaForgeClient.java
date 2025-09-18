@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.api.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
@@ -20,12 +19,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -47,32 +46,25 @@ import java.util.TreeSet;
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
+    public static int renderTime;
+    public static float renderFrame;
+    public static boolean inventoryRender = false;
     private static float darknessIntensity = 0.0f;
-    // 定义按键绑定
+    private static boolean keepFlying = false;
+
+    // region 定义按键绑定
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
             InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);
-
-    public static final KeyMapping SORT_0 = new KeyMapping("key.avaritia.infinity_chest.sort0", InputConstants.KEY_0, CATEGORIES);
-    public static final KeyMapping SORT_1 = new KeyMapping("key.avaritia.infinity_chest.sort1", InputConstants.KEY_1, CATEGORIES);
-    public static final KeyMapping SORT_2 = new KeyMapping("key.avaritia.infinity_chest.sort2", InputConstants.KEY_2, CATEGORIES);
-    public static final KeyMapping SORT_3 = new KeyMapping("key.avaritia.infinity_chest.sort3", InputConstants.KEY_3, CATEGORIES);
-    public static final KeyMapping SORT_4 = new KeyMapping("key.avaritia.infinity_chest.sort4", InputConstants.KEY_4, CATEGORIES);
-    public static final KeyMapping SORT_5 = new KeyMapping("key.avaritia.infinity_chest.sort5", InputConstants.KEY_5, CATEGORIES);
-    public static final KeyMapping SORT_6 = new KeyMapping("key.avaritia.infinity_chest.sort6", InputConstants.KEY_6, CATEGORIES);
-    public static final KeyMapping SORT_7 = new KeyMapping("key.avaritia.infinity_chest.sort7", InputConstants.KEY_7, CATEGORIES);
-    public static final KeyMapping SORT_8 = new KeyMapping("key.avaritia.infinity_chest.sort8", InputConstants.KEY_8, CATEGORIES);
-    public static final KeyMapping SORT_9 = new KeyMapping("key.avaritia.infinity_chest.sort9", InputConstants.KEY_9, CATEGORIES);
-
-    private static boolean keepFlying = false;
+    // endregion
     /**
      * 在客户端Tick事件触发时执行
      *
      * @param event 客户端Tick事件
      */
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTickEnd(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
         Minecraft mc = Minecraft.getInstance();
@@ -90,9 +82,12 @@ public class AvaritiaForgeClient {
                 Minecraft.getInstance().setScreen(new ItemFilterScreen());
             }
         }
-
-
         // endregion
+
+        if (!Minecraft.getInstance().isPaused()) {
+            ++renderTime;
+        }
+
         handleInfinityElytraFallFlying(mc, player);
 
         //计算黑暗强度
@@ -262,5 +257,23 @@ public class AvaritiaForgeClient {
         } else if (maxIntensity < darknessIntensity) {
             darknessIntensity = Math.max(maxIntensity, darknessIntensity - 0.05f); // 渐弱
         }
+    }
+
+
+    @SubscribeEvent
+    public static void onRenderTickStart(TickEvent.RenderTickEvent event) {
+        if (!Minecraft.getInstance().isPaused() && event.phase == TickEvent.Phase.START) {
+            renderFrame = event.renderTickTime;
+        }
+    }
+
+    @SubscribeEvent
+    public static void drawScreenPre(final ScreenEvent.Render.Pre e) {
+        inventoryRender = true;
+    }
+
+    @SubscribeEvent
+    public static void drawScreenPost(final ScreenEvent.Render.Post e) {
+        inventoryRender = false;
     }
 }

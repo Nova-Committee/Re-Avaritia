@@ -14,6 +14,7 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.*;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import static committee.nova.mods.avaritia.Const.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_SPRITES;
 
 /**
  * Author cnlimiter
@@ -68,6 +70,19 @@ public class AvaritiaModClient {
         event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
     }
 
+    @SubscribeEvent
+    public static void onTexturesSwitchPost(TextureStitchEvent.Post event){
+        if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
+            for (int i = 0; i < COSMIC_SPRITES.length; i++) {
+                COSMIC_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/cosmic_" + i));
+                AvaritiaShaders.COSMIC_UVS[i * 4] = COSMIC_SPRITES[i].getU0();
+                AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = COSMIC_SPRITES[i].getV0();
+                AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = COSMIC_SPRITES[i].getU1();
+                AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = COSMIC_SPRITES[i].getV1();
+            }
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRegisterShaders(RegisterShadersEvent event) {
         AvaritiaShaders.onRegisterShaders(event);//注册着色器
@@ -97,22 +112,15 @@ public class AvaritiaModClient {
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register("cosmic", CosmicModelLoader.INSTANCE);
         event.register("halo", HaloModelLoader.INSTANCE);
-        event.register("eternal", EternalModelLoader.INSTANCE);
-        event.register("hell", HellModelLoader.INSTANCE);
-        event.register("unstable", UnstableModelLoader.INSTANCE);
         event.register("halo_cosmic", HaloCosmicModelLoader.INSTANCE);
-        event.register("halo_eternal", HaloEternalModelLoader.INSTANCE);
     }
 
     @SubscribeEvent
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
-        addLayer(event, "default");
-        addLayer(event, "slim");
-    }
-
-    private static void addLayer(final EntityRenderersEvent.AddLayers e, final String s) {
-        final LivingEntityRenderer entityRenderer = e.getSkin(s);
-        entityRenderer.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>) entityRenderer));
+        for (var model : event.getSkins()) {
+            LivingEntityRenderer eventSkin = event.getSkin(model);
+            eventSkin.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>) eventSkin));
+        }
     }
 
     public static int getCurrentRainbowColor() {

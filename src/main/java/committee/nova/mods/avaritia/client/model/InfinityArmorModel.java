@@ -3,9 +3,8 @@ package committee.nova.mods.avaritia.client.model;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.util.ColorUtils;
+import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -37,36 +36,22 @@ import java.util.Random;
  * Date: 2022/4/23 23:50
  * Version: 1.0
  */
-public class InfinityArmorModel extends HumanoidModel<Player> {
+public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
 
-    public static ResourceLocation MASK = Const.rl("models/infinity_armor_mask");
-    public static ResourceLocation MASK_INV = Const.rl("models/infinity_armor_mask_inv");
-    public static ResourceLocation WING = Const.rl("models/infinity_armor_mask_wings");
-    private static boolean modelRender;
-    private static boolean playerFlying;
-    private static boolean player;
+    private boolean modelRender = false;
+    private boolean playerFlying = false;
+    private boolean player = false;
     private static boolean legs = true;
 
     private final Minecraft mc;
     private final MultiBufferSource bufferSource;
-    private final Random random;
-    private final HumanoidModel<Player> humanoidModel;
 
-    public InfinityArmorModel(ModelPart pRoot, final int x) {
+    public InfinityArmorModel() {
         super(createMesh(new CubeDeformation(1.0f), 0.0f).getRoot().bake(64, 64));
         this.mc = Minecraft.getInstance();
         this.bufferSource = this.mc.renderBuffers().bufferSource();
-        this.random = new Random();
-        this.humanoidModel = new HumanoidModel<>(createMesh(new CubeDeformation(0.0f), 0.0f).getRoot().bake(64, 64));
     }
 
-    public InfinityArmorModel(ModelPart pRoot) {
-        super(pRoot);
-        this.mc = Minecraft.getInstance();
-        this.bufferSource = this.mc.renderBuffers().bufferSource();
-        this.random = new Random();
-        this.humanoidModel = new HumanoidModel<>(createMesh(new CubeDeformation(0.0f), 0.0f).getRoot().bake(64, 64));
-    }
 
     public static MeshDefinition createMesh(final CubeDeformation deformation, final float f, final boolean islegs) {
         InfinityArmorModel.legs = islegs;
@@ -118,9 +103,9 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
 
     @Override
     public void renderToBuffer(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-        final InfinityArmorModel model = new InfinityArmorModel(this.rebuildWings().bakeRoot(), 0);
-        this.copyBipedAngles(this, this.humanoidModel);
         super.renderToBuffer(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        final InfinityArmorModel model = new InfinityArmorModel();
+        this.copyBipedAngles(this, model);
         final long time = this.mc.player.level().getGameTime();
         final double pulse = Math.sin(time / 10.0) * 0.5 + 0.5;
         final double pulse_mag_sqr = pulse * pulse * pulse * pulse * pulse * pulse;
@@ -136,66 +121,67 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             f2 = 0.9f;
             f3 = 0.0f;
         }
-        AvaritiaShaders.cosmicOpacity.set(1.0f);
-        if (AvaritiaShaders.inventoryRender) {
-            AvaritiaShaders.cosmicExternalScale.set(25.0f);
+
+        AvaritiaShaders.cosmicArmorTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
+        AvaritiaShaders.cosmicArmorOpacity.set(1.0f);
+        if (AvaritiaForgeClient.inventoryRender) {
+            AvaritiaShaders.cosmicArmorExternalScale.set(25.0f);
         } else {
-            AvaritiaShaders.cosmicExternalScale.set(1.0f);
-            AvaritiaShaders.cosmicYaw.set((float) (this.mc.player.getYRot() * 2.0f * 3.141592653589793 / 360.0));
-            AvaritiaShaders.cosmicPitch.set(-(float) (this.mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0));
+            AvaritiaShaders.cosmicArmorExternalScale.set(1.0f);
+            AvaritiaShaders.cosmicArmorYaw.set((float) (this.mc.player.getYRot() * 2.0f * 3.141592653589793 / 360.0));
+            AvaritiaShaders.cosmicArmorPitch.set(-(float) (this.mc.player.getXRot() * 2.0f * 3.141592653589793 / 360.0));
         }
 
         pPoseStack.pushPose();
         pPoseStack.scale(f, f, f);
         pPoseStack.translate(0.0, this.babyYHeadOffset / 16.0f * f3, 0.0);
-        this.head.render(pPoseStack, material(MASK).buffer(this.bufferSource, AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-        if (InfinityArmorModel.modelRender && !InfinityArmorModel.player) {
-            this.hatsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, AvaritiaRenderTypes::armorMask2), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+        this.head.render(pPoseStack, material(Res.ARMOR_MASK).buffer(this.bufferSource,  AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        if (this.modelRender && !this.player) {
+            this.headParts().forEach(t -> t.render(pPoseStack, material(Res.ARMOR_MASK_INV).buffer(this.bufferSource,  AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
         }
         pPoseStack.popPose();
 
         pPoseStack.pushPose();
         pPoseStack.scale(f2, f2, f2);
         pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
-        this.bodyParts().forEach(t -> t.render(pPoseStack, material(MASK).buffer(this.bufferSource, AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
-        if (InfinityArmorModel.modelRender) {
-            this.bodyPartsOver().forEach(t -> t.render(pPoseStack, material(MASK_INV).buffer(this.bufferSource, AvaritiaRenderTypes::armorMask2), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+        this.bodyParts().forEach(t -> t.render(pPoseStack, material(Res.ARMOR_MASK).buffer(this.bufferSource,  AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
+        if (this.modelRender) {
+            this.bodyParts().forEach(t -> t.render(pPoseStack, material(Res.ARMOR_MASK_INV).buffer(this.bufferSource,  AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha));
         }
-        this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(AvaritiaRenderTypes.glow(Res.EYE_TEX)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5)));
+        this.bodyParts().forEach(t -> t.render(pPoseStack, this.vertex(AvaritiaRenderTypes.Glow(Res.EYE_TEX)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5)));
         pPoseStack.popPose();
 
-        if (InfinityArmorModel.playerFlying && !AvaritiaShaders.inventoryRender) {
+        if (this.playerFlying && !AvaritiaForgeClient.inventoryRender) {
             pPoseStack.pushPose();
             this.rebuildWings();
             pPoseStack.scale(f2, f2, f2);
             pPoseStack.translate(0.0, this.bodyYOffset / 16.0f * f3, 0.0);
-            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(RenderType.armorCutoutNoCull(Res.WING_TEX)), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            model.renderToBufferWing(pPoseStack, this.vertex(RenderType.armorCutoutNoCull(Res.WING_TEX)), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
             //Const.LOGGER.info(material(WING));
-            model.renderToBufferWing(pPoseStack, material(WING).buffer(this.bufferSource, AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-            model.renderToBufferWing(pPoseStack, this.mc.renderBuffers().bufferSource().getBuffer(AvaritiaRenderTypes.glow(Res.WING_GLOW_TEX)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5));
+            model.renderToBufferWing(pPoseStack, material(Res.WING_TEX).buffer(this.bufferSource, AvaritiaRenderTypes::armorMask), pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+            model.renderToBufferWing(pPoseStack, this.vertex(AvaritiaRenderTypes.WingGlow(Res.WING_GLOW_TEX)), pPackedLight, pPackedOverlay, 0.84f, 1.0f, 0.95f, (float) (pulse_mag_sqr * 0.5));
             pPoseStack.popPose();
         }
     }
 
     public void update(final LivingEntity e, final ItemStack itemStack, final EquipmentSlot equipmentSlot) {
-        InfinityArmorModel.modelRender = false;
-        InfinityArmorModel.playerFlying = false;
-        InfinityArmorModel.player = false;
-        final ItemStack hats = e.getItemBySlot(EquipmentSlot.HEAD);
-        final ItemStack chest = e.getItemBySlot(EquipmentSlot.CHEST);
-        final ItemStack leg = e.getItemBySlot(EquipmentSlot.LEGS);
-        final ItemStack foot = e.getItemBySlot(EquipmentSlot.FEET);
-        final boolean hasHat = hats.getItem() == ModItems.infinity_helmet.get();
-        final boolean hasChest = chest.getItem() == ModItems.infinity_chestplate.get();
-        final boolean hasLeg = leg.getItem() == ModItems.infinity_pants.get();
-        final boolean hasFoot = foot.getItem() == ModItems.infinity_boots.get();
+        final ItemStack itemBySlot = e.getItemBySlot(equipmentSlot);
+        final boolean hasHat = itemBySlot.getItem() == ModItems.infinity_helmet.get();
+        final boolean hasChest = itemBySlot.getItem() == ModItems.infinity_chestplate.get();
+        final boolean hasLeg = itemBySlot.getItem() == ModItems.infinity_pants.get();
+        final boolean hasFoot = itemBySlot.getItem() == ModItems.infinity_boots.get();
+
+        this.modelRender = false;
+        this.playerFlying = false;
+        this.player = false;
+
         if (hasHat && hasChest && hasLeg && hasFoot) {
-            InfinityArmorModel.modelRender = true;
+            this.modelRender = true;
         }
         if (e instanceof Player) {
-            InfinityArmorModel.player = true;
+            this.player = true;
             if (hasChest && ((Player) e).getAbilities().flying) {
-                InfinityArmorModel.playerFlying = true;
+                this.playerFlying = true;
             }
         }
         this.crouching = e.isCrouching();
@@ -207,18 +193,6 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         return this.bufferSource.getBuffer(t);
     }
 
-    @Override
-    public @NotNull Iterable<ModelPart> bodyParts() {
-        return ImmutableList.of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg);
-    }
-
-    public Iterable<ModelPart> hatsOver() {
-        return ImmutableList.of(this.humanoidModel.hat, this.humanoidModel.head);
-    }
-
-    public Iterable<ModelPart> bodyPartsOver() {
-        return ImmutableList.of(this.humanoidModel.body, this.humanoidModel.rightArm, this.humanoidModel.leftArm, this.humanoidModel.rightLeg, this.humanoidModel.leftLeg);
-    }
 
     private void copyPartAngles(final ModelPart from, final ModelPart to) {
         to.xRot = from.xRot;
@@ -229,7 +203,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         to.z = from.z;
     }
 
-    private void copyBipedAngles(final HumanoidModel<Player> from, final HumanoidModel<Player> to) {
+    private void copyBipedAngles(final HumanoidModel<LivingEntity> from, final HumanoidModel<LivingEntity> to) {
         this.copyPartAngles(from.head, to.head);
         this.copyPartAngles(from.hat, to.hat);
         this.copyPartAngles(from.body, to.body);
@@ -252,7 +226,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         public void render(final @NotNull PoseStack pPoseStack, final @NotNull MultiBufferSource pBuffer, final int pPackedLight, final @NotNull Player l, final float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
             if (ToolUtils.isInfinite(l)) {
                 AvaritiaShaders.cosmicOpacity.set(2.0f);
-                this.playerParts().forEach(t -> t.render(pPoseStack, InfinityArmorModel.material(MASK_INV).buffer(pBuffer, AvaritiaRenderTypes::armorMask2), pPackedLight, 1, 1.0f, 1.0f, 1.0f, 1.0f));
+                this.playerParts().forEach(t -> t.render(pPoseStack, InfinityArmorModel.material(Res.ARMOR_MASK_INV).buffer(pBuffer, AvaritiaRenderTypes::armorMask), pPackedLight, 1, 1.0f, 1.0f, 1.0f, 1.0f));
             }
         }
     }

@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
+import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -23,6 +24,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.renderFrame;
+import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.renderTime;
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -30,7 +35,6 @@ import java.util.List;
  * @Description:
  */
 public class CosmicBakeModel extends WrappedItemModel {
-    public static final float[] COSMIC_UVS = new float[40];
     private final List<ResourceLocation> maskSprite;
 
     public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
@@ -55,15 +59,13 @@ public class CosmicBakeModel extends WrappedItemModel {
         float yaw = 0.0f;
         float pitch = 0.0f;
         float scale = 1f;
-        if (AvaritiaShaders.inventoryRender || transformType == ItemDisplayContext.GUI) {
+        if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
         } else {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
-
-        AvaritiaShaders.cosmicTime
-                .set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
+        AvaritiaShaders.cosmicTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
@@ -74,13 +76,6 @@ public class CosmicBakeModel extends WrappedItemModel {
             AvaritiaShaders.cosmicOpacity.set(1.0F);
         }
 
-        for (int i = 0; i < 10; ++i) {
-            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Const.rl("misc/cosmic_" + i));
-            COSMIC_UVS[i * 4] = sprite.getU0();
-            COSMIC_UVS[i * 4 + 1] = sprite.getV0();
-            COSMIC_UVS[i * 4 + 2] = sprite.getU1();
-            COSMIC_UVS[i * 4 + 3] = sprite.getV1();
-        }
         if (AvaritiaShaders.cosmicUVs != null) {
             AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
         }

@@ -37,4 +37,7 @@ public class Res {
     public static final ResourceLocation BLACK_HOLE_CHANNEL_SELECT = Const.rl("textures/gui/chest/channel_select.png");
     public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest.png");
 
+    public static ResourceLocation ARMOR_MASK = Const.rl("models/infinity_armor_mask");
+    public static ResourceLocation ARMOR_MASK_INV = Const.rl("models/infinity_armor_mask_inv");
+    public static ResourceLocation ARMOR_WING_MASK = Const.rl("models/infinity_armor_mask_wings");
 }

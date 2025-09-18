@@ -2,19 +2,15 @@ package committee.nova.mods.avaritia.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.C2SChangePagePack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -23,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * @Project: Avaritia
@@ -32,7 +27,7 @@ import java.util.stream.Stream;
  * @Description:
  */
 public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
-    private static final KeyMapping[] SORT_KEYS = new KeyMapping[]{AvaritiaForgeClient.SORT_0, AvaritiaForgeClient.SORT_1, AvaritiaForgeClient.SORT_2, AvaritiaForgeClient.SORT_3, AvaritiaForgeClient.SORT_4, AvaritiaForgeClient.SORT_5, AvaritiaForgeClient.SORT_6, AvaritiaForgeClient.SORT_7, AvaritiaForgeClient.SORT_8, AvaritiaForgeClient.SORT_9};
+    //private static final KeyMapping[] SORT_KEYS = new KeyMapping[]{AvaritiaForgeClient.SORT_0, AvaritiaForgeClient.SORT_1, AvaritiaForgeClient.SORT_2, AvaritiaForgeClient.SORT_3, AvaritiaForgeClient.SORT_4, AvaritiaForgeClient.SORT_5, AvaritiaForgeClient.SORT_6, AvaritiaForgeClient.SORT_7, AvaritiaForgeClient.SORT_8, AvaritiaForgeClient.SORT_9};
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
 
     private final int inventoryRows;
@@ -86,18 +81,18 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if (Stream.of(SORT_KEYS).anyMatch(key -> key.matches(pKeyCode, pScanCode))){
-            for (int i = 0; i < SORT_KEYS.length; i++) {
-               if (SORT_KEYS[i].matches(pKeyCode, pScanCode)) {
-                   super.slotClicked(null, 0, i, ClickType.CLONE);
-                   return true;
-               }
-            }
-            return false;
-        }
-        else {
+//        if (Stream.of(SORT_KEYS).anyMatch(key -> key.matches(pKeyCode, pScanCode))){
+//            for (int i = 0; i < SORT_KEYS.length; i++) {
+//               if (SORT_KEYS[i].matches(pKeyCode, pScanCode)) {
+//                   super.slotClicked(null, 0, i, ClickType.CLONE);
+//                   return true;
+//               }
+//            }
+//            return false;
+//        }
+//        else {
             return super.keyPressed(pKeyCode, pScanCode, pModifiers);
-        }
+        //}
     }
 
     @Override
