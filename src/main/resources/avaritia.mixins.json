@@ -8,8 +8,8 @@
     "FrostWalkerEnchantmentMixin",
     "NetherWartBlockMixin",
     "RecipeManagerMixin",
-    "ItemStackMixin"
-
+    "ItemStackMixin",
+    "PlayerMixin"
   ],
   "client": [
     "ItemRendererMixin",
