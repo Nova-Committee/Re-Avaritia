@@ -49,6 +49,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_bucket = item("infinity_bucket", InfinityBucketItem::new);
     public static RegistryObject<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     public static RegistryObject<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
+    public static RegistryObject<Item> infinity_shield = item("infinity_shield", InfinityShieldItem::new);
 
     //crystal
     public static RegistryObject<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
