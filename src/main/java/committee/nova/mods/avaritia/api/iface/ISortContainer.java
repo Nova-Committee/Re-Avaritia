@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.iface;
 
-import committee.nova.mods.avaritia.api.utils.math.SortingType;
+import committee.nova.mods.avaritia.api.util.math.SortingType;
 
 /**
  * @Project: Avaritia

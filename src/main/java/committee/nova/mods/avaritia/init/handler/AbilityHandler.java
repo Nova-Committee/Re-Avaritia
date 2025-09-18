@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.handler;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import committee.nova.mods.avaritia.api.utils.PlayerUtils;
+import committee.nova.mods.avaritia.api.util.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.server.level.ServerPlayer;

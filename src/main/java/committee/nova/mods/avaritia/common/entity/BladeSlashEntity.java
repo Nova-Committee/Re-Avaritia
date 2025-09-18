@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
-import committee.nova.mods.avaritia.api.utils.EntityUtils;
+import committee.nova.mods.avaritia.api.util.EntityUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.world.entity.EntityType;
@@ -13,7 +13,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
 

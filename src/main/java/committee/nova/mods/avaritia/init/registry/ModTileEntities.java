@@ -67,6 +67,4 @@ public class ModTileEntities {
 //    public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.json.get()});
     public static RegistryObject<BlockEntityType<TesseractTile>> tesseract_tile = blockEntity("tesseract_tile", TesseractTile::new, () -> new Block[]{ModBlocks.tesseract.get()});
     public static RegistryObject<BlockEntityType<InfiniteChestBlockEntity>> infinity_chest_block_entity = blockEntity("infinity_chest_block_entity", InfiniteChestBlockEntity::new, () -> new Block[]{ModBlocks.tesseract.get()});
-    public static RegistryObject<BlockEntityType<RecipeGeneratorTile>> recipe_generator_tile = blockEntity("recipe_generator_tile", RecipeGeneratorTile::new, () -> new Block[]{ModBlocks.tesseract.get()});
-
 }

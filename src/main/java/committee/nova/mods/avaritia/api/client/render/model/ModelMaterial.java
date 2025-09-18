@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.render.model;
 import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.AttributeKey;
 import committee.nova.mods.avaritia.api.client.util.colour.Colour;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
-import committee.nova.mods.avaritia.api.utils.java.Copyable;
+import committee.nova.mods.avaritia.api.util.java.Copyable;
 import org.jetbrains.annotations.Nullable;
 
 /**

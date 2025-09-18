@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.api.client.render.lighting;
 
 import committee.nova.mods.avaritia.api.client.util.VectorUtils;
-import committee.nova.mods.avaritia.api.utils.java.Copyable;
-import committee.nova.mods.avaritia.api.utils.vec.Rotation;
-import committee.nova.mods.avaritia.api.utils.vec.Vector3;
+import committee.nova.mods.avaritia.api.util.java.Copyable;
+import committee.nova.mods.avaritia.api.util.vec.Rotation;
+import committee.nova.mods.avaritia.api.util.vec.Vector3;
 
 public class LC implements Copyable<LC> {
 

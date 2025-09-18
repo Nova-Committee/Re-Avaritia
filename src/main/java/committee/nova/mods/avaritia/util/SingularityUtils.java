@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.utils.NBTUtils;
+import committee.nova.mods.avaritia.api.util.NBTUtils;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.common.slot;
 
-import committee.nova.mods.avaritia.api.utils.ItemUtils;
+import committee.nova.mods.avaritia.api.util.ItemUtils;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;

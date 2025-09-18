@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.common.crafting.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import committee.nova.mods.avaritia.api.utils.java.TriFunction;
+import committee.nova.mods.avaritia.api.util.java.TriFunction;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;

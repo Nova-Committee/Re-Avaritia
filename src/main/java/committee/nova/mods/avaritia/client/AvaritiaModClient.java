@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.client.model.*;
+import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -60,6 +61,11 @@ public class AvaritiaModClient {
         ModMenus.onClientSetup();
         ModTileEntities.onClientSetup();
         ModSearches.onClientSetup();
+    }
+
+    @SubscribeEvent
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event){
+        event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

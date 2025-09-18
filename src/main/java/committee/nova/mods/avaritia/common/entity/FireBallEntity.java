@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
-import committee.nova.mods.avaritia.api.utils.PlayerUtils;
+import committee.nova.mods.avaritia.api.util.PlayerUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;

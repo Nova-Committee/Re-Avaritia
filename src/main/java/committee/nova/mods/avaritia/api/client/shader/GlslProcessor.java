@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.shader;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.mojang.blaze3d.preprocessor.GlslPreprocessor;
-import committee.nova.mods.avaritia.api.utils.io.IOUtil;
+import committee.nova.mods.avaritia.api.util.io.IOUtil;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.Minecraft;

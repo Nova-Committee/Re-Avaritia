@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.item.singularity;
 
-import committee.nova.mods.avaritia.api.utils.lang.Localizable;
+import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;

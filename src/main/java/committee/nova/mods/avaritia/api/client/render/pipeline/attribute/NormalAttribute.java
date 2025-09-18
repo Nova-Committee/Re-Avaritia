@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.api.client.render.pipeline.attribute;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.VertexAttribute;
-import committee.nova.mods.avaritia.api.utils.vec.Rotation;
-import committee.nova.mods.avaritia.api.utils.vec.Vector3;
+import committee.nova.mods.avaritia.api.util.vec.Rotation;
+import committee.nova.mods.avaritia.api.util.vec.Vector3;
 
 /**
  * Apples normals to the render operation. If the model is a planar model it uses known normals.

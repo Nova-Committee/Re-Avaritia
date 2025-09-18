@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package committee.nova.mods.avaritia.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class InfinityTridentRender extends EntityRenderer<InfinityThrownTrident> {
@@ -42,7 +38,8 @@ public class InfinityTridentRender extends EntityRenderer<InfinityThrownTrident>
         super.render(p_116111_, p_116112_, p_116113_, p_116114_, p_116115_, p_116116_);
     }
 
-    public ResourceLocation getTextureLocation(InfinityThrownTrident p_116109_) {
+    @Override
+    public @NotNull ResourceLocation getTextureLocation(@NotNull InfinityThrownTrident thrownTrident) {
         return TRIDENT_LOCATION;
     }
 }

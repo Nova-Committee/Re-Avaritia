@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.client.util;
 
-import committee.nova.mods.avaritia.api.utils.vec.Vector3;
+import committee.nova.mods.avaritia.api.util.vec.Vector3;
 import net.minecraft.core.Direction;
 
 /**

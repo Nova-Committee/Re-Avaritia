@@ -50,6 +50,7 @@ public class Avaritia {
         ModMenus.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModEnchants.ENCHANTMENT.register(bus);
+        ModParticles.PARTICLE_TYPE.register(bus);
         ModRecipeTypes.RECIPES.register(bus);
         ModRecipeSerializers.SERIALIZERS.register(bus);
 

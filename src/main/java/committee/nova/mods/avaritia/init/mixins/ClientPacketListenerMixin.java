@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.mixins;
 
 import com.mojang.authlib.GameProfile;
-import committee.nova.mods.avaritia.api.utils.RecipeUtils;
+import committee.nova.mods.avaritia.api.util.RecipeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;

@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
-import committee.nova.mods.avaritia.api.utils.game.CraftingRecipeGridIndexGetter;
-import committee.nova.mods.avaritia.api.utils.math.InvItemCounter;
+import committee.nova.mods.avaritia.api.util.game.CraftingRecipeGridIndexGetter;
+import committee.nova.mods.avaritia.api.util.math.InvItemCounter;
 import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
 import committee.nova.mods.avaritia.common.menu.provider.ChannelSelectMenuProvider;
 import committee.nova.mods.avaritia.common.net.C2SWipChestActionPack;

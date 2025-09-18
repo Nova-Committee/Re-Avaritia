@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
+import committee.nova.mods.avaritia.api.util.lang.TextUtils;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -38,23 +38,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
-import top.theillusivec4.curios.api.CuriosApi;
-
-import java.util.Set;
 
 /**
  * Description:

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.pipeline;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.AttributeKey;
-import committee.nova.mods.avaritia.api.utils.vec.Vertex5;
+import committee.nova.mods.avaritia.api.util.vec.Vertex5;
 import org.jetbrains.annotations.Nullable;
 
 /**

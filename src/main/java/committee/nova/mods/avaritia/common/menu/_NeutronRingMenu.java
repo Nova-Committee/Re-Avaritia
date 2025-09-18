@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.container.OffsetContainer;
 import committee.nova.mods.avaritia.api.common.menu.BaseMenu;
 import committee.nova.mods.avaritia.api.iface.IChangePage;
-import committee.nova.mods.avaritia.api.utils.InventoryUtils;
+import committee.nova.mods.avaritia.api.util.InventoryUtils;
 import committee.nova.mods.avaritia.common.wrappers.RingStorageWrapper;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;

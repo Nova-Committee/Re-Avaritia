@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.api.client.render.buffer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.api.utils.vec.Matrix4;
-import committee.nova.mods.avaritia.api.utils.vec.Transformation;
-import committee.nova.mods.avaritia.api.utils.vec.Vector3;
+import committee.nova.mods.avaritia.api.util.vec.Matrix4;
+import committee.nova.mods.avaritia.api.util.vec.Transformation;
+import committee.nova.mods.avaritia.api.util.vec.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.api.utils.RecipeUtils;
+import committee.nova.mods.avaritia.api.util.RecipeUtils;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;

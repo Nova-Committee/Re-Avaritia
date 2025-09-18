@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.api.client.render.model;
 
 import committee.nova.mods.avaritia.api.client.render.CCModel;
-import committee.nova.mods.avaritia.api.utils.vec.Vector3;
-import committee.nova.mods.avaritia.api.utils.vec.uv.UV;
+import committee.nova.mods.avaritia.api.util.vec.Vector3;
+import committee.nova.mods.avaritia.api.util.vec.uv.UV;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
