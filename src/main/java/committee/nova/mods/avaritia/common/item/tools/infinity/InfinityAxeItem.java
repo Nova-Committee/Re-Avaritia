@@ -99,42 +99,43 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
     }
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (entity instanceof ServerPlayer livingEntity && !livingEntity.level().isClientSide()) {
+        if (entity instanceof ServerPlayer livingEntity) {
+            Level level = livingEntity.level();
 
-            if (livingEntity.isUsingItem() && livingEntity.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
-                ItemStack shieldStack = livingEntity.getUseItem();
-                ShieldItem shieldItem = (ShieldItem) shieldStack.getItem();
+            if (!level.isClientSide()) {
+                if (livingEntity.isUsingItem() && livingEntity.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
+                    ItemStack shieldStack = livingEntity.getUseItem();
+                    ShieldItem shieldItem = (ShieldItem) shieldStack.getItem();
 
+                    boolean isInfinityShield = shieldStack.is(ModItems.infinity_shield.get());
 
-                boolean isInfinityShield = shieldStack.is(ModItems.infinity_shield.get());
+                    if (level instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(ParticleTypes.EXPLOSION,
+                                livingEntity.getX(),
+                                livingEntity.getY() + livingEntity.getBbHeight() / 2,
+                                livingEntity.getZ(),
+                                1, 0.0D, 0.0D, 0.0D, 0.0D);
 
+                        serverLevel.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(),
+                                SoundEvents.GENERIC_EXPLODE,
+                                SoundSource.BLOCKS,
+                                1.0F, 1.0F);
+                    }
 
-                if (livingEntity.level() instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(ParticleTypes.EXPLOSION,
-                            livingEntity.getX(),
-                            livingEntity.getY() + livingEntity.getBbHeight() / 2,
-                            livingEntity.getZ(),
-                            1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    // 如果是无尽盾，只产生粒子效果
+                    if (isInfinityShield) {
+                        return true;
+                    }
 
-                    serverLevel.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(),
-                            SoundEvents.GENERIC_EXPLODE,
-                            SoundSource.BLOCKS,
-                            1.0F, 1.0F);
+                    livingEntity.stopUsingItem();
+
+                    if (shieldStack.getDamageValue() >= shieldStack.getMaxDamage() - 1) {
+                        livingEntity.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                    } else {
+                        shieldStack.setDamageValue(shieldStack.getMaxDamage() - 1);
+                    }
+                    livingEntity.getCooldowns().addCooldown(shieldItem, 1200);
                 }
-
-                // 如果是无尽盾，只产生粒子效果
-                if (isInfinityShield) {
-                    return true;
-                }
-
-                livingEntity.stopUsingItem();
-
-                if (shieldStack.getDamageValue() >= shieldStack.getMaxDamage() - 1) {
-                    livingEntity.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-                } else {
-                    shieldStack.setDamageValue(shieldStack.getMaxDamage() - 1);
-                }
-                livingEntity.getCooldowns().addCooldown(shieldItem, 1200);
             }
         }
         return super.onLeftClickEntity(stack, player, entity);
