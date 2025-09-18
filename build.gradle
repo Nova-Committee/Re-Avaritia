@@ -3,18 +3,107 @@ plugins {
     id "maven-publish"
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir 'src/generated/resources'
-        }
-    }
+version = mc_version + "-" + mod_version + "-" + mod_version_tag
+group = mod_group_id
+base {
+    archivesName = mod_name
 }
 
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.deprecation = false
+    options.compilerArgs << "-Xmaxerrs" << "9999"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
-def extraModsDir = "extra-mods-${mc_version}"
+def extraModsDir = "libs-${mc_version}"
 file(extraModsDir).mkdir()
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://maven.shedaniel.me/"
+        content {
+            includeGroup "me.shedaniel"
+            includeGroup "me.shedaniel.cloth"
+            includeGroup "dev.architectury"
+        }
+    }
+    maven {
+        url "https://maven2.bai.lol"
+        content {
+            includeGroup "mcp.mobius.waila"
+            includeGroup "lol.bai"
+        }
+    }
+    maven {
+        url "https://maven.parchmentmc.net/"
+        content {
+            includeGroup "org.parchmentmc.data"
+        }
+    }
+    // For the "No Indium?" mod
+    maven {
+        url 'https://maven.cafeteria.dev/releases/'
+        content {
+            includeGroup "me.luligabi"
+        }
+    }
+
+    maven {
+        name 'modmaven'
+        url "https://modmaven.dev/"
+        content {
+            includeGroup "mezz.jei"
+        }
+    }
+
+    maven {
+        name 'cursemaven'
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+
+    maven {
+        url "https://maven.blamejared.com"
+        content {
+            includeGroup "vazkii.patchouli"
+            includeGroup "com.blamejared.crafttweaker"
+        }
+    }
+    flatDir {
+        name "extra-mods"
+        dir file(extraModsDir)
+    }
+    maven { // for TOP
+        url "https://maven.k-4u.nl/"
+        content {
+            includeGroup "mcjty"
+        }
+    }
+    maven {
+        url "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+    maven { url = 'https://repo.spongepowered.org/maven' }
+    maven { url = "https://maven.covers1624.net/" }
+    maven { url = 'https://maven.theillusivec4.top/' }
+    maven { url = 'https://maven.melanx.de/' }
+    maven { url = "https://maven.architectury.dev" }
+    maven { url = "https://maven.saps.dev/minecraft" }
+    maven { url = 'https://www.jitpack.io' }
+    maven { url = "https://maven.terraformersmc.com/" }
+}
 
 dependencies {
 
@@ -107,107 +196,6 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-version = mc_version + "-" + mod_version + "-" + mod_version_tag
-group = mod_group_id
-base {
-    archivesName = mod_name
-}
-
-
-compileJava.options.encoding = 'UTF-8'
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-    options.deprecation = false
-    options.compilerArgs << "-Xmaxerrs" << "9999"
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url "https://maven.shedaniel.me/"
-        content {
-            includeGroup "me.shedaniel"
-            includeGroup "me.shedaniel.cloth"
-            includeGroup "dev.architectury"
-        }
-    }
-    maven {
-        url "https://maven2.bai.lol"
-        content {
-            includeGroup "mcp.mobius.waila"
-            includeGroup "lol.bai"
-        }
-    }
-    maven {
-        url "https://maven.parchmentmc.net/"
-        content {
-            includeGroup "org.parchmentmc.data"
-        }
-    }
-    // For the "No Indium?" mod
-    maven {
-        url 'https://maven.cafeteria.dev/releases/'
-        content {
-            includeGroup "me.luligabi"
-        }
-    }
-
-    maven {
-        name 'modmaven'
-        url "https://modmaven.dev/"
-        content {
-            includeGroup "mezz.jei"
-        }
-    }
-
-    maven {
-        name 'cursemaven'
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-
-    maven {
-        url "https://maven.blamejared.com"
-        content {
-            includeGroup "vazkii.patchouli"
-            includeGroup "com.blamejared.crafttweaker"
-        }
-    }
-
-    flatDir {
-        name "extra-mods"
-        dir file(extraModsDir)
-    }
-    maven { // for TOP
-        url "https://maven.k-4u.nl/"
-        content {
-            includeGroup "mcjty"
-        }
-    }
-    maven {
-        url "https://maven.latvian.dev/releases"
-        content {
-            includeGroup "dev.latvian.mods"
-            includeGroup "dev.latvian.apps"
-        }
-    }
-    maven { url = 'https://repo.spongepowered.org/maven' }
-    maven { url = "https://maven.covers1624.net/" }
-    maven { url = 'https://maven.theillusivec4.top/' }
-    maven { url = 'https://maven.melanx.de/' }
-    maven { url = "https://maven.architectury.dev" }
-    maven { url = "https://maven.saps.dev/minecraft" }
-    maven { url = 'https://www.jitpack.io' }
-    maven { url = "https://maven.terraformersmc.com/" }
-}
-
-
 test {
     useJUnitPlatform()
 }
@@ -223,6 +211,12 @@ Map<String, String> commonSystemProperties = [
 
 legacyForge {
     version = "${mc_version}-${forge_version}"
+    parchment {
+        // Get versions from https://parchmentmc.org/docs/getting-started
+        // Omit the "v"-prefix in mappingsVersion
+        minecraftVersion = "${mc_version}"
+        mappingsVersion = "${mapping_version}"
+    }
     validateAccessTransformers = true
     accessTransformers = [
             "src/main/resources/META-INF/accesstransformer.cfg"
@@ -276,6 +270,14 @@ legacyForge {
 
 //////////////
 // Artifacts
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+}
+
 Map<String, String> expansionVariables = [
         "project_version"        : project.version,
         'minecraft_version'      : project.mc_version,
