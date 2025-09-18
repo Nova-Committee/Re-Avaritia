@@ -29,7 +29,7 @@ import java.util.Map;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2024/12/23 12:43
- * @Description:
+ * @Description: Don't forget this code! The text color.
  */
 public class ExtremeAnvilMenu extends ItemCombinerMenu {
     private String itemName;

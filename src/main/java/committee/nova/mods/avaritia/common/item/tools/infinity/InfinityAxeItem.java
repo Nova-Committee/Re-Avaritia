@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
@@ -97,11 +98,14 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (entity instanceof ServerPlayer livingEntity && !livingEntity.level().isClientSide()) {
+
             if (livingEntity.isUsingItem() && livingEntity.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
                 ItemStack shieldStack = livingEntity.getUseItem();
                 ShieldItem shieldItem = (ShieldItem) shieldStack.getItem();
 
-                livingEntity.stopUsingItem();
+
+                boolean isInfinityShield = shieldStack.is(ModItems.infinity_shield.get());
+
 
                 if (livingEntity.level() instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.EXPLOSION,
@@ -110,6 +114,13 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
                             livingEntity.getZ(),
                             1, 0.0D, 0.0D, 0.0D, 0.0D);
                 }
+
+                // 如果是无尽盾，只产生粒子效果
+                if (isInfinityShield) {
+                    return true;
+                }
+
+                livingEntity.stopUsingItem();
 
                 if (shieldStack.getDamageValue() >= shieldStack.getMaxDamage() - 1) {
                     livingEntity.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
