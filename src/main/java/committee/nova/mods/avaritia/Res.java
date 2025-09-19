@@ -1,9 +1,7 @@
 package committee.nova.mods.avaritia;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 
 /**
  * @Project: Avaritia
@@ -39,6 +37,7 @@ public class Res {
     public static final ResourceLocation BLACK_HOLE_CHANNEL_PANEL = Const.rl("textures/gui/chest/channel_panel.png");
     public static final ResourceLocation BLACK_HOLE_CHANNEL_SELECT = Const.rl("textures/gui/chest/channel_select.png");
     public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest.png");
+    public static final ResourceLocation ARC_TEX = Const.rl("textures/effect/line_segment.png");
 
     public static TextureAtlasSprite ARMOR_MASK;
     public static TextureAtlasSprite ARMOR_MASK_INV;

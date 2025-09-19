@@ -80,24 +80,6 @@ public abstract class WrappedItemModel implements PerspectiveModel {
         return quads;
     }
 
-    public static <E> void checkArgument(final E argument, final Predicate<E> predicate) {
-        if (predicate.test(argument)) {
-            throw new RuntimeException("");
-        }
-    }
-
-    public static <T> boolean isNullOrContainsNull(final T[] input) {
-        if (input != null) {
-            for (final T t : input) {
-                if (t == null) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return true;
-    }
-
     public boolean isCosmic() {
         return false;
     }
@@ -166,8 +148,8 @@ public abstract class WrappedItemModel implements PerspectiveModel {
     protected void renderWrapped(ItemStack stack, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, boolean fabulous, Function<VertexConsumer, VertexConsumer> consOverride) {
         BakedModel model = this.wrapped.getOverrides().resolve(this.wrapped, stack, this.world, this.entity, 0);
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        for (BakedModel bakedModel : model.getRenderPasses(stack, true)) {
-            for (RenderType rendertype : bakedModel.getRenderTypes(stack, true)) {
+        for (BakedModel bakedModel : model.getRenderPasses(stack, fabulous)) {
+            for (RenderType rendertype : bakedModel.getRenderTypes(stack, fabulous)) {
                 itemRenderer.renderModelLists(bakedModel, stack, packedLight, packedOverlay, pStack,
                         consOverride.apply(buffers.getBuffer(rendertype)));
             }

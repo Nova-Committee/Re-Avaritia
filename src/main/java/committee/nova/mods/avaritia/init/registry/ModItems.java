@@ -36,7 +36,6 @@ public class ModItems {
     public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
     public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
     public static RegistryObject<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
-    public static RegistryObject<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
 /**
      * Tools
      */
@@ -50,6 +49,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     public static RegistryObject<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
     public static RegistryObject<Item> infinity_shield = item("infinity_shield", InfinityShieldItem::new);
+    public static RegistryObject<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
 
     //crystal
     public static RegistryObject<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);

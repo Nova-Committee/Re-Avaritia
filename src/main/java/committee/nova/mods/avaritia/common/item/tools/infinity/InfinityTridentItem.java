@@ -19,10 +19,7 @@ import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 public class InfinityTridentItem extends TridentItem implements IUndamageable, ISwitchable {
 
@@ -49,7 +46,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                             }
 
                             level.addFreshEntity(throwntrident);
-                            level.playSound((Player)null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+                            level.playSound(null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
                             if (!player.getAbilities().instabuild) {
                                 player.getInventory().removeItem(itemStack);
                             }
@@ -89,10 +86,5 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 }
             }
         }
-    }
-
-    @Override
-    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
     }
 }

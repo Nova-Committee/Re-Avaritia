@@ -76,7 +76,6 @@ public class HaloModelLoader implements IGeometryLoader<HaloModelLoader.HaloItem
         private final String texture;
         private final int color;
         private final int size;
-        ;
         private final boolean pulse;
 
 

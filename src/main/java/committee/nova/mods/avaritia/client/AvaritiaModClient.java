@@ -11,17 +11,15 @@ import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
@@ -32,6 +30,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import java.util.Map;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
@@ -130,6 +130,7 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register("cosmic", CosmicModelLoader.INSTANCE);
+        event.register("cosmic_arc", CosmicArcModelLoader.INSTANCE);
         event.register("hell", HellModelLoader.INSTANCE);
         event.register("eternal", EternalModelLoader.INSTANCE);
         event.register("unstable", UnstableModelLoader.INSTANCE);
@@ -151,6 +152,13 @@ public class AvaritiaModClient {
             LivingEntityRenderer eventSkin = event.getSkin(model);
             eventSkin.addLayer(new InfinityArmorRender(eventSkin, event.getEntityModels(), model.equals(DefaultPlayerSkin.ModelType.SLIM.name())));
         }
+    }
+
+    @SubscribeEvent
+    public static void onModelBaked(ModelEvent.ModifyBakingResult event){
+        Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
+       // ModelResourceLocation location = new ModelResourceLocation(Const.getItemName(ModItems.infinity_trident.get()), "inventory");
+
     }
 
     public static int getCurrentRainbowColor() {
