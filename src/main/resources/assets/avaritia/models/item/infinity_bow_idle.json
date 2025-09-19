@@ -5,6 +5,6 @@
   },
   "loader": "avaritia:hell",
   "hell": {
-    "mask": "avaritia:mask/infinity_bow/idle_mask"
+    "mask": "avaritia:mask/item/infinity_bow/idle_mask"
   }
 }

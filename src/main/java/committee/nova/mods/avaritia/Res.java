@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 
 /**
  * @Project: Avaritia
@@ -22,9 +25,9 @@ public class Res {
 
     public static final ResourceLocation NEUTRON_HORSE_ARMOR = Const.rl("textures/item/armor/horse/neutron_horse_armor.png");
 
-    public static final ResourceLocation EYE_TEX = Const.rl("textures/models/infinity_armor_eyes.png");
-    public static final ResourceLocation WING_TEX = Const.rl("textures/models/infinity_armor_wing.png");
-    public static final ResourceLocation WING_GLOW_TEX = Const.rl("textures/models/infinity_armor_wing_glow.png");
+    public static final ResourceLocation EYE_TEX = Const.rl("textures/models/armor/infinity_armor_eyes.png");
+    public static final ResourceLocation WING_TEX = Const.rl("textures/models/armor/infinity_armor_wing.png");
+    public static final ResourceLocation WING_GLOW_TEX = Const.rl("textures/models/armor/infinity_armor_wing_glow.png");
 
     public static final ResourceLocation INFINITY_CLOCK_TIME_TEX = Const.rl("textures/gui/machine/infinity_clock_time.png");
     public static final ResourceLocation NEUTRON_COLLECTOR_TEX = Const.rl("textures/gui/machine/neutron_collector.png");
@@ -37,7 +40,7 @@ public class Res {
     public static final ResourceLocation BLACK_HOLE_CHANNEL_SELECT = Const.rl("textures/gui/chest/channel_select.png");
     public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest.png");
 
-    public static ResourceLocation ARMOR_MASK = Const.rl("models/infinity_armor_mask");
-    public static ResourceLocation ARMOR_MASK_INV = Const.rl("models/infinity_armor_mask_inv");
-    public static ResourceLocation ARMOR_WING_MASK = Const.rl("models/infinity_armor_mask_wings");
+    public static TextureAtlasSprite ARMOR_MASK;
+    public static TextureAtlasSprite ARMOR_MASK_INV;
+    public static TextureAtlasSprite ARMOR_WING_MASK;
 }

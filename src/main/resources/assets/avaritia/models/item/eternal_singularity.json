@@ -13,6 +13,6 @@
     "pulse": false
   },
   "cosmic": {
-    "mask": "avaritia:mask/eternal_singularity_mask"
+    "mask": "avaritia:mask/item/eternal_singularity_mask"
   }
 }

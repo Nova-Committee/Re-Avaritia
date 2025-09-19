@@ -13,6 +13,6 @@
   ],
   "loader": "avaritia:eternal",
   "eternal": {
-    "mask": "avaritia:mask/matter_cluster_empty_mask"
+    "mask": "avaritia:mask/item/matter_cluster_empty_mask"
   }
 }

@@ -1,18 +1,26 @@
 package committee.nova.mods.avaritia.client;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.client.model.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
+import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
@@ -29,6 +37,7 @@ import static committee.nova.mods.avaritia.Const.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_SPRITES;
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.ETERNAL_SPRITES;
 
 /**
  * Author cnlimiter
@@ -70,16 +79,26 @@ public class AvaritiaModClient {
         event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onTexturesSwitchPost(TextureStitchEvent.Post event){
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             for (int i = 0; i < COSMIC_SPRITES.length; i++) {
-                COSMIC_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/cosmic_" + i));
+                COSMIC_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/cosmic/cosmic_" + i));
                 AvaritiaShaders.COSMIC_UVS[i * 4] = COSMIC_SPRITES[i].getU0();
                 AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = COSMIC_SPRITES[i].getV0();
                 AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = COSMIC_SPRITES[i].getU1();
                 AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = COSMIC_SPRITES[i].getV1();
             }
+            for (int i = 0; i < ETERNAL_SPRITES.length; i++) {
+                ETERNAL_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/eternal/eternal_" + i));
+                AvaritiaShaders.ETERNAL_UVS[i * 4] = ETERNAL_SPRITES[i].getU0();
+                AvaritiaShaders.ETERNAL_UVS[i * 4 + 1] = ETERNAL_SPRITES[i].getV0();
+                AvaritiaShaders.ETERNAL_UVS[i * 4 + 2] = ETERNAL_SPRITES[i].getU1();
+                AvaritiaShaders.ETERNAL_UVS[i * 4 + 3] = ETERNAL_SPRITES[i].getV1();
+            }
+            Res.ARMOR_MASK = event.getAtlas().getSprite(Const.rl("mask/armor/infinity_armor_mask"));
+            Res.ARMOR_MASK_INV = event.getAtlas().getSprite(Const.rl("mask/armor/infinity_armor_mask_inv"));
+            Res.ARMOR_WING_MASK = event.getAtlas().getSprite(Const.rl("mask/armor/infinity_armor_mask_wings"));
         }
     }
 
@@ -111,15 +130,26 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register("cosmic", CosmicModelLoader.INSTANCE);
+        event.register("hell", HellModelLoader.INSTANCE);
+        event.register("eternal", EternalModelLoader.INSTANCE);
+        event.register("unstable", UnstableModelLoader.INSTANCE);
         event.register("halo", HaloModelLoader.INSTANCE);
         event.register("halo_cosmic", HaloCosmicModelLoader.INSTANCE);
+        event.register("halo_eternal", HaloEternalModelLoader.INSTANCE);
     }
 
     @SubscribeEvent
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
+        EntityRenderer<?> entityRenderer = event.getRenderer(EntityType.PLAYER);
+        if (entityRenderer instanceof PlayerRenderer playerRenderer) {
+            if (playerRenderer.getModel() instanceof HumanoidModel) {
+                playerRenderer.addLayer(new InfinityArmorRender(playerRenderer, event.getEntityModels(), false));
+            }
+        }
+
         for (var model : event.getSkins()) {
             LivingEntityRenderer eventSkin = event.getSkin(model);
-            eventSkin.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>) eventSkin));
+            eventSkin.addLayer(new InfinityArmorRender(eventSkin, event.getEntityModels(), model.equals(DefaultPlayerSkin.ModelType.SLIM.name())));
         }
     }
 

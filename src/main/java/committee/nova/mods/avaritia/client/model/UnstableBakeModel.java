@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
@@ -25,19 +26,15 @@ import java.util.List;
 
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 
-/**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/11/14 22:58
- * @Description:
- */
-public class CosmicBakeModel extends WrappedItemModel {
+
+public class UnstableBakeModel extends WrappedItemModel {
     private final List<ResourceLocation> maskSprite;
 
-    public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
+    public UnstableBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
     }
+
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
@@ -62,28 +59,32 @@ public class CosmicBakeModel extends WrappedItemModel {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
-        AvaritiaShaders.cosmicTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
-        AvaritiaShaders.cosmicYaw.set(yaw);
-        AvaritiaShaders.cosmicPitch.set(pitch);
-        AvaritiaShaders.cosmicExternalScale.set(scale);
+
+
+        AvaritiaShaders.unstableTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
+        AvaritiaShaders.unstableYaw.set(yaw);
+        AvaritiaShaders.unstablePitch.set(pitch);
+        AvaritiaShaders.unstableExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.unstableOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.cosmicOpacity.set(1.0F);
+            AvaritiaShaders.unstableOpacity.set(1.5F);
         }
 
-        if (AvaritiaShaders.cosmicUVs != null) {
-            AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
+        if (AvaritiaShaders.unstableUVs != null) {
+            AvaritiaShaders.unstableUVs.set(COSMIC_UVS);
         }
 
-        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.COSMIC);
+        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.UNSTABLE);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
     }
+
+
 
     @Override
     public @Nullable PerspectiveModelState getModelState() {

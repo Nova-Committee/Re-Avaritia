@@ -56,6 +56,6 @@
   ],
   "loader": "avaritia:eternal",
   "eternal": {
-    "mask": "avaritia:mask/infinity_bow/idle_mask"
+    "mask": "avaritia:mask/item/infinity_bow/idle_mask"
   }
 }

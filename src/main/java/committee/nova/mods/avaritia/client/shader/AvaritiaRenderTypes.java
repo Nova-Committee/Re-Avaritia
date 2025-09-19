@@ -95,18 +95,40 @@ public class AvaritiaRenderTypes {
                         .createCompositeState(true));
     }
 
-    public static RenderType armorMask(final ResourceLocation tex) {
-        return RenderType.create(Const.rl( "armor_mask").toString(),
-                DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
-                RenderType.CompositeState.builder()
-                        .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
-                        .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
-                        .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-                        .setLightmapState(RenderType.LIGHTMAP)
-                        .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                        .setCullState(RenderType.NO_CULL)
-                        .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
-                        .createCompositeState(true));
-    }
+    public static RenderType HELL = RenderType.create(
+            Const.rl("hell").toString(), DefaultVertexFormat.BLOCK,
+            VertexFormat.Mode.QUADS, 2097152, true, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.HELL_SHADER))
+                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .createCompositeState(true)
+    );
+
+    public static RenderType ETERNAL = RenderType.create(
+            Const.rl("eternal").toString(), DefaultVertexFormat.BLOCK,
+            VertexFormat.Mode.QUADS, 2097152, true, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.ETERNAL_SHADER))
+                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .createCompositeState(true)
+    );
+
+    public static RenderType UNSTABLE = RenderType.create(
+            Const.rl("unstable").toString(), DefaultVertexFormat.BLOCK,
+            VertexFormat.Mode.QUADS, 2097152, true, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.UNSTABLE_SHADER))
+                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .createCompositeState(true)
+    );
 
 }

@@ -3,13 +3,11 @@ package committee.nova.mods.avaritia.common.item.tools;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.api.util.lang.TextUtils;
-import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModArmorMaterial;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -24,12 +22,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Description:
@@ -40,7 +36,7 @@ import java.util.function.Consumer;
 public class InfinityArmorItem extends ArmorItem implements IUndamageable {
     public InfinityArmorItem(Type pSlot) {
         super(
-                ModArmorMaterial.infinite_armor,
+                ModArmorMaterial.INFINITY_ARMOR,
                 pSlot,
                 new Properties()
                         .rarity(ModRarities.COSMIC)
@@ -109,20 +105,9 @@ public class InfinityArmorItem extends ArmorItem implements IUndamageable {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public @NotNull HumanoidModel<LivingEntity> getHumanoidArmorModel(LivingEntity entityLiving, ItemStack itemstack, EquipmentSlot armorSlot, HumanoidModel _deafult) {
-                InfinityArmorModel model = new InfinityArmorModel();
-                model.update(entityLiving, itemstack, armorSlot);
-                return model;
-            }
-        });
-    }
 
-    @Override
-    public @Nullable String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return Const.MOD_ID + ":textures/models/infinity_armor.png";
-    }
+//    @Override
+//    public @Nullable String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+//        return Const.MOD_ID + ":textures/models/infinity_armor.png";
+//    }
 }

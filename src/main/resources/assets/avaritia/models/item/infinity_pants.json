@@ -5,6 +5,6 @@
   },
   "loader": "avaritia:cosmic",
   "cosmic": {
-    "mask": "avaritia:mask/infinity_pants_mask"
+    "mask": "avaritia:mask/item/infinity_pants_mask"
   }
 }

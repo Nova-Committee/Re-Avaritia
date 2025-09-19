@@ -5,6 +5,6 @@
   },
   "loader": "avaritia:hell",
   "hell": {
-    "mask": "avaritia:mask/test_sword_mask"
+    "mask": "avaritia:mask/item/test_sword_mask"
   }
 }

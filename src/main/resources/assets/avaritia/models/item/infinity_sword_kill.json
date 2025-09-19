@@ -6,6 +6,6 @@
   },
   "loader": "avaritia:hell",
   "hell": {
-    "mask": "avaritia:mask/infinity_sword_mask"
+    "mask": "avaritia:mask/item/infinity_sword_mask"
   }
 }

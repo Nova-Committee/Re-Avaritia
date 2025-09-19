@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IronGolemRenderer;
@@ -16,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
  * @description
  * @date 2024/4/5 11:35
  */
-public class InfinityGolemRenderer extends IronGolemRenderer {
-    public InfinityGolemRenderer(EntityRendererProvider.Context p_174188_) {
+public class InfinityGolemRender extends IronGolemRenderer {
+    public InfinityGolemRender(EntityRendererProvider.Context p_174188_) {
         super(p_174188_);
     }
 

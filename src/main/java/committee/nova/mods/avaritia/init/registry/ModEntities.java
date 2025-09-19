@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -132,7 +131,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
-        EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRenderer::new);
+        EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRender::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
         EntityRenderers.register(ModEntities.BLADE_SLASH.get(), BladeSlashRender::new);
         EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);

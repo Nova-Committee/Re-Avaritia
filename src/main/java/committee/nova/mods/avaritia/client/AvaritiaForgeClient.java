@@ -46,6 +46,7 @@ import java.util.TreeSet;
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
+    public static long lastTime = System.currentTimeMillis();
     public static int renderTime;
     public static float renderFrame;
     public static boolean inventoryRender = false;

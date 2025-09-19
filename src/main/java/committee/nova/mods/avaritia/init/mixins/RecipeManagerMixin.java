@@ -25,7 +25,7 @@ import java.util.Map;
  * @CreateTime: 2025/5/18 13:47
  * @Description:
  */
-@SuppressWarnings("uncheck")
+@SuppressWarnings("unchecked")
 @Mixin({RecipeManager.class})
 public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListener {
 

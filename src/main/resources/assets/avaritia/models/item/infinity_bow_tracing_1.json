@@ -5,6 +5,6 @@
   },
   "loader": "avaritia:hell",
   "hell": {
-    "mask": "avaritia:mask/infinity_bow/pull_1_mask"
+    "mask": "avaritia:mask/item/infinity_bow/pull_1_mask"
   }
 }
