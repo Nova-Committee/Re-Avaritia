@@ -37,6 +37,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -74,8 +75,13 @@ public class InfinityHandler {
             if (state.is(Blocks.BEDROCK)) {
                 level.setBlock(pos, ModBlocks.fake_bedrock.get().defaultBlockState(), 2);
             } else if (state.is(Blocks.END_PORTAL_FRAME)) {
-                level.setBlock(pos, ModBlocks.fake_end_portal_frame.get().defaultBlockState(), 2);
+                // 保留原方块状态（包括是否有末影之眼）
+                BlockState fakeEndPortalFrameState = ModBlocks.fake_end_portal_frame.get().defaultBlockState()
+                        .setValue(EndPortalFrameBlock.FACING, state.getValue(EndPortalFrameBlock.FACING))
+                        .setValue(EndPortalFrameBlock.HAS_EYE, state.getValue(EndPortalFrameBlock.HAS_EYE));
+                level.setBlock(pos, fakeEndPortalFrameState, 2);
             } else if (state.is(Blocks.END_PORTAL)) {
+                // 保留末地传送门状态
                 level.setBlock(pos, ModBlocks.fake_end_portal.get().defaultBlockState(), 2);
             }
         }
@@ -84,8 +90,13 @@ public class InfinityHandler {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
-                level.setBlock(pos, Blocks.END_PORTAL_FRAME.defaultBlockState(), 2);
+                // 保留原方块状态（包括是否有末影之眼）
+                BlockState endPortalFrameState = Blocks.END_PORTAL_FRAME.defaultBlockState()
+                        .setValue(EndPortalFrameBlock.FACING, state.getValue(EndPortalFrameBlock.FACING))
+                        .setValue(EndPortalFrameBlock.HAS_EYE, state.getValue(EndPortalFrameBlock.HAS_EYE));
+                level.setBlock(pos, endPortalFrameState, 2);
             } else if (state.is(ModBlocks.fake_end_portal.get())) {
+                // 保留末地传送门状态
                 level.setBlock(pos, Blocks.END_PORTAL.defaultBlockState(), 2);
             }
         }
