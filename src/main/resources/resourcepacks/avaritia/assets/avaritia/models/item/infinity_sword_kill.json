@@ -6,6 +6,6 @@
   },
   "loader": "avaritia:unstable",
   "unstable": {
-    "mask": "avaritia:mask/item/infinity_sword_mask"
+    "mask": "avaritia:mask/infinity_sword_mask"
   }
 }
