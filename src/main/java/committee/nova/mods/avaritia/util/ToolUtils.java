@@ -32,6 +32,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -455,6 +456,7 @@ public class ToolUtils {
      */
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
         if (player.level().isClientSide) return;
+
         AABB aabb = player.getBoundingBox().inflate(range, range, range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = player.damageSources().source(ModDamageTypes.INFINITY, player, player);
@@ -479,7 +481,7 @@ public class ToolUtils {
                 .forEach(entity -> {
                     if (entity instanceof LivingEntity livingEntity) {
                         if (livingEntity instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, src, Float.POSITIVE_INFINITY);
+                            dragon.setHealth(0);
                         } else if (livingEntity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
                             wither.hurt(src, damage);
