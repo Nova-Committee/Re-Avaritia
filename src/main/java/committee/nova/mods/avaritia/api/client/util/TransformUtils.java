@@ -91,12 +91,11 @@ public class TransformUtils {
         DEFAULT_HANDHELD_ROD = new PerspectiveModelState(ImmutableMap.copyOf(map));
 
         map = new HashMap<>();
-        map.put(ItemDisplayContext.GROUND,                   create(0F, 2F,   0F, 0F,  0F,  0F, 0.5F));
-        map.put(ItemDisplayContext.GUI,                      create(0F,  0F, 0F,0F,0F, 0F,0.625F));
-        map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(6F,  4F,2.5F, 0F, 90F, 55F,1F));
-        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(2F,  4F,2.5F, 0F,-90F,-55F,1F));
-        map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(6F,1.6F,0.8F, 0F, 90F, 25F,1F));
-        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(2F,1.6F,0.8F, 0F,-90F,-25F,1F));
+        map.put(ItemDisplayContext.GROUND,                   create(   0F,  2F,   0F,  0F,   0F,  0F, 0.5F));
+        map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(  -8F, 0F, 8F,-80F, 260F,-40F, 0.9F));
+        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(  -8F, 0F, 8F,-80F,-280F, 40F, 0.9F));
+        map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(1.13F,3.2F,1.13F,  0F, -90F, 25F,0.68F));
+        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(1.13F,3.2F,1.13F,  0F,  90F,-25F,0.68F));
         DEFAULT_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
         //@formatter:on
     }
