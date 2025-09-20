@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.net;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

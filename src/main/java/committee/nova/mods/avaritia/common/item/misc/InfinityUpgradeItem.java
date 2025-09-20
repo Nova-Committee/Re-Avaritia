@@ -3,10 +3,10 @@ package committee.nova.mods.avaritia.common.item.misc;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
-import committee.nova.mods.avaritia.init.registry.enums.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.enums.CollectorTier;
 import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -23,12 +23,12 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class InfinityUpgradeItem extends ResourceItem {
-    public InfinityUpgradeItem(String registryName) {
-        super(ModRarities.LEGEND, registryName, true,
+    public InfinityUpgradeItem() {
+        super(ModRarities.LEGEND, true,
                 new Properties()
                         .durability(16)
 
-                );
+        );
     }
 
     @Override
@@ -142,8 +142,7 @@ public class InfinityUpgradeItem extends ResourceItem {
             else {
                 return super.useOn(pContext);
             }
-        }
-        else {
+        } else {
             return super.useOn(pContext);
         }
     }

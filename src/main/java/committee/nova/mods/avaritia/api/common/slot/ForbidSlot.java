@@ -18,6 +18,7 @@ public class ForbidSlot extends SlotItemHandler {
     public boolean mayPlace(@NotNull ItemStack stack) {
         return false;
     }
+
     @Override
     public boolean mayPickup(Player player) {
         return false;

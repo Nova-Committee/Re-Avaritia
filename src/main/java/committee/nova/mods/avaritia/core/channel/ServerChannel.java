@@ -17,7 +17,7 @@ import java.util.HashSet;
  * @CreateTime: 2025/2/28 03:13
  * @Description:
  */
-public class ServerChannel extends Channel{
+public class ServerChannel extends Channel {
 
     private final HashSet<String> changedItems = new HashSet<>();
     private final HashSet<String> changedFluids = new HashSet<>();
@@ -27,7 +27,8 @@ public class ServerChannel extends Channel{
     private boolean removed = false;
 
 
-    public ServerChannel() {}
+    public ServerChannel() {
+    }
 
     public ServerChannel(String name) {
         this.setName(name);
@@ -45,7 +46,7 @@ public class ServerChannel extends Channel{
 
     @Override
     public void onFluidChanged(String fluidId, boolean listChanged) {
-        super.onFluidChanged(fluidId,listChanged);
+        super.onFluidChanged(fluidId, listChanged);
         changedFluids.add(fluidId);
     }
 

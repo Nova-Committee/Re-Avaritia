@@ -17,7 +17,8 @@ public class ClientChannel extends Channel {
     @Nullable
     public ChannelDummyContainer container;
 
-    public ClientChannel() {}
+    public ClientChannel() {
+    }
 
     public void addListener(ChannelDummyContainer container) {
         this.container = container;
@@ -38,7 +39,7 @@ public class ClientChannel extends Channel {
 
     @Override
     public void onFluidChanged(String fluidId, boolean listChanged) {
-        super.onFluidChanged(fluidId,listChanged);
+        super.onFluidChanged(fluidId, listChanged);
         if (container != null) container.refreshContainer(listChanged);
     }
 
@@ -78,7 +79,7 @@ public class ClientChannel extends Channel {
         });
         fluids.getAllKeys().forEach(fluidId -> {
             long count = fluids.getLong(fluidId);
-            if (count <= 0L ) {
+            if (count <= 0L) {
                 if (storageFluids.containsKey(fluidId)) {
                     storageFluids.remove(fluidId);
                     fullUpdate.set(true);
@@ -99,7 +100,7 @@ public class ClientChannel extends Channel {
         });
         energies.getAllKeys().forEach(energyId -> {
             long count = energies.getLong(energyId);
-            if (count <= 0L ) {
+            if (count <= 0L) {
                 if (storageEnergies.containsKey(energyId)) {
                     storageEnergies.remove(energyId);
                     fullUpdate.set(true);

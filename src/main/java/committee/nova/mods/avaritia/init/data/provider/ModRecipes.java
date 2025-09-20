@@ -11,7 +11,10 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,8 +34,6 @@ import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-
-import javax.json.JsonArray;
 
 import java.util.function.Consumer;
 
@@ -85,7 +86,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('d', Blocks.SCULK_CATALYST)
                 .unlockedBy("", lul).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(),1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), 1)
                 .pattern("xyx")
                 .pattern("xyx")
                 .define('x', ModItems.diamond_lattice.get())
@@ -176,111 +177,111 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('y', Items.NETHERITE_SCRAP)
                 .unlockedBy("", lul).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_13, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_13, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.YELLOW_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_CAT, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_CAT, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.GREEN_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_BLOCKS, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_BLOCKS, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.ORANGE_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_CHIRP, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_CHIRP, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.RED_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_FAR, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_FAR, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.LIME_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_MALL, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_MALL, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.PURPLE_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_MELLOHI, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_MELLOHI, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.MAGENTA_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_STAL, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_STAL, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.BLACK_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_STRAD, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_STRAD, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.WHITE_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_WARD, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_WARD, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.CYAN_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_11, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_11, 1, 1)
                 .pattern("a a")
                 .pattern(" a ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_WAIT, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_WAIT, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.LIGHT_BLUE_DYE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_PIGSTEP, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_PIGSTEP, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.NETHER_GOLD_ORE)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_OTHERSIDE, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_OTHERSIDE, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.GRASS_BLOCK)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_5, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_5, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
                 .define('a', ModItems.record_fragment.get())
                 .define('b', Items.ECHO_SHARD)
                 .unlockedBy("has_item", has(ModItems.record_fragment.get())).save(consumer);
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_RELIC, 1,1)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.MUSIC_DISC_RELIC, 1, 1)
                 .pattern("a a")
                 .pattern(" b ")
                 .pattern("a a")
@@ -332,14 +333,14 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('d', Items.NAUTILUS_SHELL)
                 .unlockedBy("has_block", has(Items.PRISMARINE_SHARD)).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC,Blocks.SOUL_SAND, 4,1)
-            .pattern("ab ")
-            .pattern("ba ")
-            .define('a', Blocks.SOUL_SOIL)
-            .define('b', Blocks.SAND)
-            .unlockedBy("has_item", has(Blocks.SOUL_SOIL)).save(consumer);
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.SOUL_SAND, 4, 1)
+                .pattern("ab ")
+                .pattern("ba ")
+                .define('a', Blocks.SOUL_SOIL)
+                .define('b', Blocks.SAND)
+                .unlockedBy("has_item", has(Blocks.SOUL_SOIL)).save(consumer);
 
-        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC,Items.ECHO_SHARD,1,1)
+        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.ECHO_SHARD, 1, 1)
                 .requires(Blocks.SCULK)
                 .unlockedBy("has_item", has(Blocks.SCULK)).save(consumer);
 
@@ -351,7 +352,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('b', Items.NETHERITE_SCRAP)
                 .define('c', Items.DIAMOND)
                 .tier(1)
-                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer,Const.rl("ancient_debris_eight"));
+                .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer, Const.rl("ancient_debris_eight"));
 
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.end_crafting_table.get(), 2)
@@ -441,7 +442,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('g', ModItems.neutron_pile.get())
                 .unlockedBy("has_item", has(ModItems.neutron_pile.get())).save(consumer);
 
-        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.record_fragment.get(), 4,3)
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.record_fragment.get(), 4, 3)
                 .pattern("       ")
                 .pattern("       ")
                 .pattern("   a   ")
@@ -537,7 +538,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .pattern("iai")
                 .define('i', ModItems.diamond_lattice.get())
                 .define('a', Items.NETHER_STAR)
-                .unlockedBy("has_item", has(Items.NETHER_STAR)).save(consumer,Const.rl("crystal_matrix_ingot_normal"));
+                .unlockedBy("has_item", has(Items.NETHER_STAR)).save(consumer, Const.rl("crystal_matrix_ingot_normal"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.diamond_lattice.get())
                 .pattern("iii")
@@ -548,11 +549,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer, Const.rl("diamond_lattice_normal"));
 
         ModExtremeSmithingRecipeBuilder.smithing(
-                Ingredient.of(ModItems.upgrade_smithing_template.get()),
-                Ingredient.of(Items.TOTEM_OF_UNDYING),
-                CompoundIngredient.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(Items.BEACON)),
-                RecipeCategory.MISC,
-                ModItems.infinity_totem.get())
+                        Ingredient.of(ModItems.upgrade_smithing_template.get()),
+                        Ingredient.of(Items.TOTEM_OF_UNDYING),
+                        CompoundIngredient.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(Items.BEACON)),
+                        RecipeCategory.MISC,
+                        ModItems.infinity_totem.get())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
                 .save(consumer);
 
@@ -613,7 +614,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(ModBlocks.compressed_chest.get()),
-                        CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get()),Ingredient.of(ModBlocks.infinity.get())),
+                        CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.infinity.get())),
                         RecipeCategory.MISC,
                         ModBlocks.infinity_chest.get().asItem())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
@@ -657,7 +658,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-      NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(),2)
+        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(), 2)
                 .pattern("         ")
                 .pattern(" abbbbba ")
                 .pattern(" bdcccdb ")
@@ -672,9 +673,9 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('c', ModItems.neutron_ingot.get())
                 .define('d', ModItems.neutron_pile.get())
                 .define('e', ModItems.infinity_catalyst.get())
-                .define('f',ModItems.upgrade_smithing_template.get())
+                .define('f', ModItems.upgrade_smithing_template.get())
                 .tier(4)
-                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer,Const.rl("upgrade_smithing_template_too"));
+                .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer, Const.rl("upgrade_smithing_template_too"));
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
                 .requires(Items.PORKCHOP)
@@ -692,10 +693,10 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .requires(ModItems.neutron_nugget.get())
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
-        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.NETHERITE_INGOT,1,2)
-                .requires(Items.NETHERITE_SCRAP,2)
-                .requires(Items.GOLD_INGOT,2)
-                .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer,Const.rl("netherite_ingot_too"));
+        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.NETHERITE_INGOT, 1, 2)
+                .requires(Items.NETHERITE_SCRAP, 2)
+                .requires(Items.GOLD_INGOT, 2)
+                .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer, Const.rl("netherite_ingot_too"));
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.ultimate_stew.get())
                 .requires(Items.APPLE)

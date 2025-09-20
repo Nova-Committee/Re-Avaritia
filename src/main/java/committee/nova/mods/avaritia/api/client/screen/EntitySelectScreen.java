@@ -121,12 +121,12 @@ public class EntitySelectScreen extends Screen {
     // endregion 滚动条相关
 
     public EntitySelectScreen(@NonNull Screen callbackScreen, @NonNull Consumer<EntityType<?>> onDataReceived
-                            ) {
+    ) {
         this(callbackScreen, onDataReceived, null);
     }
 
     public EntitySelectScreen(@NonNull Screen callbackScreen, @NonNull Consumer<EntityType<?>> onDataReceived,
-                             Supplier<Boolean> shouldClose
+                              Supplier<Boolean> shouldClose
 
     ) {
         super(Component.literal("SelectScreen"));
@@ -351,8 +351,8 @@ public class EntitySelectScreen extends Screen {
                         context.button().setCustomPopupFunction(() -> {
                             if (context.button().isHovered()) {
                                 List<Component> list1 = Lists.newArrayList(entityType.getDescription());
-                                
-                               // context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
+
+                                // context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
                             }
                         });
                     } else {

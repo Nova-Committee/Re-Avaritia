@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.menu;
 
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -34,6 +33,7 @@ import java.util.Map;
 public class ExtremeAnvilMenu extends ItemCombinerMenu {
     private String itemName;
     public int repairItemCountCost;
+
     public ExtremeAnvilMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf buf) {
         this(pContainerId, pPlayerInventory, ContainerLevelAccess.NULL);
     }
@@ -59,6 +59,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
     protected boolean mayPickup(Player pPlayer, boolean pHasStack) {
         return true;
     }
+
     private int calculateXpCost() {
         ItemStack itemstack = this.inputSlots.getItem(0);
         ItemStack itemstack1 = this.inputSlots.getItem(1);
@@ -78,7 +79,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                     }
 
                     int i3;
-                    for(i3 = 0; l2 > 0 && i3 < itemstack1.getCount(); ++i3) {
+                    for (i3 = 0; l2 > 0 && i3 < itemstack1.getCount(); ++i3) {
                         int j3 = itemstack.getDamageValue() - l2;
                         itemstack.setDamageValue(j3);
                         ++i;
@@ -105,7 +106,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                     }
 
                     Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(itemstack1);
-                    for(Enchantment enchantment1 : map1.keySet()) {
+                    for (Enchantment enchantment1 : map1.keySet()) {
                         if (enchantment1 != null) {
                             int i2 = map.getOrDefault(enchantment1, 0);
                             int j2 = map1.get(enchantment1);
@@ -146,6 +147,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
             return i;
         }
     }
+
     @Override
     protected void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
         this.inputSlots.setItem(0, ItemStack.EMPTY);
@@ -190,7 +192,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                     }
 
                     int i3;
-                    for(i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
+                    for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
                         int j3 = itemstack1.getDamageValue() - l2;
                         itemstack1.setDamageValue(j3);
                         ++i;
@@ -220,7 +222,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                     }
 
                     Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(itemstack2);
-                    for(Enchantment enchantment1 : map1.keySet()) {
+                    for (Enchantment enchantment1 : map1.keySet()) {
                         if (enchantment1 != null) {
                             int i2 = map.getOrDefault(enchantment1, 0);
                             int j2 = map1.get(enchantment1);

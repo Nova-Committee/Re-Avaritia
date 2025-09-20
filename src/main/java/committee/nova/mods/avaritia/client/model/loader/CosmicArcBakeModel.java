@@ -34,6 +34,7 @@ import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_
  */
 public class CosmicArcBakeModel extends WrappedItemModel {
     private final List<ResourceLocation> maskSprite;
+
     public CosmicArcBakeModel(BakedModel wrapped, List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;

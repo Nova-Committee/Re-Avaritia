@@ -9,7 +9,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -32,7 +31,7 @@ public class HeavenArrowEntity extends Arrow {
     }
 
     public HeavenArrowEntity(Level world, Entity pShooter) {
-        this(world, pShooter, pShooter.getX(), pShooter.getEyeY() - (double)0.1F, pShooter.getZ());
+        this(world, pShooter, pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
         if (pShooter instanceof Player) {
             this.pickup = Pickup.DISALLOWED;
         }

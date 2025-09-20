@@ -32,6 +32,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
     public RecipeManagerMixin(Gson gson, String directory) {
         super(gson, directory);
     }
+
     @Inject(
             at = {@At(
                     value = "INVOKE_ASSIGN",

@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.registries.Registries;
@@ -15,8 +14,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Description:
@@ -32,7 +29,7 @@ public class ModCreativeModeTabs {
 
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("avaritia_group", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tab.Infinity"))
-            .icon(()->ModItems.infinity_catalyst.get().getDefaultInstance())
+            .icon(() -> ModItems.infinity_catalyst.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 for (var item : ACCEPT_ITEM) {
                     output.accept(item.get());
@@ -52,6 +49,7 @@ public class ModCreativeModeTabs {
                         }
                     })
                     .build());
+
     private static ItemStack makeIcon() {
         ItemStack stack = new ItemStack(ModItems.singularity.get());
         CompoundTag tag = new CompoundTag();

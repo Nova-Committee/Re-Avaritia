@@ -103,7 +103,8 @@ public class SortUtils {
         for (int i = 0; i < min; i++) {
             l = Character.compare(a[j], b[k]);
             if (l != 0) return l;
-            j--; k--;
+            j--;
+            k--;
         }
         return Integer.compare(a.length, b.length);
     }

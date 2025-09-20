@@ -1,20 +1,12 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.ReloadableServerResources;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 

@@ -12,7 +12,10 @@ import java.util.List;
  */
 public interface IFilters {
     List<ItemStack> getAllFilters();
+
     void addFilter(ItemStack stack);
+
     void removeFilter(ItemStack stack);
+
     void removeAll();
 }

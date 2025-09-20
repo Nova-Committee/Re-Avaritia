@@ -8,8 +8,8 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
  * @CreateTime: 2024/12/19 23:57
  * @Description:
  */
-public class EnhancementCoreItem extends ResourceItem{
+public class EnhancementCoreItem extends ResourceItem {
     public EnhancementCoreItem() {
-        super(ModRarities.LEGEND, "enhancement_core", true);
+        super(ModRarities.LEGEND, true);
     }
 }

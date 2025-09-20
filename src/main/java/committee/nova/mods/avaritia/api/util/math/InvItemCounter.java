@@ -35,7 +35,8 @@ public class InvItemCounter {
         if (invItem.isEmpty()) return;
         if (invItem.hasTag()) nbtItemIndex.add(i);
         else {
-            if(invItemAmount.containsKey(invItem.getItem())) invItemAmount.replace(invItem.getItem(), invItemAmount.get(invItem.getItem()) + invItem.getCount());
+            if (invItemAmount.containsKey(invItem.getItem()))
+                invItemAmount.replace(invItem.getItem(), invItemAmount.get(invItem.getItem()) + invItem.getCount());
             else invItemAmount.put(invItem.getItem(), invItem.getCount());
             noNbtItemIndex.add(i);
         }
@@ -55,8 +56,7 @@ public class InvItemCounter {
                 }
             }
             return count;
-        }
-        else return getCount(itemStack.getItem());
+        } else return getCount(itemStack.getItem());
     }
 
     public Integer[] getNbtItemIndex() {

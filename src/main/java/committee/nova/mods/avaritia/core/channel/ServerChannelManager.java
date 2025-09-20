@@ -79,7 +79,8 @@ public class ServerChannelManager {
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         this.userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
         NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
-        if (!loadSuccess) event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
+        if (!loadSuccess)
+            event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
     }
 
     @SubscribeEvent
@@ -88,8 +89,10 @@ public class ServerChannelManager {
         MinecraftServer server = event.getServer();
         if (server == null) return;
         int tickCount = server.getTickCount();
-        if (tickCount % ModConfig.CHANNEL_FULL_UPDATE_RATE.get() == 0) channelList.forEach((uuid, map) -> map.forEach((id, channel) -> channel.sendFullUpdate()));
-        else if (tickCount % ModConfig.CHANNEL_FAST_UPDATE_RATE.get() == 0) channelList.forEach((uuid, map) -> map.forEach((id, channel) -> channel.sendUpdate()));
+        if (tickCount % ModConfig.CHANNEL_FULL_UPDATE_RATE.get() == 0)
+            channelList.forEach((uuid, map) -> map.forEach((id, channel) -> channel.sendFullUpdate()));
+        else if (tickCount % ModConfig.CHANNEL_FAST_UPDATE_RATE.get() == 0)
+            channelList.forEach((uuid, map) -> map.forEach((id, channel) -> channel.sendUpdate()));
     }
 
     @SubscribeEvent
@@ -122,7 +125,7 @@ public class ServerChannelManager {
             } else {
                 this.initializeNameCache();
             }
-            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success").getString());
+            Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_success").getString());
 
             File[] channelDirs = saveDataPath.listFiles(pathname -> pathname.isDirectory() && pathname.getName()
                     .matches(StorageUtils.UUID_REGEX));
@@ -137,12 +140,12 @@ public class ServerChannelManager {
                         int channelID = Integer.parseInt(channelFile.getName().substring(0, channelFile.getName().length() - 4));
                         ServerChannel channel = new ServerChannel(channelDat);
                         playerChannels.put(channelID, channel);
-                        Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).getString());
+                        Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).getString());
                     }
                     channelList.put(player, playerChannels);
                 }
             }
-            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.load_finish").getString());
+            Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_finish").getString());
 
         } catch (Exception e) {
             loadSuccess = false;
@@ -168,7 +171,7 @@ public class ServerChannelManager {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Const.LOGGER.info(Component.translatable( "info.avaritia.channel.save_success", uuid, id, channel.getName()).getString());
+                    Const.LOGGER.info(Component.translatable("info.avaritia.channel.save_success", uuid, id, channel.getName()).getString());
                 });
             });
 
@@ -245,7 +248,7 @@ public class ServerChannelManager {
 
     public void tryAddChannel(ServerPlayer player, String name, boolean pub) {
         //int slotId = player.getInventory().findSlotMatchingItem(new ItemStack(ModItems.STORAGE_CORE.get()));
-       // if (slotId <= -1) return;
+        // if (slotId <= -1) return;
         UUID uuid = pub ? Const.AVARITIA_FAKE_PLAYER.getId() : player.getUUID();
         int max = pub ? ModConfig.MAX_PUBLIC_CHANNELS.get() : ModConfig.MAX_CHANNELS_PRE_PLAYER.get();
         HashMap<Integer, ServerChannel> playerChannels;
@@ -259,7 +262,7 @@ public class ServerChannelManager {
             if (playerChannels.containsKey(i)) continue;
             playerChannels.put(i, new ServerChannel(name));
             sendChannelAdd(uuid, name, i);
-            Const.LOGGER.info(Component.translatable( "info.avaritia.channel.add_success", uuid, i, name).getString());
+            Const.LOGGER.info(Component.translatable("info.avaritia.channel.add_success", uuid, i, name).getString());
             break;
         }
     }
@@ -302,7 +305,7 @@ public class ServerChannelManager {
     private void sandChannelRemove(UUID channelOwner, int id) {
         if (channelOwner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
             channelSelector.forEach((player, other) ->
-                    NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.REMOVE, (byte) 2,"", id)));
+                    NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.REMOVE, (byte) 2, "", id)));
         } else {
             channelSelector.forEach((player, other) -> {
                 if (player.getUUID().equals(channelOwner)) {
@@ -333,12 +336,12 @@ public class ServerChannelManager {
         if (player.getUUID().equals(channelOwner)) {
             NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET, (byte) 0, name, channelId));
         } else if (terminalOwner.equals(channelOwner)) {
-            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET,(byte) 1, name, channelId));
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET, (byte) 1, name, channelId));
         } else if (Const.AVARITIA_FAKE_PLAYER.getId().equals(channelOwner)) {
-            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET,(byte) 2, name, channelId));
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET, (byte) 2, name, channelId));
         } else if (!name.isEmpty()) {
             //频道名不为空，代表选择的频道是非用户非设备所有人非公有的其他人
-            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET,(byte) -1, name, -1));
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CChannelActionPack(ChannelAction.SET, (byte) -1, name, -1));
         }
     }
 

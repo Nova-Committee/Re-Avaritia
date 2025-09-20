@@ -26,9 +26,11 @@ public interface OffsetContainer extends Container {
             public OffsetItemStackWrapper getItemHandler() {
                 return itemHandler;
             }
+
             @Override
             public void setChanged() {
             }
+
             @Override
             public boolean stillValid(@NotNull Player pPlayer) {
                 return OffsetContainer.super.stillValid(pPlayer);
@@ -43,9 +45,11 @@ public interface OffsetContainer extends Container {
             public OffsetItemStackWrapper getItemHandler() {
                 return itemHandler;
             }
+
             @Override
             public void setChanged() {
             }
+
             @Override
             public boolean stillValid(@NotNull Player pPlayer) {
                 return OffsetContainer.super.stillValid(pPlayer);
@@ -54,21 +58,27 @@ public interface OffsetContainer extends Container {
     }
 
     OffsetItemStackWrapper getItemHandler();
+
     default StorageItem getItemInSlot(int index) {
         return this.getItemHandler().getContainerInSlot(index);
     }
 
     default ContainerData getItemCount() {
         return new ContainerData() {
-            @Override public int get(int index) {
+            @Override
+            public int get(int index) {
                 return index >= 0 && index < OffsetContainer.this.getContainerSize() ? (int) OffsetContainer.this.getItemInSlot(index).getCount() : 0;
             }
-            @Override public void set(int index, int value) {
+
+            @Override
+            public void set(int index, int value) {
                 if (index >= 0 && index < OffsetContainer.this.getContainerSize()) {
                     OffsetContainer.this.getItemInSlot(index).setCount(Integer.toUnsignedLong(value));
                 }
             }
-            @Override public int getCount() {
+
+            @Override
+            public int getCount() {
                 return OffsetContainer.this.getContainerSize();
             }
         };
@@ -81,7 +91,7 @@ public interface OffsetContainer extends Container {
 
     @Override
     default boolean isEmpty() {
-        for(int i = 0; i < this.getContainerSize(); ++i) {
+        for (int i = 0; i < this.getContainerSize(); ++i) {
             if (!this.getItemInSlot(i).isEmpty()) {
                 return false;
             }
@@ -118,12 +128,12 @@ public interface OffsetContainer extends Container {
 
     @Override
     default int getMaxStackSize() {
-        return (int)Math.min(Integer.MAX_VALUE , ModConfig.slotStackLimit.get());
+        return (int) Math.min(Integer.MAX_VALUE, ModConfig.slotStackLimit.get());
     }
 
     @Override
     default void clearContent() {
-        for(int i = 0; i < this.getContainerSize(); ++i) {
+        for (int i = 0; i < this.getContainerSize(); ++i) {
             this.getItemHandler().removeContainerInSlot(i);
         }
     }

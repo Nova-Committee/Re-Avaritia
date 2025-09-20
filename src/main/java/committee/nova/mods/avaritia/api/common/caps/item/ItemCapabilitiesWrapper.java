@@ -26,7 +26,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
         this.itemStack = stack;
         this.capabilities = new ItemCapability[capabilities.size()];
 
-        for(int i = 0; i < capabilities.size(); ++i) {
+        for (int i = 0; i < capabilities.size(); ++i) {
             ItemCapability<?> cap = (capabilities.get(i)).get();
             this.capabilities[i] = cap;
             cap.setWrapper(this);
@@ -38,7 +38,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
         this.itemStack = stack;
         this.capabilities = capabilities;
 
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             cap.setWrapper(this);
         }
 
@@ -50,7 +50,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
 
     @Override
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             if (capability == cap.getCapability()) {
                 return cap.getLazyCapability().cast();
             }
@@ -63,7 +63,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
     public CompoundTag serializeNBT() {
         CompoundTag serializedNBT = new CompoundTag();
 
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             if (cap instanceof IItemCapabilitySerializable serializableCap) {
                 serializedNBT.put(serializableCap.getStorageKey(), serializableCap.serializeNBT());
             }
@@ -74,7 +74,7 @@ public class ItemCapabilitiesWrapper implements ICapabilitySerializable<Compound
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        for(ItemCapability<?> cap : this.capabilities) {
+        for (ItemCapability<?> cap : this.capabilities) {
             if (cap instanceof IItemCapabilitySerializable serializableCap) {
                 if (nbt.contains(serializableCap.getStorageKey())) {
                     serializableCap.deserializeNBT(nbt.get(serializableCap.getStorageKey()));

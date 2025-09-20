@@ -95,7 +95,7 @@ public class ModConfig {
         slotStackLimit = buildLong(common, "config.avaritia.slot_stack_limit", 4294967295L, 64L, 4294967295L, "config.avaritia.slot_stack_limit.tooltip");
         maxPageLimit = buildInt(common, "config.avaritia.max_page_limit", 79536431, 2, 79536431, "config.avaritia.max_page_limit.tooltip");
         resetMaxPage = buildInt(common, "config.avaritia.reset_max_page", 1, 1, 79536431, "config.avaritia.reset_max_page.tooltip");
-        inventoryRows =buildInt(common, "config.avaritia.inventory_rows", 6, 1, 6, "config.avaritia.inventory_rows.tooltip");
+        inventoryRows = buildInt(common, "config.avaritia.inventory_rows", 6, 1, 6, "config.avaritia.inventory_rows.tooltip");
         common.pop();
         common.push("channel");
         MAX_SIZE_PRE_CHANNEL = buildInt(common, "config.avaritia.max_size_pre_channel", 32768, 2048, Integer.MAX_VALUE, "config.avaritia.max_size_pre_channel.tooltip");
@@ -106,9 +106,9 @@ public class ModConfig {
         common.pop();
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "config.avaritia.use_advance_tooltips", false, "config.avaritia.use_advance_tooltips.tooltip");
-        endlessItemEntitySpeed = buildDouble(common, "config.avaritia.endless_item_entity_speed", 3,1,50, "config.avaritia.endless_item_entity_speed.tooltip");
-        endlessItemEntityRange = buildDouble(common, "config.avaritia.endless_item_entity_range", 1000,1,10000, "config.avaritia.endless_item_entity_range.tooltip");
-        infinityElytraFlyingSpeed = buildDouble(common, "config.avaritia.infinity_elytra_flying_speed", 1.5,1,10, "config.avaritia.infinity_elytra_flying_speed.tooltip");
+        endlessItemEntitySpeed = buildDouble(common, "config.avaritia.endless_item_entity_speed", 3, 1, 50, "config.avaritia.endless_item_entity_speed.tooltip");
+        endlessItemEntityRange = buildDouble(common, "config.avaritia.endless_item_entity_range", 1000, 1, 10000, "config.avaritia.endless_item_entity_range.tooltip");
+        infinityElytraFlyingSpeed = buildDouble(common, "config.avaritia.infinity_elytra_flying_speed", 1.5, 1, 10, "config.avaritia.infinity_elytra_flying_speed.tooltip");
         bootSpeedBase = buildDouble(common, "config.avaritia.boot_speed_base", 0.1, 0.01, 1.0, "config.avaritia.boot_speed_base.tooltip");
         bootSpeedFlyingMultiplier = buildDouble(common, "config.avaritia.boot_speed_flying_multiplier", 1.1, 0.1, 5.0, "config.avaritia.boot_speed_flying_multiplier.tooltip");
         bootSpeedSwimmingMultiplier = buildDouble(common, "config.avaritia.boot_speed_swimming_multiplier", 1.2, 0.1, 5.0, "config.avaritia.boot_speed_swimming_multiplier.tooltip");

@@ -100,7 +100,7 @@ public class WorldUtils {
     public static List<BlockEntity> getBlockEntitiesWithinAABB(Level level, AABB bBox) {
         List<BlockEntity> list = new ArrayList<>();
 
-        for(BlockPos pos : getPositionsFromBox(bBox)) {
+        for (BlockPos pos : getPositionsFromBox(bBox)) {
             BlockEntity blockEntity = getBlockEntity(level, pos);
             if (blockEntity != null) {
                 list.add(blockEntity);
@@ -123,9 +123,7 @@ public class WorldUtils {
      *
      * @param level world
      * @param pos   position
-     *
      * @return 如果发现块实体，则无发现或未加载
-     *
      * @implNote From Mekanism
      */
     @Nullable
@@ -142,9 +140,7 @@ public class WorldUtils {
      *
      * @param world world
      * @param pos   position
-     *
      * @return 如果位置已加载或给定的世界是Iworldreader的超级类，则没有加载的概念。
-     *
      * @implNote From Mekanism
      */
     public static boolean isBlockLoaded(@Nullable BlockGetter world, @NotNull BlockPos pos) {

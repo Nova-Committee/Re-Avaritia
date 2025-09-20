@@ -34,8 +34,8 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     public TNTProEntity(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner) {
         this(ModEntities.tntProEntity.get(), pLevel);
         this.setPos(pX, pY, pZ);
-        double d = pLevel.random.nextDouble() * (double)((float)Math.PI * 2F);
-        this.setDeltaMovement(-Math.sin(d) * 0.02, (double)0.2F, -Math.cos(d) * 0.02);
+        double d = pLevel.random.nextDouble() * (double) ((float) Math.PI * 2F);
+        this.setDeltaMovement(-Math.sin(d) * 0.02, (double) 0.2F, -Math.cos(d) * 0.02);
         this.setFuse(DEFAULT_FUSE_TIME);
         this.xo = pX;
         this.yo = pY;
@@ -134,7 +134,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
-        pCompound.putShort("Fuse", (short)this.getFuse());
+        pCompound.putShort("Fuse", (short) this.getFuse());
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {

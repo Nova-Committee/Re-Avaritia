@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
+
 /**
  * @author: cnlimiter
  */
@@ -31,7 +32,6 @@ public class InfiniteChestScreen2 extends AbstractContainerScreen<InfiniteChestM
     private Button sortButton;
     private Button modCategoryButton;
     private Scrollbar scrollbar;
-
 
 
     public InfiniteChestScreen2(InfiniteChestMenu2 menu, Inventory inventory, Component title) {

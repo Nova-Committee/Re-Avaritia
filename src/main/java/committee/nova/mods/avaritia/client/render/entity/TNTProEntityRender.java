@@ -28,8 +28,8 @@ public class TNTProEntityRender extends EntityRenderer<TNTProEntity> {
         pPoseStack.pushPose();
         pPoseStack.translate(0.0F, 0.5F, 0.0F);
         int $$6 = pEntity.getFuse();
-        if ((float)$$6 - pPartialTicks + 1.0F < 10.0F) {
-            float $$7 = 1.0F - ((float)$$6 - pPartialTicks + 1.0F) / 10.0F;
+        if ((float) $$6 - pPartialTicks + 1.0F < 10.0F) {
+            float $$7 = 1.0F - ((float) $$6 - pPartialTicks + 1.0F) / 10.0F;
             $$7 = Mth.clamp($$7, 0.0F, 1.0F);
             $$7 *= $$7;
             $$7 *= $$7;

@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ITierCraftingRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;

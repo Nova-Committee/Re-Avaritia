@@ -3,8 +3,6 @@ package committee.nova.mods.avaritia.client.render.tile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -13,7 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
 public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDisplayEntity> {
@@ -88,6 +85,7 @@ public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDispla
 
         poseStack.popPose();
     }
+
     @Override
     public ResourceLocation getTextureLocation(AcceleratorDisplayEntity entity) {
         return null;

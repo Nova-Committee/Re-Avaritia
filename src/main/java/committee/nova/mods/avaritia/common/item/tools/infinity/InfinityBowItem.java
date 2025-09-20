@@ -1,20 +1,20 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.iface.*;
+import committee.nova.mods.avaritia.api.iface.IBowTransform;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.IUndamageable;
+import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,7 +41,7 @@ import java.util.List;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, InitEnchantItem, IUndamageable, IBowTransform {
+public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchantItem, IUndamageable, IBowTransform {
     public InfinityBowItem() {
         super(new Properties()
                 .stacksTo(1)

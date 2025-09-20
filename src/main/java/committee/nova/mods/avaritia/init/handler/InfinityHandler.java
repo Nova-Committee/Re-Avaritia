@@ -44,7 +44,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.*;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -65,13 +68,13 @@ public class InfinityHandler {
         var level = event.getLevel();
         var pos = event.getPos();
         var state = level.getBlockState(pos);
-        var player= event.getEntity();
+        var player = event.getEntity();
         var face = event.getFace();
         if (face == null || level.isClientSide || item.isEmpty() || player.isCreative()) {
             return;
         }
 
-        if (item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get())){
+        if (item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get())) {
             if (state.is(Blocks.BEDROCK)) {
                 level.setBlock(pos, ModBlocks.fake_bedrock.get().defaultBlockState(), 2);
             } else if (state.is(Blocks.END_PORTAL_FRAME)) {
@@ -86,7 +89,7 @@ public class InfinityHandler {
             }
         }
 
-        if (!(item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get()))){
+        if (!(item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get()))) {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
@@ -101,6 +104,7 @@ public class InfinityHandler {
             }
         }
     }
+
     @SubscribeEvent
     public static void onPlayerMine(BlockEvent.BreakEvent event) {
         if (event.getLevel().isClientSide()) return;
@@ -132,7 +136,7 @@ public class InfinityHandler {
                     event.setNewSpeed(event.getNewSpeed() * 5);
                 }
                 if (ISwitchable.isMode(held, "infinity_pickaxe_hammer")
-                        ||  ISwitchable.isMode(held,"infinity_shovel_destroyer")) {
+                        || ISwitchable.isMode(held, "infinity_shovel_destroyer")) {
                     event.setNewSpeed(event.getNewSpeed() * 0.5F);
                 }
             }
@@ -298,7 +302,7 @@ public class InfinityHandler {
         Block block = event.getState().getBlock();
         BlockState state = event.getState();
         if (
-                ( tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
+                (tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_shovel.get()))
                         && tool.getItem() instanceof ISwitchable switchable
         ) {
             if (switchable.isActive(tool, "smelt"))
@@ -353,7 +357,6 @@ public class InfinityHandler {
         }
 
     }
-
 
 
     @SubscribeEvent

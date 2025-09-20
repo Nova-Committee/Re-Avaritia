@@ -22,10 +22,9 @@ public class ChargeParticle extends TextureSheetParticle {
 
     @Override
     public void tick() {
-        if(this.age++ >= this.lifetime) {
+        if (this.age++ >= this.lifetime) {
             this.remove();
-        }
-        else {
+        } else {
             this.setSpriteFromAge(sprites);
         }
     }

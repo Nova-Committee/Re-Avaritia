@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.common.item.resources.UpgradeSmithingTemplateItem;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
@@ -24,7 +23,7 @@ import java.util.Optional;
  * @CreateTime: 2024/12/19 13:14
  * @Description:
  */
-public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu>  {
+public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu> {
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
     private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
@@ -32,6 +31,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
     private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = new ResourceLocation("item/empty_slot_smithing_template_netherite_upgrade");
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
+
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
 
         super(pMenu, pPlayerInventory, pTitle, Res.EXTREME_SMITHING_TEX);

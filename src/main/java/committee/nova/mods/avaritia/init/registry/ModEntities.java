@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
-import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRenderer;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
@@ -123,6 +122,7 @@ public class ModEntities {
                     .sized(1f, 1f)
                     .build(new ResourceLocation("avaritia", "infinity_thrown_trident").toString())
             );
+
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         EntityRenderers.register(ModEntities.IMMORTAL.get(), ItemEntityRenderer::new);

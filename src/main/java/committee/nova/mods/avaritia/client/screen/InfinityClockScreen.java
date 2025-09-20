@@ -6,14 +6,11 @@ import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.common.net.C2SSetTimePacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +44,7 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 3, startY, 89, 22, 3, 14000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 4, startY, 113, 22, 4, 18000));
         addRenderableWidget(new TimeButton(startX + (buttonW + spacing) * 5, startY, 137, 22, 5, 22000));
-        this.titleLabelX=62;
+        this.titleLabelX = 62;
         timeInput = new EditBox(this.font, guiLeft + 38, guiTop + 52, 113, 10, Component.literal(""));
         timeInput.setMaxLength(10);
         addRenderableWidget(timeInput);

@@ -32,7 +32,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -110,9 +109,9 @@ public class ToolUtils {
     /**
      * 破坏方块
      *
-     * @param world    世界
-     * @param player   玩家
-     * @param pos      点击坐标
+     * @param world  世界
+     * @param player 玩家
+     * @param pos    点击坐标
      */
     public static void destroy(ServerLevel world, Player player, BlockPos pos) {
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -150,11 +149,13 @@ public class ToolUtils {
         }
         return true;
     }
+
     /**
      * 无尽镐And无尽铲破坏
-     * @param player 玩家
+     *
+     * @param player   玩家
      * @param startPos 起始坐标
-     * @param range 挖掘范围
+     * @param range    挖掘范围
      */
     public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
         ServerLevel world = player.serverLevel();
@@ -465,10 +466,9 @@ public class ToolUtils {
 //                .filter(entity -> !(entity instanceof Npc))
                 .filter(entity -> {
                     boolean attack = ModConfig.isSwordAttackItemEntity.get();
-                  if (attack == false){
-                      return !(entity instanceof ItemEntity);
-                  }
-                  else return true;
+                    if (attack == false) {
+                        return !(entity instanceof ItemEntity);
+                    } else return true;
                 })
                 .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
                 .filter(entity -> {
@@ -601,10 +601,10 @@ public class ToolUtils {
     /**
      * 连锁砍树
      *
-     * @param player   玩家
-     * @param world    世界
-     * @param pos      点击坐标
-     * @param state    方块状态
+     * @param player 玩家
+     * @param world  世界
+     * @param pos    点击坐标
+     * @param state  方块状态
      */
     public static void destroyTree(Player player, ServerLevel world, BlockPos pos, BlockState state) {
         List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
@@ -776,12 +776,13 @@ public class ToolUtils {
 
     /**
      * 加速方块实体和更新
-     * @param pos 被加速方块位置
-     * @param level 世界
-     * @param speed 速度
+     *
+     * @param pos         被加速方块位置
+     * @param level       世界
+     * @param speed       速度
      * @param randomTicks 随机刻
-     * from Torcherino
-     *已弃用
+     *                    from Torcherino
+     *                    已弃用
      */
     @Deprecated
     public static void speedBlockTick(BlockPos pos, ServerLevel level, int speed, int randomTicks) {
@@ -813,9 +814,10 @@ public class ToolUtils {
 
     /**
      * 加速方块实体和更新
+     *
      * @param level 世界
-     * @param pos 被加速方块位置
-     * @param be 被加速的实体
+     * @param pos   被加速方块位置
+     * @param be    被加速的实体
      * @param times 随机刻
      */
     @SuppressWarnings({"rawtypes", "unchecked"})

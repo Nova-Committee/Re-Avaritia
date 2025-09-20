@@ -30,10 +30,11 @@ import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_
 public class HellBakeModel extends WrappedItemModel {
     private final List<ResourceLocation> maskSprite;
 
-public HellBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite){
+    public HellBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
-}
+    }
+
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
         if (stack.getItem() instanceof IToolTransform) {
@@ -80,6 +81,7 @@ public HellBakeModel(final BakedModel wrapped, final List<ResourceLocation> mask
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
     }
+
     @Override
     public @Nullable PerspectiveModelState getModelState() {
         return (PerspectiveModelState) this.parentState;

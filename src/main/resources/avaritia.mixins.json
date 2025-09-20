@@ -6,10 +6,11 @@
   "mixins": [
     "EnchantmentHelperMixin",
     "FrostWalkerEnchantmentMixin",
-    "NetherWartBlockMixin",
-    "RecipeManagerMixin",
+    "ItemMixin",
     "ItemStackMixin",
-    "PlayerMixin"
+    "NetherWartBlockMixin",
+    "PlayerMixin",
+    "RecipeManagerMixin"
   ],
   "client": [
     "ItemRendererMixin",

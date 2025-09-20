@@ -20,7 +20,9 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,7 +50,7 @@ public class RecipeUtils {
         recipeManager = manager;
     }
 
-    public static RecipeManager getRecipeManager(){
+    public static RecipeManager getRecipeManager() {
         return recipeManager;
     }
 

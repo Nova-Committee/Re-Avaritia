@@ -18,8 +18,8 @@ import java.util.function.Supplier;
  * @CreateTime: 2025/2/23 02:03
  * @Description:
  */
-public class GuiButton extends Button{
-    public static final ResourceLocation BUTTON_TEXTURES = Const.rl( "textures/gui/buttons.png");
+public class GuiButton extends Button {
+    public static final ResourceLocation BUTTON_TEXTURES = Const.rl("textures/gui/buttons.png");
 
     public ResourceLocation texture;
     public int tile;
@@ -29,7 +29,7 @@ public class GuiButton extends Button{
     public Int2ObjectFunction<Tooltip> tooltipFactory;
 
     public GuiButton(int x, int y, int tile, Button.OnPress pressable) {
-        this (x, y, 16, 16, Component.empty(), pressable);
+        this(x, y, 16, 16, Component.empty(), pressable);
         this.tile = tile;
         this.texture = BUTTON_TEXTURES;
     }
@@ -56,6 +56,7 @@ public class GuiButton extends Button{
 
     public static class CompositeButton extends GuiButton {
         public int texY_button = 16;
+
         public CompositeButton(int x, int y, int tile, Button.OnPress pressable) {
             super(x, y, tile, pressable);
         }
@@ -93,7 +94,7 @@ public class GuiButton extends Button{
 
     public void setState(int state) {
         this.state = state;
-        if(tooltipFactory != null)setTooltip(tooltipFactory.apply(state));
+        if (tooltipFactory != null) setTooltip(tooltipFactory.apply(state));
     }
 
     public int getState() {

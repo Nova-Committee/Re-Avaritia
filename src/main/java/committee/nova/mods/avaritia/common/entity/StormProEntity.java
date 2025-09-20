@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -22,6 +21,7 @@ public class StormProEntity extends ThrowableItemProjectile {
     protected Item getDefaultItem() {
         return Items.FIRE_CHARGE;
     }
+
     @Override
     protected void onHit(HitResult result) {
         super.onHit(result);

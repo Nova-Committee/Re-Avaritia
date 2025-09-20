@@ -62,12 +62,12 @@ public class Const {
     }
 
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {
-        if(curios) {
+        if (curios) {
             AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
             CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
                 s.set(curiosInventory.findCurios(is));
             });
-            if(!s.get().isEmpty())return map.apply(s.get().get(0).stack());
+            if (!s.get().isEmpty()) return map.apply(s.get().get(0).stack());
         }
         return def;
     }

@@ -15,11 +15,13 @@ import net.minecraftforge.common.util.INBTSerializable;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2025/3/6 02:14
- * @Description: 
- */public class RingStorageWrapper extends OffsetItemStackWrapper implements INBTSerializable<CompoundTag> {
+ * @Description:
+ */
+public class RingStorageWrapper extends OffsetItemStackWrapper implements INBTSerializable<CompoundTag> {
     private final int rows;
     public Int2ObjectMap<StorageItem> containers = StorageUtils.newContainers();
-    @Getter private int page = 0;
+    @Getter
+    private int page = 0;
 
     public RingStorageWrapper(int rows) {
         this.rows = rows;
@@ -66,6 +68,7 @@ import net.minecraftforge.common.util.INBTSerializable;
         public int get() {
             return RingStorageWrapper.this.page;
         }
+
         @Override
         public void set(int value) {
             RingStorageWrapper.this.page = value;
@@ -73,16 +76,21 @@ import net.minecraftforge.common.util.INBTSerializable;
     };
 
     public final ContainerData countData = new ContainerData() {
-            @Override public int get(int index) {
-                return index >= 0 && index < RingStorageWrapper.this.getSlots() ? (int) RingStorageWrapper.this.getContainerInSlot(index).getCount() : 0;
+        @Override
+        public int get(int index) {
+            return index >= 0 && index < RingStorageWrapper.this.getSlots() ? (int) RingStorageWrapper.this.getContainerInSlot(index).getCount() : 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index >= 0 && index < RingStorageWrapper.this.getSlots()) {
+                RingStorageWrapper.this.getContainerInSlot(index).setCount(Integer.toUnsignedLong(value));
             }
-            @Override public void set(int index, int value) {
-                if (index >= 0 && index < RingStorageWrapper.this.getSlots()) {
-                    RingStorageWrapper.this.getContainerInSlot(index).setCount(Integer.toUnsignedLong(value));
-                }
-            }
-            @Override public int getCount() {
-                return RingStorageWrapper.this.getSlots();
-            }
+        }
+
+        @Override
+        public int getCount() {
+            return RingStorageWrapper.this.getSlots();
+        }
     };
 }

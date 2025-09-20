@@ -91,7 +91,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 //            return false;
 //        }
 //        else {
-            return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
         //}
     }
 
@@ -131,6 +131,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             }
         }
     }
+
     @Override
     protected void slotClicked(@Nullable Slot slotIn, int slotId, int mouseButton, @NotNull ClickType type) {
         if (type == ClickType.CLONE) {

@@ -9,7 +9,6 @@ import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.ToolUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -35,17 +34,13 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -69,7 +64,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
         if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
             var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
-            if (victim instanceof EnderDragon dragon ) {
+            if (victim instanceof EnderDragon dragon) {
                 dragon.hurt(dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());
             } else if (victim instanceof Player pvp) {
                 if (ToolUtils.isInfinite(pvp)) {
@@ -120,7 +115,6 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
             victim.hurtTime = victim.hurtDuration;
 
 
-
             Entity entity1 = pSource.getEntity();
             if (entity1 != null) {
                 if (entity1 instanceof LivingEntity livingentity1) {
@@ -155,7 +149,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
                 double d0 = entity1.getX() - victim.getX();
 
                 double d1;
-                for(d1 = entity1.getZ() - victim.getZ(); d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
+                for (d1 = entity1.getZ() - victim.getZ(); d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
                     d0 = (Math.random() - Math.random()) * 0.01D;
                 }
 
@@ -177,11 +171,11 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
             victim.lastDamageStamp = victim.level().getGameTime();
 
             if (victim instanceof ServerPlayer) {
-                CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer)victim, pSource, pAmount, pAmount, flag);
+                CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) victim, pSource, pAmount, pAmount, flag);
             }
 
             if (entity1 instanceof ServerPlayer) {
-                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer)entity1, victim, pSource, pAmount, pAmount, flag);
+                CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) entity1, victim, pSource, pAmount, pAmount, flag);
             }
 
             return flag2;
@@ -214,7 +208,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
                     this.createWitherRose(victim, livingentity);
                 }
 
-                victim.level().broadcastEntityEvent(victim, (byte)3);
+                victim.level().broadcastEntityEvent(victim, (byte) 3);
             }
 
             victim.setPose(Pose.DYING);
@@ -241,6 +235,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
 
         }
     }
+
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
@@ -250,10 +245,9 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
             return InteractionResultHolder.success(itemstack);
         }
         if (!level.isClientSide) {
-            if (isActive(itemstack, "infinity_sword_kill")){
+            if (isActive(itemstack, "infinity_sword_kill")) {
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
-            }
-            else {
+            } else {
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());
             }
             player.getCooldowns().addCooldown(heldItem.getItem(), 20);

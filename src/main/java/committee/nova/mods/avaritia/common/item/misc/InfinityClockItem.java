@@ -6,55 +6,42 @@ import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.util.ToolUtils;
-import moze_intel.projecte.api.block_entity.IDMPedestal;
-import moze_intel.projecte.api.capabilities.item.IPedestalItem;
-import moze_intel.projecte.config.ProjectEConfig;
-import moze_intel.projecte.gameObjs.PETags;
-import moze_intel.projecte.utils.WorldHelper;
-import moze_intel.projecte.utils.text.PELang;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable{
+public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
 
 
     public static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
@@ -62,7 +49,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     private static final int[] SPEED_STEPS = {1, 4, 16, 64, 256, 512};
 
     public InfinityClockItem() {
-        super(ModRarities.COSMIC, "infinity_clock", true, new Properties().stacksTo(1));
+        super(ModRarities.COSMIC, true, new Properties().stacksTo(1));
     }
 
     @Override

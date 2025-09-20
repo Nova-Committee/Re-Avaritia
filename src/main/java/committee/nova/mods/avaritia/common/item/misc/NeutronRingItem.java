@@ -24,9 +24,9 @@ import org.jetbrains.annotations.Nullable;
  * @CreateTime: 2024/8/2 上午12:32
  * @Description:
  */
-public class NeutronRingItem extends ResourceItem{
+public class NeutronRingItem extends ResourceItem {
     public NeutronRingItem() {
-        super(ModRarities.EPIC, "neutron_ring", true, new Properties().stacksTo(1));
+        super(ModRarities.EPIC, true, new Properties().stacksTo(1));
     }
 
     @Override

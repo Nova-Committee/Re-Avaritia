@@ -40,9 +40,8 @@ import java.util.List;
  * Version: 1.0
  */
 public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, InitEnchantItem {
-    private final String name;
 
-    public BlazeHoeItem(String name) {
+    public BlazeHoeItem() {
         super(ModToolTiers.BLAZE, -10, 10f,
                 new Properties()
                         .rarity(ModRarities.EPIC)
@@ -50,7 +49,6 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
                         .fireResistant()
         );
 
-        this.name = name;
     }
 
     @Override
@@ -64,10 +62,15 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public boolean hasDescTooltip() {
+        return true;
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FIRE_ASPECT.getFullname(10)).build());
-        this.appendTooltip(stack, level, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
         var blockpos = pContext.getClickedPos();
         var blockstate = level.getBlockState(blockpos);
         var player = pContext.getPlayer();
-        if (isActive(stack,"smelt")) {
+        if (isActive(stack, "smelt")) {
             if (blockstate.is(Blocks.SOUL_SAND)) {
                 level.setBlockAndUpdate(blockpos, Blocks.SOUL_SOIL.defaultBlockState());
                 level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -96,11 +99,11 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
                 level.setBlockAndUpdate(blockpos, ModBlocks.soul_farmland.get().defaultBlockState());
                 level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return InteractionResult.SUCCESS;
-            }else if (blockstate.is(ModBlocks.soul_farmland.get())){
+            } else if (blockstate.is(ModBlocks.soul_farmland.get())) {
                 return InteractionResult.PASS;
             }
-        }else if (!isActive(stack,"smelt")) {
-            if (blockstate.is(ModBlocks.soul_farmland.get())){
+        } else if (!isActive(stack, "smelt")) {
+            if (blockstate.is(ModBlocks.soul_farmland.get())) {
                 return InteractionResult.PASS;
             }
         }

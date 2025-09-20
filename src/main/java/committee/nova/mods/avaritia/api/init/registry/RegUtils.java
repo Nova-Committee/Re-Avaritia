@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -110,7 +109,7 @@ public class RegUtils {
         return itemBlock(name, block, true, true, new Item.Properties().rarity(rarity));
     }
 
-    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block,  boolean hasItem, Item.Properties properties) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties) {
         return itemBlock(name, block, hasItem, true, properties);
     }
 
@@ -122,7 +121,7 @@ public class RegUtils {
 
     public static RegistryObject<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
         var reg = BLOCKS.register(name, block);
-        if (hasItem) item(name, () -> new BlockItem(reg.get(), properties){
+        if (hasItem) item(name, () -> new BlockItem(reg.get(), properties) {
             @Override
             public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                 return burnTime;

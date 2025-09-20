@@ -11,8 +11,6 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -97,6 +95,7 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
         }
         return false;
     }
+
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (entity instanceof ServerPlayer livingEntity) {
@@ -140,6 +139,7 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
         }
         return super.onLeftClickEntity(stack, player, entity);
     }
+
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();

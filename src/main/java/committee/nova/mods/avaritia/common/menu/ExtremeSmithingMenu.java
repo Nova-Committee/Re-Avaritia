@@ -1,8 +1,9 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
-import committee.nova.mods.avaritia.init.registry.*;
-import net.minecraft.nbt.CompoundTag;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModMenus;
+import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -139,7 +140,7 @@ public class ExtremeSmithingMenu extends ItemCombinerMenu {
         } else if (pRecipe.isBaseIngredient(pStack)) {
             return Optional.of(List.of(1));
         } else {
-            return pRecipe.isAdditionIngredient(pStack) ? Optional.of(List.of(2,3,4)) : Optional.empty();
+            return pRecipe.isAdditionIngredient(pStack) ? Optional.of(List.of(2, 3, 4)) : Optional.empty();
         }
     }
 

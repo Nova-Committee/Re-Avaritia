@@ -99,7 +99,7 @@ public class Localizable {
             }
 
             if (!this.appendText.isEmpty()) {
-                component =component.append(Component.literal(this.appendText));
+                component = component.append(Component.literal(this.appendText));
             }
 
             if (this.color != null) {

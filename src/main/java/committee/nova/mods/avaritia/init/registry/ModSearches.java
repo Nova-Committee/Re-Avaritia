@@ -16,7 +16,7 @@ public class ModSearches {
     public static final SearchRegistry.Key<EntityType<?>> LIVING_ENTITY_KEY = new SearchRegistry.Key<>();
 
     public static void onClientSetup() {
-        Minecraft.getInstance().getSearchTreeManager().register(LIVING_ENTITY_KEY, (entities) ->{
+        Minecraft.getInstance().getSearchTreeManager().register(LIVING_ENTITY_KEY, (entities) -> {
                     return new FullTextSearchTree<>((entity) -> {
                         return ForgeRegistries.ENTITY_TYPES.getValues().stream()
                                 .map((entity1) -> entity1.getDescription().getString())
@@ -27,7 +27,7 @@ public class ModSearches {
 
                     }, entities);
 
-        }
+                }
         );
     }
 }

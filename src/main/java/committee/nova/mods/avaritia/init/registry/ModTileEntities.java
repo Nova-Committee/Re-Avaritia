@@ -2,10 +2,8 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.BlackHoleChestRender;
-import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -64,7 +62,7 @@ public class ModTileEntities {
             });
     public static RegistryObject<BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
     public static RegistryObject<BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
-//    public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.json.get()});
+    //    public static RegistryObject<BlockEntityType<InfinityClockTile>> infinity_clock_tile = blockEntity("infinity_clock_tile", InfinityClockTile::new, () -> new Block[]{ModBlocks.infinity_clock.json.get()});
     public static RegistryObject<BlockEntityType<TesseractTile>> tesseract_tile = blockEntity("tesseract_tile", TesseractTile::new, () -> new Block[]{ModBlocks.tesseract.get()});
     public static RegistryObject<BlockEntityType<InfiniteChestBlockEntity>> infinity_chest_block_entity = blockEntity("infinity_chest_block_entity", InfiniteChestBlockEntity::new, () -> new Block[]{ModBlocks.tesseract.get()});
 }

@@ -11,18 +11,26 @@ import committee.nova.mods.avaritia.api.util.math.SortingType;
 public interface ISortContainer {
     public int getDifferenceInAdditionalSlots();
 
-    /**Get additional slots for this player - always multiple of 9*/
+    /**
+     * Get additional slots for this player - always multiple of 9
+     */
     public int getAdditionalSlots();
 
     public void setAdditionalSlots(int additionalSlots);
 
-    /**Mark as needing to update additional slots of infinitory*/
+    /**
+     * Mark as needing to update additional slots of infinitory
+     */
     public void needToUpdateInfinitorySize();
 
-    /**Mark as needing to sort inventory*/
+    /**
+     * Mark as needing to sort inventory
+     */
     public void needToSort();
 
-    /**Mark as needing to update client*/
+    /**
+     * Mark as needing to update client
+     */
     void needToUpdateClient();
 
     public SortingType getSortingType();
@@ -33,9 +41,13 @@ public interface ISortContainer {
 
     public void setSortAscending(boolean sortAscending);
 
-    /**Recalculate additional slots based on main and infinitory sizes / fullness*/
+    /**
+     * Recalculate additional slots based on main and infinitory sizes / fullness
+     */
     public void updateInfinitorySize();
 
-    /**Sync additional slots, sorting type, and sorting ascending server -> client*/
+    /**
+     * Sync additional slots, sorting type, and sorting ascending server -> client
+     */
     public void syncInfinitoryValues();
 }

@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import net.minecraft.client.renderer.MultiBufferSource;

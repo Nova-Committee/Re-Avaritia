@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
-import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityPickaxeItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

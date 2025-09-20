@@ -1,10 +1,6 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.screen.TesseractScreen;
-import committee.nova.mods.avaritia.common.menu.TesseractMenu;
-import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
-import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
 import committee.nova.mods.avaritia.client.screen.*;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;

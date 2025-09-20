@@ -1,17 +1,12 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -22,8 +17,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-
-import static net.minecraft.client.renderer.RenderStateShard.*;
 
 /**
  * @Project: Avaritia

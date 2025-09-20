@@ -86,7 +86,6 @@ public class UnstableBakeModel extends WrappedItemModel {
     }
 
 
-
     @Override
     public @Nullable PerspectiveModelState getModelState() {
         return (PerspectiveModelState) this.parentState;

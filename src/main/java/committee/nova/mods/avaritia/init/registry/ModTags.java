@@ -33,6 +33,6 @@ public class ModTags {
     public static final TagKey<Block> NEEDS_BLAZE_TOOL = BlockTags.create(Const.rl("needs_blaze_tool"));
     public static final TagKey<Block> NEEDS_INFINITY_TOOL = BlockTags.create(Const.rl("needs_infinity_tool"));
 
-    public static final TagKey<EntityType<?>> NEUTRAL_CREATURES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge","neutral_creatures"));
+    public static final TagKey<EntityType<?>> NEUTRAL_CREATURES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", "neutral_creatures"));
 
 }

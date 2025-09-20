@@ -14,7 +14,6 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

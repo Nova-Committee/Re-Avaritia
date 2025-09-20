@@ -75,7 +75,8 @@ public class ModExtremeSmithingRecipeBuilder implements RecipeBuilder {
         }
     }
 
-    public record Result(ResourceLocation id,Ingredient template, Ingredient base, Ingredient additions, Item result, Advancement.Builder advancement, ResourceLocation advancementId) implements FinishedRecipe {
+    public record Result(ResourceLocation id, Ingredient template, Ingredient base, Ingredient additions, Item result,
+                         Advancement.Builder advancement, ResourceLocation advancementId) implements FinishedRecipe {
         @Override
         public void serializeRecipeData(JsonObject pJson) {
             pJson.add("template", this.template.toJson());
@@ -85,18 +86,22 @@ public class ModExtremeSmithingRecipeBuilder implements RecipeBuilder {
             jsonobject.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString());
             pJson.add("result", jsonobject);
         }
+
         @Override
         public @NotNull ResourceLocation getId() {
             return this.id;
         }
+
         @Override
         public @NotNull RecipeSerializer<?> getType() {
             return ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.get();
         }
+
         @Override
         public @NotNull JsonObject serializeAdvancement() {
             return this.advancement.serializeToJson();
         }
+
         @Override
         @Nullable
         public ResourceLocation getAdvancementId() {

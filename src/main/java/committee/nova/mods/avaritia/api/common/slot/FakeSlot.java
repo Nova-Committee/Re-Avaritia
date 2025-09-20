@@ -18,11 +18,14 @@ public class FakeSlot extends Slot {
     public FakeSlot(Container pContainer, int pSlot, int pX, int pY) {
         super(pContainer, pSlot, pX, pY);
     }
-    @Override
-    public void set(@NotNull ItemStack pStack) {}
 
     @Override
-    public void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {}
+    public void set(@NotNull ItemStack pStack) {
+    }
+
+    @Override
+    public void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
+    }
 
     @Override
     public @NotNull ItemStack remove(int pAmount) {
@@ -45,8 +48,10 @@ public class FakeSlot extends Slot {
     }
 
     @Override
-    public void onQuickCraft(@NotNull ItemStack pOldStack, @NotNull ItemStack pNewStack) {}
+    public void onQuickCraft(@NotNull ItemStack pOldStack, @NotNull ItemStack pNewStack) {
+    }
 
     @Override
-    public void setChanged() {}
+    public void setChanged() {
+    }
 }

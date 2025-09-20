@@ -32,16 +32,16 @@ public class NbtDataPack {
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+        if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             ctx.get().enqueueWork(() -> {
                 ServerPlayer sender = ctx.get().getSender();
                 if (sender != null && sender.containerMenu instanceof IDataReceiver dataReceiver) {
                     dataReceiver.receive(tag);
                 }
             });
-        } else if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+        } else if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
             ctx.get().enqueueWork(() -> {
-                if(Minecraft.getInstance().screen instanceof IDataReceiver dataReceiver) {
+                if (Minecraft.getInstance().screen instanceof IDataReceiver dataReceiver) {
                     dataReceiver.receive(tag);
                 }
             });

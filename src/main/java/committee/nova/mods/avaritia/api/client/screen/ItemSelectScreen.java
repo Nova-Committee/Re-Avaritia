@@ -73,7 +73,7 @@ public class ItemSelectScreen extends Screen {
      * 背包模式
      */
     private final boolean useInventoryMode;
-    private  boolean inventoryMode = false;
+    private boolean inventoryMode = false;
     /**
      * 输入框
      */

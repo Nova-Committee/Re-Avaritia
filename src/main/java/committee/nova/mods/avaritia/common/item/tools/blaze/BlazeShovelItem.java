@@ -5,12 +5,10 @@ import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.FuncUtils;
-import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -60,18 +58,14 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
             Map.entry(Blocks.LANTERN, Blocks.SOUL_LANTERN),
             Map.entry(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE),
             Map.entry(Blocks.DEAD_BUSH, Blocks.WITHER_ROSE)
-            );
+    );
 
-    private final String name;
-
-    public BlazeShovelItem(String name) {
+    public BlazeShovelItem() {
         super(ModToolTiers.BLAZE, -15, 15f,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant());
-
-        this.name = name;
     }
 
     @Override
@@ -85,10 +79,15 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public boolean hasDescTooltip() {
+        return true;
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FIRE_ASPECT.getFullname(10)).build());
-        this.appendTooltip(stack, level, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
 
     @Override
@@ -108,7 +107,7 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
         var level = pContext.getLevel();
         var blockpos = pContext.getClickedPos();
         if (isActive(stack, "blaze_shovel_trans")) {
-           return FuncUtils.transBlock(level, player, blockpos, TRANS_MAP);
+            return FuncUtils.transBlock(level, player, blockpos, TRANS_MAP);
         } else return super.useOn(pContext);
     }
 

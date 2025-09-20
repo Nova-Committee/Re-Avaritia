@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
 /*
 每次添加配置的时候都需要在initConfigEntries添加一个配置项,然后在resetToDefaults中添加一个默认值
 关于默认值的自动化我没太搞懂...
@@ -117,7 +118,6 @@ public class AvaritiaConfigScreen extends Screen {
         addBooleanEntry("internal_infinity_catalyst_craft", ModConfig.internalInfinityCatalystCraft,
                 Component.translatable("config.avaritia.internal_infinity_catalyst_craft.tooltip"),
                 ModConfig.internalInfinityCatalystCraft::set, ModConfig.internalInfinityCatalystCraft);
-
 
 
         addCategoryHeader("config.avaritia.category.emc");
@@ -559,7 +559,6 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
 
-
     private static class IntConfigEntry extends ConfigEntry<Integer> {
         private RangedEditBox editBox;
         private final int min;
@@ -590,7 +589,8 @@ public class AvaritiaConfigScreen extends Screen {
                 if (!text.isEmpty()) {
                     try {
                         updateValue(Integer.parseInt(text));
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             });
             screen.addRenderableWidget(editBox);
@@ -646,7 +646,8 @@ public class AvaritiaConfigScreen extends Screen {
                 if (!text.isEmpty()) {
                     try {
                         updateValue(Double.parseDouble(text));
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             });
             screen.addRenderableWidget(editBox);
@@ -700,7 +701,8 @@ public class AvaritiaConfigScreen extends Screen {
                 if (!text.isEmpty()) {
                     try {
                         updateValue(Long.parseLong(text));
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             });
             screen.addRenderableWidget(editBox);
@@ -773,10 +775,10 @@ public class AvaritiaConfigScreen extends Screen {
                     if (isInteger) {
                         long val = Long.parseLong(text);
                         if (val > max) {
-                            setValue(String.valueOf((long)max));
+                            setValue(String.valueOf((long) max));
                             moveCursorTo(0);
                         } else if (val < min) {
-                            setValue(String.valueOf((long)min));
+                            setValue(String.valueOf((long) min));
                             moveCursorTo(0);
                         }
                     } else {

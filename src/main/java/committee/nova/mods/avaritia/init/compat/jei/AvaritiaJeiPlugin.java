@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
+import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;

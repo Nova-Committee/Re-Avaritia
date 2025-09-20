@@ -17,6 +17,7 @@ import net.minecraft.world.level.material.MapColor;
 
 public class ResourceBlock extends BaseBlock {
     ModResourceBlocks type;
+
     public ResourceBlock(ModResourceBlocks type) {
         super(MapColor.METAL, SoundType.METAL, type.hardness, type.resistance, type.lightLevel);
         this.type = type;

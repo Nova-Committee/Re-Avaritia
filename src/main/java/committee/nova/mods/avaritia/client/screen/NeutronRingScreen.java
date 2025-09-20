@@ -1,13 +1,10 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;

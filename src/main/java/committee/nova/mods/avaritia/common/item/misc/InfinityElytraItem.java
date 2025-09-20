@@ -3,13 +3,11 @@ package committee.nova.mods.avaritia.common.item.misc;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 public class InfinityElytraItem extends ElytraItem {
     public InfinityElytraItem() {

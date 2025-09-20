@@ -42,8 +42,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                         .map(SingularityUtils::getItemForSingularity)
                         .map(Ingredient::of)
                         .forEach(super.getIngredients()::add);
-            }
-             else {
+            } else {
                 super.getIngredients().addAll(originalInputs);
             }
 

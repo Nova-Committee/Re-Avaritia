@@ -32,7 +32,7 @@ public abstract class ItemCapability<CAP> {
     }
 
     protected CAP getItem() {
-        return (CAP)this.getStack().getItem();
+        return (CAP) this.getStack().getItem();
     }
 }
 

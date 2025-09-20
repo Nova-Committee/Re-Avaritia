@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -19,12 +18,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Description:
@@ -33,21 +28,18 @@ import java.util.List;
  * Version: 1.0
  */
 public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable {
-    private final String name;
 
-    public CrystalSwordItem(String name) {
+    public CrystalSwordItem() {
         super(ModToolTiers.CRYSTAL, 0, 0F,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant());
-        this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override

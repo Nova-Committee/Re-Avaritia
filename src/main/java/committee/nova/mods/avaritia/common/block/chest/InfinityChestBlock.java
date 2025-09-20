@@ -114,7 +114,9 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             var tile = level.getBlockEntity(pos);
 
             if (tile instanceof InfinityChestTile chestTile) {
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {buf.writeBlockPos(pos);});
+                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {
+                    buf.writeBlockPos(pos);
+                });
             }
         }
 

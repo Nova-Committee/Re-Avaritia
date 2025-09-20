@@ -12,6 +12,7 @@ public enum ChannelAction {
     SET(2, "set");
     private final String name;
     private final int id;
+
     ChannelAction(int id, String name) {
         this.name = name;
         this.id = id;

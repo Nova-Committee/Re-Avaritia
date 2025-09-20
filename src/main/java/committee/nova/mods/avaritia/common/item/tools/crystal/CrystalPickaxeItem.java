@@ -17,15 +17,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Description:
@@ -35,21 +31,16 @@ import java.util.List;
  */
 public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
 
-    private final String name;
-
-    public CrystalPickaxeItem(String name) {
+    public CrystalPickaxeItem() {
         super(ModToolTiers.CRYSTAL, -25, 0F,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
-                        .fireResistant());
-        this.name = name;
-    }
+                        .fireResistant());}
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override

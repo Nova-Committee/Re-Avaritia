@@ -12,10 +12,8 @@ import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -43,16 +41,14 @@ import java.util.List;
  * Version: 1.0
  */
 public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, InitEnchantItem {
-    private final String name;
 
-    public BlazeAxeItem(String name) {
+    public BlazeAxeItem() {
         super(ModToolTiers.BLAZE, 10, -10f,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant());
 
-        this.name = name;
     }
 
     @Override
@@ -66,10 +62,15 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+    public boolean hasDescTooltip() {
+        return true;
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FIRE_ASPECT.getFullname(10)).build());
-        this.appendTooltip(stack, level, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
 
     @Override

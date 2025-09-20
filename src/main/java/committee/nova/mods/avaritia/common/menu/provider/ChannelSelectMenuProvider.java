@@ -20,6 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ChannelSelectMenuProvider implements MenuProvider {
 
     private final IChannelTerminal terminal;
+
     public ChannelSelectMenuProvider(IChannelTerminal terminal) {
         this.terminal = terminal;
     }

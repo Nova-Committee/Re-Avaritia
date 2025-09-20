@@ -43,31 +43,31 @@ public class C2SItemFilterPack {
             if (player == null) return;
             if (player.getMainHandItem().getItem() instanceof IFilterItem) {
                 var tag = player.getMainHandItem().getOrCreateTag();
-                switch(action) {
-                        case 0 -> {
-                            if (tag.contains("filters")){
-                                if (!tag.getCompound("filters").contains(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString())){
-                                    tag.getCompound("filters")
-                                            .put(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), stack.serializeNBT());
-                                }
-                            } else {
-                                CompoundTag filters = new CompoundTag();
-                                filters.put(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), stack.serializeNBT());
-                                tag.put("filters", filters);
+                switch (action) {
+                    case 0 -> {
+                        if (tag.contains("filters")) {
+                            if (!tag.getCompound("filters").contains(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString())) {
+                                tag.getCompound("filters")
+                                        .put(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), stack.serializeNBT());
                             }
+                        } else {
+                            CompoundTag filters = new CompoundTag();
+                            filters.put(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), stack.serializeNBT());
+                            tag.put("filters", filters);
+                        }
 
-                        }
-                        case 1 -> {
-                            CompoundTag filters = tag.getCompound("filters");
-                            if (filters.contains(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString())){
-                                filters.remove(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
-                            }
-                        }
-                        case 2 -> {
-                            CompoundTag filters = tag.getCompound("filters");
-                            filters.getAllKeys().forEach(filters::remove);
+                    }
+                    case 1 -> {
+                        CompoundTag filters = tag.getCompound("filters");
+                        if (filters.contains(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString())) {
+                            filters.remove(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
                         }
                     }
+                    case 2 -> {
+                        CompoundTag filters = tag.getCompound("filters");
+                        filters.getAllKeys().forEach(filters::remove);
+                    }
+                }
 
             }
 

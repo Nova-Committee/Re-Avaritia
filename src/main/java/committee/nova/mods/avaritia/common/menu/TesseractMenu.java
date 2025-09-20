@@ -145,8 +145,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 this.channelOwner = channel.getUUID("channelOwner");
                 this.channelID = channel.getInt("channelID");
             }
-        }
-        else {
+        } else {
             this.blockPos = blockEntity.getBlockPos();
             this.tesseractTile = blockEntity;
             this.owner = blockEntity.getOwner() == null ? player.getUUID() : blockEntity.getOwner();
@@ -184,8 +183,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                             nbt.putInt("sortType", sortType);
                         }
                         panelItem.setTag(nbt);
-                    }
-                    else {
+                    } else {
                         tesseractTile.setLocked(locked);
                         if (locked) saveBlock();
                     }
@@ -236,7 +234,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (type.equals("item")) setCarried(channel.saveTakeItem(id, false));
             else if (type.equals("fluid")) {
                 if (!channel.storageFluids.containsKey(id)) return;
-                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket"))
+                    return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
@@ -244,8 +243,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 channel.takeItem("minecraft:bucket", 1);
                 setCarried(fluidBucket);
             }
-        }
-        else {
+        } else {
             //叠堆大于1不处理特殊操作，防止意外。
             if (carried.getCount() > 1) {
                 channel.addItem(carried);
@@ -260,38 +258,38 @@ public class TesseractMenu extends AbstractContainerMenu {
                 if (fluidBucket.isEmpty()) return;
                 channel.takeFluid(id, FluidType.BUCKET_VOLUME);
                 setCarried(fluidBucket);
-            }
-            else {
+            } else {
 //                if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) {
 //                    channel.addItem(carried);
 //                    return;
 //                }
                 //其他容器
                 AtomicBoolean canal = new AtomicBoolean(false);
-                if (type.equals("fluid")) carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
-                    if (!channel.storageFluids.containsKey(id)) return;
-                    FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), (int) Math.min(FluidType.BUCKET_VOLUME, channel.storageFluids.get(id)));
-                    int filledAmount = iFluidHandlerItem.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
-                    if (filledAmount != 0) {
-                        boolean succeedInput = true;
-                        int tanks = iFluidHandlerItem.getTanks();
-                        ItemStack testItem = carried.copy();
-                        AtomicReference<FluidStack> testFluid = new AtomicReference<>(FluidStack.EMPTY);
-                        for (int i = 0; i < tanks; i++) {
-                            int finalI = i;
-                            testItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(testFluidHandlerItem ->
-                                    testFluid.set(testFluidHandlerItem.getFluidInTank(
-                                            finalI)));
-                            if (!testFluid.get().isFluidStackIdentical(iFluidHandlerItem.getFluidInTank(i))) {
-                                succeedInput = false;
-                                setCarried(getCarried().copy());
-                                break;
+                if (type.equals("fluid"))
+                    carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
+                        if (!channel.storageFluids.containsKey(id)) return;
+                        FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), (int) Math.min(FluidType.BUCKET_VOLUME, channel.storageFluids.get(id)));
+                        int filledAmount = iFluidHandlerItem.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                        if (filledAmount != 0) {
+                            boolean succeedInput = true;
+                            int tanks = iFluidHandlerItem.getTanks();
+                            ItemStack testItem = carried.copy();
+                            AtomicReference<FluidStack> testFluid = new AtomicReference<>(FluidStack.EMPTY);
+                            for (int i = 0; i < tanks; i++) {
+                                int finalI = i;
+                                testItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(testFluidHandlerItem ->
+                                        testFluid.set(testFluidHandlerItem.getFluidInTank(
+                                                finalI)));
+                                if (!testFluid.get().isFluidStackIdentical(iFluidHandlerItem.getFluidInTank(i))) {
+                                    succeedInput = false;
+                                    setCarried(getCarried().copy());
+                                    break;
+                                }
                             }
+                            if (succeedInput) channel.takeFluid(id, filledAmount);
                         }
-                        if (succeedInput) channel.takeFluid(id, filledAmount);
-                    }
-                    canal.set(true);
-                });
+                        canal.set(true);
+                    });
                 else if (type.equals("energy") && id.equals("blackholestorage:forge_energy"))
                     carried.getCapability(ForgeCapabilities.ENERGY).ifPresent(iEnergyStorage -> {
                         if (!iEnergyStorage.canReceive() || channel.getFEAmount() == 0) return;
@@ -301,35 +299,37 @@ public class TesseractMenu extends AbstractContainerMenu {
                         channel.removeEnergy((long) receiveEnergy);
                         canal.set(true);
                     });
-                else if (type.equals("item")) carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                    //TODO：这里需要做与流体一样的正确性检查防止刷物品，但需要一个有这个问题的容器才能做测试。
-                    if (!channel.storageItems.containsKey(id)) return;
-                    int slots = iItemHandler.getSlots();
-                    for (int i = 0; i < slots; i++) {
-                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
-                        if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty()) continue;
-                        int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
-                        if (remainingSlotSpace <= 0) continue;
-                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(id) / 2);
-                        transmitAmount = Math.max(transmitAmount, 64000);
-                        transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(id));
-                        transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
-                        int markAmount = transmitAmount;
-                        tryInsertItem.setCount(transmitAmount);
-                        for (int j = 0; j < 64; j++) {
-                            ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
-                            transmitAmount = remainingItem.getCount();
-                            if (transmitAmount <= 0) break;
+                else if (type.equals("item"))
+                    carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+                        //TODO：这里需要做与流体一样的正确性检查防止刷物品，但需要一个有这个问题的容器才能做测试。
+                        if (!channel.storageItems.containsKey(id)) return;
+                        int slots = iItemHandler.getSlots();
+                        for (int i = 0; i < slots; i++) {
+                            ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
+                            if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
+                                continue;
+                            int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
+                            if (remainingSlotSpace <= 0) continue;
+                            int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(id) / 2);
+                            transmitAmount = Math.max(transmitAmount, 64000);
+                            transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(id));
+                            transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
+                            int markAmount = transmitAmount;
                             tryInsertItem.setCount(transmitAmount);
+                            for (int j = 0; j < 64; j++) {
+                                ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
+                                transmitAmount = remainingItem.getCount();
+                                if (transmitAmount <= 0) break;
+                                tryInsertItem.setCount(transmitAmount);
+                            }
+                            markAmount -= transmitAmount;
+                            if (markAmount > 0) {
+                                channel.takeItem(id, markAmount);
+                                canal.set(true);
+                                return;
+                            }
                         }
-                        markAmount -= transmitAmount;
-                        if (markAmount > 0) {
-                            channel.takeItem(id, markAmount);
-                            canal.set(true);
-                            return;
-                        }
-                    }
-                });
+                    });
                 if (canal.get()) return;
                 channel.addItem(carried);
             }
@@ -342,7 +342,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (id.equals("minecraft:air")) return;
             if (type.equals("item")) setCarried(channel.saveTakeItem(id, true));
             if (type.equals("fluid")) {
-                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket"))
+                    return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
@@ -350,8 +351,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 channel.takeItem("minecraft:bucket", 1);
                 setCarried(fluidBucket);
             }
-        }
-        else {
+        } else {
             if (carried.getCount() > 1) {
                 channel.fillItemStack(carried, -1);
                 return;
@@ -435,10 +435,10 @@ public class TesseractMenu extends AbstractContainerMenu {
                     itemStack.setCount(i);
                     channel.removeItem(itemStack);
                 }
-            }
-            else if (type.equals("fluid")) {
+            } else if (type.equals("fluid")) {
                 if (!channel.storageFluids.containsKey(id)) return;
-                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket"))
+                    return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
@@ -449,8 +449,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                     channel.takeItem("minecraft:bucket", 1);
                 }
             }
-        }
-        else {
+        } else {
             if (carried.getCount() > 1) {
                 channel.fillItemStack(carried, -1);
                 return;
@@ -462,56 +461,57 @@ public class TesseractMenu extends AbstractContainerMenu {
                 if (fluidBucket.isEmpty()) return;
                 channel.takeFluid(id, FluidType.BUCKET_VOLUME);
                 setCarried(fluidBucket);
-            }
-            else {
+            } else {
                 //if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) return;
                 AtomicBoolean canal = new AtomicBoolean(false);
                 //取一大堆，下限堆大小为64k桶，上限为存量的一半，防止败家行为。
-                if (type.equals("fluid")) carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
-                    if (!channel.storageFluids.containsKey(id)) return;
-                    int tanks = iFluidHandlerItem.getTanks();
-                    for (int i = 0; i < tanks; i++) {
-                        FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1000);
-                        if (!fluidStack.isFluidEqual(iFluidHandlerItem.getFluidInTank(i)) && !iFluidHandlerItem.getFluidInTank(i).isEmpty()) continue;
-                        int remainingTankSpace = iFluidHandlerItem.getTankCapacity(i) - iFluidHandlerItem.getFluidInTank(i).getAmount();
-                        if (remainingTankSpace <= 0) continue;
-                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageFluids.get(id) / 2);
-                        transmitAmount = Math.max(transmitAmount, 64000000);
-                        transmitAmount = (int) Math.min(transmitAmount, channel.storageFluids.get(id));
-                        transmitAmount = Math.min(transmitAmount, remainingTankSpace);
-                        int markAmount = transmitAmount;
-                        fluidStack.setAmount(transmitAmount);
-                        for (int j = 0; j < 1024; j++) {
-                            int filledAmount = iFluidHandlerItem.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
-                            if (j == 0) {
-                                ItemStack testItem = carried.copy();
-                                AtomicReference<FluidStack> testFluid = new AtomicReference<>(FluidStack.EMPTY);
-                                for (int k = 0; k < tanks; k++) {
-                                    int finalI = k;
-                                    testItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(testFluidHandlerItem ->
-                                            testFluid.set(
-                                                    testFluidHandlerItem.getFluidInTank(
-                                                            finalI)));
-                                    if (!testFluid.get().isFluidStackIdentical(iFluidHandlerItem.getFluidInTank(i))) {
-                                        filledAmount = 0;
-                                        setCarried(getCarried().copy());
-                                        break;
+                if (type.equals("fluid"))
+                    carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
+                        if (!channel.storageFluids.containsKey(id)) return;
+                        int tanks = iFluidHandlerItem.getTanks();
+                        for (int i = 0; i < tanks; i++) {
+                            FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1000);
+                            if (!fluidStack.isFluidEqual(iFluidHandlerItem.getFluidInTank(i)) && !iFluidHandlerItem.getFluidInTank(i).isEmpty())
+                                continue;
+                            int remainingTankSpace = iFluidHandlerItem.getTankCapacity(i) - iFluidHandlerItem.getFluidInTank(i).getAmount();
+                            if (remainingTankSpace <= 0) continue;
+                            int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageFluids.get(id) / 2);
+                            transmitAmount = Math.max(transmitAmount, 64000000);
+                            transmitAmount = (int) Math.min(transmitAmount, channel.storageFluids.get(id));
+                            transmitAmount = Math.min(transmitAmount, remainingTankSpace);
+                            int markAmount = transmitAmount;
+                            fluidStack.setAmount(transmitAmount);
+                            for (int j = 0; j < 1024; j++) {
+                                int filledAmount = iFluidHandlerItem.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                                if (j == 0) {
+                                    ItemStack testItem = carried.copy();
+                                    AtomicReference<FluidStack> testFluid = new AtomicReference<>(FluidStack.EMPTY);
+                                    for (int k = 0; k < tanks; k++) {
+                                        int finalI = k;
+                                        testItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(testFluidHandlerItem ->
+                                                testFluid.set(
+                                                        testFluidHandlerItem.getFluidInTank(
+                                                                finalI)));
+                                        if (!testFluid.get().isFluidStackIdentical(iFluidHandlerItem.getFluidInTank(i))) {
+                                            filledAmount = 0;
+                                            setCarried(getCarried().copy());
+                                            break;
+                                        }
                                     }
                                 }
+                                if (filledAmount == 0) break;
+                                transmitAmount -= filledAmount;
+                                if (transmitAmount <= 0) break;
+                                fluidStack.setAmount(transmitAmount);
                             }
-                            if (filledAmount == 0) break;
-                            transmitAmount -= filledAmount;
-                            if (transmitAmount <= 0) break;
-                            fluidStack.setAmount(transmitAmount);
+                            markAmount -= transmitAmount;
+                            if (markAmount > 0) {
+                                channel.takeFluid(id, markAmount);
+                                canal.set(true);
+                            }
+                            return;
                         }
-                        markAmount -= transmitAmount;
-                        if (markAmount > 0) {
-                            channel.takeFluid(id, markAmount);
-                            canal.set(true);
-                        }
-                        return;
-                    }
-                });
+                    });
                     //但电不需要防败家，因为不缺嘿嘿嘿。
                 else if (type.equals("energy") && id.equals("blackholestorage:forge_energy"))
                     carried.getCapability(ForgeCapabilities.ENERGY).ifPresent(iEnergyStorage -> {
@@ -530,29 +530,30 @@ public class TesseractMenu extends AbstractContainerMenu {
                             canal.set(true);
                         }
                     });
-                else if (type.equals("item")) carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                    if (!channel.storageItems.containsKey(id)) return;
-                    int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(id) / 2);
-                    transmitAmount = Math.max(transmitAmount, 64000);
-                    transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(id));
-                    int markAmount = transmitAmount;
-                    ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
-                    int slots = iItemHandler.getSlots();
-                    for (int i = 0; i < slots; i++) {
-                        for (int j = 0; j < 64; j++) {
-                            ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
-                            if (remainingItem.getCount() == transmitAmount) break;
-                            transmitAmount = remainingItem.getCount();
-                            if (transmitAmount <= 0) break;
-                            tryInsertItem.setCount(transmitAmount);
+                else if (type.equals("item"))
+                    carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+                        if (!channel.storageItems.containsKey(id)) return;
+                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, channel.storageItems.get(id) / 2);
+                        transmitAmount = Math.max(transmitAmount, 64000);
+                        transmitAmount = (int) Math.min(transmitAmount, channel.storageItems.get(id));
+                        int markAmount = transmitAmount;
+                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
+                        int slots = iItemHandler.getSlots();
+                        for (int i = 0; i < slots; i++) {
+                            for (int j = 0; j < 64; j++) {
+                                ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
+                                if (remainingItem.getCount() == transmitAmount) break;
+                                transmitAmount = remainingItem.getCount();
+                                if (transmitAmount <= 0) break;
+                                tryInsertItem.setCount(transmitAmount);
+                            }
                         }
-                    }
-                    markAmount -= transmitAmount;
-                    if (markAmount > 0) {
-                        channel.takeItem(id, markAmount);
-                        canal.set(true);
-                    }
-                });
+                        markAmount -= transmitAmount;
+                        if (markAmount > 0) {
+                            channel.takeItem(id, markAmount);
+                            canal.set(true);
+                        }
+                    });
                 if (canal.get()) return;
                 channel.addItem(carried);
             }
@@ -569,10 +570,10 @@ public class TesseractMenu extends AbstractContainerMenu {
                 if (craftingMode) moveItemStackTo(itemStack, 41, 50, false);
                 else moveItemStackTo(itemStack, 0, 36, false);
                 if (itemStack.isEmpty()) channel.takeItem(id, 1);
-            }
-            else if (type.equals("fluid")) {
+            } else if (type.equals("fluid")) {
                 if (!channel.storageFluids.containsKey(id)) return;
-                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
+                if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket"))
+                    return;
                 FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
                 ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
                 if (fluidBucket.isEmpty()) return;
@@ -583,13 +584,12 @@ public class TesseractMenu extends AbstractContainerMenu {
                     channel.takeItem("minecraft:bucket", 1);
                 }
             }
-        }
-        else {
+        } else {
             if (carried.getCount() > 1) {
                 channel.fillItemStack(carried, -1);
                 return;
             }
-           // if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) return;
+            // if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) return;
             AtomicBoolean canal = new AtomicBoolean(false);
             carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
                 FluidStack resultFluidStack = iFluidHandlerItem.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
@@ -676,11 +676,11 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (!channel.storageItems.containsKey(id)) return;
             ItemStack itemStack = channel.takeItem(id, 1);
             player.drop(itemStack, false);
-        }
-        else if (type.equals("fluid")) {
+        } else if (type.equals("fluid")) {
             //笑死，对于流体这种空槽根本不触发扔事件。
             if (!channel.storageFluids.containsKey(id)) return;
-            if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
+            if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket"))
+                return;
             FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
             ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
             if (fluidBucket.isEmpty()) return;
@@ -696,10 +696,10 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (!channel.storageItems.containsKey(id)) return;
             ItemStack itemStack = channel.saveTakeItem(id, false);
             player.drop(itemStack, false);
-        }
-        else if (type.equals("fluid")) {
+        } else if (type.equals("fluid")) {
             if (!channel.storageFluids.containsKey(id)) return;
-            if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket")) return;
+            if (channel.storageFluids.get(id) < FluidType.BUCKET_VOLUME || !channel.storageItems.containsKey("minecraft:bucket"))
+                return;
             FluidStack fluidStack = new FluidStack(StorageUtils.getFluid(id), 1);
             ItemStack fluidBucket = new ItemStack(fluidStack.getFluid().getBucket());
             if (fluidBucket.isEmpty()) return;
@@ -856,7 +856,8 @@ public class TesseractMenu extends AbstractContainerMenu {
         if (pSlotId >= 51) {
             //仅客户端能触发
             String[] object;
-            if (pSlotId - 51 < channelDummyContainer.viewingObject.size()) object = channelDummyContainer.viewingObject.get(pSlotId - 51);
+            if (pSlotId - 51 < channelDummyContainer.viewingObject.size())
+                object = channelDummyContainer.viewingObject.get(pSlotId - 51);
             else object = new String[]{"item", "minecraft:air"};
 
             switch (pButton) {
@@ -934,22 +935,18 @@ public class TesseractMenu extends AbstractContainerMenu {
                 }
             }
             //剩下的SWAP无视掉(hot bar的快捷键)
-        }
-        else if (pSlotId >= 41 && pSlotId <= 49 && pClickType.equals(ClickType.QUICK_MOVE)) {
+        } else if (pSlotId >= 41 && pSlotId <= 49 && pClickType.equals(ClickType.QUICK_MOVE)) {
             //合成格
             ItemStack itemStack = slots.get(pSlotId).getItem();
             if (pButton == 0) {
                 moveItemStackTo(itemStack, 9, 36, false);
                 if (!itemStack.isEmpty()) moveItemStackTo(itemStack, 0, 9, false);
                 slotsChanged(craftSlots);
-            }
-            else if (pButton == 1) {
+            } else if (pButton == 1) {
                 channel.addItem(itemStack);
                 slotsChanged(craftSlots);
-            }
-            else super.clicked(pSlotId, pButton, pClickType, pPlayer);
-        }
-        else if (pSlotId != panelItemSlotIndex) super.clicked(pSlotId, pButton, pClickType, pPlayer);
+            } else super.clicked(pSlotId, pButton, pClickType, pPlayer);
+        } else if (pSlotId != panelItemSlotIndex) super.clicked(pSlotId, pButton, pClickType, pPlayer);
     }
 
     @Override
@@ -966,32 +963,27 @@ public class TesseractMenu extends AbstractContainerMenu {
                     if (!this.moveItemStackTo(movingStack, 41, 50, false)) {
                         return ItemStack.EMPTY;
                     }
-                }
-                else {
+                } else {
                     channel.addItem(movingStack);
                     return ItemStack.EMPTY;
                 }
-            }
-            else if (slotId == 50) {
+            } else if (slotId == 50) {
                 movingStack.getItem().onCraftedBy(movingStack, level, player);
                 if (!this.moveItemStackTo(movingStack, 0, 36, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(movingStack, itemStack);
-            }
-            else if (slotId >= 41 && slotId <= 49) {
+            } else if (slotId >= 41 && slotId <= 49) {
                 //正常情况不会运行这里，因为上面已经拦下来了。
                 if (!this.moveItemStackTo(movingStack, 0, 36, false)) {
                     return ItemStack.EMPTY;
                 }
-            }
-            else {
+            } else {
                 Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= 51 in server side ?");
             }
             if (movingStack.isEmpty()) {
                 slot.set(ItemStack.EMPTY);
-            }
-            else {
+            } else {
                 slot.setChanged();
             }
             if (movingStack.getCount() == itemStack.getCount()) {
@@ -1019,8 +1011,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 CompoundTag nbt = panelItem.getTag();
                 nbt.remove("channel");
                 panelItem.setTag(nbt);
-            }
-            else tesseractTile.setChannel(null, -1);
+            } else tesseractTile.setChannel(null, -1);
             openChannelScreen();
         }
         if (panelItemSlotIndex >= 0) return panelItem == player.getInventory().getItem(panelItemSlotIndex);
@@ -1050,21 +1041,20 @@ public class TesseractMenu extends AbstractContainerMenu {
                 if (channel.isRemoved()) nbt.remove("channel");
                 panelItem.setTag(nbt);
             }
-        }
-        else {
+        } else {
             if (!tesseractTile.isLocked()) saveBlock();
         }
     }
 
     private void openChannelScreen() {
         if (locked) return;
-        if (panelItemSlotIndex >= 0){
+        if (panelItemSlotIndex >= 0) {
             NetworkHooks.openScreen((ServerPlayer) player,
                     new ChannelSelectMenuProvider(new ItemChannelTerminal(player.getInventory(), panelItem, panelItemSlotIndex)),
-                    buf -> {}
+                    buf -> {
+                    }
             );
-        }
-        else NetworkHooks.openScreen((ServerPlayer) player, new ChannelSelectMenuProvider(tesseractTile), buf -> {
+        } else NetworkHooks.openScreen((ServerPlayer) player, new ChannelSelectMenuProvider(tesseractTile), buf -> {
         });
     }
 
@@ -1084,8 +1074,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (resultSlots.setRecipeUsed(level, (ServerPlayer) player, recipe)) {
                 resultSlots.setItem(0, recipe.assemble(craftSlots, this.level.registryAccess()));
             }
-        }
-        else resultSlots.setItem(0, ItemStack.EMPTY);
+        } else resultSlots.setItem(0, ItemStack.EMPTY);
     }
 
     public void receivedRecipe(String recipeId, boolean maxTransfer) {
@@ -1125,8 +1114,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 //不统计nbt
                 if (stack.hasTag()) {
                     hasNbtItem = true;
-                }
-                else {
+                } else {
                     //边统计边确认此槽可以使用的物品里数量最大的那一种
                     Item item = stack.getItem();
                     long count;
@@ -1150,8 +1138,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             }
             if (markItem == null && hasNbtItem) {
                 itemChosen.add(Items.AIR);
-            }
-            else itemChosen.add(markItem);
+            } else itemChosen.add(markItem);
         }
 
         //先填充一次，如果连填充单个都不够，那就不需要继续了。
@@ -1177,8 +1164,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                             if (stack2.getCount() == 1) {
                                 craftSlots.setItem(gridIndex, stack2);
                                 inventory.setItem(index, ItemStack.EMPTY);
-                            }
-                            else {
+                            } else {
                                 ItemStack newStack = stack2.copy();
                                 newStack.setCount(1);
                                 craftSlots.setItem(gridIndex, newStack);
@@ -1190,13 +1176,11 @@ public class TesseractMenu extends AbstractContainerMenu {
                     }
                     if (flag) break;
                 }
-            }
-            else {
+            } else {
                 if (channel.getRealItemAmount(StorageUtils.getItemId(item)) > 0) {
                     craftSlots.setItem(gridIndex, new ItemStack(item));
                     channel.removeItem(StorageUtils.getItemId(item), 1);
-                }
-                else {
+                } else {
                     if (invItemCounter == null) invItemCounter = new InvItemCounter(inventory);
                     Integer[] itemIndex = invItemCounter.getNoNbtItemIndex();
                     for (Integer index : itemIndex) {
@@ -1206,8 +1190,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                             if (stack.getCount() == 1) {
                                 craftSlots.setItem(gridIndex, stack);
                                 inventory.setItem(index, ItemStack.EMPTY);
-                            }
-                            else {
+                            } else {
                                 craftSlots.setItem(gridIndex, new ItemStack(item));
                                 stack.grow(-1);
                             }
@@ -1233,8 +1216,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 if (channelHas >= targetCount) {
                     channel.removeItem(itemId, targetCount - itemStack.getCount());
                     itemStack.setCount(targetCount);
-                }
-                else {
+                } else {
                     if (channelHas > 0) {
                         channel.removeItem(itemId, channelHas);
                         itemStack.setCount(itemStack.getCount() + channelHas);
@@ -1250,8 +1232,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                                 int j = itemStack.getCount() + invCount - targetCount;
                                 invStack.setCount(j);
                                 itemStack.setCount(targetCount);
-                            }
-                            else {
+                            } else {
                                 inventory.setItem(index, ItemStack.EMPTY);
                                 itemStack.grow(invCount);
                                 if (itemStack.getCount() >= targetCount) break;
@@ -1274,9 +1255,9 @@ public class TesseractMenu extends AbstractContainerMenu {
                     }
                 }
             }
-        }
-        else resultSlots.setItem(0, ItemStack.EMPTY);
+        } else resultSlots.setItem(0, ItemStack.EMPTY);
     }
+
     public void receivedRecipe(Map<String, Integer> itemNeed) {
         itemNeed.forEach((s, integer) -> {
             ItemStack itemStack = channel.takeItem(s, integer);
@@ -1377,13 +1358,13 @@ public class TesseractMenu extends AbstractContainerMenu {
                                 if (channelAmount >= maxStackSize - 1) {
                                     craftingStack.setCount(maxStackSize);
                                     channel.removeItem(StorageUtils.getItemId(craftingStack.getItem()), maxStackSize - 1);
-                                }
-                                else {
+                                } else {
                                     if (channelAmount > 0) {
                                         channel.removeItem(StorageUtils.getItemId(craftingStack.getItem()), channelAmount);
                                         craftingStack.setCount(channelAmount + 1);
                                     }
-                                    if (invItemCounter == null) invItemCounter = new InvItemCounter(player.getInventory());
+                                    if (invItemCounter == null)
+                                        invItemCounter = new InvItemCounter(player.getInventory());
                                     if (invItemCounter.getCount(craftingStack.getItem()) <= 0) continue;
                                     Integer[] noNbtItemIndex = invItemCounter.getNoNbtItemIndex();
                                     for (Integer integer : noNbtItemIndex) {
@@ -1421,7 +1402,8 @@ public class TesseractMenu extends AbstractContainerMenu {
                 canFastCraft = false;
                 break;
             }
-            if (itemMap.containsKey(slotStack.getItem())) itemMap.replace(slotStack.getItem(), itemMap.get(slotStack.getItem()) + 1);
+            if (itemMap.containsKey(slotStack.getItem()))
+                itemMap.replace(slotStack.getItem(), itemMap.get(slotStack.getItem()) + 1);
             else itemMap.put(slotStack.getItem(), 1);
         }
 
@@ -1473,11 +1455,9 @@ public class TesseractMenu extends AbstractContainerMenu {
                     int channelHas = channel.getItemAmount(StorageUtils.getItemId(needStack.getItem()));
                     if (channelHas >= needStack.getMaxStackSize()) {
                         craftSlots.setItem(i, channel.takeItem(StorageUtils.getItemId(needStack.getItem()), needStack.getMaxStackSize()));
-                    }
-                    else if (channelHas == 0) {
+                    } else if (channelHas == 0) {
                         moveSameItemToCraftingSlot(i, needStack);
-                    }
-                    else {
+                    } else {
                         craftSlots.setItem(i, channel.takeItem(StorageUtils.getItemId(needStack.getItem()), channelHas));
                         fillStackFromInventory(craftSlots.getItem(i));
                     }
@@ -1495,8 +1475,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                     ItemStack inItem = beforeItem.copy();
                     inItem.setCount(1);
                     itemMark.add(inItem);
-                }
-                else {
+                } else {
                     boolean flag = true;
                     for (ItemStack itemStack : itemMark) {
                         if (ItemStack.isSameItemSameTags(beforeItem, itemStack)) {
@@ -1518,8 +1497,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 if (itemAmount.size() == 0) {
                     ItemStack inItem = slotItem.copy();
                     itemAmount.add(inItem);
-                }
-                else {
+                } else {
                     boolean flag = true;
                     for (ItemStack itemStack : itemAmount) {
                         if (ItemStack.isSameItemSameTags(slotItem, itemStack)) {
@@ -1601,8 +1579,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (otherStack.getCount() > needAmount) {
                 itemStack.setCount(itemStack.getMaxStackSize());
                 otherStack.setCount(otherStack.getCount() - needAmount);
-            }
-            else {
+            } else {
                 itemStack.setCount(itemStack.getCount() + otherStack.getCount());
                 player.getInventory().setItem(slotId, ItemStack.EMPTY);
             }
@@ -1616,8 +1593,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             if (otherStack.getCount() > needAmount) {
                 itemStack.setCount(itemStack.getMaxStackSize());
                 otherStack.setCount(otherStack.getCount() - needAmount);
-            }
-            else {
+            } else {
                 itemStack.setCount(itemStack.getCount() + otherStack.getCount());
                 player.getInventory().setItem(slotId, ItemStack.EMPTY);
             }

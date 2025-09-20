@@ -117,7 +117,7 @@ public class StorageUtils {
     public static void loadAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
         ListTag list = nbt.getList("Items", Tag.TAG_COMPOUND);
 
-        for(int i = 0; i < list.size(); ++i) {
+        for (int i = 0; i < list.size(); ++i) {
             CompoundTag compound = list.getCompound(i);
             int index = compound.getInt("Index");
             StorageItem item = StorageItem.read(compound);

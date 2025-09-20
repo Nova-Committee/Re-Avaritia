@@ -26,6 +26,7 @@ public class ItemChannelTerminal implements IChannelTerminal {
     private final ItemStack terminal;
     private final int slotID;
     private final Inventory inventory;
+
     public ItemChannelTerminal(Inventory playerInventory, ItemStack itemStack, int slotID) {
         this.inventory = playerInventory;
         this.slotID = slotID;
@@ -91,7 +92,8 @@ public class ItemChannelTerminal implements IChannelTerminal {
     }
 
     @Override
-    public void removeChannelSelector(ServerPlayer player) {}
+    public void removeChannelSelector(ServerPlayer player) {
+    }
 
     @Override
     public boolean stillValid() {

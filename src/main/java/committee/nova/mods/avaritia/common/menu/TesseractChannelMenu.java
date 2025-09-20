@@ -29,6 +29,7 @@ public class TesseractChannelMenu extends AbstractContainerMenu {
         this.player = playerInv.player;
         this.terminal = null;
     }
+
     public TesseractChannelMenu(int containerId, Player player, IChannelTerminal terminal) {
         super(ModMenus.tesseract_channel.get(), containerId);
         this.player = player;

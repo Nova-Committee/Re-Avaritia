@@ -193,8 +193,6 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         AvaritiaShaders.cosmicArmorUVs.set(AvaritiaShaders.COSMIC_UVS);
 
         if (livingEntity instanceof Player player) {
-            ItemStack itemStack = player.getItemBySlot(EquipmentSlot.CHEST);
-
             if (chestItem == ModItems.infinity_chestplate.get() && (player.getAbilities().flying)) {
                 poseStack.pushPose();
                 ModelPart leftWing = root.getChild("left_wing");

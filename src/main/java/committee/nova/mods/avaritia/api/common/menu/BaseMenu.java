@@ -52,12 +52,12 @@ public abstract class BaseMenu extends AbstractContainerMenu implements IDataRec
     }
 
     protected void createInventorySlots(Inventory pInventory, int xOffset, int yOffset) {
-        for(int i = 0; i < 3; ++i) {
-            for(int j = 0; j < 9; ++j) {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(pInventory, j + i * 9 + 9, 8 + j * 18 + xOffset, 84 + i * 18 + yOffset));
             }
         }
-        for(int k = 0; k < 9; ++k) {
+        for (int k = 0; k < 9; ++k) {
             this.addSlot(new Slot(pInventory, k, 8 + k * 18 + xOffset, 142 + yOffset));
         }
     }

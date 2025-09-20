@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.init.data.provider.recipe;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;

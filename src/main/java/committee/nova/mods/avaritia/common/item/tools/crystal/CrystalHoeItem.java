@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -23,7 +22,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -32,9 +30,6 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.GrassBlock;
 import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Description:
@@ -44,22 +39,19 @@ import java.util.List;
  */
 public class CrystalHoeItem extends HoeItem implements ITooltip {
 
-    private final String name;
 
-    public CrystalHoeItem(String name) {
+    public CrystalHoeItem() {
         super(ModToolTiers.CRYSTAL, 0, -25F,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
         );
-        this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        this.appendTooltip(pStack, pLevel, pTooltipComponents, pIsAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override
@@ -112,6 +104,7 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
         }
         return InteractionResult.SUCCESS;
     }
+
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (player instanceof ServerPlayer serverPlayer) {

@@ -57,8 +57,9 @@ public class InventoryUtils {
 
     /**
      * 判断物品容器中是否有给定物品
+     *
      * @param itemInv 有容器的物品
-     * @param stack 需要查找的物品
+     * @param stack   需要查找的物品
      * @return 是否有给定物品
      */
     private static boolean itemInvHasItem(ItemStack itemInv, ItemStack stack) {
@@ -79,8 +80,9 @@ public class InventoryUtils {
 
     /**
      * 获取第一个给定物品的slot
+     *
      * @param itemInv 有容器的物品
-     * @param stack 需要查找的物品
+     * @param stack   需要查找的物品
      * @return 第一个给定物品的slot
      */
     public static int getFirstSlotWithStack(ItemStack itemInv, ItemStack stack) {
@@ -97,8 +99,9 @@ public class InventoryUtils {
 
     /**
      * 获取最后一个给定物品的slot
+     *
      * @param itemInv 有容器的物品
-     * @param stack 需要查找的物品
+     * @param stack   需要查找的物品
      * @return 最后一个给定物品的slot
      */
     private static int getLastSlotWithStack(ItemStack itemInv, ItemStack stack) {
@@ -133,18 +136,18 @@ public class InventoryUtils {
      * 有优先级 主手 > 副手 > 背包
      *
      * @param player 玩家
-     * @param is 匹配值
+     * @param is     匹配值
      * @return 找到的值
      */
 
     public static ItemStack findItemInInv(Player player, Predicate<ItemStack> is) {
-        if(is.test(player.getMainHandItem())) return player.getMainHandItem();
-        if(is.test(player.getOffhandItem()))return player.getOffhandItem();
+        if (is.test(player.getMainHandItem())) return player.getMainHandItem();
+        if (is.test(player.getOffhandItem())) return player.getOffhandItem();
         Inventory inv = player.getInventory();
         int size = inv.getContainerSize();
-        for(int i = 0;i<size;i++) {
+        for (int i = 0; i < size; i++) {
             ItemStack s = inv.getItem(i);
-            if(is.test(s)) {
+            if (is.test(s)) {
                 return s;
             }
         }
@@ -156,25 +159,25 @@ public class InventoryUtils {
      * 有优先级 饰品栏 > 主手 > 副手 > 背包
      *
      * @param player 玩家
-     * @param is 匹配值
-     * @param map 操作函数
+     * @param is     匹配值
+     * @param map    操作函数
      * @return 找到的值
      */
     public static ItemStack findItemInInv(Player player, Predicate<ItemStack> is, Function<ItemStack, ItemStack> map) {
-        if(curios) {
+        if (curios) {
             AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
             CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
                 s.set(curiosInventory.findCurios(is));
             });
-            if(!s.get().isEmpty())return map.apply(s.get().get(0).stack());
+            if (!s.get().isEmpty()) return map.apply(s.get().get(0).stack());
         }//从饰品栏中获取
-        if(is.test(player.getMainHandItem()))return map.apply(player.getMainHandItem());
-        if(is.test(player.getOffhandItem()))return map.apply(player.getOffhandItem());
+        if (is.test(player.getMainHandItem())) return map.apply(player.getMainHandItem());
+        if (is.test(player.getOffhandItem())) return map.apply(player.getOffhandItem());
         Inventory inv = player.getInventory();
         int size = inv.getContainerSize();
-        for(int i = 0;i<size;i++) {
+        for (int i = 0; i < size; i++) {
             ItemStack s = inv.getItem(i);
-            if(is.test(s)) {
+            if (is.test(s)) {
                 return map.apply(s);
             }
         }
@@ -183,7 +186,8 @@ public class InventoryUtils {
 
     /**
      * 为物品创建Curios能力提供者
-     * @param stack 物品堆
+     *
+     * @param stack  物品堆
      * @param unused 未使用的NBT标签
      * @return ICapabilityProvider
      */

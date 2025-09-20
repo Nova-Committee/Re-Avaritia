@@ -11,12 +11,12 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class Res {
     public static final ResourceLocation DRAGON_FIREBALL = ResourceLocation.tryParse("textures/entity/enderdragon/dragon_fireball.png");
-    public static final ResourceLocation VOID = Const.rl( "textures/entity/void.png");
-    public static final ResourceLocation VOID_HALO = Const.rl( "textures/entity/void_halo.png");
-    public static final ResourceLocation HEAVEN_ARROW = Const.rl( "textures/entity/heavenarrow.png");
+    public static final ResourceLocation VOID = Const.rl("textures/entity/void.png");
+    public static final ResourceLocation VOID_HALO = Const.rl("textures/entity/void_halo.png");
+    public static final ResourceLocation HEAVEN_ARROW = Const.rl("textures/entity/heavenarrow.png");
     public static final ResourceLocation BLADE_SLASH = Const.rl("textures/entity/blade_slash.png");
-    public static final ResourceLocation INFINITY_ELYTRA = Const.rl( "textures/entity/infinity_elytra.png");
-    public static final ResourceLocation INFINITY_GOLEM = Const.rl( "textures/entity/iron_golem.png");
+    public static final ResourceLocation INFINITY_ELYTRA = Const.rl("textures/entity/infinity_elytra.png");
+    public static final ResourceLocation INFINITY_GOLEM = Const.rl("textures/entity/iron_golem.png");
     public static final ResourceLocation SUN_PRO_TEX = Const.rl("textures/entity/sun_pro.png");
     public static final ResourceLocation RAIN_PRO_TEX = Const.rl("textures/entity/rain_pro.png");
     public static final ResourceLocation STORM_PRO_TEX = Const.rl("textures/entity/storm_pro.png");

@@ -30,7 +30,9 @@ public class NumberFormatUtil {
         assert number >= 0;
         String numberString = Long.toString(number);
         int numberSize = numberString.length();
-        if (numberSize <= width) { return numberString; }
+        if (numberSize <= width) {
+            return numberString;
+        }
 
         long base = number;
         double last = base * 1000;

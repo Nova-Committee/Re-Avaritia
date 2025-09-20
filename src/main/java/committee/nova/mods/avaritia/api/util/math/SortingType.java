@@ -41,8 +41,9 @@ public enum SortingType {
         if (comparator != null)
             list.sort(comparator);
     }
+
     public SortingType getNextType() {
-        int ordinal = this.ordinal()+1;
+        int ordinal = this.ordinal() + 1;
         if (ordinal >= SortingType.values().length)
             ordinal = 0;
         return SortingType.values()[ordinal];

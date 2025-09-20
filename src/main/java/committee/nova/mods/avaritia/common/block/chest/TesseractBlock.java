@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import com.google.common.collect.ImmutableMap;
-import committee.nova.mods.avaritia.common.tile.TesseractTile;
-import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
+import committee.nova.mods.avaritia.common.menu.provider.ChannelMenuProvider;
+import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -65,6 +65,7 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
     private final ImmutableMap<BlockState, VoxelShape> shapesCache;
+
     public TesseractBlock() {
         super(Properties.of()
                 .mapColor(MapColor.GOLD)
@@ -138,7 +139,8 @@ public class TesseractBlock extends BaseTileEntityBlock implements SimpleWaterlo
                 UUID ownerUUID = nbt.getUUID("owner");
                 String ownerName = ClientChannelManager.getInstance().getUserName(nbt.getUUID("owner"));
                 boolean lock = nbt.getBoolean("locked");
-                if (selfUUID.equals(ownerUUID)) pTooltip.add(Component.translatable("gui.avaritia.owner", "§a" + ownerName));
+                if (selfUUID.equals(ownerUUID))
+                    pTooltip.add(Component.translatable("gui.avaritia.owner", "§a" + ownerName));
                 else if (lock) pTooltip.add(Component.translatable("gui.avaritia.owner", "§c" + ownerName));
                 else pTooltip.add(Component.translatable("gui.avaritia.owner", ownerName));
             }

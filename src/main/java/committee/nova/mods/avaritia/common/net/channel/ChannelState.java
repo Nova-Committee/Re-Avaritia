@@ -12,6 +12,7 @@ public enum ChannelState {
     NAME(2, "name");
     private final String name;
     private final int id;
+
     ChannelState(int id, String name) {
         this.name = name;
         this.id = id;

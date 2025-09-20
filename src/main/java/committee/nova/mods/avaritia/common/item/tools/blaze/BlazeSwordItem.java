@@ -39,16 +39,14 @@ import java.util.List;
  * Version: 1.0
  */
 public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, InitEnchantItem {
-    private final String name;
 
-    public BlazeSwordItem(String name) {
+    public BlazeSwordItem() {
         super(ModToolTiers.BLAZE, 0, 0f,
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant());
 
-        this.name = name;
     }
 
     @Override
@@ -62,10 +60,15 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
     }
 
     @Override
+    public boolean hasDescTooltip() {
+        return true;
+    }
+
+    @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FIRE_ASPECT.getFullname(10)).build());
-        this.appendTooltip(stack, level, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
 
     @Override

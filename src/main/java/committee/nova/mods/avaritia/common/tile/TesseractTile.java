@@ -47,19 +47,29 @@ import java.util.UUID;
 public class TesseractTile extends BaseTileEntity implements IChannelTerminal {
     private static final Component CONTAINER_NAME = Component.translatable("container.infinity_chest");
     private final int slotIndex;
-    @Getter private UUID owner;
-    @Getter private boolean locked = false;
-    @Getter private boolean craftingMode = false;
-    @Getter private String filter = "";
-    @Getter private byte sortType = 4;
-    @Getter private byte viewType = 0;
-    @Getter private UUID channelOwner;
-    @Getter private int channelID = -1;
+    @Getter
+    private UUID owner;
+    @Getter
+    private boolean locked = false;
+    @Getter
+    private boolean craftingMode = false;
+    @Getter
+    private String filter = "";
+    @Getter
+    private byte sortType = 4;
+    @Getter
+    private byte viewType = 0;
+    @Getter
+    private UUID channelOwner;
+    @Getter
+    private int channelID = -1;
     private boolean waterlogged = false;
     private final HashSet<ServerPlayer> channelSelectors = new HashSet<>();
 
-    @Getter private ServerChannel channel = NullChannel.INSTANCE;
-    @Getter private LazyOptional<?> capability = LazyOptional.of(() -> channel);
+    @Getter
+    private ServerChannel channel = NullChannel.INSTANCE;
+    @Getter
+    private LazyOptional<?> capability = LazyOptional.of(() -> channel);
 
 
     public TesseractTile(BlockPos pos, BlockState state) {
@@ -111,7 +121,7 @@ public class TesseractTile extends BaseTileEntity implements IChannelTerminal {
         pTag.putByte("sortType", sortType);
         pTag.putByte("viewType", viewType);
         if (channelID >= 0) {
-            CompoundTag channel =  new CompoundTag();
+            CompoundTag channel = new CompoundTag();
             channel.putUUID("channelOwner", channelOwner);
             channel.putInt("channelID", channelID);
             pTag.put("channel", channel);

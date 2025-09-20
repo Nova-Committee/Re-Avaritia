@@ -195,6 +195,7 @@ public class TextureUtils {
 
     /**
      * 获取指定命名空间的方块贴图
+     *
      * @param location 命名空间
      * @return 贴图
      */
@@ -283,7 +284,6 @@ public class TextureUtils {
         }
         return effectIcon;
     }
-
 
 
 }

@@ -13,7 +13,7 @@ public class InfinityRingItem extends ResourceItem {
 
 
     public InfinityRingItem() {
-        super(ModRarities.LEGEND, "infinity_ring", true, new Properties().stacksTo(1));
+        super(ModRarities.LEGEND, true, new Properties().stacksTo(1));
     }
 
 

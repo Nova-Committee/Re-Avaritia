@@ -46,7 +46,7 @@ public class AvaritiaShaders {
     public static Uniform hellExternalScale;
     public static Uniform hellOpacity;
     public static Uniform hellUVs;
-    
+
     public static Uniform eternalTime;
     public static Uniform eternalYaw;
     public static Uniform eternalPitch;
@@ -61,7 +61,7 @@ public class AvaritiaShaders {
     public static Uniform unstableOpacity;
     public static Uniform unstableUVs;
 
-    
+
     public static void onRegisterShaders(RegisterShadersEvent event) {
         try {
             event.registerShader(new ShaderInstance(event.getResourceProvider(), Const.rl("cosmic"), DefaultVertexFormat.BLOCK), shader -> {

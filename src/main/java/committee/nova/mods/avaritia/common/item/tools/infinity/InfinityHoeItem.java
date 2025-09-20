@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -153,8 +152,8 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
             }
             world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             return InteractionResult.sidedSuccess(world.isClientSide);
-        }else if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
-                (targetBlock instanceof SoulSandBlock || targetBlock.equals(Blocks.SOUL_SOIL) )) {
+        } else if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
+                (targetBlock instanceof SoulSandBlock || targetBlock.equals(Blocks.SOUL_SOIL))) {
             if (player != null && !world.isClientSide) {
                 if (player.isCrouching() && stack.getOrCreateTag().getBoolean("sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);

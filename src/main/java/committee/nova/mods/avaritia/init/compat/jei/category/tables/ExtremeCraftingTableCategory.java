@@ -70,6 +70,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<ITierCrafti
     public int getHeight() {
         return 163;
     }
+
     @Override
     public void draw(@NotNull ITierCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);

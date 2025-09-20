@@ -53,6 +53,7 @@ public class BladeSlashEntity extends Projectile {
         this(worldIn, livingEntityIn, damageModifier);
         this.duration += durationModifier;
     }
+
     @Override
     protected void defineSynchedData() {
 

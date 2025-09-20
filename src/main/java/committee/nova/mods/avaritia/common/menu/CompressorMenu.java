@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     private final ContainerData progressData;
+
     public CompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
     }

@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class NeutronHorseArmorItem extends HorseArmorItem implements ITooltip, InitEnchantItem {
+public class NeutronHorseArmorItem extends HorseArmorItem implements InitEnchantItem {
     public NeutronHorseArmorItem() {
         super(Integer.MAX_VALUE, new ResourceLocation(Const.MOD_ID, Res.NEUTRON_HORSE_ARMOR.getPath()),
                 new Item.Properties()
@@ -73,6 +72,5 @@ public class NeutronHorseArmorItem extends HorseArmorItem implements ITooltip, I
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FROST_WALKER.getFullname(10)).build());
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.ALL_DAMAGE_PROTECTION.getFullname(10)).build());
         tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.FALL_PROTECTION.getFullname(10)).build());
-        appendTooltip(stack, level, tooltipComponents, isAdvanced, "neutron_horse_armor");
     }
 }

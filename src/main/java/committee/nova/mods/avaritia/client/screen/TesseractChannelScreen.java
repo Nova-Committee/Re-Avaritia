@@ -60,12 +60,13 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
     }
 
     public void blit(GuiGraphics pPoseStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        pPoseStack.blit(GUI_IMG, pX, pY, this.blitOffset, (float)pUOffset, (float)pVOffset, pUWidth, pVHeight, 256, 256);
+        pPoseStack.blit(GUI_IMG, pX, pY, this.blitOffset, (float) pUOffset, (float) pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    protected void renderLabels(GuiGraphics stack, int i, int j) {}
+    protected void renderLabels(GuiGraphics stack, int i, int j) {
+    }
 
 
     @Override
@@ -145,7 +146,7 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
         temp.sort((o1, o2) -> channelManager.publicChannels.get(o1[1]).compareTo(channelManager.publicChannels.get(o2[1])));
         filterChannels.addAll(temp);
 
-        scrollBar.setScrollTagSize( 10.0D / filterChannels.size() * 182);
+        scrollBar.setScrollTagSize(10.0D / filterChannels.size() * 182);
     }
 
     @Override
@@ -212,7 +213,7 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
         @Override
         public void draggedTo(double scrolledOn) {
             if (filterChannels.size() <= 10) scrollAt = 0;
-            else scrollAt = Math.round((float) ( scrolledOn * (filterChannels.size() - 10) ));
+            else scrollAt = Math.round((float) (scrolledOn * (filterChannels.size() - 10)));
         }
 
         @Override
@@ -312,7 +313,8 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
                     permissions = false;
                 }
                 list.add(Component.translatable("gui.avaritia.renameChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
-                if (!permissions) list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
+                if (!permissions)
+                    list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
             }
             if (this.isHovered) setTooltipForNextRenderPass(list);
         }
@@ -344,7 +346,8 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
                 }
                 list.add(Component.translatable("gui.avaritia.removeChannel.tip1", flag1 + channelManager.selectedChannelName).getVisualOrderText());
                 list.add(Component.translatable("gui.avaritia.removeChannel.tip2").getVisualOrderText());
-                if (!permissions) list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
+                if (!permissions)
+                    list.add(Component.translatable("gui.avaritia.noPermission.tip3").getVisualOrderText());
             }
             if (this.isHovered) setTooltipForNextRenderPass(list);
         }

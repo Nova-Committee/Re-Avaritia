@@ -54,7 +54,7 @@ public class _NeutronRingMenu extends BaseMenu implements IChangePage {
             this.ring = InventoryUtils.findItemInInv(playerInventory.player, stack -> stack.is(ModItems.neutron_ring.get()), stack -> stack);
         }
         ring.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
-            this.storageWrapper = (RingStorageWrapper)itemHandler;
+            this.storageWrapper = (RingStorageWrapper) itemHandler;
             this.pageData = this.storageWrapper.pageData;
             this.countData = this.storageWrapper.countData;
             this.mainInventorySize = playerInventory.items.size() + this.storageWrapper.getSlots();
@@ -62,24 +62,26 @@ public class _NeutronRingMenu extends BaseMenu implements IChangePage {
 
         int rows = ModConfig.inventoryRows.get();
         int offset = (rows - 4) * 18;
-        for(int i = 0; i < rows; ++i) {
-            for(int j = 0; j < 9; ++j) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(container, j + i * 9, 8 + j * 18, 36 + i * 18));
             }
         }
         createInventorySlots(playerInventory, 0, 38 + offset);
 
         this.addDataSlot(this.pageData);
-        for(int i2 = 0; i2 < this.countData.getCount(); ++i2) {
+        for (int i2 = 0; i2 < this.countData.getCount(); ++i2) {
             int finalI = i2;
             this.addDataSlot(new DataSlot() {
                 private int lastKnownPage = -1;
 
-                @Override public int get() {
+                @Override
+                public int get() {
                     return _NeutronRingMenu.this.countData.get(finalI);
                 }
 
-                @Override public void set(int value) {
+                @Override
+                public void set(int value) {
                     _NeutronRingMenu.this.countData.set(finalI, value);
                 }
 
@@ -135,6 +137,7 @@ public class _NeutronRingMenu extends BaseMenu implements IChangePage {
     public int getSwapIndex() {
         return this.swapIndex;
     }
+
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int pIndex) {
         ItemStack itemStack = ItemStack.EMPTY;

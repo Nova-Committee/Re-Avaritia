@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TierCraftTableBlock extends BaseTileEntityBlock {
     ModCraftTier tier;
+
     public TierCraftTableBlock(ModCraftTier tier) {
         super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true);
         this.tier = tier;
@@ -68,7 +69,7 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
         // 遍历方向列表，检查每个方向的方块状态
         for (Direction direction : Direction.values()) {
             BlockPos offsetPos = pos.relative(direction);
-            if (level.getBlockState(offsetPos).is( ModBlocks.infinity.get())) {
+            if (level.getBlockState(offsetPos).is(ModBlocks.infinity.get())) {
                 return 15;
             }
         }

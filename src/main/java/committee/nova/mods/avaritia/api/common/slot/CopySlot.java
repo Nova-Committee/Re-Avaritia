@@ -23,7 +23,7 @@ public class CopySlot extends SlotItemHandler {
 
     @Override
     public void set(ItemStack stack) {
-        if(!stack.isEmpty() && !mayPlace(stack)) {
+        if (!stack.isEmpty() && !mayPlace(stack)) {
             return;
         }
         super.set(stack);

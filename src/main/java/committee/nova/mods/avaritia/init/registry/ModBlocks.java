@@ -4,10 +4,10 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
-import committee.nova.mods.avaritia.common.block.chest.TesseractBlock;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
 import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock2;
+import committee.nova.mods.avaritia.common.block.chest.TesseractBlock;
 import committee.nova.mods.avaritia.common.block.collector.NeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
@@ -69,17 +69,17 @@ public class ModBlocks {
                     .sound(SoundType.GLASS)
             ), true,
             new Item.Properties().rarity(ModRarities.UNCOMMON)
-            );
+    );
     public static RegistryObject<Block> star_fuel_block = itemBurnBlock("star_fuel_block", () -> new BaseBlock(BlockBehaviour.Properties.of()
                     .strength(100F, 200F)
                     .sound(SoundType.STONE)
-            ),  true,
+            ), true,
             new Item.Properties().rarity(ModRarities.RARE), Integer.MAX_VALUE);
 
     public static RegistryObject<Block> refined_coal_block = itemBurnBlock("refined_coal_block", () -> new BaseBlock(BlockBehaviour.Properties.of()
                     .strength(50F, 50F)
                     .sound(SoundType.STONE)
-            ),  true,
+            ), true,
             new Item.Properties().rarity(ModRarities.UNCOMMON), RefinedCoalItem.BURN_TIME * 9);
 
     //MACHINE
@@ -103,13 +103,13 @@ public class ModBlocks {
     public static RegistryObject<Block> endless_cake = itemBlock("endless_cake", EndlessCakeBlock::new, ModRarities.UNCOMMON);
 
 
-    public static RegistryObject<Block> fake_bedrock = itemBlock("fake_bedrock", ()-> new Block(
+    public static RegistryObject<Block> fake_bedrock = itemBlock("fake_bedrock", () -> new Block(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .strength(1000F, 3600000.0F)
                     .isValidSpawn((state, level, pos, value) -> false)), false);
-    public static RegistryObject<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", ()-> new EndPortalFrameBlock(
+    public static RegistryObject<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new EndPortalFrameBlock(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
                     .instrument(NoteBlockInstrument.BASEDRUM)
@@ -145,7 +145,7 @@ public class ModBlocks {
         return itemBlock(name, block, true, true, new Item.Properties().rarity(rarity));
     }
 
-    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block,  boolean hasItem, Item.Properties properties) {
+    public static RegistryObject<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties) {
         return itemBlock(name, block, hasItem, true, properties);
     }
 
@@ -157,7 +157,7 @@ public class ModBlocks {
 
     public static RegistryObject<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
         var reg = BLOCKS.register(name, block);
-        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties){
+        if (hasItem) ModItems.item(name, () -> new BlockItem(reg.get(), properties) {
             @Override
             public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                 return burnTime;

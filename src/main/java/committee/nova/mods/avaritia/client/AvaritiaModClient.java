@@ -4,7 +4,6 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
-import committee.nova.mods.avaritia.client.model.entity.InfinityTridentModel;
 import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
@@ -65,7 +64,6 @@ public class AvaritiaModClient {
     }
 
 
-
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
         registerConfigScreen();
@@ -76,12 +74,12 @@ public class AvaritiaModClient {
     }
 
     @SubscribeEvent
-    public static void registerParticleProviders(RegisterParticleProvidersEvent event){
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onTexturesSwitchPost(TextureStitchEvent.Post event){
+    public static void onTexturesSwitchPost(TextureStitchEvent.Post event) {
         if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             for (int i = 0; i < COSMIC_SPRITES.length; i++) {
                 COSMIC_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/cosmic/cosmic_" + i));
@@ -124,6 +122,7 @@ public class AvaritiaModClient {
                 ModItems.eternal_singularity.get()
         );
     }
+
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "endest_pearl_darkness", AvaritiaForgeClient.DARKNESS_OVERLAY);
@@ -157,9 +156,9 @@ public class AvaritiaModClient {
     }
 
     @SubscribeEvent
-    public static void onModelBaked(ModelEvent.ModifyBakingResult event){
+    public static void onModelBaked(ModelEvent.ModifyBakingResult event) {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
-       // ModelResourceLocation location = new ModelResourceLocation(Const.getItemName(ModItems.infinity_trident.get()), "inventory");
+        // ModelResourceLocation location = new ModelResourceLocation(Const.getItemName(ModItems.infinity_trident.get()), "inventory");
 
     }
 
