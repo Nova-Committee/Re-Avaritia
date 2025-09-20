@@ -9,6 +9,8 @@ import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemMode
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.api.iface.IBowTransform;
+import committee.nova.mods.avaritia.api.iface.IToolTransform;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -80,11 +82,9 @@ public class HaloEternalBakedModel extends WrappedItemModel {
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
-        if (stack.getItem() == ModItems.infinity_umbrella.get()) {
+        if (stack.getItem() instanceof IToolTransform) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
-        } else if (stack.getItem() == ModItems.infinity_sword.get()) {
-            this.parentState = TransformUtils.DEFAULT_TOOL;
-        } else if (stack.getItem() == ModItems.infinity_bow.get() || stack.getItem() == ModItems.infinity_crossbow.get()) {
+        } else if (stack.getItem() instanceof IBowTransform) {
             this.parentState = TransformUtils.DEFAULT_BOW;
         } else {
             this.parentState = TransformUtils.DEFAULT_ITEM;

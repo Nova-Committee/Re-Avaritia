@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.IToolTransform;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
@@ -53,7 +54,7 @@ import java.util.List;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISwitchable, IUndamageable {
+public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISwitchable, IUndamageable, IToolTransform {
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY, 900, 0F, (new Properties())
                 .rarity(ModRarities.COSMIC)
