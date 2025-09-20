@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
+import committee.nova.mods.avaritia.api.iface.IToolTransform;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.render.util.ArcRender;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
@@ -49,7 +50,7 @@ public class CosmicArcBakeModel extends WrappedItemModel {
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
-        if (stack.getItem() == ModItems.infinity_umbrella.get()) {
+        if (stack.getItem() instanceof IToolTransform) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
         }else {
             this.parentState = TransformUtils.DEFAULT_ITEM;

@@ -3,6 +3,7 @@
     import com.google.common.collect.Collections2;
     import com.google.common.collect.Lists;
     import committee.nova.mods.avaritia.api.iface.ISwitchable;
+    import committee.nova.mods.avaritia.api.iface.IToolTransform;
     import committee.nova.mods.avaritia.common.entity.*;
     import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
     import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -29,7 +30,7 @@
      * @CreateTime: 2025/08/23
      * @Description: Now,We Did it,Four Modes
      */
-    public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable {
+    public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, IToolTransform {
 
         public static final List<String> MODES = Arrays.asList("infinity_umbrella_normal", "infinity_umbrella_sun", "infinity_umbrella_rain", "infinity_umbrella_storm");
 

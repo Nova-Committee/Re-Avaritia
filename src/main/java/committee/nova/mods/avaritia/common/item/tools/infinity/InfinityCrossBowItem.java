@@ -1,9 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.iface.IUndamageable;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.*;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.entity.TNTProEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
@@ -31,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ITooltip, ISwitchable, IUndamageable {
+public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ITooltip, ISwitchable, IUndamageable, IBowTransform {
 
     public InfinityCrossBowItem() {
         super(new Properties()
