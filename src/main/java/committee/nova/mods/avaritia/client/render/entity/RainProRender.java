@@ -17,7 +17,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class RainProRender extends EntityRenderer<RainProEntity> {
-    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.RAIN_PRO_TEXTURE);
+    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.RAIN_PRO_TEX);
 
     public RainProRender(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -49,7 +49,7 @@ public class RainProRender extends EntityRenderer<RainProEntity> {
     }
     @Override
     public ResourceLocation getTextureLocation(RainProEntity rainProEntity) {
-        return Res.RAIN_PRO_TEXTURE;
+        return Res.RAIN_PRO_TEX;
     }
 
 }

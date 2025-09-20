@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.render.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
+import committee.nova.mods.avaritia.client.model.entity.InfinityArmorModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;

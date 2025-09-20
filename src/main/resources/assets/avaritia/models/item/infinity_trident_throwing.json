@@ -1,7 +1,7 @@
 {
   "parent": "builtin/entity",
   "textures": {
-    "particle": "item/trident"
+    "particle": "avaritia:item/tools/infinity_trident/layer_0"
   },
   "display": {
     "thirdperson_righthand": {

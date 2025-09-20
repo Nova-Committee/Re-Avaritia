@@ -4,9 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.common.entity.FireBallEntity;
 import committee.nova.mods.avaritia.common.entity.SunProEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -20,7 +18,7 @@ import org.joml.Matrix4f;
 
 public class SunProRender extends EntityRenderer<SunProEntity> {
 
-    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.SUN_PRO_TEXTURE);
+    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.SUN_PRO_TEX);
     public SunProRender(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -52,6 +50,6 @@ public class SunProRender extends EntityRenderer<SunProEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(SunProEntity entity) {
-        return Res.SUN_PRO_TEXTURE;
+        return Res.SUN_PRO_TEX;
     }
 }

@@ -1,8 +1,7 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
@@ -27,10 +26,10 @@ import java.util.List;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 
 
-public class EternalBakeModel extends WrappedItemModel {
+public class UnstableBakeModel extends WrappedItemModel {
     private final List<ResourceLocation> maskSprite;
 
-    public EternalBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
+    public UnstableBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
     }
@@ -61,22 +60,22 @@ public class EternalBakeModel extends WrappedItemModel {
         }
 
 
-        AvaritiaShaders.eternalTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
-        AvaritiaShaders.eternalYaw.set(yaw);
-        AvaritiaShaders.eternalPitch.set(pitch);
-        AvaritiaShaders.eternalExternalScale.set(scale);
+        AvaritiaShaders.unstableTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
+        AvaritiaShaders.unstableYaw.set(yaw);
+        AvaritiaShaders.unstablePitch.set(pitch);
+        AvaritiaShaders.unstableExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.unstableOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.eternalOpacity.set(1.5F);
+            AvaritiaShaders.unstableOpacity.set(1.5F);
         }
 
-        if (AvaritiaShaders.eternalUVs != null) {
-            AvaritiaShaders.eternalUVs.set(COSMIC_UVS);
+        if (AvaritiaShaders.unstableUVs != null) {
+            AvaritiaShaders.unstableUVs.set(COSMIC_UVS);
         }
 
-        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.ETERNAL);
+        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.UNSTABLE);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));

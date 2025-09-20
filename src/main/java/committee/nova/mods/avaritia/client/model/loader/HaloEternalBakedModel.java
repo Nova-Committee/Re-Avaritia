@@ -1,8 +1,7 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.Quad;
@@ -33,13 +32,14 @@ import java.util.Random;
 
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 
-public class HaloCosmicBakedModel extends WrappedItemModel {
+
+public class HaloEternalBakedModel extends WrappedItemModel {
     private final Random random;
     private final BakedQuad haloQuad;
     private final boolean pulse;
     private final List<ResourceLocation> maskSprite;
 
-    public HaloCosmicBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, int color, int size, boolean pulse, List<ResourceLocation> maskSprite) {
+    public HaloEternalBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, int color, int size, boolean pulse, List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.random = new Random();
         this.haloQuad = generateHaloQuad(sprite, size, color);
@@ -111,7 +111,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel {
             bs.endBatch();
         }
 
-        // 渲染Cosmic效果
+        // 渲染Eternal效果
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
@@ -123,22 +123,22 @@ public class HaloCosmicBakedModel extends WrappedItemModel {
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
 
-        AvaritiaShaders.cosmicTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
-        AvaritiaShaders.cosmicYaw.set(yaw);
-        AvaritiaShaders.cosmicPitch.set(pitch);
-        AvaritiaShaders.cosmicExternalScale.set(scale);
+        AvaritiaShaders.eternalTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
+        AvaritiaShaders.eternalYaw.set(yaw);
+        AvaritiaShaders.eternalPitch.set(pitch);
+        AvaritiaShaders.eternalExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.cosmicOpacity.set(1.0F);
+            AvaritiaShaders.eternalOpacity.set(1.5F);
         }
 
-        if (AvaritiaShaders.cosmicUVs != null) {
-            AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
+        if (AvaritiaShaders.eternalUVs != null) {
+            AvaritiaShaders.eternalUVs.set(COSMIC_UVS);
         }
 
-        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.COSMIC);
+        final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.ETERNAL);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));

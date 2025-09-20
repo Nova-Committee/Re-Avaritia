@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.common.entity.RainProEntity;
 import committee.nova.mods.avaritia.common.entity.StormProEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -20,7 +19,7 @@ import org.joml.Matrix4f;
 
 public class StormProRender extends EntityRenderer<StormProEntity> {
 
-    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.STORM_PRO_TEXTURE);
+    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.STORM_PRO_TEX);
 
     public StormProRender(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -52,6 +51,6 @@ public class StormProRender extends EntityRenderer<StormProEntity> {
     }
     @Override
     public ResourceLocation getTextureLocation(StormProEntity rainProEntity) {
-        return Res.STORM_PRO_TEXTURE;
+        return Res.STORM_PRO_TEX;
     }
 }

@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
 import com.google.gson.*;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.function.Function;
 
 
-public class HaloCosmicModelLoader implements IGeometryLoader<HaloCosmicModelLoader.HaloCosmicGeometry> {
-    public static final HaloCosmicModelLoader INSTANCE = new HaloCosmicModelLoader();
+public class HaloEternalModelLoader implements IGeometryLoader<HaloEternalModelLoader.HaloEternalGeometry> {
+    public static final HaloEternalModelLoader INSTANCE = new HaloEternalModelLoader();
 
     @Override
-    public HaloCosmicGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException {
+    public HaloEternalGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException {
 
         final JsonObject halo = modelContents.getAsJsonObject("halo");
         if (halo == null) {
@@ -30,9 +30,9 @@ public class HaloCosmicModelLoader implements IGeometryLoader<HaloCosmicModelLoa
         }
 
 
-        final JsonObject cosmic = modelContents.getAsJsonObject("cosmic");
-        if (cosmic == null) {
-            throw new IllegalStateException("Missing 'cosmic' object.");
+        final JsonObject eternal = modelContents.getAsJsonObject("eternal");
+        if (eternal == null) {
+            throw new IllegalStateException("Missing 'eternal' object.");
         }
 
 
@@ -50,25 +50,25 @@ public class HaloCosmicModelLoader implements IGeometryLoader<HaloCosmicModelLoa
 
 
         List<String> maskTexture = new ArrayList<>();
-        if (cosmic.has("mask") && cosmic.get("mask").isJsonArray()) {
-            JsonArray masks = cosmic.getAsJsonArray("mask");
+        if (eternal.has("mask") && eternal.get("mask").isJsonArray()) {
+            JsonArray masks = eternal.getAsJsonArray("mask");
             for (int i = 0; i < masks.size(); i++) {
                 maskTexture.add(masks.get(i).getAsString());
             }
         } else {
-            maskTexture.add(GsonHelper.getAsString(cosmic, "mask"));
+            maskTexture.add(GsonHelper.getAsString(eternal, "mask"));
         }
 
 
         final JsonObject clean = modelContents.deepCopy();
         clean.remove("halo");
-        clean.remove("cosmic");
+        clean.remove("eternal");
         clean.remove("loader");
         final BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
-        return new HaloCosmicGeometry(baseModel, layerColors, texture, color, size, pulse, maskTexture);
+        return new HaloEternalGeometry(baseModel, layerColors, texture, color, size, pulse, maskTexture);
     }
 
-    public static class HaloCosmicGeometry implements IUnbakedGeometry<HaloCosmicGeometry> {
+    public static class HaloEternalGeometry implements IUnbakedGeometry<HaloEternalGeometry> {
         private final BlockModel baseModel;
         private final IntList layerColors;
         private final String texture;
@@ -77,8 +77,8 @@ public class HaloCosmicModelLoader implements IGeometryLoader<HaloCosmicModelLoa
         private final boolean pulse;
         private final List<String> maskTextures;
 
-        public HaloCosmicGeometry(final BlockModel baseModel, final IntList layerColors, final String texture,
-                                  final int color, final int size, final boolean pulse, final List<String> maskTextures) {
+        public HaloEternalGeometry(final BlockModel baseModel, final IntList layerColors, final String texture,
+                                   final int color, final int size, final boolean pulse, final List<String> maskTextures) {
             this.baseModel = baseModel;
             this.layerColors = layerColors;
             this.texture = texture;
@@ -97,12 +97,12 @@ public class HaloCosmicModelLoader implements IGeometryLoader<HaloCosmicModelLoa
             Material particleLocation = this.baseModel.getMaterial(this.texture);
             TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
 
-            // 处理Cosmic遮罩纹理
+            // 处理Eternal遮罩纹理
             List<ResourceLocation> textures = new ArrayList<>();
             this.maskTextures.forEach(mask -> textures.add(new ResourceLocation(mask)));
 
-            // 创建融合了Halo和Cosmic效果的模型
-            return new HaloCosmicBakedModel(HaloModelLoader.HaloItemModelGeometry.tintLayers(bakedBaseModel, layerColors),
+            // 创建融合了Halo和Eternal效果的模型
+            return new HaloEternalBakedModel(HaloModelLoader.HaloItemModelGeometry.tintLayers(bakedBaseModel, layerColors),
                     particle, this.color, this.size, this.pulse, textures);
         }
 

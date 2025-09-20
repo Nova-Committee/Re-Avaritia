@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -18,37 +18,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class HellModelLoader implements IGeometryLoader<HellModelLoader.HellGeometry> {
-    public static final HellModelLoader INSTANCE = new HellModelLoader();
+
+public class UnstableModelLoader implements IGeometryLoader<UnstableModelLoader.UnstableGeometry> {
+    public static final UnstableModelLoader INSTANCE = new UnstableModelLoader();
 
     @Override
-    public HellGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException {
-        JsonObject hellObj = modelContents.getAsJsonObject("hell");
-        if (hellObj == null) {
-            throw new IllegalStateException("Missing 'hell' object.");
+    public UnstableGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException {
+        JsonObject unstableObj = modelContents.getAsJsonObject("unstable");
+        if (unstableObj == null) {
+            throw new IllegalStateException("Missing 'unstable' object.");
         } else {
             List<String> maskTexture = new ArrayList<>();
-            if (hellObj.has("mask") && hellObj.get("mask").isJsonArray()) {
-                JsonArray masks = hellObj.getAsJsonArray("mask");
+            if (unstableObj.has("mask") && unstableObj.get("mask").isJsonArray()) {
+                JsonArray masks = unstableObj.getAsJsonArray("mask");
                 for (int i = 0; i < masks.size(); i++) {
                     maskTexture.add(masks.get(i).getAsString());
                 }
             } else {
-                maskTexture.add(GsonHelper.getAsString(hellObj, "mask"));
+                maskTexture.add(GsonHelper.getAsString(unstableObj, "mask"));
             }
             JsonObject clean = modelContents.deepCopy();
-            clean.remove("hell");
+            clean.remove("unstable");
             clean.remove("loader");
             BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
-            return new HellGeometry(baseModel, maskTexture);
+            return new UnstableModelLoader.UnstableGeometry(baseModel, maskTexture);
         }
     }
 
-    public static class HellGeometry implements IUnbakedGeometry<HellGeometry> {
+    public static class UnstableGeometry implements IUnbakedGeometry<UnstableGeometry> {
         private final BlockModel baseModel;
         private final List<String> maskTextures;
 
-        public HellGeometry(final BlockModel baseModel, final List<String> maskTextures) {
+        public UnstableGeometry(final BlockModel baseModel, final List<String> maskTextures) {
             this.baseModel = baseModel;
             this.maskTextures = maskTextures;
         }
@@ -58,13 +59,12 @@ public class HellModelLoader implements IGeometryLoader<HellModelLoader.HellGeom
             BakedModel baseBakedModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, true);
             List<ResourceLocation> textures = new ArrayList<>();
             this.maskTextures.forEach(mask -> textures.add(new ResourceLocation(mask)));
-            return new HellBakeModel(baseBakedModel, textures);
+            return new UnstableBakeModel(baseBakedModel, textures);
         }
 
         @Override
         public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
             this.baseModel.resolveParents(modelGetter);
         }
-
     }
 }

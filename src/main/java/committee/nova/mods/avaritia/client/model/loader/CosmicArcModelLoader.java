@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
 import com.google.gson.*;
 import net.minecraft.client.renderer.block.model.BlockModel;

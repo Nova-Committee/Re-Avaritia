@@ -4,7 +4,8 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
-import committee.nova.mods.avaritia.client.model.*;
+import committee.nova.mods.avaritia.client.model.entity.InfinityTridentModel;
+import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
@@ -51,7 +52,7 @@ public class AvaritiaModClient {
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(Const.rl("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(Const.rl("compressed_chest_left"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_RIGHT = new ModelLayerLocation(Const.rl("compressed_chest_right"), "main");
-
+    public static final ModelLayerLocation INFINITY_TRIDENT = new ModelLayerLocation(Const.rl("infinity_trident"), "main");
 
     /**
      * 注册键绑定
@@ -112,6 +113,7 @@ public class AvaritiaModClient {
         event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRenderer::createSingleBodyLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRenderer::createDoubleBodyLeftLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_RIGHT, CompressedChestRenderer::createDoubleBodyRightLayer);
+        //event.registerLayerDefinition(INFINITY_TRIDENT, InfinityTridentModel::createLayer);
     }
 
     @SubscribeEvent

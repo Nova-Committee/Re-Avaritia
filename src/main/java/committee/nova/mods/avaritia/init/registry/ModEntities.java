@@ -139,7 +139,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
         EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRenderer::new);
         EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
-        EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityTridentRender::new);
+        EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityThrownTridentRender::new);
     }
 
 }
