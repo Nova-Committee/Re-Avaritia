@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemMode
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.api.iface.IToolTransform;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -73,7 +74,7 @@ public class HaloBakedModel extends WrappedItemModel {
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
-        if (stack.getItem() == ModItems.infinity_umbrella.get()) {
+        if (stack.getItem() instanceof IToolTransform) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
         }else {
             this.parentState = TransformUtils.DEFAULT_ITEM;

@@ -1,9 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.api.iface.IUndamageable;
-import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.*;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
@@ -44,7 +41,7 @@ import java.util.List;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, InitEnchantItem, IUndamageable {
+public class InfinityBowItem extends BowItem implements ITooltip, ISwitchable, InitEnchantItem, IUndamageable, IBowTransform {
     public InfinityBowItem() {
         super(new Properties()
                 .stacksTo(1)
