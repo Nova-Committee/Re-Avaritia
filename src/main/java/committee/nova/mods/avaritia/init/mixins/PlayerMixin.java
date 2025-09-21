@@ -20,7 +20,6 @@ public class PlayerMixin {
         if (useItem.getItem() instanceof InfinityShieldItem) {
 
             if (entity.getMainHandItem().canDisableShield(useItem, player, entity)) {
-
                 ci.cancel();
             }
         }

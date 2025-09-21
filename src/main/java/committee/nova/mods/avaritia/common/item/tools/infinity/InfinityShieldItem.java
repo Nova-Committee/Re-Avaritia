@@ -2,7 +2,10 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 
 public class InfinityShieldItem extends ShieldItem implements IUndamageable {
@@ -12,5 +15,6 @@ public class InfinityShieldItem extends ShieldItem implements IUndamageable {
                 .stacksTo(1)
                 .fireResistant());
     }
+
 
 }
