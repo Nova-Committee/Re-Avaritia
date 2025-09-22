@@ -351,8 +351,8 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                     }
                 } else {
                     // 只有当方块实体不存在时才移除加速
-                    // it.remove();
-                    // removeDisplayEntity(level, pos);
+                     it.remove();
+                     removeDisplayEntity(level, pos);
                 }
 
                 // 更新实体显示
