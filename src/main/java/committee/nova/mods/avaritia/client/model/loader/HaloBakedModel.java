@@ -9,9 +9,11 @@ import committee.nova.mods.avaritia.client.model.loader.base.HaloSetting;
 import committee.nova.mods.avaritia.client.model.loader.base.HaloUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +41,9 @@ public class HaloBakedModel extends WrappedItemModel {
     }
 
     @Override
-    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                           int packedLight, int packedOverlay,
+                           ItemModelShaper itemModelShaper, TextureManager textureManager) {
         if (stack.getItem() instanceof IToolTransform) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
         } else {

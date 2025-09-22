@@ -13,9 +13,11 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -36,35 +38,42 @@ public class CosmicArcBakeModel extends WrappedItemModel {
     public CosmicArcBakeModel(BakedModel wrapped, List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
+        this.cosmic = true;
     }
 
     @Override
-    public boolean isCosmic() {
-        return true;
-    }
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                           int packedLight, int packedOverlay,
+                           ItemModelShaper itemModelShaper, TextureManager textureManager) {
 
-    @Override
-    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
+
         // 渲染基础模型
         if (stack.is(ModItems.infinity_trident.get())) {
-                this.parentState = TransformUtils.DEFAULT_TRIDENT;
+            this.parentState = TransformUtils.DEFAULT_TRIDENT;
+            if (transformType == ItemDisplayContext.GUI || transformType == ItemDisplayContext.GROUND || transformType == ItemDisplayContext.FIXED) {
+                this.cosmic = true;
+                this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
+            } else {
+                this.cosmic = false;
                 var tridentModel = new InfinityTridentModel();
                 pStack.pushPose();
                 pStack.scale(1.0F, -1.0F, -1.0F);
                 VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
                 tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
                 pStack.popPose();
-
+            }
         } else {
             this.parentState = TransformUtils.DEFAULT_ITEM;
             this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
         }
 
+
+
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }
 
-        if (transformType != ItemDisplayContext.GUI) {
+        if (transformType != ItemDisplayContext.GUI && transformType != ItemDisplayContext.GROUND) {
             // 保存当前变换矩阵
             pStack.pushPose();
 

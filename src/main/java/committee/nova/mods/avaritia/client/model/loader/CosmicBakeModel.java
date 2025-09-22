@@ -10,8 +10,10 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -35,15 +37,13 @@ public class CosmicBakeModel extends WrappedItemModel {
     public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
+        this.cosmic = true;
     }
 
     @Override
-    public boolean isCosmic() {
-        return true;
-    }
-
-    @Override
-    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                           int packedLight, int packedOverlay,
+                           ItemModelShaper itemModelShaper, TextureManager textureManager) {
         if (stack.is(ModItems.infinity_sword.get())) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
         } else if (stack.is(ModItems.infinity_bow.get()) || stack.is(ModItems.infinity_crossbow.get())) {
@@ -53,7 +53,7 @@ public class CosmicBakeModel extends WrappedItemModel {
         }
 
         // 模型渲染
-        this.renderWrapped(stack, pStack, source, light, overlay, true);
+        this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }
@@ -89,7 +89,7 @@ public class CosmicBakeModel extends WrappedItemModel {
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
+        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
     }
 
 }

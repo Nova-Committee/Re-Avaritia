@@ -4,8 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -27,14 +29,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-
-    @Unique
-    ItemStack avaritia$stack;
-    @Unique
-    VertexConsumer avaritia$vertexConsumer;
     @Shadow
     @Final
-    private Minecraft minecraft;
+    private ItemModelShaper itemModelShaper;
+
+    @Shadow
+    @Final
+    private TextureManager textureManager;
 
     @Inject(
             method = "render",
@@ -45,7 +46,7 @@ public abstract class ItemRendererMixin {
             mStack.pushPose();
             final PerspectiveModel transformModel = (PerspectiveModel) model.applyTransform(context, mStack, leftHand);
             mStack.translate(-0.5D, -0.5D, -0.5D);
-            transformModel.renderItem(stack, context, mStack, buffers, packedLight, packedOverlay);
+            transformModel.renderItem(stack, context, mStack, buffers, packedLight, packedOverlay, this.itemModelShaper, this.textureManager);
             mStack.popPose();
         }
     }

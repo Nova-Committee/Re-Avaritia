@@ -4,10 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.util.TextureUtils;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -37,7 +39,9 @@ public interface PerspectiveModel extends BakedModel {
     @Nullable
     PerspectiveModelState getModelState();
 
-    void renderItem(ItemStack stack, ItemDisplayContext ctx, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay);
+    void renderItem(ItemStack stack, ItemDisplayContext ctx, PoseStack mStack, MultiBufferSource source,
+                    int packedLight, int packedOverlay,
+                    ItemModelShaper itemModelShaper, TextureManager textureManager);
 
     //Useless methods for IItemRenderer.
     //@formatter:off

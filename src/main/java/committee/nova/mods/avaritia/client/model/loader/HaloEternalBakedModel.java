@@ -16,9 +16,11 @@ import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -44,15 +46,13 @@ public class HaloEternalBakedModel extends WrappedItemModel {
         this.haloQuad = HaloUtils.generateHaloQuad(sprite, setting.size(), setting.color());
         this.setting = setting;
         this.maskSprite = maskSprite;
+        this.cosmic = true;
     }
 
     @Override
-    public boolean isCosmic() {
-        return true;
-    }
-
-    @Override
-    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                           int packedLight, int packedOverlay,
+                           ItemModelShaper itemModelShaper, TextureManager textureManager) {
         if (stack.getItem() instanceof IToolTransform) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
         } else if (stack.getItem() instanceof IBowTransform) {
@@ -64,20 +64,20 @@ public class HaloEternalBakedModel extends WrappedItemModel {
         // 渲染Halo效果
         if (transformType == ItemDisplayContext.GUI) {
             Minecraft.getInstance().getItemRenderer()
-                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, light, overlay);
+                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
             if (this.setting.pulse()) {
                 pStack.pushPose();
                 double scale = random.nextDouble() * 0.15D + 0.95D;
                 double trans = (1.0D - scale) / 2.0D;
                 pStack.translate(trans, trans, 0.0D);
                 pStack.scale((float) scale, (float) scale, 1.0001F);
-                this.renderWrapped(stack, pStack, source, light, overlay, true, (e) -> new AlphaOverrideVertexConsumer(e, 0.6000000238418579D));
+                this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true, (e) -> new AlphaOverrideVertexConsumer(e, 0.6000000238418579D));
                 pStack.popPose();
             }
         }
 
         // 渲染基础模型
-        this.renderWrapped(stack, pStack, source, light, overlay, true);
+        this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }
@@ -114,6 +114,6 @@ public class HaloEternalBakedModel extends WrappedItemModel {
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
+        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
     }
 }
