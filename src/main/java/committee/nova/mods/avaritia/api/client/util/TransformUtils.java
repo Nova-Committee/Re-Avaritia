@@ -1,17 +1,14 @@
 package committee.nova.mods.avaritia.api.client.util;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
-import committee.nova.mods.avaritia.api.util.GsonUtils;
 import committee.nova.mods.avaritia.api.util.math.MathUtils;
 import committee.nova.mods.avaritia.api.util.vec.Vector3;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;

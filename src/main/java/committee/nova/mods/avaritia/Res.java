@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -44,7 +43,4 @@ public class Res {
     public static TextureAtlasSprite ARMOR_MASK;
     public static TextureAtlasSprite ARMOR_MASK_INV;
     public static TextureAtlasSprite ARMOR_WING_MASK;
-
-    public static final ModelResourceLocation INFINITY_TRIDENT_MODEL = new ModelResourceLocation(Const.MOD_ID, "infinity_trident", "inventory");
-    public static final ModelResourceLocation INFINITY_TRIDENT_IN_HAND_MODEL = new ModelResourceLocation(Const.MOD_ID, "infinity_trident_in_hand", "inventory");
 }

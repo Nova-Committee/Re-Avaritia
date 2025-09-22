@@ -10,7 +10,6 @@ import committee.nova.mods.avaritia.client.model.entity.InfinityTridentModel;
 import committee.nova.mods.avaritia.client.render.util.ArcRender;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
-import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelShaper;
