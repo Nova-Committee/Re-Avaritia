@@ -188,7 +188,7 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         AvaritiaShaders.cosmicArmorYaw.set(yaw);
         AvaritiaShaders.cosmicArmorPitch.set(pitch);
         AvaritiaShaders.cosmicArmorExternalScale.set(scale);
-        AvaritiaShaders.cosmicArmorOpacity.set(0.9F);
+        AvaritiaShaders.cosmicArmorOpacity.set(1.25F);
         AvaritiaShaders.cosmicArmorUVs.set(AvaritiaShaders.COSMIC_UVS);
 
         if (livingEntity instanceof Player player) {
