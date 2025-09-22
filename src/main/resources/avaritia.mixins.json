@@ -10,9 +10,11 @@
     "ItemStackMixin",
     "NetherWartBlockMixin",
     "PlayerMixin",
-    "RecipeManagerMixin"
+    "RecipeManagerMixin",
+    "ReloadableServerResourcesMixin"
   ],
   "client": [
+    "ClientPacketListenerMixin",
     "ItemRendererMixin",
     "PlayerRendererMixin"
   ],

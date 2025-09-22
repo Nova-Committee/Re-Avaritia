@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.api.init.event;
 
-import committee.nova.mods.avaritia.api.util.RecipeUtils;
+import committee.nova.mods.avaritia.api.util.recipe.RecipeUtils;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.eventbus.api.Event;
@@ -17,7 +17,7 @@ public class RegisterRecipesEvent extends Event {
     }
 
     public void addRecipe(Recipe<?> recipe) {
-        RecipeUtils.addRecipe(recipe);
+        //RecipeUtils.addRecipe(recipe);
     }
 }
     

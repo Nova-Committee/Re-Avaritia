@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.api.init.event.RecipeManagerLoadingEvent;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.util.SingularityUtils;
@@ -21,7 +21,7 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class InternalRecipeHandler {
     @SubscribeEvent
-    public static void onRegisterRecipes(RegisterRecipesEvent event) {
+    public static void onRegisterRecipes(RecipeManagerLoadingEvent event) {
         List<Singularity> allSingularities = SingularityRegistryHandler.getInstance().getSingularities();
         for (var singularity : allSingularities) {
             if (singularity.isRecipeDisabled()) {
