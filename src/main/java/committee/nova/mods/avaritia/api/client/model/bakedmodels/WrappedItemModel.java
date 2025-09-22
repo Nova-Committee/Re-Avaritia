@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Overwrite;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -42,7 +43,7 @@ public abstract class WrappedItemModel implements PerspectiveModel {
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
     private static final FaceBakery FACE_BAKERY = new FaceBakery();
     protected BakedModel wrapped;
-    protected ModelState parentState;
+    protected PerspectiveModelState parentState;
     @Nullable
     protected LivingEntity entity;
     @Nullable
@@ -81,6 +82,11 @@ public abstract class WrappedItemModel implements PerspectiveModel {
 
     public boolean isCosmic() {
         return false;
+    }
+
+    @Override
+    public @Nullable PerspectiveModelState getModelState() {
+        return this.parentState;
     }
 
     @Override

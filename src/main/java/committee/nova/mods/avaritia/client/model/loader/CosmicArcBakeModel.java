@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
@@ -13,7 +13,6 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.TridentModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,7 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +41,6 @@ public class CosmicArcBakeModel extends WrappedItemModel {
     @Override
     public boolean isCosmic() {
         return true;
-    }
-
-    @Override
-    public @Nullable PerspectiveModelState getModelState() {
-        return (PerspectiveModelState) this.parentState;
     }
 
     @Override
@@ -99,7 +92,7 @@ public class CosmicArcBakeModel extends WrappedItemModel {
             var tridentModel = new InfinityTridentModel();
             pStack.pushPose();
             pStack.scale(1.0F, -1.0F, -1.0F);
-            VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(TridentModel.TEXTURE), false, stack.hasFoil());
+            VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
             tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
             pStack.popPose();
         } else {

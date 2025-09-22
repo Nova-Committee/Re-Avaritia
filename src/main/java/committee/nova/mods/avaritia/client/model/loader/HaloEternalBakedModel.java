@@ -2,16 +2,14 @@ package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.api.client.model.CachedFormat;
-import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
-import committee.nova.mods.avaritia.api.client.model.Quad;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
 import committee.nova.mods.avaritia.api.iface.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.IToolTransform;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
+import committee.nova.mods.avaritia.client.model.loader.base.HaloSetting;
+import committee.nova.mods.avaritia.client.model.loader.base.HaloUtils;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -26,7 +24,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,46 +35,20 @@ import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_
 public class HaloEternalBakedModel extends WrappedItemModel {
     private final Random random;
     private final BakedQuad haloQuad;
-    private final boolean pulse;
+    private final HaloSetting setting;
     private final List<ResourceLocation> maskSprite;
 
-    public HaloEternalBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, int color, int size, boolean pulse, List<ResourceLocation> maskSprite) {
+    public HaloEternalBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, HaloSetting setting, List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.random = new Random();
-        this.haloQuad = generateHaloQuad(sprite, size, color);
-        this.pulse = pulse;
+        this.haloQuad = HaloUtils.generateHaloQuad(sprite, setting.size(), setting.color());
+        this.setting = setting;
         this.maskSprite = maskSprite;
     }
 
-    static BakedQuad generateHaloQuad(final TextureAtlasSprite sprite, final int size, final int color) {
-        final float[] colors = new ColourARGB(color).getRGBA();
-        final double spread = size / 16.0;
-        final double min = 0.0 - spread;
-        final double max = 1.0 + spread;
-        final float minU = sprite.getU0();
-        final float maxU = sprite.getU1();
-        final float minV = sprite.getV0();
-        final float maxV = sprite.getV1();
-        final Quad quad = new Quad();
-        quad.reset(CachedFormat.BLOCK);
-        quad.setTexture(sprite);
-        putVertex(quad.vertices[0], max, max, 0.0, maxU, minV);
-        putVertex(quad.vertices[1], min, max, 0.0, minU, minV);
-        putVertex(quad.vertices[2], min, min, 0.0, minU, maxV);
-        putVertex(quad.vertices[3], max, min, 0.0, maxU, maxV);
-        for (int i = 0; i < 4; ++i) {
-            System.arraycopy(colors, 0, quad.vertices[i].color, 0, 4);
-        }
-        quad.calculateOrientation(true);
-        return quad.bake();
-    }
-
-    static void putVertex(final Quad.Vertex vx, final double x, final double y, final double z, final double u, final double v) {
-        vx.vec[0] = (float) x;
-        vx.vec[1] = (float) y;
-        vx.vec[2] = (float) z;
-        vx.uv[0] = (float) u;
-        vx.uv[1] = (float) v;
+    @Override
+    public boolean isCosmic() {
+        return true;
     }
 
     @Override
@@ -94,7 +65,7 @@ public class HaloEternalBakedModel extends WrappedItemModel {
         if (transformType == ItemDisplayContext.GUI) {
             Minecraft.getInstance().getItemRenderer()
                     .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, light, overlay);
-            if (this.pulse) {
+            if (this.setting.pulse()) {
                 pStack.pushPose();
                 double scale = random.nextDouble() * 0.15D + 0.95D;
                 double trans = (1.0D - scale) / 2.0D;
@@ -144,15 +115,5 @@ public class HaloEternalBakedModel extends WrappedItemModel {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
-    }
-
-    @Override
-    public @Nullable PerspectiveModelState getModelState() {
-        return (PerspectiveModelState) this.parentState;
-    }
-
-    @Override
-    public boolean isCosmic() {
-        return true;
     }
 }

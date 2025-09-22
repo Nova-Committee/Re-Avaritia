@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.iface.IBowTransform;
@@ -20,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +34,10 @@ public class UnstableBakeModel extends WrappedItemModel {
         this.maskSprite = maskSprite;
     }
 
+    @Override
+    public boolean isCosmic() {
+        return true;
+    }
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
@@ -83,16 +85,5 @@ public class UnstableBakeModel extends WrappedItemModel {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
-    }
-
-
-    @Override
-    public @Nullable PerspectiveModelState getModelState() {
-        return (PerspectiveModelState) this.parentState;
-    }
-
-    @Override
-    public boolean isCosmic() {
-        return true;
     }
 }

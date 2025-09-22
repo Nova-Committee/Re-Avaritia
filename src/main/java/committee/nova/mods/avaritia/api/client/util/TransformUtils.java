@@ -1,14 +1,17 @@
 package committee.nova.mods.avaritia.api.client.util;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
+import committee.nova.mods.avaritia.api.util.GsonUtils;
 import committee.nova.mods.avaritia.api.util.math.MathUtils;
 import committee.nova.mods.avaritia.api.util.vec.Vector3;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -91,11 +94,13 @@ public class TransformUtils {
         DEFAULT_HANDHELD_ROD = new PerspectiveModelState(ImmutableMap.copyOf(map));
 
         map = new HashMap<>();
-        map.put(ItemDisplayContext.GROUND,                   create(   0F,  2F,   0F,  0F,   0F,  0F, 0.5F));
-        map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(  -8F, 0F, 8F,-80F, 260F,-40F, 0.9F));
-        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(  -8F, 0F, 8F,-80F,-280F, 40F, 0.9F));
-        map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(1.13F,3.2F,1.13F,  0F, -90F, 25F,0.68F));
-        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(1.13F,3.2F,1.13F,  0F,  90F,-25F,0.68F));
+        map.put(ItemDisplayContext.GROUND,                   create(   4F,  4F,   2F,  0F,   0F,  0F, 0.25F));
+        map.put(ItemDisplayContext.FIXED,                    create(   -2F,  4F,   -5F, 0F,  180F,  0F,   0.5F));
+        map.put(ItemDisplayContext.GUI,                      create(2F,  3F, 0F,15F,-25F, -5F,0.65F));
+        map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(  11F, 17F, -2F,0F, 60F,0F, 1F));
+        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(  -3F, 17F, 12F,0F,60F, 0F, 1F));
+        map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(-3F,17F,1F,  0F, -90F, 25F,1F));
+        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(-15F,17F,1F,  0F,  90F,-25F,1F));
         DEFAULT_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
         //@formatter:on
     }
@@ -161,13 +166,27 @@ public class TransformUtils {
         return flipX.compose(transform).compose(flipX);
     }
 
+    public static ModelState stateFromItemTransforms(ItemTransforms itemTransforms, Map<ItemDisplayContext, Transformation> additions) {
+        if (itemTransforms == ItemTransforms.NO_TRANSFORMS) return IDENTITY;
+
+        ImmutableMap.Builder<ItemDisplayContext, Transformation> map = ImmutableMap.builder();
+
+        for (ItemDisplayContext value : ItemDisplayContext.values()) {
+            map.put(value, create(itemTransforms.getTransform(value)));
+        }
+
+        map.putAll(additions);
+
+        return new PerspectiveModelState(map.build());
+    }
+
     /**
      * Decompose a vanilla {@link ItemTransforms} into a {@link PerspectiveModelState}.
      *
      * @param itemTransforms the {@link ItemTransforms} to decompose.
      * @return The {@link PerspectiveModelState}
      */
-    public static ModelState stateFromItemTransforms(ItemTransforms itemTransforms) {
+    public static PerspectiveModelState stateFromItemTransforms(ItemTransforms itemTransforms) {
         if (itemTransforms == ItemTransforms.NO_TRANSFORMS) return IDENTITY;
 
         ImmutableMap.Builder<ItemDisplayContext, Transformation> map = ImmutableMap.builder();
