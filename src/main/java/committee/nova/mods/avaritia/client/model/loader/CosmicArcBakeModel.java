@@ -45,62 +45,61 @@ public class CosmicArcBakeModel extends WrappedItemModel {
 
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
-        if (stack.is(ModItems.infinity_trident.get())) {
-            this.parentState = TransformUtils.DEFAULT_TRIDENT;
-        } else {
-            this.parentState = TransformUtils.DEFAULT_ITEM;
-        }
-
-        // 保存当前变换矩阵
-        pStack.pushPose();
-
-        // 定义电弧起点和终点（相对于物品中心）
-        float startX = 0.0f;
-        float startY = -0.5f;
-        float startZ = 0.0f;
-
-        // 电弧终点可以设置在物品上方
-        float endX = 0.0f;
-        float endY = 0.0f;
-        float endZ = 0.0f;
-
-        // 设置电弧参数
-        long seed = System.currentTimeMillis(); // 使用当前时间作为种子，使电弧随时间变化
-        float thickness = 0.02f; // 电弧粗细
-        int segments = 8; // 电弧分段数
-
-        // 可选：添加一些偏移或旋转来增强视觉效果
-//        pStack.translate(0.5, 0.5, 0.5); // 移动到物品中心
-//        pStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees((float) (System.currentTimeMillis() / 10 % 360))); // 旋转
-
-        // 渲染电弧
-        ArcRender.renderArc(
-                pStack,
-                source,
-                seed,
-                startX, startY, startZ,
-                endX, endY, endZ,
-                thickness,
-                segments
-        );
-
-        // 恢复变换矩阵
-        pStack.popPose();
-
         // 渲染基础模型
         if (stack.is(ModItems.infinity_trident.get())) {
-            var tridentModel = new InfinityTridentModel();
-            pStack.pushPose();
-            pStack.scale(1.0F, -1.0F, -1.0F);
-            VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
-            tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
-            pStack.popPose();
+                this.parentState = TransformUtils.DEFAULT_TRIDENT;
+                var tridentModel = new InfinityTridentModel();
+                pStack.pushPose();
+                pStack.scale(1.0F, -1.0F, -1.0F);
+                VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
+                tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                pStack.popPose();
+
         } else {
+            this.parentState = TransformUtils.DEFAULT_ITEM;
             this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
         }
 
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
+        }
+
+        if (transformType != ItemDisplayContext.GUI) {
+            // 保存当前变换矩阵
+            pStack.pushPose();
+
+            // 定义电弧起点和终点（相对于物品中心）
+            float startX = 0.0f;
+            float startY = -0.5f;
+            float startZ = 0.0f;
+
+            // 电弧终点可以设置在物品上方
+            float endX = 0.0f;
+            float endY = 0.0f;
+            float endZ = 0.0f;
+
+            // 设置电弧参数
+            long seed = System.currentTimeMillis(); // 使用当前时间作为种子，使电弧随时间变化
+            float thickness = 0.02f; // 电弧粗细
+            int segments = 8; // 电弧分段数
+
+            // 可选：添加一些偏移或旋转来增强视觉效果
+//        pStack.translate(0.5, 0.5, 0.5); // 移动到物品中心
+            pStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees((float) (System.currentTimeMillis() / 10 % 360))); // 旋转
+
+            // 渲染电弧
+            ArcRender.renderArc(
+                    pStack,
+                    source,
+                    seed,
+                    startX, startY, startZ,
+                    endX, endY, endZ,
+                    thickness,
+                    segments
+            );
+
+            // 恢复变换矩阵
+            pStack.popPose();
         }
 
         // 渲染Cosmic效果
@@ -110,26 +109,15 @@ public class CosmicArcBakeModel extends WrappedItemModel {
         float scale = 1f;
         if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
-        } else {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
-
         AvaritiaShaders.cosmicTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
-
-        if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
-        } else {
-            AvaritiaShaders.cosmicOpacity.set(1.0F);
-        }
-
-        if (AvaritiaShaders.cosmicUVs != null) {
-            AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
-        }
-
+        AvaritiaShaders.cosmicOpacity.set(1.0F);
+        AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.COSMIC);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
