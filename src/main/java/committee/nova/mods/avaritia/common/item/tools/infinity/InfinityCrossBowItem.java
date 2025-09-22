@@ -77,7 +77,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
 
     @Override
     public int getUseDuration(ItemStack stack) {
-
         return 10;
     }
 
