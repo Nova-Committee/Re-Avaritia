@@ -21,6 +21,7 @@ public class Res {
     public static final ResourceLocation RAIN_PRO_TEX = Const.rl("textures/entity/rain_pro.png");
     public static final ResourceLocation STORM_PRO_TEX = Const.rl("textures/entity/storm_pro.png");
     public static final ResourceLocation TRIDENT_TEX = Const.rl("textures/entity/infinity_trident_model.png");
+    public static final ResourceLocation SHIELD_TEX = Const.rl("textures/item/tools/infinity_shield/layer_0.png");
 
     public static final ResourceLocation NEUTRON_HORSE_ARMOR = Const.rl("textures/item/armor/horse/neutron_horse_armor.png");
 

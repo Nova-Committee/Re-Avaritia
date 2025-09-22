@@ -16,6 +16,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -29,8 +30,14 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 .stacksTo(1)
                 .fireResistant());
     }
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.SPEAR;
+    }
 
-    @Override
+    public int getUseDuration(ItemStack stack) {
+        return 72000;
+    }
+
     public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
         if (livingEntity instanceof Player player) {
             int i = this.getUseDuration(itemStack) - timeLeft;

@@ -47,6 +47,9 @@ public class ItemOverrideHandler {
             setPropertyOverride(ModItems.matter_cluster.get(), Const.rl("cap"), (itemStack, world, livingEntity, d) -> {
                 return MatterClusterItem.getClusterSize(itemStack) == MatterClusterItem.CAPACITY ? 1 : 0;
             });
+            setPropertyOverride(ModItems.infinity_shield.get(), Const.rl("blocking"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
             ItemProperties.register(ModItems.infinity_umbrella.get(),
                     new ResourceLocation("mode"),
                     (stack, world, entity, seed) -> {
