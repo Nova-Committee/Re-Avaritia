@@ -56,22 +56,22 @@ public class CosmicArcBakeModel extends WrappedItemModel {
 
         // 定义电弧起点和终点（相对于物品中心）
         float startX = 0.0f;
-        float startY = 0.0f;
+        float startY = -0.5f;
         float startZ = 0.0f;
 
         // 电弧终点可以设置在物品上方
         float endX = 0.0f;
-        float endY = 0.5f; // 向上跳跃 0.5 米
+        float endY = 0.0f;
         float endZ = 0.0f;
 
         // 设置电弧参数
         long seed = System.currentTimeMillis(); // 使用当前时间作为种子，使电弧随时间变化
-        float thickness = 0.03f; // 电弧粗细
+        float thickness = 0.02f; // 电弧粗细
         int segments = 8; // 电弧分段数
 
         // 可选：添加一些偏移或旋转来增强视觉效果
-        pStack.translate(0.5, 0.5, 0.5); // 移动到物品中心
-        pStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees((float) (System.currentTimeMillis() / 10 % 360))); // 旋转
+//        pStack.translate(0.5, 0.5, 0.5); // 移动到物品中心
+//        pStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees((float) (System.currentTimeMillis() / 10 % 360))); // 旋转
 
         // 渲染电弧
         ArcRender.renderArc(
