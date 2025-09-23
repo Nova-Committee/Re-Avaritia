@@ -73,8 +73,6 @@ public class RecipeUtils {
 
             if (!map.containsKey(recipeType)) {
                 recipeMap = Maps.newConcurrentMap();
-            } else {
-                Lib.LOGGER.error("Failed to register recipe {} to map of type {}", recipe.getId(), recipeMap.getClass());
             }
 
             recipeMap.put(recipe.getId(), recipe);

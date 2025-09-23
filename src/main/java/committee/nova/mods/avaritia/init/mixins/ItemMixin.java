@@ -34,10 +34,11 @@ public abstract class ItemMixin implements ITooltip {
     public void avaritia$appendHoverText(ItemStack stack, Level level, List<Component> tooltipComponents,
                                          TooltipFlag isAdvanced, CallbackInfo ci) {
         if (this.hasDescTooltip()) {
-            tooltipComponents.add(Component.literal(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC
-                    + I18n.get("tooltip."
-                    + ForgeRegistries.ITEMS.getKey((Item) (Object) this).toString().replace(":", ".")
-                    + ".desc")));
+            tooltipComponents.add(
+                    Component.translatable("tooltip."
+                            + ForgeRegistries.ITEMS.getKey((Item) (Object) this).toString().replace(":", ".")
+                            + ".desc").withStyle(ChatFormatting.DARK_GRAY,  ChatFormatting.ITALIC)
+            );
         }
     }
 }
