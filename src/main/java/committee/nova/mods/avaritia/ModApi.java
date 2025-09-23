@@ -1,7 +1,11 @@
 package committee.nova.mods.avaritia;
 
+import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.item.singularity.Singularity;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -38,5 +42,19 @@ public class ModApi {
             ingredients.add(Ingredient.of(stack));
         }
         return ingredients;
+    }
+
+    public static CompressorRecipe addSingularityRecipe(Singularity singularity) {
+        var ingredient = singularity.getIngredient();
+        if (ingredient == Ingredient.EMPTY)
+            return null;
+
+        var id = singularity.getId();
+        var recipeId = new ResourceLocation(Const.MOD_ID, id.getPath() + "_singularity");
+        var output = SingularityUtils.getItemForSingularity(singularity);
+        int ingredientCount = singularity.getIngredientCount();
+        int timeRequired = singularity.getTimeRequired();
+
+        return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
     }
 }

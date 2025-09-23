@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.util.recipe;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.api.Lib;
-import committee.nova.mods.avaritia.api.init.event.RecipeManagerLoadingEvent;
+import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
@@ -55,14 +55,13 @@ public class RecipeUtils {
         return getRecipeManager().getRecipes();
     }
 
-    // map parameter uses Object because custom servers replace the ImmutableMap.Builder with a different map type
     public static void fireRecipeManagerLoadedEvent(RecipeManager manager, ICondition.IContext context, Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map,
                                                     Map<ResourceLocation, Recipe<?>> builder) {
         var stopwatch = Stopwatch.createStarted();
         var recipes = new ArrayList<Recipe<?>>();
 
         try {
-            MinecraftForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, context, recipes));
+            MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, context, recipes));
         } catch (Exception e) {
             Lib.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
         }
@@ -82,21 +81,4 @@ public class RecipeUtils {
 
         Lib.LOGGER.info("Registered {} recipes in {} ms", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
     }
-
-//    public static void fireRecipeManagerLoadedEventKubeJSEdition(RecipeManager manager, Map<ResourceLocation, Recipe<?>> recipesByName) {
-//        var stopwatch = Stopwatch.createStarted();
-//        var recipes = new ArrayList<Recipe<?>>();
-//
-//        try {
-//            MinecraftForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, recipes));
-//        } catch (Exception e) {
-//            Lib.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
-//        }
-//
-//        for (var recipe : recipes) {
-//            recipesByName.put(recipe.getId(), recipe);
-//        }
-//
-//        Lib.LOGGER.info("Registered {} recipes in {} ms (KubeJS mode)", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
-//    }
 }
