@@ -36,7 +36,8 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
-                        .fireResistant());}
+                        .fireResistant());
+    }
 
     @Override
     public boolean hasDescTooltip() {

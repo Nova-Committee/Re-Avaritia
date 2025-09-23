@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.client.AvaritiaModClient;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;

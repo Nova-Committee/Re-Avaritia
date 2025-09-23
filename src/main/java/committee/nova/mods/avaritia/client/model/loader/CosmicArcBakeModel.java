@@ -67,7 +67,6 @@ public class CosmicArcBakeModel extends WrappedItemModel {
         }
 
 
-
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }

@@ -30,6 +30,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 .stacksTo(1)
                 .fireResistant());
     }
+
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.SPEAR;
     }

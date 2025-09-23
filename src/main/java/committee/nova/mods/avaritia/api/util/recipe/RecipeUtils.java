@@ -1,30 +1,23 @@
 package committee.nova.mods.avaritia.api.util.recipe;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.Lib;
 import committee.nova.mods.avaritia.api.init.event.RecipeManagerLoadingEvent;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,11 +43,11 @@ public class RecipeUtils {
         recipeManager = new WeakReference<>(manager);
     }
 
-    public static <I extends Container, T extends Recipe<I>> Map<ResourceLocation,T> byType(RecipeType<T> type) {
+    public static <I extends Container, T extends Recipe<I>> Map<ResourceLocation, T> byType(RecipeType<T> type) {
         return byType(getRecipeManager(), type);
     }
 
-    public static <I extends Container, T extends Recipe<I>> Map<ResourceLocation,T> byType(RecipeManager manager, RecipeType<T> type) {
+    public static <I extends Container, T extends Recipe<I>> Map<ResourceLocation, T> byType(RecipeManager manager, RecipeType<T> type) {
         return manager.byType(type);
     }
 

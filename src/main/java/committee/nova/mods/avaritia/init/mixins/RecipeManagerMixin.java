@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.llamalad7.mixinextras.sugar.Local;
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.util.recipe.ConfigRecipeManager;
 import committee.nova.mods.avaritia.api.util.recipe.RecipeUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -21,14 +19,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 /**
  * @Project: Avaritia
@@ -87,11 +81,11 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
 
     @Inject(
             at = @At("TAIL"),
-    method = {"apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V"}
+            method = {"apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V"}
     )
     public void avaritia$apply2(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager,
                                 ProfilerFiller profiler, CallbackInfo ci
-                                ){
+    ) {
 
         // 创建新的recipes映射
         Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipes = Maps.newConcurrentMap();

@@ -14,8 +14,7 @@ import java.util.function.Function;
 public abstract class BaseGeometry<U extends IUnbakedGeometry<U>> implements IUnbakedGeometry<U> {
     public final BlockModel baseModel;
 
-    public BaseGeometry(BlockModel baseModel)
-    {
+    public BaseGeometry(BlockModel baseModel) {
         this.baseModel = baseModel;
     }
 

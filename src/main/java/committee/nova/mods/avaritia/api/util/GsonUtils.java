@@ -10,7 +10,7 @@ public class GsonUtils {
     /**
      * 从 JsonElement 中获取浮点数数组
      *
-     * @param element JSON 元素
+     * @param element        JSON 元素
      * @param expectedLength 期望的数组长度
      * @return 浮点数数组
      * @throws IllegalArgumentException 如果元素不是数组或长度不匹配

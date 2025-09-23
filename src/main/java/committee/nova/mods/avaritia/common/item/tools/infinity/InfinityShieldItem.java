@@ -18,6 +18,7 @@ public class InfinityShieldItem extends ShieldItem implements IUndamageable {
                 .stacksTo(1)
                 .fireResistant());
     }
+
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {

@@ -398,6 +398,7 @@ public class InfinityHandler {
             }
         }
     }
+
     //无尽盾取消击退
     @SubscribeEvent
     public static void onLivingKnockBack(LivingKnockBackEvent event) {

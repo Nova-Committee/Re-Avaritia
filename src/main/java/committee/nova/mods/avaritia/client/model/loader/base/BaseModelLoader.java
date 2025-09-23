@@ -16,7 +16,7 @@ import java.util.List;
  * @author: cnlimiter
  */
 public abstract class BaseModelLoader<T extends IUnbakedGeometry<T>> implements IGeometryLoader<T> {
-    public JsonObject clear(JsonObject modelContents, String... types){
+    public JsonObject clear(JsonObject modelContents, String... types) {
         final JsonObject clean = modelContents.deepCopy();
         clean.remove("loader");
         for (String type : types) {
@@ -25,7 +25,7 @@ public abstract class BaseModelLoader<T extends IUnbakedGeometry<T>> implements 
         return clean;
     }
 
-    public List<ResourceLocation> getMasks(JsonObject modelContents, String type){
+    public List<ResourceLocation> getMasks(JsonObject modelContents, String type) {
         final JsonObject cosmic = modelContents.getAsJsonObject(type);
         if (cosmic == null) {
             throw new IllegalStateException("Missing " + type + " object.");
@@ -42,7 +42,7 @@ public abstract class BaseModelLoader<T extends IUnbakedGeometry<T>> implements 
         return maskTexture;
     }
 
-    public HaloSetting getHalo(JsonObject modelContents){
+    public HaloSetting getHalo(JsonObject modelContents) {
         final JsonObject halo = modelContents.getAsJsonObject("halo");
         if (halo == null) {
             throw new IllegalStateException("Missing 'halo' object.");
