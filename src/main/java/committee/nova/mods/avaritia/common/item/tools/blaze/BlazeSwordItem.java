@@ -81,6 +81,7 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
                 fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                 fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                 level.addFreshEntity(fireBallEntity);
+                player.getCooldowns().addCooldown(heldItem.getItem(), 40);
             }
 
         }
