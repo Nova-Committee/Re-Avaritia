@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.common.item.singularity.Singularity;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -18,11 +19,13 @@ import java.util.List;
  * Date: 2022/5/15 20:34
  * Version: 1.0
  */
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Const.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RecipeManagerLoadingEvent event) {
-        List<Singularity> allSingularities = SingularityRegistryHandler.getInstance().getSingularities();
+        SingularityRegistryHandler.getInstance().loadSingularities(event.getContext());
+        List<Singularity> allSingularities = SingularityRegistryHandler.getInstance()
+                .getSingularities();
         for (var singularity : allSingularities) {
             if (singularity.isRecipeDisabled()) {
                 continue;

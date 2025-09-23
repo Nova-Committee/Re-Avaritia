@@ -15,6 +15,8 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,6 +44,10 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
 
     @Shadow
     public Map<ResourceLocation, Recipe<?>> byName;
+
+    @Shadow
+    @Final
+    private ICondition.IContext context;
 
     public RecipeManagerMixin(Gson gson, String directory) {
         super(gson, directory);
@@ -95,7 +101,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
         // 创建新的byName映射
         Map<ResourceLocation, Recipe<?>> newByName = new ConcurrentHashMap<>(this.byName);
 
-        RecipeUtils.fireRecipeManagerLoadedEvent((RecipeManager) (Object) this, newRecipes, newByName);
+        RecipeUtils.fireRecipeManagerLoadedEvent((RecipeManager) (Object) this, this.context, newRecipes, newByName);
 
         this.recipes = ImmutableMap.copyOf(newRecipes);
         this.byName = ImmutableMap.copyOf(newByName);

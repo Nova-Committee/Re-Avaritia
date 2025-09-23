@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class ResourceReloadHandler {
     @SubscribeEvent
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(new SingularityResourceReloadListener(event.getServerResources()));
+        //event.addListener(new SingularityResourceReloadListener(event.getServerResources()));
         //event.addListener(new RegisterRecipesReloadListener(event.getServerResources()));
     }
 

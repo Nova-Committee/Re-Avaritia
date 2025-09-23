@@ -14,6 +14,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -62,13 +63,13 @@ public class RecipeUtils {
     }
 
     // map parameter uses Object because custom servers replace the ImmutableMap.Builder with a different map type
-    public static void fireRecipeManagerLoadedEvent(RecipeManager manager, Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map,
+    public static void fireRecipeManagerLoadedEvent(RecipeManager manager, ICondition.IContext context, Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map,
                                                     Map<ResourceLocation, Recipe<?>> builder) {
         var stopwatch = Stopwatch.createStarted();
         var recipes = new ArrayList<Recipe<?>>();
 
         try {
-            MinecraftForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, recipes));
+            MinecraftForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, context, recipes));
         } catch (Exception e) {
             Lib.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
         }
@@ -91,20 +92,20 @@ public class RecipeUtils {
         Lib.LOGGER.info("Registered {} recipes in {} ms", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 
-    public static void fireRecipeManagerLoadedEventKubeJSEdition(RecipeManager manager, Map<ResourceLocation, Recipe<?>> recipesByName) {
-        var stopwatch = Stopwatch.createStarted();
-        var recipes = new ArrayList<Recipe<?>>();
-
-        try {
-            MinecraftForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, recipes));
-        } catch (Exception e) {
-            Lib.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
-        }
-
-        for (var recipe : recipes) {
-            recipesByName.put(recipe.getId(), recipe);
-        }
-
-        Lib.LOGGER.info("Registered {} recipes in {} ms (KubeJS mode)", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
-    }
+//    public static void fireRecipeManagerLoadedEventKubeJSEdition(RecipeManager manager, Map<ResourceLocation, Recipe<?>> recipesByName) {
+//        var stopwatch = Stopwatch.createStarted();
+//        var recipes = new ArrayList<Recipe<?>>();
+//
+//        try {
+//            MinecraftForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, recipes));
+//        } catch (Exception e) {
+//            Lib.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
+//        }
+//
+//        for (var recipe : recipes) {
+//            recipesByName.put(recipe.getId(), recipe);
+//        }
+//
+//        Lib.LOGGER.info("Registered {} recipes in {} ms (KubeJS mode)", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
+//    }
 }
