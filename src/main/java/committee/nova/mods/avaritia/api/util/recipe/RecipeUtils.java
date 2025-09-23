@@ -63,7 +63,7 @@ public class RecipeUtils {
         try {
             MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, context, recipes));
         } catch (Exception e) {
-            Lib.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
+            Lib.LOGGER.error("An error occurred while firing RegisterRecipesEvent", e);
         }
 
         for (var recipe : recipes) {

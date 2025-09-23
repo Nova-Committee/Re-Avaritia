@@ -13,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Project: Avaritia
@@ -21,8 +22,9 @@ import java.util.List;
  * @Description:
  */
 public class ModApi {
-    @ApiStatus.Experimental
+    @ApiStatus.AvailableSince("1.3.9.0")
     public static ShapelessTableCraftingRecipe addModShapelessRecipe(ItemStack result, List<ItemStack> ingredients, int tier) {
+        UUID uuid = UUID.randomUUID();
         List<ItemStack> arraylist = new ArrayList<>();
 
         for (ItemStack stack : ingredients) {
@@ -33,7 +35,7 @@ public class ModApi {
             }
         }
 
-        return new ShapelessTableCraftingRecipe(ForgeRegistries.ITEMS.getKey(result.getItem()), getList(arraylist), result, tier);
+        return new ShapelessTableCraftingRecipe(Const.rl(uuid.toString()), getList(arraylist), result, tier);
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {
@@ -44,6 +46,7 @@ public class ModApi {
         return ingredients;
     }
 
+    @ApiStatus.AvailableSince("1.3.9.2")
     public static CompressorRecipe addSingularityRecipe(Singularity singularity) {
         var ingredient = singularity.getIngredient();
         if (ingredient == Ingredient.EMPTY)
