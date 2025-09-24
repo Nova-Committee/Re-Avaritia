@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2024/7/13 下午1:39
  * @Description:
  */
-public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T> {
+public class CompressedChestRender<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T> {
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
@@ -45,7 +45,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
     private final ModelPart doubleRightBottom;
     private final ModelPart doubleRightLock;
 
-    public CompressedChestRenderer(BlockEntityRendererProvider.Context pContext) {
+    public CompressedChestRender(BlockEntityRendererProvider.Context pContext) {
         ModelPart modelpart = pContext.bakeLayer(ModelLayers.CHEST);
         this.bottom = modelpart.getChild("bottom");
         this.lid = modelpart.getChild("lid");

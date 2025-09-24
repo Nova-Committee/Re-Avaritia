@@ -1,7 +1,7 @@
-package committee.nova.mods.avaritia.common.net;
+package committee.nova.mods.avaritia.common.net.chest;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.menu.TesseractMenu;
+import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -9,35 +9,28 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2025/2/28 12:24
- * @Description:
+ * @author: cnlimiter
  */
-public class C2SWipChestActionPack {
+public class C2SInfinityChestActionPack {
     private final int containerId;
     private final int actionId;
-    private final String type;
     private final String id;
 
-    public C2SWipChestActionPack(FriendlyByteBuf buf) {
+    public C2SInfinityChestActionPack(FriendlyByteBuf buf) {
         this.containerId = buf.readInt();
         this.actionId = buf.readInt();
-        this.type = buf.readUtf();
         this.id = buf.readUtf();
     }
 
-    public C2SWipChestActionPack(int containerId, int actionId, String[] object) {
+    public C2SInfinityChestActionPack(int containerId, int actionId, String object) {
         this.containerId = containerId;
         this.actionId = actionId;
-        this.type = object[0];
-        this.id = object[1];
+        this.id = object;
     }
 
     public void write(FriendlyByteBuf buf) {
         buf.writeInt(containerId);
         buf.writeInt(actionId);
-        buf.writeUtf(type);
         buf.writeUtf(id);
     }
 
@@ -49,7 +42,7 @@ public class C2SWipChestActionPack {
             if (!player.containerMenu.stillValid(player)) {
                 Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
             } else {
-                ((TesseractMenu) player.containerMenu).action(actionId, type, id);
+                ((InfinityChestMenu) player.containerMenu).action(actionId, id);
                 player.containerMenu.broadcastChanges();
             }
         });

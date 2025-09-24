@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.util.StorageUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -203,7 +204,7 @@ public abstract class OffsetItemStackWrapper implements IItemHandlerModifiable {
 
     @Override
     public int getSlotLimit(int slot) {
-        return (int) Math.min(Integer.MAX_VALUE, this.getSlotLimitLong(slot));
+        return Integer.MAX_VALUE;
     }
 
     @Override

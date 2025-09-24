@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
-import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRenderer;
+import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
@@ -137,7 +137,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
         EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
-        EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRenderer::new);
+        EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRender::new);
         EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
         EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityThrownTridentRender::new);
     }

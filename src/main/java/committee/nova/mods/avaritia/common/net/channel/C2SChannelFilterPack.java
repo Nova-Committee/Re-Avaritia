@@ -14,17 +14,17 @@ import java.util.function.Supplier;
  * @CreateTime: 2025/2/28 14:00
  * @Description:
  */
-public class C2SFilterChannelPack {
+public class C2SChannelFilterPack {
 
     private final int containerId;
     private final String filter;
 
-    public C2SFilterChannelPack(FriendlyByteBuf buf) {
+    public C2SChannelFilterPack(FriendlyByteBuf buf) {
         this.containerId = buf.readInt();
         this.filter = buf.readUtf(64);
     }
 
-    public C2SFilterChannelPack(int containerId, String filter) {
+    public C2SChannelFilterPack(int containerId, String filter) {
         this.containerId = containerId;
         this.filter = filter;
     }

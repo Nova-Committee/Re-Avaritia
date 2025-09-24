@@ -9,7 +9,7 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
-import committee.nova.mods.avaritia.common.net.channel.C2SFilterChannelPack;
+import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannel;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -84,7 +84,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         this.leftPos = (this.width - imageWidth + 4) / 2;
         this.topPos = (this.height - imageHeight) / 2;
         this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 16, menu.craftingMode ? 118 : 152);
-        this.scrollBar.setScrolledOn(menu.channelDummyContainer.getScrollOn());
+        this.scrollBar.setScrolledOn(menu.dummyChannelContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
         this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 198, this.topPos + 195));
         this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 211));
@@ -110,7 +110,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         this.addRenderableWidget(craftToChannelButton);
         this.addRenderableWidget(craftToInventoryButton);
         this.addRenderableWidget(craftAndDropButton);
-        menu.channelDummyContainer.refreshContainer(true);
+        menu.dummyChannelContainer.refreshContainer(true);
         menu.craftModeSetter = () -> {
             if (!menu.craftingMode) toggleCraftingMode();
         };
@@ -173,7 +173,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         poseStack.translate(leftPos, topPos, 300.0D);
-        menu.channelDummyContainer.fluidStacks.forEach((integer, fluidStack) -> {
+        menu.dummyChannelContainer.fluidStacks.forEach((integer, fluidStack) -> {
             Slot slot = menu.slots.get(integer + 51);
             FluidItemRender.renderFluid(fluidStack, poseStack, slot.x, slot.y, 0);
         });
@@ -182,9 +182,9 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
 
     public void renderDummyCount(GuiGraphics guiGraphics) {
         PoseStack poseStack = guiGraphics.pose();
-        for (int i = 0; i < menu.channelDummyContainer.formatCount.size(); i++) {
+        for (int i = 0; i < menu.dummyChannelContainer.formatCount.size(); i++) {
             Slot slot = menu.slots.get(i + 51);
-            String count = menu.channelDummyContainer.formatCount.get(i);
+            String count = menu.dummyChannelContainer.formatCount.get(i);
             this.setBlitOffset(100);
             RenderSystem.enableDepthTest();
             float fontSize = 0.5F;
@@ -223,8 +223,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     }
 
     private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
-        if ((hoveredSlot.index - 51) >= menu.channelDummyContainer.viewingObject.size()) return;
-        String[] hoveredObject = menu.channelDummyContainer.viewingObject.get(hoveredSlot.index - 51);
+        if ((hoveredSlot.index - 51) >= menu.dummyChannelContainer.viewingObject.size()) return;
+        String[] hoveredObject = menu.dummyChannelContainer.viewingObject.get(hoveredSlot.index - 51);
         List<Component> components = Lists.newArrayList();
         long count;
         if (hoveredObject[0].equals("item")) {
@@ -268,8 +268,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
                 || carried.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
         if (hasCapability) {
             List<Component> components = Lists.newArrayList();
-            if ((hoveredSlot.index - 51) < menu.channelDummyContainer.viewingObject.size()) {
-                String[] hoveredObject = menu.channelDummyContainer.viewingObject.get(hoveredSlot.index - 51);
+            if ((hoveredSlot.index - 51) < menu.dummyChannelContainer.viewingObject.size()) {
+                String[] hoveredObject = menu.dummyChannelContainer.viewingObject.get(hoveredSlot.index - 51);
                 if (hoveredObject[0].equals("fluid")) {
                     components.add(Component.translatable("gui.avaritia.capability.tip1",
                             Component.translatable("block." + hoveredObject[1].replace(':', '.')).getString()
@@ -292,7 +292,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
 
     @Override
     public void onClose() {
-        NetworkHandler.CHANNEL.sendToServer(new C2SFilterChannelPack(menu.containerId, menu.filter));
+        NetworkHandler.CHANNEL.sendToServer(new C2SChannelFilterPack(menu.containerId, menu.filter));
         ((ClientChannel) menu.channel).removeListener();
         super.onClose();
     }
@@ -305,7 +305,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
             if (searchBox.isMouseOver(pMouseX, pMouseY)) {
                 menu.filter = "";
                 searchBox.setValue("");
-                menu.channelDummyContainer.refreshContainer(true);
+                menu.dummyChannelContainer.refreshContainer(true);
                 searchBox.setFocused(true);
                 searchBox.setEditable(true);
             } else if (craftToChannelButton.isMouseOver(pMouseX, pMouseY)) {
@@ -360,12 +360,12 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
             String s = searchBox.getValue().toLowerCase();
             if (!s.equals(menu.filter)) {
                 menu.filter = s;
-                menu.channelDummyContainer.refreshContainer(true);
+                menu.dummyChannelContainer.refreshContainer(true);
             }
         }
         if (pKeyCode == InputConstants.KEY_LSHIFT) {
             menu.LShifting = false;
-            menu.channelDummyContainer.refreshContainer(true);
+            menu.dummyChannelContainer.refreshContainer(true);
         }
         return super.keyReleased(pKeyCode, pScanCode, pModifiers);
     }
@@ -373,8 +373,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
         if (pMouseX >= leftPos + 5 && pMouseX <= leftPos + 214 && pMouseY >= topPos + 17 && pMouseY <= topPos + 18 + (menu.craftingMode ? 119 : 153) && scrollBar.canScroll()) {
-            if (pDelta <= 0) scrollBar.setScrolledOn(menu.channelDummyContainer.onMouseScrolled(false));
-            else scrollBar.setScrolledOn(menu.channelDummyContainer.onMouseScrolled(true));
+            if (pDelta <= 0) scrollBar.setScrolledOn(menu.dummyChannelContainer.onMouseScrolled(false));
+            else scrollBar.setScrolledOn(menu.dummyChannelContainer.onMouseScrolled(true));
             return true;
         } else return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
@@ -396,14 +396,14 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
             this.menu.locked = !this.menu.locked;
             this.searchBox.setFocused(false);
-            NetworkHandler.CHANNEL.sendToServer(new C2SFilterChannelPack(menu.containerId, menu.filter));
+            NetworkHandler.CHANNEL.sendToServer(new C2SChannelFilterPack(menu.containerId, menu.filter));
             this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 0);
         }
     }
 
     protected void toggleCraftingMode() {
         this.menu.craftingMode = !this.menu.craftingMode;
-        this.menu.channelDummyContainer.refreshContainer(true);
+        this.menu.dummyChannelContainer.refreshContainer(true);
         this.searchBox.setFocused(false);
         this.craftToChannelButton.active = menu.craftingMode;
         this.craftToChannelButton.visible = menu.craftingMode;
@@ -454,24 +454,24 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         public ItemScrollBar(int x, int y, int weight, int height) {
             super(x, y, weight, height);
             this.setScrollTagSize();
-            this.lastObjectListSize = menu.channelDummyContainer.sortedObject.size();
+            this.lastObjectListSize = menu.dummyChannelContainer.sortedObject.size();
         }
 
         public void setScrollTagSize() {
-            double v = (double) this.height * ((menu.craftingMode ? 7.0D : 9.0D) / Math.ceil(menu.channelDummyContainer.sortedObject.size() / 11.0D));
+            double v = (double) this.height * ((menu.craftingMode ? 7.0D : 9.0D) / Math.ceil(menu.dummyChannelContainer.sortedObject.size() / 11.0D));
             this.setScrollTagSize(v);
         }
 
         @Override
         public void draggedTo(double scrolledOn) {
-            menu.channelDummyContainer.onScrollTo(scrolledOn);
+            menu.dummyChannelContainer.onScrollTo(scrolledOn);
         }
 
         @Override
         public void beforeRender() {
-            if (menu.channelDummyContainer.sortedObject.size() != lastObjectListSize) {
+            if (menu.dummyChannelContainer.sortedObject.size() != lastObjectListSize) {
                 setScrollTagSize();
-                this.lastObjectListSize = menu.channelDummyContainer.sortedObject.size();
+                this.lastObjectListSize = menu.dummyChannelContainer.sortedObject.size();
             }
         }
     }

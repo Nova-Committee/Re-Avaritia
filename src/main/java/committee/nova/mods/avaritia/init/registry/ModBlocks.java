@@ -5,8 +5,6 @@ import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
-import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
-import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock2;
 import committee.nova.mods.avaritia.common.block.chest.TesseractBlock;
 import committee.nova.mods.avaritia.common.block.collector.NeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
@@ -17,6 +15,7 @@ import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
+import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.world.item.BlockItem;
@@ -60,7 +59,6 @@ public class ModBlocks {
     public static RegistryObject<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new ResourceBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static RegistryObject<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
-    public static RegistryObject<Block> infinity_chest2 = itemBlock("infinity_chest2", InfinityChestBlock2::new, ModRarities.LEGEND);
     public static RegistryObject<Block> tesseract = itemBlock("tesseract", TesseractBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",

@@ -94,7 +94,7 @@ public class HaloEternalBakedModel extends WrappedItemModel {
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
 
-        AvaritiaShaders.eternalTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
+        AvaritiaShaders.eternalTime.set(AvaritiaForgeClient.renderTime % Integer.MAX_VALUE);
         AvaritiaShaders.eternalYaw.set(yaw);
         AvaritiaShaders.eternalPitch.set(pitch);
         AvaritiaShaders.eternalExternalScale.set(scale);

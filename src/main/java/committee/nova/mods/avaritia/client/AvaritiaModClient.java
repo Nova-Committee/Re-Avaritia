@@ -8,7 +8,8 @@ import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
-import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
+import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
+import committee.nova.mods.avaritia.client.render.tile.InfinityChestRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -52,6 +53,7 @@ public class AvaritiaModClient {
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(Const.rl("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(Const.rl("compressed_chest_left"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_RIGHT = new ModelLayerLocation(Const.rl("compressed_chest_right"), "main");
+    public static final ModelLayerLocation INFINITY_CHEST = new ModelLayerLocation(Const.rl("infinity_chest"), "main");
     public static final ModelLayerLocation INFINITY_SHIELD = new ModelLayerLocation(Const.rl("infinity_shield"), "main");
     public static final ModelLayerLocation INFINITY_TRIDENT = new ModelLayerLocation(Const.rl("infinity_trident"), "main");
 
@@ -110,9 +112,10 @@ public class AvaritiaModClient {
 
     @SubscribeEvent
     public static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRenderer::createSingleBodyLayer);
-        event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRenderer::createDoubleBodyLeftLayer);
-        event.registerLayerDefinition(COMPRESSED_CHEST_RIGHT, CompressedChestRenderer::createDoubleBodyRightLayer);
+        event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRender::createSingleBodyLayer);
+        event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRender::createDoubleBodyLeftLayer);
+        event.registerLayerDefinition(COMPRESSED_CHEST_RIGHT, CompressedChestRender::createDoubleBodyRightLayer);
+        event.registerLayerDefinition(INFINITY_CHEST, InfinityChestRender::createSingleBodyLayer);
         event.registerLayerDefinition(INFINITY_SHIELD, InfinityShieldModel::createLayer);
         //event.registerLayerDefinition(INFINITY_TRIDENT, InfinityTridentModel::createLayer);
     }

@@ -4,9 +4,9 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
 import committee.nova.mods.avaritia.api.util.game.CraftingRecipeGridIndexGetter;
 import committee.nova.mods.avaritia.api.util.math.InvItemCounter;
-import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
+import committee.nova.mods.avaritia.common.container.DummyChannelContainer;
 import committee.nova.mods.avaritia.common.menu.provider.ChannelSelectMenuProvider;
-import committee.nova.mods.avaritia.common.net.C2SWipChestActionPack;
+import committee.nova.mods.avaritia.common.net.channel.C2SChannelActionPack;
 import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import committee.nova.mods.avaritia.core.channel.*;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -64,8 +64,8 @@ public class TesseractMenu extends AbstractContainerMenu {
     private final ItemStack panelItem;
     private final TransientCraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
+    public DummyChannelContainer dummyChannelContainer = new DummyChannelContainer(this);
     public TesseractTile tesseractTile;
-    public ChannelDummyContainer channelDummyContainer;
     public boolean locked;
     public UUID channelOwner;
     public int channelID;
@@ -101,18 +101,16 @@ public class TesseractMenu extends AbstractContainerMenu {
         else this.panelItem = ItemStack.EMPTY;
 
         addSlots(playerInv.player, playerInv);
-
-        this.channelDummyContainer = new ChannelDummyContainer(this);
-        this.channel = ClientChannelManager.getInstance().getChannel(channelDummyContainer);
+        this.channel = ClientChannelManager.getInstance().getChannel(dummyChannelContainer);
         //虚拟储存物品格51 ~ 149
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 11; j++) {
-                this.addSlot(new FakeSlot(channelDummyContainer, i * 11 + j, 7 + j * 17, 17 + i * 17));
+                this.addSlot(new FakeSlot(dummyChannelContainer, i * 11 + j, 7 + j * 17, 17 + i * 17));
             }
         }
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 11; j++) {
-                this.addSlot(new FakeSlot(channelDummyContainer, 77 + i * 11 + j, 7 + j * 17, 136 + i * 17) {
+                this.addSlot(new FakeSlot(dummyChannelContainer, 77 + i * 11 + j, 7 + j * 17, 136 + i * 17) {
                     @Override
                     public boolean isActive() {
                         return !craftingMode;
@@ -828,19 +826,19 @@ public class TesseractMenu extends AbstractContainerMenu {
     public void nextSort() {
         sortType += 2;
         if (sortType > 7) sortType %= 8;
-        if (level.isClientSide) channelDummyContainer.refreshContainer(true);
+        if (level.isClientSide) dummyChannelContainer.refreshContainer(true);
     }
 
     public void reverseSort() {
         if (sortType % 2 == 0) sortType++;
         else sortType--;
-        if (level.isClientSide) channelDummyContainer.refreshContainer(true);
+        if (level.isClientSide) dummyChannelContainer.refreshContainer(true);
     }
 
     public void changeViewType() {
         if (viewType == 2) viewType = 0;
         else viewType++;
-        if (level.isClientSide) channelDummyContainer.onChangeViewType();
+        if (level.isClientSide) dummyChannelContainer.onChangeViewType();
     }
 
     private void saveBlock() {
@@ -856,8 +854,8 @@ public class TesseractMenu extends AbstractContainerMenu {
         if (pSlotId >= 51) {
             //仅客户端能触发
             String[] object;
-            if (pSlotId - 51 < channelDummyContainer.viewingObject.size())
-                object = channelDummyContainer.viewingObject.get(pSlotId - 51);
+            if (pSlotId - 51 < dummyChannelContainer.viewingObject.size())
+                object = dummyChannelContainer.viewingObject.get(pSlotId - 51);
             else object = new String[]{"item", "minecraft:air"};
 
             switch (pButton) {
@@ -866,19 +864,19 @@ public class TesseractMenu extends AbstractContainerMenu {
                         case QUICK_MOVE -> {
                             //左键shift
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.LEFT_SHIFT_DUMMY_SLOT, object));
+                                    new C2SChannelActionPack(containerId, Action.LEFT_SHIFT_DUMMY_SLOT, object));
                             onLeftShiftDummySlot(object[0], object[1]);
                         }
                         case PICKUP -> {
                             //左键点击
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.LEFT_CLICK_DUMMY_SLOT, object));
+                                    new C2SChannelActionPack(containerId, Action.LEFT_CLICK_DUMMY_SLOT, object));
                             onLeftClickDummySlot(object[0], object[1]);
                         }
                         case THROW -> {
                             //丢一个
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.THROW_ONE, object));
+                                    new C2SChannelActionPack(containerId, Action.THROW_ONE, object));
                             tryThrowOneFromDummySlot(object[0], object[1]);
                         }
                     }
@@ -888,25 +886,25 @@ public class TesseractMenu extends AbstractContainerMenu {
                         case PICKUP -> {
                             //右键点击
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.Right_CLICK_DUMMY_SLOT, object));
+                                    new C2SChannelActionPack(containerId, Action.Right_CLICK_DUMMY_SLOT, object));
                             onRightClickDummySlot(object[0], object[1]);
                         }
                         case QUICK_MOVE -> {
                             //右键shift 快速拿一个
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.Right_SHIFT_DUMMY_SLOT, object));
+                                    new C2SChannelActionPack(containerId, Action.Right_SHIFT_DUMMY_SLOT, object));
                             onRightShiftDummySlot(object[0], object[1]);
                         }
                         case QUICK_CRAFT -> {
                             //左键拖动
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.LEFT_DRAG, object));
+                                    new C2SChannelActionPack(containerId, Action.LEFT_DRAG, object));
                             onLeftDragDummySlot(object[0], object[1]);
                         }
                         case THROW -> {
                             //丢一组
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SWipChestActionPack(containerId, Action.THROW_STICK, object));
+                                    new C2SChannelActionPack(containerId, Action.THROW_STICK, object));
                             tryThrowStickFromDummySlot(object[0], object[1]);
                         }
                     }
@@ -915,21 +913,21 @@ public class TesseractMenu extends AbstractContainerMenu {
                     if (pClickType == ClickType.CLONE) {
                         //复制
                         if (object[0].equals("item") && object[1].equals("minecraft:air")) return;
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SWipChestActionPack(containerId, Action.CLONE, object));
+                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SChannelActionPack(containerId, Action.CLONE, object));
                         onCloneFormDummySlot(object[0], object[1]);
                     }
                 }
                 case 5 -> {
                     if (pClickType == ClickType.QUICK_CRAFT) {
                         //右键拖动
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SWipChestActionPack(containerId, Action.RIGHT_DRAG, object));
+                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SChannelActionPack(containerId, Action.RIGHT_DRAG, object));
                         onRightDragDummySlot(object[0], object[1]);
                     }
                 }
                 case 9 -> {
                     if (pClickType == ClickType.QUICK_CRAFT) {
                         //拖动复制
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SWipChestActionPack(containerId, Action.DRAG_CLONE, object));
+                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SChannelActionPack(containerId, Action.DRAG_CLONE, object));
                         onDragCloneDummySlot(object[0], object[1]);
                     }
                 }

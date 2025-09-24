@@ -46,8 +46,8 @@ import java.util.TreeSet;
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
     public static long lastTime = System.currentTimeMillis();
-    public static int renderTime;
-    public static float renderFrame;
+    public static int renderTime = 0;
+    public static float renderFrame = 0;
     public static boolean inventoryRender = false;
     private static float darknessIntensity = 0.0f;
     private static boolean keepFlying = false;

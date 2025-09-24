@@ -12,19 +12,18 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
     public NoConsumeCatalystShapedRecipe(ResourceLocation recipeId, int width, int height,
                                          NonNullList<Ingredient> inputs, ItemStack output, int tier) {
-        super(recipeId, width, height, inputs, output, tier);
+        super(recipeId, width, height, inputs, output, tier, false);
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(IItemHandler inventory) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inventory) {
         NonNullList<ItemStack> remaining = super.getRemainingItems(inventory);
-        int size = (int) Math.sqrt(inventory.getSlots());
-
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.is(ModItems.infinity_catalyst.get())) {

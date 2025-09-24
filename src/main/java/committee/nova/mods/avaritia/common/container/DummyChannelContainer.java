@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @CreateTime: 2025/2/28 03:26
  * @Description:
  */
-public class ChannelDummyContainer extends SimpleContainer {
+public class DummyChannelContainer extends SimpleContainer {
     public final ArrayList<String[]> sortedObject = new ArrayList<>();
     public final ArrayList<String[]> viewingObject = new ArrayList<>();
     public final HashMap<Integer, FluidStack> fluidStacks = new HashMap<>();
@@ -29,7 +29,7 @@ public class ChannelDummyContainer extends SimpleContainer {
     protected ArrayList<String> sortedEnergies = new ArrayList<>();
     private double scrollTo = 0.0D;
 
-    public ChannelDummyContainer(TesseractMenu menu) {
+    public DummyChannelContainer(TesseractMenu menu) {
         super(99);
         this.menu = menu;
     }

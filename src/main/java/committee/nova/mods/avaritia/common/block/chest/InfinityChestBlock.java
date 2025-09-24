@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.common.block.chest;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.common.wrappers.StorageItem;
+import committee.nova.mods.avaritia.core.chest.ServerChestManager;
+import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.StorageUtils;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -12,11 +12,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -25,13 +28,10 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
@@ -44,18 +44,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/13 下午12:38
- * @Description:
+ * @author: cnlimiter
  */
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape AABB = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
-
     public InfinityChestBlock() {
         super(Properties.of()
                 .mapColor(MapColor.GOLD)
@@ -65,42 +62,80 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
                 .lightLevel((b) -> 15)
                 .isValidSpawn((state, getter, pos, entityType) -> false)
                 .isSuffocating((state, getter, pos) -> false)
-                .ignitedByLava());
-        this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH)
-                .setValue(WATERLOGGED, Boolean.FALSE)
+                .ignitedByLava()
+
         );
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, Boolean.FALSE));
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED);
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, TooltipFlag pFlag) {
+    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState,
+                                           @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
+        if (state.getValue(WATERLOGGED)) {
+            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+    }
+
+    @Override
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos,
+                                        @NotNull CollisionContext context) {
+        return AABB;
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction direction = context.getHorizontalDirection().getOpposite();
+        FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
+        boolean flag = context.isSecondaryUseActive();
+        Direction direction1 = context.getClickedFace();
+        if (direction1.getAxis().isHorizontal() && flag) {
+            Direction direction2 = this.candidatePartnerFacing(context, direction1.getOpposite());
+            if (direction2 != null && direction2.getAxis() != direction1.getAxis()) {
+                direction = direction2;
+            }
+        }
+
+        return this.defaultBlockState().setValue(FACING, direction).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
+    }
+
+    @Nullable
+    private Direction candidatePartnerFacing(BlockPlaceContext context, Direction direction) {
+        BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos().relative(direction));
+        return blockstate.is(this) ? blockstate.getValue(FACING) : null;
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new InfinityChestTile(pos, state);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, @NotNull TooltipFlag pFlag) {
         if (Minecraft.getInstance().player == null) return;
         if (!pStack.hasTag()) return;
         if (pStack.getTag().contains("BlockEntityTag")) {
             CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
-            if (nbt.contains("Items", 9)) {
-                Int2ObjectMap<StorageItem> containers = StorageUtils.newContainers();
-                StorageUtils.loadAllItems(nbt, containers);
+            if (nbt.contains("owner") && nbt.contains("channelID")) {
+                var owner = nbt.getUUID("owner");
+                var channelID = nbt.getUUID("channelID");
+                var channel = ServerChestManager.getInstance().getChannel(owner, channelID);
                 int i = 0;
                 int j = 0;
-
-                for (StorageItem next : containers.values()) {
-                    if (!next.isEmpty()) {
-                        ++j;
-                        if (i <= 4) {
-                            ++i;
-                            MutableComponent textComponent = next.getStack().getHoverName().copy();
-                            textComponent.append(" x").append(String.format("%,d", next.getCount()));
-                            pTooltip.add(textComponent);
-                        }
+                for (var item : channel.storageItems.keySet()) {
+                    ++j;
+                    if (i <= 4) {
+                        ++i;
+                        MutableComponent textComponent = StorageUtils.getItem(item).getDefaultInstance().getHoverName().copy();
+                        textComponent.append(" x").append(String.format("%,d",  channel.storageItems.get(item)));
+                        pTooltip.add(textComponent);
                     }
                 }
-
                 if (j - i > 0) {
                     pTooltip.add((Component.translatable("container.shulkerBox.more", j - i)).withStyle(ChatFormatting.ITALIC));
                 }
@@ -109,26 +144,15 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
-        if (!level.isClientSide() && !player.isSpectator()) {
-            var tile = level.getBlockEntity(pos);
-
-            if (tile instanceof InfinityChestTile chestTile) {
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {
-                    buf.writeBlockPos(pos);
-                });
+    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
+        if (pPlacer instanceof ServerPlayer player && !pStack.getOrCreateTag().contains("BlockEntityTag")) {
+            InfinityChestTile blockEntity = (InfinityChestTile) pLevel.getBlockEntity(pPos);
+            if (blockEntity != null) {
+                blockEntity.setOwner(player.getUUID());
+                blockEntity.setChannelId(UUID.randomUUID());
+                ServerChestManager.getInstance().tryAddChannel(player, blockEntity.getChannelID());
             }
         }
-
-        return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext placeContext) {
-        BlockPos blockpos = placeContext.getClickedPos();
-        FluidState fluidstate = placeContext.getLevel().getFluidState(blockpos);
-        return this.defaultBlockState().setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER)
-                .setValue(FACING, placeContext.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -137,15 +161,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity instanceof InfinityChestTile infinityChestTile) {
                 ItemStack stack = new ItemStack(this);
-                CompoundTag compound = infinityChestTile.saveToTag(new CompoundTag());
-                if (!compound.isEmpty()) {
-                    stack.addTagElement("BlockEntityTag", compound);
-                }
-
-                if (infinityChestTile.hasCustomName()) {
-                    stack.setHoverName(infinityChestTile.getCustomName());
-                }
-
+                infinityChestTile.saveToItem(stack);
                 popResource(pLevel, pPos, stack);
             }
         }
@@ -153,65 +169,66 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        return new InfinityChestTile(pPos, pState);
-    }
+    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+        if (!level.isClientSide() && !player.isSpectator()) {
+            var tile = level.getBlockEntity(pos);
 
-    @Override
-    public @NotNull VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return AABB;
-    }
+            if (tile instanceof InfinityChestTile chestTile) {
+                if (chestTile.getOwner() == null) {
+                    chestTile.setOwner(player.getUUID());
+                    chestTile.setLocked(false);
+                }
+                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {
+                        buf.writeBlockPos(pos);
+                        buf.writeUUID(chestTile.getOwner());
+                        buf.writeBoolean(chestTile.isLocked());
+                        buf.writeUtf(chestTile.getFilter(), 64);
+                        buf.writeByte(chestTile.getSortType());
+                        buf.writeUUID(chestTile.getChannelID());
+                });
+                player.awardStat(Stats.CUSTOM.get(Stats.OPEN_CHEST));
 
-    @Override
-    public boolean useShapeForLightOcclusion(@NotNull BlockState pState) {
-        return true;
-    }
-
-    @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter getter, BlockPos pos) {
-        return state.getFluidState().isEmpty();
-    }
-
-    @Override
-    public @NotNull BlockState updateShape(BlockState pState, @NotNull Direction pFacing, @NotNull BlockState pFacingState, @NotNull LevelAccessor pLevel, @NotNull BlockPos pCurrentPos, @NotNull BlockPos pFacingPos) {
-        if (pState.getValue(WATERLOGGED)) {
-            pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
+            }
         }
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public FluidState getFluidState(BlockState pState) {
-        return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
+    protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return createTicker(type, ModTileEntities.infinity_chest_tile.get(), InfinityChestTile::lidAnimateTick);
     }
 
     @Override
-    public boolean hasAnalogOutputSignal(@NotNull BlockState pState) {
+    public boolean hasAnalogOutputSignal(@NotNull BlockState state) {
         return true;
     }
 
     @Override
-    public int getAnalogOutputSignal(@NotNull BlockState state, Level level, @NotNull BlockPos pos) {
-        return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState pState) {
-        return RenderShape.MODEL;
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Override
-    public boolean isPathfindable(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull PathComputationType pType) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, WATERLOGGED);
+    }
+
+    @Override
+    public boolean isPathfindable(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull PathComputationType type) {
         return false;
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRotation) {
-        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
-    }
-
-    @Override
-    public @NotNull BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    public void tick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof InfinityChestTile chestTile) {
+            chestTile.recheckOpen();
+        }
     }
 }

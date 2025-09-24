@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
-import committee.nova.mods.avaritia.common.container.ChannelDummyContainer;
+import committee.nova.mods.avaritia.common.container.DummyChannelContainer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -90,7 +90,7 @@ public class ClientChannelManager {
         return channel;
     }
 
-    public ClientChannel getChannel(ChannelDummyContainer container) {
+    public ClientChannel getChannel(DummyChannelContainer container) {
         channel.addListener(container);
         return channel;
     }

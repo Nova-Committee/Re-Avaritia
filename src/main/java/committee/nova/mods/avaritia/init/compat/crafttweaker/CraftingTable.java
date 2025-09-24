@@ -57,7 +57,7 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
             }
         }
 
-        var recipe = new ShapedTableCraftingRecipe(id, width, height, ingredients, output.getInternal(), tier);
+        var recipe = new ShapedTableCraftingRecipe(id, width, height, ingredients, output.getInternal(), tier, false);
         recipe.setTransformers((x, y, stack) -> inputs[y][x].getRemainingItem(new MCItemStack(stack)).getInternal());
 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));

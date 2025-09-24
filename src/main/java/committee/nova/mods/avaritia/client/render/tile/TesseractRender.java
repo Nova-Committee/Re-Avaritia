@@ -12,9 +12,9 @@ import org.joml.Matrix4f;
 /**
  * @author: cnlimiter
  */
-public class BlackHoleChestRender implements BlockEntityRenderer<BlockEntity> {
+public class TesseractRender implements BlockEntityRenderer<BlockEntity> {
 
-    public BlackHoleChestRender(BlockEntityRendererProvider.Context context) {
+    public TesseractRender(BlockEntityRendererProvider.Context context) {
     }
 
     @Override

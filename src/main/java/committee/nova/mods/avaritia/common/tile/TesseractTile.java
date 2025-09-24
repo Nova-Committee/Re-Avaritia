@@ -45,7 +45,6 @@ import java.util.UUID;
  * @Description:
  */
 public class TesseractTile extends BaseTileEntity implements IChannelTerminal {
-    private static final Component CONTAINER_NAME = Component.translatable("container.infinity_chest");
     private final int slotIndex;
     @Getter
     private UUID owner;

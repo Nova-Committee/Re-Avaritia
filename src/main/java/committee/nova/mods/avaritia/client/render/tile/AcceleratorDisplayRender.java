@@ -13,11 +13,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class AcceleratorDisplayRenderer extends EntityRenderer<AcceleratorDisplayEntity> {
+public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayEntity> {
     private final Font font;
     private static final float SCALE = 0.02f;
 
-    public AcceleratorDisplayRenderer(EntityRendererProvider.Context context) {
+    public AcceleratorDisplayRender(EntityRendererProvider.Context context) {
         super(context);
         this.font = context.getFont();
     }

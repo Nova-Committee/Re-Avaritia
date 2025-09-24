@@ -114,7 +114,7 @@ public class ServerChannelManager {
     }
 
     private void load() {
-        this.saveDataPath = new File(server.getWorldPath(LevelResource.ROOT).toFile(), "data/avaritia");
+        this.saveDataPath = new File(server.getWorldPath(LevelResource.ROOT).toFile(), "data/avaritia/tesseract");
         try {
             if (!saveDataPath.exists()) saveDataPath.mkdirs();
 

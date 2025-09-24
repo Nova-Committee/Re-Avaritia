@@ -319,6 +319,7 @@
   "key.avaritia.infinity_chest.sort9": "sort 9",
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.owner": "Owner: %d",
+  "gui.avaritia.public": "Public",
   "gui.avaritia.search": "search",
   "gui.avaritia.name": "name",
   "gui.avaritia.confirm": "Confirm",

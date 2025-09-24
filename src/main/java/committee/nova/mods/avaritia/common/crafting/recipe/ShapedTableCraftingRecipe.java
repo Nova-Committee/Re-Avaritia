@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import committee.nova.mods.avaritia.api.util.java.TriFunction;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import lombok.Getter;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -36,19 +37,23 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     private final int width;
     private final int height;
     private final int tier;
+    @Getter private final boolean compatible;
     private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
 
     public ShapedTableCraftingRecipe(ResourceLocation recipeId, int width, int height, NonNullList<Ingredient> inputs, ItemStack output) {
-        this(recipeId, width, height, inputs, output, 0);
+        this(recipeId, width, height, inputs, output, 0, false);
     }
 
-    public ShapedTableCraftingRecipe(ResourceLocation recipeId, int width, int height, NonNullList<Ingredient> inputs, ItemStack output, int tier) {
+    public ShapedTableCraftingRecipe(ResourceLocation recipeId, int width, int height,
+                                     NonNullList<Ingredient> inputs, ItemStack output,
+                                     int tier, boolean compatible) {
         this.recipeId = recipeId;
         this.inputs = inputs;
         this.output = output;
         this.width = width;
         this.height = height;
         this.tier = tier;
+        this.compatible = compatible;
     }
 
     private static String[] patternFromJson(JsonArray jsonArr) {
@@ -241,13 +246,14 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
             int height = pattern.length;
             var inputs = ShapedRecipe.dissolvePattern(pattern, map, width, height);
             var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
+            var compatible = GsonHelper.getAsBoolean(json, "compatible", false);
             int tier = GsonHelper.getAsInt(json, "tier", 0);
             int size = tier * 2 + 1;
 
             if (tier != 0 && (width > size || height > size))
                 throw new JsonSyntaxException("The pattern size is larger than the specified tier can support");
 
-            return new ShapedTableCraftingRecipe(recipeId, width, height, inputs, output, tier);
+            return new ShapedTableCraftingRecipe(recipeId, width, height, inputs, output, tier, compatible);
         }
 
         @Override
@@ -259,8 +265,9 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
             inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
 
             var output = buffer.readItem();
-            int tier = buffer.readVarInt();
-            return new ShapedTableCraftingRecipe(recipeId, width, height, inputs, output, tier);
+            var tier = buffer.readVarInt();
+            var compatible = buffer.readBoolean();
+            return new ShapedTableCraftingRecipe(recipeId, width, height, inputs, output, tier, compatible);
         }
 
         @Override
@@ -274,6 +281,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
             buffer.writeItem(recipe.output);
             buffer.writeVarInt(recipe.tier);
+            buffer.writeBoolean(recipe.compatible);
         }
     }
 
