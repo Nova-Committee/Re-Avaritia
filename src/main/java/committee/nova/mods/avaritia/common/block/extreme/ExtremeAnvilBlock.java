@@ -18,8 +18,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -29,12 +31,16 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.IPlantable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * @Project: Avaritia
@@ -72,6 +78,8 @@ public class ExtremeAnvilBlock extends FallingBlock {
             this.falling(fallingblockentity);
         }
     }
+
+
 
     public static boolean isNoDown(BlockState pState) {
         return pState.is(Blocks.BEDROCK) || pState.is(ModTags.EXTREME_ANVIL_UNBREAK);
@@ -117,22 +125,17 @@ public class ExtremeAnvilBlock extends FallingBlock {
         if (!pFallingBlock.isSilent()) {
             pLevel.levelEvent(1031, pPos, 0);
         }
-
-        // 当铁砧落地时，重新放置方块而不是破坏它
-        if (!pLevel.isClientSide) {
-            pLevel.setBlock(pPos, pState, 3);
-        }
     }
 
     @Override
     public void onBrokenAfterFall(@NotNull Level pLevel, @NotNull BlockPos pPos, FallingBlockEntity pFallingBlock) {
-
         if (!pFallingBlock.isSilent()) {
             pLevel.levelEvent(1029, pPos, 0);
         }
 
-        if (!pLevel.isClientSide) {
-            pLevel.setBlock(pPos, this.defaultBlockState(), 3);
+        if (!pLevel.isClientSide && pLevel.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+            ItemStack itemStack = new ItemStack(this);
+            Block.popResource(pLevel, pPos, itemStack);
         }
     }
 
