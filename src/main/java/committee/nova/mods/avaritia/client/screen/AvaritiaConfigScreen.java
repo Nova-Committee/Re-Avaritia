@@ -37,6 +37,11 @@ public class AvaritiaConfigScreen extends Screen {
     private int scrollbarHeight;
     private int scrollbarHandleHeight;
     private int maxScrollOffset;
+    private double scrollVelocity = 0.0;
+    private long lastScrollTime = 0;
+    private static final double FRICTION = 0.92;
+    private static final double MIN_VELOCITY = 0.1;
+    private static final double SCROLL_FACTOR = 10.0;
 
     public AvaritiaConfigScreen(Screen parent) {
         super(Component.translatable("title.avaritia.config.title"));
@@ -372,6 +377,19 @@ public class AvaritiaConfigScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        // 处理惯性滚动
+        if (Math.abs(scrollVelocity) > MIN_VELOCITY) {
+            int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
+            scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset + scrollVelocity));
+            scrollVelocity *= FRICTION; // 应用摩擦力
+
+            if (Math.abs(scrollVelocity) < MIN_VELOCITY) {
+                scrollVelocity = 0;
+            }
+
+            init(); // 重新初始化组件位置
+        }
+
         renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -380,13 +398,13 @@ public class AvaritiaConfigScreen extends Screen {
         for (int i = 0; i < configEntries.size(); i++) {
             ConfigEntry<?> entry = configEntries.get(i);
             int y = START_Y + i * ENTRY_HEIGHT - scrollOffset;
-            if (y + ENTRY_HEIGHT > START_Y && y < height - 40) {
+            if (y + ENTRY_HEIGHT > START_Y - 20 && y < height - 20) {
                 entry.render(guiGraphics, mouseX, mouseY, MARGIN, y, width - 2 * MARGIN, ENTRY_HEIGHT, font);
             }
         }
 
         if (configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
-            // 计算滚动条参数
+
             maxScrollOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
             int visibleHeight = height - START_Y - 40;
             scrollbarHeight = visibleHeight;
@@ -395,9 +413,7 @@ public class AvaritiaConfigScreen extends Screen {
             scrollbarY = START_Y + scrollBarYOffset;
             scrollbarX = width - 8;
 
-            // 绘制滚动条背景
             guiGraphics.fill(scrollbarX, START_Y, scrollbarX + 4, START_Y + scrollbarHeight, 0x88888888);
-            // 绘制滚动条手柄
             guiGraphics.fill(scrollbarX, scrollbarY, scrollbarX + 4, scrollbarY + scrollbarHandleHeight, 0xFFAAAAAA);
         }
 
@@ -407,8 +423,19 @@ public class AvaritiaConfigScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        long currentTime = System.currentTimeMillis();
+        double scrollDelta = -delta * ENTRY_HEIGHT / 8.0;
+
+        if (currentTime - lastScrollTime < 200) {
+            scrollVelocity += scrollDelta * 0.5;
+        } else {
+            scrollVelocity = scrollDelta;
+        }
+
+        lastScrollTime = currentTime;
+
         int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-        scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset - delta * 20));
+        scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset + scrollDelta));
         init();
         return true;
     }
@@ -416,16 +443,13 @@ public class AvaritiaConfigScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
-            // 检查是否点击了滚动条手柄
             if (mouseX >= scrollbarX && mouseX <= scrollbarX + 4 &&
                     mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarHandleHeight) {
                 isDraggingScrollbar = true;
                 return true;
             }
-            // 检查是否点击了滚动条背景
             else if (mouseX >= scrollbarX && mouseX <= scrollbarX + 4 &&
                     mouseY >= START_Y && mouseY <= START_Y + scrollbarHeight) {
-                // 点击滚动条背景时，跳转到该位置
                 int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
                 double clickPosition = (mouseY - START_Y) / scrollbarHeight;
                 scrollOffset = (int) (clickPosition * maxOffset);
@@ -441,6 +465,7 @@ public class AvaritiaConfigScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (isDraggingScrollbar && configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
+            scrollVelocity = 0;
             int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
             double positionRatio = (mouseY - START_Y - (double) scrollbarHandleHeight / 2) / (scrollbarHeight - scrollbarHandleHeight);
             scrollOffset = (int) (positionRatio * maxOffset);
