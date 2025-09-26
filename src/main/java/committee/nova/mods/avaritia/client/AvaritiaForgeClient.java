@@ -192,7 +192,7 @@ public class AvaritiaForgeClient {
             case Tag.TAG_SHORT -> list.add(Component.literal(prefix + key + ": §2" + ((NumericTag) tag).getAsShort()));
             case Tag.TAG_INT -> list.add(Component.literal(prefix + key + ": §3" + ((NumericTag) tag).getAsInt()));
             case Tag.TAG_DOUBLE -> list.add(Component.literal(prefix + key + ": §6" + ((NumericTag) tag).getAsDouble()));
-            case Tag.TAG_BYTE -> list.add(Component.literal(prefix + key + ": §9" + ((NumericTag) tag).getAsDouble()));
+            case Tag.TAG_BYTE -> list.add(Component.literal(prefix + key + ": §9" + ((NumericTag) tag).getAsByte()));
             case Tag.TAG_STRING -> list.add(Component.literal(prefix + key + ": §8" + tag.getAsString()));
             case Tag.TAG_LIST -> {
                 list.add(Component.literal(prefix + key + ": §9List, " + ((ListTag) tag).size() + " items"));
