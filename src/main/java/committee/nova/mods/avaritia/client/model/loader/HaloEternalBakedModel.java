@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.ETERNAL_UVS;
 
 
 public class HaloEternalBakedModel extends WrappedItemModel {
@@ -94,7 +94,7 @@ public class HaloEternalBakedModel extends WrappedItemModel {
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
 
-        AvaritiaShaders.eternalTime.set(AvaritiaForgeClient.renderTime % Integer.MAX_VALUE);
+        AvaritiaShaders.eternalTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
         AvaritiaShaders.eternalYaw.set(yaw);
         AvaritiaShaders.eternalPitch.set(pitch);
         AvaritiaShaders.eternalExternalScale.set(scale);
@@ -106,7 +106,7 @@ public class HaloEternalBakedModel extends WrappedItemModel {
         }
 
         if (AvaritiaShaders.eternalUVs != null) {
-            AvaritiaShaders.eternalUVs.set(COSMIC_UVS);
+            AvaritiaShaders.eternalUVs.set(ETERNAL_UVS);
         }
 
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.ETERNAL);
