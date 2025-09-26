@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -182,29 +183,32 @@ public class AvaritiaForgeClient {
     private static void addTagCompound(String prefix, List<Component> list, CompoundTag tag) {
         TreeSet<String> sortedKeys = new TreeSet<>(tag.getAllKeys());
         for (String key : sortedKeys) {
-            Tag elem = tag.get(key);
-            switch (elem.getId()) {
-                case Tag.TAG_SHORT -> list.add(Component.literal(prefix + key + ": §2" + tag.getShort(key)));
-                case Tag.TAG_INT -> list.add(Component.literal(prefix + key + ": §3" + tag.getInt(key)));
-                case Tag.TAG_DOUBLE -> list.add(Component.literal(prefix + key + ": §6" + tag.getDouble(key)));
-                case Tag.TAG_STRING -> list.add(Component.literal(prefix + key + ": §8" + tag.getString(key)));
-                case Tag.TAG_BYTE -> list.add(Component.literal(prefix + key + ": §9" + tag.getByte(key)));
-                case Tag.TAG_LIST -> {
-                    list.add(Component.literal(prefix + key + ": §9List, " + ((ListTag) elem).size() + " items"));
-                    if (Screen.hasShiftDown()) {
-                        for (Tag key1 : (ListTag) elem) {
-                            addTagCompound(prefix + "    ", list, (CompoundTag) key1);
-                        }
+            addTag(prefix, key, list, tag.get(key));
+        }
+    }
+
+    private static void addTag(String prefix, String key, List<Component> list, Tag tag) {
+        switch (tag.getId()) {
+            case Tag.TAG_SHORT -> list.add(Component.literal(prefix + key + ": §2" + ((NumericTag) tag).getAsShort()));
+            case Tag.TAG_INT -> list.add(Component.literal(prefix + key + ": §3" + ((NumericTag) tag).getAsInt()));
+            case Tag.TAG_DOUBLE -> list.add(Component.literal(prefix + key + ": §6" + ((NumericTag) tag).getAsDouble()));
+            case Tag.TAG_BYTE -> list.add(Component.literal(prefix + key + ": §9" + ((NumericTag) tag).getAsDouble()));
+            case Tag.TAG_STRING -> list.add(Component.literal(prefix + key + ": §8" + tag.getAsString()));
+            case Tag.TAG_LIST -> {
+                list.add(Component.literal(prefix + key + ": §9List, " + ((ListTag) tag).size() + " items"));
+                if (Screen.hasShiftDown()) {
+                    for (Tag key1 : (ListTag) tag) {
+                        addTag(prefix, "    ", list, key1);
                     }
                 }
-                case Tag.TAG_COMPOUND -> {
-                    list.add(Component.literal(prefix + key + ": §aCompound"));
-                    if (Screen.hasShiftDown()) {
-                        addTagCompound(prefix + "    ", list, (CompoundTag) elem);
-                    }
-                }
-                default -> list.add(Component.literal(prefix + key + ": Type " + elem.getType()));
             }
+            case Tag.TAG_COMPOUND -> {
+                list.add(Component.literal(prefix + key + ": §aCompound"));
+                if (Screen.hasShiftDown()) {
+                    addTagCompound(prefix + "    ", list, (CompoundTag) tag);
+                }
+            }
+            default -> list.add(Component.literal(prefix + key + ": Type " + tag.getType()));
         }
     }
 

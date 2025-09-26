@@ -39,7 +39,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
     @Shadow
     public Map<ResourceLocation, Recipe<?>> byName;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private ICondition.IContext context;
 
