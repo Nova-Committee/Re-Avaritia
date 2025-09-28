@@ -10,8 +10,13 @@ import committee.nova.mods.avaritia.init.compat.emi.category.tables.EndCraftingT
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.ExtremeCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.NetherCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.SculkCraftingTableCategory;
+import committee.nova.mods.avaritia.init.compat.emi.handler.EndCraftingRecipeHandler;
+import committee.nova.mods.avaritia.init.compat.emi.handler.ExtremeCraftingRecipeHandler;
+import committee.nova.mods.avaritia.init.compat.emi.handler.NetherCraftingRecipeHandler;
+import committee.nova.mods.avaritia.init.compat.emi.handler.SculkCraftingRecipeHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import dev.emi.emi.api.EmiEntrypoint;
@@ -65,5 +70,10 @@ public class AvaritiaEmiPlugin implements EmiPlugin {
 
         registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModBlocks.neutron_collector.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_collector")), ResourceLocation.tryBuild(Const.MOD_ID, "/info_collector")));
         registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(Ingredient.of(ModItems.neutron_pile.get()))), List.of(Component.translatable("emi.tooltip.avaritia.neutron_pile")), ResourceLocation.tryBuild(Const.MOD_ID, "/info_pile")));
+        registry.addRecipeHandler(ModMenus.sculk_crafting_tile_table.get(), new SculkCraftingRecipeHandler());
+        registry.addRecipeHandler(ModMenus.nether_crafting_tile_table.get(), new NetherCraftingRecipeHandler());
+        registry.addRecipeHandler(ModMenus.end_crafting_tile_table.get(), new EndCraftingRecipeHandler());
+        registry.addRecipeHandler(ModMenus.extreme_crafting_table.get(), new ExtremeCraftingRecipeHandler());
+
     }
 }

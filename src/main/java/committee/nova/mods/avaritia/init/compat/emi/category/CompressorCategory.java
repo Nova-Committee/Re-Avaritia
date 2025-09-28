@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record CompressorCategory(ICompressorRecipe recipe) implements EmiRecipe {
-    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/neutron_compressor.png"), 0, 0, 169, 62);
+    private static final EmiTexture TEXTURE = new EmiTexture(ResourceLocation.tryBuild(Const.MOD_ID, "textures/gui/jei/compressor.png"), 0, 0, 169, 62);
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.neutron_compressor.get());
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ResourceLocation.tryBuild(Const.MOD_ID, "compressor"), WORKSTATION);
 
