@@ -32,6 +32,7 @@ public class ModItems {
     public static DeferredItem<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
     public static DeferredItem<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
     public static DeferredItem<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
+    public static DeferredItem<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
     /**
      * Tools
      */

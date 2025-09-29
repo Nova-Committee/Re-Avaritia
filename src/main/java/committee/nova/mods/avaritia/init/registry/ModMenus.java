@@ -42,7 +42,6 @@ public class ModMenus {
         event.register(infinity_chest.get(), InfinityChestScreen::new);
         event.register(extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         event.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
-        event.register(infinity_clock_block.get(), InfinityClockBlockScreen::new);
     }
 
     public static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
@@ -71,6 +70,4 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<CompressedChestMenu>)CompressedChestMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<ExtremeAnvilMenu>> extreme_anvil = menu("extreme_anvil",
             () -> new MenuType<>((IContainerFactory<ExtremeAnvilMenu>)ExtremeAnvilMenu::new, FeatureFlagSet.of()));
-    public static DeferredHolder<MenuType<?>, MenuType<InfinityClockBlockMenu>> infinity_clock_block = menu("infinity_clock_block",
-            () -> new MenuType<>((IContainerFactory<InfinityClockBlockMenu>)InfinityClockBlockMenu::new, FeatureFlagSet.of()));
 }

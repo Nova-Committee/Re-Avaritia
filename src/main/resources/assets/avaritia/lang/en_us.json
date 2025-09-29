@@ -1,5 +1,7 @@
 {
   "itemGroup.tab.Infinity": "Re:Avaritia",
+  "itemGroup.tab.Singularity": "Avaritia:Singularity",
+
   "item.avaritia.matter_cluster": "Matter Cluster",
   "item.avaritia.infinity_helmet": "Infinity Helmet",
   "item.avaritia.infinity_chestplate": "Infinity Chestplate",
@@ -43,6 +45,7 @@
   "item.avaritia.neutron_ring": "Neutronium Ring",
   "item.avaritia.infinity_ring": "Infinity Ring(WIP)",
   "item.avaritia.infinity_umbrella": "Infinity Umbrella(WIP)",
+  "item.avaritia.infinity_clock": "Infinity Clock",
   "item.avaritia.neutron_horse_armor": "Neutronium Horse Armor",
   "item.avaritia.neutron_gear": "Neutronium Gear",
   "item.avaritia.enhancement_core": "Enhancement Core",
@@ -163,7 +166,7 @@
   "block.avaritia.star_fuel_block": "Star Fuel Block",
   "block.avaritia.refined_coal_block": "Refined Coal Block",
   "block.avaritia.diamond_lattice_block": "Diamond Lattice Block",
-  "block.avaritia.infinity_clock": "Infinity Clock",
+
   "container.extreme_anvil" : "Extreme Anvil",
   "container.compressor": "Neutronium Compressor",
   "container.neutron_collector": "Neutronium Collector",
@@ -220,6 +223,10 @@
   "singularity.avaritia.osmium": "Osmium",
   "singularity.avaritia.refined_obsidian": "Refined Obsidian",
   "singularity.avaritia.lapis_lazuli": "Lapis Lazuli",
+  "singularity.avaritia.obsidian": "Obsidian",
+  "singularity.avaritia.blue_ice": "Blue Ice",
+  "singularity.avaritia.amethyst_shard": "Amethyst Shard",
+
   "jei.category.avaritia.compressor": "Neutronium Compressor",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
   "jei.tooltip.avaritia.neutron_collector": "Collect Neutron Pile",

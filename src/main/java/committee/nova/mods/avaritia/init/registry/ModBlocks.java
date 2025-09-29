@@ -15,7 +15,6 @@ import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
-import committee.nova.mods.avaritia.common.block.misc.infinity_clock.InfinityClockBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
@@ -64,7 +63,6 @@ public class ModBlocks {
     public static DeferredBlock<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new ResourceBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static DeferredBlock<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND.getValue());
-    public static DeferredBlock<Block> infinity_clock = itemBlock("infinity_clock", InfinityClockBlock::new, ModRarities.LEGEND.getValue());
     public static DeferredBlock<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
             () -> new BaseBlock(BlockBehaviour.Properties.of()
