@@ -1,17 +1,23 @@
 package committee.nova.mods.avaritia.init.registry;
 
+import com.mojang.serialization.Codec;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.util.SingularityUtils;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static committee.nova.mods.avaritia.init.registry.ModDataComponents.IS_CREATIVE_TAB_ICON;
 
 /**
  * Description:
@@ -26,16 +32,28 @@ public class ModCreativeModeTabs {
             .title(Component.translatable("itemGroup.tab.Infinity"))
             .icon(() -> ModItems.infinity_catalyst.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
-                    if (singularity.isEnabled()) {
-                        output.accept(SingularityUtils.getItemForSingularity(singularity));
-                    }
-                }
                 for (var item : ACCEPT_ITEM){
                     output.accept(item.get());
                 }
 
             })
             .build());
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SINGULARITY_CREATIVE_TAB = TABS.register("singularity_group", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.tab.Singularity"))
+            .icon(ModCreativeModeTabs::makeIcon)
+            .displayItems((parameters, output) -> {
+                for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
+                    if (singularity.isEnabled()) {
+                        output.accept(SingularityUtils.getItemForSingularity(singularity));
+                    }
+                }
 
+            })
+            .build());
+
+    private static ItemStack makeIcon() {
+        ItemStack stack = new ItemStack(ModItems.singularity.get());
+        stack.set(IS_CREATIVE_TAB_ICON.get(), true);
+        return stack;
+    }
 }

@@ -26,7 +26,9 @@ public class ModDataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> ACTIVE = registerBoolean("active");
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> TOOL_FILTERS = registerTag("tool_filters");
-
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_CREATIVE_TAB_ICON =
+            DATA_COMPONENTS.register("is_creative_tab_icon",
+                    () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> SINGULARITY_ID = DATA_COMPONENTS.register("singularity_id",
             () -> DataComponentType.<ResourceLocation>builder().persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<InfinityContainerContents>> MATTER_CLUSTER = DATA_COMPONENTS.register("matter_cluster",
