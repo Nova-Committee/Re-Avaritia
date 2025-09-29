@@ -35,6 +35,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -72,7 +73,19 @@ public class InfinityHandler {
             if (state.is(Blocks.BEDROCK)) {
                 level.setBlock(pos, ModBlocks.fake_bedrock.get().defaultBlockState(), 2);
             } else if (state.is(Blocks.END_PORTAL_FRAME)) {
-                level.setBlock(pos, ModBlocks.fake_end_portal_frame.get().defaultBlockState(), 2);
+
+                BlockState fakeState = ModBlocks.fake_end_portal_frame.get().defaultBlockState();
+
+
+                if (fakeState.hasProperty(BlockStateProperties.EYE) && state.hasProperty(BlockStateProperties.EYE)) {
+                    fakeState = fakeState.setValue(BlockStateProperties.EYE, state.getValue(BlockStateProperties.EYE));
+                }
+
+                if (fakeState.hasProperty(BlockStateProperties.HORIZONTAL_FACING) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
+                    fakeState = fakeState.setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING));
+                }
+
+                level.setBlock(pos, fakeState, 2);
             } else if (state.is(Blocks.END_PORTAL)) {
                 level.setBlock(pos, ModBlocks.fake_end_portal.get().defaultBlockState(), 2);
             }
@@ -82,7 +95,19 @@ public class InfinityHandler {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
-                level.setBlock(pos, Blocks.END_PORTAL_FRAME.defaultBlockState(), 2);
+
+                BlockState originalState = Blocks.END_PORTAL_FRAME.defaultBlockState();
+
+
+                if (originalState.hasProperty(BlockStateProperties.EYE) && state.hasProperty(BlockStateProperties.EYE)) {
+                    originalState = originalState.setValue(BlockStateProperties.EYE, state.getValue(BlockStateProperties.EYE));
+                }
+
+                if (originalState.hasProperty(BlockStateProperties.HORIZONTAL_FACING) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
+                    originalState = originalState.setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING));
+                }
+
+                level.setBlock(pos, originalState, 2);
             } else if (state.is(ModBlocks.fake_end_portal.get())) {
                 level.setBlock(pos, Blocks.END_PORTAL.defaultBlockState(), 2);
             }
@@ -98,7 +123,10 @@ public class InfinityHandler {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 Block.popResource(level, pos, Blocks.BEDROCK.asItem().getDefaultInstance());
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
-                Block.popResource(level, pos, Blocks.END_PORTAL_FRAME.asItem().getDefaultInstance());
+
+                ItemStack frameItem = Blocks.END_PORTAL_FRAME.asItem().getDefaultInstance();
+
+                Block.popResource(level, pos, frameItem);
             } else if (state.is(ModBlocks.fake_end_portal.get())) {
                 Block.popResource(level, pos, Blocks.END_PORTAL.asItem().getDefaultInstance());
             } else if (state.is(Blocks.REINFORCED_DEEPSLATE)) {
