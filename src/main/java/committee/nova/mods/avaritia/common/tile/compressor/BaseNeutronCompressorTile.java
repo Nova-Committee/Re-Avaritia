@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -70,9 +71,12 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, BaseNeutronCompressorTile tile) {
+        if (level == null || tile == null) return;
+
         var recipe = tile.getActiveRecipe();
         var output = tile.inventory.getStackInSlot(0);
         var input = tile.inventory.getStackInSlot(1);
+        tile.recipeInventory.setStackInSlot(0, tile.materialStack);
 
         if (!level.isClientSide()) {
             if (!input.isEmpty()) {
@@ -82,33 +86,34 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
                     tile.setChangedFast();
                 }
 
-                if (recipe != null && tile.materialCount < recipe.getInputCount()) {
+                if (recipe != null && tile.materialCount < recipe.getInputCount() * tile.tier.inputAmplifier) {
                     if (ItemUtils.areStacksSameType(input, tile.materialStack)) {
                         int consumeAmount = input.getCount();
 
-                        consumeAmount = Math.min(consumeAmount, recipe.getInputCount() - tile.materialCount);
-
+                        consumeAmount = Math.min(consumeAmount, Mth.ceil(recipe.getInputCount() * tile.tier.inputAmplifier) - tile.materialCount);
 
                         input.shrink(consumeAmount);
                         tile.materialCount += consumeAmount;
 
                         tile.setChangedFast();
-
                     }
                 }
             }
 
             if (recipe != null) {
-                if (tile.materialCount >= recipe.getInputCount()) {
+                if (tile.materialCount >= recipe.getInputCount() * tile.tier.inputAmplifier) {
                     tile.progress++;
                     tile.data.set(0, tile.progress);
-                    if (tile.progress >= recipe.getTimeCost()) {
-                        var result = recipe.assemble(tile.toCraftingInput(), level.registryAccess());
+                    if (tile.progress >= recipe.getTimeCost() * tile.tier.timeAmplifier) {
+
+                        CraftingInput craftingInput = tile.recipeInventory.toShapelessCraftingInput();
+                        var baseResult = recipe.assemble(craftingInput, level.registryAccess());
+                        var result = baseResult.copyWithCount(baseResult.getCount() * tile.tier.outputAmplifier);
 
                         if (ItemUtils.canCombineStacks(result, output)) {
                             tile.updateResult(result);
                             tile.progress = 0;
-                            tile.materialCount -= recipe.getInputCount();
+                            tile.materialCount -= Mth.ceil(recipe.getInputCount() * tile.tier.inputAmplifier);
 
                             if (tile.materialCount <= 0) {
                                 tile.materialStack = ItemStack.EMPTY;
@@ -143,7 +148,6 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
             }
         }
 
-
         tile.dispatchIfChanged();
     }
 
@@ -172,7 +176,7 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Localizable.of("container.compressor").build();
+        return Localizable.of("block.avaritia." + tier.name).build();
     }
 
     @Nullable
@@ -209,11 +213,10 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
     }
 
     public ICompressorRecipe getActiveRecipe() {
-        if (this.level == null)
+        if (this.level == null || this.materialStack.isEmpty())
             return null;
 
         this.recipeInventory.setStackInSlot(0, this.materialStack);
-
         return this.recipe.checkAndGet(this.toCraftingInput(), this.level);
     }
 
@@ -223,16 +226,15 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
 
     public int getMaterialsRequired() {
         if (this.hasRecipe())
-            return this.getActiveRecipe().getInputCount();
+            return Mth.ceil(this.getActiveRecipe().getInputCount() * this.tier.inputAmplifier);
         return 0;
     }
 
     public int getTimeRequired() {
         if (this.hasRecipe())
-            return this.getActiveRecipe().getTimeCost();
+            return Mth.ceil(this.getActiveRecipe().getTimeCost() * this.tier.timeAmplifier);
         return 0;
     }
-
 
     private void updateResult(ItemStack stack) {
         var result = this.inventory.getStackInSlot(0);
@@ -337,9 +339,11 @@ public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implement
     public CompressorTier getTier() {
         return tier;
     }
+
     public void setTier(CompressorTier tier) {
         this.tier = tier;
     }
+
     @Override
     public void clearContent() {
 

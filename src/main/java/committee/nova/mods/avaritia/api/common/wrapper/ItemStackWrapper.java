@@ -15,6 +15,8 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.neoforged.neoforge.common.util.DataComponentUtil;
@@ -85,7 +87,9 @@ public class ItemStackWrapper extends ItemStackHandler {
     public int getStackLimit(int slot, @NotNull ItemStack stack) {
         return super.getStackLimit(slot, stack);
     }
-
+    public Container toIInventory() {
+        return new SimpleContainer(this.stacks.toArray(new ItemStack[0]));
+    }
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return this.canInsert == null || this.canInsert.apply(slot, stack);

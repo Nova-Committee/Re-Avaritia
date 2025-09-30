@@ -1,28 +1,38 @@
 package committee.nova.mods.avaritia.common.tile.compressor;
 
 
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * 压缩机等级枚举
  */
-public enum CompressorTier {
-    // 基础等级（默认）
-    DEFAULT("compressor", 1.0f, 1.0f, 1),
-    // 致密等级 - 工作时间减半
-    DENSE("dense_compressor", 0.5f, 1.0f, 1),
-    // 精英等级 - 工作时间1/4，材料消耗3/4
-    DENSER("denser_compressor", 0.25f, 0.75f, 1),
-    // 极限等级 - 工作时间1/8，材料消耗1/2，产出翻倍
-    DENSEST("densest_compressor", 0.125f, 0.5f, 2);
+public enum CompressorTier implements StringRepresentable {
+    DEFAULT("neutron_compressor", 1f, 1f, 1),
+    DENSE("dense_neutron_compressor", 1 / 2f, 1f, 1),
+    DENSER("denser_neutron_compressor", 1 / 4f, 3 / 4f, 1),
+    DENSEST("densest_neutron_compressor", 1 / 8f, 1 / 2f, 2);
 
     public final String name;
-    public final float timeMultiplier;     // 时间倍数
-    public final float materialMultiplier; // 材料消耗倍数
-    public final int outputMultiplier;   // 产出倍数
+    public final float timeAmplifier;
+    public final float inputAmplifier;
+    public final int outputAmplifier;
 
-    CompressorTier(String name, float timeMultiplier, float materialMultiplier, int outputMultiplier) {
+    CompressorTier(String name, float timeAmplifier, float inputAmplifier, int outputAmplifier) {
         this.name = name;
-        this.timeMultiplier = timeMultiplier;
-        this.materialMultiplier = materialMultiplier;
-        this.outputMultiplier = outputMultiplier;
+        this.timeAmplifier = timeAmplifier;
+        this.inputAmplifier = inputAmplifier;
+        this.outputAmplifier = outputAmplifier;
+    }
+
+    @Override
+    public String toString() {
+        return this.getSerializedName();
+    }
+
+    @Override
+    public @NotNull String getSerializedName() {
+        return this.name;
     }
 }
