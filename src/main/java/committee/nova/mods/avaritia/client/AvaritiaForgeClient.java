@@ -1,14 +1,20 @@
 package committee.nova.mods.avaritia.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
+import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponentType;
@@ -19,12 +25,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -145,6 +153,43 @@ public class AvaritiaForgeClient {
                 }
                 default -> list.add(Component.literal(prefix + key + ": Type "+ elem.getType()));
             }
+        }
+    }
+//终望珍珠渲染
+    @SubscribeEvent
+    public static void onRenderOverlay(RenderGuiEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        if (player == null || mc.level == null) return;
+
+        final double START_DISTANCE = 6.0;  // 开始变黑的距离
+        final double FULL_DISTANCE = 4.0;   // 完全黑暗的距离
+
+        List<GapingVoidEntity> voids = mc.level.getEntitiesOfClass(GapingVoidEntity.class,
+                player.getBoundingBox().inflate(START_DISTANCE + 10));
+
+        float maxDarkness = 0.0f;
+        for (GapingVoidEntity gap : voids) {
+            double distance = player.distanceTo(gap);
+
+            if (distance <= START_DISTANCE) {
+
+                float darkness = (float) ((START_DISTANCE - distance) / (START_DISTANCE - FULL_DISTANCE));
+                darkness = Math.max(0.0f, Math.min(1.0f, darkness));
+                maxDarkness = Math.max(maxDarkness, darkness);
+            }
+        }
+
+        if (maxDarkness > 0) {
+            GuiGraphics guiGraphics = event.getGuiGraphics();
+            Window window = mc.getWindow();
+
+            int screenWidth = window.getGuiScaledWidth();
+            int screenHeight = window.getGuiScaledHeight();
+
+            int alpha = (int) (maxDarkness * 255);
+            if (alpha > 255) alpha = 255;
+            guiGraphics.fill(0, 0, screenWidth, screenHeight, (alpha << 24));
         }
     }
 }

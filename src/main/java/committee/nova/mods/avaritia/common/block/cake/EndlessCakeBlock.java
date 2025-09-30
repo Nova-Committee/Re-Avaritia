@@ -48,9 +48,10 @@ public class EndlessCakeBlock extends BaseBlock {
 
             if (!pLevel.isClientSide()) {
                 pPlayer.removeEffect(MobEffects.POISON);
-                pPlayer.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
-                pPlayer.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0));
+                pPlayer.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 400, 1));
+                pPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 0));
                 pPlayer.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 6000, 0));
+                pPlayer.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3));
             }
 
             pLevel.gameEvent(pPlayer, GameEvent.EAT, pPos);
