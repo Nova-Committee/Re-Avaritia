@@ -8,6 +8,9 @@ import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemMode
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.api.iface.IBowTransform;
+import committee.nova.mods.avaritia.api.iface.IToolTransform;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,6 +19,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
@@ -73,6 +77,14 @@ public class HaloBakedModel extends WrappedItemModel {
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int packedLight, int packedOverlay) {
         if (transformType == ItemDisplayContext.GUI) {
+            if (stack.getItem() instanceof IToolTransform) {
+                this.parentState = TransformUtils.DEFAULT_TOOL;
+            }else if (stack.getItem() instanceof IBowTransform){
+                this.parentState = TransformUtils.DEFAULT_BOW;
+            }else {
+                this.parentState = TransformUtils.DEFAULT_ITEM;
+            }
+
             Minecraft.getInstance().getItemRenderer()
                     .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
             if (this.pulse) {
@@ -90,7 +102,7 @@ public class HaloBakedModel extends WrappedItemModel {
     }
 
     @Override
-    public PerspectiveModelState getModelState() {
-        return TransformUtils.DEFAULT_ITEM;
+    public @Nullable PerspectiveModelState getModelState() {
+        return (PerspectiveModelState) this.parentState;
     }
 }

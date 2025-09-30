@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 
 public class ModTags {
     public static final TagKey<Item> SINGULARITY = ItemTags.create(Const.rl("singularity"));
+    public static final TagKey<Item> IMMORTAL_ITEM = ItemTags.create(Const.rl("endless"));
     public static final TagKey<Item> DRAWERS = ItemTags.create(ResourceLocation.tryBuild("storagedrawers", "drawers"));
 
     public static final TagKey<Item> ELYTRA_SLOT = ItemTags.create(ResourceLocation.tryBuild("elytraslot", "elytra"));

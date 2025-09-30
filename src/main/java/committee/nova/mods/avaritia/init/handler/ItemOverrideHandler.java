@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.common.item.misc.InfinityUmbrellaItem;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityCrossBowItem;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
@@ -71,7 +73,7 @@ public class ItemOverrideHandler {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / InfinityCrossBowItem.getChargeDuration();
+                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / InfinityCrossBowItem.getChargeDuration(itemStack, livingEntity);
                 }
             });
             setPropertyOverride(Items.CROSSBOW, Const.rl("pulling"), (itemStack, level, livingEntity, i) -> {
@@ -80,6 +82,9 @@ public class ItemOverrideHandler {
             setPropertyOverride(ModItems.infinity_crossbow.get(), Const.rl("charged"), (itemStack, world, livingEntity, d) -> {
                 return InfinityCrossBowItem.isCharged(itemStack) ? 1.0F : 0.0F;
             });
+            ItemProperties.register(ModItems.infinity_umbrella.get(),
+                    ResourceLocation.fromNamespaceAndPath(Const.MOD_ID, "mode"),
+                    (stack, world, entity, seed) -> ISwitchable.getCurrentMode(stack, InfinityUmbrellaItem.MODES));
         });
 
 

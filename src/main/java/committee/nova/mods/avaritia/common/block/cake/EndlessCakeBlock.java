@@ -6,6 +6,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -43,6 +45,14 @@ public class EndlessCakeBlock extends BaseBlock {
         } else {
             pPlayer.awardStat(Stats.EAT_CAKE_SLICE);
             pPlayer.getFoodData().eat(2, 0.1F);
+
+            if (!pLevel.isClientSide()) {
+                pPlayer.removeEffect(MobEffects.POISON);
+                pPlayer.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
+                pPlayer.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0));
+                pPlayer.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 6000, 0));
+            }
+
             pLevel.gameEvent(pPlayer, GameEvent.EAT, pPos);
             return ItemInteractionResult.SUCCESS;
         }

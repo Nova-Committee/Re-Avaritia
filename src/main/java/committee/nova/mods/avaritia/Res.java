@@ -17,6 +17,9 @@ public class Res {
     public static final ResourceLocation INFINITY_ELYTRA = Const.rl( "textures/entity/infinity_elytra.png");
     public static final ResourceLocation INFINITY_GOLEM = Const.rl( "textures/entity/iron_golem.png");
     public static final ResourceLocation NEUTRON_HORSE_ARMOR = Const.rl("textures/item/armor/horse/neutron_horse_armor.png");
+    public static final ResourceLocation SUN_PRO_TEX = Const.rl("textures/entity/sun_pro.png");
+    public static final ResourceLocation RAIN_PRO_TEX = Const.rl("textures/entity/rain_pro.png");
+    public static final ResourceLocation STORM_PRO_TEX = Const.rl("textures/entity/storm_pro.png");
 
     public static final ResourceLocation EYE_TEX = Const.rl("textures/models/infinity_armor_eyes.png");
     public static final ResourceLocation WING_TEX = Const.rl("textures/models/infinity_armor_wing.png");

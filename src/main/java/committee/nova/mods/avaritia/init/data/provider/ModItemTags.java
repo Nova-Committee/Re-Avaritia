@@ -40,5 +40,21 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.NEUTRON_NUGGET).add(ModItems.neutron_nugget.get());
         tag(ModTags.NEUTRON_INGOT).add(ModItems.neutron_ingot.get());
         tag(ModTags.ELYTRA_SLOT).add(ModItems.infinity_elytra.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_bow.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_crossbow.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_sword.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_pickaxe.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_axe.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_hoe.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_shovel.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.eternal_singularity.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.singularity.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.matter_cluster.get());
+//        tag(ModTags.IMMORTAL_ITEM).add(ModItems.full_matter_cluster.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.neutron_horse_armor.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_helmet.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_chestplate.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_pants.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_boots.get());
     }
 }

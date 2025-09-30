@@ -84,6 +84,24 @@ public class ModEntities {
                     .setUpdateInterval(10)
                     .fireImmune()
                     .build(Const.rl("blade_slash").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<SunProEntity>> SUN_PRO = ENTITIES.register("sun_pro",
+            () -> EntityType.Builder.<SunProEntity>of(SunProEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("sun_pro").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<RainProEntity>> RAIN_PRO = ENTITIES.register("rain_pro",
+            () -> EntityType.Builder.<RainProEntity>of(RainProEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("rain_pro").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<StormProEntity>> STORM_PRO = ENTITIES.register("storm_pro",
+            () -> EntityType.Builder.<StormProEntity>of(StormProEntity::new, MobCategory.MISC)
+                    .sized(3F, 0.5F)
+                    .setUpdateInterval(10)
+                    .fireImmune()
+                    .build(Const.rl("storm_pro").toString()));
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
@@ -96,6 +114,9 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRenderer::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
         EntityRenderers.register(ModEntities.BLADE_SLASH.get(), BladeSlashRender::new);
+        EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
+        EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
+        EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
     }
 
 }

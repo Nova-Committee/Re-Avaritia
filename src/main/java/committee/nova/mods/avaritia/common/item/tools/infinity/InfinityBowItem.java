@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
 import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
+import committee.nova.mods.avaritia.api.iface.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
@@ -47,7 +48,7 @@ import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<InfinityMode>, IItemEnchant {
+public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<InfinityMode>, IItemEnchant, IBowTransform {
     private final InitEnchantment initEnchantment;
     public InfinityBowItem() {
         super(new Properties()

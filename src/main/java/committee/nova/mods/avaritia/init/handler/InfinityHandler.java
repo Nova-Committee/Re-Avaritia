@@ -7,10 +7,7 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
-import committee.nova.mods.avaritia.init.registry.ModDataComponents;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
@@ -32,6 +29,7 @@ import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +39,10 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.item.ItemEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -329,4 +330,39 @@ public class InfinityHandler {
         entity.setDefaultPickUpDelay();
         event.getDrops().add(entity);
     }
+
+
+    //endless物品侦听
+    @SubscribeEvent
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof ItemEntity itemEntity) {
+            ItemStack stack = itemEntity.getItem();
+            if (stack.is(ModTags.IMMORTAL_ITEM) && !(itemEntity instanceof ImmortalItemEntity)) {
+                Level level = event.getLevel();
+
+                if (!level.isClientSide()) {
+
+                    ImmortalItemEntity immortalEntity = ImmortalItemEntity.create(
+                            ModEntities.IMMORTAL.get(),
+                            level,
+                            itemEntity.getX(),
+                            itemEntity.getY(),
+                            itemEntity.getZ(),
+                            stack
+                    );
+
+                    if (immortalEntity != null) {
+
+                        immortalEntity.setDeltaMovement(itemEntity.getDeltaMovement());
+                        immortalEntity.setPickUpDelay(0);
+
+                        event.setCanceled(true);
+                        itemEntity.discard();
+                        level.addFreshEntity(immortalEntity);
+                    }
+                }
+            }
+        }
+    }
+
 }

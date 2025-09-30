@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
+import committee.nova.mods.avaritia.api.iface.IToolTransform;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
@@ -43,7 +44,7 @@ import java.util.List;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem implements IItemEnchant {
+public class InfinitySwordItem extends SwordItem implements IItemEnchant, IToolTransform {
     private final InitEnchantment initEnchantment;
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY,
