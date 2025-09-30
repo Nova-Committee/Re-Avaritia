@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.TriState;
 
-import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_ENTITY_SHADOW_SHADER;
+import static net.minecraft.client.renderer.RenderStateShard.*;
 
 /**
  * @Project: Avaritia
@@ -33,7 +33,7 @@ public class AvaritiaRenderTypes {
             RenderType.CompositeState.builder()
                     .setShaderState(RenderType.POSITION_TEX_SHADER)
                     .setTextureState(new RenderStateShard.TextureStateShard(Res.VOID_HALO, false, false))
-                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setWriteMaskState(RenderType.COLOR_WRITE)
                     .createCompositeState(false));
 
@@ -44,7 +44,7 @@ public class AvaritiaRenderTypes {
                     .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
                     .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
                     .createCompositeState(true)
     );
@@ -56,7 +56,7 @@ public class AvaritiaRenderTypes {
                     .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_ARMOR_SHADER))
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                     .setCullState(RenderStateShard.NO_CULL)
                     .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
@@ -68,7 +68,7 @@ public class AvaritiaRenderTypes {
                 DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
                 RenderType.CompositeState.builder().setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                         .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
-                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setCullState(RenderStateShard.NO_CULL)
                         .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
                         .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
@@ -92,7 +92,7 @@ public class AvaritiaRenderTypes {
                 DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 2097152, true, false,
                 RenderType.CompositeState.builder()
                 .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
-                .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                 .setLightmapState(RenderType.LIGHTMAP)
                 .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .setCullState(RenderType.NO_CULL)
@@ -100,5 +100,12 @@ public class AvaritiaRenderTypes {
                 .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
                 .createCompositeState(true));
     }
+    public static final RenderType BLADE_SLASH = RenderType.create("blade_slash",
+            DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
+            RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(Res.BLADE_SLASH, false, false))
+                    .setShaderState(RENDERTYPE_TEXT_SEE_THROUGH_SHADER)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .createCompositeState(true));
 
 }

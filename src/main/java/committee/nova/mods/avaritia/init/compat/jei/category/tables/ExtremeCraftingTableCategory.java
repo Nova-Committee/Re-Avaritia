@@ -94,7 +94,7 @@ public class ExtremeCraftingTableCategory implements IRecipeCategory<RecipeHolde
             shapelessRecipe(builder, inputs);
             builder.addSlot(RecipeIngredientRole.OUTPUT, 167, 73).addItemStack(new ItemStack(ModItems.eternal_singularity.get()));
         }
-        builder.moveRecipeTransferButton(170, 100);
+        builder.moveRecipeTransferButton(170, 120);
     }
 
     private void shapelessRecipe(@NotNull IRecipeLayoutBuilder builder, NonNullList<Ingredient> inputs) {

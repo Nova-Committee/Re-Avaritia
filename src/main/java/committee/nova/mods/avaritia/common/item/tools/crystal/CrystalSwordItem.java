@@ -1,22 +1,30 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
+import mekanism.common.block.attribute.Attribute;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +36,7 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalSwordItem extends SwordItem implements ITooltip, IItemMode<ToolMode> {
+public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable {
     private final String name;
 
     public CrystalSwordItem(String name) {
@@ -56,12 +64,12 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, IItemMode<T
     }
 
     @Override
-    public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (player instanceof ServerPlayer serverPlayer) {
-            // 取消攻击冷却
+
             serverPlayer.resetAttackStrengthTicker();
         }
-        entity.setInvulnerable(false);//取消无敌
+        entity.setInvulnerable(false);
 
         return super.onLeftClickEntity(stack, player, entity);
     }
@@ -69,21 +77,11 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, IItemMode<T
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching() && !world.isClientSide) {
-            changeMode(player, stack, hand, ToolMode.ADVANCE);
+        if (player.isCrouching()) {
+            switchMode(world, player, hand, "blade_slash");
             return InteractionResultHolder.success(stack);
         }
-        if (getMode(stack).equals(ToolMode.ADVANCE)) ToolUtils.shootBladeSlash(stack, player);//射出剑气
+        if (isActive(stack, "blade_slash")) ToolUtils.shootBladeSlash(stack, player);
         return super.use(world, player, hand);
-    }
-
-    @Override
-    public DataComponentType<ToolMode> getDataComponentType() {
-        return ModDataComponents.TOOL_MODE.get();
-    }
-
-    @Override
-    public ToolMode getDefaultMode() {
-        return ToolMode.DEFAULT;
     }
 }

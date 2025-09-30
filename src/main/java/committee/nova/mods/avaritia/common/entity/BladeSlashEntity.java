@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -13,7 +14,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -54,6 +54,11 @@ public class BladeSlashEntity extends Projectile {
         this.duration += durationModifier;
     }
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+
+    }
+
 
     @Override
     protected void doWaterSplashEffect() {
@@ -63,18 +68,20 @@ public class BladeSlashEntity extends Projectile {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
-        result.getEntity().hurt(level().damageSources().fellOutOfWorld(), damage);
+
+        if (this.getOwner() instanceof Player player) {
+            result.getEntity().hurt(this.damageSources().playerAttack(player), damage);
+        } else if (this.getOwner() instanceof LivingEntity livingEntity) {
+            result.getEntity().hurt(this.damageSources().mobAttack(livingEntity), damage);
+        } else {
+            result.getEntity().hurt(this.damageSources().generic(), damage);
+        }
     }
 
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         discard();
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-
     }
 
     @Override
@@ -110,7 +117,7 @@ public class BladeSlashEntity extends Projectile {
         }
         this.hitEntities(this.level(), start, end);
 
-        if (blockCollision && !EventHooks.onProjectileImpact(this, blockResult)) {
+        if (blockCollision) {
             this.onHitBlock(blockResult);
         }
     }
@@ -121,7 +128,6 @@ public class BladeSlashEntity extends Projectile {
 
     protected void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
         EntityUtils.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
-                .filter(result -> !EventHooks.onProjectileImpact(this, result))
                 .forEach(this::onHitEntity);
     }
 }
