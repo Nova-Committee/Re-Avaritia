@@ -1,8 +1,7 @@
 package committee.nova.mods.avaritia.common.block.compressor;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.compressor.CompressorTile;
-import committee.nova.mods.avaritia.common.tile.compressor.CompressorTier;
+import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
@@ -40,7 +39,7 @@ public class BaseNeutronCompressorBlock extends BaseTileEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new CompressorTile(pos, state);
+        return new BaseNeutronCompressorTile(pos, state);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class BaseNeutronCompressorBlock extends BaseTileEntityBlock {
         if (!level.isClientSide()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof CompressorTile compressor) {
+            if (tile instanceof BaseNeutronCompressorTile compressor) {
                 player.openMenu(compressor, pos);
             }
         }
@@ -71,7 +70,7 @@ public class BaseNeutronCompressorBlock extends BaseTileEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             var tile = level.getBlockEntity(pos);
 
-            if (tile instanceof CompressorTile compressor) {
+            if (tile instanceof BaseNeutronCompressorTile compressor) {
                 Containers.dropContents(level, pos, compressor.getInventory().getStacks());
             }
         }
@@ -91,12 +90,12 @@ public class BaseNeutronCompressorBlock extends BaseTileEntityBlock {
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), CompressorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), BaseNeutronCompressorTile::tick);
     }
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), CompressorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), BaseNeutronCompressorTile::tick);
     }
 
 }

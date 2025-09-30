@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.common.block.compressor.BaseNeutronCompresso
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
-import committee.nova.mods.avaritia.common.tile.compressor.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -38,7 +38,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-            var compressor = (CompressorTile) accessor.getBlockEntity();
+            var compressor = (BaseNeutronCompressorTile) accessor.getBlockEntity();
             var recipe = compressor.getActiveRecipe();
 
             if (recipe != null) {

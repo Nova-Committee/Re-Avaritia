@@ -8,6 +8,8 @@ import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
+import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
@@ -33,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class CompressorTile extends BaseInventoryTileEntity implements WorldlyContainer {
+public class BaseNeutronCompressorTile extends BaseInventoryTileEntity implements WorldlyContainer {
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
     private final SimpleContainerData data = new SimpleContainerData(1);
@@ -42,12 +44,22 @@ public class CompressorTile extends BaseInventoryTileEntity implements WorldlyCo
     private int materialCount;
     private int progress;
     private boolean ejecting = false;
+    private CompressorTier tier;
 
-    public CompressorTile(BlockPos pos, BlockState state) {
+    public BaseNeutronCompressorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler((slot) -> this.setChanged());
         this.recipeInventory = ItemStackWrapper.create(1);
         this.recipe = new CachedRecipe<>(ModRecipeTypes.COMPRESSOR_RECIPE.get());
+        if (state.is(ModBlocks.neutron_compressor.get())) {
+            tier = CompressorTier.DEFAULT;
+        } else if (state.is(ModBlocks.dense_neutron_compressor.get())) {
+            tier = CompressorTier.DENSE;
+        } else if (state.is(ModBlocks.denser_neutron_compressor.get())) {
+            tier = CompressorTier.DENSER;
+        } else if (state.is(ModBlocks.densest_neutron_compressor.get())) {
+            tier = CompressorTier.DENSEST;
+        }
     }
 
     public static ItemStackWrapper createInventoryHandler(OnContentsChangedFunction onContentsChanged) {
@@ -57,7 +69,7 @@ public class CompressorTile extends BaseInventoryTileEntity implements WorldlyCo
         });
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, CompressorTile tile) {
+    public static void tick(Level level, BlockPos pos, BlockState state, BaseNeutronCompressorTile tile) {
         var recipe = tile.getActiveRecipe();
         var output = tile.inventory.getStackInSlot(0);
         var input = tile.inventory.getStackInSlot(1);
@@ -322,6 +334,12 @@ public class CompressorTile extends BaseInventoryTileEntity implements WorldlyCo
                 blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 64.0D;
     }
 
+    public CompressorTier getTier() {
+        return tier;
+    }
+    public void setTier(CompressorTier tier) {
+        this.tier = tier;
+    }
     @Override
     public void clearContent() {
 
