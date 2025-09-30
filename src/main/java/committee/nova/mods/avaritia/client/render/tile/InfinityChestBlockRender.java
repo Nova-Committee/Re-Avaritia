@@ -4,12 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.AvaritiaModClient;
 import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -25,19 +23,18 @@ import net.minecraft.client.renderer.blockentity.BrightnessCombiner;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author: cnlimiter
  */
-public class InfinityChestRender implements BlockEntityRenderer<InfinityChestTile> {
+public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChestTile> {
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
 
-    public InfinityChestRender(BlockEntityRendererProvider.Context pContext) {
+    public InfinityChestBlockRender(BlockEntityRendererProvider.Context pContext) {
         ModelPart modelpart = pContext.bakeLayer(AvaritiaModClient.INFINITY_CHEST);
         this.bottom = modelpart.getChild("bottom");
         this.lid = modelpart.getChild("lid");

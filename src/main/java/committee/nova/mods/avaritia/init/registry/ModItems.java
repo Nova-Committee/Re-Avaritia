@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.item.BaseItem;
+import committee.nova.mods.avaritia.common.item.block.InfinityChestItem;
 import committee.nova.mods.avaritia.common.item.misc.*;
 import committee.nova.mods.avaritia.common.item.resources.*;
 import committee.nova.mods.avaritia.common.item.singularity.EternalSingularityItem;
@@ -11,7 +12,9 @@ import committee.nova.mods.avaritia.common.item.tools.blaze.*;
 import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -36,6 +39,8 @@ public class ModItems {
     public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
     public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
     public static RegistryObject<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
+    public static RegistryObject<Item> infinity_chest = item("infinity_chest",
+            () -> new InfinityChestItem(ModBlocks.infinity_chest.get()));
     /**
      * Tools
      */
@@ -111,6 +116,10 @@ public class ModItems {
 
     public static RegistryObject<Item> item(String name) {
         return item(name, true);
+    }
+
+    public static RegistryObject<Item> blockItem(String name, Supplier<Block> block, Item.Properties properties, boolean exist) {
+        return item(name, (e) -> new BlockItem(block.get(), properties), exist);
     }
 
     public static RegistryObject<Item> item(String name, boolean exist) {

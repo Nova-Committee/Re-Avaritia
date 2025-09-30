@@ -9,7 +9,7 @@ import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
-import committee.nova.mods.avaritia.client.render.tile.InfinityChestRender;
+import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -115,7 +115,7 @@ public class AvaritiaModClient {
         event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRender::createSingleBodyLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRender::createDoubleBodyLeftLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_RIGHT, CompressedChestRender::createDoubleBodyRightLayer);
-        event.registerLayerDefinition(INFINITY_CHEST, InfinityChestRender::createLayer);
+        event.registerLayerDefinition(INFINITY_CHEST, InfinityChestBlockRender::createLayer);
         event.registerLayerDefinition(INFINITY_SHIELD, InfinityShieldModel::createLayer);
         //event.registerLayerDefinition(INFINITY_TRIDENT, InfinityTridentModel::createLayer);
     }

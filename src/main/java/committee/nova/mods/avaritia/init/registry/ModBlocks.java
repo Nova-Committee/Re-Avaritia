@@ -58,7 +58,7 @@ public class ModBlocks {
     public static RegistryObject<Block> crystal_matrix = itemBlock("crystal_matrix", () -> new ResourceBlock(ModResourceBlocks.CRYSTAL), ModRarities.RARE);
     public static RegistryObject<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new ResourceBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static RegistryObject<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
-    public static RegistryObject<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND);
+    public static RegistryObject<Block> infinity_chest = baseBlock("infinity_chest", InfinityChestBlock::new);
     public static RegistryObject<Block> tesseract = itemBlock("tesseract", TesseractBlock::new, ModRarities.LEGEND);
     public static RegistryObject<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
