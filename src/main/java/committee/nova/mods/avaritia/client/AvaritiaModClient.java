@@ -7,8 +7,11 @@ import committee.nova.mods.avaritia.client.model.CosmicModelLoader;
 import committee.nova.mods.avaritia.client.model.HaloModelLoader;
 import committee.nova.mods.avaritia.client.model.InfinityArmorModel;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
+import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
+import dev.emi.emi.screen.ConfigScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -23,12 +26,17 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.NotNull;
+
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
@@ -64,6 +72,8 @@ public class AvaritiaModClient {
         ModEntities.onClientSetup();
         ModTileEntities.onClientSetup();
         ModSearches.onClientSetup();
+        ModList.get().getModContainerById(Const.MOD_ID).orElseThrow().registerExtensionPoint(IConfigScreenFactory.class,
+                (container, last) -> new AvaritiaConfigScreen(last));
     }
 
     @SubscribeEvent

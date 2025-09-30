@@ -54,8 +54,8 @@ public class ModConfig {
 
     public static final ModConfigSpec.BooleanValue useAdvanceTooltips;
     public static final ModConfigSpec.BooleanValue useModDifficulty;
-    public static final ModConfigSpec.IntValue endlessItemEntityRange;
-    public static final ModConfigSpec.IntValue endlessItemEntitySpeed;
+    public static final ModConfigSpec.DoubleValue endlessItemEntityRange;
+    public static final ModConfigSpec.DoubleValue endlessItemEntitySpeed;
 
     //SERVER
     static {
@@ -106,8 +106,8 @@ public class ModConfig {
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
         useModDifficulty = buildBoolean(common, "Use Mod Difficulty", true, "For some mods");
-        endlessItemEntityRange = buildInt(common, "Endless ItemEntity Range", 1000, 1, 10000, "The range of Endless ItemEntity");
-        endlessItemEntitySpeed = buildInt(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
+        endlessItemEntityRange = buildDouble(common, "Endless ItemEntity Range", 1000, 1, 10000, "The range of Endless ItemEntity");
+        endlessItemEntitySpeed = buildDouble(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
 
         common.pop();
         COMMON = common.build();
