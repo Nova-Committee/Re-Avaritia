@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.common.block.compressor;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
-import committee.nova.mods.avaritia.common.tile.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.CompressorTier;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
@@ -27,11 +28,13 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:57
  * Version: 1.0
  */
-public class CompressorBlock extends BaseTileEntityBlock {
+public class BaseNeutronCompressorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
-    public CompressorBlock() {
+
+    public BaseNeutronCompressorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);
+
     }
 
     @Nullable
@@ -88,12 +91,12 @@ public class CompressorBlock extends BaseTileEntityBlock {
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.compressor_tile.get(), CompressorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), CompressorTile::tick);
     }
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.compressor_tile.get(), CompressorTile::tick);
+        return createTicker(type, ModTileEntities.neutron_compressor_tile.get(), CompressorTile::tick);
     }
 
 }

@@ -18,7 +18,7 @@ public class SculkCraftScreen extends BaseContainerScreen<TierCraftMenu> {
     private static final ResourceLocation BACKGROUND = Const.rl( "textures/gui/craft/sculk_crafting_table_gui.png");
 
     public SculkCraftScreen(TierCraftMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, BACKGROUND, 176, 161);
+        super(container, inventory, title, BACKGROUND, 176, 167);
     }
 
     @Override

@@ -33,4 +33,5 @@ public class ModLootTables extends LootTableProvider {
 //                new SubProviderEntry(ModGiftLootTables::new, LootContextParamSets.GIFT)
         );
     }
+
 }

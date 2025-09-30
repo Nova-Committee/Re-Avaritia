@@ -104,23 +104,6 @@ public class CompressorRecipe implements ICompressorRecipe {
         public static final StreamCodec<RegistryFriendlyByteBuf, CompressorRecipe> STREAM_CODEC = StreamCodec.of(
                 CompressorRecipe.Serializer::toNetwork, CompressorRecipe.Serializer::fromNetwork
         );
-
-        private static CompressorRecipe fromNetwork(@NotNull RegistryFriendlyByteBuf buffer) {
-            var inputs = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            var output = ItemStack.STREAM_CODEC.decode(buffer);
-            int inputCount = buffer.readInt();
-            int timeCost = buffer.readInt();
-
-            return new CompressorRecipe(inputs, output, inputCount, timeCost);
-        }
-
-        private static void toNetwork(@NotNull RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
-            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.inputs.getFirst());
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.output);
-            buffer.writeInt(recipe.inputCount);
-            buffer.writeInt(recipe.timeCost);
-        }
-
         @Override
         public @NotNull MapCodec<CompressorRecipe> codec() {
             return CODEC;
@@ -129,6 +112,22 @@ public class CompressorRecipe implements ICompressorRecipe {
         @Override
         public @NotNull StreamCodec<RegistryFriendlyByteBuf, CompressorRecipe> streamCodec() {
             return STREAM_CODEC;
+        }
+
+        private static CompressorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            var ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+            var output = ItemStack.STREAM_CODEC.decode(buffer);
+            int inputCount = buffer.readVarInt();
+            int timeCost = buffer.readVarInt();
+
+            return new CompressorRecipe(ingredient, output, inputCount, timeCost);
+        }
+
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.inputs.getFirst());
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.output);
+            buffer.writeVarInt(recipe.inputCount);
+            buffer.writeVarInt(recipe.timeCost);
         }
     }
 }

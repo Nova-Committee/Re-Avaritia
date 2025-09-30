@@ -2,11 +2,11 @@ package committee.nova.mods.avaritia.init.compat;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.TierInput;
-import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
+import committee.nova.mods.avaritia.common.block.compressor.BaseNeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
-import committee.nova.mods.avaritia.common.tile.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.CompressorTile;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -27,7 +27,7 @@ import snownee.jade.api.config.IPluginConfig;
 public class JadeCompat implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
-        registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, CompressorBlock.class);
+        registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, BaseNeutronCompressorBlock.class);
         registration.registerBlockComponent(CraftingComponentProvider.INSTANCE, TierCraftTableBlock.class);
         registration.registerBlockComponent(ExtremeSmithingComponentProvider.INSTANCE, ExtremeSmithingTableBlock.class);
     }

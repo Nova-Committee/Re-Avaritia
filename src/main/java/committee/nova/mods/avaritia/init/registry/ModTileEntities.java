@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
 import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.CompressorTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -44,8 +45,17 @@ public class ModTileEntities {
                     ModBlocks.densest_neutron_collector.get()
             }
     );
-    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<CompressorTile>> compressor_tile = blockEntity("compressor_tile", CompressorTile::new, () -> new Block[]{ModBlocks.neutron_compressor.get()});
-    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,
+    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<CompressorTile>> neutron_compressor_tile = blockEntity(
+            "compressor_tile",
+            (CompressorTile::new),
+            () -> new Block[]{
+                    ModBlocks.neutron_compressor.get(),
+                    ModBlocks.dense_neutron_compressor.get(),
+                    ModBlocks.denser_neutron_compressor.get(),
+                    ModBlocks.densest_neutron_compressor.get()
+            }
+    );
+   public static DeferredHolder<BlockEntityType<?>,BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,
             () -> new Block[]{
                     ModBlocks.sculk_crafting_table.get(),
                     ModBlocks.nether_crafting_table.get(),

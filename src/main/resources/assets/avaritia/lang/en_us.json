@@ -168,7 +168,10 @@
   "block.avaritia.diamond_lattice_block": "Diamond Lattice Block",
 
   "container.extreme_anvil" : "Extreme Anvil",
-  "container.compressor": "Neutronium Compressor",
+  "container.neutron_compressor": "Neutronium Compressor",
+  "container.dense_neutron_compressor": "Dense Neutronium Compressor",
+  "container.denser_neutron_compressor": "Denser Neutronium Compressor",
+  "container.densest_neutron_compressor": "Densest Neutronium Compressor",
   "container.neutron_collector": "Neutronium Collector",
   "container.dense_neutron_collector": "Dense Neutron Collector",
   "container.denser_neutron_collector": "Denser Neutron Collector",

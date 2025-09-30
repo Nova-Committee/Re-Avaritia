@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
-import committee.nova.mods.avaritia.common.tile.CompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.CompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;

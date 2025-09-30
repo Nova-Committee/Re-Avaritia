@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.tile;
+package committee.nova.mods.avaritia.common.tile.compressor;
 
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.common.inventory.CachedRecipe;
@@ -44,7 +44,7 @@ public class CompressorTile extends BaseInventoryTileEntity implements WorldlyCo
     private boolean ejecting = false;
 
     public CompressorTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.compressor_tile.get(), pos, state);
+        super(ModTileEntities.neutron_compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler((slot) -> this.setChanged());
         this.recipeInventory = ItemStackWrapper.create(1);
         this.recipe = new CachedRecipe<>(ModRecipeTypes.COMPRESSOR_RECIPE.get());

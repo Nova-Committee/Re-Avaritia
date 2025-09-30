@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
 import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.common.block.collector.BaseNeutronCollectorBlock;
-import committee.nova.mods.avaritia.common.block.compressor.CompressorBlock;
+import committee.nova.mods.avaritia.common.block.compressor.BaseNeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
@@ -16,6 +16,7 @@ import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
+import committee.nova.mods.avaritia.common.tile.compressor.CompressorTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.world.item.BlockItem;
@@ -92,7 +93,11 @@ public class ModBlocks {
     public static DeferredBlock<Block> dense_neutron_collector = itemBlock("dense_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.EPIC);
     public static DeferredBlock<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.LEGEND.getValue());
     public static DeferredBlock<Block> densest_neutron_collector = itemBlock("densest_neutron_collector", BaseNeutronCollectorBlock::new, ModRarities.COSMIC.getValue());
-    public static DeferredBlock<Block> neutron_compressor = itemBlock("neutron_compressor", CompressorBlock::new, ModRarities.RARE);
+    public static DeferredBlock<Block> neutron_compressor = itemBlock("neutron_compressor",BaseNeutronCompressorBlock::new, ModRarities.RARE);
+    public static DeferredBlock<Block> dense_neutron_compressor = itemBlock("dense_neutron_compressor",BaseNeutronCompressorBlock::new , ModRarities.EPIC);
+    public static DeferredBlock<Block> denser_neutron_compressor = itemBlock("denser_neutron_compressor",BaseNeutronCompressorBlock::new, ModRarities.LEGEND.getValue());
+    public static DeferredBlock<Block> densest_neutron_compressor = itemBlock("densest_neutron_compressor", BaseNeutronCompressorBlock::new, ModRarities.COSMIC.getValue());
+
     public static DeferredBlock<Block> extreme_smithing_table = itemBlock("extreme_smithing_table", ExtremeSmithingTableBlock::new, ModRarities.LEGEND.getValue());
 
     public static DeferredBlock<Block> extreme_anvil = itemBlock("extreme_anvil", ExtremeAnvilBlock::new, ModRarities.LEGEND.getValue());
