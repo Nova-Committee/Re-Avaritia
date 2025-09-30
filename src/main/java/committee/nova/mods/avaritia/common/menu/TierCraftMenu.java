@@ -30,6 +30,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final Container result;
     private final Player player;
     private final ModCraftTier tier;
+    public final ModCraftContainer matrix;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
         this(type, id, playerInventory, buf.readBlockPos(), tier);
@@ -44,7 +45,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.result = new ResultContainer();
         this.tier = tier;
 
-        var matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
+        matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
 
         this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, tier.size * tier.size, tier.outX, tier.outY));
 
