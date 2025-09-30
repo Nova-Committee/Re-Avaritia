@@ -3,6 +3,8 @@ package committee.nova.mods.avaritia.common.block.cake;
 import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -52,6 +54,19 @@ public class EndlessCakeBlock extends BaseBlock {
                 pPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 0));
                 pPlayer.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 6000, 0));
                 pPlayer.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 3));
+
+                // 添加黑色药水粒子效果
+                if (pLevel instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(
+                            ParticleTypes.WITCH,
+                            pPos.getX() + 0.5D,
+                            pPos.getY() + 1.0D,
+                            pPos.getZ() + 0.5D,
+                            10,
+                            0.5D, 0.5D, 0.5D,
+                            0.1D
+                    );
+                }
             }
 
             pLevel.gameEvent(pPlayer, GameEvent.EAT, pPos);

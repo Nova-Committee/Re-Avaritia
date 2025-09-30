@@ -3,7 +3,9 @@ package committee.nova.mods.avaritia.common.entity;
 import committee.nova.mods.avaritia.api.utils.EntityUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -81,6 +83,19 @@ public class BladeSlashEntity extends Projectile {
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
+
+        if (this.level() instanceof ServerLevel serverLevel) {
+
+            serverLevel.sendParticles(
+                    ParticleTypes.CRIT,
+                    this.getX(),
+                    this.getY(),
+                    this.getZ(),
+                    15,
+                    0.5, 0.5, 0.5,
+                    0.1
+            );
+        }
         discard();
     }
 
