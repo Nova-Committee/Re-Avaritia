@@ -31,14 +31,17 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 .fireResistant());
     }
 
-    public UseAnim getUseAnimation(ItemStack stack) {
+    @Override
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
         return UseAnim.SPEAR;
     }
 
-    public int getUseDuration(ItemStack stack) {
+    @Override
+    public int getUseDuration(@NotNull ItemStack stack) {
         return 72000;
     }
 
+    @Override
     public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
         if (livingEntity instanceof Player player) {
             int i = this.getUseDuration(itemStack) - timeLeft;

@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
-import committee.nova.mods.avaritia.common.menu.CompressedChestMenu;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
@@ -15,19 +14,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.CompoundContainer;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -128,28 +122,6 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     }
 
     private final ChestLidController chestLidController = new ChestLidController();
-    public ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
-        @Override
-        protected void onOpen(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
-            playSound(pLevel, pPos, SoundEvents.CHEST_OPEN);
-        }
-
-        @Override
-        protected void onClose(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
-            playSound(pLevel, pPos, SoundEvents.CHEST_CLOSE);
-        }
-
-        @Override
-        protected void openerCountChanged(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, int pEventId, int pEventParam) {
-            signalOpenCount(pLevel, pPos, pState, pEventParam);
-        }
-
-        @Override
-        protected boolean isOwnContainer(@NotNull Player pPlayer) {
-            return pPlayer.containerMenu instanceof InfinityChestMenu;
-        }
-    };
-
     public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, InfinityChestTile blockEntity) {
         blockEntity.chestLidController.tickLid();
     }
@@ -169,32 +141,10 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         return this.chestLidController.getOpenness(partialTicks);
     }
 
-    public static int getOpenCount(BlockGetter level, BlockPos pos) {
-        BlockState blockstate = level.getBlockState(pos);
-        if (blockstate.hasBlockEntity()) {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof InfinityChestTile chestTile) {
-                return chestTile.openersCounter.getOpenerCount();
-            }
-        }
-        return 0;
-    }
-
-    public void recheckOpen() {
-        if (!this.isRemoved()) {
-            this.openersCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
-        }
-    }
-
-    static void playSound(Level pLevel, BlockPos pPos, SoundEvent pSound) {
+    public static void playSound(Level pLevel, BlockPos pPos, SoundEvent pSound) {
         double d0 = (double) pPos.getX() + 0.5;
         double d1 = (double) pPos.getY() + 0.5;
         double d2 = (double) pPos.getZ() + 0.5;
         pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
-    }
-
-    protected void signalOpenCount(Level pLevel, BlockPos pPos, BlockState pState, int pEventParam) {
-        Block block = pState.getBlock();
-        pLevel.blockEvent(pPos, block, 1, pEventParam);
     }
 }

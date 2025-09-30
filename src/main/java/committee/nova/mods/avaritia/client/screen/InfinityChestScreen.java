@@ -66,7 +66,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.topPos = (this.height - imageHeight) / 2;
 
         this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 15, 118);
-        this.scrollBar.setScrolledOn(menu.dummyChannelContainer.getScrollOn());
+        this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
         this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 211));
         this.sortButton = new SortButton(this.leftPos + 198, this.topPos + 243);
@@ -82,7 +82,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 179, topPos + 159);
         this.addRenderableWidget(craftToChannelButton);
         this.addRenderableWidget(craftToInventoryButton);
-        menu.dummyChannelContainer.refreshContainer(true);
+        menu.chestContainer.refreshContainer(true);
     }
 
     public void blit(GuiGraphics pPoseStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
@@ -110,9 +110,9 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     public void renderDummyCount(GuiGraphics guiGraphics) {
         PoseStack poseStack = guiGraphics.pose();
-        for (int i = 0; i < menu.dummyChannelContainer.formatCount.size(); i++) {
+        for (int i = 0; i < menu.chestContainer.formatCount.size(); i++) {
             Slot slot = menu.slots.get(i + 51);
-            String count = menu.dummyChannelContainer.formatCount.get(i);
+            String count = menu.chestContainer.formatCount.get(i);
             this.setBlitOffset(100);
             RenderSystem.enableDepthTest();
             float fontSize = 0.5F;
@@ -151,8 +151,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     }
 
     private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
-        if ((hoveredSlot.index - 51) >= menu.dummyChannelContainer.viewingObject.size()) return;
-        String hoveredObject = menu.dummyChannelContainer.viewingObject.get(hoveredSlot.index - 51);
+        if ((hoveredSlot.index - 51) >= menu.chestContainer.viewingObject.size()) return;
+        String hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - 51);
         List<Component> components = Lists.newArrayList();
         long count;
         components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
@@ -187,7 +187,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
                 || carried.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
         if (hasCapability) {
             List<Component> components = Lists.newArrayList();
-            if ((hoveredSlot.index - 51) < menu.dummyChannelContainer.viewingObject.size()) {
+            if ((hoveredSlot.index - 51) < menu.chestContainer.viewingObject.size()) {
                 components.add(Component.translatable("gui.avaritia.capability.tip1", hoveredSlot.getItem().getHoverName()));
             }
             components.add(Component.translatable("gui.avaritia.capability.tip2"));
@@ -217,7 +217,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             if (searchBox.isMouseOver(pMouseX, pMouseY)) {
                 menu.filter = "";
                 searchBox.setValue("");
-                menu.dummyChannelContainer.refreshContainer(true);
+                menu.chestContainer.refreshContainer(true);
                 searchBox.setFocused(true);
                 searchBox.setEditable(true);
             } else if (craftToChannelButton.isMouseOver(pMouseX, pMouseY)) {
@@ -266,12 +266,12 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             String s = searchBox.getValue().toLowerCase();
             if (!s.equals(menu.filter)) {
                 menu.filter = s;
-                menu.dummyChannelContainer.refreshContainer(true);
+                menu.chestContainer.refreshContainer(true);
             }
         }
         if (pKeyCode == InputConstants.KEY_LSHIFT) {
             menu.LShifting = false;
-            menu.dummyChannelContainer.refreshContainer(true);
+            menu.chestContainer.refreshContainer(true);
         }
         return super.keyReleased(pKeyCode, pScanCode, pModifiers);
     }
@@ -279,8 +279,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
         if (pMouseX >= leftPos + 5 && pMouseX <= leftPos + 214 && pMouseY >= topPos + 17 && pMouseY <= topPos + 18 + 119 && scrollBar.canScroll()) {
-            if (pDelta <= 0) scrollBar.setScrolledOn(menu.dummyChannelContainer.onMouseScrolled(false));
-            else scrollBar.setScrolledOn(menu.dummyChannelContainer.onMouseScrolled(true));
+            if (pDelta <= 0) scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(false));
+            else scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(true));
             return true;
         } else return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
@@ -337,24 +337,24 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         public ItemScrollBar(int x, int y, int weight, int height) {
             super(x, y, weight, height);
             this.setScrollTagSize();
-            this.lastObjectListSize = menu.dummyChannelContainer.sortedObject.size();
+            this.lastObjectListSize = menu.chestContainer.sortedObject.size();
         }
 
         public void setScrollTagSize() {
-            double v = (double) this.height * (7.0D / Math.ceil(menu.dummyChannelContainer.sortedObject.size() / 11.0D));
+            double v = (double) this.height * (7.0D / Math.ceil(menu.chestContainer.sortedObject.size() / 11.0D));
             this.setScrollTagSize(v);
         }
 
         @Override
         public void draggedTo(double scrolledOn) {
-            menu.dummyChannelContainer.onScrollTo(scrolledOn);
+            menu.chestContainer.onScrollTo(scrolledOn);
         }
 
         @Override
         public void beforeRender() {
-            if (menu.dummyChannelContainer.sortedObject.size() != lastObjectListSize) {
+            if (menu.chestContainer.sortedObject.size() != lastObjectListSize) {
                 setScrollTagSize();
-                this.lastObjectListSize = menu.dummyChannelContainer.sortedObject.size();
+                this.lastObjectListSize = menu.chestContainer.sortedObject.size();
             }
         }
     }

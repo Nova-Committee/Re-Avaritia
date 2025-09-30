@@ -115,7 +115,7 @@ public class AvaritiaModClient {
         event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRender::createSingleBodyLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRender::createDoubleBodyLeftLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_RIGHT, CompressedChestRender::createDoubleBodyRightLayer);
-        event.registerLayerDefinition(INFINITY_CHEST, InfinityChestRender::createSingleBodyLayer);
+        event.registerLayerDefinition(INFINITY_CHEST, InfinityChestRender::createLayer);
         event.registerLayerDefinition(INFINITY_SHIELD, InfinityShieldModel::createLayer);
         //event.registerLayerDefinition(INFINITY_TRIDENT, InfinityTridentModel::createLayer);
     }

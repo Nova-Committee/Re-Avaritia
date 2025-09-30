@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.AvaritiaModClient;
+import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -34,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2024/7/13 下午1:39
  * @Description:
  */
-public class CompressedChestRender<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T> {
+public class CompressedChestRender implements BlockEntityRenderer<CompressedChestTile> {
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
@@ -46,15 +48,15 @@ public class CompressedChestRender<T extends BlockEntity & LidBlockEntity> imple
     private final ModelPart doubleRightLock;
 
     public CompressedChestRender(BlockEntityRendererProvider.Context pContext) {
-        ModelPart modelpart = pContext.bakeLayer(ModelLayers.CHEST);
+        ModelPart modelpart = pContext.bakeLayer(AvaritiaModClient.COMPRESSED_CHEST);
         this.bottom = modelpart.getChild("bottom");
         this.lid = modelpart.getChild("lid");
         this.lock = modelpart.getChild("lock");
-        ModelPart modelpart1 = pContext.bakeLayer(ModelLayers.DOUBLE_CHEST_LEFT);
+        ModelPart modelpart1 = pContext.bakeLayer(AvaritiaModClient.COMPRESSED_CHEST_LEFT);
         this.doubleLeftBottom = modelpart1.getChild("bottom");
         this.doubleLeftLid = modelpart1.getChild("lid");
         this.doubleLeftLock = modelpart1.getChild("lock");
-        ModelPart modelpart2 = pContext.bakeLayer(ModelLayers.DOUBLE_CHEST_RIGHT);
+        ModelPart modelpart2 = pContext.bakeLayer(AvaritiaModClient.COMPRESSED_CHEST_RIGHT);
         this.doubleRightBottom = modelpart2.getChild("bottom");
         this.doubleRightLid = modelpart2.getChild("lid");
         this.doubleRightLock = modelpart2.getChild("lock");
@@ -88,7 +90,8 @@ public class CompressedChestRender<T extends BlockEntity & LidBlockEntity> imple
     }
 
     @Override
-    public void render(T pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
+    public void render(CompressedChestTile pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer,
+                       int pPackedLight, int pPackedOverlay) {
         Level level = pBlockEntity.getLevel();
         boolean flag = level != null;
         BlockState blockstate = flag ? pBlockEntity.getBlockState() : Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.SOUTH);
@@ -136,7 +139,7 @@ public class CompressedChestRender<T extends BlockEntity & LidBlockEntity> imple
         pBottomPart.render(pPoseStack, pConsumer, pPackedLight, pPackedOverlay);
     }
 
-    protected Material getMaterial(T blockEntity, ChestType chestType) {
+    protected Material getMaterial(CompressedChestTile blockEntity, ChestType chestType) {
         return Sheets.chooseMaterial(blockEntity, chestType, false);
     }
 }

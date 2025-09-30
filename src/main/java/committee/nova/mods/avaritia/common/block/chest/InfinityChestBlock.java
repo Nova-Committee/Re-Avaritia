@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -100,7 +101,6 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
                 direction = direction2;
             }
         }
-
         return this.defaultBlockState().setValue(FACING, direction).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
     }
 
@@ -222,13 +222,5 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     @Override
     public boolean isPathfindable(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull PathComputationType type) {
         return false;
-    }
-
-    @Override
-    public void tick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        BlockEntity blockentity = level.getBlockEntity(pos);
-        if (blockentity instanceof InfinityChestTile chestTile) {
-            chestTile.recheckOpen();
-        }
     }
 }

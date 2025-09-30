@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.core.chest;
 
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
+import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.world.SimpleContainer;
@@ -182,20 +183,4 @@ public class InfinityChestContainer extends SimpleContainer {
     public int getMaxStackSize() {
         return Integer.MAX_VALUE;
     }
-
-    @Override
-    public void startOpen(@NotNull Player pPlayer) {
-        if (!this.menu.chestTile2.isRemoved() && !pPlayer.isSpectator()) {
-            this.menu.chestTile2.openersCounter.incrementOpeners(pPlayer, this.menu.level, this.menu.blockPos, this.menu.chestTile2.getBlockState());
-        }
-
-    }
-
-    @Override
-    public void stopOpen(@NotNull Player pPlayer) {
-        if (!this.menu.chestTile2.isRemoved() && !pPlayer.isSpectator()) {
-            this.menu.chestTile2.openersCounter.decrementOpeners(pPlayer, this.menu.level, this.menu.blockPos, this.menu.chestTile2.getBlockState());
-        }
-    }
-
 }

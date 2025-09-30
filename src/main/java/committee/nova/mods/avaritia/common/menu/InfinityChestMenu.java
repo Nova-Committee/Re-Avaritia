@@ -45,8 +45,8 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
     private final TransientCraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
-    public InfinityChestTile chestTile2;
-    public InfinityChestContainer dummyChannelContainer = new InfinityChestContainer(this);
+    public InfinityChestTile chestTile;
+    public InfinityChestContainer chestContainer = new InfinityChestContainer(this);
     public boolean LShifting = false;
     private CraftingRecipe lastCraftingRecipe = null;
 
@@ -72,12 +72,12 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         
         addSlots(playerInv.player, playerInv);
 
-        this.dummyChannelContainer = new InfinityChestContainer(this);
-        this.channel = ClientChestManager.getInstance().getChannel(dummyChannelContainer);
+        this.chestContainer = new InfinityChestContainer(this);
+        this.channel = ClientChestManager.getInstance().getChannel(chestContainer);
         //虚拟储存物品格51 ~ 128
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 11; j++) {
-                this.addSlot(new FakeSlot(dummyChannelContainer, i * 11 + j, 7 + j * 17, 17 + i * 17));
+                this.addSlot(new FakeSlot(chestContainer, i * 11 + j, 7 + j * 17, 17 + i * 17));
             }
         }
     }
@@ -88,7 +88,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         this.player = player;
         this.level = player.level();
         this.blockPos = blockEntity.getBlockPos();
-        this.chestTile2 = blockEntity;
+        this.chestTile = blockEntity;
 
         this.owner = blockEntity.getOwner() == null ? player.getUUID() : blockEntity.getOwner();
         this.locked = blockEntity.isLocked();
@@ -109,7 +109,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
             case 0 -> {
                 if (owner.equals(player.getUUID())) {
                     locked = !locked;
-                    chestTile2.setLocked(locked);
+                    chestTile.setLocked(locked);
                     if (locked) saveBlock();
                 }
             }
@@ -419,18 +419,18 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     public void nextSort() {
         sortType += 2;
         if (sortType > 7) sortType %= 8;
-        if (level.isClientSide) dummyChannelContainer.refreshContainer(true);
+        if (level.isClientSide) chestContainer.refreshContainer(true);
     }
 
     public void reverseSort() {
         if (sortType % 2 == 0) sortType++;
         else sortType--;
-        if (level.isClientSide) dummyChannelContainer.refreshContainer(true);
+        if (level.isClientSide) chestContainer.refreshContainer(true);
     }
     
     private void saveBlock() {
-        chestTile2.setFilter(filter);
-        chestTile2.setSortType(sortType);
+        chestTile.setFilter(filter);
+        chestTile.setSortType(sortType);
     }
 
     @Override
@@ -439,8 +439,8 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (pSlotId >= 51) {
             //仅客户端能触发
             String object;
-            if (pSlotId - 51 < dummyChannelContainer.viewingObject.size())
-                object = dummyChannelContainer.viewingObject.get(pSlotId - 51);
+            if (pSlotId - 51 < chestContainer.viewingObject.size())
+                object = chestContainer.viewingObject.get(pSlotId - 51);
             else object = "minecraft:air";
 
             switch (pButton) {
@@ -584,7 +584,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     @Override
     @ParametersAreNonnullByDefault
     public boolean stillValid(Player player) {
-        return !chestTile2.isRemoved() &&
+        return !chestTile.isRemoved() &&
                 player.distanceToSqr(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 32.0D;
     }
 
@@ -595,7 +595,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (!channel.isRemoved()) ((ServerChestHandler) channel).removeListener((ServerPlayer) player);
         super.removed(player);
         clearCraftSlots();
-        if (!chestTile2.isLocked()) saveBlock();
+        if (!chestTile.isLocked()) saveBlock();
     }
 
     @Override
