@@ -48,6 +48,11 @@ public record ExtremeCraftingTableCategory(ITierCraftingRecipe recipe) implement
     }
 
     @Override
+    public boolean supportsRecipeTree() {
+        return true;
+    }
+
+    @Override
     public int getDisplayWidth() {
         return 191;
     }

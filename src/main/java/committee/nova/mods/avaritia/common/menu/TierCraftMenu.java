@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.menu;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
 import committee.nova.mods.avaritia.common.container.slot.ModCraftResultSlot;
@@ -67,6 +68,8 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         }
 
         this.slotsChanged(matrix);
+        Const.LOGGER.info(this.slots.size());
+        this.slots.forEach(slot -> Const.LOGGER.info(slot.container));
     }
 
     public static TierCraftMenu sculk(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {

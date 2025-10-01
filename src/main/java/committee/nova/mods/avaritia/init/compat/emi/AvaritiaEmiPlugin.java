@@ -37,7 +37,9 @@ import java.util.List;
 public class AvaritiaEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
-        registry.setDefaultComparison(ModItems.singularity.get(), Comparison.of((stack1, stack2) -> SingularityUtils.getSingularity(stack1.getItemStack()) == SingularityUtils.getSingularity(stack2.getItemStack())));
+        registry.setDefaultComparison(ModItems.singularity.get(), Comparison.of((stack1, stack2) ->
+                SingularityUtils.getSingularity(stack1.getItemStack()) == SingularityUtils.getSingularity(stack2.getItemStack()))
+        );
 
         registry.addWorkstation(VanillaEmiRecipeCategories.ANVIL_REPAIRING, EmiStack.of(ModBlocks.extreme_anvil.get()));
 

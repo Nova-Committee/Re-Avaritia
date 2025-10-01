@@ -48,6 +48,11 @@ public record EndCraftingTableCategory(ITierCraftingRecipe recipe) implements Em
     }
 
     @Override
+    public boolean supportsRecipeTree() {
+        return true;
+    }
+
+    @Override
     public int getDisplayWidth() {
         return 195;
     }

@@ -48,6 +48,11 @@ public record NetherCraftingTableCategory(ITierCraftingRecipe recipe) implements
     }
 
     @Override
+    public boolean supportsRecipeTree() {
+        return true;
+    }
+
+    @Override
     public int getDisplayWidth() {
         return 159;
     }

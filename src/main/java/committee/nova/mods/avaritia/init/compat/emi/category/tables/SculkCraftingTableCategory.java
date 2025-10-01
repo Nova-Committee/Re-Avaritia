@@ -48,6 +48,11 @@ public record SculkCraftingTableCategory(ITierCraftingRecipe recipe) implements 
     }
 
     @Override
+    public boolean supportsRecipeTree() {
+        return true;
+    }
+
+    @Override
     public int getDisplayWidth() {
         return 118;
     }
