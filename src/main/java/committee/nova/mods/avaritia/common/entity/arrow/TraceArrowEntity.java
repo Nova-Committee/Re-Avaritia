@@ -232,6 +232,8 @@ public class TraceArrowEntity extends Arrow {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult pResult) {
+        LivingEntity entity = (LivingEntity) pResult.getEntity();
+        entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20, 0, false, false,false));
         ToolUtils.infinityTraceArrowDamage(pResult, this);
     }
 
@@ -303,7 +305,12 @@ public class TraceArrowEntity extends Arrow {
             }
 
             if (!this.level().isClientSide) {
-                TargetingConditions conditions = TargetingConditions.forCombat().selector((living) -> living.hasLineOfSight(this));
+                TargetingConditions conditions = TargetingConditions.forCombat()
+                        .selector((living) -> {
+                            // 排除玩家实体
+                            return !(living instanceof Player) &&
+                                    living.hasLineOfSight(this);
+                        });
                 this.homingTarget = this.level().getNearestEntity(LivingEntity.class, conditions, owner instanceof LivingEntity ? (LivingEntity) owner : null, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
                 if (this.homingTarget != null) {
                     Vec3 targetPos = this.homingTarget.getEyePosition();

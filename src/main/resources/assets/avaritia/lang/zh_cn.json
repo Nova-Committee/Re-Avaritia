@@ -428,6 +428,8 @@
   "config.avaritia.endless_item_entity_range.tooltip": "永恒物品追踪的范围",
   "config.avaritia.infinity_elytra_flying_speed": "无尽鞘翅飞行速度",
   "config.avaritia.infinity_elytra_flying_speed.tooltip": "无尽鞘翅的飞行速度",
+  "config.avaritia.infinity_elytra_flying_damage_range": "无尽鞘翅飞行范围伤害",
+  "config.avaritia.infinity_elytra_flying_damage_range.tooltip": "无尽鞘翅在飞行时造成的范围伤害",
   "config.avaritia.boot_speed_base": "靴子基础速度",
   "config.avaritia.boot_speed_base.tooltip": "无尽靴的基础移动速度",
   "config.avaritia.boot_speed_flying_multiplier": "靴子飞行倍数",

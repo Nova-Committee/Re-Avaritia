@@ -56,6 +56,8 @@ public class ModConfig {
     public static final ModConfigSpec.BooleanValue useModDifficulty;
     public static final ModConfigSpec.DoubleValue endlessItemEntityRange;
     public static final ModConfigSpec.DoubleValue endlessItemEntitySpeed;
+    public static final ModConfigSpec.DoubleValue infinityElytraFlyingSpeed;
+    public static final ModConfigSpec.DoubleValue infinityElytraFlyingRangeDamage;
 
     //SERVER
     static {
@@ -108,7 +110,8 @@ public class ModConfig {
         useModDifficulty = buildBoolean(common, "Use Mod Difficulty", true, "For some mods");
         endlessItemEntityRange = buildDouble(common, "Endless ItemEntity Range", 1000, 1, 10000, "The range of Endless ItemEntity");
         endlessItemEntitySpeed = buildDouble(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
-
+        infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5, 1, 10, "Infinity Elytra Flying Speed");
+        infinityElytraFlyingRangeDamage = buildDouble(common, "Infinity Elytra Flying Range Damage", 100, 0, 10000, "Infinity Elytra Flying Range Damage");
         common.pop();
         COMMON = common.build();
     }

@@ -28,8 +28,6 @@ public class NetworkHandler {
 
         registrar.playToServer(C2SRenamePack.TYPE, C2SRenamePack.STREAM_CODEC,
                 new C2SRenamePack.Handler());
-        registrar.playToServer(C2SElytraSpeedUpPacket.TYPE, C2SElytraSpeedUpPacket.STREAM_CODEC,
-                new C2SElytraSpeedUpPacket.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
                 new C2SOpenRingPack.Handler());
         registrar.playToServer(C2SChangePagePack.TYPE, C2SChangePagePack.STREAM_CODEC,

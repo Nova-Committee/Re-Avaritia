@@ -441,6 +441,8 @@
   "config.avaritia.endless_item_entity_range.tooltip": "Tracking Endless Item Range",
   "config.avaritia.infinity_elytra_flying_speed": "Infinity Elytra Flying Speed",
   "config.avaritia.infinity_elytra_flying_speed.tooltip": "Speed of Infinity Elytra",
+  "config.avaritia.infinity_elytra_flying_damage_range": "Infinity Elytra Range Damage",
+  "config.avaritia.infinity_elytra_flying_damage_range.tooltip": "Flying Range Damage of Infinity Elytra",
   "config.avaritia.boot_speed_base": "Boots Base Speed",
   "config.avaritia.boot_speed_base.tooltip": "Infinity Boots Base movement speed for Infinity Boots",
   "config.avaritia.boot_speed_flying_multiplier": "Boots Flying Multiplier",

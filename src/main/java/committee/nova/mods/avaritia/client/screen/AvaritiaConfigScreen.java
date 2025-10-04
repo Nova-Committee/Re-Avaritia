@@ -192,6 +192,12 @@ public class AvaritiaConfigScreen extends Screen {
         addDoubleEntry("endless_item_entity_range", ModConfig.endlessItemEntityRange, 1.0, 10000.0,
                 Component.translatable("config.avaritia.endless_item_entity_range.tooltip"),
                 ModConfig.endlessItemEntityRange::set, ModConfig.endlessItemEntityRange);
+        addDoubleEntry("infinity_elytra_flying_speed", ModConfig.infinityElytraFlyingSpeed, 0.0, 100.0,
+                Component.translatable("config.avaritia.infinity_elytra_flying_speed.tooltip"),
+                ModConfig.infinityElytraFlyingSpeed::set, ModConfig.infinityElytraFlyingSpeed);
+        addDoubleEntry("infinity_elytra_flying_damage_range", ModConfig.infinityElytraFlyingRangeDamage, 0.0, 10000.0,
+                Component.translatable("config.avaritia.infinity_elytra_flying_damage_range.tooltip"),
+                ModConfig.infinityElytraFlyingRangeDamage::set,ModConfig.infinityElytraFlyingRangeDamage);
     }
 
     private void addBooleanEntry(String titleKey, ModConfigSpec.BooleanValue configValue,
@@ -322,6 +328,8 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
         ModConfig.endlessItemEntitySpeed.set(ModConfig.endlessItemEntitySpeed.getDefault());
         ModConfig.endlessItemEntityRange.set(ModConfig.endlessItemEntityRange.getDefault());
+        ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
+        ModConfig.infinityElytraFlyingRangeDamage.set(ModConfig.infinityElytraFlyingRangeDamage.getDefault());
     }
 
     private void updateWidgetValues() {

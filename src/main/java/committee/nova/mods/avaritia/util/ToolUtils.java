@@ -291,6 +291,11 @@ public class ToolUtils {
     public static void infinityTraceArrowDamage(@NotNull EntityHitResult result, TraceArrowEntity arrow) {
 
         Entity entity = result.getEntity();
+        if (entity instanceof Player) {
+            arrow.seekNextTarget();
+
+            return;
+        }
         float f = (float) arrow.getDeltaMovement().length();
         int i = Mth.ceil(Mth.clamp((double) f * arrow.getBaseDamage(), 0.0D, 2.147483647E9D));
         Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();

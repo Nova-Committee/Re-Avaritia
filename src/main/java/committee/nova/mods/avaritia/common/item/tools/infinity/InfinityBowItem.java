@@ -12,8 +12,10 @@ import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -21,6 +23,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -151,22 +155,58 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
                 float draw = getPowerForTime(drawTime);//蓄力时间
                 float powerForTime = draw * VELOCITY_MULTIPLIER;
 
-                AbstractArrow arrowEntity = new HeavenArrowEntity(player);
+                boolean isRangeMode = getMode(stack).equals(InfinityMode.RANGE);
 
-                if (getMode(stack).equals(InfinityMode.RANGE)) {//追踪模式
-                    if ((double) powerForTime >= 0.1D) {
-                        arrowEntity = new TraceArrowEntity(player);
+                // 确定需要发射的箭矢数量
+                int arrowCount = isRangeMode ? 2 : 1;
+
+                for (int i = 0; i < arrowCount; i++) {
+                    AbstractArrow arrowEntity = new HeavenArrowEntity(player);
+
+                    if (isRangeMode) {//追踪模式
+                        if ((double) powerForTime >= 0.1D) {
+                            arrowEntity = new TraceArrowEntity(player);
+                        }
                     }
-                }
 
-                arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.01F);
-                if (draw == 1.0F) {
-                    arrowEntity.setCritArrow(true);//蓄力满必暴击
+                    // 如果是第二发箭矢，稍微调整角度
+                    float yawOffset = i == 1 ? 5.0F : 0.0F;
+                    arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot() + yawOffset, 0.0F, powerForTime * 3.0F, 0.01F);
+
+                    if (draw == 1.0F) {
+                        arrowEntity.setCritArrow(true);//蓄力满必暴击
+                    }
+                    arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
+                    addEnchant(stack, level, player, arrowEntity, powerForTime);
+
+                    // 只在第一发箭矢时播放声音和增加统计
+                    if (i == 0) {
+                        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
+                        player.awardStat(Stats.ITEM_USED.get(this));
+                    }
+
+                    level.addFreshEntity(arrowEntity);
                 }
-                arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
-                addEnchant(stack, level, player, arrowEntity, powerForTime);
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
-                player.awardStat(Stats.ITEM_USED.get(this));
+            }
+        }
+    }
+    @Override
+    public void onUseTick(@NotNull Level level, @NotNull LivingEntity living, @NotNull ItemStack stack, int remainingUseDuration) {
+        super.onUseTick(level, living, stack, remainingUseDuration);
+
+        if (!level.isClientSide && living instanceof Player player) {
+            int elapsed = this.getUseDuration(stack, player) - remainingUseDuration;
+            double vy = player.getDeltaMovement().y;
+
+            if (elapsed <= 28) {
+                if (vy > 0) {
+                    player.setDeltaMovement(player.getDeltaMovement().x, vy + 0.07, player.getDeltaMovement().z);
+                    player.hurtMarked = true;
+                }
+            }
+
+            if (vy < 0) {
+                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 18, 0, false, false, false));
             }
         }
     }

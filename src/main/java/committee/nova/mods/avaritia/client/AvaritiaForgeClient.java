@@ -12,6 +12,7 @@ import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,7 +26,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -50,7 +54,7 @@ import java.util.TreeSet;
 @EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
-
+    private static boolean keepFlying = false;
     // 定义按键绑定
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
             InputConstants.KEY_H, CATEGORIES);
@@ -76,6 +80,9 @@ public class AvaritiaForgeClient {
      */
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
+
+
+        Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = Minecraft.getInstance().player;
         // 检测并消费点击事件
         while (FILTER_KEY.consumeClick() && player != null) {
@@ -88,13 +95,52 @@ public class AvaritiaForgeClient {
             PacketDistributor.sendToServer(new C2SOpenRingPack());
         }
 
-        infinityElytraCooldown = Math.max(infinityElytraCooldown - 1, 0);
-        if (Minecraft.getInstance().options.keyJump.isDown() && infinityElytraCooldown <= 0) {
-            infinityElytraCooldown = 50;
-            PacketDistributor.sendToServer(new C2SElytraSpeedUpPacket());
-        }
+        handleInfinityElytraFallFlying(mc, player);
     }
 
+    public static void handleInfinityElytraFallFlying(Minecraft mc, Player player) {
+        if (player == null) return;
+
+        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+            keepFlying = false;
+            return;
+        }
+
+        boolean isFlying = player.isFallFlying();
+
+        if (mc.options.keyJump.isDown()) {
+            keepFlying = false;
+            return;
+        }
+
+        if (isFlying && !keepFlying) {
+            keepFlying = true;
+        }
+
+        if (keepFlying && player.onGround()) {
+            keepFlying = false;
+
+            double radius = 2.5;
+            List<LivingEntity> nearby = player.level().getEntitiesOfClass(
+                    LivingEntity.class,
+                    player.getBoundingBox().inflate(radius),
+                    e -> e != player && !e.isInvulnerable()
+            );
+
+            for (LivingEntity target : nearby) {
+                target.hurt(player.damageSources().fellOutOfWorld(), 6.0F);
+            }
+            return;
+        }
+
+        if (keepFlying) {
+            if (player.isFallFlying()) {
+                Vec3 look = player.getLookAngle().normalize();
+                double FLY_SPEED = ModConfig.infinityElytraFlyingSpeed.get();
+                player.setDeltaMovement(look.x * FLY_SPEED, look.y * FLY_SPEED, look.z * FLY_SPEED);
+            }
+        }
+    }
 
 
     // region tooltipExt
