@@ -462,7 +462,7 @@ public class ToolUtils {
                         if (mob instanceof Animal animal && hurtAnimal) {
                             animal.hurt(src, damage);
                         } else if (mob instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, src, Float.POSITIVE_INFINITY);
+                            dragon.setHealth(0);
                         } else if (mob instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
                             wither.hurt(src, damage);
