@@ -41,6 +41,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -78,7 +79,7 @@ public class ToolUtils {
             Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.ORES,
             BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
             Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE,
-            Tags.Blocks.COBBLESTONES,
+            Tags.Blocks.COBBLESTONES_DEEPSLATE,
             BlockTags.FEATURES_CANNOT_REPLACE
     );
 
@@ -148,49 +149,54 @@ public class ToolUtils {
     }
 
     /**
-     * 破坏范围方块
+     * 无尽镐And无尽铲破坏
      *
-     * @param player      玩家
-     * @param stack       手中工具
-     * @param pos         点击坐标
-     * @param range       范围
-     * @param keySets     满足的方块
-     * @param filterTrash 使用黑名单
+     * @param player   玩家
+     * @param startPos 起始坐标
+     * @param range    挖掘范围
      */
-    public static void breakRangeBlocks(Player player, ItemStack stack, BlockPos pos, int range, Set<TagKey<Block>> keySets, boolean filterTrash) {
-        var world = player.level();
-        var state = world.getBlockState(pos);
-        var minOffset = new BlockPos(-range, -range, -range);
-        var maxOffset = new BlockPos(range, range, range);
-        if (!state.isAir() && world instanceof ServerLevel serverLevel) {
-            ToolUtils.breakBlocks(serverLevel, player, stack, pos, minOffset, maxOffset, keySets, filterTrash);
-        }
-    }
+    public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
+        ServerLevel world = player.serverLevel();
 
-    private static void breakBlocks(ServerLevel world, Player player,
-                                    ItemStack stack,
-                                    BlockPos origin, BlockPos min, BlockPos max,
-                                    Set<TagKey<Block>> validMaterials, boolean filterTrash
-    ) {
+        // 计算方形范围
+        int halfRange = range / 2;
+        BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
+        BlockPos maxPos = startPos.offset(halfRange, halfRange, halfRange);
+
+
         Set<ItemStack> drops = Sets.newHashSet();
 
-        for (int lx = min.getX(); lx < max.getX(); lx++) {
-            for (int ly = min.getY(); ly < max.getY(); ly++) {
-                for (int lz = min.getZ(); lz < max.getZ(); lz++) {
-                    BlockPos pos = origin.offset(lx, ly, lz);
-                    removeBlockWithDrops(world, player, pos, stack, drops, validMaterials);
+
+        for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+
+            BlockPos currentPos = pos.immutable();
+            BlockState state = world.getBlockState(currentPos);
+
+            // 仅处理可被工具挖掘的方块
+            if (ToolUtils.canUseTool(state, materials) && state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
+                // 收集掉落物
+                List<ItemStack> blockDrops = Block.getDrops(state, world, currentPos, null);
+                if (!blockDrops.isEmpty()) {
+                    drops.addAll(blockDrops);
+                } else {
+                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
+
+                // 破坏方块并优化粒子效果和声音
+                world.destroyBlock(currentPos, false, player);
+
+                // 播放更清晰的破坏声音
+                world.playSound(null, currentPos, state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 0.5F, 1.0F);
+
+                // 显示破坏粒子效果
+                world.levelEvent(2001, currentPos, Block.getId(state));
             }
         }
 
-
-        ClustersUtils.spawnClusters(world, player,
-                filterTrash ? ClustersUtils.removeTrash(drops,
-                        !stack.getOrDefault(ModDataComponents.TOOL_FILTERS, new CompoundTag()).isEmpty()
-                                ? stack.get(ModDataComponents.TOOL_FILTERS).getAllKeys()
-                                : defaultTrashOres)
-                : drops);
-
+        // 将所有掉落物合并为物质团
+        ClustersUtils.spawnClusters(world, player, drops);
     }
 
     public static void removeBlockWithDrops(ServerLevel world, Player player,

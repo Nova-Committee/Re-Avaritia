@@ -4,15 +4,23 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import committee.nova.mods.avaritia.util.SingularityUtils;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Name: Avaritia-forge / InfinityCatalystRecipe
@@ -22,13 +30,36 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
+    private static final Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     private final String group;
     private final int count;
+    private final NonNullList<Ingredient> originalInputs;
 
     public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
-        super(inputs, new ItemStack(ModItems.infinity_catalyst.get()), 4);
+        super(NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get()), 4);
         this.group = pGroup;
         this.count = count;
+        this.originalInputs = inputs;
+    }
+
+    @Override
+    public @NotNull NonNullList<Ingredient> getIngredients() {
+        if (!INGREDIENTS_LOADED.getBoolean(this)) {
+            super.getIngredients().clear();
+            super.getIngredients().addAll(this.originalInputs);
+
+            if ("default".equals(this.group)) {
+                SingularityRegistryHandler.getInstance().getSingularities()
+                        .stream()
+                        .filter(singularity -> singularity.isEnabled() && singularity.isRecipeEnabled())
+                        .map(SingularityUtils::getItemForSingularity)
+                        .map(Ingredient::of)
+                        .forEach(super.getIngredients()::add);
+            }
+
+            INGREDIENTS_LOADED.put(this, true);
+        }
+        return super.getIngredients();
     }
 
     @Override
@@ -62,7 +93,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                                         },
                                         DataResult::success
                                 )
-                                .forGetter(ShapelessTableCraftingRecipe::getInputs),
+                                .forGetter(recipe -> recipe.originalInputs),
                         Codec.INT.fieldOf("count").forGetter(recipe -> recipe.count)
                 ).apply(builder, InfinityCatalystCraftRecipe::new)
         );
@@ -93,9 +124,9 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, InfinityCatalystCraftRecipe recipe) {
             buffer.writeUtf(recipe.group);
-            buffer.writeVarInt(recipe.getInputs().size());
+            buffer.writeVarInt(recipe.originalInputs.size());
 
-            for (var ingredient : recipe.getInputs()) {
+            for (var ingredient : recipe.originalInputs) {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             buffer.writeInt(recipe.count);

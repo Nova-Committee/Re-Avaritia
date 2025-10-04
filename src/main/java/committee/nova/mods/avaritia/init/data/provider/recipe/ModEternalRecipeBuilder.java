@@ -121,4 +121,5 @@ public class ModEternalRecipeBuilder implements RecipeBuilder {
             throw new IllegalStateException("No way of obtaining recipe " + id);
         }
     }
+
 }

@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -93,7 +94,7 @@ public class InfinityShovelItem extends ShovelItem implements IItemMode<Infinity
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (getMode(stack).equals(InfinityMode.RANGE) && miningEntity instanceof Player player) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.shovelBreakRange.get(), ToolUtils.materialsShovel, false);
+            ToolUtils.destroyMaterialBlocks((ServerPlayer) player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsShovel);
         }
         return false;
     }

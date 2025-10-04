@@ -16,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -119,7 +120,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements IItemEnchant, IF
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (miningEntity instanceof Player player && getMode(stack).equals(InfinityMode.RANGE)) {
-            ToolUtils.breakRangeBlocks(player, stack, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick, true);
+            ToolUtils.destroyMaterialBlocks((ServerPlayer) player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
         }
         return false;
     }
