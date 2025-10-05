@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.util.InventoryUtils;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
+import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
@@ -63,6 +64,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -274,7 +276,7 @@ public class ToolUtils {
     }
 
 
-    public static DamageSource getArrowDamageSource(AbstractArrow arrow, Entity owner, Entity target) {
+    public static DamageSource getArrowDamageSource(Level level, AbstractArrow arrow, Entity owner, Entity target) {
         DamageSource damagesource;
         if (owner == null) {
             damagesource = target.damageSources().arrow(arrow, arrow);
@@ -286,7 +288,7 @@ public class ToolUtils {
         }
 
         if (owner != null && projectileAntiImmuneEntities.contains(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(target.getType())).toString())) {
-            damagesource = ModDamageTypes.causeRandomDamage(owner);
+            damagesource = ModDamageTypes.causeRandomDamage(level, owner);
         }
         return damagesource;
     }
@@ -297,7 +299,7 @@ public class ToolUtils {
      * @param result 命中结果
      * @param arrow  弓箭
      */
-    public static void infinityTraceArrowDamage(@NotNull EntityHitResult result, TraceArrowEntity arrow) {
+    public static void infinityTraceArrowDamage(Level level, @NotNull EntityHitResult result, TraceArrowEntity arrow) {
 
         Entity entity = result.getEntity();
         float f = (float) arrow.getDeltaMovement().length();
@@ -325,7 +327,7 @@ public class ToolUtils {
             i = (int) Math.min(j + (long) i, 2147483647L);
         }
 
-        DamageSource damagesource = ToolUtils.getArrowDamageSource(arrow, owner, entity);
+        DamageSource damagesource = ToolUtils.getArrowDamageSource(level, arrow, owner, entity);
         boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
         int k = entity.getRemainingFireTicks();
         if (arrow.isOnFire() && !isEnderman) {
@@ -493,15 +495,38 @@ public class ToolUtils {
                     } else if (entity instanceof Entity) {
                         entity.hurt(src, damage);
                     }
-                    LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
-                    if (lightOn && lightningbolt != null) {
-                        lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
-                        lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
-                        player.level().addFreshEntity(lightningbolt);
-                    }
+                    if (lightOn) trySummonLightning(player.level(), 1, entity.blockPosition(),
+                            player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
                 });
     }
 
+
+
+    /**
+     * 尝试在指定位置召唤闪电
+     *
+     * @param level 世界对象，用于创建和添加实体
+     * @param bolts 生成的闪电数量
+     * @param hitPos 闪电生成的位置
+     * @param thrower 可为空的服务器玩家对象，作为闪电的施放者
+     * @return 如果成功生成至少一个闪电则返回true，否则返回false
+     */
+    public static boolean trySummonLightning(Level level, int bolts, BlockPos hitPos, @Nullable ServerPlayer thrower) {
+        if (level instanceof ServerLevel serverLevel){
+            boolean hasAction = false;
+            for (int i = 0; i < bolts; i++) {
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                if (lightning != null) {
+                    lightning.moveTo(Vec3.atBottomCenterOf(hitPos));
+                    lightning.setCause(thrower);
+                    serverLevel.addFreshEntity(lightning);
+                }
+                hasAction = true;
+            }
+            return hasAction;
+        }
+        return false;
+    }
 
     /**
      * 范围收获
@@ -757,6 +782,7 @@ public class ToolUtils {
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
         player.swing(player.getUsedItemHand());
     }
+
 
     private static class BlockPosList extends ArrayList<BlockPos> {
         @Override

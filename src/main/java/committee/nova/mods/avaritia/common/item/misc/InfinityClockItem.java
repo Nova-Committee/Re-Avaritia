@@ -42,11 +42,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
-
-
     public static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
     private static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
-    private static final int[] SPEED_STEPS = {1, 4, 16, 64, 256, 512};
 
     public InfinityClockItem() {
         super(ModRarities.COSMIC, true, new Properties().stacksTo(1));

@@ -68,8 +68,6 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         }
 
         this.slotsChanged(matrix);
-        Const.LOGGER.info(this.slots.size());
-        this.slots.forEach(slot -> Const.LOGGER.info(slot.container));
     }
 
     public static TierCraftMenu sculk(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {

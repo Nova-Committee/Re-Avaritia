@@ -235,7 +235,7 @@ public class TraceArrowEntity extends Arrow {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult pResult) {
-        ToolUtils.infinityTraceArrowDamage(pResult, this);
+        ToolUtils.infinityTraceArrowDamage(level(), pResult, this);
     }
 
     @Override

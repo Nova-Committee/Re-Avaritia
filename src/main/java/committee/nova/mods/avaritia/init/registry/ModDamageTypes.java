@@ -16,6 +16,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,13 +44,17 @@ public class ModDamageTypes {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1F));
     }
 
-    public static DamageSource causeRandomDamage(Entity attacker) {
-        return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
+    public static DamageSource causeRandomDamage(Level level, @Nullable Entity itemEntity, @Nullable Entity owner) {
+        return new DamageSourceRandomMessages(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), itemEntity, owner);
+    }
+
+    public static DamageSource causeRandomDamage(Level level, @Nullable Entity owner) {
+        return new DamageSourceRandomMessages(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), owner, owner);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {
-        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity) {
-            super(damageTypeHolder, entity);
+        public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity itemEntity, @Nullable Entity owner) {
+            super(damageTypeHolder, itemEntity, owner);
         }
 
         @Override

@@ -1,9 +1,17 @@
 package committee.nova.mods.avaritia.common.entity;
 
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityTridentItem;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,202 +20,336 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 
-public class InfinityThrownTrident extends AbstractArrow {
-    private static final EntityDataAccessor<Byte> ID_LOYALTY;
-    private static final EntityDataAccessor<Boolean> ID_FOIL;
-    private ItemStack tridentItem;
+public class InfinityThrownTrident extends AbstractArrow implements IEntityAdditionalSpawnData {
+    private static final EntityDataAccessor<Boolean> CHANNELING = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> SHOCKWAVE = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.INT);
+
+    private static final Predicate<Entity> SLAY_MOB = entity -> !entity.isSpectator() && entity instanceof Enemy;
+    private ItemStack tridentItem = new ItemStack(ModItems.infinity_trident.get());
     private boolean dealtDamage;
-    public int clientSideReturnTridentTickCount;
+    private boolean noReturn;
+    private final int loyaltyLevel = 5;
+    public int returningTicks;
 
-    public InfinityThrownTrident(EntityType<? extends InfinityThrownTrident> entity, Level level) {
-        super(entity, level);
-        this.tridentItem = new ItemStack(ModItems.infinity_trident.get());
+    public InfinityThrownTrident(EntityType<? extends InfinityThrownTrident> type, Level worldIn) {
+        super(type, worldIn);
     }
 
-    public InfinityThrownTrident(Level p_37569_, LivingEntity p_37570_, ItemStack p_37571_) {
-        super(ModEntities.infinity_thrown_trident.get(), p_37570_, p_37569_);
-        this.tridentItem = new ItemStack(ModItems.infinity_trident.get());
-        this.tridentItem = p_37571_.copy();
-        this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(p_37571_));
-        this.entityData.set(ID_FOIL, p_37571_.hasFoil());
+    public InfinityThrownTrident(Level world, LivingEntity thrower, ItemStack thrownStackIn) {
+        super(ModEntities.infinity_thrown_trident.get(), thrower, world);
+        setStackAndLoyalty(thrownStackIn.copy());
     }
 
+
+    private void setStackAndLoyalty(@NotNull ItemStack stack) {
+        if (!stack.isEmpty() && stack.getItem() instanceof InfinityTridentItem trident) {
+            tridentItem = stack;
+        }
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(ID_LOYALTY, (byte) 0);
-        this.entityData.define(ID_FOIL, false);
+        this.entityData.define(SHOCKWAVE, false);
+        this.entityData.define(CHANNELING, false);
+        this.entityData.define(RADIUS, 1);
     }
 
+    @Override
     public void tick() {
-        if (this.inGroundTime > 4) {
-            this.dealtDamage = true;
+        if (inGroundTime > 4) {
+            dealtDamage = true;
+            noReturn = !isAcceptableReturnOwner();
         }
-
-        Entity entity = this.getOwner();
-        int i = (Byte) this.entityData.get(ID_LOYALTY);
-        if (i > 0 && (this.dealtDamage || this.isNoPhysics()) && entity != null) {
-            if (!this.isAcceptibleReturnOwner()) {
-                if (!this.level().isClientSide && this.pickup == Pickup.ALLOWED) {
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+        if (!noReturn && (dealtDamage || isNoPhysics())) {
+            Entity entity = getOwner();
+            if (entity != null) {
+                if (isAcceptableReturnOwner()) {
+                    setNoPhysics(true);
+                    Vec3 returnVector = entity.getEyePosition().subtract(position());
+                    setPosRaw(getX(), getY() + returnVector.y * 0.015D * loyaltyLevel, getZ());
+                    if (level().isClientSide) {
+                        yOld = getY();
+                    }
+                    setDeltaMovement(getDeltaMovement().scale(0.95D).add(returnVector.normalize().scale(0.05D * loyaltyLevel)));
+                    if (returningTicks == 0) {
+                        playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
+                    }
+                    ++this.returningTicks;
+                } else {
+                    if (!level().isClientSide && pickup == Pickup.ALLOWED) {
+                        spawnAtLocation(getPickupItem(), 0.1F);
+                    }
+                    discard();
                 }
-
-                this.discard();
-            } else {
-                this.setNoPhysics(true);
-                Vec3 vec3 = entity.getEyePosition().subtract(this.position());
-                this.setPosRaw(this.getX(), this.getY() + vec3.y * 0.015 * (double) i, this.getZ());
-                if (this.level().isClientSide) {
-                    this.yOld = this.getY();
-                }
-
-                double d0 = 0.05 * (double) i;
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95).add(vec3.normalize().scale(d0)));
-                if (this.clientSideReturnTridentTickCount == 0) {
-                    this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
-                }
-
-                ++this.clientSideReturnTridentTickCount;
             }
         }
-
         super.tick();
     }
 
-    private boolean isAcceptibleReturnOwner() {
-        Entity entity = this.getOwner();
+    private boolean isAcceptableReturnOwner() {
+        Entity entity = getOwner();
         if (entity != null && entity.isAlive()) {
             return !(entity instanceof ServerPlayer) || !entity.isSpectator();
-        } else {
-            return false;
         }
+        return false;
     }
 
+    @NotNull
+    @Override
     protected ItemStack getPickupItem() {
         return this.tridentItem.copy();
     }
 
-    public boolean isFoil() {
-        return (Boolean) this.entityData.get(ID_FOIL);
-    }
-
     @Nullable
-    protected EntityHitResult findHitEntity(Vec3 p_37575_, Vec3 p_37576_) {
-        return this.dealtDamage ? null : super.findHitEntity(p_37575_, p_37576_);
+    @Override
+    protected EntityHitResult findHitEntity(@NotNull Vec3 startVec, @NotNull Vec3 endVec) {
+        return this.dealtDamage ? null : super.findHitEntity(startVec, endVec);
     }
 
-    protected void onHitEntity(EntityHitResult p_37573_) {
-        Entity entity = p_37573_.getEntity();
-        float f = 8.0F;
-        if (entity instanceof LivingEntity livingentity) {
-            f += EnchantmentHelper.getDamageBonus(this.tridentItem, livingentity.getMobType());
-        }
-
-        Entity entity1 = this.getOwner();
-        DamageSource damagesource = this.damageSources().trident(this, (Entity) (entity1 == null ? this : entity1));
-        this.dealtDamage = true;
-        SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
-        if (entity.hurt(damagesource, f)) {
-            if (entity.getType() == EntityType.ENDERMAN) {
-                return;
-            }
-
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingentity1 = (LivingEntity) entity;
-                if (entity1 instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity1, entity1);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity) entity1, livingentity1);
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        Entity hitEntity = result.getEntity();
+        InfinityTridentItem trident = (InfinityTridentItem) tridentItem.getItem();
+        float damage = Float.MAX_VALUE;
+        Entity thrower = getOwner();
+        DamageSource damagesource = damageSources().trident(this, thrower == null ? this : thrower);
+        dealtDamage = true;
+        if (hitEntity.hurt(damagesource, damage)) {
+            //Vanilla's trident exits on endermen here, we allow hitting them instead
+            if (hitEntity instanceof LivingEntity livingHit) {
+                if (thrower instanceof LivingEntity) {
+                    EnchantmentHelper.doPostHurtEffects(livingHit, thrower);
+                    EnchantmentHelper.doPostDamageEffects((LivingEntity) thrower, livingHit);
                 }
-
-                this.doPostHurtEffects(livingentity1);
+                this.doPostHurtEffects(livingHit);
             }
         }
+        setDeltaMovement(getDeltaMovement().multiply(-0.01D, -0.1D, -0.01D));
+        float volume = 1.0F;
+        SoundEvent sound = SoundEvents.TRIDENT_HIT;
+        AABB area = new AABB(hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(), hitEntity.getX(), hitEntity.getY(), hitEntity.getZ()).inflate(this.entityData.get(RADIUS));
+        List<Mob> mobs = this.entityData.get(SHOCKWAVE) ? this.getCommandSenderWorld().getEntitiesOfClass(Mob.class, area) : Collections.emptyList();
 
-        this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01));
-        float f1 = 1.0F;
-        if (this.level() instanceof ServerLevel && this.level().isThundering() && this.isChanneling()) {
-            BlockPos blockpos = entity.blockPosition();
+        if (thrower instanceof Player && this.entityData.get(SHOCKWAVE)) {
+            mobs.forEach(mobEntity -> {
+                mobEntity.hurt(mobEntity.damageSources().playerAttack((Player) thrower), damage);
+            });
+            this.getCommandSenderWorld().getEntitiesOfClass(ItemEntity.class, area.inflate(1)).forEach(itemEntity -> {
+                itemEntity.setNoPickUpDelay();
+                itemEntity.teleportTo(thrower.blockPosition().getX(), thrower.blockPosition().getY() + 1, thrower.blockPosition().getZ());
+            });
+            this.getCommandSenderWorld().getEntitiesOfClass(ExperienceOrb.class, area.inflate(1))
+                    .forEach(entityXPOrb ->
+                            entityXPOrb.teleportTo(thrower.blockPosition().getX(), thrower.blockPosition().getY(), thrower.blockPosition().getZ()));
+        }
+        if (this.level() instanceof ServerLevel && this.entityData.get(CHANNELING)) {
+            BlockPos blockpos = hitEntity.blockPosition();
             if (this.level().canSeeSky(blockpos)) {
-                LightningBolt lightningbolt = (LightningBolt) EntityType.LIGHTNING_BOLT.create(this.level());
-                if (lightningbolt != null) {
-                    lightningbolt.moveTo(Vec3.atBottomCenterOf(blockpos));
-                    lightningbolt.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer) entity1 : null);
-                    this.level().addFreshEntity(lightningbolt);
-                    soundevent = SoundEvents.TRIDENT_THUNDER;
-                    f1 = 5.0F;
-                }
+                ToolUtils.trySummonLightning(level(), 1, blockpos,
+                        thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
+                sound = SoundEvents.TRIDENT_THUNDER;
+                volume = 5.0F;
+                mobs.forEach(mobEntity -> {
+                    if (this.level().canSeeSky(mobEntity.blockPosition())) {
+                        ToolUtils.trySummonLightning(level(), 1, mobEntity.blockPosition(),
+                                thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
+                    }
+                });
+            }
+        }
+        playSound(sound, volume, 1.0F);
+    }
+
+    @Override//onBlockHit
+    protected void onHitBlock(BlockHitResult result) {
+        float damage = Float.MAX_VALUE;
+        lastState = level().getBlockState(result.getBlockPos());
+        lastState.onProjectileHit(level(), lastState, result, this);
+        Vec3 motion = result.getLocation().subtract(getX(), getY(), getZ());
+        setDeltaMovement(motion);
+        Vec3 vec3d1 = motion.normalize().scale(0.05F);
+        setPosRaw(getX() - vec3d1.x, getY() - vec3d1.y, getZ() - vec3d1.z);
+        //Vanilla Copy end
+
+        SoundEvent sound = getHitGroundSoundEvent();
+        float volume = 1.0F;
+        float pitch = 1.2F / (random.nextFloat() * 0.2F + 0.9F);
+
+        BlockPos hitPosition = result.getBlockPos();
+        Entity thrower = getOwner();
+        //If we hit a block try
+        InfinityTridentItem trident = (InfinityTridentItem) tridentItem.getItem();
+
+        if (this.level() instanceof ServerLevel && this.entityData.get(CHANNELING)) {
+            if (ToolUtils.trySummonLightning(level(),  1, hitPosition.above(), thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null)) {
+                sound = SoundEvents.TRIDENT_THUNDER;
+                volume = 5.0F;
+                pitch = 1.0F;
             }
         }
 
-        this.playSound(soundevent, f1, 1.0F);
+        AABB area = new AABB(hitPosition.getX(), hitPosition.getY(), hitPosition.getZ(), hitPosition.getX(), hitPosition.getY(), hitPosition.getZ()).inflate(this.entityData.get(RADIUS));
+        List<Mob> mobs = this.entityData.get(SHOCKWAVE) ? this.getCommandSenderWorld().getEntitiesOfClass(Mob.class, area) : Collections.emptyList();
+        if (thrower instanceof Player && this.entityData.get(SHOCKWAVE)) {
+            mobs.forEach(mobEntity -> {
+                mobEntity.hurt(mobEntity.damageSources().playerAttack((Player) thrower), damage);
+            });
+            this.getCommandSenderWorld().getEntitiesOfClass(ItemEntity.class, area.inflate(1)).forEach(itemEntity -> {
+                itemEntity.setNoPickUpDelay();
+                itemEntity.teleportTo(thrower.blockPosition().getX(), thrower.blockPosition().getY() + 1, thrower.blockPosition().getZ());
+            });
+            this.getCommandSenderWorld().getEntitiesOfClass(ExperienceOrb.class, area.inflate(1))
+                    .forEach(entityXPOrb ->
+                            entityXPOrb.teleportTo(thrower.blockPosition().getX(), thrower.blockPosition().getY(), thrower.blockPosition().getZ()));
+        }
+
+        if (this.level() instanceof ServerLevel && this.entityData.get(CHANNELING)) {
+            if (this.level().canSeeSky(hitPosition)) {
+                ToolUtils.trySummonLightning(level(), 1, hitPosition,
+                        thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
+                sound = SoundEvents.TRIDENT_THUNDER;
+                volume = 5.0F;
+                mobs.forEach(mobEntity -> {
+                    if (this.level().canSeeSky(mobEntity.blockPosition())) {
+                        ToolUtils.trySummonLightning(level(), 1, mobEntity.blockPosition(),
+                                thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
+                    }
+                });
+            }
+        }
+
+        //Vanilla Copy continue
+        playSound(sound, volume, pitch);
+        inGround = true;
+        shakeTime = 7;
+        setCritArrow(false);
+        setPierceLevel((byte) 0);
+        setSoundEvent(SoundEvents.ARROW_HIT);
+        setShotFromCrossbow(false);
+        resetPiercedEntities();
     }
 
-    public boolean isChanneling() {
-        return EnchantmentHelper.hasChanneling(this.tridentItem);
+    private boolean tryCreateShockwave(int charge, float damage, @Nullable LivingEntity thrower) {
+        if (level() instanceof ServerLevel serverLevel) {
+            if (thrower != null) {
+                DamageSource src = ModDamageTypes.causeRandomDamage(serverLevel, this, thrower);
+                float damageToDo = damage + charge;
+                int distance = charge + 1;
+                for (Entity entity : serverLevel.getEntities(thrower, getBoundingBox().inflate(distance), SLAY_MOB)) {
+                    entity.hurt(src, damageToDo);
+                }
+                AreaEffectCloud particle = new AreaEffectCloud(serverLevel, getX(), getY(), getZ());
+                particle.setOwner(thrower);
+                particle.setParticle(ParticleTypes.CRIT);
+                particle.setRadius(distance);
+                particle.setDuration(0);
+                serverLevel.addFreshEntity(particle);
+                return true;
+            }
+        }
+        return false;
     }
 
-    protected boolean tryPickup(Player p_150196_) {
-        return super.tryPickup(p_150196_) || this.isNoPhysics() && this.ownedBy(p_150196_) && p_150196_.getInventory().add(this.getPickupItem());
+    @Override
+    protected boolean tryPickup(@NotNull Player player) {
+        return super.tryPickup(player) || isNoPhysics() && ownedBy(player) && player.getInventory().add(getPickupItem());
     }
 
+    @NotNull
+    @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {
         return SoundEvents.TRIDENT_HIT_GROUND;
     }
 
-    public void playerTouch(Player p_37580_) {
-        if (this.ownedBy(p_37580_) || this.getOwner() == null) {
-            super.playerTouch(p_37580_);
+    @Override
+    public void playerTouch(@NotNull Player entity) {
+        if (ownedBy(entity) || getOwner() == null) {
+            super.playerTouch(entity);
         }
-
     }
 
-    public void readAdditionalSaveData(CompoundTag p_37578_) {
-        super.readAdditionalSaveData(p_37578_);
-        if (p_37578_.contains("Trident", 10)) {
-            this.tridentItem = ItemStack.of(p_37578_.getCompound("Trident"));
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("Trident", Tag.TAG_COMPOUND)) {
+            setStackAndLoyalty(ItemStack.of(compound.getCompound("Trident")));
         }
-
-        this.dealtDamage = p_37578_.getBoolean("DealtDamage");
-        this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.tridentItem));
+        dealtDamage = compound.getBoolean("DealtDamage");
+        noReturn = compound.getBoolean("NoReturn");
+        //this.entityData.set(SHOCKWAVE, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentLoyalty(thrownStack));
+       // this.entityData.set(CHANNELING, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentChanneling(thrownStack));
+        //this.entityData.set(RADIUS, ItemInfinity.getSelectedTier(thrownStack).getRadius());
     }
 
-    public void addAdditionalSaveData(CompoundTag p_37582_) {
-        super.addAdditionalSaveData(p_37582_);
-        p_37582_.put("Trident", this.tridentItem.save(new CompoundTag()));
-        p_37582_.putBoolean("DealtDamage", this.dealtDamage);
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.put("Trident", tridentItem.serializeNBT());
+        compound.putBoolean("DealtDamage", dealtDamage);
+        compound.putBoolean("NoReturn", noReturn);
     }
 
-    public void tickDespawn() {
-        int i = (Byte) this.entityData.get(ID_LOYALTY);
-        if (this.pickup != Pickup.ALLOWED || i <= 0) {
+    @Override
+    protected void tickDespawn() {
+        if (this.pickup != Pickup.ALLOWED) {
             super.tickDespawn();
+        } else if (noReturn && !level().isClientSide) {
+            spawnAtLocation(getPickupItem(), 0.1F);
+            discard();
         }
-
     }
 
+    @Override
     protected float getWaterInertia() {
-        return 0.99F;
+        return 0.99F + 0.5F;
     }
 
-    public boolean shouldRender(double p_37588_, double p_37589_, double p_37590_) {
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public boolean shouldRender(double x, double y, double z) {
         return true;
     }
 
-    static {
-        ID_LOYALTY = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BYTE);
-        ID_FOIL = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
+    @NotNull
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        buffer.writeItem(tridentItem);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf buffer) {
+        setStackAndLoyalty(buffer.readItem());
+    }
+
+    @Override
+    public ItemStack getPickedResult(HitResult target) {
+        return tridentItem.copy();
     }
 }

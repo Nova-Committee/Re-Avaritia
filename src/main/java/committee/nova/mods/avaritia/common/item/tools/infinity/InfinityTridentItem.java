@@ -4,11 +4,13 @@ import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
@@ -17,18 +19,39 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class InfinityTridentItem extends TridentItem implements IUndamageable, ISwitchable {
+import java.util.Arrays;
+import java.util.List;
 
+public class InfinityTridentItem extends TridentItem implements IUndamageable, ISwitchable {
+    public static final List<String> FUNC_MODES = Arrays.asList("infinity_trident_normal", "infinity_trident_loyalty", "infinity_trident_riptide");
+    public static final byte MODE_NORMAL = 0;
+    public static final byte MODE_LOYALTY = 1;
+    public static final byte MODE_RIPTIDE = 2;
     public InfinityTridentItem() {
         super((new Item.Properties())
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant());
+    }
+
+    @Override
+    public boolean isEnchantable(@NotNull ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        return false;
     }
 
     @Override
@@ -38,21 +61,20 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack) {
-        return 72000;
+        return 18000;
     }
 
     @Override
     public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
         if (livingEntity instanceof Player player) {
             int i = this.getUseDuration(itemStack) - timeLeft;
+            int currentMode = ISwitchable.getCurrentMode(itemStack, FUNC_MODES);
             if (i >= 10) {
-                int j = EnchantmentHelper.getRiptide(itemStack);
-                if (j <= 0 || player.isInWaterOrRain()) {
-                    if (!level.isClientSide) {
-                        itemStack.hurtAndBreak(1, player, (player1) -> player1.broadcastBreakEvent(livingEntity.getUsedItemHand()));
-                        if (j == 0) {
+                switch (currentMode) {
+                    case MODE_NORMAL -> {
+                        if (!level.isClientSide) {
                             InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack);
-                            throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float) j * 0.5F, 1.0F);
+                            throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);
                             if (player.getAbilities().instabuild) {
                                 throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                             }
@@ -64,39 +86,41 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                             }
                         }
                     }
-
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                    if (j > 0) {
-                        float f7 = player.getYRot();
-                        float f = player.getXRot();
-                        float f1 = -Mth.sin(f7 * ((float) Math.PI / 180F)) * Mth.cos(f * ((float) Math.PI / 180F));
-                        float f2 = -Mth.sin(f * ((float) Math.PI / 180F));
-                        float f3 = Mth.cos(f7 * ((float) Math.PI / 180F)) * Mth.cos(f * ((float) Math.PI / 180F));
-                        float f4 = Mth.sqrt(f1 * f1 + f2 * f2 + f3 * f3);
-                        float f5 = 3.0F * ((1.0F + (float) j) / 4.0F);
-                        f1 *= f5 / f4;
-                        f2 *= f5 / f4;
-                        f3 *= f5 / f4;
-                        player.push((double) f1, (double) f2, (double) f3);
+                    case MODE_LOYALTY -> {
+                        player.awardStat(Stats.ITEM_USED.get(this));
+                    }
+                    case MODE_RIPTIDE -> {
+                        player.awardStat(Stats.ITEM_USED.get(this));
+                        int riptideLevel = 5;
+                        float toRadians = (float) Math.PI / 180F;
+                        float yaw = player.getYRot() * toRadians;
+                        float pitch = player.getXRot() * toRadians;
+                        float xVelocity = -Mth.sin(yaw) * Mth.cos(pitch);
+                        float yVelocity = -Mth.sin(pitch);
+                        float zVelocity = Mth.cos(yaw) * Mth.cos(pitch);
+                        float velocity = Mth.sqrt(xVelocity * xVelocity + yVelocity * yVelocity + zVelocity * zVelocity);
+                        float velocityModifier = (0.75F + 0.75F * riptideLevel) / velocity;
+                        player.push(xVelocity * velocityModifier, yVelocity * velocityModifier, zVelocity * velocityModifier);
                         player.startAutoSpinAttack(20);
                         if (player.onGround()) {
-                            float f6 = 1.1999999F;
-                            player.move(MoverType.SELF, new Vec3((double) 0.0F, (double) 1.1999999F, (double) 0.0F));
+                            player.move(MoverType.SELF, new Vec3(0.0D, 1.1999999F, 0.0D));
                         }
-
-                        SoundEvent soundevent;
-                        if (j >= 3) {
-                            soundevent = SoundEvents.TRIDENT_RIPTIDE_3;
-                        } else if (j == 2) {
-                            soundevent = SoundEvents.TRIDENT_RIPTIDE_2;
-                        } else {
-                            soundevent = SoundEvents.TRIDENT_RIPTIDE_1;
-                        }
-
-                        level.playSound(null, player, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        level.playSound(null, player, SoundEvents.TRIDENT_RIPTIDE_3, SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
+
                 }
             }
         }
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isCrouching()) {
+            cycleMode(world, player, hand, FUNC_MODES);
+            return InteractionResultHolder.success(stack);
+        }
+
+        return super.use(world, player, hand);
     }
 }
