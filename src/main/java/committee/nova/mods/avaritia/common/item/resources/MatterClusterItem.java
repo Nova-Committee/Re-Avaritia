@@ -145,7 +145,7 @@ public class MatterClusterItem extends Item {
     public void appendHoverText(ItemStack stack, Level worldIn, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
         if (stack.hasTag() || !stack.getOrCreateTag().contains("items", Tag.TAG_LIST)) {
             int total = getClusterSize(stack);
-            tooltip.add(Component.translatable("tooltip.matter_cluster.counter", total, Math.max(total, CAPACITY)));
+            tooltip.add(Component.translatable("tooltip.avaritia.matter_cluster.counter", total, Math.max(total, CAPACITY)));
             tooltip.add(Component.literal(""));
             if (Screen.hasShiftDown()) {
                 Object2IntMap<Item> itemCounts = new Object2IntOpenHashMap<>();
@@ -160,8 +160,8 @@ public class MatterClusterItem extends Item {
                     tooltip.add((Component.translatable(itemx.getDescriptionId())).withStyle(itemx.getRarity(new ItemStack(itemx)).getStyleModifier()).append((Component.literal(" x " + count)).withStyle(ChatFormatting.GRAY)));
                 });
             } else {
-                tooltip.add((Component.translatable("tooltip.matter_cluster.desc")).withStyle(ChatFormatting.DARK_GRAY));
-                tooltip.add((Component.translatable("tooltip.matter_cluster.desc2")).withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
+                tooltip.add((Component.translatable("tooltip.avaritia.matter_cluster.desc")).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.add((Component.translatable("tooltip.avaritia.matter_cluster.desc2")).withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
             }
 
         }

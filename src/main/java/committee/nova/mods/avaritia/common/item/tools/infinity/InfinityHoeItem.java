@@ -81,7 +81,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
             tags.putBoolean("sow", !tags.getBoolean("sow"));
             player.swing(hand);
             if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
-                    Component.translatable(tags.getBoolean("sow") ? "tooltip.infinity_hoe.type_2" : "tooltip.infinity_hoe.type_1"
+                    Component.translatable(tags.getBoolean("sow") ? "tooltip.avaritia.tool.infinity_hoe.type_2" : "tooltip.avaritia.tool.infinity_hoe.type_1"
                     ), true);
             return InteractionResultHolder.success(stack);
         }

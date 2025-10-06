@@ -67,12 +67,12 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
                 ItemUtils.clearEnchants(stack);
                 stack.enchant(Enchantments.BLOCK_FORTUNE, 3);
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
-                    serverPlayer.sendSystemMessage(Component.translatable("tooltip.crystal_pickaxe.enchant_1"), true);
+                    serverPlayer.sendSystemMessage(Component.translatable("tooltip.avaritia.tool.crystal_pickaxe.enchant_1"), true);
             } else {
                 ItemUtils.clearEnchants(stack);
                 stack.enchant(Enchantments.SILK_TOUCH, 1);
                 if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
-                    serverPlayer.sendSystemMessage(Component.translatable("tooltip.crystal_pickaxe.enchant_2"), true);
+                    serverPlayer.sendSystemMessage(Component.translatable("tooltip.avaritia.tool.crystal_pickaxe.enchant_2"), true);
             }
             player.swing(hand);
             return InteractionResultHolder.success(stack);

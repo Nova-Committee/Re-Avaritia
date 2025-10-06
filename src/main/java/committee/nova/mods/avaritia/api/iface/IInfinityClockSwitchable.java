@@ -20,8 +20,8 @@ public interface IInfinityClockSwitchable extends ISwitchable {
         switch (funcName) {
             case "infinity_clock_up":
                 message = tags.getBoolean(funcName) ?
-                        Component.translatable("tooltip.avaritia.infinity_clock.overclock_enabled") :
-                        Component.translatable("tooltip.avaritia.infinity_clock.overclock_disabled");
+                        Component.translatable("tooltip.avaritia.tool.infinity_clock.overclock_enabled") :
+                        Component.translatable("tooltip.avaritia.tool.infinity_clock.overclock_disabled");
                 break;
             default:
                 Component funcTooltip = Component.translatable("tooltip.avaritia.tool." + funcName);
