@@ -240,7 +240,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
         var heldItem = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchMode(level, player, hand, "infinity_sword_kill");
             return InteractionResultHolder.success(itemstack);
         }

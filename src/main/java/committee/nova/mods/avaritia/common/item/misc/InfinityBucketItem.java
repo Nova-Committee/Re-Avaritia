@@ -147,7 +147,7 @@ public class InfinityBucketItem extends ResourceItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
-        if (pPlayer.isCrouching()) {
+        if (pPlayer.isShiftKeyDown()) {
             List<FluidStack> fluids = getFluids(itemStack);
             if (fluids.isEmpty()) {
                 return InteractionResultHolder.fail(itemStack);

@@ -86,7 +86,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchMode(world, player, hand, "infinity_pickaxe_hammer");
             return InteractionResultHolder.success(stack);
         }

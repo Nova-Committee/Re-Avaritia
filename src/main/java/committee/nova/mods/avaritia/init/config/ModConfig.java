@@ -31,8 +31,8 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue bladeSlashDamage;
     public static final ForgeConfigSpec.IntValue bladeSlashRadius;
     public static final ForgeConfigSpec.BooleanValue internalInfinityCatalystCraft;
-    public static final ForgeConfigSpec.DoubleValue endlessItemEntitySpeed;
-    public static final ForgeConfigSpec.DoubleValue endlessItemEntityRange;
+    public static final ForgeConfigSpec.DoubleValue immortalItemEntitySpeed;
+    public static final ForgeConfigSpec.DoubleValue immortalItemEntityRange;
     public static final ForgeConfigSpec.DoubleValue infinityElytraFlyingSpeed;
     public static final ForgeConfigSpec.DoubleValue bootSpeedBase;
     public static final ForgeConfigSpec.DoubleValue bootSpeedFlyingMultiplier;
@@ -105,9 +105,11 @@ public class ModConfig {
         CHANNEL_FULL_UPDATE_RATE = buildInt(common, "config.avaritia.channel_full_update_rate", 40, 20, 1200, "config.avaritia.channel_full_update_rate.tooltip");
         common.pop();
         common.push("misc");
+        common.push("immortal item entity");
+        immortalItemEntitySpeed = buildDouble(common, "config.avaritia.endless_item_entity_speed", 3, 1, 50, "config.avaritia.endless_item_entity_speed.tooltip");
+        immortalItemEntityRange = buildDouble(common, "config.avaritia.endless_item_entity_range", 1000, 1, 10000, "config.avaritia.endless_item_entity_range.tooltip");
+        common.pop();
         useAdvanceTooltips = buildBoolean(common, "config.avaritia.use_advance_tooltips", false, "config.avaritia.use_advance_tooltips.tooltip");
-        endlessItemEntitySpeed = buildDouble(common, "config.avaritia.endless_item_entity_speed", 3, 1, 50, "config.avaritia.endless_item_entity_speed.tooltip");
-        endlessItemEntityRange = buildDouble(common, "config.avaritia.endless_item_entity_range", 1000, 1, 10000, "config.avaritia.endless_item_entity_range.tooltip");
         infinityElytraFlyingSpeed = buildDouble(common, "config.avaritia.infinity_elytra_flying_speed", 1.5, 1, 10, "config.avaritia.infinity_elytra_flying_speed.tooltip");
         bootSpeedBase = buildDouble(common, "config.avaritia.boot_speed_base", 0.1, 0.01, 1.0, "config.avaritia.boot_speed_base.tooltip");
         bootSpeedFlyingMultiplier = buildDouble(common, "config.avaritia.boot_speed_flying_multiplier", 1.1, 0.1, 5.0, "config.avaritia.boot_speed_flying_multiplier.tooltip");

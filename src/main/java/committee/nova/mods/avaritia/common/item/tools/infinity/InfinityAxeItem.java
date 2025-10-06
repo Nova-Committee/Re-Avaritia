@@ -81,7 +81,7 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchMode(pLevel, player, hand, "infinity_axe_range");
             return InteractionResultHolder.success(stack);
         }

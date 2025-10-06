@@ -76,7 +76,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             CompoundTag tags = stack.getOrCreateTag();
             tags.putBoolean("sow", !tags.getBoolean("sow"));
             player.swing(hand);
@@ -115,7 +115,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
             if (player != null && !world.isClientSide) {
-                if (player.isCrouching() && stack.getOrCreateTag().getBoolean("sow")) {
+                if (player.isShiftKeyDown() && stack.getOrCreateTag().getBoolean("sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);
@@ -155,7 +155,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
         } else if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof SoulSandBlock || targetBlock.equals(Blocks.SOUL_SOIL))) {
             if (player != null && !world.isClientSide) {
-                if (player.isCrouching() && stack.getOrCreateTag().getBoolean("sow")) {
+                if (player.isShiftKeyDown() && stack.getOrCreateTag().getBoolean("sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);

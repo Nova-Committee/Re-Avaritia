@@ -139,7 +139,7 @@ public class AbilityHandler {
                 player.setMaxUpStep(1.0625F);//Step 17 pixels, Allows for stepping directly from a path to the top of a block next to the path.
                 boolean flying = player.getAbilities().flying;
                 boolean swimming = player.isInWater();
-                boolean sneaking = player.isCrouching();
+                boolean sneaking = player.isShiftKeyDown();
                 if (player.onGround() || flying || swimming) {
 
                     float speed = (float) (ModConfig.bootSpeedBase.get() * (flying ? ModConfig.bootSpeedFlyingMultiplier.get() : 1.0f)

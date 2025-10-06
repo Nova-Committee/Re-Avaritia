@@ -18,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class ImmortalItemEntity extends ItemEntity {
-
-
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
         this.pickupDelay = 5;
@@ -49,7 +47,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
         if (!this.level().isClientSide) {
 
-            Player targetPlayer = this.level().getNearestPlayer(this, ModConfig.endlessItemEntityRange.get());
+            Player targetPlayer = this.level().getNearestPlayer(this, ModConfig.immortalItemEntityRange.get());
 
 
             if (targetPlayer != null) {
@@ -61,7 +59,7 @@ public class ImmortalItemEntity extends ItemEntity {
                 ).normalize();
 
 
-                this.setDeltaMovement(direction.scale(ModConfig.endlessItemEntitySpeed.get()));
+                this.setDeltaMovement(direction.scale(ModConfig.immortalItemEntitySpeed.get()));
 
 
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.02D, 0));

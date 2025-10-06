@@ -68,7 +68,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
 
         boolean upMode = isActive(stack, "infinity_clock_up");
 
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchClockMode(level, player, hand, "infinity_clock_up");
             return InteractionResultHolder.success(stack);
         }

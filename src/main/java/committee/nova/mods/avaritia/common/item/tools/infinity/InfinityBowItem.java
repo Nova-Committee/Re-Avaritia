@@ -115,7 +115,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
         var itemstack = player.getItemInHand(hand);
         InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchMode(level, player, hand, "infinity_bow_tracer");
             return InteractionResultHolder.success(itemstack);
         }

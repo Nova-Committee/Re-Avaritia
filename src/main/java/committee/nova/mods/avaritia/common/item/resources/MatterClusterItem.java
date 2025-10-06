@@ -172,7 +172,7 @@ public class MatterClusterItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
             ItemUtils.dropInventory(level, player.blockPosition(), readClusterInventory(stack));
-            //if (player.isCrouching()) player.openMenu(new SimpleMenuProvider((id, playerInventory, playerx) -> ))
+            //if (player.isShiftKeyDown()) player.openMenu(new SimpleMenuProvider((id, playerInventory, playerx) -> ))
         }
 
         player.setItemInHand(hand, ItemStack.EMPTY);

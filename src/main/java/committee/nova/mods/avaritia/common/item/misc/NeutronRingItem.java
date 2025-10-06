@@ -31,7 +31,7 @@ public class NeutronRingItem extends ResourceItem {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, @NotNull Player playerIn, @NotNull InteractionHand handIn) {
-        if (!worldIn.isClientSide && !playerIn.isCrouching()) {
+        if (!worldIn.isClientSide && !playerIn.isShiftKeyDown()) {
             int slot = handIn == InteractionHand.MAIN_HAND ? playerIn.getInventory().selected : 40;
             NetworkHooks.openScreen((ServerPlayer) playerIn,
                     new SimpleMenuProvider((id, playerInventory, player) -> new NeutronRingMenu(id, playerInventory, slot), Component.translatable("item.avaritia.neutron_ring")),

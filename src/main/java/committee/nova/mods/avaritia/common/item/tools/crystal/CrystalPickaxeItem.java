@@ -62,7 +62,7 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
                 ItemUtils.clearEnchants(stack);
                 stack.enchant(Enchantments.BLOCK_FORTUNE, 3);

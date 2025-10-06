@@ -32,11 +32,31 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     public static final byte MODE_NORMAL = 0;
     public static final byte MODE_LOYALTY = 1;
     public static final byte MODE_RIPTIDE = 2;
+
+    private static final String CHANNELING_NBT = "Channeling";
+    private static final String SHOCKWAVE_NBT = "Shockwave";
+
     public InfinityTridentItem() {
         super((new Item.Properties())
                 .rarity(ModRarities.COSMIC)
                 .stacksTo(1)
                 .fireResistant());
+    }
+
+    public boolean getCurrentChanneling(ItemStack stack) {
+        return stack.getOrCreateTag().getBoolean(CHANNELING_NBT);
+    }
+
+    public void setChanneling(ItemStack stack, boolean enabled) {
+        stack.getOrCreateTag().putBoolean(CHANNELING_NBT, enabled);
+    }
+
+    public boolean getCurrentShockwave(ItemStack stack) {
+        return stack.getOrCreateTag().getBoolean(SHOCKWAVE_NBT);
+    }
+
+    public void setShockwave(ItemStack stack, boolean enabled) {
+        stack.getOrCreateTag().putBoolean(SHOCKWAVE_NBT, enabled);
     }
 
     @Override
@@ -72,22 +92,11 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
             if (i >= 10) {
                 switch (currentMode) {
                     case MODE_NORMAL -> {
-                        if (!level.isClientSide) {
-                            InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack);
-                            throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);
-                            if (player.getAbilities().instabuild) {
-                                throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                            }
-
-                            level.addFreshEntity(throwntrident);
-                            level.playSound(null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
-                            if (!player.getAbilities().instabuild) {
-                                player.getInventory().removeItem(itemStack);
-                            }
-                        }
+                        shootTrident(itemStack, level, player, true);
                     }
                     case MODE_LOYALTY -> {
                         player.awardStat(Stats.ITEM_USED.get(this));
+                        shootTrident(itemStack, level, player,  false);
                     }
                     case MODE_RIPTIDE -> {
                         player.awardStat(Stats.ITEM_USED.get(this));
@@ -113,14 +122,32 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
         }
     }
 
+    private void shootTrident(@NotNull ItemStack itemStack, @NotNull Level level, Player player, boolean noReturn) {
+        if (!level.isClientSide) {
+            InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack);
+            throwntrident.setLoyaltyLevel(noReturn ? 0 : 3);
+            throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);
+            if (player.getAbilities().instabuild) {
+                throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+            }
+
+            level.addFreshEntity(throwntrident);
+            level.playSound(null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+            if (!player.getAbilities().instabuild) {
+                player.getInventory().removeItem(itemStack);
+            }
+        }
+    }
+
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             cycleMode(world, player, hand, FUNC_MODES);
             return InteractionResultHolder.success(stack);
+        } else {
+            player.startUsingItem(hand);
+            return InteractionResultHolder.consume(stack);
         }
-
-        return super.use(world, player, hand);
     }
 }

@@ -113,7 +113,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             cycleMode(world, player, hand, MODES);
             return InteractionResultHolder.success(stack);
         }

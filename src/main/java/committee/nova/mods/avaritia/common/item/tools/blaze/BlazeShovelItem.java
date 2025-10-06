@@ -93,7 +93,7 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchMode(pLevel, player, hand, "blaze_shovel_trans");
             return InteractionResultHolder.success(stack);
         }

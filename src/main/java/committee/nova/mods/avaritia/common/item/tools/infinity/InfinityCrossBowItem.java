@@ -50,7 +50,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             switchMode(level, player, hand, "infinity_crossbow_multi");
             return InteractionResultHolder.success(stack);
         }

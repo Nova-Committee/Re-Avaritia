@@ -50,7 +50,7 @@ public class InfinityUpgradeItem extends ResourceItem {
         var player = pContext.getPlayer();
         var itemInHand = pContext.getItemInHand();
 
-        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isShiftKeyDown()) {
             if (tile instanceof NeutronCollectorTile collectorTile) {
                 switch (collectorTile.getTier()) {
                     case DEFAULT -> {
@@ -107,7 +107,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                 }
             }
             //else if (Const.isLoad("mekanism")){
-//            if (tile instanceof TileEntityFactory tileEntityFactory && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+//            if (tile instanceof TileEntityFactory tileEntityFactory && player instanceof ServerPlayer serverPlayer && serverPlayer.isShiftKeyDown()) {
 //                switch (tileEntityFactory.tier) {
 //                    case BASIC -> {
 //                        tileEntityFactory.tier = FactoryTier.ADVANCED;

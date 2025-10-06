@@ -33,7 +33,7 @@ public class BaseItem extends Item {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
-        if (pPlayer.isCrouching()) return rightClick(pLevel, pPlayer, pUsedHand);
+        if (pPlayer.isShiftKeyDown()) return rightClick(pLevel, pPlayer, pUsedHand);
         return super.use(pLevel, pPlayer, pUsedHand);
     }
 }

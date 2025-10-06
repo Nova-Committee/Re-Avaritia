@@ -57,7 +57,6 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.singularity.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.matter_cluster.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.full_matter_cluster.get());
-        tag(ModTags.IMMORTAL_ITEM).add(ModItems.neutron_horse_armor.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_helmet.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_chestplate.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_pants.get());
