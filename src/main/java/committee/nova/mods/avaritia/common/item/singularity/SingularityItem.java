@@ -22,26 +22,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SingularityItem extends Item implements IColored {
-    private static final AtomicInteger currentSingularityIndex = new AtomicInteger(0);
-    private static final Timer singularityIconTimer = new Timer("Singularity Icon Timer");
-    private static List<Singularity> enabledSingularities = null;
 
-    static {
-        // 初始化定时器，每秒切换一次奇点显示
-        singularityIconTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (enabledSingularities != null && !enabledSingularities.isEmpty()) {
-                    currentSingularityIndex.set((currentSingularityIndex.get() + 1) % enabledSingularities.size());
-                }
-            }
-        }, 0, 1000); // 每1秒切换一次
-    }
+    public static final AtomicInteger currentSingularityIndex = new AtomicInteger(0);
+    public static List<Singularity> enabledSingularities = null;
 
     public SingularityItem() {
         super(new Properties().rarity(ModRarities.UNCOMMON));

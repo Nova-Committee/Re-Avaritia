@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.api.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
+import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.KeyMapping;
@@ -94,6 +95,8 @@ public class AvaritiaForgeClient {
 
         //计算黑暗强度
         calculateDarknessIntensity(player, level);
+
+        singularityIconTimer();
     }
 
     /**
@@ -266,6 +269,12 @@ public class AvaritiaForgeClient {
         }
     }
 
+    private static void singularityIconTimer(){
+        if (renderTime % 20 != 0) return;
+        if (SingularityItem.enabledSingularities != null && !SingularityItem.enabledSingularities.isEmpty()) {
+            SingularityItem.currentSingularityIndex.set((SingularityItem.currentSingularityIndex.get() + 1) % SingularityItem.enabledSingularities.size());
+        }
+    }
 
     @SubscribeEvent
     public static void onRenderTickStart(TickEvent.RenderTickEvent event) {
