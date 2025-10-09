@@ -13,8 +13,8 @@ import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
 import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexSource;
 import committee.nova.mods.avaritia.api.client.render.pipeline.VertexAttribute;
 import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.*;
-import committee.nova.mods.avaritia.api.client.util.colour.Colour;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.color.Color;
+import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
 import committee.nova.mods.avaritia.api.util.vec.Matrix4;
 import committee.nova.mods.avaritia.api.util.vec.Vector3;
 import committee.nova.mods.avaritia.api.util.vec.Vertex5;
@@ -298,12 +298,12 @@ public class CCRenderState {
         this.baseColour = IClientFluidTypeExtensions.of(fluidStack.getFluid()).getTintColor(fluidStack) << 8 | alpha;
     }
 
-    public ColourRGBA getColour() {
-        return new ColourRGBA(colour);
+    public ColorRGBA getColour() {
+        return new ColorRGBA(colour);
     }
 
-    public void setColour(Colour colour) {
-        this.colour = colour.rgba();
+    public void setColour(Color color) {
+        this.colour = color.rgba();
     }
 
     public VertexConsumer getConsumer() {

@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.api.client.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
-import committee.nova.mods.avaritia.api.client.util.colour.Colour;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.api.client.util.color.Color;
+import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -58,11 +58,11 @@ public class TextureUtils {
         return data;
     }
 
-    public static Colour[] loadTextureColours(ResourceLocation resource) {
+    public static Color[] loadTextureColours(ResourceLocation resource) {
         int[] idata = loadTextureData(resource);
-        Colour[] data = new Colour[idata.length];
+        Color[] data = new Color[idata.length];
         for (int i = 0; i < data.length; i++) {
-            data[i] = new ColourARGB(idata[i]);
+            data[i] = new ColorARGB(idata[i]);
         }
         return data;
     }

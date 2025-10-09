@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.Quad;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -33,7 +33,7 @@ public class HaloUtils {
     private static final ConcurrentMap<Pair<VertexFormat, VertexFormat>, int[]> formatMaps = new ConcurrentHashMap<>();
 
     public static BakedQuad generateHaloQuad(final TextureAtlasSprite sprite, final int size, final int color) {
-        final float[] colors = new ColourARGB(color).getRGBA();
+        final float[] colors = new ColorARGB(color).getRGBA();
         final double spread = size / 16.0;
         final double min = 0.0 - spread;
         final double max = 1.0 + spread;

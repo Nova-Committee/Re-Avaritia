@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.lighting;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
 
 /**
  * Faster precomputed version of LightModel that only works for axis planar sides
@@ -30,7 +30,7 @@ public class PlanarLightModel implements IVertexOperation {
 
     @Override
     public void operate(CCRenderState ccrs) {
-        ccrs.colour = ColourRGBA.multiply(ccrs.colour, colours[ccrs.side]);
+        ccrs.colour = ColorRGBA.multiply(ccrs.colour, colours[ccrs.side]);
     }
 
     @Override

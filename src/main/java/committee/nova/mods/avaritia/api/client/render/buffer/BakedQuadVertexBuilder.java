@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.Quad;
-import committee.nova.mods.avaritia.api.client.util.colour.Colour;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.color.Color;
+import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
@@ -25,7 +25,7 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
     private final int vSize;
 
     private CachedFormat format;
-    private Colour defaultColour;
+    private Color defaultColor;
     private Quad current;
     private int vertex;
 
@@ -157,8 +157,8 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
             if (current.sprite == null) {
                 throw new IllegalStateException("Sprite not set.");
             }
-            if (defaultColour != null) {
-                float[] colour = defaultColour.getRGBA();
+            if (defaultColor != null) {
+                float[] colour = defaultColor.getRGBA();
                 for (Quad.Vertex v : current.vertices) {
                     System.arraycopy(colour, 0, v.color, 0, 4);
                 }
@@ -171,12 +171,12 @@ public class BakedQuadVertexBuilder implements VertexConsumer, ISpriteAwareVerte
 
     @Override
     public void defaultColor(int r, int g, int b, int a) {
-        defaultColour = new ColourRGBA(r, g, b, a);
+        defaultColor = new ColorRGBA(r, g, b, a);
     }
 
     @Override
     public void unsetDefaultColor() {
-        defaultColour = null;
+        defaultColor = null;
     }
 
     public List<BakedQuad> bake() {

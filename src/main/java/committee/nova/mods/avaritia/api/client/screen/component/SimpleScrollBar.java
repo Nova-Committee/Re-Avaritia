@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.client.widget;
+package committee.nova.mods.avaritia.api.client.screen.component;
 
 import lombok.Getter;
 import lombok.Setter;

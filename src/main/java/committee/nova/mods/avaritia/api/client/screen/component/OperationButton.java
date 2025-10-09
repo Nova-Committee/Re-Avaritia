@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2024/12/25 20:27
- * @Description:
+ * @Description: 页面操作按钮 from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */
 @Data
 @Accessors(chain = true)
@@ -30,7 +30,7 @@ public class OperationButton {
     /**
      * 渲染辅助类：用于向自定义渲染函数传递上下文
      */
-    public record RenderContext(GuiGraphics graphics, double mouseX, double mouseY, OperationButton button) {
+    public record RenderContext(GuiGraphics graphics, KeyEventManager keyManager, OperationButton button) {
     }
 
     /**
@@ -120,7 +120,7 @@ public class OperationButton {
     /**
      * 提示文字是否仅按下按键时显示
      */
-    private int keyCode = -1, modifiers = -1;
+    private String keyNames;
 
     public OperationButton(int operation, Consumer<RenderContext> customRenderFunction) {
         this.operation = operation;
@@ -226,7 +226,7 @@ public class OperationButton {
     public double getRealMouseX(double mouseX, double mouseY) {
         // 矩形范围定义
         double startX = getRealX(); // 起始 X
-        double startY = getRealY(); // 起始b Y
+        double startY = getRealY(); // 起始 Y
         double width = getRealWidth();  // 范围宽度
         double height = getRealHeight(); // 范围高度
 
@@ -386,8 +386,8 @@ public class OperationButton {
     /**
      * 绘制按钮
      */
-    public void render(GuiGraphics graphics, double mouseX, double mouseY) {
-        this.render(graphics, mouseX, mouseY, false, -1, -1);
+    public void render(GuiGraphics graphics, KeyEventManager keyManager) {
+        this.render(graphics, false, keyManager);
     }
 
     /**
@@ -395,10 +395,10 @@ public class OperationButton {
      *
      * @param renderPopup 是否绘制弹出层提示
      */
-    public void render(GuiGraphics graphics, double mouseX, double mouseY, boolean renderPopup, int keyCode, int modifiers) {
+    public void render(GuiGraphics graphics, boolean renderPopup, KeyEventManager keyManager) {
         if (customRenderFunction != null) {
             // 使用自定义渲染逻辑
-            customRenderFunction.accept(new RenderContext(graphics, mouseX, mouseY, this));
+            customRenderFunction.accept(new RenderContext(graphics, keyManager, this));
         } else {
             TextureCoordinate textureCoordinate = new TextureCoordinate().setTotalWidth(this.textureWidth).setTotalHeight(this.textureHeight);
             Coordinate coordinate = new Coordinate().setX(this.x).setY(this.y).setWidth(this.width).setHeight(this.height)
@@ -421,43 +421,29 @@ public class OperationButton {
             }
         }
         if (renderPopup) {
-            this.renderPopup(graphics, null, mouseX, mouseY, keyCode, modifiers);
+            this.renderPopup(graphics, null, keyManager);
         }
     }
 
     /**
      * 绘制弹出层
      */
-    public void renderPopup(GuiGraphics graphics, double mouseX, double mouseY) {
-        this.renderPopup(graphics, null, mouseX, mouseY, -1, -1);
+    public void renderPopup(GuiGraphics graphics, KeyEventManager keyManager) {
+        this.renderPopup(graphics, null, keyManager);
     }
 
     /**
      * 绘制弹出层
      */
-    public void renderPopup(GuiGraphics graphics, Font font, double mouseX, double mouseY) {
-        this.renderPopup(graphics, font, mouseX, mouseY, -1, -1);
-    }
-
-    /**
-     * 绘制弹出层
-     */
-    public void renderPopup(GuiGraphics graphics, double mouseX, double mouseY, int keyCode, int modifiers) {
-        this.renderPopup(graphics, null, mouseX, mouseY, keyCode, modifiers);
-    }
-
-    /**
-     * 绘制弹出层
-     */
-    public void renderPopup(GuiGraphics graphics, Font font, double mouseX, double mouseY, int keyCode, int modifiers) {
+    public void renderPopup(GuiGraphics graphics, Font font, KeyEventManager keyManager) {
         // 绘制提示
-        if (this.keyCode == -1 || (this.keyCode == keyCode && this.modifiers == modifiers)) {
+        if (StringUtils.isNullOrEmptyEx(this.keyNames) || keyManager.isKeyPressed(this.keyNames)) {
             if (this.isHovered()) {
                 if (customPopupFunction != null) {
                     customPopupFunction.run();
                 } else if (tooltip != null && StringUtils.isNotNullOrEmpty(tooltip.getContent()) && Minecraft.getInstance().screen != null) {
                     if (font == null) font = Minecraft.getInstance().font;
-                    GuiUtils.drawPopupMessage(tooltip.setGraphics(graphics).setFont(font), (int) mouseX, (int) mouseY, Minecraft.getInstance().screen.width, Minecraft.getInstance().screen.height);
+                    GuiUtils.drawPopupMessage(tooltip.setGraphics(graphics).setFont(font), (int) keyManager.getMouseX(), (int) keyManager.getMouseY(), Minecraft.getInstance().screen.width, Minecraft.getInstance().screen.height);
                 }
             }
         }

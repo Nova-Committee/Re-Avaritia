@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.api.client.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
+import committee.nova.mods.avaritia.api.client.screen.component.KeyEventManager;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationButton;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
@@ -35,6 +36,8 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY
  * @Description:
  */
 public class ItemFilterScreen extends Screen {
+    private final KeyEventManager keyManager = new KeyEventManager();
+
     // 每行显示数量
     private final int itemPerLine = 9;
     // 每页显示行数
@@ -98,7 +101,6 @@ public class ItemFilterScreen extends Screen {
      */
     @Getter
     enum OperationButtonType {
-
         SLIDER(1),
         ;
 
@@ -156,17 +158,19 @@ public class ItemFilterScreen extends Screen {
         GuiUtils.fill(graphics, (int) (this.bgX - this.margin), (int) (this.bgY - this.margin), (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5), 0xCCC6C6C6, 2);
         GuiUtils.fillOutLine(graphics, (int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.itemPerLine + this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.maxLine + this.margin), 1, 0xFF000000, 1);
         super.render(graphics, mouseX, mouseY, delta);
-        this.renderButton(graphics, mouseX, mouseY);
+        this.renderButton(graphics);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        keyManager.mouseScrolled(delta, mouseX, mouseY);
         this.setScrollOffset(this.getScrollOffset() - delta);
         return true;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        keyManager.mouseClicked(button, mouseX, mouseY);
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             OP_BUTTONS.forEach((key, value) -> {
                 if (value.isHovered()) {
@@ -187,6 +191,7 @@ public class ItemFilterScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        keyManager.refresh(mouseX, mouseY);
         AtomicBoolean flag = new AtomicBoolean(false);
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             // 物品按钮
@@ -199,11 +204,13 @@ public class ItemFilterScreen extends Screen {
             this.mouseDownX = -1;
             this.mouseDownY = -1;
         }
+        keyManager.mouseReleased(button, mouseX, mouseY);
         return flag.get() ? flag.get() : super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
+        keyManager.mouseMoved(mouseX, mouseY);
         // 控制按钮
         OP_BUTTONS.forEach((key, value) -> {
             value.setHovered(value.isMouseOverEx(mouseX, mouseY));
@@ -218,6 +225,24 @@ public class ItemFilterScreen extends Screen {
         // 物品按钮
         ITEM_BUTTONS.forEach(bt -> bt.setHovered(bt.isMouseOverEx(mouseX, mouseY)));
         super.mouseMoved(mouseX, mouseY);
+    }
+    /**
+     * 重写键盘事件
+     */
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        keyManager.keyPressed(pKeyCode);
+        InputConstants.Key mouseKey = InputConstants.getKey(pKeyCode, pScanCode);
+        if (FILTER_KEY.isActiveAndMatches(mouseKey)) {
+            this.onClose();
+            return true;
+        } else return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        keyManager.keyReleased(keyCode);
+        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -344,7 +369,7 @@ public class ItemFilterScreen extends Screen {
                                         list1.add(1, modeTab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
                                     }
                                 }
-                                context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
+                                context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.keyManager().getMouseX(), (int) context.keyManager().getMouseY());
                             }
                         });
                     } else {
@@ -358,22 +383,14 @@ public class ItemFilterScreen extends Screen {
     /**
      * 绘制按钮
      */
-    private void renderButton(GuiGraphics graphics, int mouseX, int mouseY) {
-        for (OperationButton button : OP_BUTTONS.values()) button.render(graphics, mouseX, mouseY);
-        for (OperationButton button : ITEM_BUTTONS) button.render(graphics, mouseX, mouseY);
+    private void renderButton(GuiGraphics graphics) {
+        for (OperationButton button : OP_BUTTONS.values()) button.render(graphics, keyManager);
+        for (OperationButton button : ITEM_BUTTONS) button.render(graphics, keyManager);
         for (OperationButton button : OP_BUTTONS.values())
-            button.renderPopup(graphics, this.font, mouseX, mouseY);
+            button.renderPopup(graphics, this.font, keyManager);
         for (OperationButton button : ITEM_BUTTONS)
-            button.renderPopup(graphics, this.font, mouseX, mouseY);
+            button.renderPopup(graphics, this.font, keyManager);
     }
 
 
-    @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        InputConstants.Key mouseKey = InputConstants.getKey(pKeyCode, pScanCode);
-        if (FILTER_KEY.isActiveAndMatches(mouseKey)) {
-            this.onClose();
-            return true;
-        } else return super.keyPressed(pKeyCode, pScanCode, pModifiers);
-    }
 }

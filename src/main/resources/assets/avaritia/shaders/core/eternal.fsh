@@ -55,7 +55,7 @@ void main (void)
 
     int uvtiles = 16;
 
-    // background colour
+    // background color
     vec4 col = vec4(0.1,0.0,0.0,1.0);
 
     float pulse = mod(time,400)/400.0;
@@ -121,7 +121,7 @@ void main (void)
             flip = true;
         }
 
-        // if it's an icon, then add the colour!
+        // if it's an icon, then add the color!
         if (symbol >= 0 && symbol < cosmiccount) {
 
             vec2 cosmictex = vec2(1.0,1.0);

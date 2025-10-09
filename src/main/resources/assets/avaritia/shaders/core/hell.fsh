@@ -121,7 +121,7 @@ void main (void)
             flip = true;
         }
 
-        // if it's an icon, then add the colour!
+        // if it's an icon, then add the color!
         if (symbol >= 0 && symbol < cosmiccount) {
 
             vec2 cosmictex = vec2(1.0,1.0);

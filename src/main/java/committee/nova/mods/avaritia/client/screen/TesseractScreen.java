@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
-import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
+import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannel;

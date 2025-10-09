@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
+import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.core.chest.ClientChestHandler;
 import committee.nova.mods.avaritia.core.chest.ClientChestManager;

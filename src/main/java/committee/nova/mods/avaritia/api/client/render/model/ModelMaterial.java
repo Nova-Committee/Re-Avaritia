@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.api.client.render.model;
 
 import committee.nova.mods.avaritia.api.client.render.pipeline.attribute.AttributeKey;
-import committee.nova.mods.avaritia.api.client.util.colour.Colour;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.color.Color;
+import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
 import committee.nova.mods.avaritia.api.util.java.Copyable;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,13 +30,13 @@ public class ModelMaterial implements Copyable<ModelMaterial> {
 
     @Nullable
     public String name;
-    public Colour ambientColour = new ColourRGBA(0x000000FF);
+    public Color ambientColor = new ColorRGBA(0x000000FF);
     @Nullable
     public String ambientColourMap;
-    public Colour diffuseColour = new ColourRGBA(0xFFFFFFFF);
+    public Color diffuseColor = new ColorRGBA(0xFFFFFFFF);
     @Nullable
     public String diffuseColourMap;
-    public Colour specularColour = new ColourRGBA(0x000000FF);
+    public Color specularColor = new ColorRGBA(0x000000FF);
     public float specularHighlight = 0F;
     @Nullable
     public String specularColourMap;
@@ -49,11 +49,11 @@ public class ModelMaterial implements Copyable<ModelMaterial> {
 
     public ModelMaterial(ModelMaterial other) {
         name = other.name;
-        ambientColour = other.ambientColour;
+        ambientColor = other.ambientColor;
         ambientColourMap = other.ambientColourMap;
-        diffuseColour = other.diffuseColour;
+        diffuseColor = other.diffuseColor;
         diffuseColourMap = other.diffuseColourMap;
-        specularColour = other.specularColour;
+        specularColor = other.specularColor;
         specularHighlight = other.specularHighlight;
         specularColourMap = other.specularColourMap;
         dissolve = other.dissolve;
