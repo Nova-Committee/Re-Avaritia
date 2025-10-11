@@ -100,8 +100,8 @@ public class GuiUtils {
         graphics.blit(x0, y0, z, destWidth, destHeight, sprite);
     }
 
-    public static void blit(GuiGraphics graphics, ResourceLocation texture, int x0, int y0, int z, float u0, float v0, int width, int height, int textureHeight, int textureWidth) {
-        graphics.blit(texture, x0, y0, z, u0, v0, width, height, textureHeight, textureWidth);
+    public static void blit(GuiGraphics graphics, ResourceLocation texture, int x0, int y0, int z, float u0, float v0, int width, int height, int textureWidth, int textureHeight) {
+        graphics.blit(texture, x0, y0, z, u0, v0, width, height, textureWidth, textureHeight);
     }
 
     /**
