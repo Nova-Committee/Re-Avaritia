@@ -12,6 +12,7 @@ import committee.nova.mods.avaritia.common.block.compressor.BaseNeutronCompresso
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
+import committee.nova.mods.avaritia.common.block.extreme.BlazeCubeBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
@@ -61,7 +62,7 @@ public class ModBlocks {
     public static DeferredBlock<Block> neutron = itemBlock("neutron", () -> new ResourceBlock(ModResourceBlocks.NEUTRON), ModRarities.EPIC);
     public static DeferredBlock<Block> infinity = itemBlock("infinity", () -> new ResourceBlock(ModResourceBlocks.INFINITY), ModRarities.COSMIC.getValue());
     public static DeferredBlock<Block> crystal_matrix = itemBlock("crystal_matrix", () -> new ResourceBlock(ModResourceBlocks.CRYSTAL), ModRarities.RARE);
-    public static DeferredBlock<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new ResourceBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
+    public static DeferredBlock<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new BlazeCubeBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static DeferredBlock<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND.getValue());
     public static DeferredBlock<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);

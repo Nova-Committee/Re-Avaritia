@@ -16,7 +16,7 @@ public class InfinityTotemItem extends ResourceItem {
 
 
     public InfinityTotemItem() {
-        super(ModRarities.EPIC, "infinity_totem", true, new Item.Properties().stacksTo(1).durability(99));
+        super(ModRarities.EPIC, "infinity_totem", true, new Item.Properties().stacksTo(1).durability(999));
     }
 
     @Override

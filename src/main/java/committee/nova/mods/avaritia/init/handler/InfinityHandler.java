@@ -225,7 +225,7 @@ public class InfinityHandler {
                     PacketDistributor.sendToPlayer(player, new S2CTotemPack(totem, player.getId()));
 
                     player.removeAllEffects();
-                    if (totem.getDamageValue() == 1) { //最后一次
+                    if (totem.getDamageValue() % 10 == 0) { //每当为10的倍数
                         player.setHealth(player.getMaxHealth());
                         player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
                         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
