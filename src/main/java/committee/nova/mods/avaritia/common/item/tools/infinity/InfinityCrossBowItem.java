@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -112,6 +113,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
             shootEgg(level, player, angle);
         } else if (ammo.is(ModItems.endest_pearl.get())) {
             shootEndestPearl(level, player, angle);
+        } else if (ammo.is(Items.WIND_CHARGE)) {
+            shootWindCharge(level, player, angle);
         } else {
             shootInfinityArrow(level, player, 3.0F, 1.0F, angle);
         }
@@ -136,8 +139,8 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
                 stack.is(Items.SNOWBALL) ||
                 stack.is(Items.EGG) ||
                 stack.is(ModItems.endest_pearl.get()) ||
-                stack.is(Items.TNT);
-
+                stack.is(Items.TNT) ||
+                stack.is(Items.WIND_CHARGE);
     }
 
     //天堂箭
@@ -267,5 +270,12 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENDER_PEARL_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
-
+    //风弹
+    private void shootWindCharge(Level level, Player player, float angle) {
+        WindCharge windCharge = new WindCharge(player, level, player.getX(), player.getEyeY(), player.getZ());
+        windCharge.shootFromRotation(player, player.getXRot(), player.getYRot() + angle, 0.0F, 1.5F, 1.0F);
+        level.addFreshEntity(windCharge);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.WIND_CHARGE_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
 }

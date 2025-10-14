@@ -23,9 +23,6 @@ public class ResourceBlock extends BaseBlock {
         this.type = type;
     }
 
-    public ResourceBlock(Properties properties) {
-        super(properties);
-    }
     @Override
     public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
         return this.type.enchantPower;
