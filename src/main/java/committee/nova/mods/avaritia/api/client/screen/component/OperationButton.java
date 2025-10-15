@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.screen.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import committee.nova.mods.avaritia.api.client.screen.coordinate.Coordinate;
-import committee.nova.mods.avaritia.api.client.screen.coordinate.TextureCoordinate;
+import committee.nova.mods.avaritia.api.client.screen.coordinate.TexCoordinate;
 import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.api.client.util.TextureUtils;
 import committee.nova.mods.avaritia.api.util.StringUtils;
@@ -400,7 +400,7 @@ public class OperationButton {
             // 使用自定义渲染逻辑
             customRenderFunction.accept(new RenderContext(graphics, keyManager, this));
         } else {
-            TextureCoordinate textureCoordinate = new TextureCoordinate().setTotalWidth(this.textureWidth).setTotalHeight(this.textureHeight);
+            TexCoordinate texCoordinate = new TexCoordinate().setTotalWidth(this.textureWidth).setTotalHeight(this.textureHeight);
             Coordinate coordinate = new Coordinate().setX(this.x).setY(this.y).setWidth(this.width).setHeight(this.height)
                     .setU0(getU()).setV0(getV()).setUWidth(getUWidth()).setVHeight(getVHeight());
             // 绘制背景颜色
@@ -410,9 +410,9 @@ public class OperationButton {
             }
             // 绘制纹理
             if (this.isHovered() && this.getTremblingAmplitude() > 0) {
-                GuiUtils.renderTremblingTexture(graphics, this.texture, textureCoordinate, coordinate, this.baseX, this.baseY, this.scale, true, this.getTremblingAmplitude());
+                GuiUtils.renderTremblingTexture(graphics, this.texture, texCoordinate, coordinate, this.baseX, this.baseY, this.scale, true, this.getTremblingAmplitude());
             } else {
-                GuiUtils.renderRotatedTexture(graphics, this.texture, textureCoordinate, coordinate, this.baseX, this.baseY, this.scale, this.rotatedAngle, this.flipHorizontal, this.flipVertical);
+                GuiUtils.renderRotatedTexture(graphics, this.texture, texCoordinate, coordinate, this.baseX, this.baseY, this.scale, this.rotatedAngle, this.flipHorizontal, this.flipVertical);
             }
             // 绘制前景颜色
             int fgColor = this.getForegroundColor();

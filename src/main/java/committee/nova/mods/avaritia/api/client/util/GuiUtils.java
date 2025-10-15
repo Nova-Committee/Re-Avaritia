@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.screen.coordinate.Coordinate;
-import committee.nova.mods.avaritia.api.client.screen.coordinate.TextureCoordinate;
+import committee.nova.mods.avaritia.api.client.screen.coordinate.TexCoordinate;
 import committee.nova.mods.avaritia.api.util.DateUtils;
 import committee.nova.mods.avaritia.api.util.StringUtils;
 import committee.nova.mods.avaritia.api.util.WorldUtils;
@@ -130,7 +130,7 @@ public class GuiUtils {
      * 绘制旋转的纹理
      *
      * @param texture           纹理
-     * @param textureCoordinate 纹理坐标
+     * @param texCoordinate 纹理坐标
      * @param coordinate        绘制相对坐标
      * @param baseX             绘制的基础坐标X
      * @param baseY             绘制的基础坐标Y
@@ -139,7 +139,7 @@ public class GuiUtils {
      * @param flipHorizontal    水平翻转
      * @param flipVertical      垂直翻转
      */
-    public static void renderRotatedTexture(GuiGraphics graphics, ResourceLocation texture, TextureCoordinate textureCoordinate, Coordinate coordinate, double baseX, double baseY, double scale, double angle, boolean flipHorizontal, boolean flipVertical) {
+    public static void renderRotatedTexture(GuiGraphics graphics, ResourceLocation texture, TexCoordinate texCoordinate, Coordinate coordinate, double baseX, double baseY, double scale, double angle, boolean flipHorizontal, boolean flipVertical) {
         double x = baseX + coordinate.getX() * scale;
         double y = baseY + coordinate.getY() * scale;
         int width = (int) (coordinate.getWidth() * scale);
@@ -170,7 +170,7 @@ public class GuiUtils {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         // 绘制纹理
-        GuiUtils.blit(graphics, texture, 0, 0, width, height, u0, v0, uWidth, vHeight, textureCoordinate.getTotalWidth(), textureCoordinate.getTotalHeight());
+        GuiUtils.blit(graphics, texture, 0, 0, width, height, u0, v0, uWidth, vHeight, texCoordinate.getTotalWidth(), texCoordinate.getTotalHeight());
         RenderSystem.disableBlend();
         // 恢复矩阵状态
         graphics.pose().popPose();
@@ -180,7 +180,7 @@ public class GuiUtils {
      * 绘制 颤抖的 纹理
      *
      * @param texture            纹理
-     * @param textureCoordinate  纹理坐标
+     * @param texCoordinate  纹理坐标
      * @param coordinate         绘制相对坐标
      * @param baseX              绘制的基础坐标X
      * @param baseY              绘制的基础坐标Y
@@ -188,7 +188,7 @@ public class GuiUtils {
      * @param affectLight        是否受光照影响
      * @param tremblingAmplitude 颤抖幅度
      */
-    public static void renderTremblingTexture(GuiGraphics graphics, ResourceLocation texture, TextureCoordinate textureCoordinate, Coordinate coordinate, double baseX, double baseY, double scale, boolean affectLight, double tremblingAmplitude) {
+    public static void renderTremblingTexture(GuiGraphics graphics, ResourceLocation texture, TexCoordinate texCoordinate, Coordinate coordinate, double baseX, double baseY, double scale, boolean affectLight, double tremblingAmplitude) {
         double x = baseX + coordinate.getX() * scale;
         double y = baseY + coordinate.getY() * scale;
         int width = (int) (coordinate.getWidth() * scale);
@@ -211,7 +211,7 @@ public class GuiUtils {
         }
         graphics.pose().translate(x, y, 0);
         // 绘制纹理
-        GuiUtils.blit(graphics, texture, 0, 0, width, height, u0, v0, uWidth, vHeight, textureCoordinate.getTotalWidth(), textureCoordinate.getTotalHeight());
+        GuiUtils.blit(graphics, texture, 0, 0, width, height, u0, v0, uWidth, vHeight, texCoordinate.getTotalWidth(), texCoordinate.getTotalHeight());
         graphics.pose().popPose();
         RenderSystem.disableBlend();
     }
@@ -615,11 +615,11 @@ public class GuiUtils {
      * @param height            目标矩形的高度，决定了图像在屏幕上的高度
      * @param showText          是否显示效果等级和持续时间
      */
-    public static void drawEffectIcon(GuiGraphics graphics, Font font, MobEffectInstance mobEffectInstance, ResourceLocation textureLocation, TextureCoordinate textureCoordinate, int x, int y, int width, int height, boolean showText) {
+    public static void drawEffectIcon(GuiGraphics graphics, Font font, MobEffectInstance mobEffectInstance, ResourceLocation textureLocation, TexCoordinate texCoordinate, int x, int y, int width, int height, boolean showText) {
         ResourceLocation effectIcon = TextureUtils.getEffectTexture(mobEffectInstance);
         if (effectIcon == null) {
-            Coordinate buffUV = textureCoordinate.getBuffUV();
-            GuiUtils.blit(graphics, textureLocation, x, y, width, height, (float) buffUV.getU0(), (float) buffUV.getV0(), (int) buffUV.getUWidth(), (int) buffUV.getVHeight(), textureCoordinate.getTotalWidth(), textureCoordinate.getTotalHeight());
+            Coordinate buffUV = texCoordinate.getBuffUV();
+            GuiUtils.blit(graphics, textureLocation, x, y, width, height, (float) buffUV.getU0(), (float) buffUV.getV0(), (int) buffUV.getUWidth(), (int) buffUV.getVHeight(), texCoordinate.getTotalWidth(), texCoordinate.getTotalHeight());
         } else {
             GuiUtils.blit(graphics, effectIcon, x, y, 0, 0, width, height, width, height);
         }
