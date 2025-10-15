@@ -99,7 +99,7 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
-        return 1200;
+        return 7200;
     }//使用时间
 
     @Override
@@ -149,7 +149,6 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
                 if (drawTime < 0) {
                     return;
                 }
-
                 float VELOCITY_MULTIPLIER = 1.2F;
                 float DAMAGE_MULTIPLIER = 5000.0F;
                 float draw = getPowerForTime(drawTime);//蓄力时间
@@ -208,8 +207,15 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
             if (vy < 0) {
                 player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 18, 0, false, false, false));
             }
+
+            if (elapsed % 2 == 0) {
+                if (player.getHealth() < player.getMaxHealth()) {
+                    player.heal(1F);
+                }
+            }
         }
     }
+
 
     private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
         Holder<Enchantment> POWER =

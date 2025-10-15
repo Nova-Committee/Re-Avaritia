@@ -150,6 +150,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
         level.addFreshEntity(arrow);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
+
     }
 
     //箭

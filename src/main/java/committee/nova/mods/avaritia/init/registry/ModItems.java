@@ -51,6 +51,7 @@ public class ModItems {
     public static DeferredItem<Item> crystal_pickaxe = item("crystal_pickaxe", CrystalPickaxeItem::new);
     public static DeferredItem<Item> crystal_shovel = item("crystal_shovel", CrystalShovelItem::new);
     public static DeferredItem<Item> crystal_axe = item("crystal_axe", CrystalAxeItem::new);
+    public static DeferredItem<Item> crystal_bow = item("crystal_bow", CrystalBowItem::new);
     //blaze
     public static DeferredItem<Item> blaze_sword = item("blaze_sword", BlazeSwordItem::new);
     public static DeferredItem<Item> blaze_hoe = item("blaze_hoe", BlazeHoeItem::new);
