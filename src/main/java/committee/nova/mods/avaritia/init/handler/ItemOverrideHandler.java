@@ -62,10 +62,19 @@ public class ItemOverrideHandler {
                     return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
                 }
             });
+            setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                }
+            });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
             });
-
+            setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
+            });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracer"), (itemStack, world, livingEntity, d) -> {
                 if (livingEntity == null) {
                     return 0.0F;

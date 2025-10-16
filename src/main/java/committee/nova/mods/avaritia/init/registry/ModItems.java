@@ -62,6 +62,7 @@ public class ModItems {
     public static RegistryObject<Item> crystal_pickaxe = item("crystal_pickaxe", CrystalPickaxeItem::new);
     public static RegistryObject<Item> crystal_shovel = item("crystal_shovel", CrystalShovelItem::new);
     public static RegistryObject<Item> crystal_axe = item("crystal_axe", CrystalAxeItem::new);
+    public static RegistryObject<Item> crystal_bow = item("crystal_bow", CrystalBowItem::new);
     //blaze
     public static RegistryObject<Item> blaze_sword = item("blaze_sword", BlazeSwordItem::new);
     public static RegistryObject<Item> blaze_hoe = item("blaze_hoe", BlazeHoeItem::new);
