@@ -53,7 +53,7 @@ public class HeavenSubArrowEntity extends Arrow {
 
     @Override
     public @NotNull ItemStack getPickupItem() {
-        return new ItemStack(Items.ARROW);
+        return ItemStack.EMPTY;
     }
 
     @Override

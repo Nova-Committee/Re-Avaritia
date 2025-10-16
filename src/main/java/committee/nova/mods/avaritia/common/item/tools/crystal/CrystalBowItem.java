@@ -1,10 +1,16 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.NeutronArrowEntity;
+import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
@@ -17,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 
 
-public class CrystalBowItem extends BowItem {
+public class CrystalBowItem extends BowItem implements ISwitchable {
     public CrystalBowItem(String name) {
         super(new Properties()
                         .rarity(ModRarities.EPIC)
@@ -29,9 +35,13 @@ public class CrystalBowItem extends BowItem {
     public @NotNull UseAnim getUseAnimation(@NotNull ItemStack pStack) {
         return UseAnim.BOW;
     }
+
     @Override
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving, int pTimeLeft) {
         if (pEntityLiving instanceof Player player) {
+            InteractionHand hand = pEntityLiving.getUsedItemHand();
+            ItemStack stack = player.getItemInHand(hand);
+            boolean isBladeSlashActive = isActive(stack, "blade_slash");
 
             int chargeTime = this.getUseDuration(pStack, pEntityLiving) - pTimeLeft;
 
@@ -42,16 +52,12 @@ public class CrystalBowItem extends BowItem {
 
             float power = getPowerForTime(chargeTime);
             if (power >= 0.1) {
-                int projectileCount = 1;
-
                 if (!pLevel.isClientSide) {
-                    for (int i = 0; i < projectileCount; i++) {
+                    if (isBladeSlashActive) {
                         BladeSlashEntity bladeSlash = new BladeSlashEntity(pLevel, player);
 
                         float speed = BladeSlashEntity.defaultSpeed * (1.0F + power * 2.0F);
-
                         float inaccuracy = 0.0F;
-
                         float yawOffset = 0.0F;
 
                         bladeSlash.shootFromRotation(
@@ -65,18 +71,38 @@ public class CrystalBowItem extends BowItem {
 
                         float damageBoost = power * 5.0F;
                         bladeSlash.damage += damageBoost;
-
                         bladeSlash.duration += (int) (power * 20);
-
+                        pLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                                SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS,
+                                1.0F, 0.8F + (power * 0.4F));
                         pLevel.addFreshEntity(bladeSlash);
+                    } else {
+                        NeutronArrowEntity neutronArrow = new NeutronArrowEntity(ModEntities.NEUTRON_ARROW.get(), pLevel);
+                        neutronArrow.setOwner(player);
+                        neutronArrow.setPos(player.getX(), player.getEyeY() - 0.1F, player.getZ());
+                        float speed = 3.0F;
+                        float inaccuracy = 0.0F;
+                        float yawOffset = 0.0F;
+
+                        neutronArrow.shootFromRotation(
+                                player,
+                                player.getXRot(),
+                                player.getYRot() + yawOffset,
+                                0.0F,
+                                speed,
+                                inaccuracy
+                        );
+
+                        pLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                                SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS,
+                                1.0F, 0.8F + (power * 0.4F));
+
+                        pLevel.addFreshEntity(neutronArrow);
                     }
 
-                    pStack.hurtAndBreak(1, player, getSlotForHand(player.getUsedItemHand()));
+                    pStack.hurtAndBreak(1, player, getSlotForHand(hand));
                 }
 
-                pLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS,
-                        1.0F, 0.8F + (power * 0.4F));
 
 
                 player.awardStat(Stats.ITEM_USED.get(this));
@@ -85,4 +111,13 @@ public class CrystalBowItem extends BowItem {
     }
 
 
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isCrouching()) {
+            switchMode(level, player, hand, "blade_slash");
+            return InteractionResultHolder.success(stack);
+        }
+        return super.use(level, player, hand);
+    }
 }

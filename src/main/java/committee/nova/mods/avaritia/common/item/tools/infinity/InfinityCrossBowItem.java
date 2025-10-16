@@ -70,7 +70,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 10;
+        return 40;
     }
 
     private void performShooting(Level level, Player player, InteractionHand hand, ItemStack crossbow, float velocity, float inaccuracy) {

@@ -136,8 +136,8 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
             changeMode(player, itemstack, hand);
             return InteractionResultHolder.success(itemstack);
         }
-        player.startUsingItem(hand);
-        return InteractionResultHolder.success(itemstack);
+//        player.startUsingItem(hand);
+        return super.use(pLevel, player, hand);
     }
 
     @Override

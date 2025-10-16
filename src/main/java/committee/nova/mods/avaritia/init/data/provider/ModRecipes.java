@@ -713,6 +713,20 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('C', ModItems.crystal_matrix_ingot.get())
                 .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.crystal_bow.get(), 3)
+                .pattern("  CDAAC")
+                .pattern("   CCCD")
+                .pattern("C A  B ")
+                .pattern("DC  B  ")
+                .pattern("AC B   ")
+                .pattern("ACB    ")
+                .pattern("CD     ")
+                .define('A', ModBlocks.crystal_matrix.get())
+                .define('B', ModItems.neutron_ingot.get())
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('D', ModItems.diamond_lattice.get())
+                .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_axe.get())
                 .pattern("    II   ")
                 .pattern("   II  B ")
