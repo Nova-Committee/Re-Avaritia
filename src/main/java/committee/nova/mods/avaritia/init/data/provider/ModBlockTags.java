@@ -43,7 +43,7 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.crystal_matrix.get(), ModBlocks.infinity.get(), ModBlocks.neutron.get(),
                 ModBlocks.neutron_collector.get(), ModBlocks.dense_neutron_collector.get(),
                 ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
-                ModBlocks.neutron_compressor.get(), ModBlocks.extreme_anvil.get(),
+                ModBlocks.neutron_compressor.get(),ModBlocks.dense_neutron_compressor.get(),ModBlocks.denser_neutron_compressor.get(),ModBlocks.densest_neutron_compressor.get(), ModBlocks.extreme_anvil.get(),
                 ModBlocks.infinity_chest.get(), ModBlocks.extreme_smithing_table.get(),
                 Blocks.BEDROCK, Blocks.END_PORTAL_FRAME, Blocks.END_PORTAL,
                 ModBlocks.fake_bedrock.get(), ModBlocks.fake_end_portal_frame.get(), ModBlocks.fake_end_portal.get()
