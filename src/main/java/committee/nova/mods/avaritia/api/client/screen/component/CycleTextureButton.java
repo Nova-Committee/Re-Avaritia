@@ -44,6 +44,7 @@ public class CycleTextureButton<T> extends AbstractButton {
     protected final int xTexStart;
     protected final int yTexStart;
     protected final int xDiffTex;
+    protected final int yDiffTex;
     protected final int textureWidth;
     protected final int textureHeight;
     private final int xOffset;
@@ -60,7 +61,7 @@ public class CycleTextureButton<T> extends AbstractButton {
                        ResourceLocation resourceLocation,
                        int x, int y, int width, int height,
                        int xTexStart, int yTexStart, int xOffset, int yOffset,
-                       int textureWidth, int textureHeight, int xDiffTex
+                       int textureWidth, int textureHeight, int xDiffTex, int yDiffTex
                        ) {
         super(x, y, width, height, message);
         this.name = name;
@@ -84,6 +85,7 @@ public class CycleTextureButton<T> extends AbstractButton {
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
         this.xDiffTex = xDiffTex;
+        this.yDiffTex = yDiffTex;
     }
 
     private void updateTooltip() {
@@ -115,14 +117,11 @@ public class CycleTextureButton<T> extends AbstractButton {
     @Override
     protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         //super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-        this.renderXDiffTexture(guiGraphics, this.resourceLocation, this.getXOffset(), this.getYOffset(), this.xTexStart, this.yTexStart, this.xDiffTex, this.usedTextureWidth, this.usedTextureHeight, this.textureWidth, this.textureHeight);
-    }
-
-    public void renderXDiffTexture(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int uOffset, int vOffset, int textureDifference, int width, int height, int textureWidth, int textureHeight) {
         RenderSystem.enableDepthTest();
-        guiGraphics.blit(texture, x, y, (float)uOffset + textureDifference * this.index, (float)vOffset, width, height, textureWidth, textureHeight);
+        if (this.isHoveredOrFocused()) {
+            guiGraphics.blit(this.resourceLocation, this.getXOffset(), this.getYOffset(), (float)this.xTexStart + this.xDiffTex * this.index, this.yTexStart + this.yDiffTex, this.usedTextureWidth, this.usedTextureHeight, this.textureWidth, this.textureHeight);
+        } else guiGraphics.blit(this.resourceLocation, this.getXOffset(), this.getYOffset(), (float)this.xTexStart + this.xDiffTex * this.index, this.yTexStart, this.usedTextureWidth, this.usedTextureHeight, this.textureWidth, this.textureHeight);
     }
-
 
     private int getXOffset() {
         return this.getX() + (this.width / 2 - this.usedTextureWidth / 2) + this.xOffset;
@@ -131,7 +130,6 @@ public class CycleTextureButton<T> extends AbstractButton {
     private int getYOffset() {
         return this.getY() + (this.height / 2 - this.usedTextureHeight / 2) + this.yOffset;
     }
-
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
@@ -162,11 +160,11 @@ public class CycleTextureButton<T> extends AbstractButton {
     }
 
     private Component createLabelForValue(T value) {
-        return (Component)(this.displayOnlyValue ? (Component)this.valueStringifier.apply(value) : this.createFullName(value));
+        return this.displayOnlyValue ? this.valueStringifier.apply(value) : this.createFullName(value);
     }
 
     private MutableComponent createFullName(T value) {
-        return CommonComponents.optionNameValue(this.name, (Component)this.valueStringifier.apply(value));
+        return CommonComponents.optionNameValue(this.name, this.valueStringifier.apply(value));
     }
 
     public T getValue() {
@@ -231,6 +229,7 @@ public class CycleTextureButton<T> extends AbstractButton {
         private int xTexStart;
         private int yTexStart;
         private int xDiffTex;
+        private int yDiffTex;
         private int textureWidth;
         private int textureHeight;
         private int xOffset;
@@ -312,6 +311,11 @@ public class CycleTextureButton<T> extends AbstractButton {
             return this;
         }
 
+        public Builder<T> yDiffTex(int yDiffTex) {
+            this.yDiffTex = yDiffTex;
+            return this;
+        }
+
         public Builder<T> textureSize(int width, int height) {
             this.textureWidth = width;
             this.textureHeight = height;
@@ -332,7 +336,7 @@ public class CycleTextureButton<T> extends AbstractButton {
                 Component component = this.valueStringifier.apply(t);
                 Component component1 = this.displayOnlyValue ? component : CommonComponents.optionNameValue(name, component);
                 return new CycleTextureButton<T>(component1, name, this.initialIndex, t, this.values, this.valueStringifier, this.narrationProvider, onValueChange, this.tooltipSupplier, this.displayOnlyValue,
-                        resourceLocation, x, y, width, height, this.xTexStart, this.yTexStart, this.xOffset, this.yOffset, this.textureWidth, this.textureHeight, this.xDiffTex
+                        resourceLocation, x, y, width, height, this.xTexStart, this.yTexStart, this.xOffset, this.yOffset, this.textureWidth, this.textureHeight, this.xDiffTex, this.yDiffTex
                 );
             }
         }
