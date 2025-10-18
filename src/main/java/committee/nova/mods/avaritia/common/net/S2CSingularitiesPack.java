@@ -35,7 +35,6 @@ public class S2CSingularitiesPack {
         ctx.get().enqueueWork(() -> {
             SingularityRegistryHandler.getInstance().loadSingularities(this);
         });
-
         ctx.get().setPacketHandled(true);
     }
 

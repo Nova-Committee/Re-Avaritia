@@ -61,10 +61,6 @@ public class SingularityRegistryHandler {
         }
     }
 
-    public void onResourceManagerReload(ICondition.IContext context) {
-        this.loadSingularities(context);
-    }
-
     public void loadSingularities(ICondition.IContext context) {
         var stopwatch = Stopwatch.createStarted();
         var dir = FMLPaths.CONFIGDIR.get().resolve("avaritia/singularities/").toFile();
