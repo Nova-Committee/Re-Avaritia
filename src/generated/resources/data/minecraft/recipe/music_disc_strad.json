@@ -1,0 +1,21 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": {
+      "item": "avaritia:record_fragment"
+    },
+    "b": {
+      "item": "minecraft:white_dye"
+    }
+  },
+  "pattern": [
+    "a a",
+    " b ",
+    "a a"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:music_disc_strad"
+  },
+  "tier": 1
+}

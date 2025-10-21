@@ -56,21 +56,21 @@ public class InfinityUpgradeItem extends ResourceItem {
                     compressorTile.setTier(CompressorTier.DENSE);
                     level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_compressor.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.consume(1, serverPlayer);
+                    itemInHand.setDamageValue(itemInHand.getDamageValue() + 1);
                     return InteractionResult.SUCCESS;
                 }
                 case DENSE -> {
                     compressorTile.setTier(CompressorTier.DENSER);
                     level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_compressor.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.consume(1, serverPlayer);
+                    itemInHand.setDamageValue(itemInHand.getDamageValue() + 1);
                     return InteractionResult.SUCCESS;
                 }
                 case DENSER -> {
                     compressorTile.setTier(CompressorTier.DENSEST);
                     level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_compressor.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.consume(1, serverPlayer);
+                    itemInHand.setDamageValue(itemInHand.getDamageValue() + 1);
                     return InteractionResult.SUCCESS;
                 }
                 default -> {
@@ -83,21 +83,21 @@ public class InfinityUpgradeItem extends ResourceItem {
                     collectorTile.setTier(CollectorTier.DENSE);
                     level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_collector.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.consume(1, serverPlayer);
+                    itemInHand.setDamageValue(itemInHand.getDamageValue() + 1);
                     return InteractionResult.SUCCESS;
                 }
                 case DENSE -> {
                     collectorTile.setTier(CollectorTier.DENSER);
                     level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.consume(1, serverPlayer);
+                    itemInHand.setDamageValue(itemInHand.getDamageValue() + 1);
                     return InteractionResult.SUCCESS;
                 }
                 case DENSER -> {
                     collectorTile.setTier(CollectorTier.DENSEST);
                     level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_collector.get().withPropertiesOf(blockstate));
                     level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
-                    itemInHand.consume(1, serverPlayer);
+                    itemInHand.setDamageValue(itemInHand.getDamageValue() + 1);
                     return InteractionResult.SUCCESS;
                 }
                 default -> {
