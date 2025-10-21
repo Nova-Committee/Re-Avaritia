@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.core.HolderLookup;
@@ -39,6 +40,7 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.NEUTRON_DUST).add(ModItems.neutron_pile.get());
         tag(ModTags.NEUTRON_NUGGET).add(ModItems.neutron_nugget.get());
         tag(ModTags.NEUTRON_INGOT).add(ModItems.neutron_ingot.get());
+        tag(ModTags.NEUTRON_BLOCK_ITEM).add(Item.byBlock(ModBlocks.neutron.get()));
         tag(ModTags.ELYTRA_SLOT).add(ModItems.infinity_elytra.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_bow.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_crossbow.get());

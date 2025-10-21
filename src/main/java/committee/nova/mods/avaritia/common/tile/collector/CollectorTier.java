@@ -13,7 +13,7 @@ public enum CollectorTier {
     DEFAULT("neutron_collector", Ingredient.of(ModTags.NEUTRON_DUST), 3600),
     DENSE("dense_neutron_collector", Ingredient.of(ModTags.NEUTRON_NUGGET), 3600),
     DENSER("denser_neutron_collector", Ingredient.of(ModTags.NEUTRON_INGOT), 3600),
-    DENSEST("densest_neutron_collector", Ingredient.of(ModTags.NEUTRON_INGOT), 200);
+    DENSEST("densest_neutron_collector", Ingredient.of(ModTags.NEUTRON_BLOCK_ITEM), 200);
 
     public final int production_ticks;
     public final Ingredient production;
