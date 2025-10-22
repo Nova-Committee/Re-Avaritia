@@ -19,8 +19,6 @@ import java.util.List;
  * Version: 1.0
  */
 public class ModSingularities {
-    static final DeferredRegister<Singularity> DEFERRED_FLUID_TYPES = DeferredRegister.create(ResourceKey.createRegistryKey(new ResourceLocation("")), Const.MOD_ID);
-
     public static final Singularity OBSIDIAN = new Singularity(new ResourceLocation(Const.MOD_ID, "obsidian"), "singularity.avaritia.obsidian", new int[]{0x3B2754, 0x100C1C}, Ingredient.of(Items.OBSIDIAN));
     public static final Singularity BLUE_ICE = new Singularity(new ResourceLocation(Const.MOD_ID, "blue_ice"), "singularity.avaritia.blue_ice", new int[]{0x8EB8FE, 0x6B9DFB}, Ingredient.of(Items.BLUE_ICE));
     public static final Singularity COAL = new Singularity(new ResourceLocation(Const.MOD_ID, "coal"), "singularity.avaritia.coal", new int[]{0x363739, 0x261E24}, Ingredient.of(Items.COAL));

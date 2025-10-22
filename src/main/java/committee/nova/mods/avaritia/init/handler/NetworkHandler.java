@@ -39,7 +39,6 @@ public class NetworkHandler {
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
         CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
-        CHANNEL.registerMessage(id++, S2CSingularitiesPack.class, S2CSingularitiesPack::write, S2CSingularitiesPack::new, S2CSingularitiesPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, S2CTotemPack.class, S2CTotemPack::write, S2CTotemPack::new, S2CTotemPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRenamePack.class, C2SRenamePack::write, C2SRenamePack::new, C2SRenamePack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));

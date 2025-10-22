@@ -1,0 +1,22 @@
+{
+  "colors": [
+    "a0bebd",
+    "527889"
+  ],
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/tin"
+      }
+    }
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/tin"
+  },
+  "name": "singularity.avaritia.tin",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

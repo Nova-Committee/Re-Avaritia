@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "363739",
+    "261e24"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:coal"
+  },
+  "name": "singularity.avaritia.coal",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

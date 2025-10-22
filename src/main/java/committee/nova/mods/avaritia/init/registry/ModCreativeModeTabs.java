@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
+import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -42,7 +42,7 @@ public class ModCreativeModeTabs {
                     .title(Component.translatable("itemGroup.tab.Singularity"))
                     .icon(ModCreativeModeTabs::makeIcon)
                     .displayItems((parameters, output) -> {
-                        for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
+                        for (var singularity : SingularityDataHandler.getInstance().getSingularities()) {
                             if (singularity.isEnabled()) {
                                 output.accept(SingularityUtils.getItemForSingularity(singularity));
                             }

@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "eae5de",
+    "b6a48e"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:quartz"
+  },
+  "name": "singularity.avaritia.quartz",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

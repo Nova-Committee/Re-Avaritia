@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.DamageTypeTags;
@@ -22,8 +23,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModDamageTypeTags extends TagsProvider<DamageType> {
 
-    public ModDamageTypeTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
-        super(output, Registries.DAMAGE_TYPE, future, Const.MOD_ID, helper);
+    public ModDamageTypeTags(DataGenerator generator, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
+        super(generator.getPackOutput(), Registries.DAMAGE_TYPE, future, Const.MOD_ID, helper);
     }
 
 

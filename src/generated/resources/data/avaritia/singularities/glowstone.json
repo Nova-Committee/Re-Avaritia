@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "ffd38f",
+    "a06135"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:glowstone_dust"
+  },
+  "name": "singularity.avaritia.glowstone",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

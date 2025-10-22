@@ -1,0 +1,22 @@
+{
+  "colors": [
+    "bcc5bb",
+    "5d7877"
+  ],
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/invar"
+      }
+    }
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/invar"
+  },
+  "name": "singularity.avaritia.invar",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

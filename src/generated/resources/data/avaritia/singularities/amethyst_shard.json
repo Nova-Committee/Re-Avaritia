@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "cfa0f3",
+    "8d6acc"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "name": "singularity.avaritia.amethyst_shard",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

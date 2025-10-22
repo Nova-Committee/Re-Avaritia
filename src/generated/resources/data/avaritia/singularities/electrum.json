@@ -1,0 +1,22 @@
+{
+  "colors": [
+    "f5f18e",
+    "9e8d3e"
+  ],
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/electrum"
+      }
+    }
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/electrum"
+  },
+  "name": "singularity.avaritia.electrum",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

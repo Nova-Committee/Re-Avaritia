@@ -1,0 +1,22 @@
+{
+  "colors": [
+    "6c7d92",
+    "323562"
+  ],
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/lead"
+      }
+    }
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/lead"
+  },
+  "name": "singularity.avaritia.lead",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

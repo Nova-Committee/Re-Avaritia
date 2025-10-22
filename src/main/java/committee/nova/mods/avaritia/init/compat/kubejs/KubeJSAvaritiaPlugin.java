@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.compat.kubejs;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
@@ -21,5 +22,7 @@ public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
         event.register(ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.getId(), InfinityCatalystRecipeSchema.SCHEMA);
         event.register(ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.getId(), EternalSingularityRecipeSchema.SCHEMA);
         event.register(ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.getId(), ExtremeSmithingRecipeSchema.SCHEMA);
+        // 注册奇点模式
+        event.register(Const.rl("singularity"), SingularitySchema.SCHEMA);
     }
 }

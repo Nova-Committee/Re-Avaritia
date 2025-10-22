@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
+import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.util.SingularityUtils;
@@ -36,7 +36,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             if ("default".equals(group)) {
 
                 super.getIngredients().addAll(originalInputs);
-                SingularityRegistryHandler.getInstance().getSingularities()
+                SingularityDataHandler.getInstance().getSingularities()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)

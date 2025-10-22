@@ -1,0 +1,22 @@
+{
+  "colors": [
+    "d99f43",
+    "bb6b3b"
+  ],
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/bronze"
+      }
+    }
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/bronze"
+  },
+  "name": "singularity.avaritia.bronze",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}

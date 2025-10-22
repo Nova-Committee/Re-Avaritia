@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
+import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -66,9 +67,9 @@ public class SingularityItem extends Item implements IColored {
         if (stack.hasTag() && stack.getTag().getBoolean("IsCreativeTab")) {
             // 初始化奇点列表（如果尚未初始化）
             if (enabledSingularities == null) {
-                enabledSingularities = SingularityRegistryHandler.getInstance().getSingularities()
+                enabledSingularities = SingularityDataHandler.getInstance().getSingularities()
                         .stream()
-                        .filter(s -> s.isEnabled() && s.getIngredient() != net.minecraft.world.item.crafting.Ingredient.EMPTY)
+                        .filter(s -> s.isEnabled() && s.getIngredient() != Ingredient.EMPTY)
                         .toList();
             }
 

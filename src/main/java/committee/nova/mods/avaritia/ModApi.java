@@ -53,7 +53,7 @@ public class ModApi {
             return null;
 
         var id = singularity.getId();
-        var recipeId = new ResourceLocation(Const.MOD_ID, id.getPath() + "_singularity");
+        var recipeId = new ResourceLocation(id.getNamespace(), id.getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getIngredientCount();
         int timeRequired = singularity.getTimeRequired();

@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.data;
 
+import committee.nova.mods.avaritia.init.data.provider.ModSingularityProvider;
 import committee.nova.mods.avaritia.init.data.provider.*;
 import committee.nova.mods.avaritia.init.data.provider.loot.ModLootTables;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
@@ -52,8 +53,10 @@ public class ModDataGen {
             generator.addProvider(true, new ModAdvancements(output, future, helper));
 //            generator.addProvider(true, new ModFluidTags(output, future, helper));
 
-            generator.addProvider(true, new ModRegistries(generator.getPackOutput(), future));
-            generator.addProvider(true, new ModDamageTypeTags(generator.getPackOutput(), future.thenApply(ModDamageTypes::append), helper));
+            generator.addProvider(true, new ModRegistries(generator, future));
+            generator.addProvider(true, new ModDamageTypeTags(generator, future.thenApply(ModDamageTypes::append), helper));
+            // 添加奇点数据生成器
+            generator.addProvider(true, new ModSingularityProvider(generator, helper));
             generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
                     Component.literal("Avaritia Resources"),
                     DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),

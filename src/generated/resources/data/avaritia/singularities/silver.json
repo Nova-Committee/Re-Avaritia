@@ -1,0 +1,22 @@
+{
+  "colors": [
+    "c0cdd2",
+    "5f6e7c"
+  ],
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/silver"
+      }
+    }
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/silver"
+  },
+  "name": "singularity.avaritia.silver",
+  "recipeDisabled": false,
+  "timeRequired": 240
+}
