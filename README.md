@@ -47,7 +47,7 @@
 * You can add recipes by KubeJs!
 
 ## **🔎Wiki:**
-* [Wiki](https://github.com/Nova-Committee/Re-Avaritia/wiki)
+* [Wiki](wiki)
 
 ## **⚙️Develop:**
 ### **CraftTweaker:**

@@ -47,7 +47,7 @@
 * 使用KubeJs修改无尽工作台和中子态素压缩机配方!
 
 ## **🔎文档:**
-* [Wiki](https://github.com/Nova-Committee/Re-Avaritia/wiki)
+* [Wiki](wiki)
 
 ## **⚙️开发:**
 ### **Singularities**
