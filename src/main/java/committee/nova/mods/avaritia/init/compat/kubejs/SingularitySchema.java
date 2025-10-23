@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.compat.kubejs;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -119,11 +119,7 @@ public interface SingularitySchema {
             this.singularity.setEnabled(enabled);
             this.singularity.setRecipeDisabled(recipeDisabled);
             // 注册奇点到数据管理器
-            SingularityDataHandler manager = SingularityDataHandler.getInstance();
-            if (manager.isInitialized()) {
-                // 使用数据管理器的运行时注册方法
-                manager.registerRuntimeSingularity(this.singularity);
-            }
+            SingularityDataManager.INSTANCE.registerSingularity(this.singularity);
         }
 
         /**

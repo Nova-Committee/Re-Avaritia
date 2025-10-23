@@ -58,7 +58,7 @@ def check_eternal_singularity_recipe():
             content = f.read()
 
         # 检查SingularityDataManager导入
-        if "import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;" not in content:
+        if "import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;" not in content:
             print("❌ EternalSingularityCraftRecipe缺少SingularityDataManager导入")
             return False
 

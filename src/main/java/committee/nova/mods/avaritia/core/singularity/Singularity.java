@@ -89,6 +89,10 @@ public class Singularity {
         return this.name;
     }
 
+    public int[] getColors() {
+        return colors;
+    }
+
     public int getOverlayColor() {
         return this.colors[0];
     }

@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.util.NBTUtils;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.nbt.CompoundTag;
@@ -124,10 +124,7 @@ public class SingularityUtils {
         var id = NBTUtils.getString(stack, "Id");
         if (!id.isEmpty()) {
             // 优先使用新的数据管理器
-            var manager = SingularityDataHandler.getInstance();
-            if (manager != null && manager.isInitialized()) {
-                return manager.getSingularity(ResourceLocation.tryParse(id));
-            }
+            return SingularityDataManager.INSTANCE.getSingularity(ResourceLocation.tryParse(id));
         }
         return null;
     }

@@ -1,0 +1,28 @@
+package committee.nova.mods.avaritia.init.handler;
+
+import committee.nova.mods.avaritia.common.net.S2CSingularitiesPack;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
+
+/**
+ * @author cnlimiter
+ */
+@Mod.EventBusSubscriber
+public class DataPackSyncHandler {
+    @SubscribeEvent
+    public void onDatapackSync(OnDatapackSyncEvent event) {
+        ServerPlayer player = event.getPlayer();
+        var singularities = SingularityDataManager.INSTANCE.getSingularities();
+        var message = new S2CSingularitiesPack(singularities);
+
+        if (player != null) {
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
+        } else {
+            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
+        }
+    }
+}

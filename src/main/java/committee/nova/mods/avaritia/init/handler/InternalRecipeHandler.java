@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.ModApi;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -19,7 +20,7 @@ import java.util.Collection;
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
-        Collection<Singularity> allSingularities = SingularityDataHandler.getInstance().getSingularities();
+        Collection<Singularity> allSingularities = SingularityDataManager.INSTANCE.getSingularities();
         for (var singularity : allSingularities) {
             if (singularity.isRecipeDisabled()) {
                 continue;

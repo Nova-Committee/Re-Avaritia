@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -68,7 +68,7 @@ public class SingularityItem extends Item implements IColored {
         if (stack.hasTag() && stack.getTag().getBoolean("IsCreativeTab")) {
             // 初始化奇点列表（如果尚未初始化）
             if (enabledSingularities == null) {
-                enabledSingularities = SingularityDataHandler.getInstance().getSingularities()
+                enabledSingularities = SingularityDataManager.INSTANCE.getSingularities()
                         .stream()
                         .filter(s -> s.isEnabled() && s.getIngredient() != Ingredient.EMPTY)
                         .toList();

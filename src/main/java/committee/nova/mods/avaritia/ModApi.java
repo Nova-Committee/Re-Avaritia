@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityBuilder;
-import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -79,11 +78,7 @@ public class ModApi {
         builder.accept(singularityBuilder);
 
         Singularity singularity = singularityBuilder.build();
-        SingularityDataHandler manager = SingularityDataHandler.getInstance();
-        if (manager.isInitialized()) {
-            // 使用数据管理器的运行时注册方法
-            manager.registerRuntimeSingularity(singularity);
-        }
+        SingularityDataManager.INSTANCE.registerSingularity(singularity);;
         return singularity;
     }
 }

@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.item.misc.InfinityClockItem;
-import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
 import committee.nova.mods.avaritia.init.compat.projecte.ModEMCHandler;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
@@ -57,7 +56,6 @@ public class Avaritia {
 
     public void setup(final FMLCommonSetupEvent event) {
         if (Const.isLoad("projecte")) ModEMCHandler.init();
-        SingularityDataHandler.onCommonSetup();
         DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
                 return Util.make(new EndestPearlEntity(level, position.x(), position.y(), position.z()), (entity) -> entity.setItem(stack));
