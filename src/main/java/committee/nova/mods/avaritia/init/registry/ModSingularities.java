@@ -1,24 +1,19 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
-import net.minecraft.resources.ResourceKey;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.List;
+import java.util.*;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/2 12:37
- * Version: 1.0
+ * @author cnlimiter
+ * @version 1.0
  */
 public class ModSingularities {
+
     public static final Singularity OBSIDIAN = new Singularity(new ResourceLocation(Const.MOD_ID, "obsidian"), "singularity.avaritia.obsidian", new int[]{0x3B2754, 0x100C1C}, Ingredient.of(Items.OBSIDIAN));
     public static final Singularity BLUE_ICE = new Singularity(new ResourceLocation(Const.MOD_ID, "blue_ice"), "singularity.avaritia.blue_ice", new int[]{0x8EB8FE, 0x6B9DFB}, Ingredient.of(Items.BLUE_ICE));
     public static final Singularity COAL = new Singularity(new ResourceLocation(Const.MOD_ID, "coal"), "singularity.avaritia.coal", new int[]{0x363739, 0x261E24}, Ingredient.of(Items.COAL));

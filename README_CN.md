@@ -46,9 +46,10 @@
 * 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!
 * 使用KubeJs修改无尽工作台和中子态素压缩机配方!
 
+## **🔎文档:**
+* [Wiki](https://github.com/Nova-Committee/Re-Avaritia/wiki)
 
-## **🔎开发:**
-
+## **⚙️开发:**
 ### **Singularities**
     位于config/avaritia/singularities文件夹下，可以利用json自定义奇点：
 ```json5

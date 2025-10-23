@@ -46,8 +46,10 @@
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
 
+## **🔎Wiki:**
+* [Wiki](https://github.com/Nova-Committee/Re-Avaritia/wiki)
 
-## **🔎Develop:**
+## **⚙️Develop:**
 ### **CraftTweaker:**
 ```
 mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);

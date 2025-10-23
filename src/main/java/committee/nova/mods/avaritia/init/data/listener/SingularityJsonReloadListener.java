@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.data.listener;
 
 import com.google.gson.JsonElement;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import lombok.Getter;

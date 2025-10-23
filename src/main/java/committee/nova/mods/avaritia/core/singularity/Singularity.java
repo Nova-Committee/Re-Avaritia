@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.item.singularity;
+package committee.nova.mods.avaritia.core.singularity;
 
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.init.config.ModConfig;

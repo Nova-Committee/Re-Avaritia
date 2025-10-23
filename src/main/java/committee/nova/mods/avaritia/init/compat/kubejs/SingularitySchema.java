@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.kubejs;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.handler.SingularityDataHandler;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -12,8 +12,6 @@ import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 
 import java.util.Arrays;
 

@@ -1,4 +1,8 @@
 # KubeJS奇点创建指南
+<p>
+    <a href="KUBEJS_SINGULARITY_GUIDE.md">English</a> | 
+    <a href="KUBEJS_SINGULARITY_GUIDE_CN.md">简体中文</a>
+</p>
 
 ## 概述
 

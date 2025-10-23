@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.data.CachedOutput;
@@ -9,7 +9,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,9 +62,7 @@ public class ModSingularityProvider implements DataProvider {
         }
 
         Const.LOGGER.info("Generated {} singularity data files", this.singularities.size());
-        return CompletableFuture.allOf(list.toArray((p_253393_) -> {
-            return new CompletableFuture[p_253393_];
-        }));
+        return CompletableFuture.allOf(list.toArray(CompletableFuture[]::new));
     }
 
     /**

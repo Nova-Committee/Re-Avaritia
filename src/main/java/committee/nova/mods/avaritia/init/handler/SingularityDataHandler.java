@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +12,8 @@ import net.minecraftforge.eventbus.api.Event;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 奇点数据管理器 - 新的数据包系统
@@ -29,8 +29,8 @@ public class SingularityDataHandler {
     private static final Logger LOGGER = Const.LOGGER;
     private static SingularityDataHandler INSTANCE;
 
-    @Getter @Setter private Map<ResourceLocation, Singularity> cachedSingularities = new LinkedHashMap<>();
-    @Getter @Setter private Map<ResourceLocation, Singularity> runtimeSingularities = new LinkedHashMap<>();
+    @Getter @Setter private Map<ResourceLocation, Singularity> cachedSingularities = new ConcurrentHashMap<>();
+    @Getter @Setter private Map<ResourceLocation, Singularity> runtimeSingularities = new ConcurrentHashMap<>();
     private boolean isInitialized = false;
 
     public SingularityDataHandler() {
@@ -84,7 +84,7 @@ public class SingularityDataHandler {
      * 获取所有奇点（包括运行时奇点）
      */
     public Collection<Singularity> getSingularities() {
-        Map<ResourceLocation, Singularity> allSingularities = new LinkedHashMap<>(this.cachedSingularities);
+        Map<ResourceLocation, Singularity> allSingularities = new ConcurrentHashMap<>(this.cachedSingularities);
         allSingularities.putAll(this.runtimeSingularities);
         return allSingularities.values();
     }
@@ -111,7 +111,7 @@ public class SingularityDataHandler {
     }
 
     /**
-     * 注册运行时奇点（用于KubeJS）
+     * 注册运行时奇点
      */
     public void registerRuntimeSingularity(Singularity singularity) {
         if (singularity != null && singularity.getId() != null) {
@@ -168,7 +168,7 @@ public class SingularityDataHandler {
      * 获取所有奇点的合并映射
      */
     private Map<ResourceLocation, Singularity> getAllSingularities() {
-        Map<ResourceLocation, Singularity> all = new LinkedHashMap<>(this.cachedSingularities);
+        Map<ResourceLocation, Singularity> all = new ConcurrentHashMap<>(this.cachedSingularities);
         all.putAll(this.runtimeSingularities);
         return all;
     }
@@ -222,11 +222,11 @@ public class SingularityDataHandler {
         private final Map<ResourceLocation, Singularity> singularities;
 
         public SingularityReloadEvent(Map<ResourceLocation, Singularity> singularities) {
-            this.singularities = new LinkedHashMap<>(singularities);
+            this.singularities = new ConcurrentHashMap<>(singularities);
         }
 
         public Map<ResourceLocation, Singularity> getSingularities() {
-            return new LinkedHashMap<>(this.singularities);
+            return new ConcurrentHashMap<>(this.singularities);
         }
     }
 }
