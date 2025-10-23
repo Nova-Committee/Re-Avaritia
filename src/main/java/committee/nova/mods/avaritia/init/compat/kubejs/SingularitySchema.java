@@ -31,8 +31,8 @@ public interface SingularitySchema {
     RecipeKey<String> ID = StringComponent.NON_BLANK.key("id").alt("奇点id").optional("NULL");
     RecipeKey<String> NAME = StringComponent.NON_BLANK.key("name").alt("奇点显示名称").optional("Custom Singularity");
     RecipeKey<String[]> COLORS = StringComponent.NON_BLANK.asArray().key("colors").alt("奇点颜色 [覆盖色, 底层色]").optional(new String[]{"FFFFFF", "000000"});
-    RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient").alt("奇点材料").optional(InputItem.EMPTY);
-    RecipeKey<String> TAG = StringComponent.NON_BLANK.key("tag").alt("材料标签").optional("");
+    RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient").alt("奇点材料").allowEmpty().optional(InputItem.EMPTY);
+    RecipeKey<String> TAG = StringComponent.ANY.key("tag").alt("材料标签").allowEmpty().optional("");
     RecipeKey<Integer> MATERIAL_COUNT = NumberComponent.INT.key("materialCount").alt("所需材料数量").optional(1000);
     RecipeKey<Integer> TIME_REQUIRED = NumberComponent.INT.key("timeRequired").alt("压缩时间(刻)").optional(200);
     RecipeKey<Boolean> ENABLED = BooleanComponent.BOOLEAN.key("enabled").alt("是否启用").optional(true);
@@ -40,8 +40,7 @@ public interface SingularitySchema {
 
     // 奇点模式定义
     RecipeSchema SCHEMA = new RecipeSchema(SingularityJS.class, SingularityJS::new,
-            ID, NAME, COLORS, INGREDIENT, TAG, MATERIAL_COUNT, TIME_REQUIRED, ENABLED, RECIPE_DISABLED)
-            .uniqueInputId(INGREDIENT);
+            ID, NAME, COLORS, INGREDIENT, TAG, MATERIAL_COUNT, TIME_REQUIRED, ENABLED, RECIPE_DISABLED);
 
     /**
      * 奇点创建实现
@@ -57,7 +56,7 @@ public interface SingularitySchema {
 
         @Override
         public boolean hasInput(ReplacementMatch match) {
-            return getValue(INGREDIENT) != null && getValue(TAG) != null;
+            return getValue(INGREDIENT) != null || getValue(TAG) != null;
         }
 
         @Override
@@ -94,7 +93,7 @@ public interface SingularitySchema {
             }
 
             // 创建奇点
-            if (!tag.isEmpty()) {
+            if (tag != null && !tag.isEmpty()) {
                 // 使用标签
                 this.singularity = new Singularity(
                         Const.rl(id),
@@ -104,7 +103,7 @@ public interface SingularitySchema {
                     materialCount,
                     timeRequired
                 );
-            } else if (!ingredient.isEmpty()) {
+            } else if (ingredient != null && !ingredient.isEmpty()) {
                 // 使用物品
                 this.singularity = new Singularity(
                         Const.rl(id),
