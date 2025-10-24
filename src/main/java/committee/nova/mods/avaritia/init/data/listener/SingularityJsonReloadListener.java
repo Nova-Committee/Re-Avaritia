@@ -47,8 +47,8 @@ public class SingularityJsonReloadListener extends SimpleJsonResourceReloadListe
             }
         }
         // 更新缓存
-        SingularityDataManager.INSTANCE.getCachedSingularities().clear();
-        SingularityDataManager.INSTANCE.setCachedSingularities(singularities.values().stream().toList());
+        SingularityDataManager.INSTANCE.getSingularities().clear();
+        SingularityDataManager.INSTANCE.setSingularities(singularities.values().stream().toList());
         Const.LOGGER.info("Loaded {} singularities", singularities.size());
         // 通知其他组件奇点数据已更新
         onSingularitiesReloaded(singularities.values().stream().toList());

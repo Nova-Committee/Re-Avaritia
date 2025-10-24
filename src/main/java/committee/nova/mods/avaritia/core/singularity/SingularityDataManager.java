@@ -16,7 +16,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.eventbus.api.Event;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -38,7 +37,7 @@ public class SingularityDataManager {
     private static final Logger LOGGER = Const.LOGGER;
     public static final SingularityDataManager INSTANCE = new SingularityDataManager();
 
-    @Getter @Setter private List<Singularity> cachedSingularities = new CopyOnWriteArrayList<>();
+    @Getter @Setter private List<Singularity> singularities = new CopyOnWriteArrayList<>();
     public SingularityDataManager() {
     }
 
@@ -81,18 +80,10 @@ public class SingularityDataManager {
     }
 
     /**
-     * 获取所有奇点（包括运行时奇点）
-     */
-    public List<Singularity> getSingularities() {
-        return cachedSingularities;
-    }
-
-
-    /**
      * 根据ID获取奇点（优先运行时奇点）
      */
     public Singularity getSingularity(ResourceLocation id) {
-        for (Singularity singularity : this.cachedSingularities) {
+        for (Singularity singularity : this.singularities) {
             if(singularity.getId().equals(id)) {
                 return singularity;
             }
@@ -104,7 +95,7 @@ public class SingularityDataManager {
      */
     public void registerSingularity(Singularity singularity) {
         if (singularity != null && singularity.getId() != null) {
-            this.cachedSingularities.add(singularity);
+            this.singularities.add(singularity);
             // 使EternalSingularityCraftRecipe缓存失效
             LOGGER.info("Registered singularity: {}", singularity.getId());
             EternalSingularityCraftRecipe.invalidate();

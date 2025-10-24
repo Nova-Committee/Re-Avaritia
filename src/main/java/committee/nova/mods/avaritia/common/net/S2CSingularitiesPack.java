@@ -62,8 +62,8 @@ public class S2CSingularitiesPack {
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            SingularityDataManager.INSTANCE.getCachedSingularities().clear();
-            SingularityDataManager.INSTANCE.getCachedSingularities().addAll(this.singularities);
+            SingularityDataManager.INSTANCE.getSingularities().clear();
+            SingularityDataManager.INSTANCE.getSingularities().addAll(this.singularities);
         });
         ctx.get().setPacketHandled(true);
     }

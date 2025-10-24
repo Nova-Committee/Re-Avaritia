@@ -9,6 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Description:
@@ -20,7 +21,7 @@ import java.util.Collection;
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
-        Collection<Singularity> allSingularities = SingularityDataManager.INSTANCE.getSingularities();
+        List<Singularity> allSingularities = SingularityDataManager.INSTANCE.getSingularities();
         for (var singularity : allSingularities) {
             if (singularity.isRecipeDisabled()) {
                 continue;

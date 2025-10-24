@@ -14,7 +14,7 @@ import net.minecraftforge.network.PacketDistributor;
 @Mod.EventBusSubscriber
 public class DataPackSyncHandler {
     @SubscribeEvent
-    public void onDatapackSync(OnDatapackSyncEvent event) {
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
         ServerPlayer player = event.getPlayer();
         var singularities = SingularityDataManager.INSTANCE.getSingularities();
         var message = new S2CSingularitiesPack(singularities);

@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -16,14 +18,23 @@ import net.minecraftforge.fml.loading.FMLLoader;
  * Version: 1.0
  */
 public class Singularity {
+    @Getter
     private final ResourceLocation id;
+    @Getter
     private final String name;
+    @Getter
     private final int[] colors;
+    @Getter
     private final String tag;
     private final int ingredientCount;
+    @Getter
     private final int timeRequired;
     private Ingredient ingredient;
+    @Setter
+    @Getter
     private boolean enabled = true;
+    @Setter
+    @Getter
     private boolean recipeDisabled = false;
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
@@ -81,28 +92,12 @@ public class Singularity {
         return singularity;
     }
 
-    public ResourceLocation getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int[] getColors() {
-        return colors;
-    }
-
     public int getOverlayColor() {
         return this.colors[0];
     }
 
     public int getUnderlayColor() {
         return this.colors[1];
-    }
-
-    public String getTag() {
-        return this.tag;
     }
 
     public Ingredient getIngredient() {
@@ -123,26 +118,6 @@ public class Singularity {
 
     public Component getDisplayName() {
         return Localizable.of(this.name).build();
-    }
-
-    public int getTimeRequired() {
-        return timeRequired;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isRecipeDisabled() {
-        return recipeDisabled;
-    }
-
-    public void setRecipeDisabled(boolean recipeDisabled) {
-        this.recipeDisabled = recipeDisabled;
     }
 
     public void write(FriendlyByteBuf buffer) {
