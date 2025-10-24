@@ -16,12 +16,15 @@ public class DataPackSyncHandler {
     @SubscribeEvent
     public static void onDatapackSync(OnDatapackSyncEvent event) {
         ServerPlayer player = event.getPlayer();
-        var message = new S2CSingularitiesPack(SingularityDataManager.getInstance().getCachedSingularities().values());
+        var cacheMsg = new S2CSingularitiesPack(SingularityDataManager.getInstance().getCachedSingularities().values());
+        var runtimeMsg = new S2CSingularitiesPack(SingularityDataManager.getInstance().getRuntimeSingularities().values());
 
         if (player != null) {
-            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), cacheMsg);
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), runtimeMsg);
         } else {
-            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
+            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), cacheMsg);
+            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), runtimeMsg);
         }
     }
 }

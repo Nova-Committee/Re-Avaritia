@@ -59,32 +59,32 @@ public class ItemOverrideHandler {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                    return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
                 }
             });
             setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                    return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
                 }
             });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
-                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
             });
             setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
-                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
             });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracer"), (itemStack, world, livingEntity, d) -> {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return CrossbowItem.isCharged(itemStack) && itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer") ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                    return livingEntity.getUseItem() == itemStack && itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer") ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
                 }
             });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracing"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem()
-                        && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack)
+                        && livingEntity.getUseItem() == itemStack
                         && itemStack.getOrCreateTagElement("mode").getBoolean("infinity_bow_tracer")
                         ? 1.0F : 0.0F;
             });
@@ -94,7 +94,7 @@ public class ItemOverrideHandler {
                 if (livingEntity == null) {
                     return 0.0F;
                 } else {
-                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / 20;
+                    return InfinityCrossBowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
                 }
             });
             setPropertyOverride(Items.CROSSBOW, Const.rl("pulling"), (itemStack, level, livingEntity, i) -> {
