@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
@@ -47,7 +46,6 @@ public class SingularityDataManager {
      */
     public static void onCommonSetup() {
         getInstance().initialize();
-        LOGGER.info("SingularityDataManager initialized");
     }
 
     /**
@@ -61,7 +59,7 @@ public class SingularityDataManager {
         this.isInitialized = true;
         this.loadFallbackSingularities();
 
-        LOGGER.info("SingularityDataManager initialized with {} singularities",
+        LOGGER.info("Singularity: Initialized with {} singularities",
                 this.cachedSingularities.size());
     }
 
@@ -75,8 +73,7 @@ public class SingularityDataManager {
         for (var singularity : ModSingularities.getDefaults()) {
             this.cachedSingularities.put(singularity.getId(), singularity);
         }
-
-        LOGGER.info("Loaded {} fallback singularities", this.cachedSingularities.size());
+        LOGGER.info("Singularity: Loaded {} fallback singularities", this.cachedSingularities.size());
     }
 
     /**
@@ -116,16 +113,15 @@ public class SingularityDataManager {
         if (singularity != null && singularity.getId() != null) {
             var oldSingularity = this.runtimeSingularities.put(singularity.getId(), singularity);
             if (oldSingularity == null) {
-                LOGGER.info("Registered runtime singularity: {}", singularity.getId());
+                LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getId());
             } else {
-                LOGGER.info("Updated runtime singularity: {}", singularity.getId());
+                LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getId());
             }
 
             // 使EternalSingularityCraftRecipe缓存失效
             EternalSingularityCraftRecipe.invalidate();
-
             // 通知奇点更新
-            MinecraftForge.EVENT_BUS.post(new SingularityReloadEvent(getAllSingularities()));
+            MinecraftForge.EVENT_BUS.post(new SingularityRuntimeEvent.Add(getAllSingularities(), singularity));
         }
     }
 
@@ -135,33 +131,17 @@ public class SingularityDataManager {
     public Singularity removeRuntimeSingularity(ResourceLocation id) {
         var removed = this.runtimeSingularities.remove(id);
         if (removed != null) {
-            LOGGER.info("Removed runtime singularity: {}", id);
+            LOGGER.info("Singularity: Removed runtime singularity: {}", id);
 
             // 使EternalSingularityCraftRecipe缓存失效
             EternalSingularityCraftRecipe.invalidate();
 
             // 通知奇点更新
-            MinecraftForge.EVENT_BUS.post(new SingularityReloadEvent(getAllSingularities()));
+            MinecraftForge.EVENT_BUS.post(new SingularityRuntimeEvent.Remove(getAllSingularities(), id));
         }
         return removed;
     }
 
-    /**
-     * 清空所有运行时奇点
-     */
-    public void clearRuntimeSingularities() {
-        int count = this.runtimeSingularities.size();
-        this.runtimeSingularities.clear();
-        LOGGER.info("Cleared {} runtime singularities", count);
-
-        if (count > 0) {
-            // 使EternalSingularityCraftRecipe缓存失效
-            EternalSingularityCraftRecipe.invalidate();
-
-            // 通知奇点更新
-            MinecraftForge.EVENT_BUS.post(new SingularityReloadEvent(getAllSingularities()));
-        }
-    }
 
     /**
      * 获取所有奇点的合并映射
@@ -214,18 +194,4 @@ public class SingularityDataManager {
         return this.isInitialized;
     }
 
-    /**
-     * 奇点重载事件
-     */
-    public static class SingularityReloadEvent extends Event {
-        private final Map<ResourceLocation, Singularity> singularities;
-
-        public SingularityReloadEvent(Map<ResourceLocation, Singularity> singularities) {
-            this.singularities = new LinkedHashMap<>(singularities);
-        }
-
-        public Map<ResourceLocation, Singularity> getSingularities() {
-            return new LinkedHashMap<>(this.singularities);
-        }
-    }
 }

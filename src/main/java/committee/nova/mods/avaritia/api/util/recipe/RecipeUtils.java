@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.api.util.recipe;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.api.Lib;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
@@ -17,7 +18,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,6 +44,29 @@ public class RecipeUtils {
     @ApiStatus.Internal
     public static void setRecipeManager(RecipeManager manager) {
         recipeManager = new WeakReference<>(manager);
+    }
+
+    public static void addRecipe(Recipe<?> recipe) {
+        impactRecipeManager();
+        getRecipeManager().recipes.computeIfAbsent(recipe.getType(), t -> new HashMap<>()).put(recipe.getId(), recipe);
+        getRecipeManager().byName.put(recipe.getId(), recipe);
+    }
+
+    public static void removeRecipe(RecipeType<?> recipeType, ResourceLocation recipeId) {
+        impactRecipeManager();
+        getRecipeManager().recipes.computeIfAbsent(recipeType, t -> new HashMap<>()).remove(recipeId);
+        getRecipeManager().byName.remove(recipeId);
+    }
+
+    private static void impactRecipeManager() {
+        if (getRecipeManager().recipes instanceof ImmutableMap) {
+            getRecipeManager().recipes = new ConcurrentHashMap<>(getRecipeManager().recipes);
+            getRecipeManager().recipes.replaceAll((t, v) -> new ConcurrentHashMap<>(getRecipeManager().recipes.get(t)));
+        }
+
+        if (getRecipeManager().byName instanceof ImmutableMap) {
+            getRecipeManager().byName = new ConcurrentHashMap<>(getRecipeManager().byName);
+        }
     }
 
     public static <I extends Container, T extends Recipe<I>> Map<ResourceLocation, T> byType(RecipeType<T> type) {

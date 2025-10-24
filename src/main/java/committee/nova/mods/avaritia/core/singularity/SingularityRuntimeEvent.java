@@ -1,0 +1,39 @@
+package committee.nova.mods.avaritia.core.singularity;
+
+import lombok.Getter;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.Event;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * 奇点添加事件
+ */
+public class SingularityRuntimeEvent extends Event {
+    private final Map<ResourceLocation, Singularity> allSingularities;
+
+    public SingularityRuntimeEvent(Map<ResourceLocation, Singularity> allSingularities) {
+        this.allSingularities = new LinkedHashMap<>(allSingularities);
+    }
+
+    public Map<ResourceLocation, Singularity> getAllSingularities() {
+        return new LinkedHashMap<>(this.allSingularities);
+    }
+
+    public static class Add extends SingularityRuntimeEvent {
+        @Getter private final Singularity singularity;
+        public Add(Map<ResourceLocation, Singularity> allSingularities, Singularity singularity) {
+            super(allSingularities);
+            this.singularity = singularity;
+        }
+    }
+    public static class Remove extends SingularityRuntimeEvent {
+        @Getter private final ResourceLocation singularityId;
+        public Remove(Map<ResourceLocation, Singularity> allSingularities, ResourceLocation singularityId) {
+            super(allSingularities);
+            this.singularityId = singularityId;
+        }
+    }
+
+}

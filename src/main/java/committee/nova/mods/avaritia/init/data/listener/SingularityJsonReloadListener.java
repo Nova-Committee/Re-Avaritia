@@ -2,8 +2,13 @@ package committee.nova.mods.avaritia.init.data.listener;
 
 import com.google.gson.JsonElement;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.ModApi;
+import committee.nova.mods.avaritia.api.util.recipe.RecipeUtils;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
+import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +20,6 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,7 +53,7 @@ public class SingularityJsonReloadListener extends SimpleJsonResourceReloadListe
         // 更新缓存
         SingularityDataManager.getInstance().getCachedSingularities().clear();
         SingularityDataManager.getInstance().setCachedSingularities(singularities);
-        Const.LOGGER.info("Loaded {} singularities", singularities.size());
+        Const.LOGGER.info("Singularity: Loaded {} singularities", singularities.size());
         // 通知其他组件奇点数据已更新
         onSingularitiesReloaded(singularities);
     }
@@ -58,9 +62,10 @@ public class SingularityJsonReloadListener extends SimpleJsonResourceReloadListe
      * 奇点数据重载完成后的回调
      */
     private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
-        MinecraftForge.EVENT_BUS.post(new SingularityDataManager.SingularityReloadEvent(singularities));
-        // 这里可以添加通知其他组件的逻辑
-        // 例如：刷新配方缓存、重新计算某些数据等
+        // 使EternalSingularityCraftRecipe缓存失效
+        EternalSingularityCraftRecipe.invalidate();
+        // 通知奇点更新
+        MinecraftForge.EVENT_BUS.post(new SingularityReloadEvent(singularities));
     }
 
     @Override
