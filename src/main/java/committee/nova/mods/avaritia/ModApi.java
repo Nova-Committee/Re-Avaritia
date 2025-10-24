@@ -78,7 +78,12 @@ public class ModApi {
         builder.accept(singularityBuilder);
 
         Singularity singularity = singularityBuilder.build();
-        SingularityDataManager.INSTANCE.registerSingularity(singularity);;
+        // 注册奇点到数据管理器
+        SingularityDataManager manager = SingularityDataManager.getInstance();
+        if (manager.isInitialized()) {
+            // 使用数据管理器的运行时注册方法
+            manager.registerRuntimeSingularity(singularity);
+        }
         return singularity;
     }
 }

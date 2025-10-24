@@ -47,17 +47,17 @@ public class SingularityJsonReloadListener extends SimpleJsonResourceReloadListe
             }
         }
         // 更新缓存
-        SingularityDataManager.INSTANCE.getSingularities().clear();
-        SingularityDataManager.INSTANCE.setSingularities(singularities.values().stream().toList());
+        SingularityDataManager.getInstance().getCachedSingularities().clear();
+        SingularityDataManager.getInstance().setCachedSingularities(singularities);
         Const.LOGGER.info("Loaded {} singularities", singularities.size());
         // 通知其他组件奇点数据已更新
-        onSingularitiesReloaded(singularities.values().stream().toList());
+        onSingularitiesReloaded(singularities);
     }
 
     /**
      * 奇点数据重载完成后的回调
      */
-    private void onSingularitiesReloaded(List<Singularity> singularities) {
+    private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
         MinecraftForge.EVENT_BUS.post(new SingularityDataManager.SingularityReloadEvent(singularities));
         // 这里可以添加通知其他组件的逻辑
         // 例如：刷新配方缓存、重新计算某些数据等

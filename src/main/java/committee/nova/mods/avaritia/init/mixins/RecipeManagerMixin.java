@@ -62,18 +62,9 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
             ConfigRecipeManager.RecipeConfig config = entry.getValue();
 
             switch (config.action) {
-                case ADD:
-                    // 添加新配方
-                    object.put(recipeId, config.recipeData);
-                    break;
-                case REMOVE:
-                    // 删除配方
-                    object.remove(recipeId);
-                    break;
-                case REPLACE:
-                    // 替换配方
-                    object.put(recipeId, config.recipeData);
-                    break;
+                case ADD -> object.put(recipeId, config.recipeData);
+                case REMOVE -> object.remove(recipeId);
+                case REPLACE -> object.put(recipeId, config.recipeData);
             }
         }
     }

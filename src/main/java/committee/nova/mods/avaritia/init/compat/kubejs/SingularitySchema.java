@@ -119,7 +119,11 @@ public interface SingularitySchema {
             this.singularity.setEnabled(enabled);
             this.singularity.setRecipeDisabled(recipeDisabled);
             // 注册奇点到数据管理器
-            SingularityDataManager.INSTANCE.registerSingularity(this.singularity);
+            SingularityDataManager manager = SingularityDataManager.getInstance();
+            if (manager.isInitialized()) {
+                // 使用数据管理器的运行时注册方法
+                manager.registerRuntimeSingularity(this.singularity);
+            }
         }
 
         /**

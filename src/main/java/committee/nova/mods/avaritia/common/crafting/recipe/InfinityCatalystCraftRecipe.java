@@ -36,7 +36,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             if ("default".equals(group)) {
 
                 super.getIngredients().addAll(originalInputs);
-                SingularityDataManager.INSTANCE.getSingularities()
+                SingularityDataManager.getInstance().getSingularities()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)

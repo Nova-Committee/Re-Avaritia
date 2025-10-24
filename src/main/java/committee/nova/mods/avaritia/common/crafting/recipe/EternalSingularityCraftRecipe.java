@@ -44,7 +44,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         var ingredients = this.getIngredients();
         if (ingredients.isEmpty()) return false;
 
-        int singularityCount = SingularityDataManager.INSTANCE.getSingularities()
+        int singularityCount = SingularityDataManager.getInstance().getSingularities()
                 .stream()
                 .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                 .mapToInt(singularity -> 1)
@@ -59,7 +59,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                 validItems++;
                 boolean matched = false;
                 int index = 0;
-                for (var singularity : SingularityDataManager.INSTANCE.getSingularities()) {
+                for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
                     if (singularity.getIngredient() != Ingredient.EMPTY) {
                         ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
                         if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
@@ -93,7 +93,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             if (this.custom) {
                 super.getIngredients().addAll(inputs);
             } else {
-                SingularityDataManager.INSTANCE.getSingularities()
+                SingularityDataManager.getInstance().getSingularities()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)

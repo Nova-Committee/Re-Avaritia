@@ -124,7 +124,10 @@ public class SingularityUtils {
         var id = NBTUtils.getString(stack, "Id");
         if (!id.isEmpty()) {
             // 优先使用新的数据管理器
-            return SingularityDataManager.INSTANCE.getSingularity(ResourceLocation.tryParse(id));
+            var manager = SingularityDataManager.getInstance();
+            if (manager != null && manager.isInitialized()) {
+                return manager.getSingularity(ResourceLocation.tryParse(id));
+            }
         }
         return null;
     }

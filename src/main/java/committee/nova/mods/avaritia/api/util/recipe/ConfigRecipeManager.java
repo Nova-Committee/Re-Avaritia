@@ -61,14 +61,12 @@ public class ConfigRecipeManager {
                     .forEach(path -> {
                         try (BufferedReader reader = Files.newBufferedReader(path)) {
                             JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-                            if (json != null) {
-                                ResourceLocation recipeId = getRecipeIdFromPath(path, configDir);
-                                RecipeAction action = parseAction(json);
-                                String recipeType = GsonHelper.getAsString(json, "type", "");
-                                JsonObject recipeData = GsonHelper.getAsJsonObject(json, "recipe", new JsonObject());
+                            ResourceLocation recipeId = getRecipeIdFromPath(path, configDir);
+                            RecipeAction action = parseAction(json);
+                            String recipeType = GsonHelper.getAsString(json, "type", "");
+                            JsonObject recipeData = GsonHelper.getAsJsonObject(json, "recipe", new JsonObject());
 
-                                configs.put(recipeId, new RecipeConfig(action, recipeType, recipeData));
-                            }
+                            configs.put(recipeId, new RecipeConfig(action, recipeType, recipeData));
                         } catch (Exception e) {
                             LOGGER.error("Failed to load recipe config: {}", path, e);
                         }

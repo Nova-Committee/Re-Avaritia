@@ -3,11 +3,12 @@ package committee.nova.mods.avaritia.common.net;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * S2CSingularitiesPacket
@@ -18,30 +19,33 @@ import java.util.function.Supplier;
  */
 public class S2CSingularitiesPack {
 
-    private final List<Singularity> singularities;
+    private final Collection<Singularity> cacheSingularities;
 
-    public S2CSingularitiesPack(List<Singularity> singularities) {
-        this.singularities = singularities;
+    public S2CSingularitiesPack(Collection<Singularity> cacheSingularities) {
+        this.cacheSingularities = cacheSingularities;
     }
 
     public S2CSingularitiesPack(FriendlyByteBuf buf) {
-        List<Singularity> singularities = new ArrayList<>();
+        List<Singularity> cacheSingularities = new ArrayList<>();
 
-        int size = buf.readVarInt();
+        int cacheSize = buf.readVarInt();
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < cacheSize; i++) {
             var singularity = Singularity.read(buf);
 
-            singularities.add(singularity);
+            cacheSingularities.add(singularity);
         }
 
-        this.singularities = singularities;
+        this.cacheSingularities = cacheSingularities;
     }
 
     public void write(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(this.singularities.size());
+        writeSingularities(buffer, this.cacheSingularities);
+    }
 
-        this.singularities.forEach((singularity) -> {
+    private void writeSingularities(FriendlyByteBuf buffer, Collection<Singularity> singularities) {
+        buffer.writeVarInt(singularities.size());
+        singularities.forEach(singularity -> {
             buffer.writeResourceLocation(singularity.getId());
             buffer.writeUtf(singularity.getName());
             buffer.writeVarIntArray(singularity.getColors());
@@ -62,13 +66,12 @@ public class S2CSingularitiesPack {
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            SingularityDataManager.INSTANCE.getSingularities().clear();
-            SingularityDataManager.INSTANCE.getSingularities().addAll(this.singularities);
+            SingularityDataManager.getInstance().getCachedSingularities().clear();
+            SingularityDataManager.getInstance().getCachedSingularities().putAll(
+                    this.cacheSingularities.stream()
+                    .collect(Collectors.toMap(Singularity::getId, s -> s))
+            );
         });
         ctx.get().setPacketHandled(true);
-    }
-
-    public List<Singularity> getSingularities() {
-        return this.singularities;
     }
 }

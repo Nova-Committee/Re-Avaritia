@@ -68,7 +68,7 @@ public class SingularityItem extends Item implements IColored {
         if (stack.hasTag() && stack.getTag().getBoolean("IsCreativeTab")) {
             // 初始化奇点列表（如果尚未初始化）
             if (enabledSingularities == null) {
-                enabledSingularities = SingularityDataManager.INSTANCE.getSingularities()
+                enabledSingularities = SingularityDataManager.getInstance().getSingularities()
                         .stream()
                         .filter(s -> s.isEnabled() && s.getIngredient() != Ingredient.EMPTY)
                         .toList();

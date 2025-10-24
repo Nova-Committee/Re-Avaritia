@@ -42,7 +42,7 @@ public class ModCreativeModeTabs {
                     .title(Component.translatable("itemGroup.tab.Singularity"))
                     .icon(ModCreativeModeTabs::makeIcon)
                     .displayItems((parameters, output) -> {
-                        for (var singularity : SingularityDataManager.INSTANCE.getSingularities()) {
+                        for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
                             if (singularity.isEnabled()) {
                                 output.accept(SingularityUtils.getItemForSingularity(singularity));
                             }
