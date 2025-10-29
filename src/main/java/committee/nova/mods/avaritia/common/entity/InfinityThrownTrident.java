@@ -86,7 +86,13 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
         }
         Entity entity = getOwner();
         if (!noReturn && (dealtDamage || isNoPhysics()) && entity != null) {
-            if (isAcceptableReturnOwner() && loyaltyLevel > 0) {
+            if (!isAcceptableReturnOwner() ) {
+                if (!level().isClientSide && pickup == Pickup.ALLOWED) {
+                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+                }
+
+            } else if (loyaltyLevel > 0){
+                this.onClientRemoval();
                 setNoPhysics(true);
                 Vec3 returnVector = entity.getEyePosition().subtract(position());
                 this.setPosRaw(getX(), getY() + returnVector.y * 0.015D * loyaltyLevel, getZ());
@@ -99,11 +105,6 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
                     this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
                 }
                 ++this.returningTicks;
-            } else {
-                if (!level().isClientSide && pickup == Pickup.ALLOWED) {
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
-                }
-                this.onClientRemoval();
             }
         }
         super.tick();
