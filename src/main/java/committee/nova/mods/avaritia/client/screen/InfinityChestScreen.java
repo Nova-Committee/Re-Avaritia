@@ -43,7 +43,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     @Getter
     private int blitOffset;
 
-    private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_PANEL;
+    private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
     private final String ownerName;
     private String lastHoveredObject="";
     private long lastCount = 0;
@@ -68,8 +68,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 15, 118);
         this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 211));
-        this.sortButton = new SortButton(this.leftPos + 198, this.topPos + 243);
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 185, this.topPos + 202));
+        this.sortButton = new SortButton(this.leftPos + 185, this.topPos + 219);
         this.addRenderableWidget(sortButton);
 
         this.searchBox = new EditBox(this.font, leftPos + 104, topPos + 4, 90, 12, Component.translatable("gui.avaritia.search"));
@@ -78,8 +78,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.searchBox.setValue(menu.filter);
         this.addRenderableWidget(searchBox);
 
-        this.craftToChannelButton = new CraftToChannelButton(leftPos + 179, topPos + 146);
-        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 179, topPos + 159);
+        this.craftToChannelButton = new CraftToChannelButton(leftPos + 160, topPos + 143);
+        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 160, topPos + 171);
         this.addRenderableWidget(craftToChannelButton);
         this.addRenderableWidget(craftToInventoryButton);
         menu.chestContainer.refreshContainer(true);
@@ -91,7 +91,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        //取消标题渲染
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 17, this.inventoryLabelY + 122, 4210752, false);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
         if ((hoveredSlot.index - 51) >= menu.chestContainer.viewingObject.size()) return;
         String hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - 51);
-        List<Component> components = Lists.newArrayList();
+        List<Component> components;
         long count;
         components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
         count = menu.channel.getRealItemAmount(hoveredObject);
@@ -399,14 +399,14 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
-            if (sortButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
+            if (sortButton.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 
     private class CraftToChannelButton extends ImageButton {
 
         public CraftToChannelButton(int x, int y) {
-            super(x, y, 16, 9, 219, 0, GUI_IMG, pButton -> {
+            super(x, y, 17, 9, 219, 0, GUI_IMG, pButton -> {
             });
 
         }
@@ -427,7 +427,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     private class CraftToInventoryButton extends ImageButton {
         public CraftToInventoryButton(int x, int y) {
-            super(x, y, 16, 9, 219, 18, GUI_IMG, pButton -> {
+            super(x, y, 17, 9, 219, 18, GUI_IMG, pButton -> {
             });
         }
 

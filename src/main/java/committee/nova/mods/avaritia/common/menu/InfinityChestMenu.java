@@ -352,13 +352,13 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     private void addSlots(Player player, Inventory playerInv) {
         //快捷栏0~8
         for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 258));
+            this.addSlot(new Slot(playerInv, l, 24 + l * 17, 258));
         }
 
         //背包9~35
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
-                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 23 + i1 * 17, 195 + k * 17));
+                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 24 + i1 * 17, 203 + k * 17));
             }
         }
 
