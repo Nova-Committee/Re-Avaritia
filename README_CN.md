@@ -165,30 +165,17 @@ ServerEvents.recipes(
 }
 ```
 ### **Dependencies:**
+avaritia_version 请查看这里 [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
 ```groovy
-plugins {
-    id 'org.spongepowered.mixin' version '0.7.+'
-}
-
 repositories {
     maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        url = "https://repo.spongepowered.org/repository/maven-public"
+        url "https://maven.nova-committee.cn/s3"
     }
 }
 
 dependencies {
-
-    implementation fg.deobf("curse.maven:re-avaritia-623969:${avaritia_version}")
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:[0.4.1,0.5.0)"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:[0.4.1,0.5.0)"))
+    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
 }
-
 ```
 
 

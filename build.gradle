@@ -6,7 +6,7 @@ plugins {
 version = mc_version + "-" + mod_version + "-" + mod_version_tag
 group = mod_group_id
 base {
-    archivesName = mod_name
+    archivesName = mod_name + "-" + mod_platform
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -173,8 +173,6 @@ dependencies {
         compileOnly topDependency
     }
 
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
 
     compileOnly ("org.projectlombok:lombok:$lombok_version")
     annotationProcessor ("org.projectlombok:lombok:$lombok_version")
@@ -364,7 +362,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = project.group
-            artifactId = project.mod_name
+            artifactId = project.mod_id + "-" + project.mod_platform
             version = project.version
 
             artifact jar
