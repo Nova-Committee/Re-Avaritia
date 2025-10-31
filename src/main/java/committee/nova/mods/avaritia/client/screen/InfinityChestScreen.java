@@ -68,8 +68,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 15, 118);
         this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 185, this.topPos + 202));
-        this.sortButton = new SortButton(this.leftPos + 185, this.topPos + 219);
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 185, this.topPos + 200));
+        this.sortButton = new SortButton(this.leftPos + 185, this.topPos + 217);
         this.addRenderableWidget(sortButton);
 
         this.searchBox = new EditBox(this.font, leftPos + 104, topPos + 4, 90, 12, Component.translatable("gui.avaritia.search"));
@@ -78,8 +78,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.searchBox.setValue(menu.filter);
         this.addRenderableWidget(searchBox);
 
-        this.craftToChannelButton = new CraftToChannelButton(leftPos + 160, topPos + 143);
-        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 160, topPos + 171);
+        this.craftToChannelButton = new CraftToChannelButton(leftPos + 160, topPos + 145);
+        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 160, topPos + 173);
         this.addRenderableWidget(craftToChannelButton);
         this.addRenderableWidget(craftToInventoryButton);
         menu.chestContainer.refreshContainer(true);

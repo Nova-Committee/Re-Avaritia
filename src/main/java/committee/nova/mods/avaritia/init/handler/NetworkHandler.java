@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,6 +57,10 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, C2SOpenRingPack.class, C2SOpenRingPack::write, C2SOpenRingPack::new, C2SOpenRingPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SSetTimePacket.class, C2SSetTimePacket::write, C2SSetTimePacket::new, C2SSetTimePacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        // 中子压缩器新增功能包
+        CHANNEL.registerMessage(id++, C2SCompressorLockPacket.class, C2SCompressorLockPacket::toBytes, C2SCompressorLockPacket::new, C2SCompressorLockPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SCompressorEjectPacket.class, C2SCompressorEjectPacket::toBytes, C2SCompressorEjectPacket::new, C2SCompressorEjectPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
         CHANNEL.registerMessage(id++, S2CInfinityChestStatePack.class, S2CInfinityChestStatePack::write, S2CInfinityChestStatePack::new, S2CInfinityChestStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SInfinityChestActionPack.class, C2SInfinityChestActionPack::write, C2SInfinityChestActionPack::new, C2SInfinityChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SInfinityChestFilterPack.class, C2SInfinityChestFilterPack::write, C2SInfinityChestFilterPack::new, C2SInfinityChestFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
@@ -68,5 +73,15 @@ public class NetworkHandler {
 
     public static void sendNbtDataTo(ServerPlayer pl, CompoundTag tag) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> pl), new NbtDataPack(tag));
+    }
+
+    // 便捷方法：发送压缩器锁定包
+    public static void sendCompressorLockPacket(BlockPos pos, boolean locked) {
+        CHANNEL.sendToServer(new C2SCompressorLockPacket(pos, locked));
+    }
+
+    // 便捷方法：发送压缩器弹出包
+    public static void sendCompressorEjectPacket(BlockPos pos) {
+        CHANNEL.sendToServer(new C2SCompressorEjectPacket(pos));
     }
 }

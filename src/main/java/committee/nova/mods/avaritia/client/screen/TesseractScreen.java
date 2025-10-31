@@ -555,7 +555,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
             list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
-            if (sortButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
+            if (sortButton.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 
@@ -575,7 +575,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
             else if (menu.viewType == 1)
                 list.add(Component.translatable("gui.avaritia.view.item").getVisualOrderText());
             else list.add(Component.translatable("gui.avaritia.view.fluid").getVisualOrderText());
-            if (viewTypeButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
+            if (viewTypeButton.isHovered) setTooltipForNextRenderPass(list);
         }
     }
 

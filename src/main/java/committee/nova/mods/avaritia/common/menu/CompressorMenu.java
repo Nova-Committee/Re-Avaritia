@@ -36,6 +36,22 @@ public class CompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
         this.progressData = data;
         inventory.setSlotValidator((integer, itemStack) -> {
             if (integer == 1) {
+                // 获取压缩器实例检查锁定状态
+                var tile = level.getBlockEntity(pos);
+                if (tile instanceof NeutronCompressorTile compressor) {
+                    if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
+                        // 锁定状态下，只接受锁定配方的材料
+                        var ingredients = compressor.getLockedRecipe().getIngredients();
+                        if (!ingredients.isEmpty()) {
+                            var ingredient = ingredients.get(0);
+                            var items = ingredient.getItems();
+                            return items.length > 0 && itemStack.is(items[0].getItem());
+                        }
+                        return false;
+                    }
+                }
+
+                // 正常状态下的验证逻辑
                 var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
                 if (recipes.isEmpty()) return true;
 
@@ -105,6 +121,13 @@ public class CompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     @OnlyIn(Dist.CLIENT)
     public int getProgress() {
         return this.progressData.get(0);
+    }
+
+    public NeutronCompressorTile getTileEntity() {
+        if (level != null) {
+            return level.getBlockEntity(getBlockPos()) instanceof NeutronCompressorTile tile ? tile : null;
+        }
+        return null;
     }
 
 }

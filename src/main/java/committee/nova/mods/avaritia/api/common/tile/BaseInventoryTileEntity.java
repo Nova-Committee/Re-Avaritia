@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class BaseInventoryTileEntity extends BaseTileEntity {
 
-    private LazyOptional<IItemHandler> capability = LazyOptional.of(this::getInventory);
+    public LazyOptional<IItemHandler> capability = LazyOptional.of(this::getInventory);
     private LockCode lockKey = LockCode.NO_LOCK;
 
 

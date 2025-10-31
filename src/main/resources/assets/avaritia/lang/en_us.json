@@ -2,6 +2,11 @@
   "itemGroup.tab.Infinity": "Re:Avaritia",
   "itemGroup.tab.Singularity": "Avaritia:Singularity",
 
+  "key.avaritia.categories": "Avaritia KeyBindings",
+  "key.avaritia.filter": "Open filter screen",
+  "key.avaritia.neutron_ring": "Open Neutron Ring",
+  "key.avaritia.config": "Open Avaritia Config",
+
   "title.avaritia.resourcepack": "Avaritia Old Resourcepack",
   "title.avaritia.config.title": "Re：Avaritia",
 

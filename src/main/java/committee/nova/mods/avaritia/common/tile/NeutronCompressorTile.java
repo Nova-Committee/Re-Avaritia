@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -20,6 +21,9 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +34,14 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class NeutronCompressorTile extends BaseInventoryTileEntity {
+    //passive
+    private boolean north = true;
+    private boolean south = true;
+    private boolean east = true;
+    private boolean west = true;
+    private boolean up = true;
+    private boolean down = true;
+
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
     private final SimpleContainerData data = new SimpleContainerData(1);
@@ -38,6 +50,8 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     private int materialCount;
     private int progress;
     private boolean ejecting = false;
+    private boolean recipeLocked = false;
+    private ICompressorRecipe lockedRecipe = null;
     private CompressorTier tier;
 
     public NeutronCompressorTile(BlockPos pos, BlockState state) {
@@ -68,8 +82,14 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
         tile.recipeInventory.setStackInSlot(0, tile.materialStack);
 
-        if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
-            tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+        if (tile.recipeLocked && tile.lockedRecipe != null) {
+            // 锁定状态下使用锁定的配方
+            tile.recipe = tile.lockedRecipe.matches(tile.recipeInventory.toIInventory(), level) ? tile.lockedRecipe : null;
+        } else {
+            // 正常状态查找配方
+            if (tile.recipe == null || !tile.recipe.matches(tile.recipeInventory.toIInventory(), level)) {
+                tile.recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), tile.recipeInventory.toIInventory(), level).orElse(null);
+            }
         }
 
         if (!level.isClientSide()) {
@@ -157,6 +177,9 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         this.materialStack = ItemStack.of(tag.getCompound("MaterialStack"));
         this.progress = tag.getInt("Progress");
         this.ejecting = tag.getBoolean("Ejecting");
+        this.recipeLocked = tag.getBoolean("RecipeLocked");
+        // 注意：锁定配方不序列化，重启后需要重新锁定
+        this.lockedRecipe = null;
     }
 
     @Override
@@ -166,6 +189,8 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         tag.put("MaterialStack", this.materialStack.serializeNBT());
         tag.putInt("Progress", this.progress);
         tag.putBoolean("Ejecting", this.ejecting);
+        tag.putBoolean("RecipeLocked", this.recipeLocked);
+        // 注意：锁定配方不序列化，重启后需要重新锁定
     }
 
     @Override
@@ -177,6 +202,17 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory) {
         return new CompressorMenu(windowId, playerInventory, this.inventory, this.getBlockPos(), this.data);
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (side == Direction.NORTH && !north) return LazyOptional.empty();
+        else if (side == Direction.SOUTH && !south) return LazyOptional.empty();
+        else if (side == Direction.WEST && !west) return LazyOptional.empty();
+        else if (side == Direction.EAST && !east) return LazyOptional.empty();
+        else if (side == Direction.UP && !up) return LazyOptional.empty();
+        else if (side == Direction.DOWN && !down) return LazyOptional.empty();
+        else return super.getCapability(cap, side);
     }
 
     public CompressorTier getTier() {
@@ -239,5 +275,51 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         } else {
             this.inventory.setStackInSlot(0, ItemUtils.grow(result, stack.getCount() * outputAmplifier));
         }
+    }
+
+    // 新增方法：配方锁定相关
+    public boolean isRecipeLocked() {
+        return this.recipeLocked;
+    }
+
+    public void setRecipeLock(boolean locked, ICompressorRecipe recipe) {
+        this.recipeLocked = locked;
+        this.lockedRecipe = locked && recipe != null ? recipe : null;
+        this.setChangedAndDispatch();
+    }
+
+    public ICompressorRecipe getLockedRecipe() {
+        return this.lockedRecipe;
+    }
+
+    // 新增方法：材料弹出相关
+    public void clearMaterials() {
+        this.materialStack = ItemStack.EMPTY;
+        this.materialCount = 0;
+        this.progress = 0;
+        this.setChangedAndDispatch();
+    }
+
+    public boolean canEjectMaterials() {
+        return this.materialCount > 0 &&
+               (this.recipe == null ||
+                this.materialCount < this.recipe.getInputCount() * this.tier.inputAmplifier);
+    }
+
+    // 新增方法：输入槽锁定验证
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        if (slot == 1) { // 输入槽
+            if (this.recipeLocked && this.lockedRecipe != null) {
+                // 锁定状态下，只接受锁定配方的材料
+                var ingredients = this.lockedRecipe.getIngredients();
+                if (!ingredients.isEmpty()) {
+                    var ingredient = ingredients.get(0);
+                    var items = ingredient.getItems();
+                    return items.length > 0 && stack.is(items[0].getItem());
+                }
+                return false;
+            }
+        }
+        return true; // 默认允许放置
     }
 }

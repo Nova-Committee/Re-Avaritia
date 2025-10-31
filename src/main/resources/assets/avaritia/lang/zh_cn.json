@@ -1,6 +1,10 @@
 {
   "itemGroup.tab.Infinity": "无尽：重生",
   "itemGroup.tab.Singularity": "无尽：奇点",
+  "key.avaritia.categories": "Avaritia KeyBindings",
+  "key.avaritia.filter": "Open filter screen",
+  "key.avaritia.neutron_ring": "Open Neutron Ring",
+  "key.avaritia.config": "Open Avaritia Config",
   "title.avaritia.resourcepack": "无尽贪婪旧版纹理",
   "title.avaritia.config.title": "无尽贪婪：重生",
   "item.avaritia.matter_cluster": "物质团",
@@ -189,6 +193,7 @@
   "block.avaritia.star_fuel_block": "恒星燃料块",
   "block.avaritia.refined_coal_block": "精炼煤炭块",
   "block.avaritia.diamond_lattice_block": "钻石晶格块",
+  "block.avaritia.tesseract": "超立方体",
 
   "death.attack.infinity": "%1$s 被 %2$s 彻底粉碎",
   "death.attack.infinity.item": "%1$s 被 %2$s 彻底粉碎",
@@ -297,6 +302,7 @@
 
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.owner": "主人: %d",
+  "gui.avaritia.public": "公共的",
   "gui.avaritia.search": "搜索",
   "gui.avaritia.name": "名",
   "gui.avaritia.confirm": "确定",
@@ -335,6 +341,7 @@
   "gui.avaritia.removeChannel.tip1": "移除： \"%d\"",
   "gui.avaritia.removeChannel.tip2": "§c频道必须是空的",
   "gui.avaritia.renameChannel.tip1": "重命名： \"%d\"",
+  "gui.avaritia.renameChannel.tip2": "至: \"%d\"",
   "gui.avaritia.backChannel.tip1": "返回",
   "gui.avaritia.channel.tip1": "频道： \"%d\"",
   "gui.avaritia.channel.tip2": "主人： \"%d\"",

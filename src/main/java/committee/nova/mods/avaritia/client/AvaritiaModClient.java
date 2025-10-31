@@ -36,8 +36,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import java.util.Map;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
-import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
-import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
+import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.*;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_SPRITES;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.ETERNAL_SPRITES;
 
@@ -65,6 +64,7 @@ public class AvaritiaModClient {
         LOGGER.debug("Registering key bindings");
         event.register(FILTER_KEY);
         event.register(RING_KEY);
+        event.register(CONFIG_KEY);
     }
 
 
