@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
+import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -354,12 +355,8 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
         if (targetTile != null) {
             // 尝试从目标方块抽取物品
-            targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
-                    .ifPresent(targetHandler -> {
-                        if (targetHandler instanceof ItemStackHandler itemStackHandler) {
-                            extractFromHandler(itemStackHandler, side);
-                        }
-                    });
+             targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
+                    .ifPresent(targetHandler -> extractFromHandler(targetHandler, side));
         }
     }
 
@@ -382,7 +379,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     /**
      * 从外部物品处理器抽取物品
      */
-    private void extractFromHandler(ItemStackHandler externalHandler, Direction fromSide) {
+    private void extractFromHandler(IItemHandler externalHandler, Direction fromSide) {
         var inputSlot = this.inventory.getStackInSlot(1);
 
         // 检查当前输入槽是否已满或材料类型不匹配
@@ -401,12 +398,13 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
             // 计算可转移的数量
             int maxTransfer = Math.min(stack.getCount(), 64); // 每次最多转移64个
-            int spaceInInput = Math.min(inputSlot.getMaxStackSize() - inputSlot.getCount(),
-                                       materialStack.isEmpty() ? 64 : materialStack.getMaxStackSize() - materialCount);
+            int spaceInInput = materialStack.isEmpty() ? 64 : (int) (this.recipe.getInputCount() * this.tier.inputAmplifier - materialCount);
 
-            if (spaceInInput <= 0) break;
+            int inputCount = inputSlot.isEmpty() ? 64 : inputSlot.getMaxStackSize() - inputSlot.getCount();
 
-            int transferAmount = Math.min(maxTransfer, spaceInInput);
+            if (spaceInInput + inputCount <= 0) break;
+
+            int transferAmount = Math.min(maxTransfer, spaceInInput + inputCount);
             ItemStack extractedStack = externalHandler.extractItem(i, transferAmount, false);
 
             if (!extractedStack.isEmpty()) {
@@ -420,8 +418,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
                 } else {
                     inputSlot.grow(extractedStack.getCount());
                 }
-
-                materialCount += extractedStack.getCount();
                 this.setChanged();
                 break;
             }

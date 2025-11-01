@@ -216,77 +216,18 @@ public class SideConfigScreen extends Screen {
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // 先渲染背景
-        renderBgs(guiGraphics, mouseX, mouseY, partialTick);
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 
         // 渲染标题
         guiGraphics.drawString(font, Component.translatable("screen.avaritia.side_config.title").getString(),
-                this.getGuiLeft() + 10, this.getGuiTop() + 4, 4210752, false);
-
-        // 渲染说明文字
-//        guiGraphics.drawString(font, Component.translatable("screen.avaritia.side_config.instructions").getString(),
-//                this.getGuiLeft() + 8, this.getGuiTop() + 20, 4210752, false);
-
-        // 渲染图例
-//        renderLegend(guiGraphics);
+                this.getGuiLeft() + 20, this.getGuiTop() + 4, 4210752, false);
 
         // 渲染子组件（按钮等）
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
-    /**
-     * 渲染图例说明
-     */
-    private void renderLegend(GuiGraphics pGuiGraphics) {
-        int x = this.getGuiLeft() + 5;
-        int y = this.getGuiTop() + 35;
-        int lineHeight = 12;
-
-        String[] legends = {
-                "■ " + Component.translatable("tooltip.avaritia.side.mode.off").getString(),
-                "← " + Component.translatable("tooltip.avaritia.side.mode.passive_input").getString(),
-                "→ " + Component.translatable("tooltip.avaritia.side.mode.passive_output").getString(),
-                "⇐ " + Component.translatable("tooltip.avaritia.side.mode.active_input").getString(),
-                "⇒ " + Component.translatable("tooltip.avaritia.side.mode.active_output").getString()
-        };
-
-        for (int i = 0; i < legends.length; i++) {
-            pGuiGraphics.drawString(font, legends[i], x, y + (i * lineHeight), 4210752, false);
-        }
-    }
-
-    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
-        // 不需要在中间区域渲染额外标签
-    }
-
-    protected void renderBgs(GuiGraphics pGuiGraphics, int pX, int pY, float pPartialTick) {
-        // 渲染背景
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
-        pGuiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
-
-        // 渲染中心立方体框架（可选的视觉效果）
-//        renderCubeFrame(pGuiGraphics, x + 88, y + 75);
-    }
-
-    /**
-     * 渲染3D立方体框架
-     */
-    private void renderCubeFrame(GuiGraphics pGuiGraphics, int centerX, int centerY) {
-        // 这里可以绘制一个简单的3D立方体线框来表示六个面的位置
-        // 由于这是2D界面，我们用简单的线条来表示
-        // 立方体大小约40x40像素
-        int size = 40;
-        int halfSize = size / 2;
-
-        // 绘制立方体的边框线条（使用等距投影）
-        int topX = centerX - halfSize;
-        int topY = centerY - halfSize - 10;
-        int bottomX = centerX - halfSize;
-        int bottomY = centerY + halfSize - 10;
-
-        // 简单的线条绘制（可以通过添加自定义纹理来改善视觉效果）
-        // 这里只是示意，实际可能需要更复杂的绘制逻辑
-    }
 
     @Override
     public void onClose() {

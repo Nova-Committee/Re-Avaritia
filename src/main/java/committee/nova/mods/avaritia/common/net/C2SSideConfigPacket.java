@@ -49,7 +49,7 @@ public class C2SSideConfigPacket {
 
             if (tile instanceof NeutronCompressorTile compressor) {
                 // 验证玩家是否有权限配置这个方块
-                if (player.canUseGameMasterBlocks() || level.getBlockEntity(this.pos) == null) {
+                if (level.getBlockEntity(this.pos) == null) {
                     return; // 没有权限
                 }
 
