@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.client.screen.config.SideConfigScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -29,6 +30,7 @@ import java.util.List;
 public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu> {
     private Button lockButton;
     private Button ejectButton;
+    private Button configButton;
 
     public NeutronCompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, Res.NEUTRON_COMPRESSOR_TEX);
@@ -46,8 +48,12 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
         // 添加弹出按钮
         this.ejectButton = new EjectButton(x + 40, y + 20);
 
+        // 添加配置按钮
+        this.configButton = new ConfigButton(x - 20, y);
+
         this.addRenderableWidget(this.lockButton);
         this.addRenderableWidget(this.ejectButton);
+        this.addRenderableWidget(this.configButton);
 
         // 更新按钮初始状态
         this.lockButton.setMessage(Component.literal(this.isRecipeLocked() ? "🔒" : "🔓"));
@@ -63,6 +69,23 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
     private void ejectMaterials() {
         if (this.minecraft != null && this.minecraft.player != null) {
             NetworkHandler.sendCompressorEjectPacket(this.menu.getBlockPos());
+        }
+    }
+
+    private void openSideConfig() {
+        if (this.minecraft != null && this.minecraft.player != null) {
+            var level = this.minecraft.level;
+            if (level != null) {
+                var container = this.getMenu();
+                var tile = level.getBlockEntity(container.getBlockPos());
+
+                if (tile instanceof NeutronCompressorTile compressor) {
+                    var sideConfig = compressor.getSideConfiguration();
+                    var blockPos = container.getBlockPos();
+                    var configScreen = new SideConfigScreen(this, sideConfig, blockPos);
+                    this.minecraft.setScreen(configScreen);
+                }
+            }
         }
     }
 
@@ -185,14 +208,6 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
         return Component.literal("");
     }
 
-    public boolean isEjecting() {
-        if (this.menu.getTileEntity() == null)
-            return false;
-
-        return this.menu.getTileEntity().isEjecting();
-    }
-
-
     public boolean hasRecipe() {
         if (this.menu.getTileEntity() == null)
             return false;
@@ -259,6 +274,27 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
             return false;
 
         return this.menu.getTileEntity().getMaterialCount() > 0;
+    }
+
+    private class ConfigButton extends ImageButton {
+        private final List<FormattedCharSequence> tips = new ArrayList<>();
+
+        public ConfigButton(int pX, int pY) {
+            super(pX, pY, 20, 24, 156, 0, Res.SIDE_CONFIG_TEX, pButton -> openSideConfig());
+            tips.add(Component.literal("配置输入输出").withStyle(ChatFormatting.LIGHT_PURPLE).getVisualOrderText());
+            tips.add(Component.literal("点击打开六面配置界面").withStyle(ChatFormatting.GRAY).getVisualOrderText());
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            if (this.isHovered) {
+                setTooltipForNextRenderPass(tips);
+                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart + 24, this.width, this.height, 256, 256);
+            } else {
+                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
+            }
+        }
     }
 
 }

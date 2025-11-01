@@ -32,6 +32,7 @@ public class Res {
     public static final ResourceLocation INFINITY_CLOCK_TIME_TEX = Const.rl("textures/gui/machine/infinity_clock_time.png");
     public static final ResourceLocation NEUTRON_COLLECTOR_TEX = Const.rl("textures/gui/machine/neutron_collector.png");
     public static final ResourceLocation NEUTRON_COMPRESSOR_TEX = Const.rl("textures/gui/machine/neutron_compressor.png");
+    public static final ResourceLocation SIDE_CONFIG_TEX = Const.rl("textures/gui/machine/side_config.png");
     public static final ResourceLocation EXTREME_ANVIL_TEX = Const.rl("textures/gui/machine/extreme_anvil_gui.png");
     public static final ResourceLocation GENERIC_243_TEX = Const.rl("textures/gui/chest/generic_243.png");
     public static final ResourceLocation NEUTRON_RING_TEX = Const.rl("textures/gui/chest/neutron_ring.png");

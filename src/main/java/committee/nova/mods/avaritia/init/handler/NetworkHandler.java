@@ -6,9 +6,11 @@ import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
+import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -61,6 +63,10 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, C2SCompressorLockPacket.class, C2SCompressorLockPacket::toBytes, C2SCompressorLockPacket::new, C2SCompressorLockPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SCompressorEjectPacket.class, C2SCompressorEjectPacket::toBytes, C2SCompressorEjectPacket::new, C2SCompressorEjectPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
+        // 方块配置功能包
+        CHANNEL.registerMessage(id++, C2SSideConfigPacket.class, C2SSideConfigPacket::toBytes, C2SSideConfigPacket::new, C2SSideConfigPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, S2CSideConfigSyncPacket.class, S2CSideConfigSyncPacket::toBytes, S2CSideConfigSyncPacket::new, S2CSideConfigSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+
         CHANNEL.registerMessage(id++, S2CInfinityChestStatePack.class, S2CInfinityChestStatePack::write, S2CInfinityChestStatePack::new, S2CInfinityChestStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SInfinityChestActionPack.class, C2SInfinityChestActionPack::write, C2SInfinityChestActionPack::new, C2SInfinityChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SInfinityChestFilterPack.class, C2SInfinityChestFilterPack::write, C2SInfinityChestFilterPack::new, C2SInfinityChestFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
@@ -83,5 +89,17 @@ public class NetworkHandler {
     // 便捷方法：发送压缩器弹出包
     public static void sendCompressorEjectPacket(BlockPos pos) {
         CHANNEL.sendToServer(new C2SCompressorEjectPacket(pos));
+    }
+
+    // 便捷方法：发送方块配置更新包
+    public static void sendSideConfigUpdate(BlockPos blockPos, SideConfiguration sideConfig) {
+        // 解析字符串格式的位置: BlockPos{x=123, y=456, z=789}
+        CHANNEL.sendToServer(new C2SSideConfigPacket(blockPos, sideConfig));
+    }
+
+    // 便捷方法：发送方块配置同步包给附近玩家
+    public static void sendSideConfigSync(Level level, BlockPos pos, SideConfiguration sideConfig) {
+        // 暂时使用空参数，后续可以改进为指定位置的广播
+        CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CSideConfigSyncPacket(pos, sideConfig));
     }
 }

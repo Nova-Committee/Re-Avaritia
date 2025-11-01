@@ -460,5 +460,20 @@
   "config.avaritia.category.misc": "其他",
   "config.avaritia.category.emc": "EMC",
   "config.avaritia.category.storage": "储存",
-  "config.avaritia.category.channel": "频道"
+  "config.avaritia.category.channel": "频道",
+
+  "screen.avaritia.side_config.title": "中子压缩器 - 输入输出配置",
+  "tooltip.avaritia.side.mode.off": "关闭",
+  "tooltip.avaritia.side.mode.passive_input": "被动输入",
+  "tooltip.avaritia.side.mode.passive_output": "被动输出",
+  "tooltip.avaritia.side.mode.active_input": "主动输入",
+  "tooltip.avaritia.side.mode.active_output": "主动输出",
+  "tooltip.avaritia.side.click_to_cycle": "点击切换模式",
+  "direction.avaritia.north": "前面",
+  "direction.avaritia.south": "后面",
+  "direction.avaritia.east": "右面",
+  "direction.avaritia.west": "左面",
+  "direction.avaritia.up": "上面",
+  "direction.avaritia.down": "下面",
+  "gui.avaritia.back": "返回"
 }

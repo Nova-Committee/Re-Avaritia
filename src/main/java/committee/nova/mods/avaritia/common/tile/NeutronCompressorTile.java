@@ -6,6 +6,8 @@ import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
+import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
@@ -20,10 +22,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,13 +39,12 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class NeutronCompressorTile extends BaseInventoryTileEntity {
-    //passive
-    private boolean north = true;
-    private boolean south = true;
-    private boolean east = true;
-    private boolean west = true;
-    private boolean up = true;
-    private boolean down = true;
+    // 新的面配置系统，替代原来的boolean控制
+    private SideConfiguration sideConfig = new SideConfiguration();
+
+    // 主动IO操作计时器
+    private int activeIOtick = 0;
+    private static final int ACTIVE_IO_INTERVAL = 20; // 每秒执行一次主动IO
 
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
@@ -49,7 +53,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     private ItemStack materialStack = ItemStack.EMPTY;
     private int materialCount;
     private int progress;
-    private boolean ejecting = false;
     private boolean recipeLocked = false;
     private ICompressorRecipe lockedRecipe = null;
     private CompressorTier tier;
@@ -81,6 +84,15 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         var input = tile.inventory.getStackInSlot(1);
 
         tile.recipeInventory.setStackInSlot(0, tile.materialStack);
+
+        // 处理主动IO操作
+        if (!level.isClientSide()) {
+            tile.activeIOtick++;
+            if (tile.activeIOtick >= ACTIVE_IO_INTERVAL) {
+                tile.activeIOtick = 0;
+                tile.handleActiveIO();
+            }
+        }
 
         if (tile.recipeLocked && tile.lockedRecipe != null) {
             // 锁定状态下使用锁定的配方
@@ -137,28 +149,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
                     }
                 }
             }
-
-            if (tile.ejecting) {
-                if (tile.materialCount > 0 && !tile.materialStack.isEmpty() && (output.isEmpty() || ItemUtils.areStacksSameType(tile.materialStack, output))) {
-                    int addCount = Math.min(tile.materialCount, tile.materialStack.getMaxStackSize() - output.getCount());
-                    if (addCount > 0) {
-                        var toAdd = ItemUtils.withSize(tile.materialStack, addCount, false);
-
-                        tile.updateResult(toAdd, tile.tier.outputAmplifier);
-                        tile.materialCount -= addCount;
-
-                        if (tile.materialCount < 1) {
-                            tile.materialStack = ItemStack.EMPTY;
-                            tile.ejecting = false;
-                        }
-
-                        if (tile.progress > 0)
-                            tile.progress = 0;
-
-                        tile.setChangedFast();
-                    }
-                }
-            }
         }
 
 
@@ -176,9 +166,11 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         this.materialCount = tag.getInt("MaterialCount");
         this.materialStack = ItemStack.of(tag.getCompound("MaterialStack"));
         this.progress = tag.getInt("Progress");
-        this.ejecting = tag.getBoolean("Ejecting");
         this.recipeLocked = tag.getBoolean("RecipeLocked");
-        // 注意：锁定配方不序列化，重启后需要重新锁定
+        // 加载面配置
+        if (tag.contains("SideConfig")) {
+            this.sideConfig = SideConfiguration.fromNBT(tag.getCompound("SideConfig"));
+        }
         this.lockedRecipe = null;
     }
 
@@ -188,9 +180,10 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         tag.putInt("MaterialCount", this.materialCount);
         tag.put("MaterialStack", this.materialStack.serializeNBT());
         tag.putInt("Progress", this.progress);
-        tag.putBoolean("Ejecting", this.ejecting);
         tag.putBoolean("RecipeLocked", this.recipeLocked);
-        // 注意：锁定配方不序列化，重启后需要重新锁定
+
+        // 保存面配置
+        tag.put("SideConfig", sideConfig.toNBT());
     }
 
     @Override
@@ -206,13 +199,14 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (side == Direction.NORTH && !north) return LazyOptional.empty();
-        else if (side == Direction.SOUTH && !south) return LazyOptional.empty();
-        else if (side == Direction.WEST && !west) return LazyOptional.empty();
-        else if (side == Direction.EAST && !east) return LazyOptional.empty();
-        else if (side == Direction.UP && !up) return LazyOptional.empty();
-        else if (side == Direction.DOWN && !down) return LazyOptional.empty();
-        else return super.getCapability(cap, side);
+        // 检查被动输入输出配置
+        if (side != null && cap == ForgeCapabilities.ITEM_HANDLER) {
+            // 检查该面是否允许被动IO
+            if (!sideConfig.isPassive(side)) {
+                return LazyOptional.empty();
+            }
+        }
+        return super.getCapability(cap, side);
     }
 
     public CompressorTier getTier() {
@@ -233,17 +227,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
 
     public int getMaterialCount() {
         return this.materialCount;
-    }
-
-    public boolean isEjecting() {
-        return this.ejecting;
-    }
-
-    public void toggleEjecting() {
-        if (this.materialCount > 0) {
-            this.ejecting = !this.ejecting;
-            this.setChangedAndDispatch();
-        }
     }
 
     public boolean hasRecipe() {
@@ -321,5 +304,152 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
             }
         }
         return true; // 默认允许放置
+    }
+
+    // ==================== 新增的面配置相关方法 ====================
+
+    /**
+     * 设置方块配置
+     */
+    public void setSideConfiguration(SideConfiguration config) {
+        this.sideConfig = config;
+        this.setChangedAndDispatch();
+
+        // 同步给客户端
+        if (!this.level.isClientSide()) {
+            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, config);
+        }
+    }
+
+    /**
+     * 获取方块配置
+     */
+    public SideConfiguration getSideConfiguration() {
+        return this.sideConfig;
+    }
+
+    /**
+     * 处理主动输入输出操作
+     */
+    private void handleActiveIO() {
+        if (level == null) return;
+
+        // 处理主动输入
+        for (Direction side : sideConfig.getActiveInputSides()) {
+            handleActiveInput(side);
+        }
+
+        // 处理主动输出
+        for (Direction side : sideConfig.getActiveOutputSides()) {
+            handleActiveOutput(side);
+        }
+    }
+
+    /**
+     * 处理从指定方向的主动输入
+     */
+    private void handleActiveInput(Direction side) {
+        BlockPos targetPos = worldPosition.relative(side);
+        BlockEntity targetTile = level.getBlockEntity(targetPos);
+
+        if (targetTile != null) {
+            // 尝试从目标方块抽取物品
+            targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
+                    .ifPresent(targetHandler -> {
+                        if (targetHandler instanceof ItemStackHandler itemStackHandler) {
+                            extractFromHandler(itemStackHandler, side);
+                        }
+                    });
+        }
+    }
+
+    /**
+     * 处理到指定方向的主动输出
+     */
+    private void handleActiveOutput(Direction side) {
+        BlockPos targetPos = worldPosition.relative(side);
+        BlockEntity targetTile = level.getBlockEntity(targetPos);
+
+        if (targetTile != null) {
+            // 尝试将物品插入到目标方块
+            targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
+                    .ifPresent(targetHandler -> {
+                        insertToHandler(targetHandler, side);
+                    });
+        }
+    }
+
+    /**
+     * 从外部物品处理器抽取物品
+     */
+    private void extractFromHandler(ItemStackHandler externalHandler, Direction fromSide) {
+        var inputSlot = this.inventory.getStackInSlot(1);
+
+        // 检查当前输入槽是否已满或材料类型不匹配
+        if (!inputSlot.isEmpty() && !ItemUtils.areStacksSameType(inputSlot, materialStack)) {
+            return;
+        }
+
+        for (int i = 0; i < externalHandler.getSlots(); i++) {
+            ItemStack stack = externalHandler.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+
+            // 检查是否与当前材料类型匹配
+            if (!materialStack.isEmpty() && !ItemUtils.areStacksSameType(stack, materialStack)) {
+                continue;
+            }
+
+            // 计算可转移的数量
+            int maxTransfer = Math.min(stack.getCount(), 64); // 每次最多转移64个
+            int spaceInInput = Math.min(inputSlot.getMaxStackSize() - inputSlot.getCount(),
+                                       materialStack.isEmpty() ? 64 : materialStack.getMaxStackSize() - materialCount);
+
+            if (spaceInInput <= 0) break;
+
+            int transferAmount = Math.min(maxTransfer, spaceInInput);
+            ItemStack extractedStack = externalHandler.extractItem(i, transferAmount, false);
+
+            if (!extractedStack.isEmpty()) {
+                if (materialStack.isEmpty()) {
+                    materialStack = extractedStack.copy();
+                }
+
+                // 将物品放入输入槽
+                if (inputSlot.isEmpty()) {
+                    this.inventory.setStackInSlot(1, extractedStack.copy());
+                } else {
+                    inputSlot.grow(extractedStack.getCount());
+                }
+
+                materialCount += extractedStack.getCount();
+                this.setChanged();
+                break;
+            }
+        }
+    }
+
+    /**
+     * 向外部物品处理器插入物品
+     */
+    private void insertToHandler(IItemHandler externalHandler, Direction toSide) {
+        var outputSlot = this.inventory.getStackInSlot(0);
+        if (outputSlot.isEmpty()) return;
+
+        ItemStack remaining = outputSlot.copy();
+
+        for (int i = 0; i < externalHandler.getSlots() && !remaining.isEmpty(); i++) {
+            ItemStack insertResult = externalHandler.insertItem(i, remaining, false);
+            int transferred = remaining.getCount() - insertResult.getCount();
+
+            if (transferred > 0) {
+                // 更新输出槽
+                outputSlot.shrink(transferred);
+                remaining = insertResult;
+            }
+        }
+
+        if (!remaining.equals(outputSlot)) {
+            this.setChanged();
+        }
     }
 }
