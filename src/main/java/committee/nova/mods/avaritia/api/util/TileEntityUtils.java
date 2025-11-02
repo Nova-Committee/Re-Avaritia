@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 11:03
  * Version: 1.0
  */

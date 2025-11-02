@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/5 00:55
  * @Description:
  */

@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
     @Setter

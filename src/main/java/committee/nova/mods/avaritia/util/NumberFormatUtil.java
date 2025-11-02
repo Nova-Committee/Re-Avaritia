@@ -7,7 +7,7 @@ import java.text.Format;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/23 02:13
  * @Description:
  */

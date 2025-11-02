@@ -165,6 +165,12 @@
   "info.avaritia.channel.save_success": "成功保存频道: %s %s %s",
   "info.avaritia.channel.add_success": "成功添加频道: %s %s %s",
 
+  "info.avaritia.infinity_chest.load_success": "成功加载无尽箱子: %s %s %s",
+  "info.avaritia.infinity_chest.load_error": "加载无尽箱子错误",
+  "info.avaritia.infinity_chest.load_finish": "无尽箱子数据加载完毕",
+  "info.avaritia.infinity_chest.save_success": "成功保存无尽箱子: %s %s %s",
+  "info.avaritia.infinity_chest.add_success": "成功添加无尽箱子: %s %s %s",
+
   "block.avaritia.neutron": "中子态素块",
   "block.avaritia.infinity": "无尽之块",
   "block.avaritia.blaze_cube_block": "炽骨立方块",

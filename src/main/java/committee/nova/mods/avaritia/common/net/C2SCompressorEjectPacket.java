@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 /**
  * 中子压缩器弹出材料数据包
  * Description: 用于弹出配方材料的数据包
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2025/11/01
  * Version: 1.0
  */

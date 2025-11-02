@@ -23,7 +23,7 @@ import java.util.Random;
 
 /**
  * Name: Avaritia-forge / HaloBakedModel
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/24 22:35
  * Description:
  */

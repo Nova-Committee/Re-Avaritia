@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity {
     @Getter

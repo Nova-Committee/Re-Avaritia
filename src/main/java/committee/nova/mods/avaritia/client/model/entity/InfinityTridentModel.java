@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityTridentModel extends Model {
     private final ModelPart root = createLayer().bakeRoot();

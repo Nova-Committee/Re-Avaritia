@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
+import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * 方块配置同步数据包
  * Description: 服务端同步方块配置到客户端
- * Author: 幽浮喵
+ * @author cnlimiter
  * Date: 2025/11/01
  * Version: 1.0
  */

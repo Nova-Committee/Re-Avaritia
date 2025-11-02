@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfiniteItemHandler implements IItemHandler, IItemHandlerModifiable {
     // 每页的槽位数

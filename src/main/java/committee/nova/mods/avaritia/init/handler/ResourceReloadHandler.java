@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.Mod;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 11:40
  * Version: 1.0
  */

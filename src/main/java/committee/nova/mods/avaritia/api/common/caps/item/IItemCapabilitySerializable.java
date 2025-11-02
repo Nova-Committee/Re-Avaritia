@@ -5,7 +5,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/6 13:55
  * @Description:
  */

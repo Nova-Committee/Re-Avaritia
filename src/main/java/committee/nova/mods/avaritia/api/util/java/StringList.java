@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class StringList extends ArrayList<String> {
     public StringList() {

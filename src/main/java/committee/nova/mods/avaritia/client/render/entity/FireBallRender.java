@@ -18,7 +18,7 @@ import org.joml.Matrix4f;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/8/7 下午8:49
  * @Description:
  */

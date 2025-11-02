@@ -19,7 +19,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 19:50
  * Version: 1.0
  */

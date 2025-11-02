@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChestTile> {
     private final ModelPart lid;

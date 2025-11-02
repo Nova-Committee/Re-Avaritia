@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/20 20:13
  * @Description:
  */

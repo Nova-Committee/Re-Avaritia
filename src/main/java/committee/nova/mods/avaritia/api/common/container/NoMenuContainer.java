@@ -13,7 +13,7 @@ import java.util.Objects;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/6/11 下午11:46
  * @Description:
  */

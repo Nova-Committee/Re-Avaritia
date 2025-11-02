@@ -3,23 +3,31 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 15:12
  * Version: 1.0
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
+    private Button configButton;
+
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, Res.NEUTRON_COLLECTOR_TEX);
     }
@@ -27,6 +35,13 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     @Override
     protected void init() {
         super.init();
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+
+        // 添加配置按钮
+        this.configButton = new ConfigButton(x - 20, y);
+
+        this.addRenderableWidget(this.configButton);
     }
 
     @Override
@@ -83,5 +98,43 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int i = Mth.clamp(this.getProgress(), 0, this.getTimeRequired());
         int j = this.getTimeRequired();
         return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
+    }
+
+    private void openSideConfig() {
+        if (this.minecraft != null && this.minecraft.player != null) {
+            var level = this.minecraft.level;
+            if (level != null) {
+                var container = this.getMenu();
+                var tile = level.getBlockEntity(container.getBlockPos());
+
+                if (tile instanceof NeutronCollectorTile collector) {
+                    var sideConfig = collector.getSideConfiguration();
+                    var blockPos = container.getBlockPos();
+                    var configScreen = new SideConfigScreen(this, sideConfig, blockPos);
+                    this.minecraft.setScreen(configScreen);
+                }
+            }
+        }
+    }
+
+    private class ConfigButton extends ImageButton {
+        private final List<FormattedCharSequence> tips = new ArrayList<>();
+
+        public ConfigButton(int pX, int pY) {
+            super(pX, pY, 20, 24, 156, 0, Res.SIDE_CONFIG_TEX, pButton -> openSideConfig());
+            tips.add(Component.literal("配置输入输出").withStyle(ChatFormatting.LIGHT_PURPLE).getVisualOrderText());
+            tips.add(Component.literal("点击打开六面配置界面").withStyle(ChatFormatting.GRAY).getVisualOrderText());
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            if (this.isHovered) {
+                setTooltipForNextRenderPass(tips);
+                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart + 24, this.width, this.height, 256, 256);
+            } else {
+                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
+            }
+        }
     }
 }

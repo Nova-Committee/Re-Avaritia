@@ -32,7 +32,7 @@ import java.util.function.Function;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/14 22:58
  * @Description:
  */

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public abstract class BaseModelLoader<T extends IUnbakedGeometry<T>> implements IGeometryLoader<T> {
     public JsonObject clear(JsonObject modelContents, String... types) {

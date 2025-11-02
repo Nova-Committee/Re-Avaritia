@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/25 20:27
  * @Description: 页面操作按钮 from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */

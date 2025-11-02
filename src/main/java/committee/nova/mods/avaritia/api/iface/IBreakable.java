@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/1/22 02:48
  * @Description:
  */

@@ -26,7 +26,7 @@ import static committee.nova.mods.avaritia.Const.LOGGER;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 14:18
  * Version: 1.0
  */

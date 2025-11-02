@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.common.crafting.ITierRecipe;
 
 /**
  * @Name: BaseTableCraftingRecipe
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/30 19:10
  * @Description:
  *

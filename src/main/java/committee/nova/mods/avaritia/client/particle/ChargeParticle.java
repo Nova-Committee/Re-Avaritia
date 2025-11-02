@@ -6,7 +6,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ChargeParticle extends TextureSheetParticle {
     private final SpriteSet sprites;

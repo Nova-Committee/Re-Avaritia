@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/21 12:49
  * @Description:
  */

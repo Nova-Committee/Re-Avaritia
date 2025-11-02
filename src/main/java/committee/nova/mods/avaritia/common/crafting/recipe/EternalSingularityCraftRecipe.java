@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Name: Avaritia-forge / EternalSingularityCraftRecipe
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/16 17:19
  * Description:
  */

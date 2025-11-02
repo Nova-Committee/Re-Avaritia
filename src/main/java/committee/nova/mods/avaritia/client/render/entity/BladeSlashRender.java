@@ -20,7 +20,7 @@ import org.joml.Matrix4f;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/16 01:41
  * @Description:
  */

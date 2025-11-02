@@ -12,7 +12,7 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/5/21 00:31
  * @Description:
  */

@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 /**
  * Name: Avaritia-forge / ModShapelessRecipeBuilder
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/8/24 14:07
  * Description:
  */

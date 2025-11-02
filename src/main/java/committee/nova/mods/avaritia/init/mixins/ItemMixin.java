@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @Mixin(Item.class)
 public abstract class ItemMixin implements ITooltip {

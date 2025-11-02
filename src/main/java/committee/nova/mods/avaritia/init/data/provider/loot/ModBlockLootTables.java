@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * Name: Avaritia-forge / ModBlockLootTables
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/8/24 13:39
  * Description:
  */

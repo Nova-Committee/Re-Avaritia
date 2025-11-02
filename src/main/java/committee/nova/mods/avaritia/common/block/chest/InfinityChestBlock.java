@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;

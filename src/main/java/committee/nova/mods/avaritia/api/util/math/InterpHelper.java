@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.util.math;
 
 /**
  * Name: Avaritia-forge / InterpHelper
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/24 23:04
  * Description:
  */

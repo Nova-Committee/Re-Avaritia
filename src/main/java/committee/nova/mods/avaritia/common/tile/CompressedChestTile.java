@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Name: Avaritia-forge / CompressChestTile
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/11/21 3:34
  * Description:
  */

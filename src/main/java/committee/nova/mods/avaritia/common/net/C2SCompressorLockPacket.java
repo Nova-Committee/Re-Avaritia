@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * 中子压缩器锁定配方切换数据包
  * Description: 用于切换锁定配方状态的数据包
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2025/11/01
  * Version: 1.0
  */

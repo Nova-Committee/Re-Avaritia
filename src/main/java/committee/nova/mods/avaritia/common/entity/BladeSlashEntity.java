@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/16 01:19
  * @Description: from <a href="https://github.com/CoFH/RedstoneArsenal/blob/1.20.x/src/main/java/cofh/redstonearsenal/common/entity/FluxSlash.java">...</a>
  */

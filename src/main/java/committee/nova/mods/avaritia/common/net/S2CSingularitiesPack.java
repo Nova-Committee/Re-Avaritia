@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * S2CSingularitiesPacket
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */

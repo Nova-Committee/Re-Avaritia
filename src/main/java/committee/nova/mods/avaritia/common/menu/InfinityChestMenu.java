@@ -35,7 +35,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestMenu extends AbstractContainerMenu {
     public final ChestHandler channel;

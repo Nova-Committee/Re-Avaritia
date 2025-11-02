@@ -8,7 +8,7 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.List;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class RegisterRecipesEvent extends Event {
     private final ICondition.IContext context;

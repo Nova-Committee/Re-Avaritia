@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.client.screen.config.SideConfigScreen;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -23,7 +22,7 @@ import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 18:16
  * Version: 1.0
  */

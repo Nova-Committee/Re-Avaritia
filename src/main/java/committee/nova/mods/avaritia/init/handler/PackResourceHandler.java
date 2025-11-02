@@ -14,7 +14,7 @@ import net.minecraftforge.forgespi.locating.IModFile;
 import java.nio.file.Path;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PackResourceHandler {

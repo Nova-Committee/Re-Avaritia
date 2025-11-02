@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Name: Avaritia-forge / ModDamageTypeTags
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/10 0:39
  * Description:
  */

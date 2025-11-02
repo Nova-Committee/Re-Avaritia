@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
+import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * 方块配置更新数据包
  * Description: 客户端发送方块配置更新到服务端
- * Author: 幽浮喵
+ * @author cnlimiter
  * Date: 2025/11/01
  * Version: 1.0
  */

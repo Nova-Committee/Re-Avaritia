@@ -27,7 +27,7 @@ import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/14 22:58
  * @Description:
  */

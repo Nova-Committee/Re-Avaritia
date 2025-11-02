@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/28 20:27
  * @Description:
  */

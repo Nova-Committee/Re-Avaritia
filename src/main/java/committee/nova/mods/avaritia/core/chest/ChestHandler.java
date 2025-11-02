@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public abstract class ChestHandler implements IItemHandler {
     public final HashMap<String, Long> storageItems = new HashMap<>();

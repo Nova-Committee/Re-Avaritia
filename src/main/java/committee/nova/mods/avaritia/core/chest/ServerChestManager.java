@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerChestManager {
@@ -74,7 +74,7 @@ public class ServerChestManager {
         this.userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
         NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CInfinityChestStatePack(ChannelState.NAME, userCache));
         if (!loadSuccess)
-            event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
+            event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.infinity_chest.load_error"));
     }
 
     @SubscribeEvent
@@ -118,8 +118,6 @@ public class ServerChestManager {
             } else {
                 this.initializeNameCache();
             }
-            Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_success").getString());
-
             File[] channelDirs = saveDataPath.listFiles(pathname -> pathname.isDirectory() && pathname.getName()
                     .matches(StorageUtils.UUID_REGEX));
             if (channelDirs != null) {
@@ -133,12 +131,12 @@ public class ServerChestManager {
                         CompoundTag channelDat = NbtIo.readCompressed(channelFile);
                         ServerChestHandler channel = new ServerChestHandler(channelDat);
                         playerChannels.put(channelID, channel);
-                        Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_success", dir.getName(), channelID, "").getString());
+                        Const.LOGGER.info(Component.translatable("info.avaritia.infinity_chest.load_success", dir.getName(), channelID, "").getString());
                     }
                     channelList.put(player, playerChannels);
                 }
             }
-            Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_finish").getString());
+            Const.LOGGER.info(Component.translatable("info.avaritia.infinity_chest.load_finish").getString());
 
         } catch (Exception e) {
             loadSuccess = false;
@@ -164,7 +162,7 @@ public class ServerChestManager {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Const.LOGGER.info(Component.translatable("info.avaritia.channel.save_success", uuid, id, "").getString());
+                    Const.LOGGER.info(Component.translatable("info.avaritia.infinity_chest.save_success", uuid, id, "").getString());
                 });
             });
 
@@ -216,7 +214,7 @@ public class ServerChestManager {
             channelList.put(uuid, playerChannels);
         }
         playerChannels.put(chestId, new ServerChestHandler());
-        Const.LOGGER.info(Component.translatable("info.avaritia.channel.add_success", uuid, chestId, "").getString());
+        Const.LOGGER.info(Component.translatable("info.avaritia.infinity_chest.add_success", uuid, chestId, "").getString());
     }
 
 

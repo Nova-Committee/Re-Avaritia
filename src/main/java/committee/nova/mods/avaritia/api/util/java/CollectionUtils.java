@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class CollectionUtils {
     public static boolean isNullOrEmpty(Collection<?> list) {

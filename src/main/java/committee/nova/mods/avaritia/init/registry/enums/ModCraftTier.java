@@ -5,7 +5,7 @@ import net.minecraft.world.level.block.SoundType;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/10/6 22:53
  * @Description:
  */

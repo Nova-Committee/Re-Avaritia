@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.joml.Matrix4f;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class TesseractRender implements BlockEntityRenderer<BlockEntity> {
 

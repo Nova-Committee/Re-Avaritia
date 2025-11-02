@@ -6,7 +6,7 @@ import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
-import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
+import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +23,7 @@ import java.util.Optional;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 13:07
  * Version: 1.0
  */

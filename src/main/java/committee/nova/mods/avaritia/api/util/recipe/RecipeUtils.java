@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/5/18 13:45
  * @Description:
  */

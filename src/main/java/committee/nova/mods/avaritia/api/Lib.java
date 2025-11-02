@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/1/11 18:52
  * @Description:
  */

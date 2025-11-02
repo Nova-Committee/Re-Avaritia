@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/23 01:46
  * @Description:
  */

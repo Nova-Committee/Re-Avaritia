@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/17 02:50
  * @Description:
  */

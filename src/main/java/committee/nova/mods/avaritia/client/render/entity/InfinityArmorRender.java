@@ -25,7 +25,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @OnlyIn(Dist.CLIENT)
 public class InfinityArmorRender<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class BootstrapMinecraftExtension implements Extension, BeforeAllCallback {
     @Override

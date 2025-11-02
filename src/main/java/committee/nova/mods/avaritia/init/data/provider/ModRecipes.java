@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 
 /**
  * Name: Avaritia-forge / ModRecipes
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/8/24 13:48
  * Description:
  */

@@ -8,7 +8,7 @@ import net.minecraftforge.common.data.SpriteSourceProvider;
 
 /**
  * Name: Avaritia-forge / ModSpriteSource
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/23 2:15
  * Description:
  */

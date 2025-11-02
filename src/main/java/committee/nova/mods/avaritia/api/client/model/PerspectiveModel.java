@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/14 22:58
  * @Description:
  */

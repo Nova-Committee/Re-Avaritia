@@ -11,7 +11,7 @@ import net.minecraft.world.level.ItemLike;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/7/15 下午11:58
  * @Description:
  */

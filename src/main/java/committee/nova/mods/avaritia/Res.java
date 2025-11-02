@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/5/21 00:33
  * @Description:
  */

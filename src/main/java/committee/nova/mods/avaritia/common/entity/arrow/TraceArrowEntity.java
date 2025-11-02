@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Name: Avaritia-forge / TraceArrowEntity
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/23 16:34
  * Description:
  */

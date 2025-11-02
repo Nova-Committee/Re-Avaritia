@@ -29,7 +29,7 @@ import static net.minecraft.world.entity.EquipmentSlot.*;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/21 15:38
  * Version: 1.0
  */

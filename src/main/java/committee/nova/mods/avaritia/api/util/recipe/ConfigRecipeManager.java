@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ConfigRecipeManager {
     private static final Logger LOGGER = LogManager.getLogger();

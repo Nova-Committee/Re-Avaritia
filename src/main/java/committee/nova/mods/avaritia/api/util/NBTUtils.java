@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:40
  * Version: 1.0
  */

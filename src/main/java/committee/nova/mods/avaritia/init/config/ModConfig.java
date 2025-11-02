@@ -5,7 +5,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/17 15:04
  * Version: 1.0
  */

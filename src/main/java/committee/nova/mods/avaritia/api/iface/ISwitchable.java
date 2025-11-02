@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/4 00:16
  * @Description: 切换状态接口 - 支持多模式切换
  */

@@ -11,7 +11,7 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/8/6 下午1:39
  * @Description:
  */

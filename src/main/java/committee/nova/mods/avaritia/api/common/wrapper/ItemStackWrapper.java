@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2022/4/2 10:59
  * @Description:
  */

@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2022/3/31 10:50
  * @Description:
  */

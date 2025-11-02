@@ -7,7 +7,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 11:50
  * Version: 1.0
  */

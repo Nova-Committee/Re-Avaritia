@@ -38,7 +38,7 @@ import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 17:11
  * Version: 1.0
  */

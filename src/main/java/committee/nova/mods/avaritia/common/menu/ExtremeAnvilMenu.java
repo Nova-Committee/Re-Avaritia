@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/23 12:43
  * @Description: Don't forget this code! The text color.
  */

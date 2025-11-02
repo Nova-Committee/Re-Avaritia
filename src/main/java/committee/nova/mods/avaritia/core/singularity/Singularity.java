@@ -13,7 +13,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:34
  * Version: 1.0
  */
@@ -31,10 +31,8 @@ public class Singularity {
     private final int timeRequired;
     private Ingredient ingredient;
     @Setter
-    @Getter
     private boolean enabled = true;
     @Setter
-    @Getter
     private boolean recipeDisabled = false;
 
     public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
@@ -136,5 +134,14 @@ public class Singularity {
         buffer.writeVarInt(this.ingredientCount);
         buffer.writeBoolean(this.enabled);
         buffer.writeBoolean(this.recipeDisabled);
+    }
+
+    // 手动添加isEnabled()和isRecipeDisabled()方法以确保编译成功
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public boolean isRecipeDisabled() {
+        return this.recipeDisabled;
     }
 }

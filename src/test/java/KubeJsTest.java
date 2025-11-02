@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @BootstrapMinecraft
 public class KubeJsTest {

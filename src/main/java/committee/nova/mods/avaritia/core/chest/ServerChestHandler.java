@@ -12,7 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.HashSet;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ServerChestHandler extends ChestHandler {
     private final HashSet<String> changedItems = new HashSet<>();

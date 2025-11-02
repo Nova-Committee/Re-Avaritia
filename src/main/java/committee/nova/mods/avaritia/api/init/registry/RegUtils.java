@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class RegUtils {
     public static DeferredRegister<Block> BLOCKS;

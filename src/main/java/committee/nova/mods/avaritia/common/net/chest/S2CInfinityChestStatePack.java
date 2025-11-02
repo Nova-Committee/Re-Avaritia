@@ -11,7 +11,7 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class S2CInfinityChestStatePack {
     private final ChannelState channelState;

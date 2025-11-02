@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description: {@link net.minecraft.world.inventory.ResultSlot}
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/2/20 9:45
  * Version: 1.0
  */

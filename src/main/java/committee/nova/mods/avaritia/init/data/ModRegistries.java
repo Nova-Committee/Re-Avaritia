@@ -13,7 +13,7 @@ import static committee.nova.mods.avaritia.init.registry.ModDamageTypes.DAMAGE_B
 
 /**
  * Name: Avaritia-forge / ModRegistries
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/10 0:40
  * Description:
  */

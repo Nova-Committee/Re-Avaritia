@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestContainer extends SimpleContainer {
     public final ArrayList<String> sortedObject = new ArrayList<>();

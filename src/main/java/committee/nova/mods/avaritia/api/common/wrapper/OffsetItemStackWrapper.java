@@ -15,7 +15,7 @@ import java.util.function.IntSupplier;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/1/31 22:33
  * @Description: 多页容器IItemHandler
  */

@@ -13,7 +13,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/28 20:10
  * @Description:
  */

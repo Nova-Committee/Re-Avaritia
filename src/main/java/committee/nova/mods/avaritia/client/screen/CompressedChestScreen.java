@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/7/13 上午11:32
  * @Description:
  */

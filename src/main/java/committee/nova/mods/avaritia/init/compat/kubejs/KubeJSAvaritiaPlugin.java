@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 
 /**
  * Name: Avaritia-forge / KubeJSAvaritiaPlugin
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/17 0:49
  * Description:
  */

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.iface;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/6 02:51
  * @Description:
  */

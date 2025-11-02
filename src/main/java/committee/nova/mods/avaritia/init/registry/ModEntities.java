@@ -21,7 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 14:52
  * Version: 1.0
  */

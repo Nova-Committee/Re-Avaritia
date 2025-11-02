@@ -19,7 +19,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:39
  * Version: 1.0
  */

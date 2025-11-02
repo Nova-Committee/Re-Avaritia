@@ -7,7 +7,9 @@ import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
-import committee.nova.mods.avaritia.common.tile.config.SideConfiguration;
+import committee.nova.mods.avaritia.core.io.SideConfiguration;
+import committee.nova.mods.avaritia.api.iface.ITileIO;
+import committee.nova.mods.avaritia.core.io.TileIOHandler;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -17,35 +19,36 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 17:39
  * Version: 1.0
  */
-public class NeutronCompressorTile extends BaseInventoryTileEntity {
+public class NeutronCompressorTile extends BaseInventoryTileEntity implements ITileIO {
     // 新的面配置系统，替代原来的boolean控制
     private SideConfiguration sideConfig = new SideConfiguration();
 
     // 主动IO操作计时器
     private int activeIOtick = 0;
     private static final int ACTIVE_IO_INTERVAL = 20; // 每秒执行一次主动IO
+
+    // IO处理器
+    private final TileIOHandler ioHandler = new TileIOHandler(this, NeutronCompressorBlock.FACING);
 
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
@@ -202,19 +205,8 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         // 检查被动输入输出配置
         if (side != null && cap == ForgeCapabilities.ITEM_HANDLER) {
-            // 获取方块的实际朝向
-            Direction blockFacing = getBlockFacing();
-            if (blockFacing != null) {
-                // 将绝对方向转换为相对方向进行配置检查
-                Direction relativeSide = getRelativeDirectionFromAbsolute(side, blockFacing);
-                if (relativeSide != null && !sideConfig.isPassive(relativeSide)) {
-                    return LazyOptional.empty();
-                }
-            } else {
-                // 如果无法获取朝向，使用原始逻辑
-                if (!sideConfig.isPassive(side)) {
-                    return LazyOptional.empty();
-                }
+            if (!ioHandler.shouldAllowPassiveIO(side)) {
+                return LazyOptional.empty();
             }
         }
         return super.getCapability(cap, side);
@@ -333,133 +325,28 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         }
     }
 
-    /**
-     * 获取方块配置
-     */
-    public SideConfiguration getSideConfiguration() {
-        return this.sideConfig;
-    }
 
 
     /**
      * 处理主动输入输出操作
      */
     private void handleActiveIO() {
-        if (level == null) return;
-
-        // 处理主动输入
-        for (Direction side : sideConfig.getActiveInputSides()) {
-            handleActiveInput(side);
-        }
-
-        // 处理主动输出
-        for (Direction side : sideConfig.getActiveOutputSides()) {
-            handleActiveOutput(side);
-        }
-    }
-
-    /**
-     * 处理从指定方向的主动输入
-     */
-    private void handleActiveInput(Direction side) {
-        // 获取方块的实际朝向
-        Direction blockFacing = getBlockFacing();
-        if (blockFacing == null) return;
-
-        // 根据方块朝向转换相对方向
-        Direction actualDirection = getRelativeDirection(side, blockFacing);
-        if (actualDirection == null) return;
-
-        BlockPos targetPos = worldPosition.relative(actualDirection);
-        BlockEntity targetTile = level.getBlockEntity(targetPos);
-
-        if (targetTile != null) {
-            // 尝试从目标方块抽取物品
-             targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
-                    .ifPresent(targetHandler -> extractFromHandler(targetHandler, actualDirection));
-        }
-    }
-
-    /**
-     * 获取方块的朝向
-     */
-    private Direction getBlockFacing() {
-        if (level != null) {
-            BlockState state = level.getBlockState(worldPosition);
-            if (state.hasProperty(NeutronCompressorBlock.FACING)) {
-                return state.getValue(NeutronCompressorBlock.FACING);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 根据方块朝向将相对方向转换为绝对方向
-     * @param relativeSide 相对方向（FRONT, BACK, LEFT, RIGHT, UP, DOWN）
-     * @param blockFacing 方块的朝向
-     * @return 转换后的绝对方向
-     */
-    private Direction getRelativeDirection(Direction relativeSide, Direction blockFacing) {
-        return switch (relativeSide) {
-            // 前方 = 方块朝向
-            case NORTH -> blockFacing;
-            // 后方 = 方块朝向的对面
-            case SOUTH -> blockFacing.getOpposite();
-            // 右侧 = 方块朝向顺时针90度
-            case EAST -> blockFacing.getCounterClockWise();
-            // 左侧 = 方块朝向逆时针90度
-            case WEST -> blockFacing.getClockWise();
-            // 上下方向保持不变
-            case UP -> Direction.UP;
-            case DOWN -> Direction.DOWN;
-            default -> null;
-        };
+        ioHandler.handleActiveIO();
     }
 
 
+    // IO接口实现方法
     /**
-     * 根据方块朝向将绝对方向转换为相对方向
-     * 这是 getRelativeDirection 的反向操作
+     * 获取方块配置
      */
-    private Direction getRelativeDirectionFromAbsolute(Direction absoluteDirection, Direction blockFacing) {
-        // 如果绝对方向与方块朝向相同，则它是前方
-        if (absoluteDirection == blockFacing) return Direction.NORTH;
-        if (absoluteDirection == blockFacing.getOpposite()) return Direction.SOUTH;
-        if (absoluteDirection == blockFacing.getCounterClockWise()) return Direction.EAST;
-        if (absoluteDirection == blockFacing.getClockWise()) return Direction.WEST;
-        if (absoluteDirection == Direction.UP) return Direction.UP;
-        if (absoluteDirection == Direction.DOWN) return Direction.DOWN;
-        return null;
+    @Override
+    public SideConfiguration getSideConfiguration() {
+        return this.sideConfig;
     }
 
-    /**
-     * 处理到指定方向的主动输出
-     */
-    private void handleActiveOutput(Direction side) {
-        // 获取方块的实际朝向
-        Direction blockFacing = getBlockFacing();
-        if (blockFacing == null) return;
 
-        // 根据方块朝向转换相对方向
-        Direction actualDirection = getRelativeDirection(side, blockFacing);
-        if (actualDirection == null) return;
-
-        BlockPos targetPos = worldPosition.relative(actualDirection);
-        BlockEntity targetTile = level.getBlockEntity(targetPos);
-
-        if (targetTile != null) {
-            // 尝试将物品插入到目标方块
-            targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
-                    .ifPresent(targetHandler -> {
-                        insertToHandler(targetHandler, actualDirection);
-                    });
-        }
-    }
-
-    /**
-     * 从外部物品处理器抽取物品
-     */
-    private void extractFromHandler(IItemHandler externalHandler, Direction fromSide) {
+    @Override
+    public void extractFromHandler(IItemHandler externalHandler, Direction fromSide) {
         var inputSlot = this.inventory.getStackInSlot(1);
 
         // 检查当前输入槽是否已满或材料类型不匹配
@@ -507,7 +394,9 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     /**
      * 向外部物品处理器插入物品
      */
-    private void insertToHandler(IItemHandler externalHandler, Direction toSide) {
+    @Override
+    public void insertToHandler(IItemHandler externalHandler, Direction toSide) {
+        // 检查输出槽是否有物品
         var outputSlot = this.inventory.getStackInSlot(0);
         if (outputSlot.isEmpty()) return;
 
@@ -518,7 +407,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
             int transferred = remaining.getCount() - insertResult.getCount();
 
             if (transferred > 0) {
-                // 更新输出槽
                 outputSlot.shrink(transferred);
                 remaining = insertResult;
             }

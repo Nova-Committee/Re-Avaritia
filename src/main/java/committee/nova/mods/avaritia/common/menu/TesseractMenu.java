@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/4 14:41
  * @Description:
  */

@@ -31,7 +31,7 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/30 01:06
  * @Description:
  */

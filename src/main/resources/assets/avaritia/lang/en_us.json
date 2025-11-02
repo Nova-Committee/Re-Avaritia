@@ -308,6 +308,12 @@
   "info.avaritia.channel.save_success": "Success save channel: %s %s %s",
   "info.avaritia.channel.add_success": "Success add channel: %s %s %s",
 
+  "info.avaritia.infinity_chest.load_success": "Success load infinity chest: %s %s %s",
+  "info.avaritia.infinity_chest.load_error": "Load infinity chest Error!",
+  "info.avaritia.infinity_chest.load_finish": "Infinity chest load finished!",
+  "info.avaritia.infinity_chest.save_success": "Success save infinity chest: %s %s %s",
+  "info.avaritia.infinity_chest.add_success": "Success add infinity chest: %s %s %s",
+
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.owner": "Owner: %d",
   "gui.avaritia.public": "Public",
@@ -474,8 +480,10 @@
   "tooltip.avaritia.side.mode.off": "关闭",
   "tooltip.avaritia.side.mode.passive_input": "被动输入",
   "tooltip.avaritia.side.mode.passive_output": "被动输出",
+  "tooltip.avaritia.side.mode.passive_mixin": "被动混合",
   "tooltip.avaritia.side.mode.active_input": "主动输入",
   "tooltip.avaritia.side.mode.active_output": "主动输出",
+  "tooltip.avaritia.side.mode.active_mixin": "主动混合",
   "tooltip.avaritia.side.click_to_cycle": "点击切换模式",
   "direction.avaritia.north": "前面",
   "direction.avaritia.south": "后面",

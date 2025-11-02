@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ClientChestHandler extends ChestHandler {
     @Nullable
