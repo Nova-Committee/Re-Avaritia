@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class ExtremeSmithingTableBlock extends BaseBlock {
-    private static final Component CONTAINER_TITLE = Component.translatable("container.extreme_smithing");
+    private static final Component CONTAINER_TITLE = Component.translatable("block.avaritia.extreme_smithing_table");
 
     public ExtremeSmithingTableBlock() {
         super(Properties.of()

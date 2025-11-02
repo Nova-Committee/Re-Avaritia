@@ -39,7 +39,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int y = this.getGuiTop();
 
         // 添加配置按钮
-        this.configButton = new ConfigButton(x - 20, y);
+        this.configButton = new ConfigButton(this, x - 20, y);
 
         this.addRenderableWidget(this.configButton);
     }
@@ -98,43 +98,5 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int i = Mth.clamp(this.getProgress(), 0, this.getTimeRequired());
         int j = this.getTimeRequired();
         return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
-    }
-
-    private void openSideConfig() {
-        if (this.minecraft != null && this.minecraft.player != null) {
-            var level = this.minecraft.level;
-            if (level != null) {
-                var container = this.getMenu();
-                var tile = level.getBlockEntity(container.getBlockPos());
-
-                if (tile instanceof NeutronCollectorTile collector) {
-                    var sideConfig = collector.getSideConfiguration();
-                    var blockPos = container.getBlockPos();
-                    var configScreen = new SideConfigScreen(this, sideConfig, blockPos);
-                    this.minecraft.setScreen(configScreen);
-                }
-            }
-        }
-    }
-
-    private class ConfigButton extends ImageButton {
-        private final List<FormattedCharSequence> tips = new ArrayList<>();
-
-        public ConfigButton(int pX, int pY) {
-            super(pX, pY, 20, 24, 156, 0, Res.SIDE_CONFIG_TEX, pButton -> openSideConfig());
-            tips.add(Component.literal("配置输入输出").withStyle(ChatFormatting.LIGHT_PURPLE).getVisualOrderText());
-            tips.add(Component.literal("点击打开六面配置界面").withStyle(ChatFormatting.GRAY).getVisualOrderText());
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            if (this.isHovered) {
-                setTooltipForNextRenderPass(tips);
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart + 24, this.width, this.height, 256, 256);
-            } else {
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
-            }
-        }
     }
 }

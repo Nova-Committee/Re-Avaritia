@@ -48,7 +48,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
         this.ejectButton = new EjectButton(x + 40, y + 20);
 
         // 添加配置按钮
-        this.configButton = new ConfigButton(x - 20, y);
+        this.configButton = new ConfigButton(this, x - 20, y);
 
         this.addRenderableWidget(this.lockButton);
         this.addRenderableWidget(this.ejectButton);
@@ -71,22 +71,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
         }
     }
 
-    private void openSideConfig() {
-        if (this.minecraft != null && this.minecraft.player != null) {
-            var level = this.minecraft.level;
-            if (level != null) {
-                var container = this.getMenu();
-                var tile = level.getBlockEntity(container.getBlockPos());
 
-                if (tile instanceof NeutronCompressorTile compressor) {
-                    var sideConfig = compressor.getSideConfiguration();
-                    var blockPos = container.getBlockPos();
-                    var configScreen = new SideConfigScreen(this, sideConfig, blockPos);
-                    this.minecraft.setScreen(configScreen);
-                }
-            }
-        }
-    }
 
     private class LockButton extends ImageButton {
         private final List<FormattedCharSequence> tips = new ArrayList<>();
@@ -273,27 +258,6 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
             return false;
 
         return this.menu.getTileEntity().getMaterialCount() > 0;
-    }
-
-    private class ConfigButton extends ImageButton {
-        private final List<FormattedCharSequence> tips = new ArrayList<>();
-
-        public ConfigButton(int pX, int pY) {
-            super(pX, pY, 20, 24, 156, 0, Res.SIDE_CONFIG_TEX, pButton -> openSideConfig());
-            tips.add(Component.literal("配置输入输出").withStyle(ChatFormatting.LIGHT_PURPLE).getVisualOrderText());
-            tips.add(Component.literal("点击打开六面配置界面").withStyle(ChatFormatting.GRAY).getVisualOrderText());
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            if (this.isHovered) {
-                setTooltipForNextRenderPass(tips);
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart + 24, this.width, this.height, 256, 256);
-            } else {
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
-            }
-        }
     }
 
 }
