@@ -202,13 +202,24 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         // 检查被动输入输出配置
         if (side != null && cap == ForgeCapabilities.ITEM_HANDLER) {
-            // 检查该面是否允许被动IO
-            if (!sideConfig.isPassive(side)) {
-                return LazyOptional.empty();
+            // 获取方块的实际朝向
+            Direction blockFacing = getBlockFacing();
+            if (blockFacing != null) {
+                // 将绝对方向转换为相对方向进行配置检查
+                Direction relativeSide = getRelativeDirectionFromAbsolute(side, blockFacing);
+                if (relativeSide != null && !sideConfig.isPassive(relativeSide)) {
+                    return LazyOptional.empty();
+                }
+            } else {
+                // 如果无法获取朝向，使用原始逻辑
+                if (!sideConfig.isPassive(side)) {
+                    return LazyOptional.empty();
+                }
             }
         }
         return super.getCapability(cap, side);
     }
+
 
     public CompressorTier getTier() {
         return tier;
@@ -329,6 +340,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
         return this.sideConfig;
     }
 
+
     /**
      * 处理主动输入输出操作
      */
@@ -350,28 +362,96 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity {
      * 处理从指定方向的主动输入
      */
     private void handleActiveInput(Direction side) {
-        BlockPos targetPos = worldPosition.relative(side);
+        // 获取方块的实际朝向
+        Direction blockFacing = getBlockFacing();
+        if (blockFacing == null) return;
+
+        // 根据方块朝向转换相对方向
+        Direction actualDirection = getRelativeDirection(side, blockFacing);
+        if (actualDirection == null) return;
+
+        BlockPos targetPos = worldPosition.relative(actualDirection);
         BlockEntity targetTile = level.getBlockEntity(targetPos);
 
         if (targetTile != null) {
             // 尝试从目标方块抽取物品
-             targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
-                    .ifPresent(targetHandler -> extractFromHandler(targetHandler, side));
+             targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
+                    .ifPresent(targetHandler -> extractFromHandler(targetHandler, actualDirection));
         }
+    }
+
+    /**
+     * 获取方块的朝向
+     */
+    private Direction getBlockFacing() {
+        if (level != null) {
+            BlockState state = level.getBlockState(worldPosition);
+            if (state.hasProperty(NeutronCompressorBlock.FACING)) {
+                return state.getValue(NeutronCompressorBlock.FACING);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据方块朝向将相对方向转换为绝对方向
+     * @param relativeSide 相对方向（FRONT, BACK, LEFT, RIGHT, UP, DOWN）
+     * @param blockFacing 方块的朝向
+     * @return 转换后的绝对方向
+     */
+    private Direction getRelativeDirection(Direction relativeSide, Direction blockFacing) {
+        return switch (relativeSide) {
+            // 前方 = 方块朝向
+            case NORTH -> blockFacing;
+            // 后方 = 方块朝向的对面
+            case SOUTH -> blockFacing.getOpposite();
+            // 右侧 = 方块朝向顺时针90度
+            case EAST -> blockFacing.getCounterClockWise();
+            // 左侧 = 方块朝向逆时针90度
+            case WEST -> blockFacing.getClockWise();
+            // 上下方向保持不变
+            case UP -> Direction.UP;
+            case DOWN -> Direction.DOWN;
+            default -> null;
+        };
+    }
+
+
+    /**
+     * 根据方块朝向将绝对方向转换为相对方向
+     * 这是 getRelativeDirection 的反向操作
+     */
+    private Direction getRelativeDirectionFromAbsolute(Direction absoluteDirection, Direction blockFacing) {
+        // 如果绝对方向与方块朝向相同，则它是前方
+        if (absoluteDirection == blockFacing) return Direction.NORTH;
+        if (absoluteDirection == blockFacing.getOpposite()) return Direction.SOUTH;
+        if (absoluteDirection == blockFacing.getCounterClockWise()) return Direction.EAST;
+        if (absoluteDirection == blockFacing.getClockWise()) return Direction.WEST;
+        if (absoluteDirection == Direction.UP) return Direction.UP;
+        if (absoluteDirection == Direction.DOWN) return Direction.DOWN;
+        return null;
     }
 
     /**
      * 处理到指定方向的主动输出
      */
     private void handleActiveOutput(Direction side) {
-        BlockPos targetPos = worldPosition.relative(side);
+        // 获取方块的实际朝向
+        Direction blockFacing = getBlockFacing();
+        if (blockFacing == null) return;
+
+        // 根据方块朝向转换相对方向
+        Direction actualDirection = getRelativeDirection(side, blockFacing);
+        if (actualDirection == null) return;
+
+        BlockPos targetPos = worldPosition.relative(actualDirection);
         BlockEntity targetTile = level.getBlockEntity(targetPos);
 
         if (targetTile != null) {
             // 尝试将物品插入到目标方块
-            targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
+            targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
                     .ifPresent(targetHandler -> {
-                        insertToHandler(targetHandler, side);
+                        insertToHandler(targetHandler, actualDirection);
                     });
         }
     }
