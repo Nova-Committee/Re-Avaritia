@@ -18,6 +18,10 @@ public interface ITileIO {
      */
     SideConfiguration getSideConfiguration();
 
+    void setSideConfiguration(SideConfiguration sideConfiguration);
+
+    void setIOChange();
+
     /**
      * 从外部处理器抽取物品
      */

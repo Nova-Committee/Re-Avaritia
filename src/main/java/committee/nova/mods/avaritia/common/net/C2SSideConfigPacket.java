@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.core.BlockPos;
@@ -8,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -47,20 +47,20 @@ public class C2SSideConfigPacket {
             Level level = player.level();
             BlockEntity tile = level.getBlockEntity(this.pos);
 
-            if (tile instanceof NeutronCompressorTile compressor) {
+            if (tile instanceof ITileIO tileIO) {
                 // 验证玩家是否有权限配置这个方块
                 if (level.getBlockEntity(this.pos) == null) {
                     return; // 没有权限
                 }
 
                 // 应用新的配置
-                compressor.setSideConfiguration(sideConfig);
+                tileIO.setSideConfiguration(sideConfig);
 
                 // 发送确认消息给玩家
-                player.sendSystemMessage(Component.literal("§a[中子压缩器] §f方块配置已更新"));
+                player.sendSystemMessage(Component.literal("§f方块配置已更新"));
 
                 // 标记方块实体为已更改，触发保存
-                compressor.setChanged();
+                tileIO.setIOChange();
 
                 // 同步给附近的所有玩家
                 NetworkHandler.sendSideConfigSync(level, pos, sideConfig);

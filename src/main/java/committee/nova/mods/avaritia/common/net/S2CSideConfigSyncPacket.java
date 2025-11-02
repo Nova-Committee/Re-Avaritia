@@ -1,12 +1,12 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -44,9 +44,9 @@ public class S2CSideConfigSyncPacket {
 
             BlockEntity tile = level.getBlockEntity(this.pos);
 
-            if (tile instanceof NeutronCompressorTile compressor) {
+            if (tile instanceof ITileIO tileIO) {
                 // 应用同步的配置
-                compressor.setSideConfiguration(sideConfig);
+                tileIO.setSideConfiguration(sideConfig);
             }
         });
         ctx.get().setPacketHandled(true);

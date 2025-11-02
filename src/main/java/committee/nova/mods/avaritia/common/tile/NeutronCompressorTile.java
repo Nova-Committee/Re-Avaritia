@@ -310,23 +310,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         return true; // 默认允许放置
     }
 
-    // ==================== 新增的面配置相关方法 ====================
-
-    /**
-     * 设置方块配置
-     */
-    public void setSideConfiguration(SideConfiguration config) {
-        this.sideConfig = config;
-        this.setChangedAndDispatch();
-
-        // 同步给客户端
-        if (!this.level.isClientSide()) {
-            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, config);
-        }
-    }
-
-
-
     /**
      * 处理主动输入输出操作
      */
@@ -344,6 +327,21 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         return this.sideConfig;
     }
 
+    @Override
+    public void setSideConfiguration(SideConfiguration config) {
+        this.sideConfig = config;
+        this.setChangedAndDispatch();
+
+        // 同步给客户端
+        if (!this.level.isClientSide()) {
+            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, config);
+        }
+    }
+
+    @Override
+    public void setIOChange() {
+        this.setChangedAndDispatch();
+    }
 
     @Override
     public void extractFromHandler(IItemHandler externalHandler, Direction fromSide) {
