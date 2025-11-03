@@ -34,6 +34,7 @@ public class CompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     public CompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
         super(ModMenus.compressor.get(), id, playerInventory, pos);
         this.progressData = data;
+        this.addDataSlots(progressData);
         inventory.setSlotValidator((integer, itemStack) -> {
             if (integer == 1) {
                 // 获取压缩器实例检查锁定状态
