@@ -134,14 +134,13 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
             if (tile.recipe != null) {
                 if (tile.materialCount >= tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
-                    tile.progress++;
-                    tile.data.set(0, tile.progress);
+                    tile.setProgress(tile.progress + 1);
                     if (tile.progress >= tile.recipe.getTimeCost() * tile.tier.timeAmplifier) {
                         var result = tile.recipe.assemble(tile.inventory.toIInventory(), level.registryAccess());
 
                         if (ItemUtils.canCombineStacks(result, output)) {
                             tile.updateResult(result, tile.tier.outputAmplifier);
-                            tile.progress = 0;
+                            tile.setProgress(0);
                             tile.materialCount -= Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier);
 
                             if (tile.materialCount <= 0) {
@@ -169,7 +168,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         super.load(tag);
         this.materialCount = tag.getInt("MaterialCount");
         this.materialStack = ItemStack.of(tag.getCompound("MaterialStack"));
-        this.progress = tag.getInt("Progress");
+        this.setProgress(tag.getInt("Progress"));
         this.recipeLocked = tag.getBoolean("RecipeLocked");
         // 加载面配置
         if (tag.contains("SideConfig")) {
@@ -283,7 +282,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     public void clearMaterials() {
         this.materialStack = ItemStack.EMPTY;
         this.materialCount = 0;
-        this.progress = 0;
+        this.setProgress(0);
         this.setChangedAndDispatch();
     }
 
@@ -413,5 +412,12 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         if (!remaining.equals(outputSlot)) {
             this.setChanged();
         }
+    }
+
+    /** progress的setter，确保一旦设置progress，就同步更新SimpleContainerData */
+    private void setProgress(int progress)
+    {
+        this.progress = progress;
+        this.data.set(0, this.progress);
     }
 }

@@ -76,11 +76,11 @@ public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayE
         // 应用缩放
         poseStack.scale(SCALE, -SCALE, SCALE);
 
-        // 居中文字
-        poseStack.translate(-textWidth, 0, 0);
+        // 修正绘制坐标，以居中显示
+        float x = -font.width(text) / 2.0f;
+        float y = -font.lineHeight / 2.0f;
 
-        // 绘制文字
-        font.drawInBatch(text, 0, 0, 0xFFFFFF, false,
+        font.drawInBatch(text, x, y, 0xFFFFFF, false,
                 poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
 
         poseStack.popPose();
