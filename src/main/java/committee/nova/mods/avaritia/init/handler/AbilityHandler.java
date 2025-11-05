@@ -12,6 +12,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -43,21 +44,21 @@ public class AbilityHandler {
 
 
     @SubscribeEvent
-    public static void updateAbilities(LivingEvent.LivingTickEvent event) {
-        if (event.getEntity() instanceof Player player) {
+    public static void updateAbilities(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && event.side.isServer()) {
+            var player = event.player;
             String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
 
-            boolean hasHelmet = isPlayerWearing(event.getEntity(), HEAD, item -> item instanceof InfinityArmorItem);
-            boolean hasChest = isPlayerWearing(event.getEntity(), CHEST, item -> item instanceof InfinityArmorItem);
-            boolean hasLeggings = isPlayerWearing(event.getEntity(), LEGS, item -> item instanceof InfinityArmorItem);
-            boolean hasBoots = isPlayerWearing(event.getEntity(), FEET, item -> item instanceof InfinityArmorItem);
+            boolean hasHelmet = isPlayerWearing(player, HEAD, item -> item instanceof InfinityArmorItem);
+            boolean hasChest = isPlayerWearing(player, CHEST, item -> item instanceof InfinityArmorItem);
+            boolean hasLeggings = isPlayerWearing(player, LEGS, item -> item instanceof InfinityArmorItem);
+            boolean hasBoots = isPlayerWearing(player, FEET, item -> item instanceof InfinityArmorItem);
 
 
             handleHelmetStateChange(player, key, hasHelmet);
             handleChestStateChange(player, key, hasChest);
             handleLeggingsStateChange(player, key, hasLeggings);
             handleBootsStateChange(player, key, hasBoots);
-
         }
     }
 

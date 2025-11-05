@@ -60,6 +60,7 @@ repositories {
         url "https://modmaven.dev/"
         content {
             includeGroup "mezz.jei"
+            includeGroup "mekanism"
         }
     }
 
@@ -118,10 +119,11 @@ dependencies {
 
     modImplementation("curse.maven:charm-of-undying-316873:${cou_version}")
     modImplementation("curse.maven:projecte-226410:${projecte_version}")
-    modImplementation("curse.maven:mekanism-268560:${mek_version}")
     modImplementation("curse.maven:applied-energistics-2-223794:${ae2_version}")
     modRuntimeOnly("curse.maven:packagedauto-308380:${packagedauto_version}")
     modRuntimeOnly("curse.maven:packagedavaritia-308383:${packagedavaritia_version}")
+
+    modImplementation("mekanism:Mekanism:${mek_version}")
 
     // compile against the JEI API but do not include it at runtime
     modCompileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}")

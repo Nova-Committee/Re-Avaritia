@@ -74,7 +74,7 @@ public class AvaritiaForgeClient {
         Level level = mc.level;
         if (player == null || level == null) return;
 
-        if (CONFIG_KEY.consumeClick()) {
+        while (CONFIG_KEY.consumeClick()) {
             mc.setScreen(new AvaritiaConfigScreen(mc.screen));
         }
 
