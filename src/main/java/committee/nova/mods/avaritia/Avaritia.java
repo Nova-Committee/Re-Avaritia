@@ -47,6 +47,7 @@ public class Avaritia {
         ModCreativeModeTabs.TABS.register(bus);
         ModTileEntities.BLOCK_ENTITIES.register(bus);
         ModMenus.MENUS.register(bus);
+        ModMobEffects.MOB_EFFECTS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModEnchants.ENCHANTMENT.register(bus);
         ModParticles.PARTICLE_TYPE.register(bus);
