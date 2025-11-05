@@ -55,8 +55,7 @@ public class AvaritiaForgeClient {
     private static boolean keepFlying = false;
 
     // region 定义按键绑定
-    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
-            InputConstants.KEY_H, CATEGORIES);
+    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);
     // endregion
