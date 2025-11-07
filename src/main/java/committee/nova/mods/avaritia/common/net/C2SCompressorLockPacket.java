@@ -32,12 +32,12 @@ public class C2SCompressorLockPacket {
         this.lockState = lockState;
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
         buf.writeBoolean(this.lockState);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
+    public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;

@@ -3,10 +3,18 @@ package committee.nova.mods.avaritia.common.net;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -32,22 +40,24 @@ public class S2CSideConfigSyncPacket {
         this.sideConfig = sideConfig;
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
         this.sideConfig.toNetwork(buf);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
+    public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Level level = Minecraft.getInstance().level;
-            if (level == null) return;
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                ClientLevel level = Minecraft.getInstance().level;
+                if (level == null) return;
 
-            BlockEntity tile = level.getBlockEntity(this.pos);
+                BlockEntity tile = level.getBlockEntity(this.pos);
 
-            if (tile instanceof ITileIO tileIO) {
-                // 应用同步的配置
-                tileIO.setSideConfiguration(sideConfig);
-            }
+                if (tile instanceof ITileIO tileIO) {
+                    // 应用同步的配置
+                    tileIO.setSideConfiguration(this.sideConfig);
+                }
+            });
         });
         ctx.get().setPacketHandled(true);
     }

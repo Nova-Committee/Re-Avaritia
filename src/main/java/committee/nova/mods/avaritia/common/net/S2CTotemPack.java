@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -36,13 +37,26 @@ public class S2CTotemPack {
     }
 
     public void write(FriendlyByteBuf buf) {
-        buf.writeItem(stack);
-        buf.writeInt(entityId);
+        buf.writeItem(this.stack);
+        buf.writeInt(this.entityId);
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            playTotem(stack, entityId); //处理服务端发送给客户端的消息
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                Minecraft instance = Minecraft.getInstance();
+                ClientLevel world = instance.level;
+
+                if (world != null) {
+                    Entity entity = world.getEntity(this.entityId);
+                    if (entity != null) {
+                        instance.particleEngine.createTrackingEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
+                        world.playLocalSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, entity.getSoundSource(), 1.0F, 1.0F, false);
+                        instance.gameRenderer.displayItemActivation(this.stack);
+                    }
+                }
+            });
+            playTotem(this.stack, this.entityId); //处理服务端发送给客户端的消息
         });
         ctx.get().setPacketHandled(true);
     }
@@ -50,16 +64,6 @@ public class S2CTotemPack {
     //播放图腾动画，声音，粒子
     @OnlyIn(Dist.CLIENT)
     public static void playTotem(ItemStack stack, int entityId) {
-        Minecraft instance = Minecraft.getInstance();
-        ClientLevel world = instance.level;
 
-        if (world != null) {
-            Entity entity = world.getEntity(entityId);
-            if (entity != null) {
-                instance.particleEngine.createTrackingEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
-                world.playLocalSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, entity.getSoundSource(), 1.0F, 1.0F, false);
-                instance.gameRenderer.displayItemActivation(stack);
-            }
-        }
     }
 }

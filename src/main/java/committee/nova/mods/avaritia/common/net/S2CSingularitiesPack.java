@@ -4,6 +4,8 @@ import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.*;
@@ -66,11 +68,13 @@ public class S2CSingularitiesPack {
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            SingularityDataManager.getInstance().getCachedSingularities().clear();
-            SingularityDataManager.getInstance().getCachedSingularities().putAll(
-                    this.cacheSingularities.stream()
-                    .collect(Collectors.toMap(Singularity::getId, s -> s))
-            );
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                SingularityDataManager.getInstance().getCachedSingularities().clear();
+                SingularityDataManager.getInstance().getCachedSingularities().putAll(
+                        this.cacheSingularities.stream()
+                                .collect(Collectors.toMap(Singularity::getId, s -> s))
+                );
+            });
         });
         ctx.get().setPacketHandled(true);
     }

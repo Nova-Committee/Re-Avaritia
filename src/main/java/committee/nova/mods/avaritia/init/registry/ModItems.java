@@ -69,6 +69,7 @@ public class ModItems {
     public static RegistryObject<Item> blaze_pickaxe = item("blaze_pickaxe", BlazePickaxeItem::new);
     public static RegistryObject<Item> blaze_shovel = item("blaze_shovel", BlazeShovelItem::new);
     public static RegistryObject<Item> blaze_axe = item("blaze_axe", BlazeAxeItem::new);
+    public static RegistryObject<Item> blaze_bow= item("blaze_bow", BlazeBowItem::new);
 
     /**
      * Armor

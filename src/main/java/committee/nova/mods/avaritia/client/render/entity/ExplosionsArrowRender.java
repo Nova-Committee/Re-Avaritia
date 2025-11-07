@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.common.entity.arrow.ExplosionsArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -16,13 +17,13 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
-    public HeavenSubArrowRender(EntityRendererProvider.Context p_174008_) {
-        super(p_174008_);
+public class ExplosionsArrowRender extends ArrowRenderer<ExplosionsArrowEntity> {
+    public ExplosionsArrowRender(EntityRendererProvider.Context context) {
+        super(context);
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull HeavenSubArrowEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull ExplosionsArrowEntity entity) {
         return Res.HEAVEN_ARROW;
     }
 }

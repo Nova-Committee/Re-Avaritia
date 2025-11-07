@@ -60,12 +60,12 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, C2SSetTimePacket.class, C2SSetTimePacket::write, C2SSetTimePacket::new, C2SSetTimePacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
         // 中子压缩器新增功能包
-        CHANNEL.registerMessage(id++, C2SCompressorLockPacket.class, C2SCompressorLockPacket::toBytes, C2SCompressorLockPacket::new, C2SCompressorLockPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SCompressorEjectPacket.class, C2SCompressorEjectPacket::toBytes, C2SCompressorEjectPacket::new, C2SCompressorEjectPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SCompressorLockPacket.class, C2SCompressorLockPacket::write, C2SCompressorLockPacket::new, C2SCompressorLockPacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, C2SCompressorEjectPacket.class, C2SCompressorEjectPacket::write, C2SCompressorEjectPacket::new, C2SCompressorEjectPacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
         // 方块配置功能包
-        CHANNEL.registerMessage(id++, C2SSideConfigPacket.class, C2SSideConfigPacket::toBytes, C2SSideConfigPacket::new, C2SSideConfigPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, S2CSideConfigSyncPacket.class, S2CSideConfigSyncPacket::toBytes, S2CSideConfigSyncPacket::new, S2CSideConfigSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, C2SSideConfigPacket.class, C2SSideConfigPacket::write, C2SSideConfigPacket::new, C2SSideConfigPacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, S2CSideConfigSyncPacket.class, S2CSideConfigSyncPacket::write, S2CSideConfigSyncPacket::new, S2CSideConfigSyncPacket::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         CHANNEL.registerMessage(id++, S2CInfinityChestStatePack.class, S2CInfinityChestStatePack::write, S2CInfinityChestStatePack::new, S2CInfinityChestStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SInfinityChestActionPack.class, C2SInfinityChestActionPack::write, C2SInfinityChestActionPack::new, C2SInfinityChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));

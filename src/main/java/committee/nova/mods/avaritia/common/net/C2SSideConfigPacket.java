@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -34,37 +35,38 @@ public class C2SSideConfigPacket {
         this.sideConfig = sideConfig;
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
         this.sideConfig.toNetwork(buf);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
+    public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
+            if (player.level() instanceof ServerLevel level) {
+                BlockEntity tile = level.getBlockEntity(this.pos);
 
-            Level level = player.level();
-            BlockEntity tile = level.getBlockEntity(this.pos);
+                if (tile instanceof ITileIO tileIO) {
+                    // 验证玩家是否有权限配置这个方块
+                    if (level.getBlockEntity(this.pos) == null) {
+                        return; // 没有权限
+                    }
 
-            if (tile instanceof ITileIO tileIO) {
-                // 验证玩家是否有权限配置这个方块
-                if (level.getBlockEntity(this.pos) == null) {
-                    return; // 没有权限
+                    // 应用新的配置
+                    tileIO.setSideConfiguration(sideConfig);
+
+                    // 发送确认消息给玩家
+                    player.sendSystemMessage(Component.literal("§f方块配置已更新"));
+
+                    // 标记方块实体为已更改，触发保存
+                    tileIO.setIOChange();
+
+                    // 同步给附近的所有玩家
+                    NetworkHandler.sendSideConfigSync(level, pos, sideConfig);
                 }
-
-                // 应用新的配置
-                tileIO.setSideConfiguration(sideConfig);
-
-                // 发送确认消息给玩家
-                player.sendSystemMessage(Component.literal("§f方块配置已更新"));
-
-                // 标记方块实体为已更改，触发保存
-                tileIO.setIOChange();
-
-                // 同步给附近的所有玩家
-                NetworkHandler.sendSideConfigSync(level, pos, sideConfig);
             }
+
         });
         ctx.get().setPacketHandled(true);
     }

@@ -26,6 +26,7 @@
   "item.avaritia.blaze_hoe": "炽魂之耘灵锄",
   "item.avaritia.blaze_pickaxe": "炽岩之熔山镐",
   "item.avaritia.blaze_shovel": "炽咒之狱火锹",
+  "item.avaritia.blaze_bow": "炽炎之爆裂弓",
   "item.avaritia.crystal_sword": "双锋裂界之剑",
   "item.avaritia.crystal_axe": "晶能裂岩之斧",
   "item.avaritia.crystal_hoe": "亘古不毁之锄",
@@ -481,5 +482,7 @@
   "direction.avaritia.west": "左面",
   "direction.avaritia.up": "上面",
   "direction.avaritia.down": "下面",
-  "gui.avaritia.back": "返回"
+  "gui.avaritia.back": "返回",
+  "tooltip.avaritia.side.mode.passive_mixin": "被动混合",
+  "tooltip.avaritia.side.mode.active_mixin": "主动混合"
 }
