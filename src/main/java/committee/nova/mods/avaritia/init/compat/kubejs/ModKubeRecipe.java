@@ -10,7 +10,8 @@ import java.util.function.Supplier;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2025/5/18 22:16
- * @Description:
+ * @Description: Clase base para recetas personalizadas de Avaritia integradas con KubeJS.
+ * KUBEJS 2101.7.2-build.309 COMPATIBILITY BY SrNadien.
  */
 public abstract class ModKubeRecipe extends KubeRecipe {
     @HideFromJS
@@ -21,12 +22,16 @@ public abstract class ModKubeRecipe extends KubeRecipe {
         return getValue(key);
     }
 
+    /**
+     * Cada receta concreta deberá definir su validación.
+     */
     protected abstract void validate();
 
-    @Override
-    public void afterLoaded() {
-        super.afterLoaded();
-
+    /**
+     * Ya no se usa @Override porque afterLoaded() fue eliminado de KubeRecipe.
+     * La validación deberá ejecutarse manualmente o desde el evento AfterRecipesLoadedKubeEvent.
+     */
+    public void onAfterRecipesLoaded() {
         this.validate();
     }
 }
