@@ -106,6 +106,35 @@ ServerEvents.recipes(
     }
 )
 ```
-
+### **InfinityCatalyst:**
+```json5
+{
+  "type": "avaritia:infinity_catalyst",//Infinity Catalyst recipe type
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:emerald_block"
+    },
+    {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    {
+      "item": "avaritia:neutron_ingot"
+    },
+    {
+      "item": "avaritia:cosmic_meatballs"
+    },
+    {
+      "item": "avaritia:ultimate_stew"
+    },
+    {
+      "item": "avaritia:endest_pearl"
+    },
+    {
+      "item": "avaritia:record_fragment"
+    }
+  ]
+}
+```
 
 
