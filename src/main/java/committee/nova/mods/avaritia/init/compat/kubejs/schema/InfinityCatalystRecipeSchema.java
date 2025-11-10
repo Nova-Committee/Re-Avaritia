@@ -15,6 +15,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Author cnlimiter
+ * CreateTime 2023/9/17 0:50
+ * Name CompressRecipeSchema
+ * Description
+ */
+
+
 public interface InfinityCatalystRecipeSchema {
 
    
