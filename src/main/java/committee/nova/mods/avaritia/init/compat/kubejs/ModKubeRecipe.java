@@ -10,6 +10,8 @@ import java.util.function.Supplier;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2025/5/18 22:16
+  * @Description:
+ */
  **/
 public abstract class ModKubeRecipe extends KubeRecipe {
     @HideFromJS
