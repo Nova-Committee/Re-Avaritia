@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.core.chest;
 
+import com.google.common.collect.Lists;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -7,61 +8,59 @@ import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author cnlimiter
  */
 public abstract class ChestHandler implements IItemHandler {
-    public final HashMap<String, Long> storageItems = new HashMap<>();
-    private ItemStack[] slotItemTemp = {ItemStack.EMPTY};
-    private String[] itemKeys = new String[]{};
+    public final HashMap<ItemStack, Long> storageItems = new HashMap<>();
+    private List<ItemStack> slotItemTemp = Lists.newArrayList();
 
     public ChestHandler() {}
 
     public abstract boolean isRemoved();
 
-    public void onItemChanged(String itemId, boolean listChanged) {
+    public void onItemChanged(ItemStack itemId, boolean listChanged) {
         if (listChanged) updateItemKeys();
     }
 
     public void updateItemKeys() {
-        itemKeys = storageItems.keySet().toArray(new String[]{});
-        slotItemTemp = new ItemStack[itemKeys.length];
-        for (int i = 0; i < itemKeys.length; i++) slotItemTemp[i] = new ItemStack(StorageUtils.getItem(itemKeys[i]));
+        slotItemTemp.addAll(storageItems.keySet());
     }
 
-    public boolean hasItem(String item) {
+    public boolean hasItem(ItemStack item) {
         return storageItems.containsKey(item);
     }
 
-    public int getItemAmount(String item) {
+    public int getItemAmount(ItemStack item) {
         return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(item, 0L));
     }
 
-    public long getRealItemAmount(String item) {
+    public long getRealItemAmount(ItemStack item) {
         return storageItems.getOrDefault(item, 0L);
     }
 
-    public int getStorageAmount(Item item) {
-        return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(StorageUtils.getItemId(item), 0L));
+    public int getStorageAmount(ItemStack item) {
+        return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(item, 0L));
     }
 
     public int canStorageAmount(ItemStack itemStack) {
-        if (itemStack.hasTag()) return 0;
-        long a = storageItems.getOrDefault(StorageUtils.getItemId(itemStack.getItem()), 0L);
+//        if (itemStack.hasTag()) return 0;
+        long a = storageItems.getOrDefault(itemStack, 0L);
         if (a == 0L) {
             return Integer.MAX_VALUE;
         }
         return (int) Math.min(Integer.MAX_VALUE, Long.MAX_VALUE - a);
     }
 
-    public boolean canStorageItem(String item) {
+    public boolean canStorageItem(ItemStack item) {
         if (storageItems.containsKey(item)) {
             return storageItems.get(item) < Long.MAX_VALUE;
         } else return true;
     }
 
-    public int canStorageItemAmount(String item) {
+    public int canStorageItemAmount(ItemStack item) {
         long a = storageItems.getOrDefault(item, 0L);
         if (a == 0L) {
            return Integer.MAX_VALUE;
@@ -74,27 +73,25 @@ public abstract class ChestHandler implements IItemHandler {
      * @return 存进去的量
      */
     public int addItem(ItemStack itemStack) {
-        if (itemStack.hasTag() || itemStack.isEmpty()) return 0;
-        String itemId = StorageUtils.getItemId(itemStack.getItem());
+        if (itemStack.isEmpty()) return 0;
         int count = itemStack.getCount();
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+        if (storageItems.containsKey(itemStack)) {
+            long storageCount = storageItems.get(itemStack);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (remainingSpaces >= itemStack.getCount()) {
-                storageItems.replace(itemId, storageCount + itemStack.getCount());
+                storageItems.replace(itemStack, storageCount + itemStack.getCount());
                 itemStack.setCount(0);
-                onItemChanged(itemId, false);
+                onItemChanged(itemStack, false);
                 return count;
             } else {
-                storageItems.replace(itemId, Long.MAX_VALUE);
+                storageItems.replace(itemStack, Long.MAX_VALUE);
                 itemStack.setCount(itemStack.getCount() - (int) remainingSpaces);
-                onItemChanged(itemId, false);
+                onItemChanged(itemStack, false);
                 return (int) remainingSpaces;
             }
         } else {
-            storageItems.put(itemId, (long) itemStack.getCount());
-            itemStack.setCount(0);
-            onItemChanged(itemId, true);
+            storageItems.put(itemStack, (long) itemStack.getCount());
+            onItemChanged(itemStack, true);
             return count;
         }
     }
@@ -102,8 +99,8 @@ public abstract class ChestHandler implements IItemHandler {
     /**
      * @return 成功进入的
      */
-    public long addItem(String itemId, long count) {
-        if (itemId.equals("minecraft:air") || count == 0) return 0L;
+    public long addItem(ItemStack itemId, long count) {
+        if (itemId.isEmpty() || count == 0) return 0L;
         if (storageItems.containsKey(itemId)) {
             long storageCount = storageItems.get(itemId);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
@@ -130,29 +127,28 @@ public abstract class ChestHandler implements IItemHandler {
      * @param count     要填充的数量，负数为扣除。
      */
     public void fillItemStack(ItemStack itemStack, int count) {
-        if (itemStack.isEmpty() || count == 0 || itemStack.hasTag()) return;
-        String itemId = StorageUtils.getItemId(itemStack.getItem());
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+        if (itemStack.isEmpty() || count == 0) return;
+        if (storageItems.containsKey(itemStack)) {
+            long storageCount = storageItems.get(itemStack);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (count >= storageCount) {
-                storageItems.remove(itemId);
+                storageItems.remove(itemStack);
                 itemStack.setCount(itemStack.getCount() + (int) storageCount);
-                onItemChanged(itemId, true);
+                onItemChanged(itemStack, true);
             } else if (remainingSpaces < -count) {
-                storageItems.replace(itemId, Long.MAX_VALUE);
+                storageItems.replace(itemStack, Long.MAX_VALUE);
                 itemStack.setCount(itemStack.getCount() - (int) remainingSpaces);
-                onItemChanged(itemId, false);
+                onItemChanged(itemStack, false);
             } else {
-                storageItems.replace(itemId, storageCount - count);
+                storageItems.replace(itemStack, storageCount - count);
                 itemStack.setCount(itemStack.getCount() + count);
-                onItemChanged(itemId, false);
+                onItemChanged(itemStack, false);
             }
         } else {
             if (count < 0) {
-                storageItems.put(itemId, (long) -count);
+                storageItems.put(itemStack, (long) -count);
                 itemStack.setCount(itemStack.getCount() + count);
-                onItemChanged(itemId, true);
+                onItemChanged(itemStack, true);
             }
         }
     }
@@ -160,8 +156,8 @@ public abstract class ChestHandler implements IItemHandler {
     /**
      * 获取物品，但不限制数量。
      */
-    public ItemStack takeItem(String itemId, int count) {
-        if (!storageItems.containsKey(itemId) || itemId.equals("minecraft:air") || count == 0) return ItemStack.EMPTY;
+    public ItemStack takeItem(ItemStack itemId, int count) {
+        if (!storageItems.containsKey(itemId) || itemId.isEmpty() || count == 0) return ItemStack.EMPTY;
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
             storageItems.replace(itemId, storageCount - count);
@@ -171,15 +167,15 @@ public abstract class ChestHandler implements IItemHandler {
             count = (int) storageCount;
             onItemChanged(itemId, true);
         }
-        return new ItemStack(StorageUtils.getItem(itemId), count);
+        return itemId.copyWithCount(count);
     }
 
     /**
      * 获取物品，数量限制在叠堆最大值。
      */
-    public ItemStack saveTakeItem(String itemId, int count) {
-        if (!storageItems.containsKey(itemId) || itemId.equals("minecraft:air") || count == 0) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
+    public ItemStack saveTakeItem(ItemStack itemId, int count) {
+        if (!storageItems.containsKey(itemId) || itemId.isEmpty() || count == 0) return ItemStack.EMPTY;
+        ItemStack itemStack = itemId.copyWithCount(1);
         count = Integer.min(count, itemStack.getMaxStackSize());
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -194,9 +190,9 @@ public abstract class ChestHandler implements IItemHandler {
         return itemStack;
     }
 
-    public ItemStack saveTakeItem(String itemId, boolean half) {
+    public ItemStack saveTakeItem(ItemStack itemId, boolean half) {
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
+        ItemStack itemStack = itemId.copyWithCount(1);
         int count = half ? (itemStack.getMaxStackSize() + 1) / 2 : itemStack.getMaxStackSize();
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -213,19 +209,18 @@ public abstract class ChestHandler implements IItemHandler {
 
     public void removeItem(ItemStack itemStack) {
         if (itemStack.isEmpty()) return;
-        String itemId = StorageUtils.getItemId(itemStack.getItem());
-        if (!storageItems.containsKey(itemId)) return;
-        long storageCount = storageItems.get(itemId);
+        if (!storageItems.containsKey(itemStack)) return;
+        long storageCount = storageItems.get(itemStack);
         if (itemStack.getCount() < storageCount) {
-            storageItems.replace(itemId, storageCount - itemStack.getCount());
-            onItemChanged(itemId, false);
+            storageItems.replace(itemStack, storageCount - itemStack.getCount());
+            onItemChanged(itemStack, false);
         } else {
-            storageItems.remove(itemId);
-            onItemChanged(itemId, true);
+            storageItems.remove(itemStack);
+            onItemChanged(itemStack, true);
         }
     }
 
-    public void removeItem(String itemId, long count) {
+    public void removeItem(ItemStack itemId, long count) {
         if (!storageItems.containsKey(itemId)) return;
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -248,32 +243,31 @@ public abstract class ChestHandler implements IItemHandler {
 
     @Override
     public @NotNull ItemStack getStackInSlot(int slot) {
-        if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
-        ItemStack itemStack = slotItemTemp[slot - 27];
-        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, storageItems.get(itemKeys[slot - 27])));
+        if (slot >= slotItemTemp.size() + 27 || slot < 27) return ItemStack.EMPTY;
+        ItemStack itemStack = slotItemTemp.get(slot - 27);
+        itemStack.setCount((int) Math.min(Integer.MAX_VALUE, storageItems.get(itemStack)));
         return itemStack;
     }
 
     @Override
     public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        if (stack.isEmpty() || stack.hasTag()) return stack;
-        String itemId = StorageUtils.getItemId(stack.getItem());
+        if (stack.isEmpty()) return stack;
         ItemStack remainingStack = ItemStack.EMPTY;
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+        if (storageItems.containsKey(stack)) {
+            long storageCount = storageItems.get(stack);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (remainingSpaces >= stack.getCount()) {
-                if (!simulate) storageItems.replace(itemId, storageCount + stack.getCount());
+                if (!simulate) storageItems.replace(stack, storageCount + stack.getCount());
             } else {
-                if (!simulate) storageItems.replace(itemId, Long.MAX_VALUE);
+                if (!simulate) storageItems.replace(stack, Long.MAX_VALUE);
                 remainingStack = stack.copy();
                 remainingStack.setCount(stack.getCount() - (int) remainingSpaces);
             }
-            if (!simulate) onItemChanged(itemId, false);
+            if (!simulate) onItemChanged(stack, false);
         } else {
             if (!simulate) {
-                storageItems.put(itemId, (long) stack.getCount());
-                onItemChanged(itemId, true);
+                storageItems.put(stack, (long) stack.getCount());
+                onItemChanged(stack, true);
             }
         }
         return remainingStack;
@@ -282,10 +276,10 @@ public abstract class ChestHandler implements IItemHandler {
 
     @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
-        String itemId = itemKeys[slot - 27];
+        if (slot >= slotItemTemp.size() + 27 || slot < 27) return ItemStack.EMPTY;
+        ItemStack itemId = slotItemTemp.get(slot - 27);
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
+        ItemStack itemStack = itemId.copyWithCount(1);
         int count = Math.min(itemStack.getMaxStackSize(), amount);
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -311,7 +305,7 @@ public abstract class ChestHandler implements IItemHandler {
 
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return !stack.isEmpty() && !stack.hasTag();
+        return !stack.isEmpty();
     }
 
 }

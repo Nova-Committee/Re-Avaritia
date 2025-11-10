@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.channel.*;
+import committee.nova.mods.avaritia.core.name.NameCacheManager;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.StorageUtils;
@@ -64,7 +65,6 @@ public class ServerChannelManager {
     }
 
 
-    private CompoundTag userCache;
     private File saveDataPath;
     private boolean loadSuccess = true;
     private final MinecraftServer server;
@@ -74,14 +74,6 @@ public class ServerChannelManager {
      * <玩家，终端主人>
      */
     private final HashMap<ServerPlayer, UUID> channelSelector = new HashMap<>();
-
-    @SubscribeEvent
-    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        this.userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
-        NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
-        if (!loadSuccess)
-            event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
-    }
 
     @SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent event) {
@@ -97,7 +89,7 @@ public class ServerChannelManager {
 
     @SubscribeEvent
     public void onLevelSave(LevelEvent.Save event) {
-        if (isOverworld(event.getLevel())) save(event.getLevel().getServer());
+        if (!event.getLevel().isClientSide()) save(event.getLevel().getServer());
     }
 
     @SubscribeEvent
@@ -117,16 +109,6 @@ public class ServerChannelManager {
         this.saveDataPath = new File(server.getWorldPath(LevelResource.ROOT).toFile(), "data/avaritia/tesseract");
         try {
             if (!saveDataPath.exists()) saveDataPath.mkdirs();
-
-            File userCacheFile = new File(saveDataPath, "UserCache.dat");
-            if (userCacheFile.exists() && userCacheFile.isFile()) {
-                this.userCache = NbtIo.readCompressed(userCacheFile);
-                if (!this.userCache.contains("nameCache")) this.initializeNameCache();
-            } else {
-                this.initializeNameCache();
-            }
-            Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_success").getString());
-
             File[] channelDirs = saveDataPath.listFiles(pathname -> pathname.isDirectory() && pathname.getName()
                     .matches(StorageUtils.UUID_REGEX));
             if (channelDirs != null) {
@@ -140,12 +122,12 @@ public class ServerChannelManager {
                         int channelID = Integer.parseInt(channelFile.getName().substring(0, channelFile.getName().length() - 4));
                         ServerChannel channel = new ServerChannel(channelDat);
                         playerChannels.put(channelID, channel);
-                        Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).getString());
+                        Const.LOGGER.debug(Component.translatable("info.avaritia.channel.load_success", dir.getName(), channelID, channel.getName()).getString());
                     }
                     channelList.put(player, playerChannels);
                 }
             }
-            Const.LOGGER.info(Component.translatable("info.avaritia.channel.load_finish").getString());
+            Const.LOGGER.debug(Component.translatable("info.avaritia.channel.load_finish").getString());
 
         } catch (Exception e) {
             loadSuccess = false;
@@ -156,10 +138,6 @@ public class ServerChannelManager {
     private void save(MinecraftServer server) {
         if (!loadSuccess) return;
         try {
-            File userCache = new File(saveDataPath, "UserCache.dat");
-            if (!userCache.exists()) userCache.createNewFile();
-            NbtIo.writeCompressed(this.userCache, userCache);
-
             channelList.forEach((uuid, channels) -> {
                 File user = new File(saveDataPath, uuid.toString());
                 if (!user.exists()) user.mkdir();
@@ -171,45 +149,13 @@ public class ServerChannelManager {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Const.LOGGER.info(Component.translatable("info.avaritia.channel.save_success", uuid, id, channel.getName()).getString());
+                    Const.LOGGER.debug(Component.translatable("info.avaritia.channel.save_success", uuid, id, channel.getName()).getString());
                 });
             });
 
         } catch (Exception e) {
             throw new RuntimeException("在保存数据的时候出错了！ 什么情况呢？", e);
         }
-    }
-
-    private void initializeUserCache() {
-        this.userCache = new CompoundTag();
-        this.userCache.putInt("dataVersion", 1);
-    }
-
-    private void initializeNameCache() {
-        CompoundTag nameCache = new CompoundTag();
-        nameCache.putString(Const.AVARITIA_FAKE_PLAYER.getId().toString(), Const.AVARITIA_FAKE_PLAYER.getName());
-        if (userCache == null) this.initializeUserCache();
-        this.userCache.put("nameCache", nameCache);
-    }
-
-    private boolean isOverworld(LevelAccessor level) {
-        return !level.isClientSide()
-                //&& level.equals(level.getServer().getLevel(Level.OVERWORLD))
-                ;
-    }
-
-    public CompoundTag getUserCache() {
-        return userCache;
-    }
-
-    public String getUserName(UUID uuid) {
-        String userName = userCache.getCompound("nameCache").getString(uuid.toString());
-        if (userName.isEmpty()) {
-            userCache.getCompound("nameCache").putString(uuid.toString(), "unknownUser");
-            NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
-            userName = "unknownUser";
-        }
-        return userName;
     }
 
     public ServerChannel getChannel(UUID ownerUUID, int channelId) {
@@ -262,7 +208,7 @@ public class ServerChannelManager {
             if (playerChannels.containsKey(i)) continue;
             playerChannels.put(i, new ServerChannel(name));
             sendChannelAdd(uuid, name, i);
-            Const.LOGGER.info(Component.translatable("info.avaritia.channel.add_success", uuid, i, name).getString());
+            Const.LOGGER.debug(Component.translatable("info.avaritia.channel.add_success", uuid, i, name).getString());
             break;
         }
     }

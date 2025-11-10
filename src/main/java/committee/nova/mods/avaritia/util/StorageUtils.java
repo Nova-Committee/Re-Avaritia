@@ -8,6 +8,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -49,6 +50,9 @@ public class StorageUtils {
     private static final HashMap<Fluid, String> FLUID_ID_MAP = new HashMap<>();
     private static final HashMap<String, Fluid> ID_FLUID_MAP = new HashMap<>();
 
+    public static String getItemId(ItemStack item) {
+        return getItemId(item.getItem());
+    }
 
     public static String getItemId(Item item) {
         if (ITEM_ID_MAP.containsKey(item)) return ITEM_ID_MAP.get(item);
@@ -97,34 +101,5 @@ public class StorageUtils {
         Int2ObjectOpenHashMap<StorageItem> containers = new Int2ObjectOpenHashMap<>();
         containers.defaultReturnValue(StorageItem.EMPTY);
         return containers;
-    }
-
-    public static void saveAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
-        ListTag list = new ListTag();
-
-        for (Int2ObjectMap.Entry<StorageItem> storageItemEntry : containers.int2ObjectEntrySet()) {
-            int index = storageItemEntry.getIntKey();
-            StorageItem item = storageItemEntry.getValue();
-            if (!item.isEmpty()) {
-                CompoundTag compound = item.serializeNBT();
-                compound.putInt("Index", index);
-                list.add(compound);
-            }
-        }
-        nbt.put("Items", list);
-    }
-
-    public static void loadAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
-        ListTag list = nbt.getList("Items", Tag.TAG_COMPOUND);
-
-        for (int i = 0; i < list.size(); ++i) {
-            CompoundTag compound = list.getCompound(i);
-            int index = compound.getInt("Index");
-            StorageItem item = StorageItem.read(compound);
-            if (!item.isEmpty()) {
-                containers.put(index, item);
-            }
-        }
-
     }
 }

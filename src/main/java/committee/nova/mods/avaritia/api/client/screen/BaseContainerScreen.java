@@ -93,9 +93,6 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
     }
 
-    ;
-
-
     public void dataChanged(@NotNull AbstractContainerMenu pContainerMenu, int pDataSlotIndex, int pValue) {
     }
 

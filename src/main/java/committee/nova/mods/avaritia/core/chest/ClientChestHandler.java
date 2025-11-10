@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.core.chest;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,7 +26,7 @@ public class ClientChestHandler extends ChestHandler {
     }
 
     @Override
-    public void onItemChanged(String itemId, boolean listChanged) {
+    public void onItemChanged(ItemStack itemId, boolean listChanged) {
         super.onItemChanged(itemId, listChanged);
         if (container != null) container.refreshContainer(listChanged);
     }
@@ -36,21 +37,23 @@ public class ClientChestHandler extends ChestHandler {
         AtomicBoolean fullUpdate = new AtomicBoolean(false);
         AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
         items.getAllKeys().forEach(itemId -> {
-            long count = items.getLong(itemId);
+            CompoundTag itemTag = items.getCompound(itemId);
+            long count = itemTag.getLong("realCount");
+            ItemStack item = ItemStack.of(itemTag.getCompound("item"));
             if (count <= 0L) {
-                if (storageItems.containsKey(itemId)) {
-                    storageItems.remove(itemId);
+                if (storageItems.containsKey(item)) {
+                    storageItems.remove(item);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
             } else {
-                if (storageItems.containsKey(itemId)) {
-                    if (storageItems.get(itemId) != count) {
-                        storageItems.replace(itemId, count);
+                if (storageItems.containsKey(item)) {
+                    if (storageItems.get(item) != count) {
+                        storageItems.replace(item, count);
                         needRefreshContainer.set(true);
                     }
                 } else {
-                    storageItems.put(itemId, count);
+                    storageItems.put(item, count);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
@@ -63,7 +66,12 @@ public class ClientChestHandler extends ChestHandler {
     public void fullUpdate(CompoundTag tag) {
         CompoundTag items = tag.getCompound("items");
         storageItems.clear();
-        items.getAllKeys().forEach(itemId -> storageItems.put(itemId, items.getLong(itemId)));
+        items.getAllKeys().forEach(itemId -> {
+            CompoundTag itemTag = items.getCompound(itemId);
+            long count = itemTag.getLong("realCount");
+            ItemStack item = ItemStack.of(itemTag.getCompound("item"));
+            storageItems.put(item, count);
+        });
         updateItemKeys();
         if (container != null) {
             container.refreshContainer(true);

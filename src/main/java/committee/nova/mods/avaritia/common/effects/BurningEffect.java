@@ -22,6 +22,16 @@ public class BurningEffect extends MobEffect {
 
     @Override
     public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+        int i = 40 >> pAmplifier;
+        if (i > 0) {
+            return pDuration % i == 0;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public boolean isInstantenous() {
         return true;
     }
 }

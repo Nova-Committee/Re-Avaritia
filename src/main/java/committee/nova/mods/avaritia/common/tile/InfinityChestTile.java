@@ -12,14 +12,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -61,7 +58,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new InfinityChestMenu(containerId, player, this);
+        return new InfinityChestMenu(containerId, playerInventory, player, this);
     }
 
     @Override
@@ -73,7 +70,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         if (pTag.contains("filter")) filter = pTag.getString("filter");
         if (pTag.contains("sortType")) sortType = pTag.getByte("sortType");
         if (pTag.contains("channelID")) channelID = pTag.getUUID("channelID");
-        channel = ServerChestManager.getInstance().getChannel(owner, channelID);
+        channel = ServerChestManager.getInstance().getChest(owner, channelID);
     }
 
     @Override

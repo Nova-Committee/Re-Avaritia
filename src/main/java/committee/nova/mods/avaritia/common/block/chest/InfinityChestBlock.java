@@ -5,7 +5,6 @@ import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.StorageUtils;
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -13,10 +12,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -124,14 +121,14 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             if (nbt.contains("owner") && nbt.contains("channelID")) {
                 var owner = nbt.getUUID("owner");
                 var channelID = nbt.getUUID("channelID");
-                var channel = ServerChestManager.getInstance().getChannel(owner, channelID);
+                var channel = ServerChestManager.getInstance().getChest(owner, channelID);
                 int i = 0;
                 int j = 0;
                 for (var item : channel.storageItems.keySet()) {
                     ++j;
                     if (i <= 4) {
                         ++i;
-                        MutableComponent textComponent = StorageUtils.getItem(item).getDefaultInstance().getHoverName().copy();
+                        MutableComponent textComponent = item.getHoverName().copy();
                         textComponent.append(" x").append(String.format("%,d",  channel.storageItems.get(item)));
                         pTooltip.add(textComponent);
                     }
@@ -150,7 +147,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             if (blockEntity != null) {
                 blockEntity.setOwner(player.getUUID());
                 blockEntity.setChannelId(UUID.randomUUID());
-                ServerChestManager.getInstance().tryAddChannel(player, blockEntity.getChannelID());
+                ServerChestManager.getInstance().tryAddChest(player, blockEntity.getChannelID());
             }
         }
     }

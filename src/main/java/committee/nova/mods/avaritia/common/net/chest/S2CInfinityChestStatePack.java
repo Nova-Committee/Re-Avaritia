@@ -35,8 +35,8 @@ public class S2CInfinityChestStatePack {
     public void run(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             switch (channelState) {
-                case COMMON -> ClientChestManager.getInstance().updateChannel(tag);
-                case FULL -> ClientChestManager.getInstance().fullUpdateChannel(tag);
+                case COMMON -> ClientChestManager.getInstance().updateChest(tag);
+                case FULL -> ClientChestManager.getInstance().fullUpdateChest(tag);
                 case NAME -> ClientChestManager.getInstance().setUserCache(tag);
             }
         }));

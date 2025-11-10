@@ -1,30 +1,29 @@
 package committee.nova.mods.avaritia.core.chest;
 
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
-import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author cnlimiter
  */
 public class InfinityChestContainer extends SimpleContainer {
-    public final ArrayList<String> sortedObject = new ArrayList<>();
-    public final ArrayList<String> viewingObject = new ArrayList<>();
+    public static final int SIZE = 15 * 9;
+    public final ArrayList<ItemStack> sortedObject = new ArrayList<>();
+    public final ArrayList<ItemStack> viewingObject = new ArrayList<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
     private final InfinityChestMenu menu;
-    protected ArrayList<String> sortedItems = new ArrayList<>();
+    protected ArrayList<ItemStack> sortedItems = new ArrayList<>();
     private double scrollTo = 0.0D;
 
     public InfinityChestContainer(InfinityChestMenu menu) {
-        super(99);
+        super(SIZE);
         this.menu = menu;
     }
 
@@ -44,12 +43,12 @@ public class InfinityChestContainer extends SimpleContainer {
     }
 
     public void scrollOffset(int offset) {
-        if (sortedObject.size() <= 77) {
+        if (sortedObject.size() <= SIZE) {//显示多少格子
             viewingObject.clear();
             viewingObject.addAll(sortedObject);
         } else {
-            int i = (int) Math.ceil(sortedObject.size() / 11.0D);
-            i -= 7;
+            int i = (int) Math.ceil(sortedObject.size() / 15.0D);
+            i -= 9;
             int j = Math.round(i * (float) scrollTo);
             if (offset != 0) {
                 j += offset;
@@ -57,7 +56,7 @@ public class InfinityChestContainer extends SimpleContainer {
                 scrollTo = (double) j / (double) i;
             }
             viewingObject.clear();
-            viewingObject.addAll(sortedObject.subList(j * 11, Math.min(sortedObject.size(), j * 11 + 77)));
+            viewingObject.addAll(sortedObject.subList(j * 15, Math.min(sortedObject.size(), j * 15 + SIZE)));
         }
         updateDummySlots(true);
     }
@@ -71,35 +70,31 @@ public class InfinityChestContainer extends SimpleContainer {
     public void refreshContainer(boolean fullUpdate) {
         if (!this.menu.level.isClientSide) return;
         if ((fullUpdate || this.menu.sortType >= 6) && !this.menu.LShifting) {
-            sortedItems = new ArrayList<>(this.menu.channel.storageItems.keySet());
+            sortedItems = new ArrayList<>(this.menu.chest.storageItems.keySet());
             if (!this.menu.filter.isEmpty()) {
-                ArrayList<String> temp = new ArrayList<>();
-                ArrayList<String> temp1 = new ArrayList<>();
-                ArrayList<String> temp2 = new ArrayList<>();
+                ArrayList<ItemStack> temp = new ArrayList<>();
                 char head = this.menu.filter.charAt(0);
                 if (head == '*') {
                     String s = this.menu.filter.substring(1);
-                    for (String itemName : sortedItems) if (itemName.contains(s)) temp.add(itemName);
+                    for (var itemStack : sortedItems) if (StorageUtils.getItemId(itemStack).contains(s)) temp.add(itemStack);
                 } else if (head == '$') {
                     String s = this.menu.filter.substring(1);
-                    for (String itemName : sortedItems) {
-                        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
+                    for (var itemStack : sortedItems) {
                         ArrayList<String> tags = new ArrayList<>();
                         itemStack.getTags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
                         for (String tag : tags) {
                             if (tag.contains(s)) {
-                                temp.add(itemName);
+                                temp.add(itemStack);
                                 break;
                             }
                         }
                     }
                 } else {
-                    for (String itemName : sortedItems) {
-                        if (itemName.contains(this.menu.filter)) temp.add(itemName);
+                    for (var itemStack : sortedItems) {
+                        if (StorageUtils.getItemId(itemStack).contains(this.menu.filter)) temp.add(itemStack);
                         else {
-                            ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
                             if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter))
-                                temp.add(itemName);
+                                temp.add(itemStack);
                         }
                     }
                 }
@@ -113,10 +108,10 @@ public class InfinityChestContainer extends SimpleContainer {
                     sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
                 }
                 case SortUtils.Sort.NAMESPACE_ID_ASCENDING -> {
-                    sortedItems.sort(String::compareTo);
+                    sortedItems.sort(Comparator.comparing(StorageUtils::getItemId));
                 }
                 case SortUtils.Sort.NAMESPACE_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(String::compareTo));
+                    sortedItems.sort(Collections.reverseOrder(Comparator.comparing(StorageUtils::getItemId)));
                 }
                 case SortUtils.Sort.MIRROR_ID_ASCENDING -> {
                     sortedItems.sort(SortUtils::sortFromMirrorID);
@@ -125,11 +120,11 @@ public class InfinityChestContainer extends SimpleContainer {
                     sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
                 }
                 case SortUtils.Sort.COUNT_ASCENDING -> {
-                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageItems, false));
+                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, false));
 
                 }
                 case SortUtils.Sort.COUNT_DESCENDING -> {
-                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.channel.storageItems, true));
+                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, true));
 
                 }
             }
@@ -141,35 +136,35 @@ public class InfinityChestContainer extends SimpleContainer {
 
     public void updateDummySlots(boolean fullUpdate) {
         formatCount.clear();
-        for (int j = 0; j < 77; j++) {
+        for (int j = 0; j < SIZE; j++) {
             if (j < viewingObject.size() && viewingObject.get(j) != null) {
-                String id = viewingObject.get(j);
+                var itemStack = viewingObject.get(j);
 
-                    //叠堆数为1避开原版的数字渲染
-                    if (fullUpdate) this.setItem(j, new ItemStack(StorageUtils.getItem(id)));
-                    long count;
-                    if (this.menu.channel.storageItems.containsKey(id)) {
-                            count = this.menu.channel.storageItems.get(id);
-                    } else {
-                        formatCount.add(j, "§c0");
-                        continue;
-                    }
-                    if (count < 1000L) formatCount.add(j, String.valueOf(count));
-                    else if (count < Long.MAX_VALUE) {
-                        String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);
-                        stringCount = stringCount.substring(0, 4);
-                        if (stringCount.endsWith(",")) stringCount = stringCount.substring(0, 3);
-                        stringCount = stringCount.replace(",", ".");
-                        if (count < 1000000L) stringCount += "K";
-                        else if (count < 1000000000L) stringCount += "M";
-                        else if (count < 1000000000000L) stringCount += "G";
-                        else if (count < 1000000000000000L) stringCount += "T";
-                        else if (count < 1000000000000000000L) stringCount += "P";
-                        else stringCount += "E";
-                        formatCount.add(j, stringCount);
-                        // 9,223,372,036,854,775,807L
-                        // e  p   t   g   m   k
-                    } else formatCount.add(j, "MAX");
+                //叠堆数为1避开原版的数字渲染
+                if (fullUpdate) this.setItem(j, itemStack);
+                long count;
+                if (this.menu.chest.storageItems.containsKey(itemStack)) {
+                    count = this.menu.chest.storageItems.get(itemStack);
+                } else {
+                    formatCount.add(j, "§c0");
+                    continue;
+                }
+                if (count < 1000L) formatCount.add(j, String.valueOf(count));
+                else if (count < Long.MAX_VALUE) {
+                    String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);
+                    stringCount = stringCount.substring(0, 4);
+                    if (stringCount.endsWith(",")) stringCount = stringCount.substring(0, 3);
+                    stringCount = stringCount.replace(",", ".");
+                    if (count < 1000000L) stringCount += "K";
+                    else if (count < 1000000000L) stringCount += "M";
+                    else if (count < 1000000000000L) stringCount += "G";
+                    else if (count < 1000000000000000L) stringCount += "T";
+                    else if (count < 1000000000000000000L) stringCount += "P";
+                    else stringCount += "E";
+                    formatCount.add(j, stringCount);
+                    // 9,223,372,036,854,775,807L
+                    // e  p   t   g   m   k
+                } else formatCount.add(j, "MAX");
 
             } else this.setItem(j, ItemStack.EMPTY);
         }

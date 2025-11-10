@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import committee.nova.mods.avaritia.Res;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
@@ -7,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,7 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class SimpleScrollBar extends AbstractWidget {
-
     @Getter
     @Setter
     private boolean scrolling = false;
@@ -109,9 +110,13 @@ public abstract class SimpleScrollBar extends AbstractWidget {
     public void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.beforeRender();
         if (!this.visible) return;
-        guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, scrollBarBackgroundColor);
+//        guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), getY(), 303, 37, width, height);
+//        guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, scrollBarBackgroundColor);
         double v = getY() + ((getHeight() - scrollTagSize) * scrolledOn);
-        guiGraphics.fill(getX(), (int) Math.floor(v), getX() + width, (int) Math.ceil(v + scrollTagSize), scrollBarTagColor);
+        //guiGraphics.fill(getX(), (int) Math.floor(v), getX() + width, (int) Math.ceil(v + scrollTagSize), scrollBarTagColor);
+        if (this.isScrolling() || this.isHovered) {
+            guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 316, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
+        } else guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 303, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
     }
 
     @Override
