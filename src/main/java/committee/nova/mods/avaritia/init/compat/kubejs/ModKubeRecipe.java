@@ -10,8 +10,9 @@ import java.util.function.Supplier;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2025/5/18 22:16
- * @Description:
+  * @Description:
  */
+ **/
 public abstract class ModKubeRecipe extends KubeRecipe {
     @HideFromJS
     public <T> T computeIfAbsent(RecipeKey<T> key, Supplier<T> supplier) {
@@ -21,12 +22,11 @@ public abstract class ModKubeRecipe extends KubeRecipe {
         return getValue(key);
     }
 
+  
     protected abstract void validate();
 
-    @Override
-    public void afterLoaded() {
-        super.afterLoaded();
-
+    
+    public void onAfterRecipesLoaded() {
         this.validate();
     }
 }
