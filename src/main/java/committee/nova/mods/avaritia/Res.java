@@ -14,6 +14,7 @@ public class Res {
     public static final ResourceLocation VOID = Const.rl("textures/entity/void.png");
     public static final ResourceLocation VOID_HALO = Const.rl("textures/entity/void_halo.png");
     public static final ResourceLocation HEAVEN_ARROW = Const.rl("textures/entity/heavenarrow.png");
+    public static final ResourceLocation NEUTRON_ARROW = Const.rl( "textures/entity/neutron_arrow.png");
     public static final ResourceLocation BLADE_SLASH = Const.rl("textures/entity/blade_slash.png");
     public static final ResourceLocation INFINITY_ELYTRA = Const.rl("textures/entity/infinity_elytra.png");
     public static final ResourceLocation INFINITY_GOLEM = Const.rl("textures/entity/iron_golem.png");

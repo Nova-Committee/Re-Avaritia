@@ -4,10 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
 import committee.nova.mods.avaritia.common.entity.*;
-import committee.nova.mods.avaritia.common.entity.arrow.ExplosionsArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.*;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -57,6 +54,14 @@ public class ModEntities {
                     .updateInterval(20)
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "heaven_sub_arrow").toString()));
+
+    public static final RegistryObject<EntityType<NeutronArrowEntity>> NEUTRON_ARROW = ENTITIES.register("neutron_arrow",
+            () -> EntityType.Builder.<NeutronArrowEntity>of(NeutronArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("neutron_arrow").toString()));
 
     public static final RegistryObject<EntityType<ExplosionsArrowEntity>> EXPLOSIONS_ARROW = ENTITIES.register("explosions_arrow",
             () -> EntityType.Builder.<ExplosionsArrowEntity>of(ExplosionsArrowEntity::new, MobCategory.MISC)
@@ -138,6 +143,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);
         EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
+        EntityRenderers.register(ModEntities.NEUTRON_ARROW.get(),NeutronArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
         EntityRenderers.register(ModEntities.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
