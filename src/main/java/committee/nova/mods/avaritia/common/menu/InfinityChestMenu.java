@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.menu;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;

@@ -95,6 +95,26 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.renderDummyCount(pGuiGraphics);
     }
 
+    @Override
+    public void renderSlot(@NotNull GuiGraphics guiGraphics, Slot slot) {
+        // 如果是InfinityChest的虚拟物品槽，不渲染原版的数量（避免与自定义数量显示冲突）
+        if (slot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
+            // 临时修改数量为1以隐藏原版数量渲染，然后恢复正常
+            ItemStack stack = slot.getItem();
+            int originalCount = stack.getCount();
+            if (stack.getCount() > 1) {
+                stack.setCount(1);
+                super.renderSlot(guiGraphics, slot);
+                stack.setCount(originalCount);
+            } else {
+                super.renderSlot(guiGraphics, slot);
+            }
+            return;
+        }
+        // 其他槽正常渲染
+        super.renderSlot(guiGraphics, slot);
+    }
+
     public void renderDummyCount(GuiGraphics guiGraphics) {
         PoseStack poseStack = guiGraphics.pose();
         for (int i = 0; i < menu.chestContainer.formatCount.size(); i++) {
