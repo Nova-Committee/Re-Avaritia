@@ -58,7 +58,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new InfinityChestMenu(containerId, playerInventory, player, this);
+        return new InfinityChestMenu(containerId, player, this);
     }
 
     @Override

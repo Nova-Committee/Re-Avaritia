@@ -47,7 +47,7 @@ public class ClientChestManager {
 
 
     private CompoundTag userCache;
-    private final ClientChestHandler chestHandler = new ClientChestHandler();
+    private final ClientChestHandler channel = new ClientChestHandler();
 
 
     public ClientChestManager() {
@@ -69,19 +69,19 @@ public class ClientChestManager {
     }
 
     public ClientChestHandler getChest() {
-        return chestHandler;
+        return channel;
     }
 
     public ClientChestHandler getChest(InfinityChestContainer container) {
-        chestHandler.addListener(container);
-        return chestHandler;
+        channel.addListener(container);
+        return channel;
     }
 
     public void updateChest(CompoundTag data) {
-        chestHandler.update(data);
+        channel.update(data);
     }
 
     public void fullUpdateChest(CompoundTag data) {
-        chestHandler.fullUpdate(data);
+        channel.fullUpdate(data);
     }
 }

@@ -4,7 +4,6 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -15,24 +14,24 @@ import java.util.function.Supplier;
 public class C2SInfinityChestActionPack {
     private final int containerId;
     private final int actionId;
-    private final ItemStack item;
+    private final String id;
 
     public C2SInfinityChestActionPack(FriendlyByteBuf buf) {
         this.containerId = buf.readInt();
         this.actionId = buf.readInt();
-        this.item = buf.readItem();
+        this.id = buf.readUtf();
     }
 
-    public C2SInfinityChestActionPack(int containerId, int actionId, ItemStack item) {
+    public C2SInfinityChestActionPack(int containerId, int actionId, String object) {
         this.containerId = containerId;
         this.actionId = actionId;
-        this.item = item;
+        this.id = object;
     }
 
     public void write(FriendlyByteBuf buf) {
         buf.writeInt(containerId);
         buf.writeInt(actionId);
-        buf.writeItem(item);
+        buf.writeUtf(id);
     }
 
     public void run(Supplier<NetworkEvent.Context> context) {
@@ -43,7 +42,7 @@ public class C2SInfinityChestActionPack {
             if (!player.containerMenu.stillValid(player)) {
                 Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
             } else {
-                ((InfinityChestMenu) player.containerMenu).action(actionId, item);
+                ((InfinityChestMenu) player.containerMenu).action(actionId, id);
                 player.containerMenu.broadcastChanges();
             }
         });
