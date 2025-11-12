@@ -23,7 +23,7 @@ public class InfinityChestContainer extends SimpleContainer {
     public final ArrayList<String> viewingObject = new ArrayList<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
     private final InfinityChestMenu menu;
-    protected ArrayList<String> sortedItems = new ArrayList<>();
+    public ArrayList<String> sortedItems = new ArrayList<>();
     private double scrollTo = 0.0D;
 
     public InfinityChestContainer(InfinityChestMenu menu) {

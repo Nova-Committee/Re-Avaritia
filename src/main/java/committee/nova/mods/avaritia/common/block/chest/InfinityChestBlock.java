@@ -128,7 +128,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
                     ++j;
                     if (i <= 4) {
                         ++i;
-                        MutableComponent textComponent = item.getHoverName().copy();
+                        MutableComponent textComponent = StorageUtils.getItem(item).getDefaultInstance().getHoverName().copy();
                         textComponent.append(" x").append(String.format("%,d",  channel.storageItems.get(item)));
                         pTooltip.add(textComponent);
                     }

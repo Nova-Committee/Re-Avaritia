@@ -45,7 +45,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
     private final String ownerName;
-    private ItemStack lastHoveredItem = ItemStack.EMPTY;
+    private String lastHoveredItem = "";
     private long lastCount = 0;
     private String lastFormatCountTemp = "";
     private SortButton sortButton;
@@ -264,10 +264,6 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         pMouseX -= i;
         pMouseY -= j;
         return pMouseX >= (double) pX && pMouseX < (double) (pX + pWidth) && pMouseY >= (double) pY && pMouseY < (double) (pY + pHeight);
-    }
-
-    private boolean isInsideEditBox(double pMouseX, double pMouseY) {
-        return pMouseX >= leftPos + 104 && pMouseX <= leftPos + 194 && pMouseY >= topPos + 4 && pMouseY <= topPos + 16;
     }
 
     private void toggleLock() {

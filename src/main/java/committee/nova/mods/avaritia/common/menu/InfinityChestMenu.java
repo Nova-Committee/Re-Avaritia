@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
-import committee.nova.mods.avaritia.api.util.math.InvItemCounter;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.core.chest.*;
@@ -12,15 +11,11 @@ import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.PacketDistributor;
@@ -92,7 +87,6 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         this.channelID = blockEntity.getChannelID();
         this.chest = blockEntity.getChannel();
         if (!chest.isRemoved()) ((ServerChestHandler) this.chest).addListener((ServerPlayer) player);
-
         addSlots(player, player.getInventory());
     }
 
@@ -371,8 +365,8 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (pSlotId >= CONTAINER_SLOT_START) {
             //仅客户端能触发
             String object;
-            if (pSlotId - 51 < chestContainer.viewingObject.size())
-                object = chestContainer.viewingObject.get(pSlotId - 51);
+            if (pSlotId - CONTAINER_SLOT_START < chestContainer.viewingObject.size())
+                object = chestContainer.viewingObject.get(pSlotId - CONTAINER_SLOT_START);
             else object = "minecraft:air";
 
             switch (pButton) {
@@ -462,22 +456,19 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (slot.hasItem()) {
             ItemStack movingStack = slot.getItem();
             itemStack = movingStack.copy();
-            if (slotId >= 0 && slotId <= 35) {
-                if (!this.moveItemStackTo(movingStack, CONTAINER_SLOT_START, CONTAINER_SLOT_START+ CONTAINER_SLOT_SIZE, false)) {
+            if (slotId < CONTAINER_SLOT_SIZE) {
+                if (!this.moveItemStackTo(movingStack, CONTAINER_SLOT_SIZE, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else {
-                Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= "+CONTAINER_SLOT_START+" in server side ?");
+            } else if (!this.moveItemStackTo(movingStack, 0, CONTAINER_SLOT_SIZE, false)) {
+                return ItemStack.EMPTY;
             }
+
             if (movingStack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
+                slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
-            if (movingStack.getCount() == itemStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTake(player, movingStack);
         }
         return itemStack;
     }
