@@ -35,6 +35,8 @@ public class ServerChestHandler extends ChestHandler {
 
     public void initialize(CompoundTag dat) {
         storageItems.clear();
+        nbtDataCache.clear();
+
         if (dat.contains("items")) {
             CompoundTag items = dat.getCompound("items");
             items.getAllKeys().forEach(itemId -> {
@@ -42,8 +44,20 @@ public class ServerChestHandler extends ChestHandler {
                     storageItems.put(itemId, items.getLong(itemId));
                 }
             });
-            updateItemKeys();
         }
+
+        // 加载NBT数据（如果有）
+        if (dat.contains("nbtData")) {
+            CompoundTag nbtData = dat.getCompound("nbtData");
+            nbtData.getAllKeys().forEach(itemId -> {
+                Tag nbtTag = nbtData.get(itemId);
+                if (nbtTag instanceof CompoundTag compoundTag) {
+                    nbtDataCache.put(itemId, compoundTag);
+                }
+            });
+        }
+
+        updateItemKeys();
     }
 
     public void addListener(ServerPlayer player) {
