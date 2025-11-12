@@ -371,19 +371,19 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                             //左键shift
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_SHIFT_DUMMY_SLOT, object));
-                            onLeftShiftDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onLeftShiftDummySlot(object);
                         }
                         case PICKUP -> {
                             //左键点击
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT, object));
-                            onLeftClickDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onLeftClickDummySlot(object);
                         }
                         case THROW -> {
                             //丢一个
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.THROW_ONE, object));
-                            tryThrowOneFromDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: tryThrowOneFromDummySlot(object);
                         }
                     }
                 }
@@ -393,25 +393,25 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                             //右键点击
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.Right_CLICK_DUMMY_SLOT, object));
-                            onRightClickDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onRightClickDummySlot(object);
                         }
                         case QUICK_MOVE -> {
                             //右键shift 快速拿一个
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.Right_SHIFT_DUMMY_SLOT, object));
-                            onRightShiftDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onRightShiftDummySlot(object);
                         }
                         case QUICK_CRAFT -> {
                             //左键拖动
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_DRAG, object));
-                            onLeftDragDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onLeftDragDummySlot(object);
                         }
                         case THROW -> {
                             //丢一组
                             NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                                     new C2SInfinityChestActionPack(containerId, StorageUtils.Action.THROW_STICK, object));
-                            tryThrowStickFromDummySlot(object);
+                            // ❌ 移除本地执行：// REMOVED LOCAL EXEC: tryThrowStickFromDummySlot(object);
                         }
                     }
                 }
@@ -420,21 +420,21 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                         //复制
                         if (object.isEmpty()) return;
                         NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SInfinityChestActionPack(containerId, StorageUtils.Action.CLONE, object));
-                        onCloneFormDummySlot(object);
+                        // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onCloneFormDummySlot(object);
                     }
                 }
                 case 5 -> {
                     if (pClickType == ClickType.QUICK_CRAFT) {
                         //右键拖动
                         NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SInfinityChestActionPack(containerId, StorageUtils.Action.RIGHT_DRAG, object));
-                        onRightDragDummySlot(object);
+                        // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onRightDragDummySlot(object);
                     }
                 }
                 case 9 -> {
                     if (pClickType == ClickType.QUICK_CRAFT) {
                         //拖动复制
                         NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SInfinityChestActionPack(containerId, StorageUtils.Action.DRAG_CLONE, object));
-                        onDragCloneDummySlot(object);
+                        // ❌ 移除本地执行：// REMOVED LOCAL EXEC: onDragCloneDummySlot(object);
                     }
                 }
             }
