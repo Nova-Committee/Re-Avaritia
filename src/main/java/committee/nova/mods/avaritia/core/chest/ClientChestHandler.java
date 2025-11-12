@@ -39,7 +39,7 @@ public class ClientChestHandler extends ChestHandler {
         items.getAllKeys().forEach(itemId -> {
             CompoundTag itemTag = items.getCompound(itemId);
             long count = itemTag.getLong("realCount");
-            ItemStack item = ItemStack.of(itemTag.getCompound("item"));
+            ItemStack item = ItemStack.of(itemTag);
             if (count <= 0L) {
                 if (storageItems.containsKey(item)) {
                     storageItems.remove(item);
@@ -69,7 +69,7 @@ public class ClientChestHandler extends ChestHandler {
         items.getAllKeys().forEach(itemId -> {
             CompoundTag itemTag = items.getCompound(itemId);
             long count = itemTag.getLong("realCount");
-            ItemStack item = ItemStack.of(itemTag.getCompound("item"));
+            ItemStack item = ItemStack.of(itemTag);
             storageItems.put(item, count);
         });
         updateItemKeys();

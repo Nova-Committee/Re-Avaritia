@@ -198,7 +198,6 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                 chest.fillItemStack(carried, -1);
                 return;
             }
-            //if (Config.INCOMPATIBLE_MODID.get().contains(ForgeRegistries.ITEMS.getKey(carried.getItem()).getNamespace())) return;
             AtomicBoolean canal = new AtomicBoolean(false);
             carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                 int slots = iItemHandler.getSlots();

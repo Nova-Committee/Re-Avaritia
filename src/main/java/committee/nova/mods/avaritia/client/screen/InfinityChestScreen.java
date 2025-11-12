@@ -80,7 +80,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 44, this.inventoryLabelY + 104, 4210752, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 50, this.inventoryLabelY + 108, 4210752, false);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             } else if (!hoveredSlot.getItem().isEmpty() && menu.getCarried().isEmpty())
                 pPoseStack.renderTooltip(font, this.hoveredSlot.getItem(), pX, pY);
         } else {
-            if (isInsideEditBox(pX, pY)) {
+            if (searchBox.isHovered()) {
                 List<Component> list = new ArrayList<>();
                 list.add(Component.translatable("gui.avaritia.search.tip1"));
                 list.add(Component.translatable("gui.avaritia.search.tip2"));
@@ -198,7 +198,6 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        boolean lshift = InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT);
         if (pButton == 1) {
             //搜索框
             if (searchBox.isMouseOver(pMouseX, pMouseY)) {
@@ -310,11 +309,11 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         public ItemScrollBar(int x, int y, int weight, int height) {
             super(x, y, weight, height);
             this.setScrollTagSize();
-            this.lastObjectListSize = menu.chestContainer.sortedObject.size();
+            this.lastObjectListSize = menu.chestContainer.sortedItems.size();
         }
 
         public void setScrollTagSize() {
-            double v = (double) this.height * (9.0D / Math.ceil(menu.chestContainer.sortedObject.size() / 15.0D));
+            double v = (double) this.height * (9.0D / Math.ceil(menu.chestContainer.sortedItems.size() / 15.0D));
             this.setScrollTagSize(v);
         }
 
@@ -325,9 +324,9 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
         @Override
         public void beforeRender() {
-            if (menu.chestContainer.sortedObject.size() != lastObjectListSize) {
+            if (menu.chestContainer.sortedItems.size() != lastObjectListSize) {
                 setScrollTagSize();
-                this.lastObjectListSize = menu.chestContainer.sortedObject.size();
+                this.lastObjectListSize = menu.chestContainer.sortedItems.size();
             }
         }
     }

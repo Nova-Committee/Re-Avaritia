@@ -1,16 +1,8 @@
 package committee.nova.mods.avaritia.util;
 
-import committee.nova.mods.avaritia.common.wrappers.StorageItem;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.AbstractMap;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @Project: Avaritia

@@ -15,22 +15,15 @@ import java.util.Comparator;
  */
 public class InfinityChestContainer extends SimpleContainer {
     public static final int SIZE = 15 * 9;
-    public final ArrayList<ItemStack> sortedObject = new ArrayList<>();
     public final ArrayList<ItemStack> viewingObject = new ArrayList<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
     private final InfinityChestMenu menu;
-    protected ArrayList<ItemStack> sortedItems = new ArrayList<>();
+    public ArrayList<ItemStack> sortedItems = new ArrayList<>();
     private double scrollTo = 0.0D;
 
     public InfinityChestContainer(InfinityChestMenu menu) {
         super(SIZE);
         this.menu = menu;
-    }
-
-    public void onChangeItems() {
-        sortedObject.clear();
-        sortedObject.addAll(sortedItems);
-        scrollOffset(0);
     }
 
     public void onScrollTo(double scrollTo) {
@@ -43,11 +36,11 @@ public class InfinityChestContainer extends SimpleContainer {
     }
 
     public void scrollOffset(int offset) {
-        if (sortedObject.size() <= SIZE) {//显示多少格子
+        if (sortedItems.size() <= SIZE) {//显示多少格子
             viewingObject.clear();
-            viewingObject.addAll(sortedObject);
+            viewingObject.addAll(sortedItems);
         } else {
-            int i = (int) Math.ceil(sortedObject.size() / 15.0D);
+            int i = (int) Math.ceil(sortedItems.size() / 15.0D);
             i -= 9;
             int j = Math.round(i * (float) scrollTo);
             if (offset != 0) {
@@ -56,7 +49,7 @@ public class InfinityChestContainer extends SimpleContainer {
                 scrollTo = (double) j / (double) i;
             }
             viewingObject.clear();
-            viewingObject.addAll(sortedObject.subList(j * 15, Math.min(sortedObject.size(), j * 15 + SIZE)));
+            viewingObject.addAll(sortedItems.subList(j * 15, Math.min(sortedItems.size(), j * 15 + SIZE)));
         }
         updateDummySlots(true);
     }
@@ -101,34 +94,16 @@ public class InfinityChestContainer extends SimpleContainer {
                 sortedItems = temp;
             }
             switch (this.menu.sortType) {
-                case SortUtils.Sort.ID_ASCENDING -> {
-                    sortedItems.sort(SortUtils::sortFromRightID);
-                }
-                case SortUtils.Sort.ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
-                }
-                case SortUtils.Sort.NAMESPACE_ID_ASCENDING -> {
-                    sortedItems.sort(Comparator.comparing(StorageUtils::getItemId));
-                }
-                case SortUtils.Sort.NAMESPACE_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(Comparator.comparing(StorageUtils::getItemId)));
-                }
-                case SortUtils.Sort.MIRROR_ID_ASCENDING -> {
-                    sortedItems.sort(SortUtils::sortFromMirrorID);
-                }
-                case SortUtils.Sort.MIRROR_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
-                }
-                case SortUtils.Sort.COUNT_ASCENDING -> {
-                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, false));
-
-                }
-                case SortUtils.Sort.COUNT_DESCENDING -> {
-                    sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, true));
-
-                }
+                case SortUtils.Sort.ID_ASCENDING -> sortedItems.sort(SortUtils::sortFromRightID);
+                case SortUtils.Sort.ID_DESCENDING -> sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
+                case SortUtils.Sort.NAMESPACE_ID_ASCENDING -> sortedItems.sort(Comparator.comparing(StorageUtils::getItemId));
+                case SortUtils.Sort.NAMESPACE_ID_DESCENDING -> sortedItems.sort(Collections.reverseOrder(Comparator.comparing(StorageUtils::getItemId)));
+                case SortUtils.Sort.MIRROR_ID_ASCENDING -> sortedItems.sort(SortUtils::sortFromMirrorID);
+                case SortUtils.Sort.MIRROR_ID_DESCENDING -> sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
+                case SortUtils.Sort.COUNT_ASCENDING -> sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, false));
+                case SortUtils.Sort.COUNT_DESCENDING -> sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, true));
             }
-            onChangeItems();
+            scrollOffset(0);
             return;
         }
         updateDummySlots(fullUpdate);

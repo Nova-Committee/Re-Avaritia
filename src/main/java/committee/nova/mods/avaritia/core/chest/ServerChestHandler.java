@@ -42,7 +42,7 @@ public class ServerChestHandler extends ChestHandler {
             items.getAllKeys().forEach(itemId -> {
                 CompoundTag itemTag = items.getCompound(itemId);
                 long count = itemTag.getLong("realCount");
-                ItemStack item = ItemStack.of(itemTag.getCompound("item"));
+                ItemStack item = ItemStack.of(itemTag);
                 if (count > 0 && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemId))) {
                     storageItems.put(item, count);
                 }
@@ -66,8 +66,7 @@ public class ServerChestHandler extends ChestHandler {
             CompoundTag tag = new CompoundTag();
             CompoundTag items = new CompoundTag();
             changedItems.forEach(itemStack -> {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.put("item", itemStack.serializeNBT());
+                CompoundTag itemTag = itemStack.serializeNBT();
                 itemTag.putLong("realCount", storageItems.getOrDefault(itemStack, 0L));
                 items.put(StorageUtils.getItemId(itemStack), itemTag);
             });
@@ -97,8 +96,7 @@ public class ServerChestHandler extends ChestHandler {
         CompoundTag data = new CompoundTag();
         CompoundTag items = new CompoundTag();
         storageItems.forEach((itemStack, aLong) -> {
-            CompoundTag itemTag = new CompoundTag();
-            itemTag.put("item", itemStack.serializeNBT());
+            CompoundTag itemTag = itemStack.serializeNBT();
             itemTag.putLong("realCount", aLong);
             items.put(StorageUtils.getItemId(itemStack), itemTag);
         });

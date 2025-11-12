@@ -1,11 +1,5 @@
 package committee.nova.mods.avaritia.util;
 
-import committee.nova.mods.avaritia.common.wrappers.StorageItem;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -94,12 +88,5 @@ public class StorageUtils {
             FLUID_ID_MAP.put(fluid, id);
             return fluid;
         }
-    }
-
-
-    public static Int2ObjectMap<StorageItem> newContainers() {
-        Int2ObjectOpenHashMap<StorageItem> containers = new Int2ObjectOpenHashMap<>();
-        containers.defaultReturnValue(StorageItem.EMPTY);
-        return containers;
     }
 }

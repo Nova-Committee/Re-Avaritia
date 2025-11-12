@@ -110,11 +110,8 @@ public abstract class SimpleScrollBar extends AbstractWidget {
     public void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.beforeRender();
         if (!this.visible) return;
-//        guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), getY(), 303, 37, width, height);
-//        guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, scrollBarBackgroundColor);
         double v = getY() + ((getHeight() - scrollTagSize) * scrolledOn);
-        //guiGraphics.fill(getX(), (int) Math.floor(v), getX() + width, (int) Math.ceil(v + scrollTagSize), scrollBarTagColor);
-        if (this.isScrolling() || this.isHovered) {
+        if (this.isScrolling()) {
             guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 316, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
         } else guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 303, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
     }
