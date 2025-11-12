@@ -155,36 +155,36 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
                 //其他容器
                 AtomicBoolean canal = new AtomicBoolean(false);
-                
-                    carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                        if (!chest.storageItems.containsKey(id)) return;
-                        int slots = iItemHandler.getSlots();
-                        for (int i = 0; i < slots; i++) {
-                            ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
-                            if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
-                                continue;
-                            int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
-                            if (remainingSlotSpace <= 0) continue;
-                            int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
-                            transmitAmount = Math.max(transmitAmount, 64000);
-                            transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
-                            transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
-                            int markAmount = transmitAmount;
+
+                carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+                    if (!chest.storageItems.containsKey(id)) return;
+                    int slots = iItemHandler.getSlots();
+                    for (int i = 0; i < slots; i++) {
+                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
+                        if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
+                            continue;
+                        int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
+                        if (remainingSlotSpace <= 0) continue;
+                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
+                        transmitAmount = Math.max(transmitAmount, 64000);
+                        transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
+                        transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
+                        int markAmount = transmitAmount;
+                        tryInsertItem.setCount(transmitAmount);
+                        for (int j = 0; j < 64; j++) {
+                            ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
+                            transmitAmount = remainingItem.getCount();
+                            if (transmitAmount <= 0) break;
                             tryInsertItem.setCount(transmitAmount);
-                            for (int j = 0; j < 64; j++) {
-                                ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
-                                transmitAmount = remainingItem.getCount();
-                                if (transmitAmount <= 0) break;
-                                tryInsertItem.setCount(transmitAmount);
-                            }
-                            markAmount -= transmitAmount;
-                            if (markAmount > 0) {
-                                chest.takeItem(id, markAmount);
-                                canal.set(true);
-                                return;
-                            }
                         }
-                    });
+                        markAmount -= transmitAmount;
+                        if (markAmount > 0) {
+                            chest.takeItem(id, markAmount);
+                            canal.set(true);
+                            return;
+                        }
+                    }
+                });
                 if (canal.get()) return;
                 chest.addItem(carried);
             }
@@ -224,17 +224,17 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         if (id.equals("minecraft:air")) return;
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
-                if (!chest.storageItems.containsKey(id)) return;
-                ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
-                itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), chest.storageItems.get(id)));
-                int i = itemStack.getCount();
-                moveItemStackTo(itemStack, 41, 50, false);
-                i = i - itemStack.getCount();
-                if (i > 0) {
-                    itemStack.setCount(i);
-                    chest.removeItem(itemStack);
-                }
-            
+            if (!chest.storageItems.containsKey(id)) return;
+            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
+            itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), chest.storageItems.get(id)));
+            int i = itemStack.getCount();
+            moveItemStackTo(itemStack, 41, 50, false);
+            i = i - itemStack.getCount();
+            if (i > 0) {
+                itemStack.setCount(i);
+                chest.removeItem(itemStack);
+            }
+
         } else {
             if (carried.getCount() > 1) {
                 chest.fillItemStack(carried, -1);
@@ -242,30 +242,30 @@ public class InfinityChestMenu extends AbstractContainerMenu {
             }
             {
                 AtomicBoolean canal = new AtomicBoolean(false);
-                
-                    carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                        if (!chest.storageItems.containsKey(id)) return;
-                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
-                        transmitAmount = Math.max(transmitAmount, 64000);
-                        transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
-                        int markAmount = transmitAmount;
-                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
-                        int slots = iItemHandler.getSlots();
-                        for (int i = 0; i < slots; i++) {
-                            for (int j = 0; j < 64; j++) {
-                                ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
-                                if (remainingItem.getCount() == transmitAmount) break;
-                                transmitAmount = remainingItem.getCount();
-                                if (transmitAmount <= 0) break;
-                                tryInsertItem.setCount(transmitAmount);
-                            }
+
+                carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+                    if (!chest.storageItems.containsKey(id)) return;
+                    int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
+                    transmitAmount = Math.max(transmitAmount, 64000);
+                    transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
+                    int markAmount = transmitAmount;
+                    ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
+                    int slots = iItemHandler.getSlots();
+                    for (int i = 0; i < slots; i++) {
+                        for (int j = 0; j < 64; j++) {
+                            ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
+                            if (remainingItem.getCount() == transmitAmount) break;
+                            transmitAmount = remainingItem.getCount();
+                            if (transmitAmount <= 0) break;
+                            tryInsertItem.setCount(transmitAmount);
                         }
-                        markAmount -= transmitAmount;
-                        if (markAmount > 0) {
-                            chest.takeItem(id, markAmount);
-                            canal.set(true);
-                        }
-                    });
+                    }
+                    markAmount -= transmitAmount;
+                    if (markAmount > 0) {
+                        chest.takeItem(id, markAmount);
+                        canal.set(true);
+                    }
+                });
                 if (canal.get()) return;
                 chest.addItem(carried);
             }
@@ -353,7 +353,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         else sortType--;
         if (level.isClientSide) chestContainer.refreshContainer(true);
     }
-    
+
     private void saveBlock() {
         chestTile.setFilter(filter);
         chestTile.setSortType(sortType);

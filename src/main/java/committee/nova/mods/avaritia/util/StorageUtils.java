@@ -1,5 +1,8 @@
 package committee.nova.mods.avaritia.util;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -8,7 +11,11 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -87,6 +94,60 @@ public class StorageUtils {
             ID_FLUID_MAP.put(id, fluid);
             FLUID_ID_MAP.put(fluid, id);
             return fluid;
+        }
+    }
+
+    /**
+     * 为NBT物品生成唯一标识符
+     * 格式: itemId#hash (带NBT) 或 itemId (无NBT)
+     */
+    public static String getNbtItemId(ItemStack item) {
+        if (item.isEmpty()) return "minecraft:air";
+        String itemId = getItemId(item.getItem());
+        if (!item.hasTag()) {
+            return itemId;
+        }
+        String nbtHash = hashNbt(item.getTag());
+        return itemId + "#" + nbtHash;
+    }
+
+    /**
+     * 从NBT物品ID中提取基础物品ID
+     */
+    public static String getBaseItemId(String nbtItemId) {
+        int hashIndex = nbtItemId.indexOf('#');
+        return hashIndex == -1 ? nbtItemId : nbtItemId.substring(0, hashIndex);
+    }
+
+    /**
+     * 计算NBT标签的哈希值
+     */
+    public static String hashNbt(Tag nbtTag) {
+        if (nbtTag == null) return "";
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (nbtTag instanceof CompoundTag) {
+                NbtIo.writeCompressed((CompoundTag) nbtTag, baos);
+            } else {
+                // 如果不是CompoundTag，创建临时的CompoundTag
+                CompoundTag tempTag = new CompoundTag();
+                tempTag.put("data", nbtTag);
+                NbtIo.writeCompressed(tempTag, baos);
+            }
+            byte[] bytes = baos.toByteArray();
+
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(bytes);
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString().substring(0, 16); // 取前16位作为哈希
+        } catch (Exception e) {
+            return "error";
         }
     }
 }

@@ -148,31 +148,45 @@ public class InfinityChestContainer extends SimpleContainer {
             if (j < viewingObject.size() && viewingObject.get(j) != null) {
                 String id = viewingObject.get(j);
 
-                    //叠堆数为1避开原版的数字渲染
-                    if (fullUpdate) this.setItem(j, new ItemStack(StorageUtils.getItem(id)));
-                    long count;
-                    if (this.menu.chest.storageItems.containsKey(id)) {
-                            count = this.menu.chest.storageItems.get(id);
+                //叠堆数为1避开原版的数字渲染
+                if (fullUpdate) {
+                    // 使用chest.getStackInSlot获取正确的ItemStack（包括NBT）
+                    // chest.getStackInSlot的slot参数是IItemHandler的slot
+                    // 这里j + 27对应实际的slot
+                    if (j < this.menu.chest.getSlots()) {
+                        ItemStack stack = this.menu.chest.getStackInSlot(j + 27);
+                        this.setItem(j, stack);
                     } else {
-                        formatCount.add(j, "§c0");
-                        continue;
+                        // 如果超出范围，使用基础物品
+                        String baseItemId = StorageUtils.getBaseItemId(id);
+                        ItemStack stack = new ItemStack(StorageUtils.getItem(baseItemId));
+                        this.setItem(j, stack);
                     }
-                    if (count < 1000L) formatCount.add(j, String.valueOf(count));
-                    else if (count < Long.MAX_VALUE) {
-                        String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);
-                        stringCount = stringCount.substring(0, 4);
-                        if (stringCount.endsWith(",")) stringCount = stringCount.substring(0, 3);
-                        stringCount = stringCount.replace(",", ".");
-                        if (count < 1000000L) stringCount += "K";
-                        else if (count < 1000000000L) stringCount += "M";
-                        else if (count < 1000000000000L) stringCount += "G";
-                        else if (count < 1000000000000000L) stringCount += "T";
-                        else if (count < 1000000000000000000L) stringCount += "P";
-                        else stringCount += "E";
-                        formatCount.add(j, stringCount);
-                        // 9,223,372,036,854,775,807L
-                        // e  p   t   g   m   k
-                    } else formatCount.add(j, "MAX");
+                }
+
+                long count;
+                if (this.menu.chest.storageItems.containsKey(id)) {
+                    count = this.menu.chest.storageItems.get(id);
+                } else {
+                    formatCount.add(j, "§c0");
+                    continue;
+                }
+                if (count < 1000L) formatCount.add(j, String.valueOf(count));
+                else if (count < Long.MAX_VALUE) {
+                    String stringCount = StorageUtils.DECIMAL_FORMAT.format(count);
+                    stringCount = stringCount.substring(0, 4);
+                    if (stringCount.endsWith(",")) stringCount = stringCount.substring(0, 3);
+                    stringCount = stringCount.replace(",", ".");
+                    if (count < 1000000L) stringCount += "K";
+                    else if (count < 1000000000L) stringCount += "M";
+                    else if (count < 1000000000000L) stringCount += "G";
+                    else if (count < 1000000000000000L) stringCount += "T";
+                    else if (count < 1000000000000000000L) stringCount += "P";
+                    else stringCount += "E";
+                    formatCount.add(j, stringCount);
+                    // 9,223,372,036,854,775,807L
+                    // e  p   t   g   m   k
+                } else formatCount.add(j, "MAX");
 
             } else this.setItem(j, ItemStack.EMPTY);
         }
