@@ -2,13 +2,10 @@ package committee.nova.mods.avaritia.init.data.listener;
 
 import com.google.gson.JsonElement;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.ModApi;
-import committee.nova.mods.avaritia.api.util.recipe.RecipeUtils;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;

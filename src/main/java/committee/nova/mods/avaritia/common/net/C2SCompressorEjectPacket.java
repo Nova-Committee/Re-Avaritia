@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.api.util.ItemUtils;
+import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -9,7 +10,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

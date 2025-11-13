@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.entity.arrow;
 
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModMobEffects;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,8 +14,6 @@ import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.NetworkHooks;
@@ -53,37 +50,11 @@ public class BurningArrowEntity extends Arrow {
     }
 
     @Override
-    protected void onHitBlock(@NotNull BlockHitResult result) {
-        super.onHitBlock(result);
-        if (!this.level().isClientSide) {
-            Entity owner = this.getOwner();
-            BlockPos pos = result.getBlockPos();
-            if (owner instanceof ServerPlayer player) {
-                var entities = level().getEntitiesOfClass(LivingEntity.class, new AABB(pos.offset(-4, -4, -4), pos.offset(4, 4, 4)), livingEntity -> {
-                    return !livingEntity.isSpectator() && livingEntity.isAlive() && !livingEntity.equals(player);
-                });
-                entities.forEach(entity -> {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), 1200, 3));
-                });
-            }
-        }
-
-    }
-
-    @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        super.onHitEntity(result);
-        if (!this.level().isClientSide) {
-            Entity owner = this.getOwner();
-            var pos = result.getEntity().blockPosition();
-            if (owner instanceof Player player) {
-                var entities = level().getEntitiesOfClass(LivingEntity.class, new AABB(pos.offset(-4, -4, -4), pos.offset(4, 4, 4)), livingEntity -> {
-                    return !livingEntity.isSpectator() && livingEntity.isAlive() && !livingEntity.equals(player);
-                });
-                entities.forEach(entity -> {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), 1200));
-                });
-            }
+        //super.onHitEntity(result);
+        Entity owner = this.getOwner();
+        if (!this.level().isClientSide && owner instanceof ServerPlayer player && result.getEntity() instanceof LivingEntity livingEntity) {
+            livingEntity.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), 1200));
         }
     }
 

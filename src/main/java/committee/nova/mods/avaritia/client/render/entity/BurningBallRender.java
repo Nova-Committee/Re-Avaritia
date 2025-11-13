@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -12,20 +12,23 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 /**
- * @Project: Avaritia
+ * Description:
  * @author cnlimiter
- * @CreateTime: 2024/8/7 下午8:49
- * @Description:
+ * Date: 2022/4/20 18:54
+ * Version: 1.0
  */
-public class FireBallRender extends EntityRenderer<FireBallEntity> {
+@OnlyIn(Dist.CLIENT)
+public class BurningBallRender extends EntityRenderer<BurningBallEntity> {
     private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(Res.DRAGON_FIREBALL);
 
-    public FireBallRender(EntityRendererProvider.Context pContext) {
+    public BurningBallRender(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
 
@@ -34,12 +37,12 @@ public class FireBallRender extends EntityRenderer<FireBallEntity> {
     }
 
     @Override
-    protected int getBlockLightLevel(@NotNull FireBallEntity pEntity, @NotNull BlockPos pPos) {
+    protected int getBlockLightLevel(@NotNull BurningBallEntity pEntity, @NotNull BlockPos pPos) {
         return 15;
     }
 
     @Override
-    public void render(@NotNull FireBallEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(@NotNull BurningBallEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
         pPoseStack.pushPose();
         pPoseStack.scale(2.0F, 2.0F, 2.0F);
         pPoseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
@@ -60,7 +63,7 @@ public class FireBallRender extends EntityRenderer<FireBallEntity> {
      * Returns the location of an entity's texture.
      */
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull FireBallEntity pEntity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull BurningBallEntity pEntity) {
         return Res.DRAGON_FIREBALL;
     }
 }

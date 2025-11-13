@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.menu;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
 import committee.nova.mods.avaritia.common.container.slot.ModCraftResultSlot;

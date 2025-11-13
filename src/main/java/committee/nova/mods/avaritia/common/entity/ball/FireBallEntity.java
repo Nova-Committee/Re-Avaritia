@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.entity;
+package committee.nova.mods.avaritia.common.entity.ball;
 
 import committee.nova.mods.avaritia.api.util.PlayerUtils;
 import net.minecraft.core.BlockPos;

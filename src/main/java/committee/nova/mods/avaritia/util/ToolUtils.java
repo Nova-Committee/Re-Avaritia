@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.util.InventoryUtils;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
-import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;

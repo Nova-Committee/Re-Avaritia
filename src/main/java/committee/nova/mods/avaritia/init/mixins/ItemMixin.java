@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

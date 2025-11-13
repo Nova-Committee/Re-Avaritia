@@ -5,6 +5,8 @@ import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.*;
+import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -101,6 +103,12 @@ public class ModEntities {
                     .setUpdateInterval(10)
                     .build(new ResourceLocation(Const.MOD_ID, "fire_ball").toString()));
 
+    public static final RegistryObject<EntityType<BurningBallEntity>> BURNING_BALL = ENTITIES.register("burning_ball",
+            () -> EntityType.Builder.of(BurningBallEntity::new, MobCategory.MISC)
+                    .setTrackingRange(256)
+                    .setUpdateInterval(10)
+                    .build(new ResourceLocation(Const.MOD_ID, "burning_ball").toString()));
+
     public static final RegistryObject<EntityType<BladeSlashEntity>> BLADE_SLASH = ENTITIES.register("blade_slash",
             () -> EntityType.Builder.<BladeSlashEntity>of(BladeSlashEntity::new, MobCategory.MISC)
                     .sized(3F, 0.5F)
@@ -155,6 +163,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
         EntityRenderers.register(ModEntities.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
         EntityRenderers.register(ModEntities.BURNING_ARROW.get(), BurningArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_BALL.get(), BurningBallRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
         EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRender::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);

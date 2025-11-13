@@ -12,10 +12,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**

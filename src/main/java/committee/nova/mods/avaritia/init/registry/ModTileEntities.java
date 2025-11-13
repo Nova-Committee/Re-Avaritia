@@ -1,11 +1,10 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.render.tile.TesseractRender;
-import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
 import committee.nova.mods.avaritia.common.tile.*;
-import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;

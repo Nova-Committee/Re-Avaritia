@@ -1,8 +1,9 @@
 package committee.nova.mods.avaritia.core.channel;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.net.channel.*;
-import committee.nova.mods.avaritia.core.name.NameCacheManager;
+import committee.nova.mods.avaritia.common.net.channel.ChannelAction;
+import committee.nova.mods.avaritia.common.net.channel.S2CChannelActionPack;
+import committee.nova.mods.avaritia.common.net.channel.S2CChannelListPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.StorageUtils;
@@ -11,11 +12,9 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;

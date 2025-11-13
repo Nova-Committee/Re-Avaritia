@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.client.render.entity;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.common.entity.arrow.ExplosionsArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;

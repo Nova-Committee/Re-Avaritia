@@ -6,8 +6,6 @@ import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.NeutronArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModToolTiers;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -17,16 +15,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class CrystalBowItem extends BowItem implements ISwitchable , IBowTransform {
 
@@ -131,7 +124,7 @@ public class CrystalBowItem extends BowItem implements ISwitchable , IBowTransfo
 
 
     @Override
-    public void onCraftedBy(ItemStack stack, Level level, Player player) {
+    public void onCraftedBy(ItemStack stack, @NotNull Level level, @NotNull Player player) {
         stack.enchant(Enchantments.INFINITY_ARROWS,1);
         stack.enchant(Enchantments.MULTISHOT,1);
         super.onCraftedBy(stack, level, player);

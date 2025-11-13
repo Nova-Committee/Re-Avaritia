@@ -3,7 +3,10 @@ package committee.nova.mods.avaritia.common.menu;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.core.chest.*;
+import committee.nova.mods.avaritia.core.chest.ChestHandler;
+import committee.nova.mods.avaritia.core.chest.ClientChestManager;
+import committee.nova.mods.avaritia.core.chest.InfinityChestContainer;
+import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.util.StorageUtils;
@@ -12,16 +15,17 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
