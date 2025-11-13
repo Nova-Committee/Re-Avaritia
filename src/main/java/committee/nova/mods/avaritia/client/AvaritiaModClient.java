@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
+import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
 import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
@@ -80,6 +81,7 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
+        event.registerSpriteSet(ModParticles.SHOCKWAVE_PARTICLE.get(), ShockwaveParticle.Provider::new);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
