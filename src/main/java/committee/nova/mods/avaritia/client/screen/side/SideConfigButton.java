@@ -1,8 +1,9 @@
-package committee.nova.mods.avaritia.client.screen;
+package committee.nova.mods.avaritia.client.screen.side;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
+import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,21 +18,26 @@ import java.util.List;
 /**
  * @author cnlimiter
  */
-public class ConfigButton extends ImageButton {
+public class SideConfigButton extends ImageButton {
     private final BaseContainerScreen<?> parentScreen;
     private final List<FormattedCharSequence> tips = new ArrayList<>();
 
-    public ConfigButton(BaseContainerScreen<?> parentScreen, int pX, int pY) {
+    public SideConfigButton(BaseContainerScreen<?> parentScreen, int pX, int pY) {
         super(pX, pY, 20, 24, 156, 0, Res.SIDE_CONFIG_TEX, pButton -> {
             if (parentScreen.getMinecraft().player != null) {
                 var level = parentScreen.getMinecraft().level;
                 if (level != null && parentScreen.getMenu() instanceof BaseTileMenu menu) {
                     var tile = level.getBlockEntity(menu.getBlockPos());
-
                     if (tile instanceof NeutronCompressorTile compressor) {
                         var sideConfig = compressor.getSideConfiguration();
                         var blockPos = menu.getBlockPos();
-                        var configScreen = new SideConfigScreen(parentScreen, sideConfig, blockPos);
+                        var configScreen = new NCompressorSideConfigScreen(parentScreen, sideConfig, blockPos);
+                        parentScreen.getMinecraft().setScreen(configScreen);
+                    } else if (tile instanceof NeutronCollectorTile collector) {
+                        var sideConfig = collector.getSideConfiguration();
+                        var blockPos = menu.getBlockPos();
+                        // 为NeutronCollector创建专门的配置界面
+                        var configScreen = new NCollectorSideConfigScreen(parentScreen, sideConfig, blockPos, collector);
                         parentScreen.getMinecraft().setScreen(configScreen);
                     }
                 }

@@ -189,6 +189,13 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
 
     @Override
     public void setSideConfiguration(SideConfiguration config) {
+        // 只允许PASSIVE_OUTPUT和ACTIVE_OUTPUT模式
+        for (Direction direction : Direction.values()) {
+            SideConfiguration.SideMode mode = config.getSideMode(direction);
+            if (mode != SideConfiguration.SideMode.PASSIVE_OUTPUT && mode != SideConfiguration.SideMode.ACTIVE_OUTPUT) {
+                config.setSideMode(direction, SideConfiguration.SideMode.OFF);
+            }
+        }
         this.sideConfig = config;
         this.setChangedAndDispatch();
 
@@ -201,6 +208,31 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     @Override
     public void setIOChange() {
         this.setChangedAndDispatch();
+    }
+
+    /**
+     * 为NeutronCollector自定义的面模式切换逻辑，只在PASSIVE_OUTPUT和ACTIVE_OUTPUT之间切换
+     */
+    public void cycleSideModeForNeutronCollector(Direction direction) {
+        SideConfiguration.SideMode current = sideConfig.getSideMode(direction);
+        SideConfiguration.SideMode nextMode;
+
+        if (current == SideConfiguration.SideMode.PASSIVE_OUTPUT) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_OUTPUT;
+        } else if (current == SideConfiguration.SideMode.ACTIVE_OUTPUT) {
+            nextMode = SideConfiguration.SideMode.PASSIVE_OUTPUT;
+        } else {
+            // 默认从PASSIVE_OUTPUT开始
+            nextMode = SideConfiguration.SideMode.PASSIVE_OUTPUT;
+        }
+
+        sideConfig.setSideMode(direction, nextMode);
+        this.setChangedAndDispatch();
+
+        // 同步给客户端
+        if (!this.level.isClientSide()) {
+            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, sideConfig);
+        }
     }
 
     @Override

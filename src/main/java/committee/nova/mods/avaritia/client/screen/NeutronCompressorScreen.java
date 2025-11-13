@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
 import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -48,7 +49,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu>
         this.ejectButton = new EjectButton(x + 40, y + 20);
 
         // 添加配置按钮
-        this.configButton = new ConfigButton(this, x - 20, y);
+        this.configButton = new SideConfigButton(this, x - 20, y);
 
         this.addRenderableWidget(this.lockButton);
         this.addRenderableWidget(this.ejectButton);

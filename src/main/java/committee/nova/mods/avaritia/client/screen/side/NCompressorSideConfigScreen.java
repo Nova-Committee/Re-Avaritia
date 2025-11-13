@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.client.screen;
+package committee.nova.mods.avaritia.client.screen.side;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
@@ -23,7 +23,7 @@ import java.util.List;
  * Date: 2025/11/01
  * Version: 1.0
  */
-public class SideConfigScreen extends Screen {
+public class NCompressorSideConfigScreen extends Screen {
 
     private SideConfiguration sideConfig;
     private final Screen parentScreen;
@@ -43,7 +43,7 @@ public class SideConfigScreen extends Screen {
     private SideButton upButton;
     private SideButton downButton;
 
-    public SideConfigScreen(Screen parentScreen, SideConfiguration sideConfig, BlockPos blockPos) {
+    public NCompressorSideConfigScreen(Screen parentScreen, SideConfiguration sideConfig, BlockPos blockPos) {
         super(Component.translatable("screen.avaritia.side_config.title"));
         this.parentScreen = parentScreen;
         this.sideConfig = new SideConfiguration(sideConfig); // 创建副本
@@ -231,23 +231,18 @@ public class SideConfigScreen extends Screen {
 
         public SideButton(int x, int y, Direction direction, SideConfiguration.SideMode mode) {
             super(x, y, 22, 23, 0, 118, 23, Res.SIDE_CONFIG_TEX, button -> {
-                SideConfigScreen.this.cycleModeForDirection(direction);
+                NCompressorSideConfigScreen.this.cycleModeForDirection(direction);
                 updateAllButtons();
                 sendConfigUpdate();
             });
             this.direction = direction;
             this.mode = mode;
             this.tooltip = new ArrayList<>();
-            SideConfigScreen.this.updateButtonTooltip(this);
-        }
-
-        private void cycleMode() {
-            sideConfig.cycleSideMode(direction);
-            this.mode = sideConfig.getSideMode(direction);
+            updateTooltip();
         }
 
         private void updateTooltip() {
-            SideConfigScreen.this.updateButtonTooltip(this);
+            NCompressorSideConfigScreen.this.updateButtonTooltip(this);
         }
 
         public void updateMode(SideConfiguration.SideMode newMode) {

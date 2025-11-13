@@ -4,6 +4,7 @@ pluginManagement {
         maven { url = "https://maven.parchmentmc.org" }
         maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
         maven { url = "https://maven.architectury.dev/" }
+        maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
         gradlePluginPortal()
         mavenCentral()
     }

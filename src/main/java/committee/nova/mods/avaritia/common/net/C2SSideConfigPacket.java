@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -55,8 +56,7 @@ public class C2SSideConfigPacket {
                     // 应用新的配置
                     tileIO.setSideConfiguration(sideConfig);
 
-                    // 发送确认消息给玩家
-                    player.sendSystemMessage(Component.literal("§f方块配置已更新"));
+                    Const.LOGGER.debug("方块配置已更新");
 
                     // 标记方块实体为已更改，触发保存
                     tileIO.setIOChange();
