@@ -7,7 +7,7 @@ import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
-import committee.nova.mods.avaritia.common.menu.CompressorMenu;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.core.io.TileIOHandler;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -197,7 +197,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory) {
-        return new CompressorMenu(windowId, playerInventory, this.inventory, this.getBlockPos(), this.data);
+        return new NeutronCompressorMenu(windowId, playerInventory, this.inventory, this.getBlockPos(), this.data);
     }
 
     @Override

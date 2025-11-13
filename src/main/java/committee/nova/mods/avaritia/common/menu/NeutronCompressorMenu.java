@@ -24,14 +24,14 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 18:09
  * Version: 1.0
  */
-public class CompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
+public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     private final ContainerData progressData;
 
-    public CompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+    public NeutronCompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
     }
 
-    public CompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
+    public NeutronCompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
         super(ModMenus.compressor.get(), id, playerInventory, pos);
         this.progressData = data;
         this.addDataSlots(progressData);

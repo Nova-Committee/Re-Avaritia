@@ -8,7 +8,7 @@ import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
-import committee.nova.mods.avaritia.common.menu.CompressorMenu;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
 import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
@@ -106,7 +106,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(CompressorMenu.class, ModMenus.compressor.get(), CompressorCategory.RECIPE_TYPE, 1, 1, 2, 36);
+        registration.addRecipeTransferHandler(NeutronCompressorMenu.class, ModMenus.compressor.get(), CompressorCategory.RECIPE_TYPE, 1, 1, 2, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.sculk_crafting_tile_table.get(), SculkCraftingTableCategory.RECIPE_TYPE, 1, 9, 10, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.nether_crafting_tile_table.get(), NetherCraftingTableCategory.RECIPE_TYPE, 1, 25, 26, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.end_crafting_tile_table.get(), EndCraftingTableCategory.RECIPE_TYPE, 1, 49, 50, 36);

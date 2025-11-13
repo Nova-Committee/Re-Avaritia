@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.menu;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
@@ -456,22 +457,28 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         //empty由于退出调用的奇怪循环
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotId);
+        System.out.println(slotId);
         if (slot.hasItem()) {
             ItemStack movingStack = slot.getItem();
             itemStack = movingStack.copy();
-            if (slotId < CONTAINER_SLOT_SIZE) {
-                if (!this.moveItemStackTo(movingStack, CONTAINER_SLOT_SIZE, this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.moveItemStackTo(movingStack, 0, CONTAINER_SLOT_SIZE, false)) {
+            if (slotId >=0 && slotId <= 35) {
+                chest.addItem(movingStack);
                 return ItemStack.EMPTY;
+            } else {
+                Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= 36 + CONTAINER_SLOT_SIZE in server side ?");
             }
 
-            if (movingStack.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
+            if (movingStack.getCount() == 0) {
+                slot.set(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
+
+            if (movingStack.getCount() == itemStack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, movingStack);
         }
         return itemStack;
     }

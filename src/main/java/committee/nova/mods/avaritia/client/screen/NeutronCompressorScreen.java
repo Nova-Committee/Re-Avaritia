@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
-import committee.nova.mods.avaritia.common.menu.CompressorMenu;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -27,12 +27,12 @@ import java.util.List;
  * Date: 2022/4/2 18:16
  * Version: 1.0
  */
-public class NeutronCompressorScreen extends BaseContainerScreen<CompressorMenu> {
+public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompressorMenu> {
     private Button lockButton;
     private Button ejectButton;
     private Button configButton;
 
-    public NeutronCompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
+    public NeutronCompressorScreen(NeutronCompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, Res.NEUTRON_COMPRESSOR_TEX);
     }
 
