@@ -16,22 +16,17 @@ public class BurningEffect extends MobEffect {
     }
     @Override
     public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.1f);
-        livingEntity.invulnerableTime = 0;
+        livingEntity.hurt(livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.01f);
+        livingEntity.invulnerableTime = 10;
     }
 
     @Override
     public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
-        int i = 40 >> pAmplifier;
+        int i = 20 >> pAmplifier;
         if (i > 0) {
             return pDuration % i == 0;
         } else {
             return true;
         }
-    }
-
-    @Override
-    public boolean isInstantenous() {
-        return true;
     }
 }

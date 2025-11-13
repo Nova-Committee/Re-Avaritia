@@ -3,9 +3,7 @@ package committee.nova.mods.avaritia.common.item.tools.blaze;
 import committee.nova.mods.avaritia.api.iface.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.common.entity.arrow.ExplosionsArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.BurningArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModMobEffects;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.network.chat.Component;
@@ -67,7 +65,7 @@ public class BlazeBowItem extends BowItem implements ITooltip, ISwitchable, IBow
         InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
         if (player.isShiftKeyDown()) {
-            switchMode(level, player, hand, "blade_bow_bom");
+            switchMode(level, player, hand, "blaze_bow_burning");
             return InteractionResultHolder.success(itemstack);
         }
         player.startUsingItem(hand);
@@ -92,8 +90,8 @@ public class BlazeBowItem extends BowItem implements ITooltip, ISwitchable, IBow
                     AbstractArrow abstractarrow = this.createArrow(level, stack, player);
                     abstractarrow = customArrow(abstractarrow);
 
-                    if (isActive(stack, "blade_bow_bom")) {//爆炸模式
-                        abstractarrow = this.customArrow(new ExplosionsArrowEntity(player));
+                    if (isActive(stack, "blaze_bow_burning")) {//灼烧模式
+                        abstractarrow = this.customArrow(new BurningArrowEntity(player));
                     }
 
                     abstractarrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.5F);

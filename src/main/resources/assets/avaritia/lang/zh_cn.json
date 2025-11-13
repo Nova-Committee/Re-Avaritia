@@ -26,7 +26,7 @@
   "item.avaritia.blaze_hoe": "炽魂之耘灵锄",
   "item.avaritia.blaze_pickaxe": "炽岩之熔山镐",
   "item.avaritia.blaze_shovel": "炽咒之狱火锹",
-  "item.avaritia.blaze_bow": "炽炎之爆裂弓",
+  "item.avaritia.blaze_bow": "炽阳之辉耀弓",
   "item.avaritia.crystal_sword": "双锋裂界之剑",
   "item.avaritia.crystal_axe": "晶能裂岩之斧",
   "item.avaritia.crystal_hoe": "亘古不毁之锄",
@@ -139,6 +139,7 @@
 
   "tooltip.avaritia.tool.smelt": "炽热",
   "tooltip.avaritia.tool.blade_slash": "剑气",
+  "tooltip.avaritia.tool.blaze_bow_burning": "范围灼烧",
   "tooltip.avaritia.tool.infinity_axe_range": "范围砍伐",
   "tooltip.avaritia.tool.infinity_bow_tracer": "追踪射击",
   "tooltip.avaritia.tool.infinity_pickaxe_hammer": "范围挖掘",

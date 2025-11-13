@@ -71,6 +71,14 @@ public class ModEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "explosions_arrow").toString()));
 
+    public static final RegistryObject<EntityType<BurningArrowEntity>> BURNING_ARROW = ENTITIES.register("burning_arrow",
+            () -> EntityType.Builder.<BurningArrowEntity>of(BurningArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(new ResourceLocation(Const.MOD_ID, "burning_arrow").toString()));
+
     public static final RegistryObject<EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
             () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
@@ -146,6 +154,7 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.NEUTRON_ARROW.get(),NeutronArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
         EntityRenderers.register(ModEntities.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_ARROW.get(), BurningArrowRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
         EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRender::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);

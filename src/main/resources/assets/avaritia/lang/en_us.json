@@ -29,7 +29,7 @@
   "item.avaritia.blaze_hoe": "Blaze Soul Hoe",
   "item.avaritia.blaze_pickaxe": "Blaze Lava Pickaxe",
   "item.avaritia.blaze_shovel": "Blaze Fire Shovel",
-  "item.avaritia.blaze_bow": "Blaze Burst Bow",
+  "item.avaritia.blaze_bow": "Blaze Shining Bow",
   "item.avaritia.crystal_sword": "Crystal Sword",
   "item.avaritia.crystal_axe": "Crystal Axe",
   "item.avaritia.crystal_hoe": "Crystal Hoe",
@@ -144,6 +144,7 @@
 
   "tooltip.avaritia.tool.smelt": "Smelt",
   "tooltip.avaritia.tool.blade_slash": "Blade Slash",
+  "tooltip.avaritia.tool.blaze_bow_burning": "Area Burning",
   "tooltip.avaritia.tool.infinity_axe_range": "Range Break",
   "tooltip.avaritia.tool.infinity_bow_tracer": "Trace Attack",
   "tooltip.avaritia.tool.infinity_pickaxe_hammer": "Range Dig",
