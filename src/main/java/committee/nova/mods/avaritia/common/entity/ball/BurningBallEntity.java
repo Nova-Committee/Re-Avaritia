@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 /**
  * @author cnlimiter
@@ -39,10 +40,10 @@ public class BurningBallEntity extends ThrowableProjectile {
             Entity owner = this.getOwner();
             BlockPos pos = result.getBlockPos();
             if (owner instanceof ServerPlayer player) {
-                var entities = level().getEntitiesOfClass(LivingEntity.class, new AABB(pos.offset(-5, -5, -5), pos.offset(5, 5, 5)),
+                var entities = level().getEntitiesOfClass(LivingEntity.class, new AABB(pos.offset(-10, -10, -10), pos.offset(10, 10, 10)),
                         livingEntity -> !livingEntity.isSpectator() && livingEntity.isAlive() && !livingEntity.equals(player));
                 entities.forEach(entity -> entity.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), 600, 3)));
-                serverLevel.sendParticles(player, new ShockwaveParticleOptions(Vec3.fromRGB24(3790560).toVector3f(), 20 * -1.5f * .05f, true),true, getX(), getY(), getZ(), 1, 0, 0, 0, 0);
+                spawnParticles(serverLevel, new ShockwaveParticleOptions(new Vector3f(1F, 0f, 0f), 10F, true, "minecraft:flame"), getX(), getY(), getZ(), 1, 0, 0, 0, 0,true);
             }
         }
 
@@ -55,10 +56,10 @@ public class BurningBallEntity extends ThrowableProjectile {
             Entity owner = this.getOwner();
             var pos = result.getEntity().blockPosition();
             if (owner instanceof ServerPlayer player) {
-                var entities = level().getEntitiesOfClass(LivingEntity.class, new AABB(pos.offset(-5, -5, -5), pos.offset(5, 5, 5)),
+                var entities = level().getEntitiesOfClass(LivingEntity.class, new AABB(pos.offset(-10, -10, -10), pos.offset(10, 10, 10)),
                         livingEntity -> !livingEntity.isSpectator() && livingEntity.isAlive() && !livingEntity.equals(player));
                 entities.forEach(entity -> entity.addEffect(new MobEffectInstance(ModMobEffects.BURNING.get(), 600, 3)));
-                serverLevel.sendParticles(player, new ShockwaveParticleOptions(Vec3.fromRGB24(3790560).toVector3f(), 20 * -1.5f * .05f, true),true, getX(), getY(), getZ(), 1, 0, 0, 0, 0);
+                spawnParticles(serverLevel, new ShockwaveParticleOptions(new Vector3f(1F, 0f, 0f), 10F, true, "minecraft:flame"), getX(), getY(), getZ(), 1, 0, 0, 0, 0,true);
             }
         }
     }
