@@ -60,8 +60,10 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     @Override
     protected void subInit() {
         super.subInit();
-        this.leftPos = (this.width - 302) / 2;
-        this.topPos = (this.height - 274) / 2;
+        this.imageWidth = 302;
+        this.imageHeight = 274;
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
 
         this.scrollBar = new ItemScrollBar(leftPos + 282, topPos + 16, 12, 160);
         this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
@@ -76,6 +78,8 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.searchBox.setValue(menu.filter);
         this.addRenderableWidget(searchBox);
         menu.chestContainer.refreshContainer(true);
+
+        // 创建两侧避让区
     }
 
     @Override
