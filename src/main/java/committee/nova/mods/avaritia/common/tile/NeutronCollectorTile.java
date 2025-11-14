@@ -149,7 +149,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
         // 检查被动输出配置
         if (side != null && cap == ForgeCapabilities.ITEM_HANDLER) {
             if (!ioHandler.shouldAllowPassiveIO(side)) {
-                return net.minecraftforge.common.util.LazyOptional.empty();
+                return LazyOptional.empty();
             }
         }
         return super.getCapability(cap, side);
@@ -211,19 +211,20 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     }
 
     /**
-     * 为NeutronCollector自定义的面模式切换逻辑，只在PASSIVE_OUTPUT和ACTIVE_OUTPUT之间切换
+     * 只在PASSIVE_OUTPUT和ACTIVE_OUTPUT之间切换
      */
+    @Override
     public void cycleSideModeForNeutronCollector(Direction direction) {
         SideConfiguration.SideMode current = sideConfig.getSideMode(direction);
         SideConfiguration.SideMode nextMode;
 
-        if (current == SideConfiguration.SideMode.PASSIVE_OUTPUT) {
-            nextMode = SideConfiguration.SideMode.ACTIVE_OUTPUT;
-        } else if (current == SideConfiguration.SideMode.ACTIVE_OUTPUT) {
+        if (current == SideConfiguration.SideMode.OFF) {
             nextMode = SideConfiguration.SideMode.PASSIVE_OUTPUT;
+        } else if (current == SideConfiguration.SideMode.PASSIVE_OUTPUT) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_OUTPUT;
         } else {
             // 默认从PASSIVE_OUTPUT开始
-            nextMode = SideConfiguration.SideMode.PASSIVE_OUTPUT;
+            nextMode = SideConfiguration.SideMode.OFF;
         }
 
         sideConfig.setSideMode(direction, nextMode);

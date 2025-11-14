@@ -337,6 +337,34 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         }
     }
 
+
+    @Override
+    public void cycleSideModeForNeutronCollector(Direction direction) {
+        SideConfiguration.SideMode current = sideConfig.getSideMode(direction);
+        SideConfiguration.SideMode nextMode;
+
+        if (current == SideConfiguration.SideMode.OFF) {
+            nextMode = SideConfiguration.SideMode.PASSIVE_MIXIN;
+        } else if (current == SideConfiguration.SideMode.PASSIVE_MIXIN) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_INPUT;
+        } else if (current == SideConfiguration.SideMode.ACTIVE_INPUT) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_OUTPUT;
+        } else if (current == SideConfiguration.SideMode.ACTIVE_OUTPUT) {
+            nextMode = SideConfiguration.SideMode.ACTIVE_MIXIN;
+        } else {
+            // 默认从PASSIVE_OUTPUT开始
+            nextMode = SideConfiguration.SideMode.OFF;
+        }
+
+        sideConfig.setSideMode(direction, nextMode);
+        this.setChangedAndDispatch();
+
+        // 同步给客户端
+        if (!this.level.isClientSide()) {
+            NetworkHandler.sendSideConfigSync(this.level, this.worldPosition, sideConfig);
+        }
+    }
+
     @Override
     public void setIOChange() {
         this.setChangedAndDispatch();

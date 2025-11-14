@@ -53,15 +53,13 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private EditBox searchBox;
 
     public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+        super(menu, playerInventory, title, null, 302, 274, 550, 550);
         this.ownerName = ClientChestManager.getInstance().getUserName(this.getMenu().owner);
     }
 
     @Override
     protected void subInit() {
         super.subInit();
-        this.imageWidth = 302;
-        this.imageHeight = 274;
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
 
@@ -92,7 +90,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
-        pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0,  302, 274, 550, 550);
+        pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0,  this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
     }
 
     @Override

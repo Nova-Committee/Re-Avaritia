@@ -1,37 +1,37 @@
 package committee.nova.mods.avaritia.client.screen.side;
 
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
+import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * NeutronCollector专用面配置界面
- * Description: 只允许PASSIVE_OUTPUT和ACTIVE_OUTPUT两种模式
+ * 方块配置界面
+ * Description: 类似Mekanism的六面配置界面，支持多种方块类型
  * @author cnlimiter
  * Date: 2025/11/14
  * Version: 1.0
  */
-public class NCollectorSideConfigScreen extends Screen {
+public class SideConfigScreen extends Screen {
 
     private SideConfiguration sideConfig;
     private final Screen parentScreen;
     private final BlockPos blockPos;
-    private final NeutronCollectorTile tile;
+    private final ITileIO tile;
 
     // 屏幕坐标字段
+    // 屏幕坐标字段（由于Screen没有imageWidth等，我们需要自己管理）
+    @Getter
     private int guiLeft;
+    @Getter
     private int guiTop;
     private int imageWidth = 156;
     private int imageHeight = 117;
@@ -44,7 +44,7 @@ public class NCollectorSideConfigScreen extends Screen {
     private SideButton upButton;
     private SideButton downButton;
 
-    public NCollectorSideConfigScreen(Screen parentScreen, SideConfiguration sideConfig, BlockPos blockPos, NeutronCollectorTile tile) {
+    public SideConfigScreen(Screen parentScreen, SideConfiguration sideConfig, BlockPos blockPos, ITileIO tile) {
         super(Component.translatable("screen.avaritia.side_config.title"));
         this.parentScreen = parentScreen;
         this.sideConfig = new SideConfiguration(sideConfig);
@@ -55,7 +55,7 @@ public class NCollectorSideConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        // 计算居中位置
+        // 计算居中位置（Screen没有getGuiLeft()方法，我们需要自己计算）
         this.guiLeft = (this.width - this.imageWidth) / 2;
         this.guiTop = (this.height - this.imageHeight) / 2;
         int x = this.getGuiLeft();
@@ -84,49 +84,37 @@ public class NCollectorSideConfigScreen extends Screen {
         int centerY = y + 50;
 
         // 上（顶部视图）
-        upButton = new SideButton(centerX, centerY - 24, Direction.UP, sideConfig.getSideMode(Direction.UP));
+        upButton = new SideButton(centerX, centerY - 24, Direction.UP, sideConfig.getSideMode(Direction.UP), this);
         this.addRenderableWidget(upButton);
 
         // 下（底部视图）
-        downButton = new SideButton(centerX, centerY + 24, Direction.DOWN, sideConfig.getSideMode(Direction.DOWN));
+        downButton = new SideButton(centerX, centerY + 24, Direction.DOWN, sideConfig.getSideMode(Direction.DOWN), this);
         this.addRenderableWidget(downButton);
 
         // 北（前面）
-        northButton = new SideButton(centerX, centerY, Direction.NORTH, sideConfig.getSideMode(Direction.NORTH));
+        northButton = new SideButton(centerX, centerY, Direction.NORTH, sideConfig.getSideMode(Direction.NORTH), this);
         this.addRenderableWidget(northButton);
 
         // 南（后面）
-        southButton = new SideButton(centerX - 23, centerY + 24, Direction.SOUTH, sideConfig.getSideMode(Direction.SOUTH));
+        southButton = new SideButton(centerX - 23, centerY + 24, Direction.SOUTH, sideConfig.getSideMode(Direction.SOUTH), this);
         this.addRenderableWidget(southButton);
 
         // 西（左面）
-        westButton = new SideButton(centerX - 23, centerY, Direction.WEST, sideConfig.getSideMode(Direction.WEST));
+        westButton = new SideButton(centerX - 23, centerY, Direction.WEST, sideConfig.getSideMode(Direction.WEST), this);
         this.addRenderableWidget(westButton);
 
         // 东（右面）
-        eastButton = new SideButton(centerX + 23, centerY, Direction.EAST, sideConfig.getSideMode(Direction.EAST));
+        eastButton = new SideButton(centerX + 23, centerY, Direction.EAST, sideConfig.getSideMode(Direction.EAST), this);
         this.addRenderableWidget(eastButton);
     }
 
     /**
-     * 为指定方向切换模式（仅在PASSIVE_OUTPUT和ACTIVE_OUTPUT之间切换）
+     * 为指定方向切换模式
      */
-    private void cycleModeForDirection(Direction direction) {
+    public void cycleModeForDirection(Direction direction) {
         tile.cycleSideModeForNeutronCollector(direction);
         // 更新本地配置显示
         sideConfig.setSideMode(direction, tile.getSideConfiguration().getSideMode(direction));
-    }
-
-    /**
-     * 更新按钮的工具提示
-     */
-    private void updateButtonTooltip(SideButton button) {
-        button.tooltip.clear();
-        String sideName = Component.translatable("direction.avaritia." + button.direction.getName()).getString();
-        String modeName = button.mode.getDisplayName().getString();
-
-        button.tooltip.add(Component.literal(sideName + ": " + modeName).getVisualOrderText());
-        button.tooltip.add(Component.translatable("tooltip.avaritia.side.click_to_cycle").getVisualOrderText());
     }
 
     /**
@@ -144,7 +132,7 @@ public class NCollectorSideConfigScreen extends Screen {
     /**
      * 更新所有按钮状态
      */
-    private void updateAllButtons() {
+    public void updateAllButtons() {
         northButton.updateMode(sideConfig.getSideMode(Direction.NORTH));
         southButton.updateMode(sideConfig.getSideMode(Direction.SOUTH));
         eastButton.updateMode(sideConfig.getSideMode(Direction.EAST));
@@ -156,22 +144,8 @@ public class NCollectorSideConfigScreen extends Screen {
     /**
      * 发送配置更新到服务端
      */
-    private void sendConfigUpdate() {
+    public void sendConfigUpdate() {
         NetworkHandler.sendSideConfigUpdate(blockPos, sideConfig);
-    }
-
-    /**
-     * 获取GUI左边界坐标
-     */
-    public int getGuiLeft() {
-        return guiLeft;
-    }
-
-    /**
-     * 获取GUI上边界坐标
-     */
-    public int getGuiTop() {
-        return guiTop;
     }
 
     @Override
@@ -190,65 +164,4 @@ public class NCollectorSideConfigScreen extends Screen {
         this.minecraft.setScreen(parentScreen);
     }
 
-    /**
-     * 面配置按钮类（为NeutronCollector定制）
-     */
-    private class SideButton extends ImageButton {
-        private final Direction direction;
-        private SideConfiguration.SideMode mode;
-        private final List<FormattedCharSequence> tooltip;
-
-        public SideButton(int x, int y, Direction direction, SideConfiguration.SideMode mode) {
-            super(x, y, 22, 23, 0, 118, 23, Res.SIDE_CONFIG_TEX, button -> {
-                NCollectorSideConfigScreen.this.cycleModeForDirection(direction);
-                // 更新按钮显示
-                updateAllButtons();
-                sendConfigUpdate();
-            });
-            this.direction = direction;
-            this.mode = mode;
-            this.tooltip = new ArrayList<>();
-            updateTooltip();
-        }
-
-        private void updateTooltip() {
-            NCollectorSideConfigScreen.this.updateButtonTooltip(this);
-        }
-
-
-        public void updateMode(SideConfiguration.SideMode newMode) {
-            this.mode = newMode;
-            updateTooltip();
-        }
-
-        @Override
-        public void renderWidget(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            // 根据模式选择不同的纹理区域
-            // OFF = 0, PASSIVE_INPUT = 1, PASSIVE_OUTPUT = 2, PASSIVE_MIXIN = 3,
-            // ACTIVE_INPUT = 4, ACTIVE_OUTPUT = 5, ACTIVE_MIXIN = 6
-            int texX;
-            int texY = 118; // 按钮纹理在图集中的Y位置
-
-            if (this.mode == SideConfiguration.SideMode.OFF) {
-                texX = 0;
-            } else if (this.mode == SideConfiguration.SideMode.PASSIVE_OUTPUT) {
-                texX = 2 * 22; // PASSIVE_OUTPUT在位置2
-            } else if (this.mode == SideConfiguration.SideMode.ACTIVE_OUTPUT) {
-                texX = 5 * 22; // ACTIVE_OUTPUT在位置5
-            } else {
-                // 非法模式，显示为OFF
-                texX = 0;
-            }
-
-            if (this.isHovered) {
-                texY += 23; // 悬停状态
-            }
-
-            pGuiGraphics.blit(Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), texX, texY, this.width, this.height, 256, 256);
-
-            if (this.isHovered) {
-                setTooltipForNextRenderPass(tooltip);
-            }
-        }
-    }
 }

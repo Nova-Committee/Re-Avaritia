@@ -169,12 +169,12 @@ public class TileIOHandler {
         if (side == null) return true;
 
         Direction blockFacing = getBlockFacing();
-        if (blockFacing != null && tileEntity instanceof ITileIO ITileIO) {
+        if (blockFacing != null && tileEntity instanceof ITileIO tileIO) {
             // 将绝对方向转换为相对方向进行配置检查
             Direction relativeSide = getRelativeDirectionFromAbsolute(side, blockFacing);
             if (relativeSide != null) {
-                SideConfiguration.SideMode mode = ITileIO.getSideConfiguration().getSideMode(relativeSide);
-                return mode.isPassive();
+                SideConfiguration.SideMode mode = tileIO.getSideConfiguration().getSideMode(relativeSide);
+                return mode != SideConfiguration.SideMode.OFF;//除了关闭状态都能连接
             }
         }
         return false;

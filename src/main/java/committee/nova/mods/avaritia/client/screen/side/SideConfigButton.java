@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.client.screen.side;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
+import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraft.ChatFormatting;
@@ -28,16 +29,10 @@ public class SideConfigButton extends ImageButton {
                 var level = parentScreen.getMinecraft().level;
                 if (level != null && parentScreen.getMenu() instanceof BaseTileMenu menu) {
                     var tile = level.getBlockEntity(menu.getBlockPos());
-                    if (tile instanceof NeutronCompressorTile compressor) {
-                        var sideConfig = compressor.getSideConfiguration();
+                    if (tile instanceof ITileIO tileIO) {
+                        var sideConfig = tileIO.getSideConfiguration();
                         var blockPos = menu.getBlockPos();
-                        var configScreen = new NCompressorSideConfigScreen(parentScreen, sideConfig, blockPos);
-                        parentScreen.getMinecraft().setScreen(configScreen);
-                    } else if (tile instanceof NeutronCollectorTile collector) {
-                        var sideConfig = collector.getSideConfiguration();
-                        var blockPos = menu.getBlockPos();
-                        // 为NeutronCollector创建专门的配置界面
-                        var configScreen = new NCollectorSideConfigScreen(parentScreen, sideConfig, blockPos, collector);
+                        var configScreen = new SideConfigScreen(parentScreen, sideConfig, blockPos, tileIO);
                         parentScreen.getMinecraft().setScreen(configScreen);
                     }
                 }

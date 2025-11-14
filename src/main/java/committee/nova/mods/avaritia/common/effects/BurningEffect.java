@@ -13,7 +13,7 @@ public class BurningEffect extends MobEffect {
     }
     @Override
     public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.005f);
+        livingEntity.hurt(livingEntity.damageSources().inFire(), livingEntity.getMaxHealth() * 0.05f);
         livingEntity.invulnerableTime = 10;
     }
 

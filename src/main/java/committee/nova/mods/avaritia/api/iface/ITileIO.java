@@ -31,5 +31,10 @@ public interface ITileIO {
      * 向外部处理器插入物品
      */
     void insertToHandler(IItemHandler externalHandler, Direction toSide);
+
+    /**
+     * 自定义的面模式切换逻辑
+     */
+    void cycleSideModeForNeutronCollector(Direction direction);
 }
 
