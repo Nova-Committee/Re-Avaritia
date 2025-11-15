@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.NeutronArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;

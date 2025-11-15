@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.common.item.misc.InfinityUmbrellaItem;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityCrossBowItem;

@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.common.item.iface.mode;
+package committee.nova.mods.avaritia.api.iface.item.mode;
 
 import committee.nova.mods.avaritia.api.utils.text.IHasTranslationKey;
 import net.minecraft.util.StringRepresentable;

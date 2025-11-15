@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.common.item.iface.IItemCapability;
+import committee.nova.mods.avaritia.api.iface.item.IItemCapability;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;

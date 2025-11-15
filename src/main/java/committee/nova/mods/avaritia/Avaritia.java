@@ -30,6 +30,7 @@ public class Avaritia {
         ModSounds.SOUNDS.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
+        ModParticles.PARTICLE_TYPES.register(modEventBus);
         ModRecipeTypes.RECIPES.register(modEventBus);
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModIngredients.INGREDIENT.register(modEventBus);

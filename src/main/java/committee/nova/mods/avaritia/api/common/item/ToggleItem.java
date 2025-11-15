@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.api.common.item;
 
 
-import committee.nova.mods.avaritia.api.common.item.iface.mode.IModeChanger;
+import committee.nova.mods.avaritia.api.iface.item.mode.IModeChanger;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
 import net.minecraft.sounds.SoundSource;

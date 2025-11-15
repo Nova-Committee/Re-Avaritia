@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.common.item.iface;
+package committee.nova.mods.avaritia.api.iface.item;
 
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 

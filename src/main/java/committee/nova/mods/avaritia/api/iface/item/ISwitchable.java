@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.iface;
+package committee.nova.mods.avaritia.api.iface.item;
 
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.core.component.DataComponents;

@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.common.item.iface.mode;
+package committee.nova.mods.avaritia.api.iface.item.mode;
 
 /**
  * @Project: Avaritia

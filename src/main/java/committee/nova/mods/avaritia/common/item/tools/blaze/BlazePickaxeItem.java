@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
-import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
+import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -34,7 +34,7 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazePickaxeItem extends PickaxeItem implements ITooltip, IItemMode<ToolMode>, IItemEnchant {
+public class BlazePickaxeItem extends PickaxeItem implements ITooltip, IItemMode<ToolMode>, InitEnchantItem {
     private final String name;
     private final InitEnchantment fire_aspect;
     private final InitEnchantment silk_touch;

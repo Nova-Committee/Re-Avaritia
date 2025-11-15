@@ -1,9 +1,9 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
+import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
-import committee.nova.mods.avaritia.common.entity.FireBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -33,7 +33,7 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeSwordItem extends SwordItem implements ITooltip, IItemEnchant {
+public class BlazeSwordItem extends SwordItem implements ITooltip, InitEnchantItem {
     private final String name;
     private final InitEnchantment initEnchantment;
 

@@ -1,11 +1,10 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.NeutronArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;

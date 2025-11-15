@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.registry.modes;
 
 import com.mojang.serialization.Codec;
-import committee.nova.mods.avaritia.api.common.item.iface.mode.IModeEnum;
+import committee.nova.mods.avaritia.api.iface.item.mode.IModeEnum;
 import committee.nova.mods.avaritia.api.utils.text.IHasTranslationKey;
 import committee.nova.mods.avaritia.init.registry.enums.ModLang;
 import io.netty.buffer.ByteBuf;
