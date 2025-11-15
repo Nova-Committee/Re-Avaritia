@@ -5,9 +5,6 @@
     "A": {
       "item": "avaritia:crystal_matrix"
     },
-    "B": {
-      "item": "avaritia:neutron"
-    },
     "C": {
       "item": "avaritia:crystal_matrix_ingot"
     },
@@ -22,15 +19,15 @@
     }
   },
   "pattern": [
-    "      NNN",
-    "     NIIN",
-    "    NIIIN",
-    "   NIIIN ",
-    "CCNIIIN  ",
-    " AACIN   ",
-    " ABAN    ",
-    " NAAC    ",
-    "X   C    "
+    "       II",
+    "      III",
+    "     III ",
+    "  C III  ",
+    "CCAIII   ",
+    " CAXI    ",
+    "  NAAC   ",
+    " N CC    ",
+    "A   C    "
   ],
   "result": {
     "item": "avaritia:infinity_sword"
