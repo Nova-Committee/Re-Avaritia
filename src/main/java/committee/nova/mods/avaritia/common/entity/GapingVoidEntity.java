@@ -69,7 +69,6 @@ public class GapingVoidEntity extends Entity {
 
     public GapingVoidEntity(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-//        setSharedFlagOnFire(true);
         noCulling = true;
         if (level() instanceof ServerLevel) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
@@ -141,8 +140,6 @@ public class GapingVoidEntity extends Entity {
 
     @Override
     public void tick() {
-        //super.tick();
-
         double posX = this.getX();
         double posY = this.getY();
         double posZ = this.getZ();
@@ -191,7 +188,6 @@ public class GapingVoidEntity extends Entity {
 
         // *slurping noises*
 
-        double particlespeed = 4.5;
         double size = getVoidScale(age) * 0.5 - 0.2;
         int range = (int) (size * suckRange);
         AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
