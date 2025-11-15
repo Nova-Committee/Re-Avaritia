@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -27,13 +28,16 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 17:57
  * Version: 1.0
  */
-public class BaseNeutronCompressorBlock extends BaseTileEntityBlock {
+public class NeutronCompressorBlock extends BaseTileEntityBlock {
     private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
 
-    public BaseNeutronCompressorBlock() {
+    public NeutronCompressorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);
-
+        this.registerDefaultState(
+                this.stateDefinition.any()
+                        .setValue(FACING, Direction.NORTH)
+        );
     }
 
     @Nullable

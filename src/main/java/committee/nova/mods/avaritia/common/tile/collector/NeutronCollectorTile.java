@@ -18,7 +18,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,13 +30,13 @@ import org.jetbrains.annotations.Nullable;
  * Date: 2022/4/2 13:55
  * Version: 1.0
  */
-public class BaseNeutronCollectorTile extends BaseInventoryTileEntity implements WorldlyContainer {
+public class NeutronCollectorTile extends BaseInventoryTileEntity implements WorldlyContainer {
     public final ItemStackWrapper inventory;
     public SimpleContainerData data = new SimpleContainerData(1);
     private int progress;
     private CollectorTier tier;
 
-    public BaseNeutronCollectorTile(BlockPos pos, BlockState state) {
+    public NeutronCollectorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_collector_tile.get(), pos, state);
         this.inventory = createInventoryHandler((slot) -> this.setChangedAndDispatch());
         if (state.is(ModBlocks.neutron_collector.get())) {
@@ -51,7 +50,7 @@ public class BaseNeutronCollectorTile extends BaseInventoryTileEntity implements
         }
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, BaseNeutronCollectorTile tile) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, NeutronCollectorTile tile) {
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
             var stack = tile.tier.production.getItems()[0];

@@ -1,6 +1,5 @@
-package committee.nova.mods.avaritia.common.block.extreme;
+package committee.nova.mods.avaritia.common.block.misc;
 
-import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.core.BlockPos;
@@ -31,13 +30,13 @@ public class BlazeCubeBlock extends ResourceBlock {
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    protected void tick(@NotNull BlockState state, @NotNull ServerLevel level, BlockPos pos, @NotNull RandomSource random) {
         BubbleColumnBlock.updateColumn(level, pos.above(), state);
     }
 
 
     @Override
-    protected @NotNull BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+    protected @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         if (facing == Direction.UP && facingState.is(Blocks.WATER)) {
             level.scheduleTick(currentPos, this, 20);
         }

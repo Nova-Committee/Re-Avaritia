@@ -18,8 +18,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -28,6 +31,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -129,6 +133,11 @@ public class ExtremeAnvilBlock extends FallingBlock{
         if (!pFallingBlock.isSilent()) {
             pLevel.levelEvent(1029, pPos, 0);
         }
+
+        if (!pLevel.isClientSide && pLevel.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+            ItemStack itemStack = new ItemStack(this);
+            Block.popResource(pLevel, pPos, itemStack);
+        }
     }
 
     @Override
@@ -147,7 +156,18 @@ public class ExtremeAnvilBlock extends FallingBlock{
     }
 
     @Override
+    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
+        return false;
+    }
+
+    @Override
     public int getDustColor(BlockState pState, @NotNull BlockGetter pReader, @NotNull BlockPos pPos) {
         return pState.getMapColor(pReader, pPos).col;
     }
+    @Override
+    public boolean dropFromExplosion(@NotNull Explosion pExplosion) {
+        return false;
+    }
+
+
 }
