@@ -3,8 +3,12 @@ package committee.nova.mods.avaritia.core.chest;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -185,6 +189,20 @@ public class InfinityChestContainer extends SimpleContainer {
 
             } else this.setItem(j, ItemStack.EMPTY);
         }
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int index) {
+        if (index < 0 || index >= viewingObject.size()) return ItemStack.EMPTY;
+        String itemId = viewingObject.get(index);
+        if (itemId == null || itemId.isEmpty()) return ItemStack.EMPTY;
+
+        Item item = StorageUtils.getItem(itemId);
+        long count = this.menu.chest.storageItems.getOrDefault(itemId, 0L);
+        Tag tag = this.menu.chest.nbtDataCache.get(itemId);
+        ItemStack itemStack = new ItemStack(item, (int) Math.min(Integer.MAX_VALUE, count));
+        if (tag instanceof CompoundTag cTag) itemStack.setTag(cTag);
+        return itemStack;
     }
 
     @Override

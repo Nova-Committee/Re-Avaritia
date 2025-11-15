@@ -71,7 +71,16 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         //虚拟储存物品格41 ~ 118
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 15; j++) {
-                this.addSlot(new FakeSlot(chestContainer, i * 15 + j, 8 + j * 18, 16 + i * 18));
+                this.addSlot(new FakeSlot(chestContainer, i * 15 + j, 8 + j * 18, 16 + i * 18)
+                {
+                    @Override
+                    public ItemStack getItem()
+                    {
+                        ItemStack itemStack = super.getItem();
+                        itemStack.setCount(1);
+                        return itemStack;
+                    }
+                });
             }
         }
     }
