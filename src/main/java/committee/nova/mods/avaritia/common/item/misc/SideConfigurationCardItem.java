@@ -75,7 +75,7 @@ public class SideConfigurationCardItem extends Item {
         // 检查是否是实现了ITileIO接口的机器
         if (player.isShiftKeyDown()){
             if (blockEntity instanceof ITileIO tileIO) {
-                if (!stack.getTag().contains("SideConfig")) {
+                if (!stack.getOrCreateTag().contains("SideConfig")) {
                     // Shift+右键：读取配置
                     SideConfiguration config = tileIO.getSideConfiguration();
                     saveConfigToItem(stack, config);
