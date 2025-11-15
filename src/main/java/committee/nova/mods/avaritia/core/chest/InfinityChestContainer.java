@@ -157,8 +157,7 @@ public class InfinityChestContainer extends SimpleContainer {
                         this.setItem(j, stack);
                     } else {
                         // 如果超出范围，使用基础物品
-                        String baseItemId = StorageUtils.getBaseItemId(id);
-                        ItemStack stack = new ItemStack(StorageUtils.getItem(baseItemId));
+                        ItemStack stack = new ItemStack(StorageUtils.getItem(id));
                         this.setItem(j, stack);
                     }
                 }
@@ -197,10 +196,9 @@ public class InfinityChestContainer extends SimpleContainer {
         String itemId = viewingObject.get(index);
         if (itemId == null || itemId.isEmpty()) return ItemStack.EMPTY;
 
-        Item item = StorageUtils.getItem(itemId);
         long count = this.menu.chest.storageItems.getOrDefault(itemId, 0L);
         Tag tag = this.menu.chest.nbtDataCache.get(itemId);
-        ItemStack itemStack = new ItemStack(item, (int) Math.min(Integer.MAX_VALUE, count));
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), (int) Math.min(Integer.MAX_VALUE, count));
         if (tag instanceof CompoundTag cTag) itemStack.setTag(cTag);
         return itemStack;
     }

@@ -34,14 +34,13 @@ public abstract class ChestHandler implements IItemHandler {
         slotItemTemp = new ItemStack[itemKeys.length];
         for (int i = 0; i < itemKeys.length; i++) {
             String key = itemKeys[i];
-            String baseItemId = StorageUtils.getBaseItemId(key);
-            ItemStack stack = new ItemStack(StorageUtils.getItem(baseItemId));
+            ItemStack stack = new ItemStack(StorageUtils.getItem(key));
 
             // 如果键包含NBT哈希，恢复NBT数据
             if (key.contains("#")) {
                 Tag nbtData = nbtDataCache.get(key);
-                if (nbtData instanceof CompoundTag) {
-                    stack.setTag((CompoundTag) nbtData);
+                if (nbtData instanceof CompoundTag tag) {
+                    stack.setTag(tag);
                 }
             }
 
@@ -211,14 +210,10 @@ public abstract class ChestHandler implements IItemHandler {
             onItemChanged(itemId, false);
         } else {
             storageItems.remove(itemId);
-//            if (nbtDataCache.containsKey(itemId)) {
-//                nbtDataCache.remove(itemId);
-//            }
             count = (int) storageCount;
             onItemChanged(itemId, true);
         }
-        String baseItemId = StorageUtils.getBaseItemId(itemId);
-        ItemStack result = new ItemStack(StorageUtils.getItem(baseItemId), count);
+        ItemStack result = new ItemStack(StorageUtils.getItem(itemId), count);
 
         // 如果有NBT数据，恢复它
         if (nbtDataCache.containsKey(itemId)) {
@@ -237,8 +232,7 @@ public abstract class ChestHandler implements IItemHandler {
      */
     public ItemStack saveTakeItem(String itemId, int count) {
         if (!storageItems.containsKey(itemId) || itemId.equals("minecraft:air") || count == 0) return ItemStack.EMPTY;
-        String baseItemId = StorageUtils.getBaseItemId(itemId);
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(baseItemId), 1);
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
         count = Integer.min(count, itemStack.getMaxStackSize());
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -246,9 +240,6 @@ public abstract class ChestHandler implements IItemHandler {
             onItemChanged(itemId, false);
         } else {
             storageItems.remove(itemId);
-//            if (nbtDataCache.containsKey(itemId)) {
-//                nbtDataCache.remove(itemId);
-//            }
             count = (int) storageCount;
             onItemChanged(itemId, true);
         }
@@ -268,8 +259,7 @@ public abstract class ChestHandler implements IItemHandler {
 
     public ItemStack saveTakeItem(String itemId, boolean half) {
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        String baseItemId = StorageUtils.getBaseItemId(itemId);
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(baseItemId), 1);
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
         int count = half ? (itemStack.getMaxStackSize() + 1) / 2 : itemStack.getMaxStackSize();
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {
@@ -277,9 +267,6 @@ public abstract class ChestHandler implements IItemHandler {
             onItemChanged(itemId, false);
         } else {
             storageItems.remove(itemId);
-//            if (nbtDataCache.containsKey(itemId)) {
-//                nbtDataCache.remove(itemId);
-//            }
             count = (int) storageCount;
             onItemChanged(itemId, true);
         }
@@ -394,8 +381,7 @@ public abstract class ChestHandler implements IItemHandler {
         if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
         String itemId = itemKeys[slot - 27];
         if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        String baseItemId = StorageUtils.getBaseItemId(itemId);
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(baseItemId), 1);
+        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), 1);
         int count = Math.min(itemStack.getMaxStackSize(), amount);
         long storageCount = storageItems.get(itemId);
         if (count < storageCount) {

@@ -66,7 +66,7 @@ public class StorageUtils {
     public static Item getItem(String id) {
         if (ID_ITEM_MAP.containsKey(id)) return ID_ITEM_MAP.get(id);
         else {
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(getBaseItemId(id)));
             if (item == null || item.equals(Items.AIR)) return Items.AIR;
             ID_ITEM_MAP.put(id, item);
             ITEM_ID_MAP.put(item, id);

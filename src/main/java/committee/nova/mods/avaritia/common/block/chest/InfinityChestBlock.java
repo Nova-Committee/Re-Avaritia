@@ -159,13 +159,10 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
 
     @Override
     public void playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
-        if (!pLevel.isClientSide() && pPlayer.isCreative() && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof InfinityChestTile infinityChestTile) {
-                ItemStack stack = new ItemStack(this);
-                infinityChestTile.saveToItem(stack);
-                popResource(pLevel, pPos, stack);
-            }
+        if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof InfinityChestTile infinityChestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+            ItemStack stack = new ItemStack(this);
+            infinityChestTile.saveToItem(stack);
+            popResource(pLevel, pPos, stack);
         }
         super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
