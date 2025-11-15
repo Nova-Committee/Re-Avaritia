@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -89,7 +90,6 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag unused) {
-        ICapabilityProvider provider = InventoryUtils.createCurioProvider(stack, unused);
-        return provider != null ? provider : super.initCapabilities(stack, unused);
+        return ModList.get().isLoaded("curios") ? InventoryUtils.createCurioProvider(stack, unused) : super.initCapabilities(stack, unused);
     }
 }

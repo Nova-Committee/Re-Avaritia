@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.items.ItemHandlerHelper;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
@@ -164,7 +165,7 @@ public class InventoryUtils {
      * @return 找到的值
      */
     public static ItemStack findItemInInv(Player player, Predicate<ItemStack> is, Function<ItemStack, ItemStack> map) {
-        if (curios) {
+        if (ModList.get().isLoaded("curios")) {
             AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
             CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
                 s.set(curiosInventory.findCurios(is));
@@ -192,7 +193,7 @@ public class InventoryUtils {
      * @return ICapabilityProvider
      */
     public static ICapabilityProvider createCurioProvider(ItemStack stack, CompoundTag unused) {
-        if (curios) {
+        if (ModList.get().isLoaded("curios")) {
             return CuriosApi.createCurioProvider(new ICurio() {
                 @Override
                 public ItemStack getStack() {
