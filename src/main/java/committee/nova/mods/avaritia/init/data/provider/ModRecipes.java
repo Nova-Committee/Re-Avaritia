@@ -548,7 +548,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('a', Items.NETHERITE_SCRAP)
                 .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer, Const.rl("diamond_lattice_normal"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.side_config_card.get())
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.side_config_card.get(),1)
                 .pattern("iii")
                 .pattern("iai")
                 .pattern(" b ")
