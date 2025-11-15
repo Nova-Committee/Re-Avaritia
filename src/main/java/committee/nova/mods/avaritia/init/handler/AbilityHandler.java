@@ -33,7 +33,7 @@ import static net.minecraft.world.entity.EquipmentSlot.*;
  * Date: 2022/4/21 15:38
  * Version: 1.0
  */
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class AbilityHandler {
 
     public static final Set<String> entitiesWithHelmets = new HashSet<>();

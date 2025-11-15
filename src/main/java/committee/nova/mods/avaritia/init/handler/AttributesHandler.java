@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.entity.InfinityGolem;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,7 +15,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
  * @description
  * @date 2024/4/5 11:37
  */
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class AttributesHandler {
 
     @SubscribeEvent

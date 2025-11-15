@@ -18,6 +18,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.RecipeMatcher;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
@@ -30,9 +31,9 @@ import java.util.function.BiFunction;
  */
 public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     @Getter
-    private final NonNullList<Ingredient> inputs;
-    private final ItemStack result;
-    private final int tier;
+    public final NonNullList<Ingredient> inputs;
+    public final ItemStack result;
+    public final int tier;
     private BiFunction<Integer, ItemStack, ItemStack> transformer;
 
     public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result) {
@@ -51,30 +52,6 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public boolean matches(@NotNull TierInput input, @NotNull Level level) {
-        if (this.tier != 0 && this.tier != input.tier())
-            return false;
-
-        if (this.inputs.size() != input.ingredientCount())
-            return false;
-
-        var inputs = NonNullList.<ItemStack>create();
-
-        for (var i = 0; i < input.size(); i++) {
-            var item = input.getItem(i);
-            if (!item.isEmpty()) {
-                inputs.add(item);
-            }
-        }
-
-        return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs, this.inputs) != null;
-    }
-
-    @Override
-    public @NotNull ItemStack assemble(@NotNull TierInput input, HolderLookup.@NotNull Provider registries) {
-        return this.result.copy();
-    }
-    @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;
     }
@@ -89,22 +66,40 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
         return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
     }
 
-
     @Override
     public boolean canCraftInDimensions(int width, int height) {
         return width * height >= this.inputs.size();
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(TierInput inventory) {
-        var remaining = NonNullList.withSize(inventory.size(), ItemStack.EMPTY);
+    public @NotNull ItemStack assemble(@NotNull TierInput input, HolderLookup.@NotNull Provider registries) {
+        return this.result.copy();
+    }
+    @Override
+    public boolean matches(@NotNull TierInput input, @NotNull Level level) {
+        if (this.tier != 0 && this.tier != input.tier())
+            return false;
 
-        for (int i = 0; i < remaining.size(); ++i) {
-            var item = inventory.getItem(i);
-            if (item.hasCraftingRemainingItem()) {
-                remaining.set(i, item.getCraftingRemainingItem());
+        if (this.inputs.size() != input.ingredientCount())
+            return false;
+
+        var inputs = NonNullList.<ItemStack>create();
+        int matched = 0;
+
+        for (var i = 0; i < input.size(); i++) {
+            var item = input.getItem(i);
+            if (!item.isEmpty()) {
+                inputs.add(item);
+                matched++;
             }
         }
+
+        return matched == this.inputs.size() && RecipeMatcher.findMatches(inputs, this.inputs) != null;
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getRemainingItems(TierInput inventory) {
+        var remaining = ITierCraftingRecipe.super.getRemainingItems(inventory);
 
         if (this.transformer != null) {
             var used = new boolean[remaining.size()];

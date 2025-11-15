@@ -7,12 +7,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
+import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
+import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -36,7 +40,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -54,24 +60,18 @@ import java.util.TreeSet;
 @EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
+    public static long lastTime = System.currentTimeMillis();
+    public static int renderTime = 0;
+    public static float renderFrame = 0;
+    public static boolean inventoryRender = false;
+    private static float darknessIntensity = 0.0f;
     private static boolean keepFlying = false;
-    // 定义按键绑定
-    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
-            InputConstants.KEY_H, CATEGORIES);
+
+    // region 定义按键绑定
+    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
-
-    public static final KeyMapping SORT_0 = new KeyMapping("key.avaritia.infinity_chest.sort0", InputConstants.KEY_0, CATEGORIES);
-    public static final KeyMapping SORT_1 = new KeyMapping("key.avaritia.infinity_chest.sort1", InputConstants.KEY_1, CATEGORIES);
-    public static final KeyMapping SORT_2 = new KeyMapping("key.avaritia.infinity_chest.sort2", InputConstants.KEY_2, CATEGORIES);
-    public static final KeyMapping SORT_3 = new KeyMapping("key.avaritia.infinity_chest.sort3", InputConstants.KEY_3, CATEGORIES);
-    public static final KeyMapping SORT_4 = new KeyMapping("key.avaritia.infinity_chest.sort4", InputConstants.KEY_4, CATEGORIES);
-    public static final KeyMapping SORT_5 = new KeyMapping("key.avaritia.infinity_chest.sort5", InputConstants.KEY_5, CATEGORIES);
-    public static final KeyMapping SORT_6 = new KeyMapping("key.avaritia.infinity_chest.sort6", InputConstants.KEY_6, CATEGORIES);
-    public static final KeyMapping SORT_7 = new KeyMapping("key.avaritia.infinity_chest.sort7", InputConstants.KEY_7, CATEGORIES);
-    public static final KeyMapping SORT_8 = new KeyMapping("key.avaritia.infinity_chest.sort8", InputConstants.KEY_8, CATEGORIES);
-    public static final KeyMapping SORT_9 = new KeyMapping("key.avaritia.infinity_chest.sort9", InputConstants.KEY_9, CATEGORIES);
-
-    private static int infinityElytraCooldown = 0;
+    public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);
+    // endregion
 
     /**
      * 在客户端Tick事件触发时执行
@@ -79,44 +79,64 @@ public class AvaritiaForgeClient {
      * @param event 客户端Tick事件
      */
     @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
-
-
+    public static void onClientTickPost(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        LocalPlayer player = Minecraft.getInstance().player;
-        // 检测并消费点击事件
-        while (FILTER_KEY.consumeClick() && player != null) {
-            // 打开界面
+        Player player = mc.player;
+        Level level = mc.level;
+        if (player == null || level == null) return;
+
+        while (CONFIG_KEY.consumeClick()) {
+            mc.setScreen(new AvaritiaConfigScreen(mc.screen));
+        }
+
+        // region filter 过滤界面
+        while (FILTER_KEY.consumeClick()) {
             if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof IFilterItem) {
                 Minecraft.getInstance().setScreen(new ItemFilterScreen());
             }
         }
-        while (RING_KEY.consumeClick() && player != null) {
-            PacketDistributor.sendToServer(new C2SOpenRingPack());
+        // endregion
+
+        if (!Minecraft.getInstance().isPaused()) {
+            ++renderTime;
         }
 
         handleInfinityElytraFallFlying(mc, player);
+
+        //计算黑暗强度
+        calculateDarknessIntensity(player, level);
+
+        singularityIconTimer();
     }
 
-    public static void handleInfinityElytraFallFlying(Minecraft mc, Player player) {
-        if (player == null) return;
 
-        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+    /**
+     * 处理无限鞘翅飞行逻辑
+     *
+     * @param mc     Minecraft客户端实例
+     * @param player 当前玩家对象
+     */
+    public static void handleInfinityElytraFallFlying(Minecraft mc, Player player) {
+        // 检查玩家是否装备了无限鞘翅
+        if (!(player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.infinity_elytra.get())) {
             keepFlying = false;
             return;
         }
 
         boolean isFlying = player.isFallFlying();
 
+        // 如果按下跳跃键，则停止飞行
         if (mc.options.keyJump.isDown()) {
             keepFlying = false;
             return;
         }
 
+        // 开始记录飞行状态
         if (isFlying && !keepFlying) {
             keepFlying = true;
         }
 
+        // 处理着陆逻辑：当玩家着陆时造成范围伤害
         if (keepFlying && player.onGround()) {
             keepFlying = false;
 
@@ -124,7 +144,7 @@ public class AvaritiaForgeClient {
             List<LivingEntity> nearby = player.level().getEntitiesOfClass(
                     LivingEntity.class,
                     player.getBoundingBox().inflate(radius),
-                    e -> e != player && !e.isInvulnerable()
+                    e -> e != player // 不伤害自己
             );
 
             for (LivingEntity target : nearby) {
@@ -133,12 +153,15 @@ public class AvaritiaForgeClient {
             return;
         }
 
+        // 维持飞行状态并控制飞行速度
         if (keepFlying) {
-            if (player.isFallFlying()) {
-                Vec3 look = player.getLookAngle().normalize();
-                double FLY_SPEED = ModConfig.infinityElytraFlyingSpeed.get();
-                player.setDeltaMovement(look.x * FLY_SPEED, look.y * FLY_SPEED, look.z * FLY_SPEED);
+            if (!player.isFallFlying()) {
+                player.startFallFlying();
             }
+
+            Vec3 look = player.getLookAngle().normalize();
+            double FLY_SPEED = ModConfig.infinityElytraFlyingSpeed.get();
+            player.setDeltaMovement(look.x * FLY_SPEED, look.y * FLY_SPEED, look.z * FLY_SPEED);
         }
     }
 
@@ -201,41 +224,81 @@ public class AvaritiaForgeClient {
             }
         }
     }
-//终望珍珠渲染
-    @SubscribeEvent
-    public static void onRenderOverlay(RenderGuiEvent.Pre event) {
-        Minecraft mc = Minecraft.getInstance();
-        Player player = mc.player;
-        if (player == null || mc.level == null) return;
+    /**
+     * 渲染黑暗遮罩
+     *
+     * @param guiGraphics GUI图形对象
+     * @param width       屏幕宽度
+     * @param height      屏幕高度
+     * @param intensity   黑暗强度
+     */
+    private static void renderDarknessOverlay(GuiGraphics guiGraphics, int width, int height, float intensity) {
+        // 使用纯黑色渲染一个覆盖整个屏幕的矩形，透明度由intensity决定
+        int alpha = (int) (intensity * 255);
+        if (alpha > 255) alpha = 255;
+        guiGraphics.fill(0, 0, width, height, (alpha << 24) | 0x000000);
+    }
 
-        final double START_DISTANCE = 6.0;  // 开始变黑的距离
-        final double FULL_DISTANCE = 4.0;   // 完全黑暗的距离
+    public static final IGuiOverlay DARKNESS_OVERLAY = (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
+        if (darknessIntensity > 0.01f) {
+            renderDarknessOverlay(guiGraphics, screenWidth, screenHeight, darknessIntensity);
+        }
+    };
 
-        List<GapingVoidEntity> voids = mc.level.getEntitiesOfClass(GapingVoidEntity.class,
-                player.getBoundingBox().inflate(START_DISTANCE + 10));
+    /**
+     * 计算玩家附近终望珍珠的黑暗强度
+     *
+     * @param player 玩家
+     * @param level  世界
+     */
+    private static void calculateDarknessIntensity(Player player, Level level) {
 
-        float maxDarkness = 0.0f;
-        for (GapingVoidEntity gap : voids) {
-            double distance = player.distanceTo(gap);
+        Vec3 playerPos = player.position();
+        double maxDistance = 10.0;  //渲染最大距离
+        float maxIntensity = 0.0f;
 
-            if (distance <= START_DISTANCE) {
 
-                float darkness = (float) ((START_DISTANCE - distance) / (START_DISTANCE - FULL_DISTANCE));
-                darkness = Math.max(0.0f, Math.min(1.0f, darkness));
-                maxDarkness = Math.max(maxDarkness, darkness);
+        for (GapingVoidEntity pearl : level.getEntitiesOfClass(GapingVoidEntity.class, player.getBoundingBox().inflate(maxDistance))) {
+            double distance = playerPos.distanceTo(pearl.position());
+            if (distance < maxDistance) {
+
+                //(distance-x)/y,x是完全黑屏的距离,y则是maxDistance-x
+                float intensity = (float) Math.max(0.0, 1.0 - Math.max(0.0, (distance - 4.0) / 6.0));
+                if (intensity > maxIntensity) {
+                    maxIntensity = intensity;
+                }
             }
         }
 
-        if (maxDarkness > 0) {
-            GuiGraphics guiGraphics = event.getGuiGraphics();
-            Window window = mc.getWindow();
-
-            int screenWidth = window.getGuiScaledWidth();
-            int screenHeight = window.getGuiScaledHeight();
-
-            int alpha = (int) (maxDarkness * 255);
-            if (alpha > 255) alpha = 255;
-            guiGraphics.fill(0, 0, screenWidth, screenHeight, (alpha << 24));
+        // 平滑过渡效果
+        if (maxIntensity > darknessIntensity) {
+            darknessIntensity = Math.min(maxIntensity, darknessIntensity + 0.05f); // 渐强
+        } else if (maxIntensity < darknessIntensity) {
+            darknessIntensity = Math.max(maxIntensity, darknessIntensity - 0.05f); // 渐弱
         }
+    }
+
+    private static void singularityIconTimer(){
+        if (renderTime % 20 != 0) return;
+        if (SingularityItem.enabledSingularities != null && !SingularityItem.enabledSingularities.isEmpty()) {
+            SingularityItem.currentSingularityIndex.set((SingularityItem.currentSingularityIndex.get() + 1) % SingularityItem.enabledSingularities.size());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderTickStart(RenderFrameEvent.Pre event) {
+        if (!Minecraft.getInstance().isPaused()) {
+            renderFrame = event.getPartialTick().getGameTimeDeltaTicks();
+        }
+    }
+
+    @SubscribeEvent
+    public static void drawScreenPre(final ScreenEvent.Render.Pre e) {
+        inventoryRender = true;
+    }
+
+    @SubscribeEvent
+    public static void drawScreenPost(final ScreenEvent.Render.Post e) {
+        inventoryRender = false;
     }
 }

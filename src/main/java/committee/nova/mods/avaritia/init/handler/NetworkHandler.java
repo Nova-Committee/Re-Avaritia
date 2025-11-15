@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -13,7 +14,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
  * Date: 2022/4/2 13:07
  * Version: 1.0
  */
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class NetworkHandler {
     @SubscribeEvent
     public static void init(RegisterPayloadHandlersEvent event) {

@@ -37,6 +37,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
@@ -457,6 +458,7 @@ public class ToolUtils {
         toAttack.stream()
                 .filter(entity -> entity instanceof Mob)
                 .filter(entity -> !entity.getType().is(ModTags.NEUTRAL_CREATURES))
+                .filter(entity -> !(entity instanceof Villager))
                 .forEach(entity -> {
                     if (entity instanceof Mob mob) {
                         if (mob instanceof Animal animal && hurtAnimal) {

@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -55,7 +56,7 @@ import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
  * Date: 2022/3/31 10:46
  * Version: 1.0
  */
-@EventBusSubscriber
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class InfinityHandler {
     @SubscribeEvent
     public static void onPlayerMine(PlayerInteractEvent.LeftClickBlock event) {

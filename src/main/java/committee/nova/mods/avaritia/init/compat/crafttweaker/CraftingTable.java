@@ -63,7 +63,7 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
 
         var pattern = new ShapedRecipePattern(width, height, ingredients, Optional.empty());
         var recipe = new ShapedTableCraftingRecipe(pattern, output.getInternal(), tier);
-        recipe.setTransformer((x, y, stack) -> inputs[y][x].getRemainingItem(new MCItemStack(stack)).getInternal());
+        recipe.setTransformers((x, y, stack) -> inputs[y][x].getRemainingItem(new MCItemStack(stack)).getInternal());
 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this, new RecipeHolder<>(id, recipe)));
     }

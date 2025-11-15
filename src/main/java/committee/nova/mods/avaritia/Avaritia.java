@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -41,7 +40,7 @@ public class Avaritia {
 
     public void setup(final FMLCommonSetupEvent event) {
         //if (Static.isLoad("projecte")) ModEMCHandler.init();
-        SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
+//        SingularityRegistryHandler.getInstance().writeDefaultSingularityFiles();
         //DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }
 

@@ -32,7 +32,7 @@ public class ClientPacketListenerMixin {
             at = {@At("RETURN")},
             method = {"<init>"}
     )
-    public void cucumber$constructor(Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie, CallbackInfo ci) {
+    public void avaritia$constructor(Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie, CallbackInfo ci) {
         RecipeUtils.setRecipeManager(this.recipeManager);
     }
 }

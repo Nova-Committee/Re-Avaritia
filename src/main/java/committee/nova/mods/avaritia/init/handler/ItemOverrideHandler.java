@@ -25,7 +25,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
  * Date: 2022/3/31 19:50
  * Version: 1.0
  */
-@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class ItemOverrideHandler {
 
     @SubscribeEvent
