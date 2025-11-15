@@ -57,7 +57,7 @@ import java.util.TreeSet;
  * Description
  */
 
-@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
     public static long lastTime = System.currentTimeMillis();

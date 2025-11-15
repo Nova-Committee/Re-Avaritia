@@ -18,6 +18,7 @@ public class ImmortalItemEntity extends ItemEntity {
         super(type, level);
         this.lifespan = Integer.MAX_VALUE;
         this.setPickUpDelay(0);
+        this.setUnlimitedLifetime();
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
@@ -52,7 +53,7 @@ public class ImmortalItemEntity extends ItemEntity {
 
     private void findClosestPlayer() {
         Player closestPlayer = null;
-        double closestDistance = ModConfig.endlessItemEntityRange.get();
+        double closestDistance = ModConfig.immortalItemEntityRange.get();
 
         for (Player player : this.level().players()) {
             double distance = this.distanceToSqr(player);
@@ -76,7 +77,7 @@ public class ImmortalItemEntity extends ItemEntity {
         Vec3 direction = playerPos.subtract(itemPos).normalize();
 
         double distance = this.distanceTo(this.followingPlayer);
-        double speed = Math.min(distance * 0.1D, ModConfig.endlessItemEntitySpeed.get());
+        double speed = Math.min(distance * 0.1D, ModConfig.immortalItemEntitySpeed.get());
 
         this.setDeltaMovement(direction.scale(speed));
 
@@ -111,7 +112,7 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean canChangeDimensions(Level oldLevel, Level newLevel) {
+    public boolean canChangeDimensions(@NotNull Level oldLevel, @NotNull Level newLevel) {
         return false;
     }
 

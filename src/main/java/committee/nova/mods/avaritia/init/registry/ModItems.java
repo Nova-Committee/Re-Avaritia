@@ -45,6 +45,7 @@ public class ModItems {
     public static DeferredItem<Item> infinity_bucket = item("infinity_bucket", InfinityBucketItem::new);
     public static DeferredItem<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     public static DeferredItem<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
+    public static DeferredItem<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
     //crystal
     public static DeferredItem<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
     public static DeferredItem<Item> crystal_hoe = item("crystal_hoe", CrystalHoeItem::new);

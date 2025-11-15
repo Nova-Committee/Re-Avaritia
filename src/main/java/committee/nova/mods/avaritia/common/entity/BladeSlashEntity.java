@@ -57,7 +57,7 @@ public class BladeSlashEntity extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
 
     }
 

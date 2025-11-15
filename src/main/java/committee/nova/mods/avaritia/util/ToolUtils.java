@@ -37,6 +37,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -53,6 +54,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
@@ -60,6 +62,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -456,33 +459,65 @@ public class ToolUtils {
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = ModDamageTypes.causeRandomDamage(player);
         toAttack.stream()
-                .filter(entity -> entity instanceof Mob)
-                .filter(entity -> !entity.getType().is(ModTags.NEUTRAL_CREATURES))
-                .filter(entity -> !(entity instanceof Villager))
+                .filter(entity -> {
+                    boolean attack = ModConfig.isSwordAttackItemEntity.get();
+                    if (attack == false) {
+                        return !(entity instanceof ItemEntity);
+                    } else return true;
+                })
+                .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
+                .filter(entity -> {
+                    if (hurtAnimal) {
+                        return true;
+                    } else {
+                        return entity instanceof Enemy && !entity.getType().is(ModTags.NEUTRAL_CREATURES);
+                    }
+                })
                 .forEach(entity -> {
-                    if (entity instanceof Mob mob) {
-                        if (mob instanceof Animal animal && hurtAnimal) {
-                            animal.hurt(src, damage);
-                        } else if (mob instanceof EnderDragon dragon) {
+                    if (entity instanceof LivingEntity livingEntity) {
+                        if (livingEntity instanceof EnderDragon dragon) {
                             dragon.setHealth(0);
-                        } else if (mob instanceof WitherBoss wither) {
+                        } else if (livingEntity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
                             wither.hurt(src, damage);
-                        } else if (!(mob instanceof Animal)) {
-                            mob.hurt(src, damage);
+                        } else {
+                            livingEntity.hurt(src, damage);
                         }
+                    } else if (entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
+                        entity.discard();
+                    } else if (entity instanceof Entity) {
+                        entity.hurt(src, damage);
                     }
-                    LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
-                    if (lightOn && lightningbolt != null) {
-                        if (!(entity instanceof Animal && hurtAnimal)) {
-                            lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
-                            lightningbolt.setCause(player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
-                            player.level().addFreshEntity(lightningbolt);
-                        }
-                    }
-        });
+                    if (lightOn) trySummonLightning(player.level(), 1, entity.blockPosition(),
+                            player instanceof ServerPlayer serverPlayer ? serverPlayer : null);
+                });
     }
 
+    /**
+     * 尝试在指定位置召唤闪电
+     *
+     * @param level 世界对象，用于创建和添加实体
+     * @param bolts 生成的闪电数量
+     * @param hitPos 闪电生成的位置
+     * @param thrower 可为空的服务器玩家对象，作为闪电的施放者
+     * @return 如果成功生成至少一个闪电则返回true，否则返回false
+     */
+    public static boolean trySummonLightning(Level level, int bolts, BlockPos hitPos, @Nullable ServerPlayer thrower) {
+        if (level instanceof ServerLevel serverLevel){
+            boolean hasAction = false;
+            for (int i = 0; i < bolts; i++) {
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                if (lightning != null) {
+                    lightning.moveTo(Vec3.atBottomCenterOf(hitPos));
+                    lightning.setCause(thrower);
+                    serverLevel.addFreshEntity(lightning);
+                }
+                hasAction = true;
+            }
+            return hasAction;
+        }
+        return false;
+    }
 
     /**
      * 范围收获
@@ -790,6 +825,35 @@ public class ToolUtils {
                     break;
                 }
                 ticker.tick(level, pos, targetState, blockEntity);
+            }
+        }
+    }
+
+    /**
+     * 加速方块实体和更新
+     *
+     * @param level 世界
+     * @param pos   被加速方块位置
+     * @param be    被加速的实体
+     * @param times 随机刻
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void accelerateBlockEntity(ServerLevel level, BlockPos pos, BlockEntity be, int times) {
+        if (be.isRemoved()) return;
+        BlockState state = level.getBlockState(pos);
+        Block block = state.getBlock();
+
+        if (block instanceof EntityBlock entityBlock) {
+            BlockEntityType type = be.getType();
+            BlockEntityTicker ticker = entityBlock.getTicker(level, state, type);
+
+            if (ticker != null) {
+                for (int i = 0; i < times; i++) {
+                    ticker.tick(level, pos, state, be);
+                    if (be.isRemoved()) break;
+                }
+                be.setChanged();
+                level.sendBlockUpdated(pos, state, state, 3);
             }
         }
     }

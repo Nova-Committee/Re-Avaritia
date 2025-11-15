@@ -23,6 +23,7 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue swordRangeDamage;
     public static final ModConfigSpec.IntValue swordAttackRange;
     public static final ModConfigSpec.BooleanValue isSwordAttackAnimal;
+    public static final ModConfigSpec.BooleanValue isSwordAttackItemEntity;
     public static final ModConfigSpec.BooleanValue isSwordAttackLightning;
     public static final ModConfigSpec.BooleanValue isSwordAttackEndless;
     public static final ModConfigSpec.IntValue subArrowDamage;
@@ -54,8 +55,8 @@ public class ModConfig {
 
     public static final ModConfigSpec.BooleanValue useAdvanceTooltips;
     public static final ModConfigSpec.BooleanValue useModDifficulty;
-    public static final ModConfigSpec.DoubleValue endlessItemEntityRange;
-    public static final ModConfigSpec.DoubleValue endlessItemEntitySpeed;
+    public static final ModConfigSpec.DoubleValue immortalItemEntityRange;
+    public static final ModConfigSpec.DoubleValue immortalItemEntitySpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingSpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingRangeDamage;
 
@@ -72,6 +73,7 @@ public class ModConfig {
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
         isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
+        isSwordAttackItemEntity = buildBoolean(common, "config.avaritia.is_sword_attack_item_entity", false, "config.avaritia.is_sword_attack_item_entity.tooltip");
         isSwordAttackLightning = buildBoolean(common, "Is Sword Cause Lightning", false, "Does the right key spawn lightning with range of attack");
         isSwordAttackEndless = buildBoolean(common, "Is Sword Cause Endless damage", true, "Does the right key cause infinity damage");
         subArrowDamage = buildInt(common, "Sub Arrow Damage", 10000, 100, 100000, "Infinity bow scattering light arrow damage");
@@ -108,8 +110,8 @@ public class ModConfig {
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
         useModDifficulty = buildBoolean(common, "Use Mod Difficulty", true, "For some mods");
-        endlessItemEntityRange = buildDouble(common, "Endless ItemEntity Range", 1000, 1, 10000, "The range of Endless ItemEntity");
-        endlessItemEntitySpeed = buildDouble(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
+        immortalItemEntityRange = buildDouble(common, "Endless ItemEntity Range", 1000, 1, 10000, "The range of Endless ItemEntity");
+        immortalItemEntitySpeed = buildDouble(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
         infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5, 1, 10, "Infinity Elytra Flying Speed");
         infinityElytraFlyingRangeDamage = buildDouble(common, "Infinity Elytra Flying Range Damage", 100, 0, 10000, "Infinity Elytra Flying Range Damage");
         common.pop();
