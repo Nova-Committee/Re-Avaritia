@@ -46,7 +46,6 @@ public class NetworkHandler {
         CHANNEL.registerMessage(id++, S2CSingularitiesPack.class, S2CSingularitiesPack::write, S2CSingularitiesPack::new, S2CSingularitiesPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SRenamePack.class, C2SRenamePack::write, C2SRenamePack::new, C2SRenamePack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(id++, C2SChangePagePack.class, C2SChangePagePack::write, C2SChangePagePack::new, C2SChangePagePack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 //        CHANNEL.registerMessage(id++, C2SElytraSpeedUpPacket.class, C2SElytraSpeedUpPacket::write, C2SElytraSpeedUpPacket::new, C2SElytraSpeedUpPacket::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, C2SChannelActionPack.class, C2SChannelActionPack::write, C2SChannelActionPack::new, C2SChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(id++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
