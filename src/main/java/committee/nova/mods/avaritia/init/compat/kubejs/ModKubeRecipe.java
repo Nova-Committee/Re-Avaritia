@@ -10,8 +10,9 @@ import java.util.function.Supplier;
  * @Project: Avaritia
  * @Author: cnlimiter
  * @CreateTime: 2025/5/18 22:16
- * KUBEJS 2101.7.2-build.309 COMPATIBILITY BY SrNadien.
+  * @Description:
  */
+ **/
 public abstract class ModKubeRecipe extends KubeRecipe {
     @HideFromJS
     public <T> T computeIfAbsent(RecipeKey<T> key, Supplier<T> supplier) {
