@@ -66,7 +66,6 @@
   "item.avaritia.infinity_upgrade": "无尽升级组件",
   "item.avaritia.refined_coal": "精炼煤炭",
   "item.avaritia.infinity_elytra": "无尽鞘翅",
-
   "tooltip.avaritia.blaze_cube.desc": "火焰风暴.",
   "tooltip.avaritia.crystal_matrix_ingot.desc": "这甚至不是最终形态.",
   "tooltip.avaritia.infinity_upgrade.desc": "加速模式!",
@@ -103,12 +102,10 @@
   "tooltip.avaritia.matter_cluster.counter": "物品：%s / %s ",
   "tooltip.avaritia.infinity_bucket.message": "当前流体：%s｜剩余量：%s 毫升",
   "tooltip.avaritia.infinity_clock.desc": "掌控时间…",
-
   "tooltip.infinity": "无限",
   "tooltip.infinity.desc": "攻击伤害",
   "tooltip.armor.desc": "盔甲",
   "tooltip.armor_toughness.desc": "盔甲韧性",
-
   "tooltip.avaritia.totem_break": "无尽图腾已耗尽！",
   "tooltip.avaritia.changed": "切换为 %s 模式",
   "tooltip.avaritia.empty": "空",
@@ -134,10 +131,9 @@
   "tooltip.avaritia.active": "%s 模式已激活!",
   "tooltip.avaritia.inactive": "%s 模式已取消!",
   "tooltip.avaritia.switch": "切换至 %s",
-  "tooltip.avaritia.init_enchant" : "自带 %s",
+  "tooltip.avaritia.init_enchant": "自带 %s",
   "tooltip.avaritia.more": "and %s more...",
   "tooltip.avaritia.durability": "耐久 %s",
-
   "tooltip.avaritia.tool.smelt": "炽热",
   "tooltip.avaritia.tool.blade_slash": "剑气",
   "tooltip.avaritia.tool.blaze_bow_burning": "范围灼烧",
@@ -161,19 +157,16 @@
   "tooltip.avaritia.tool.infinity_trident_normal": "普通",
   "tooltip.avaritia.tool.infinity_trident_loyalty": "忠诚",
   "tooltip.avaritia.tool.infinity_trident_riptide": "激流",
-
   "info.avaritia.channel.load_success": "成功加载频道: %s %s %s",
   "info.avaritia.channel.load_error": "加载频道错误",
   "info.avaritia.channel.load_finish": "频道数据加载完毕",
   "info.avaritia.channel.save_success": "成功保存频道: %s %s %s",
   "info.avaritia.channel.add_success": "成功添加频道: %s %s %s",
-
   "info.avaritia.infinity_chest.load_success": "成功加载无尽箱子: %s %s %s",
   "info.avaritia.infinity_chest.load_error": "加载无尽箱子错误",
   "info.avaritia.infinity_chest.load_finish": "无尽箱子数据加载完毕",
   "info.avaritia.infinity_chest.save_success": "成功保存无尽箱子: %s %s %s",
   "info.avaritia.infinity_chest.add_success": "成功添加无尽箱子: %s %s %s",
-
   "block.avaritia.neutron": "中子态素块",
   "block.avaritia.infinity": "无尽之块",
   "block.avaritia.blaze_cube_block": "炽骨立方块",
@@ -203,7 +196,6 @@
   "block.avaritia.refined_coal_block": "精炼煤炭块",
   "block.avaritia.diamond_lattice_block": "钻石晶格块",
   "block.avaritia.tesseract": "超立方体",
-
   "death.attack.infinity": "%1$s 被 %2$s 彻底粉碎",
   "death.attack.infinity.item": "%1$s 被 %2$s 彻底粉碎",
   "death.attack.infinity.0": "%1$s 被蒸发",
@@ -216,7 +208,6 @@
   "death.attack.infinity.player.3": "%1$s 被 %2$s 赶尽杀绝",
   "death.attack.infinity.4": "%1$s 被湮灭",
   "death.attack.infinity.player.4": "%1$s 被 %2$s 所湮灭",
-
   "singularity.avaritia.aluminum": "铝",
   "singularity.avaritia.bronze": "青铜",
   "singularity.avaritia.coal": "煤",
@@ -305,10 +296,8 @@
   "advancements.avaritia.star_fuel.title": "恒星能源",
   "advancements.avaritia.star_fuel.desc": "获取恒星燃料",
   "attribute.name.generic.walking_speed": "移动速度",
-
   "rarity.legend.name": "传说",
   "rarity.cosmic.name": "无尽",
-
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.owner": "主人: %d",
   "gui.avaritia.public": "公共的",
@@ -375,10 +364,9 @@
   "gui.avaritia.rule.any_item": "任意物品",
   "gui.avaritia.rule.any_fluid": "任意流体",
   "gui.avaritia.rule.tip": "用鼠标滚轮选择",
-
   "config.jade.plugin_avaritia.compressor": "中子态素压缩机",
-  "config.jade.plugin_avaritia.extreme_smithing":"终焉锻造台",
-  "config.jade.plugin_avaritia.crafting_table":"无尽合成",
+  "config.jade.plugin_avaritia.extreme_smithing": "终焉锻造台",
+  "config.jade.plugin_avaritia.crafting_table": "无尽合成",
   "config.avaritia.is_keep_stone": "保留石头和泥土",
   "config.avaritia.is_keep_stone.tooltip": "无尽工具的超级模式是否保留石头和泥土",
   "config.avaritia.is_merge_matter_cluster": "合并物质团",
@@ -470,7 +458,6 @@
   "config.avaritia.category.emc": "EMC",
   "config.avaritia.category.storage": "储存",
   "config.avaritia.category.channel": "频道",
-
   "screen.avaritia.side_config.title": "中子压缩器 - 输入输出配置",
   "tooltip.avaritia.side.mode.off": "关闭",
   "tooltip.avaritia.side.mode.passive_input": "被动输入",
@@ -486,5 +473,16 @@
   "direction.avaritia.down": "下面",
   "gui.avaritia.back": "返回",
   "tooltip.avaritia.side.mode.passive_mixin": "被动混合",
-  "tooltip.avaritia.side.mode.active_mixin": "主动混合"
+  "tooltip.avaritia.side.mode.active_mixin": "主动混合",
+  "item.avaritia.side_config_card": "侧面配置卡",
+  "tooltip.avaritia.side_config_card.has_config": "§7已保存配置",
+  "tooltip.avaritia.side_config_card.no_config": "§7空配置",
+  "tooltip.avaritia.side_config_card.instruction_right_click": "§7右键机器应用配置",
+  "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+右键机器保存配置",
+  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+右键其它方块清除配置",
+  "tooltip.avaritia.side_config_card.read_success": "配置已保存到卡片",
+  "tooltip.avaritia.side_config_card.apply_success": "配置已应用到机器",
+  "tooltip.avaritia.side_config_card.cleared": "配置已清除",
+  "tooltip.avaritia.side_config_card.already_empty": "配置已经是空的了",
+  "tooltip.avaritia.side_config_card.no_config_to_apply": "没有可应用的配置"
 }

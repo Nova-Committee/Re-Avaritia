@@ -301,10 +301,10 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private void cycleSort() {
         if (InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT)) {
             menu.reverseSort();
-            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 3);
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
         } else {
             menu.nextSort();
-            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 1);
         }
     }
 

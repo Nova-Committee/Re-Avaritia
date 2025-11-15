@@ -1,17 +1,13 @@
 {
   "itemGroup.tab.Infinity": "Re:Avaritia",
   "itemGroup.tab.Singularity": "Avaritia:Singularity",
-
   "key.avaritia.categories": "Avaritia KeyBindings",
   "key.avaritia.filter": "Open filter screen",
   "key.avaritia.neutron_ring": "Open Neutron Ring",
   "key.avaritia.config": "Open Avaritia Config",
-
   "title.avaritia.resourcepack": "Avaritia Old Resourcepack",
   "title.avaritia.config.title": "Re：Avaritia",
-
   "effect.avaritia.burning": "Burning",
-
   "item.avaritia.matter_cluster": "Matter Cluster",
   "item.avaritia.full_matter_cluster": "Full Matter Cluster",
   "item.avaritia.infinity_helmet": "Infinity Helmet",
@@ -70,10 +66,6 @@
   "item.avaritia.infinity_upgrade": "Infinity Upgrade",
   "item.avaritia.infinity_elytra": "Infinity Elytra",
   "item.avaritia.refined_coal": "Refined Coal",
-
-
-
-
   "tooltip.avaritia.infinity_upgrade.desc": "Accelerate upgrade!",
   "tooltip.avaritia.blaze_cube.desc": "Blaze Storm.",
   "tooltip.avaritia.crystal_matrix_ingot.desc": "This isn't even its final form.",
@@ -102,7 +94,7 @@
   "tooltip.avaritia.diamond_lattice.desc": "Dense material...",
   "tooltip.avaritia.infinity_totem.desc": "Eternal Guardian...",
   "tooltip.avaritia.neutron_horse_armor.desc": "Full power...",
-  "tooltip.avaritia.infinity_bucket.message" : "Current Fluid: %s | Amount: %smL",
+  "tooltip.avaritia.infinity_bucket.message": "Current Fluid: %s | Amount: %smL",
   "tooltip.avaritia.infinity_bucket.desc": "Devour everything...",
   "tooltip.avaritia.infinity_ring.desc": "...",
   "tooltip.avaritia.infinity_umbrella.desc": "Instant eternity...",
@@ -114,7 +106,6 @@
   "tooltip.armor_toughness.desc": "Armor Toughness",
   "tooltip.avaritia.enhancement_core.desc": "The road to completion!",
   "tooltip.avaritia.refined_coal.desc": "Heat explosion!",
-
   "tooltip.avaritia.totem_break": "The Endless Totem has been depleted",
   "tooltip.avaritia.empty": "Empty",
   "tooltip.avaritia.eject": "Eject",
@@ -139,11 +130,10 @@
   "tooltip.avaritia.active": "%s mode active!",
   "tooltip.avaritia.inactive": "%s mode inactive!",
   "tooltip.avaritia.switch": "Switch to %s",
-  "tooltip.avaritia.init_enchant" : "Always has at least %s",
+  "tooltip.avaritia.init_enchant": "Always has at least %s",
   "tooltip.avaritia.changed": "Set to %s Mode",
   "tooltip.avaritia.more": "and %s more...",
   "tooltip.avaritia.durability": "Durability %s",
-
   "tooltip.avaritia.tool.smelt": "Smelt",
   "tooltip.avaritia.tool.blade_slash": "Blade Slash",
   "tooltip.avaritia.tool.blaze_bow_burning": "Area Burning",
@@ -167,7 +157,6 @@
   "tooltip.avaritia.tool.infinity_trident_normal": "Normal",
   "tooltip.avaritia.tool.infinity_trident_loyalty": "Loyalty",
   "tooltip.avaritia.tool.infinity_trident_riptide": "Riptide",
-
   "block.avaritia.neutron": "Neutronium Block",
   "block.avaritia.infinity": "Infinity Block",
   "block.avaritia.blaze_cube_block": "Blaze Cube Block",
@@ -197,12 +186,9 @@
   "block.avaritia.refined_coal_block": "Refined Coal Block",
   "block.avaritia.diamond_lattice_block": "Diamond Lattice Block",
   "block.avaritia.tesseract": "Tesseract",
-
   "rarity.legend.name": "Legend",
   "rarity.cosmic.name": "Cosmic",
-
   "attribute.name.generic.walking_speed": "WALKING SPEED",
-
   "death.attack.infinity": "%1$s was obliterated by %2$s",
   "death.attack.infinity.item": "%1$s was obliterated by %2$s",
   "death.attack.infinity.0": "%1$s was sliced to ribbons",
@@ -215,7 +201,6 @@
   "death.attack.infinity.player.3": "%1$s was overkilled by %2$s",
   "death.attack.infinity.4": "%1$s was annihilated",
   "death.attack.infinity.player.4": "%1$s was annihilated by %2$s",
-
   "singularity.avaritia.aluminum": "Aluminum",
   "singularity.avaritia.bronze": "Bronze",
   "singularity.avaritia.copper": "Copper",
@@ -245,7 +230,6 @@
   "singularity.avaritia.obsidian": "Obsidian",
   "singularity.avaritia.blue_ice": "Blue Ice",
   "singularity.avaritia.amethyst_shard": "Amethyst Shard",
-
   "jei.category.avaritia.compressor": "Neutronium Compressor",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
   "jei.tooltip.avaritia.neutron_collector": "Collect Neutron Pile",
@@ -264,7 +248,6 @@
   "emi.category.avaritia.nether_crafting_table": "Nether Craft",
   "emi.category.avaritia.extreme_crafting_table": "Extreme Craft",
   "emi.category.avaritia.extreme_smithing_table": "Extreme Smithing",
-
   "advancements.avaritia.diamond_lattice.title": "The beginning of a nightmare",
   "advancements.avaritia.diamond_lattice.desc": "Making a diamond lattice",
   "advancements.avaritia.neutron_pile.title": "Endless hang up",
@@ -305,19 +288,16 @@
   "advancements.avaritia.singularity.desc": "Compress minerals to get singularity",
   "advancements.avaritia.star_fuel.title": "Stellar Energy",
   "advancements.avaritia.star_fuel.desc": "Get stellar fuel",
-
   "info.avaritia.channel.load_success": "Success load channel: %s %s %s",
   "info.avaritia.channel.load_error": "Load Channel Error!",
   "info.avaritia.channel.load_finish": "Channel load finished!",
   "info.avaritia.channel.save_success": "Success save channel: %s %s %s",
   "info.avaritia.channel.add_success": "Success add channel: %s %s %s",
-
   "info.avaritia.infinity_chest.load_success": "Success load infinity chest: %s %s %s",
   "info.avaritia.infinity_chest.load_error": "Load infinity chest Error!",
   "info.avaritia.infinity_chest.load_finish": "Infinity chest load finished!",
   "info.avaritia.infinity_chest.save_success": "Success save infinity chest: %s %s %s",
   "info.avaritia.infinity_chest.add_success": "Success add infinity chest: %s %s %s",
-
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.owner": "Owner: %d",
   "gui.avaritia.public": "Public",
@@ -384,10 +364,9 @@
   "gui.avaritia.rule.any_item": "Any item",
   "gui.avaritia.rule.any_fluid": "Any fluid",
   "gui.avaritia.rule.tip": "Select with the mouse wheel",
-
-  "config.jade.plugin_avaritia.compressor":"Compressor",
-  "config.jade.plugin_avaritia.extreme_smithing":"Extreme Smithing",
-  "config.jade.plugin_avaritia.crafting_table":"Avaritia Crafting",
+  "config.jade.plugin_avaritia.compressor": "Compressor",
+  "config.jade.plugin_avaritia.extreme_smithing": "Extreme Smithing",
+  "config.jade.plugin_avaritia.crafting_table": "Avaritia Crafting",
   "config.avaritia.is_keep_stone": "Keep Stone",
   "config.avaritia.is_keep_stone.tooltip": "Does the super mode of endless tools retain stone and soil",
   "config.avaritia.is_merge_matter_cluster": "Merge Matter Cluster",
@@ -479,7 +458,6 @@
   "config.avaritia.category.emc": "EMC",
   "config.avaritia.category.storage": "Storge",
   "config.avaritia.category.channel": "Channel",
-
   "screen.avaritia.side_config.title": "IO Config",
   "tooltip.avaritia.side.mode.off": "OFF",
   "tooltip.avaritia.side.mode.passive_input": "Passive Input",
@@ -495,5 +473,16 @@
   "direction.avaritia.west": "west",
   "direction.avaritia.up": "up",
   "direction.avaritia.down": "down",
-  "gui.avaritia.back": "back"
+  "gui.avaritia.back": "back",
+  "item.avaritia.side_config_card": "Side Configuration Card",
+  "tooltip.avaritia.side_config_card.has_config": "§7Configuration saved",
+  "tooltip.avaritia.side_config_card.no_config": "§7Empty configuration",
+  "tooltip.avaritia.side_config_card.instruction_right_click": "§7Right-click on machine to apply",
+  "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+right-click machine to save",
+  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+right-click other block to clear",
+  "tooltip.avaritia.side_config_card.read_success": "Configuration saved to card",
+  "tooltip.avaritia.side_config_card.apply_success": "Configuration applied to machine",
+  "tooltip.avaritia.side_config_card.cleared": "Configuration cleared",
+  "tooltip.avaritia.side_config_card.already_empty": "Configuration is already empty",
+  "tooltip.avaritia.side_config_card.no_config_to_apply": "No configuration to apply"
 }

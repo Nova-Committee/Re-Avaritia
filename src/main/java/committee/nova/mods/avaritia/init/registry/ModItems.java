@@ -41,6 +41,7 @@ public class ModItems {
     public static RegistryObject<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
     public static RegistryObject<Item> infinity_chest = item("infinity_chest",
             () -> new InfinityChestItem(ModBlocks.infinity_chest.get()));
+    public static RegistryObject<Item> side_config_card = item("side_config_card", SideConfigurationCardItem::new);
     /**
      * Tools
      */

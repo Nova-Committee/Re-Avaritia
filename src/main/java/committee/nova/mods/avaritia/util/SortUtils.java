@@ -22,7 +22,9 @@ public class SortUtils {
         return i;
     }
 
-    public static int sortFromCount(String s1, String s2, Map<String, Long> storageItems, boolean reverseOrder) {
+    public static int sortFromCount(String item1, String item2, Map<String, Long> storageItems, boolean reverseOrder) {
+        var s1 = StorageUtils.getBaseItemId(item1);
+        var s2 = StorageUtils.getBaseItemId(item2);
         int i;
         if (reverseOrder) {
             i = storageItems.get(s2).compareTo(storageItems.get(s1));
@@ -37,7 +39,9 @@ public class SortUtils {
         return sortFromRightID(StorageUtils.getItemId(s1), StorageUtils.getItemId(s2));
     }
 
-    public static int sortFromRightID(String s1, String s2) {
+    public static int sortFromRightID(String item1, String item2) {
+        var s1 = StorageUtils.getBaseItemId(item1);
+        var s2 = StorageUtils.getBaseItemId(item2);
         int i = s1.indexOf(":");
         String a = s1.substring(i + 1);
         int j = s2.indexOf(":");
@@ -51,7 +55,9 @@ public class SortUtils {
         return sortFromMirrorID(StorageUtils.getItemId(s1), StorageUtils.getItemId(s2));
     }
 
-    public static int sortFromMirrorID(String s1, String s2) {
+    public static int sortFromMirrorID(String item1, String item2) {
+        var s1 = StorageUtils.getBaseItemId(item1);
+        var s2 = StorageUtils.getBaseItemId(item2);
         char[] a = s1.toCharArray();
         char[] b = s2.toCharArray();
         int j = a.length - 1;

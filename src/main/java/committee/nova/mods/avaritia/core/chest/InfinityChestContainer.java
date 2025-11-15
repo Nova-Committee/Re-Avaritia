@@ -74,8 +74,6 @@ public class InfinityChestContainer extends SimpleContainer {
             sortedItems = new ArrayList<>(this.menu.chest.storageItems.keySet());
             if (!this.menu.filter.isEmpty()) {
                 ArrayList<String> temp = new ArrayList<>();
-                ArrayList<String> temp1 = new ArrayList<>();
-                ArrayList<String> temp2 = new ArrayList<>();
                 char head = this.menu.filter.charAt(0);
                 if (head == '*') {
                     String s = this.menu.filter.substring(1);

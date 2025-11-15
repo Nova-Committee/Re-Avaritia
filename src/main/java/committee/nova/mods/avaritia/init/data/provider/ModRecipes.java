@@ -894,6 +894,20 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .showNotification(true)
                 .unlockedBy("has_item", has(ModItems.blaze_cube.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.blaze_bow.get(), 2)
+                .pattern(" ABBA")
+                .pattern("ACDDC")
+                .pattern("BD E ")
+                .pattern("BDE  ")
+                .pattern("AC   ")
+                .define('A', Blocks.BONE_BLOCK)
+                .define('B', ModItems.blaze_cube.get())
+                .define('C', ModItems.diamond_lattice.get())
+                .define('D', Items.BLAZE_POWDER)
+                .define('E', Blocks.SOUL_SOIL)
+                .showNotification(true)
+                .unlockedBy("has_item", has(ModItems.blaze_cube.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.crystal_sword.get(), 3)
                 .pattern("     CA")
                 .pattern("    CAC")
