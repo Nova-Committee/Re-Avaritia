@@ -548,6 +548,15 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('a', Items.NETHERITE_SCRAP)
                 .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer, Const.rl("diamond_lattice_normal"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.side_config_card.get())
+                .pattern("iii")
+                .pattern("iai")
+                .pattern(" b ")
+                .define('i', Items.IRON_INGOT)
+                .define('a', ModItems.diamond_lattice.get())
+                .define('b',Items.GOLD_INGOT)
+                .unlockedBy("has_item", has(Items.NETHERITE_SCRAP)).save(consumer);
+
         ModExtremeSmithingRecipeBuilder.smithing(
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.TOTEM_OF_UNDYING),
@@ -978,6 +987,20 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('B', ModItems.neutron_ingot.get())
                 .define('C', ModItems.crystal_matrix_ingot.get())
                 .showNotification(true)
+                .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.crystal_bow.get(), 3)
+                .pattern("  CDAAC")
+                .pattern("   CCCD")
+                .pattern("C A  B ")
+                .pattern("DC  B  ")
+                .pattern("AC B   ")
+                .pattern("ACB    ")
+                .pattern("CD     ")
+                .define('A', ModBlocks.crystal_matrix.get())
+                .define('B', ModItems.neutron_ingot.get())
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('D', ModItems.diamond_lattice.get())
                 .unlockedBy("has_item", has(ModItems.crystal_matrix_ingot.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_axe.get())
