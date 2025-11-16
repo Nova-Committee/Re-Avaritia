@@ -18,6 +18,7 @@ public class SingularityRegisterEventJS extends EventJS {
     public void register(ResourceLocation key, Consumer<Singularity> consumer) {
         Singularity singularity = new Singularity(key);
         consumer.accept(singularity);
-        SingularityDataManager.getInstance().registerRuntimeSingularity(singularity);
+        SingularityDataManager manager = SingularityDataManager.getInstance();
+        if (manager.isInitialized()) manager.registerRuntimeSingularity(singularity);
     }
 }
