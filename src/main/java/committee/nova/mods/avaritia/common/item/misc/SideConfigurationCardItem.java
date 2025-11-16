@@ -1,14 +1,11 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.api.iface.ITileIO;
-import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +13,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

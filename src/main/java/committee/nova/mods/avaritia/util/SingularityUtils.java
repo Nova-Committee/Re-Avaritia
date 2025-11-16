@@ -35,34 +35,28 @@ public class SingularityUtils {
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
-        Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
-
         var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
-
-        if (ing == null) {
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
-        } else if (ing.has("tag")) {
-            var tag = ing.get("tag").getAsString();
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
-        } else {
-            var ingredient = Ingredient.fromJson(json.get("ingredient"));
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, ingredient, materialCount, time);
-        }
-
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
         var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
 
-        singularity.setEnabled(enabled);
-        singularity.setRecipeDisabled(recipeDisabled);
-
+        Singularity singularity = new Singularity(id).setDisplayName(name).setColors(overlayColor, underlayColor).setCount(materialCount).setTimeCost(time).setEnabled(enabled).setRecipeDisabled(recipeDisabled);
+        if (ing != null) {
+            if (ing.has("tag")) {
+                var tag = ing.get("tag").getAsString();
+                singularity.setTag(tag);
+            } else {
+                var ingredient = Ingredient.fromJson(json.get("ingredient"));
+                singularity.setIngredient(ingredient);
+            }
+        }
         return singularity;
     }
 
     public static JsonObject writeToJson(Singularity singularity) {
         var json = new JsonObject();
 
-        json.addProperty("name", singularity.getName());
+        json.addProperty("name", singularity.getDisplayName());
 
         var colors = new JsonArray();
 
@@ -70,7 +64,7 @@ public class SingularityUtils {
         colors.add(Integer.toString(singularity.getUnderlayColor(), 16));
 
         json.add("colors", colors);
-        json.addProperty("timeRequired", singularity.getTimeRequired());
+        json.addProperty("timeRequired", singularity.getTimeCost());
 
         JsonElement ingredient;
         if (singularity.getTag() != null) {
@@ -106,7 +100,7 @@ public class SingularityUtils {
     public static CompoundTag makeTag(Singularity singularity) {
         var nbt = new CompoundTag();
 
-        nbt.putString("Id", singularity.getId().toString());
+        nbt.putString("Id", singularity.getRegistryName().toString());
 
         return nbt;
     }
@@ -124,10 +118,7 @@ public class SingularityUtils {
         var id = NBTUtils.getString(stack, "Id");
         if (!id.isEmpty()) {
             // 优先使用新的数据管理器
-            var manager = SingularityDataManager.getInstance();
-            if (manager != null && manager.isInitialized()) {
-                return manager.getSingularity(ResourceLocation.tryParse(id));
-            }
+           SingularityDataManager.getInstance().getSingularity(ResourceLocation.tryParse(id));
         }
         return null;
     }

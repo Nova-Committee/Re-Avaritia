@@ -4,8 +4,6 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
-import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;

@@ -43,7 +43,7 @@ public class SingularityItem extends Item implements IColored {
             return Localizable.of(this.getDescriptionId(stack)).args("NULL").build();
         }
 
-        return Localizable.of(this.getDescriptionId(stack)).args(singularity.getDisplayName()).build();
+        return Localizable.of(this.getDescriptionId(stack)).args(Component.translatable(singularity.getDisplayName())).build();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -52,13 +52,13 @@ public class SingularityItem extends Item implements IColored {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
-            var modid = singularity.getId().getNamespace();
+            var modid = singularity.getRegistryName().getNamespace();
 
             if (!modid.equals(Const.MOD_ID))
                 tooltip.add(ModTooltips.getAddedByTooltip(modid));
 
             if (flag.isAdvanced())
-                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getId()).color(ChatFormatting.DARK_GRAY).build());
+                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getRegistryName()).color(ChatFormatting.DARK_GRAY).build());
         }
     }
 

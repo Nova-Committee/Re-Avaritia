@@ -70,7 +70,7 @@ public class ModSingularityProvider implements DataProvider {
      */
     private void collectDefaultSingularities() {
         for (var singularity : ModSingularities.getDefaults()) {
-            this.singularities.put(singularity.getId(), singularity);
+            this.singularities.put(singularity.getRegistryName(), singularity);
         }
 
         Const.LOGGER.debug("Collected {} default singularities for data generation",

@@ -1,14 +1,16 @@
 package committee.nova.mods.avaritia.core.singularity;
 
-import committee.nova.mods.avaritia.api.util.lang.Localizable;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import dev.latvian.mods.rhino.Context;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.common.crafting.conditions.NotCondition;
+import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 /**
@@ -18,50 +20,82 @@ import net.minecraftforge.fml.loading.FMLLoader;
  * Version: 1.0
  */
 public class Singularity {
-    @Getter
-    private final ResourceLocation id;
-    @Getter
-    private final String name;
-    @Getter
-    private final int[] colors;
-    @Getter
-    private final String tag;
-    private final int ingredientCount;
-    @Getter
-    private final int timeRequired;
-    private Ingredient ingredient;
-    @Setter
-    private boolean enabled = true;
-    @Setter
-    private boolean recipeDisabled = false;
+    @Getter private final ResourceLocation registryName;
+    @Getter private String displayName = "";
+    @Getter private int[] colors = new int[] {0x3B2754, 0x3B2754};
+    @Getter private String tag = null;
+    private int count = Const.isLoad("projecte") ? 10000 : 1000;
+    @Getter private int timeCost = FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
+    private Ingredient ingredient = Ingredient.EMPTY;
+    private ICondition condition = null;
+    @Getter private boolean enabled = true;
+    @Getter private boolean recipeDisabled = false;
 
-    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient, int ingredientCount, int timeRequired) {
-        this.id = id;
-        this.name = name;
-        this.colors = colors;
-        this.ingredient = ingredient;
-        this.tag = null;
-        this.ingredientCount = ingredientCount;
-        this.timeRequired = timeRequired;
+    public Singularity(ResourceLocation registryName) {
+        this.registryName = registryName;
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, Ingredient ingredient) {
-        this(id, name, colors, ingredient, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
+    public Singularity setColors(int overlayColor, int underlayColor) {
+        this.colors = new int[] {overlayColor, underlayColor};
+        return this;
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, String tag, int ingredientCount, int timeRequired) {
-        this.id = id;
-        this.name = name;
-        this.colors = colors;
-        this.ingredient = Ingredient.EMPTY;
+    public Singularity setDisplayName(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
+
+    public Singularity setTag(String tag) {
         this.tag = tag;
-        this.ingredientCount = ingredientCount;
-        this.timeRequired = timeRequired;
+        return this;
     }
 
-    public Singularity(ResourceLocation id, String name, int[] colors, String tag) {
-        this(id, name, colors, tag, -1, FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240);
+    public Singularity setCount(int count) {
+        this.count = count;
+        return this;
     }
+
+    public Singularity setTimeCost(int timeCost) {
+        this.timeCost = timeCost;
+        return this;
+    }
+
+    public Singularity setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
+        return this;
+    }
+
+    public Singularity setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
+    public Singularity setRecipeDisabled(boolean recipeDisabled) {
+        this.recipeDisabled = recipeDisabled;
+        return this;
+    }
+
+    public Singularity setCondition(ICondition condition) {
+        this.condition = condition;
+        return this;
+    }
+
+    public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, Ingredient ingredient) {
+        Singularity singularity = new Singularity(registryName);
+        singularity.setDisplayName(displayName);
+        singularity.setColors(colors[0], colors[1]);
+        singularity.setIngredient(ingredient);
+        return singularity;
+    }
+
+    public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, String tag) {
+        Singularity singularity = new Singularity(registryName);
+        singularity.setDisplayName(displayName);
+        singularity.setColors(colors[0], colors[1]);
+        singularity.setTag(tag);
+        return singularity;
+    }
+
 
     public static Singularity read(FriendlyByteBuf buffer) {
         var id = buffer.readResourceLocation();
@@ -80,14 +114,14 @@ public class Singularity {
         }
 
         int ingredientCount = buffer.readVarInt();
+        var enabled = buffer.readBoolean();
+        var recipeDisabled = buffer.readBoolean();
 
-        Singularity singularity = isTagIngredient ? new Singularity(id, name, colors, tag, ingredientCount, timeRequired)
-                : new Singularity(id, name, colors, ingredient, ingredientCount, timeRequired);
-
-        singularity.enabled = buffer.readBoolean();
-        singularity.recipeDisabled = buffer.readBoolean();
-
-        return singularity;
+        return isTagIngredient
+                ? new Singularity(id).setDisplayName(name).setColors(colors[0], colors[1])
+                .setTag(tag).setCount(ingredientCount).setTimeCost(timeRequired).setEnabled(enabled).setRecipeDisabled(recipeDisabled)
+                : new Singularity(id).setDisplayName(name).setColors(colors[0], colors[1])
+                .setIngredient(ingredient).setCount(ingredientCount).setTimeCost(timeRequired).setEnabled(enabled).setRecipeDisabled(recipeDisabled);
     }
 
     public int getOverlayColor() {
@@ -107,41 +141,30 @@ public class Singularity {
         return this.ingredient;
     }
 
-    public int getIngredientCount() {
-        if (this.ingredientCount == -1) {
+    public int getCount() {
+        if (this.count == -1) {
             return 1000;
         }
-        return this.ingredientCount;
+        return this.count;
     }
 
-    public Component getDisplayName() {
-        return Localizable.of(this.name).build();
+    public ICondition getCondition() {
+        if (this.tag != null) return new NotCondition(new TagEmptyCondition(this.tag));
+        else return null;
     }
 
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeResourceLocation(this.id);
-        buffer.writeUtf(this.name);
-        buffer.writeVarIntArray(this.colors);
-        buffer.writeBoolean(this.tag != null);
-        buffer.writeVarInt(this.timeRequired);
-
-        if (this.tag != null) {
-            buffer.writeUtf(this.tag);
-        } else {
-            this.ingredient.toNetwork(buffer);
+    public static Singularity wrap(Context context, Object object) {
+        if (object == null ) {
+            return null;
+        } else if (object instanceof Singularity) {
+            return (Singularity) object;
+        } else if (object instanceof ResourceLocation) {
+            return SingularityDataManager.getInstance().getSingularity((ResourceLocation) object);
+        }else if (object instanceof String) {
+            return SingularityDataManager.getInstance().getSingularity(ResourceLocation.tryParse((String) object));
+        }else {
+            throw new IllegalArgumentException("Cannot convert object to Singularity: " + object);
         }
-
-        buffer.writeVarInt(this.ingredientCount);
-        buffer.writeBoolean(this.enabled);
-        buffer.writeBoolean(this.recipeDisabled);
     }
 
-    // 手动添加isEnabled()和isRecipeDisabled()方法以确保编译成功
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public boolean isRecipeDisabled() {
-        return this.recipeDisabled;
-    }
 }

@@ -84,13 +84,13 @@ public class SingularityRecipeTestHandler {
                 for (Singularity singularity : singularities) {
                     if (!singularity.isRecipeDisabled()) {
                         ResourceLocation expectedRecipeId = new ResourceLocation(
-                            singularity.getId().getNamespace(),
-                            singularity.getId().getPath() + "_singularity"
+                            singularity.getRegistryName().getNamespace(),
+                            singularity.getRegistryName().getPath() + "_singularity"
                         );
 
                         boolean hasRecipe = compressorRecipes.containsKey(expectedRecipeId);
                         Const.LOGGER.info("奇点: {} -> 配方: {} ({})",
-                            singularity.getId(),
+                            singularity.getRegistryName(),
                             expectedRecipeId,
                             hasRecipe ? "存在" : "缺失");
                     }

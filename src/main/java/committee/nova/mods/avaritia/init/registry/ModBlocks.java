@@ -18,7 +18,6 @@ import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

@@ -49,11 +49,11 @@ public class S2CSingularitiesPack {
     private void writeSingularities(FriendlyByteBuf buffer, Collection<Singularity> singularities) {
         buffer.writeVarInt(singularities.size());
         singularities.forEach(singularity -> {
-            buffer.writeResourceLocation(singularity.getId());
-            buffer.writeUtf(singularity.getName());
+            buffer.writeResourceLocation(singularity.getRegistryName());
+            buffer.writeUtf(singularity.getDisplayName());
             buffer.writeVarIntArray(singularity.getColors());
             buffer.writeBoolean(singularity.getTag() != null);
-            buffer.writeVarInt(singularity.getTimeRequired());
+            buffer.writeVarInt(singularity.getTimeCost());
 
             if (singularity.getTag() != null) {
                 buffer.writeUtf(singularity.getTag());
@@ -61,7 +61,7 @@ public class S2CSingularitiesPack {
                 singularity.getIngredient().toNetwork(buffer);
             }
 
-            buffer.writeVarInt(singularity.getIngredientCount());
+            buffer.writeVarInt(singularity.getCount());
             buffer.writeBoolean(singularity.isEnabled());
             buffer.writeBoolean(singularity.isRecipeDisabled());
         });
@@ -73,7 +73,7 @@ public class S2CSingularitiesPack {
                 SingularityDataManager.getInstance().getCachedSingularities().clear();
                 SingularityDataManager.getInstance().getCachedSingularities().putAll(
                         this.cacheSingularities.stream()
-                                .collect(Collectors.toMap(Singularity::getId, s -> s))
+                                .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
                 );
             });
         });

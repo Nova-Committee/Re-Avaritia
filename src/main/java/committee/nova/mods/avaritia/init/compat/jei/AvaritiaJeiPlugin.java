@@ -9,9 +9,9 @@ import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
-import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.compat.jei.category.CompressorCategory;
@@ -133,7 +133,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         ModItems.singularity.ifPresent(item -> registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, (stack, context) -> {
             Singularity singularity = SingularityUtils.getSingularity(stack);
-            return singularity != null ? singularity.getId().toString() : "";
+            return singularity != null ? singularity.getRegistryName().toString() : "";
         }));
     }
 }

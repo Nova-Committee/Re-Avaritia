@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
-import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
@@ -23,13 +22,11 @@ import java.util.Map;
  * @version 1.0
  */
 public class SingularityDataManager {
-
     private static final Logger LOGGER = Const.LOGGER;
     private static SingularityDataManager INSTANCE;
 
     @Getter @Setter private Map<ResourceLocation, Singularity> cachedSingularities = new LinkedHashMap<>();
     @Getter @Setter private Map<ResourceLocation, Singularity> runtimeSingularities = new LinkedHashMap<>();
-    private boolean isInitialized = false;
 
     public SingularityDataManager() {
     }
@@ -39,41 +36,6 @@ public class SingularityDataManager {
             INSTANCE = new SingularityDataManager();
         }
         return INSTANCE;
-    }
-
-    /**
-     * 初始化数据管理器
-     */
-    public static void onCommonSetup() {
-        getInstance().initialize();
-    }
-
-    /**
-     * 初始化管理器
-     */
-    private void initialize() {
-        if (this.isInitialized) {
-            return;
-        }
-
-        this.isInitialized = true;
-        this.loadFallbackSingularities();
-
-        LOGGER.info("Singularity: Initialized with {} singularities",
-                this.cachedSingularities.size());
-    }
-
-    /**
-     * 加载备用奇点（当数据包中没有奇点定义时）
-     */
-    private void loadFallbackSingularities() {
-        this.cachedSingularities.clear();
-
-        // 加载默认奇点
-        for (var singularity : ModSingularities.getDefaults()) {
-            this.cachedSingularities.put(singularity.getId(), singularity);
-        }
-        LOGGER.info("Singularity: Loaded {} fallback singularities", this.cachedSingularities.size());
     }
 
     /**
@@ -110,12 +72,12 @@ public class SingularityDataManager {
      * 注册运行时奇点（用于KubeJS）
      */
     public void registerRuntimeSingularity(Singularity singularity) {
-        if (singularity != null && singularity.getId() != null) {
-            var oldSingularity = this.runtimeSingularities.put(singularity.getId(), singularity);
+        if (singularity != null && singularity.getRegistryName() != null) {
+            var oldSingularity = this.runtimeSingularities.put(singularity.getRegistryName(), singularity);
             if (oldSingularity == null) {
-                LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getId());
+                LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getRegistryName());
             } else {
-                LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getId());
+                LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
             }
 
             // 使EternalSingularityCraftRecipe缓存失效
@@ -185,13 +147,6 @@ public class SingularityDataManager {
      */
     public int getRuntimeSingularityCount() {
         return this.runtimeSingularities.size();
-    }
-
-    /**
-     * 检查管理器是否已初始化
-     */
-    public boolean isInitialized() {
-        return this.isInitialized;
     }
 
 }
