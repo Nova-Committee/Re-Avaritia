@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -13,7 +14,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
  * Date: 2022/4/2 13:07
  * Version: 1.0
  */
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class NetworkHandler {
     @SubscribeEvent
     public static void init(RegisterPayloadHandlersEvent event) {
@@ -30,8 +31,6 @@ public class NetworkHandler {
                 new C2SRenamePack.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
                 new C2SOpenRingPack.Handler());
-        registrar.playToServer(C2SChangePagePack.TYPE, C2SChangePagePack.STREAM_CODEC,
-                new C2SChangePagePack.Handler());
         //CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
         //CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 //        CHANNEL.registerMessage(id++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));

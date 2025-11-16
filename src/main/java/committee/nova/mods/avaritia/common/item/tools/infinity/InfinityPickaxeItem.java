@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
-import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
+import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -41,7 +41,7 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem implements IItemEnchant, IFilterItem, IItemMode<InfinityMode> {
+public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, IItemMode<InfinityMode> {
     private final InitEnchantment initEnchantment;
 
     public InfinityPickaxeItem() {

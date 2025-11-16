@@ -18,7 +18,7 @@ public class StarFuelItem extends ResourceItem {
     public static final int BURN_TIME = Integer.MAX_VALUE;
 
     public StarFuelItem() {
-        super(ModRarities.RARE, "star_fuel", true, new Properties().stacksTo(16));
+        super(ModRarities.RARE, true, new Properties().stacksTo(16));
     }
 
     @Override

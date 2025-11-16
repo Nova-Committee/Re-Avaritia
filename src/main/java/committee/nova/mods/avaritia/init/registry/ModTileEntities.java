@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
-import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.collector.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -35,9 +35,9 @@ public class ModTileEntities {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
     }
 
-    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<BaseNeutronCollectorTile>> neutron_collector_tile = blockEntity(
+    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(
             "neutron_collector_tile",
-            (BaseNeutronCollectorTile::new),
+            (NeutronCollectorTile::new),
             () -> new Block[]{
                     ModBlocks.neutron_collector.get(),
                     ModBlocks.dense_neutron_collector.get(),

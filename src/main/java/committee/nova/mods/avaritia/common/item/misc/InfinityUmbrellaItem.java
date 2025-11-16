@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.IToolTransform;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import committee.nova.mods.avaritia.common.entity.RainProEntity;
 import committee.nova.mods.avaritia.common.entity.StormProEntity;
 import committee.nova.mods.avaritia.common.entity.SunProEntity;

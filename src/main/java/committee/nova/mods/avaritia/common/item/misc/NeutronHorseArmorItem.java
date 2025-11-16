@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
+import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -31,7 +31,7 @@ import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infini
  * @description
  * @date 2024/4/5 20:04
  */
-public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, IItemEnchant {
+public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchantItem {
     private final InitEnchantment FROST_WALKER;
     private final InitEnchantment ALL_DAMAGE_PROTECTION;
     private final InitEnchantment FALL_PROTECTION;
@@ -86,7 +86,6 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements ITooltip, 
         this.FROST_WALKER.appendHoverText(context, tooltipComponents);
         this.ALL_DAMAGE_PROTECTION.appendHoverText(context, tooltipComponents);
         this.FALL_PROTECTION.appendHoverText(context, tooltipComponents);
-        appendTooltip(stack, context, tooltipComponents, isAdvanced, "neutron_horse_armor");
     }
 
     @Override

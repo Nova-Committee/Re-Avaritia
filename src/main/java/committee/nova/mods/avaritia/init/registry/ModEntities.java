@@ -3,14 +3,13 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.common.entity.*;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.NeutronArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.*;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.api.distmarker.Dist;
@@ -65,6 +64,22 @@ public class ModEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Const.rl("heaven_sub_arrow").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<ExplosionsArrowEntity>> EXPLOSIONS_ARROW = ENTITIES.register("explosions_arrow",
+            () -> EntityType.Builder.<ExplosionsArrowEntity>of(ExplosionsArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("explosions_arrow").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BurningArrowEntity>> BURNING_ARROW = ENTITIES.register("burning_arrow",
+            () -> EntityType.Builder.<BurningArrowEntity>of(BurningArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("burning_arrow").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
             () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
@@ -111,6 +126,24 @@ public class ModEntities {
                     .setUpdateInterval(10)
                     .fireImmune()
                     .build(Const.rl("storm_pro").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<AcceleratorDisplayEntity>> acceleratorDisplayEntity =
+            ENTITIES.register("accelerator_display", () -> EntityType.Builder.<AcceleratorDisplayEntity>of(
+                            AcceleratorDisplayEntity::new, MobCategory.MISC)
+                    .sized(0.1f, 0.1f)
+                    .build(Const.rl("accelerator_display").toString())
+            );
+    public static final DeferredHolder<EntityType<?>, EntityType<TNTProEntity>> tntProEntity =
+            ENTITIES.register("tnt_pro", () -> EntityType.Builder.<TNTProEntity>of(
+                            TNTProEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .build(Const.rl( "tnt_pro").toString())
+            );
+    public static final DeferredHolder<EntityType<?>, EntityType<InfinityThrownTrident>> infinity_thrown_trident =
+            ENTITIES.register("infinity_thrown_trident", () -> EntityType.Builder.<InfinityThrownTrident>of(
+                            InfinityThrownTrident::new, MobCategory.MISC)
+                    .sized(1f, 1f)
+                    .build(Const.rl("infinity_thrown_trident").toString())
+            );
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {

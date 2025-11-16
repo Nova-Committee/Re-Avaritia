@@ -1,12 +1,9 @@
 package committee.nova.mods.avaritia.init.registry;
 
-import com.mojang.serialization.Codec;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.util.SingularityUtils;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -38,11 +35,11 @@ public class ModCreativeModeTabs {
 
             })
             .build());
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SINGULARITY_CREATIVE_TAB = TABS.register("singularity_group", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SINGULARITY_CREATIVE_TAB = TABS.register("avaritia_singularity_group", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tab.Singularity"))
             .icon(ModCreativeModeTabs::makeIcon)
             .displayItems((parameters, output) -> {
-                for (var singularity : SingularityRegistryHandler.getInstance().getSingularities()) {
+                for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
                     if (singularity.isEnabled()) {
                         output.accept(SingularityUtils.getItemForSingularity(singularity));
                     }

@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
+import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;

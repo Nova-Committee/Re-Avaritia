@@ -28,28 +28,16 @@ import java.util.Arrays;
  */
 public class CompressorRecipe implements ICompressorRecipe {
     private final NonNullList<Ingredient> inputs;
-    private final ItemStack output;
+    private final ItemStack result;
     private final int inputCount;
     private final int timeCost;
 
-    public CompressorRecipe(Ingredient input, ItemStack output, int inputCount, int timeCost) {
+    public CompressorRecipe(Ingredient input, ItemStack result, int inputCount, int timeCost) {
         this.inputs = NonNullList.of(Ingredient.EMPTY, input);
-        this.output = output;
+        this.result = result;
         this.inputCount = inputCount;
         this.timeCost = timeCost;
 
-    }
-
-    @Override
-    public @NotNull ItemStack assemble(@NotNull CraftingInput input, HolderLookup.@NotNull Provider registries) {
-        return this.output.copy();
-    }
-    @Override
-    public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
-        if (inv.ingredientCount() != 1)
-            return false;
-        var input = inv.getItem(0);
-        return Arrays.stream(this.inputs.getFirst().getItems()).anyMatch(s -> s.is(input.getItem()));
     }
 
     @Override
@@ -59,17 +47,18 @@ public class CompressorRecipe implements ICompressorRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider pRegistryAccess) {
-        return this.output;
+        return this.result;
     }
 
     public @NotNull ItemStack getResultItem() {
-        return this.output;
+        return this.result;
     }
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         return this.inputs;
     }
+
     @Override
     public int getTimeCost() {
         return timeCost;
@@ -85,6 +74,17 @@ public class CompressorRecipe implements ICompressorRecipe {
         return ModRecipeTypes.COMPRESSOR_RECIPE.get();
     }
 
+    @Override
+    public @NotNull ItemStack assemble(@NotNull CraftingInput input, HolderLookup.@NotNull Provider registries) {
+        return this.result.copy();
+    }
+    @Override
+    public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
+        if (inv.ingredientCount() != 1)
+            return false;
+        var input = inv.getItem(0);
+        return Arrays.stream(this.inputs.getFirst().getItems()).anyMatch(s -> s.is(input.getItem()));
+    }
 
     @Override
     public int getInputCount() {
@@ -96,7 +96,7 @@ public class CompressorRecipe implements ICompressorRecipe {
                 builder.group(
                         Ingredient.CODEC
                                 .fieldOf("ingredient").forGetter(recipe -> recipe.inputs.getFirst()),
-                        ItemStack.STRICT_CODEC.fieldOf("output").forGetter(recipe -> recipe.output),
+                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("inputCount", 1000).forGetter(recipe -> recipe.inputCount),
                         Codec.INT.fieldOf("timeCost").forGetter(recipe -> recipe.timeCost)
                 ).apply(builder, CompressorRecipe::new)
@@ -125,7 +125,7 @@ public class CompressorRecipe implements ICompressorRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.inputs.getFirst());
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.output);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.inputCount);
             buffer.writeVarInt(recipe.timeCost);
         }

@@ -8,9 +8,8 @@ import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemMode
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
-import committee.nova.mods.avaritia.api.iface.IBowTransform;
-import committee.nova.mods.avaritia.api.iface.IToolTransform;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
+import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;

@@ -50,7 +50,7 @@ import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
  * Description
  */
 
-@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = MOD)
+@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class AvaritiaModClient {
     public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(Const.rl("compressed_chest"), "main");
     public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(Const.rl("compressed_chest_left"), "main");
@@ -99,6 +99,7 @@ public class AvaritiaModClient {
                 return model;
             }
         }, ModItems.infinity_helmet, ModItems.infinity_chestplate, ModItems.infinity_pants, ModItems.infinity_boots);
+        event.registerItem(new IClientItemExtensions() {}, ModBlocks.infinity_chest.asItem());
     }
 
     @SubscribeEvent

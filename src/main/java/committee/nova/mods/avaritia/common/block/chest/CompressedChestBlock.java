@@ -7,14 +7,20 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -32,6 +38,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -75,48 +82,80 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            super.onRemove(state, level, pos, newState, isMoving);
-            if (blockentity instanceof ShulkerBoxBlockEntity) {
-                level.updateNeighbourForOutputSignal(pos, state.getBlock());
-            }
+    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull LivingEntity pPlacer, @NotNull ItemStack pStack) {
+        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
+        if (pLevel.isClientSide()) return;
+        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+        if (pStack.get(DataComponents.CUSTOM_DATA) != CustomData.EMPTY && blockentity instanceof CompressedChestTile chestTile) {
+            chestTile.setChestTag(pStack.get(DataComponents.CUSTOM_DATA).copyTag());
         }
     }
 
     @Override
-    public @NotNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
-        BlockEntity blockentity = level.getBlockEntity(pos);
-        if (blockentity instanceof ShulkerBoxBlockEntity shulkerboxblockentity) {
-            if (!level.isClientSide && player.isCreative() && !shulkerboxblockentity.isEmpty()) {
-                ItemStack itemstack = ModBlocks.compressed_chest.toStack();
-                itemstack.applyComponents(blockentity.collectComponents());
-                ItemEntity itementity = new ItemEntity(
-                        level, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemstack
-                );
-                itementity.setDefaultPickUpDelay();
-                level.addFreshEntity(itementity);
-            } else {
-                shulkerboxblockentity.unpackLootTable(player);
-            }
+    public void onPlace(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pOldState, boolean pMovedByPiston) {
+        if (pLevel.isClientSide()) return;
+        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+        CompoundTag chestTag, nameTag = null, countTag = null, nbtTag = null;
+        if (blockentity instanceof CompressedChestTile chestTile && chestTile.getChestTag() != null) {
+            chestTag = chestTile.getChestTag();
+            if (chestTag.contains("name")) nameTag = chestTag.getCompound("name");
+            if (chestTag.contains("count")) countTag = chestTag.getCompound("count");
+            if (chestTag.contains("nbt")) nbtTag = chestTag.getCompound("nbt");
         }
-
-        return super.playerWillDestroy(level, pos, state, player);
-    }
-
-    @Override
-    protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.Builder params) {
-        BlockEntity blockentity = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (blockentity instanceof ShulkerBoxBlockEntity shulkerboxblockentity) {
-            params = params.withDynamicDrop(CONTENTS, p_56219_ -> {
-                for (int i = 0; i < shulkerboxblockentity.getContainerSize(); i++) {
-                    p_56219_.accept(shulkerboxblockentity.getItem(i));
+        if (nameTag != null && countTag != null) {
+            Container container = (Container) blockentity;
+            for (String index : nameTag.getAllKeys()) {
+                var name = nameTag.getString(index);
+                var newItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(name));
+                ItemStack is = new ItemStack(newItem);
+                is.setCount(countTag.getInt(index));
+                if (nbtTag != null && !nbtTag.getCompound(index).isEmpty()) {
+                    CustomData.set(DataComponents.CUSTOM_DATA, is, nbtTag.getCompound(index));
                 }
-            });
+                container.setItem(Integer.parseInt(index), is);
+            }
         }
+    }
 
-        return super.getDrops(state, params);
+    @Override
+    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (!pState.is(pNewState.getBlock())) {
+            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+            CompoundTag chestTag = new CompoundTag();
+            int stackCount = 0;
+            if (blockentity instanceof Container container) {
+                CompoundTag nameTag = new CompoundTag();
+                CompoundTag countTag = new CompoundTag();
+                CompoundTag nbtTag = new CompoundTag();
+                for (int i = 0; i < container.getContainerSize(); ++i) {
+                    var item = container.getItem(i);
+                    if (item.isEmpty()) continue;
+                    stackCount++;
+                    nameTag.putString(String.valueOf(i), BuiltInRegistries.ITEM.getKey(item.getItem()).toString());
+                    countTag.putInt(String.valueOf(i), item.getCount());
+                    nbtTag.put(String.valueOf(i), item.get(DataComponents.CUSTOM_DATA).copyTag());
+                }
+                chestTag.put("name", nameTag);
+                chestTag.put("count", countTag);
+                chestTag.put("nbt", nbtTag);
+                chestTag.putInt("stackCount", stackCount);
+            }
+
+            if (blockentity instanceof CompressedChestTile chestTile) {
+                chestTile.setChestTag(chestTag);
+            }
+            pLevel.removeBlockEntity(pPos);
+        }
+    }
+
+    @Override
+    public void playerDestroy(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable BlockEntity pBlockEntity, @NotNull ItemStack pTool) {
+        if (pLevel instanceof ServerLevel serverLevel && pBlockEntity instanceof CompressedChestTile chestTile) {
+            var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
+            CustomData.set(DataComponents.CUSTOM_DATA, pStack, chestTile.getChestTag());
+            popResource(serverLevel, pPos, pStack);
+            pState.spawnAfterBreak(serverLevel, pPos, pTool, false);
+        }
     }
 
     @Override

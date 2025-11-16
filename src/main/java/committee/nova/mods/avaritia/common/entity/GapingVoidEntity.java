@@ -67,7 +67,6 @@ public class GapingVoidEntity extends Entity {
 
     public GapingVoidEntity(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-        setSharedFlagOnFire(false);
         noCulling = true;
         if (level() instanceof ServerLevel) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
@@ -115,7 +114,6 @@ public class GapingVoidEntity extends Entity {
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         builder.define(AGE_PARAMETER, 0);
-
     }
 
     @Override

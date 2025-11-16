@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.common.menu;
 import committee.nova.mods.avaritia.api.common.container.OffsetContainer;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.common.wrapper.OffsetItemStackWrapper;
-import committee.nova.mods.avaritia.api.iface.IChangePage;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.common.wrappers.StorageItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -14,7 +13,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -32,7 +30,7 @@ import java.util.stream.IntStream;
  * @CreateTime: 2025/1/31 15:38
  * @Description:
  */
-public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implements IChangePage {
+public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> {
     private final Inventory playerInventory;
     private final OffsetContainer container;
     private final ContainerData chestData;
@@ -89,14 +87,14 @@ public class InfinityChestMenu extends BaseTileMenu<InfinityChestTile> implement
         }
     }
 
-    @Override
-    public void changePage(int page) {
-        int currentPage = this.chestData.get(0);
-        int nextPage = Mth.clamp(page, 0,  ModConfig.maxPageLimit.get() - 1);
-        if (nextPage != currentPage) {
-            this.chestData.set(0, nextPage);
-        }
-    }
+//    @Override
+//    public void changePage(int page) {
+//        int currentPage = this.chestData.get(0);
+//        int nextPage = Mth.clamp(page, 0,  ModConfig.maxPageLimit.get() - 1);
+//        if (nextPage != currentPage) {
+//            this.chestData.set(0, nextPage);
+//        }
+//    }
 
     
     public int getMaxPage() {

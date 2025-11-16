@@ -12,7 +12,7 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
  */
 public class NeutronGearItem extends ResourceItem {
     public NeutronGearItem() {
-        super(ModRarities.RARE, "neutron_gear", true);
+        super(ModRarities.RARE, true);
     }
 
 //    @Override

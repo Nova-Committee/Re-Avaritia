@@ -45,6 +45,7 @@ public class ModItems {
     public static DeferredItem<Item> infinity_bucket = item("infinity_bucket", InfinityBucketItem::new);
     public static DeferredItem<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     public static DeferredItem<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
+    public static DeferredItem<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
     //crystal
     public static DeferredItem<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
     public static DeferredItem<Item> crystal_hoe = item("crystal_hoe", CrystalHoeItem::new);
@@ -95,6 +96,7 @@ public class ModItems {
     public static DeferredItem<Item> refined_coal = item("refined_coal", RefinedCoalItem::new);
     public static DeferredItem<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);
     public static DeferredItem<Item> matter_cluster = item("matter_cluster", MatterClusterItem::new);
+    public static DeferredItem<Item> full_matter_cluster = item("full_matter_cluster", () -> new Item(new Item.Properties().stacksTo(1).rarity(ModRarities.RARE)));
     public static DeferredItem<Item> enhancement_core = item("enhancement_core", EnhancementCoreItem::new);
     public static DeferredItem<Item> upgrade_smithing_template = item("upgrade_smithing_template", UpgradeSmithingTemplateItem::new);
     public static DeferredItem<Item> infinity_upgrade = item("infinity_upgrade", InfinityUpgradeItem::new);

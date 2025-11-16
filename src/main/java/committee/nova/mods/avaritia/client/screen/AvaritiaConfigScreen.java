@@ -185,13 +185,13 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.use_advance_tooltips.tooltip"),
                 ModConfig.useAdvanceTooltips::set, ModConfig.useAdvanceTooltips);
 
-        addDoubleEntry("endless_item_entity_speed", ModConfig.endlessItemEntitySpeed, 1.0, 50.0,
+        addDoubleEntry("endless_item_entity_speed", ModConfig.immortalItemEntitySpeed, 1.0, 50.0,
                 Component.translatable("config.avaritia.endless_item_entity_speed.tooltip"),
-                ModConfig.endlessItemEntitySpeed::set, ModConfig.endlessItemEntitySpeed);
+                ModConfig.immortalItemEntitySpeed::set, ModConfig.immortalItemEntitySpeed);
 
-        addDoubleEntry("endless_item_entity_range", ModConfig.endlessItemEntityRange, 1.0, 10000.0,
+        addDoubleEntry("endless_item_entity_range", ModConfig.immortalItemEntityRange, 1.0, 10000.0,
                 Component.translatable("config.avaritia.endless_item_entity_range.tooltip"),
-                ModConfig.endlessItemEntityRange::set, ModConfig.endlessItemEntityRange);
+                ModConfig.immortalItemEntityRange::set, ModConfig.immortalItemEntityRange);
         addDoubleEntry("infinity_elytra_flying_speed", ModConfig.infinityElytraFlyingSpeed, 0.0, 100.0,
                 Component.translatable("config.avaritia.infinity_elytra_flying_speed.tooltip"),
                 ModConfig.infinityElytraFlyingSpeed::set, ModConfig.infinityElytraFlyingSpeed);
@@ -326,8 +326,8 @@ public class AvaritiaConfigScreen extends Screen {
 
         // Misc 配置项
         ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
-        ModConfig.endlessItemEntitySpeed.set(ModConfig.endlessItemEntitySpeed.getDefault());
-        ModConfig.endlessItemEntityRange.set(ModConfig.endlessItemEntityRange.getDefault());
+        ModConfig.immortalItemEntitySpeed.set(ModConfig.immortalItemEntitySpeed.getDefault());
+        ModConfig.immortalItemEntityRange.set(ModConfig.immortalItemEntityRange.getDefault());
         ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
         ModConfig.infinityElytraFlyingRangeDamage.set(ModConfig.infinityElytraFlyingRangeDamage.getDefault());
     }

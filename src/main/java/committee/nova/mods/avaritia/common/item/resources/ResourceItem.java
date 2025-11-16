@@ -22,25 +22,22 @@ import java.util.List;
  * Version: 1.0
  */
 public class ResourceItem extends Item implements ITooltip {
-    private final String name;
     private final boolean needsTooltip;
 
-    public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip) {
-        this(rarity, registryName, needsTooltip, new Properties().rarity(rarity));
+    public ResourceItem(Rarity rarity, boolean needsTooltip) {
+        this(rarity, needsTooltip, new Properties().rarity(rarity));
     }
 
-    public ResourceItem(Rarity rarity, String registryName, boolean needsTooltip, Properties properties) {
+    public ResourceItem(Rarity rarity, boolean needsTooltip, Properties properties) {
         super(properties.rarity(rarity));
-        this.name = registryName;
         this.needsTooltip = needsTooltip;
     }
 
-
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable TooltipContext context, @NotNull List<Component> components, @NotNull TooltipFlag p_41424_) {
-        if (needsTooltip)
-            appendTooltip(pStack, context, components, p_41424_, name);
+    public boolean hasDescTooltip() {
+        return needsTooltip;
     }
+
 
     @Nullable
     @Override

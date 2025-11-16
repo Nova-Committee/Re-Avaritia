@@ -5,9 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.item.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.handler.SingularityRegistryHandler;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.resources.ResourceLocation;
@@ -15,8 +15,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.conditions.NotCondition;
-import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 
 /**
  * Description:
@@ -118,9 +116,11 @@ public class SingularityUtils {
     public static Singularity getSingularity(ItemStack stack) {
         var id = stack.get(ModDataComponents.SINGULARITY_ID);
         if (id != null) {
-            return SingularityRegistryHandler.getInstance().getSingularityById(id);
+            var manager = SingularityDataManager.getInstance();
+            if (manager != null && manager.isInitialized()) {
+                return manager.getSingularity(id);
+            }
         }
-
         return null;
     }
 

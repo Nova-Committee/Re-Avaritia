@@ -32,7 +32,7 @@ public class ReloadableServerResourcesMixin {
             at = {@At("RETURN")},
             method = {"<init>"}
     )
-    public void cucumber$constructor(RegistryAccess.Frozen registryAccess, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
+    public void avaritia$constructor(RegistryAccess.Frozen registryAccess, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
         RecipeUtils.setRecipeManager(this.recipes);
     }
 }

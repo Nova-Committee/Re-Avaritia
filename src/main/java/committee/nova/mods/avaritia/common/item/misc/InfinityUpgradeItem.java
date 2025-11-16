@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
-import committee.nova.mods.avaritia.common.tile.collector.BaseNeutronCollectorTile;
+import committee.nova.mods.avaritia.common.tile.collector.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
 import committee.nova.mods.avaritia.common.tile.compressor.CompressorTier;
 import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
@@ -86,7 +86,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                     return InteractionResult.PASS;
                 }
             }
-        }else if (tile instanceof BaseNeutronCollectorTile collectorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+        }else if (tile instanceof NeutronCollectorTile collectorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
             switch (collectorTile.getTier()) {
                 case DEFAULT -> {
                     collectorTile.setTier(CollectorTier.DENSE);

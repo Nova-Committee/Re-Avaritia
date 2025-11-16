@@ -22,7 +22,7 @@ import java.util.Optional;
  * Date: 2022/5/15 11:40
  * Version: 1.0
  */
-@EventBusSubscriber(modid = Const.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class ResourceReloadHandler {
 
     @SubscribeEvent

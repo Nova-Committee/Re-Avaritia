@@ -4,8 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import committee.nova.mods.avaritia.util.SingularityUtils;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -22,13 +25,39 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
+    private static final Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     private final String group;
     private final int count;
+    // 存储原始输入配料（用于非默认组）
+    private final NonNullList<Ingredient> originalInputs;
 
     public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
         super(inputs, new ItemStack(ModItems.infinity_catalyst.get()), 4);
         this.group = pGroup;
         this.count = count;
+        this.originalInputs = inputs;
+    }
+
+    @Override
+    public @NotNull NonNullList<Ingredient> getIngredients() {
+        if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
+            super.getIngredients().clear();
+            if ("default".equals(group)) {
+
+                super.getIngredients().addAll(originalInputs);
+                SingularityDataManager.getInstance().getSingularities()
+                        .stream()
+                        .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                        .map(SingularityUtils::getItemForSingularity)
+                        .map(Ingredient::of)
+                        .forEach(super.getIngredients()::add);
+            } else {
+                super.getIngredients().addAll(originalInputs);
+            }
+
+            INGREDIENTS_LOADED.put(this, true);
+        }
+        return super.getIngredients();
     }
 
     @Override
@@ -44,7 +73,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     public static class Serializer implements RecipeSerializer<InfinityCatalystCraftRecipe> {
         public static final MapCodec<InfinityCatalystCraftRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
-                        Codec.STRING.fieldOf("group").forGetter(recipe -> recipe.group),
+                        Codec.STRING.optionalFieldOf("group", "default").forGetter(recipe -> recipe.group),
                         Ingredient.CODEC_NONEMPTY
                                 .listOf()
                                 .fieldOf("ingredients")
@@ -63,7 +92,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                                         DataResult::success
                                 )
                                 .forGetter(ShapelessTableCraftingRecipe::getInputs),
-                        Codec.INT.fieldOf("count").forGetter(recipe -> recipe.count)
+                        Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
                 ).apply(builder, InfinityCatalystCraftRecipe::new)
         );
         public static final StreamCodec<RegistryFriendlyByteBuf, InfinityCatalystCraftRecipe> STREAM_CODEC = StreamCodec.of(
@@ -94,7 +123,6 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         private static void toNetwork(RegistryFriendlyByteBuf buffer, InfinityCatalystCraftRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeVarInt(recipe.getInputs().size());
-
             for (var ingredient : recipe.getInputs()) {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }

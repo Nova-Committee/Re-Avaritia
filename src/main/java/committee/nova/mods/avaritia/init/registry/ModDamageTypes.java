@@ -24,8 +24,14 @@ import org.jetbrains.annotations.Nullable;
  */
 
 public class ModDamageTypes {
-
     public static final ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE, Const.rl("infinity"));
+
+    public static final RegistrySetBuilder DAMAGE_BUILDER = new RegistrySetBuilder()
+            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
+
+    public static HolderLookup.Provider append(HolderLookup.Provider original) {
+        return DAMAGE_BUILDER.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), original, new Cloner.Factory()).patches();
+    }
 
     public static void bootstrap(BootstrapContext<DamageType> context) {
         context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1f));

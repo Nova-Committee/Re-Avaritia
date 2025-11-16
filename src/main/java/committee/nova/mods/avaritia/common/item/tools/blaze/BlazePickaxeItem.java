@@ -1,8 +1,9 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
-import committee.nova.mods.avaritia.api.common.item.iface.IItemEnchant;
-import committee.nova.mods.avaritia.api.common.item.iface.mode.IItemMode;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -34,7 +35,7 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazePickaxeItem extends PickaxeItem implements ITooltip, IItemMode<ToolMode>, IItemEnchant {
+public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchable, InitEnchantItem {
     private final String name;
     private final InitEnchantment fire_aspect;
     private final InitEnchantment silk_touch;
@@ -69,19 +70,24 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, IItemMode
     }
 
     @Override
+    public boolean hasDescTooltip() {
+        return false;
+    }
+
+    @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.fire_aspect.appendHoverText(context, tooltipComponents);
         this.silk_touch.appendHoverText(context, tooltipComponents);
         this.block_fortune.appendHoverText(context, tooltipComponents);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching() && !world.isClientSide) {
-            changeMode(player, stack, hand, ToolMode.ADVANCE);
+        if (player.isShiftKeyDown()) {
+            switchMode(world, player, hand, "smelt");
             return InteractionResultHolder.success(stack);
         }
         return super.use(world, player, hand);
@@ -89,19 +95,10 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, IItemMode
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (getMode(stack).equals(ToolMode.ADVANCE) && miningEntity instanceof Player player) {
+        if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
             ToolUtils.melting(state, level, pos, player, stack);
         }
         return super.mineBlock(stack, level, state, pos, miningEntity);
     }
 
-    @Override
-    public DataComponentType<ToolMode> getDataComponentType() {
-        return ModDataComponents.TOOL_MODE.get();
-    }
-
-    @Override
-    public ToolMode getDefaultMode() {
-        return ToolMode.DEFAULT;
-    }
 }

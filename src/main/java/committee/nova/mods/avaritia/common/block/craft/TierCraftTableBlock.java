@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TierCraftTableBlock extends BaseTileEntityBlock {
     ModCraftTier tier;
+
     public TierCraftTableBlock(ModCraftTier tier) {
         super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true);
         this.tier = tier;

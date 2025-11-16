@@ -27,15 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-
-    @Unique
-    ItemStack avaritia$stack;
-    @Unique
-    VertexConsumer avaritia$vertexConsumer;
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-
     @Inject(
             method = "render",
             at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", ordinal = 0)

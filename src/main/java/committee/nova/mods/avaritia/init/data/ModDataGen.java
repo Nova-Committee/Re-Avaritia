@@ -55,9 +55,8 @@ public class ModDataGen {
             generator.addProvider(true, new ModBlockTags(output, lookupProvider, helper));
             generator.addProvider(true, new ModEntityTags(output, lookupProvider, helper));
             generator.addProvider(true, new ModAdvancements(output, lookupProvider, helper));
-            DatapackBuiltinEntriesProvider datapackProvider = new ModRegistries(output, event.getLookupProvider());
-            generator.addProvider(true, datapackProvider);
-            generator.addProvider(true, new ModDamageTypeTags(output, datapackProvider.getRegistryProvider(), helper));
+            generator.addProvider(true, new ModRegistries(output, event.getLookupProvider()));
+            generator.addProvider(true, new ModDamageTypeTags(output, lookupProvider.thenApply(ModDamageTypes::append), helper));
 //            generator.addProvider(true, new ModFluidTags(output, lookupProvider, helper));
 
             generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(

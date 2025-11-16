@@ -36,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2024/7/13 下午12:38
  * @Description:
  */
+//todo 重构
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;

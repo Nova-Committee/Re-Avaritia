@@ -5,6 +5,7 @@
   "refmap": "avaritia.refmap.json",
   "mixins": [
     "EnchantmentHelperMixin",
+    "ItemMixin",
     "NetherWartBlockMixin",
     "RecipeManagerMixin",
     "ReloadableServerResourcesMixin"

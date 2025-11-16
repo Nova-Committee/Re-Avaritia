@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.entity.arrow;
 
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -19,8 +18,6 @@ public class NeutronArrowEntity extends Arrow {
     public @NotNull ItemStack getPickupItem() {
         return ItemStack.EMPTY;
     }
-
-
 
     @Override
     public void tick() {

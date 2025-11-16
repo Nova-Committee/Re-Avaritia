@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
  * @Description:
  */
 public class RefinedCoalItem extends ResourceItem{
-    public RefinedCoalItem(String registryName) {
-        super(ModRarities.UNCOMMON, registryName, true, new Properties().stacksTo(32));
+    public RefinedCoalItem() {
+        super(ModRarities.UNCOMMON, true, new Properties().stacksTo(32));
     }
 
     public static final int BURN_TIME = 16000 * 10;
