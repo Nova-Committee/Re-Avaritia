@@ -67,8 +67,8 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUnda
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
-        if (stack.getTag() != null && stack.getTag().getBoolean("destroyer")) {
+    public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
+        if (isActive(stack, "infinity_shovel_destroyer")) {
             return 5.0F;
         }
         return Math.max(super.getDestroySpeed(stack, state), 6.0f);

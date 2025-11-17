@@ -64,13 +64,6 @@ public class InfinityArmorItem extends ArmorItem implements IUndamageable {
         return true;
     }
 
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return ModRarities.COSMIC;
-    }
-
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> tooltip, @NotNull TooltipFlag pIsAdvanced) {
