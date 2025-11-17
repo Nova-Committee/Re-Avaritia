@@ -2,6 +2,9 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
+import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -30,7 +33,8 @@ public class NetworkHandler {
                 new S2CTotemPack.Handler());
         registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,
                 new S2CSideConfigSyncPacket.Handler());
-
+        registrar.playToClient(S2CInfinityChestStatePack.TYPE, S2CInfinityChestStatePack.STREAM_CODEC,
+                new S2CInfinityChestStatePack.Handler());
 
         registrar.playToServer(C2SSideConfigPacket.TYPE, C2SSideConfigPacket.STREAM_CODEC,
                 new C2SSideConfigPacket.Handler());
@@ -42,6 +46,10 @@ public class NetworkHandler {
                 new C2SRenamePack.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
                 new C2SOpenRingPack.Handler());
+        registrar.playToServer(C2SInfinityChestActionPack.TYPE, C2SInfinityChestActionPack.STREAM_CODEC,
+                new C2SInfinityChestActionPack.Handler());
+        registrar.playToServer(C2SInfinityChestFilterPack.TYPE, C2SInfinityChestFilterPack.STREAM_CODEC,
+                new C2SInfinityChestFilterPack.Handler());
         //CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
         //CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 //        CHANNEL.registerMessage(id++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));

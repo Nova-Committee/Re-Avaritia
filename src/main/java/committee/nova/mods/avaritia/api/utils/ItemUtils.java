@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import committee.nova.mods.avaritia.api.utils.vec.Vector3;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -15,10 +16,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
 
@@ -74,6 +77,46 @@ public class ItemUtils {
         }
         return itemStack;
     }
+
+
+    public static boolean hasTag(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null;
+    }
+
+    public static CompoundTag getOrCreateTag(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        CompoundTag root;
+
+        if (data == null) {
+            root = new CompoundTag();
+        } else {
+            root = data.copyTag();
+        }
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
+        return root;
+    }
+
+    public static CompoundTag getOrCreateChildTag(ItemStack stack, String childTagName) {
+        CompoundTag root = getOrCreateTag(stack);
+        CompoundTag modeTag;
+        if (root.contains(childTagName, CompoundTag.TAG_COMPOUND)) {
+            modeTag = new CompoundTag();
+            root.put(childTagName, modeTag);
+        } else {
+            modeTag = root.getCompound(childTagName);
+        }
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
+        return modeTag;
+    }
+
+    public static CompoundTag updateTag(ItemStack stack, Consumer<CompoundTag> consumer) {
+        var root =  getOrCreateTag(stack);
+        consumer.accept(root);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
+        return root;
+    }
+
 
     public static String getNbtString(ItemStack itemStack) {
         String json = "";

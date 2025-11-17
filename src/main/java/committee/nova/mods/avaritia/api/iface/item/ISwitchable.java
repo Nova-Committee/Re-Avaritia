@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.iface.item;
 
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -23,54 +24,10 @@ import java.util.List;
 public interface ISwitchable {
 
     /**
-     * 获取或创建 "mode" 子标签
-     */
-    static CompoundTag getOrCreateModeTag(ItemStack stack) {
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag root;
-
-        if (data == null) {
-            root = new CompoundTag();
-        } else {
-            root = data.copyTag();
-        }
-
-        CompoundTag modeTag;
-        if (!root.contains("mode", CompoundTag.TAG_COMPOUND)) {
-            modeTag = new CompoundTag();
-            root.put("mode", modeTag);
-        } else {
-            modeTag = root.getCompound("mode");
-        }
-
-        // 重要：将修改后的数据保存回 ItemStack
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
-
-        return modeTag;
-    }
-
-    /**
-     * 更新模式标签并确保数据保存
-     */
-    static void updateModeTag(ItemStack stack, CompoundTag modeTag) {
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag root;
-
-        if (data == null) {
-            root = new CompoundTag();
-        } else {
-            root = data.copyTag();
-        }
-
-        root.put("mode", modeTag);
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
-    }
-
-    /**
      * 检查指定功能是否处于激活状态
      */
     static boolean isMode(ItemStack stack, String funcName) {
-        CompoundTag modeTag = getOrCreateModeTag(stack);
+        CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
         return modeTag.contains(funcName) && modeTag.getBoolean(funcName);
     }
 
@@ -85,7 +42,7 @@ public interface ISwitchable {
      * 获取当前激活的模式
      */
     static int getCurrentMode(ItemStack stack, List<String> modeList) {
-        CompoundTag modeTag = getOrCreateModeTag(stack);
+        CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
         for (int i = 0; i < modeList.size(); i++) {
             String mode = modeList.get(i);
             if (modeTag.contains(mode) && modeTag.getBoolean(mode)) {
@@ -160,7 +117,7 @@ public interface ISwitchable {
         if (!modeList.contains(modeName)) return;
 
         ItemStack stack = player.getItemInHand(hand);
-        CompoundTag modeTag = getOrCreateModeTag(stack);
+        CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
 
         // 关闭所有模式
         for (String mode : modeList) {
