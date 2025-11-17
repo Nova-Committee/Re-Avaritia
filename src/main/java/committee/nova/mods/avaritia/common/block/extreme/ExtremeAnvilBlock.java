@@ -124,18 +124,6 @@ public class ExtremeAnvilBlock extends FallingBlock {
     }
 
     @Override
-    public void onBrokenAfterFall(@NotNull Level pLevel, @NotNull BlockPos pPos, FallingBlockEntity pFallingBlock) {
-        if (!pFallingBlock.isSilent()) {
-            pLevel.levelEvent(1029, pPos, 0);
-        }
-
-        if (!pLevel.isClientSide && pLevel.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            ItemStack itemStack = new ItemStack(this);
-            Block.popResource(pLevel, pPos, itemStack);
-        }
-    }
-
-    @Override
     public @NotNull DamageSource getFallDamageSource(Entity pEntity) {
         return pEntity.damageSources().fallingBlock(pEntity);
     }
