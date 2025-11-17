@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,9 +24,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class CrystalShovelItem extends ShovelItem implements ITooltip {
-    private final String name;
-
-    public CrystalShovelItem(String name) {
+    public CrystalShovelItem() {
         super(ModToolTiers.CRYSTAL,
                 new Properties()
                         .rarity(ModRarities.EPIC)
@@ -36,14 +32,11 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
-        this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override
@@ -54,18 +47,25 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
     @Override
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pLevel.isClientSide && pSlotId < Inventory.getSelectionSize() && pEntity instanceof Player player && pIsSelected) {
-            List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
-            for (MobEffectInstance potion : Collections2
-                    .filter(effects, potion ->
+        if (!pLevel.isClientSide && pEntity instanceof Player player) {
+            if (pIsSelected) {
+                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+                List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
+                for (MobEffectInstance potion : Collections2
+                        .filter(effects, potion ->
 
-                            (
-                                    potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN)
-                                            || potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)
-                            )
-                    )
-            ) {
-                player.removeEffect(potion.getEffect());
+                                (
+                                        potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN)
+                                                || potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)
+                                )
+                        )
+                ) {
+                    player.removeEffect(potion.getEffect());
+                }
+            } else {
+                player.removeEffect(MobEffects.DIG_SPEED);
+                player.removeEffect(MobEffects.MOVEMENT_SPEED);
             }
         }
     }

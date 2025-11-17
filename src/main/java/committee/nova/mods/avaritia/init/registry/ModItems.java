@@ -48,11 +48,11 @@ public class ModItems {
     public static DeferredItem<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
     //crystal
     public static DeferredItem<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
-    public static DeferredItem<Item> crystal_hoe = item("crystal_hoe", CrystalHoeItem::new);
+    public static DeferredItem<Item> crystal_hoe = item("crystal_hoe", name -> new CrystalHoeItem());
     public static DeferredItem<Item> crystal_pickaxe = item("crystal_pickaxe", CrystalPickaxeItem::new);
-    public static DeferredItem<Item> crystal_shovel = item("crystal_shovel", CrystalShovelItem::new);
+    public static DeferredItem<Item> crystal_shovel = item("crystal_shovel", name -> new CrystalShovelItem());
     public static DeferredItem<Item> crystal_axe = item("crystal_axe", CrystalAxeItem::new);
-    public static DeferredItem<Item> crystal_bow = item("crystal_bow", CrystalBowItem::new);
+    public static DeferredItem<Item> crystal_bow = item("crystal_bow", name -> new CrystalBowItem());
     //blaze
     public static DeferredItem<Item> blaze_sword = item("blaze_sword", name -> new BlazeSwordItem());
     public static DeferredItem<Item> blaze_hoe = item("blaze_hoe", name -> new BlazeHoeItem());

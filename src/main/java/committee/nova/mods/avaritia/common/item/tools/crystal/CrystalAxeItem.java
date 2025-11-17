@@ -43,10 +43,8 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override
@@ -54,12 +52,6 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
         return false;
     }
 
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-
-        return super.use(world, player, hand);
-    }
     @Override
     public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         boolean isJumpAttack = this.isJumpAttack(attacker);
@@ -86,7 +78,7 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
         return !attacker.onGround() && attacker.getDeltaMovement().y() < -0.1;
     }
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+    public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
         if (entity instanceof ServerPlayer serverPlayer && !serverPlayer.level().isClientSide()) {
             serverPlayer.getCooldowns().addCooldown(serverPlayer.getUseItem().getItem(), 1200);
             serverPlayer.stopUsingItem();

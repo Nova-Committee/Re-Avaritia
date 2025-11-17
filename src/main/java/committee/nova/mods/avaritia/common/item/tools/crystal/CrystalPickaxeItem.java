@@ -45,10 +45,8 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override
@@ -75,7 +73,7 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
         Holder<Enchantment> FORTUNE =
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                         .getOrThrow(Enchantments.FORTUNE);
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
                 ItemUtils.clearEnchants(stack);
                 stack.enchant(FORTUNE, 3);

@@ -28,8 +28,6 @@ import java.util.List;
  * Version: 1.0
  */
 public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable {
-    private final String name;
-
     public CrystalSwordItem(String name) {
         super(ModToolTiers.CRYSTAL,
                 new Properties()
@@ -39,14 +37,11 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
-        this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override
@@ -55,7 +50,7 @@ public class CrystalSwordItem extends SwordItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+    public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
         if (player instanceof ServerPlayer serverPlayer) {
 
             serverPlayer.resetAttackStrengthTicker();

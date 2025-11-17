@@ -1,10 +1,12 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.NeutronArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -15,20 +17,30 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 
-
-public class CrystalBowItem extends BowItem implements ISwitchable {
-    public CrystalBowItem(String name) {
+public class CrystalBowItem extends BowItem implements ISwitchable, IBowTransform {
+    public CrystalBowItem() {
         super(new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
         );
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isCrouching()) {
+            switchMode(level, player, hand, "blade_slash");
+            return InteractionResultHolder.success(stack);
+        }
+        return super.use(level, player, hand);
     }
     @Override
     public @NotNull UseAnim getUseAnimation(@NotNull ItemStack pStack) {
@@ -36,7 +48,7 @@ public class CrystalBowItem extends BowItem implements ISwitchable {
     }
 
     @Override
-    public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving, int pTimeLeft) {
+    public void releaseUsing(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pEntityLiving, int pTimeLeft) {
         if (pEntityLiving instanceof Player player) {
             InteractionHand hand = pEntityLiving.getUsedItemHand();
             ItemStack stack = player.getItemInHand(hand);
@@ -109,14 +121,12 @@ public class CrystalBowItem extends BowItem implements ISwitchable {
         }
     }
 
-
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching()) {
-            switchMode(level, player, hand, "blade_slash");
-            return InteractionResultHolder.success(stack);
-        }
-        return super.use(level, player, hand);
+    public void onCraftedBy(@NotNull ItemStack stack, @NotNull Level level, @NotNull Player player) {
+        stack.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.INFINITY),1);
+        stack.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.MULTISHOT),1);
+        super.onCraftedBy(stack, level, player);
     }
 }

@@ -3,23 +3,23 @@ package committee.nova.mods.avaritia.common.item.tools.crystal;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.GrassBlock;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * Description:
@@ -29,9 +29,7 @@ import java.util.List;
  */
 public class CrystalHoeItem extends HoeItem implements ITooltip {
 
-    private final String name;
-
-    public CrystalHoeItem(String name) {
+    public CrystalHoeItem() {
         super(ModToolTiers.CRYSTAL,
                 new Properties()
                         .rarity(ModRarities.EPIC)
@@ -39,14 +37,11 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
-        this.name = name;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+    public boolean hasDescTooltip() {
+        return true;
     }
 
     @Override
@@ -55,25 +50,43 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
-        return super.use(world, player, hand);
-    }
+    public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
+        super.useOn(context);
+        var stack = context.getItemInHand();
+        var world = context.getLevel();
+        var blockpos = context.getClickedPos();
+        var targetBlock = world.getBlockState(blockpos).getBlock();
+        var player = context.getPlayer();
+        var blockstate = Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7);
+        int range = 1; // 3x3 area
+        var minPos = blockpos.offset(-range, 0, -range);
+        var maxPos = blockpos.offset(range, 0, range);
 
-    @Override
-    public @NotNull InteractionResult useOn(@NotNull UseOnContext pContext) {
-        super.useOn(pContext);
-        var pos = pContext.getClickedPos();
-        var level = pContext.getLevel();
-        var targetState = level.getBlockState(pos);
-        var targetBlock = targetState.getBlock();
-        if (level instanceof ServerLevel serverLevel && targetBlock instanceof BonemealableBlock growable
-        ) {
-            if (growable.isValidBonemealTarget(serverLevel, pos, targetState)
-                    //&& ForgeHooks.onCropsGrowPre(serverLevel, pos, targetState, true)
+        if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
+                (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
+            if (player != null && !world.isClientSide) {
+                var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
+                for (BlockPos pos : boxMutable) {
+                    var block = world.getBlockState(pos).getBlock();
+                    if (world.isEmptyBlock(pos.above()) && (block instanceof GrassBlock || block.equals(Blocks.DIRT) || block.equals(
+                            Blocks.COARSE_DIRT))) {
+                        world.setBlock(pos, blockstate, 11);
+                    }
+                }
+            }
+            world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+            return InteractionResult.sidedSuccess(world.isClientSide);
+        }
+
+        // Handle bonemeal functionality
+        var targetState = world.getBlockState(blockpos);
+        if (world instanceof ServerLevel serverLevel && targetBlock instanceof BonemealableBlock growable) {
+            if (growable.isValidBonemealTarget(serverLevel, blockpos, targetState)
+                    //&& onCropsGrowPre(serverLevel, blockpos, targetState, true)
             ) {
-                growable.performBonemeal(serverLevel, level.random, pos, targetState);
-                serverLevel.levelEvent(2005, pos, 0);
-                //ForgeHooks.onCropsGrowPost(serverLevel, pos, targetState);
+                growable.performBonemeal(serverLevel, world.random, blockpos, targetState);
+                serverLevel.levelEvent(2005, blockpos, 0);
+                //ForgeHooks.onCropsGrowPost(serverLevel, blockpos, targetState);
                 return InteractionResult.CONSUME;
             }
         }
@@ -81,7 +94,7 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+    public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
         if (player instanceof ServerPlayer serverPlayer) {
             // 取消攻击冷却
             serverPlayer.resetAttackStrengthTicker();
