@@ -36,6 +36,8 @@ public class NetworkHandler {
                 new C2SSideConfigPacket.Handler());
         registrar.playToServer(C2SCompressorLockPacket.TYPE, C2SCompressorLockPacket.STREAM_CODEC,
                 new C2SCompressorLockPacket.Handler());
+        registrar.playToServer(C2SCompressorEjectPacket.TYPE, C2SCompressorEjectPacket.STREAM_CODEC,
+                new C2SCompressorEjectPacket.Handler());
         registrar.playToServer(C2SRenamePack.TYPE, C2SRenamePack.STREAM_CODEC,
                 new C2SRenamePack.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,

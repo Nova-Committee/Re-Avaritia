@@ -132,29 +132,8 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                         int i2 = itemenchantments$mutable.getLevel(holder);
                         int j2 = entry.getIntValue();
                         j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
-                        Enchantment enchantment = holder.value();
-                        boolean flag1 = itemstack.supportsEnchantment(holder);
-                        if (this.player.getAbilities().instabuild) {
-                            flag1 = true;
-                        }
-
-                        for (Holder<Enchantment> holder1 : itemenchantments$mutable.keySet()) {
-                            if (!holder1.equals(holder) && !Enchantment.areCompatible(holder, holder1)) {
-                                flag1 = false;
-                                i++;
-                            }
-                        }
-                        if (!flag1) {
-                            flag3 = true;
-                        } else {
-                            flag2 = true;
-                            itemenchantments$mutable.set(holder, j2);
-                        }
-
-                        if (flag3 && !flag2) {
-                            this.resultSlots.setItem(0, ItemStack.EMPTY);
-                            return;
-                        }
+                        itemenchantments$mutable.set(holder, j2);
+                        i += j2;
                     }
 
                 }

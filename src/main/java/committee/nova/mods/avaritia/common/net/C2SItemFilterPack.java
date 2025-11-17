@@ -50,11 +50,9 @@ public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPa
                         var tag = player.getMainHandItem().getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
                         switch(packet.action) {
                             case 0 -> {
-                                    if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                        tag.put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
-                                    }
-
-
+                                if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
+                                    tag.put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
+                                }
                             }
                             case 1 -> {
                                 if (tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
