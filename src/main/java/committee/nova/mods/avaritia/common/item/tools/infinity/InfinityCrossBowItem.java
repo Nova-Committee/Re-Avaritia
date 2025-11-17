@@ -1,5 +1,8 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
+import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
+import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
@@ -7,7 +10,11 @@ import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -19,13 +26,20 @@ import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ChargedProjectiles;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 
-public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBowTransform, ISwitchable {
+public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ISwitchable, IUndamageable, IBowTransform {
+    private final InitEnchantment initEnchantment;
 
     public InfinityCrossBowItem() {
         super(new Properties()
@@ -33,11 +47,12 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
                 .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
         );
+        this.initEnchantment = new InitEnchantment(Enchantments.INFINITY, 10);
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
-
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        this.initEnchantment.appendHoverText(context, tooltipComponents);
     }
 
     @Override
@@ -69,9 +84,14 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 40;
+    public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
     }
+
+    @Override
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
+        return 10;
+    }
+
 
     private void performShooting(Level level, Player player, InteractionHand hand, ItemStack crossbow, float velocity, float inaccuracy) {
         if (level.isClientSide) return;
@@ -278,5 +298,10 @@ public class InfinityCrossBowItem extends CrossbowItem implements ITooltip, IBow
         level.addFreshEntity(windCharge);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.WIND_CHARGE_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+
+    @Override
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        return this.initEnchantment.getLevel(enchantment);
     }
 }

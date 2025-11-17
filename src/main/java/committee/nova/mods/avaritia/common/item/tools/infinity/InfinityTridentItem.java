@@ -1,9 +1,11 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
-import committee.nova.mods.avaritia.api.iface.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.IUndamageable;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -18,6 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +40,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
 
     public InfinityTridentItem() {
         super((new Properties())
-                .rarity(ModRarities.COSMIC)
+                .rarity(ModRarities.COSMIC.getValue())
                 .stacksTo(1)
                 .fireResistant());
     }
@@ -45,16 +49,8 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
         return stack.getOrCreateTag().getBoolean(CHANNELING_NBT);
     }
 
-    public void setChanneling(ItemStack stack, boolean enabled) {
-        stack.getOrCreateTag().putBoolean(CHANNELING_NBT, enabled);
-    }
-
     public boolean getCurrentShockwave(ItemStack stack) {
         return stack.getOrCreateTag().getBoolean(SHOCKWAVE_NBT);
-    }
-
-    public void setShockwave(ItemStack stack, boolean enabled) {
-        stack.getOrCreateTag().putBoolean(SHOCKWAVE_NBT, enabled);
     }
 
     @Override
@@ -108,11 +104,13 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                         float velocity = Mth.sqrt(xVelocity * xVelocity + yVelocity * yVelocity + zVelocity * zVelocity);
                         float velocityModifier = (0.75F + 0.75F * riptideLevel) / velocity;
                         player.push(xVelocity * velocityModifier, yVelocity * velocityModifier, zVelocity * velocityModifier);
-                        player.startAutoSpinAttack(20);
+                        player.startAutoSpinAttack(20, 8.0F, itemStack);
                         if (player.onGround()) {
                             player.move(MoverType.SELF, new Vec3(0.0D, 1.1999999F, 0.0D));
                         }
-                        level.playSound(null, player, SoundEvents.TRIDENT_RIPTIDE_3, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        Holder<SoundEvent> holder = EnchantmentHelper.pickHighestLevel(itemStack, EnchantmentEffectComponents.TRIDENT_SOUND)
+                                .orElse(SoundEvents.TRIDENT_THROW);
+                        level.playSound(null, player, holder.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
 
                 }
@@ -130,7 +128,9 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
             }
 
             level.addFreshEntity(throwntrident);
-            level.playSound(null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+            Holder<SoundEvent> holder = EnchantmentHelper.pickHighestLevel(itemStack, EnchantmentEffectComponents.TRIDENT_SOUND)
+                    .orElse(SoundEvents.TRIDENT_THROW);
+            level.playSound(null, player, holder.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
             if (!player.getAbilities().instabuild) {
                 player.getInventory().removeItem(itemStack);
             }

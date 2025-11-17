@@ -6,6 +6,8 @@ import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.common.entity.arrow.BurningArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -24,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
 import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
 import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
@@ -104,7 +108,7 @@ public class BlazeBowItem extends BowItem implements ITooltip, ISwitchable, IBow
                         }
                         abstractarrow.setBaseDamage(abstractarrow.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
 
-                        //addEnchant(stack, level, player, abstractarrow, powerForTime);
+                        addEnchant(stack, level, player, abstractarrow, powerForTime);
                         level.addFreshEntity(abstractarrow);
                     }
                 }
@@ -117,21 +121,23 @@ public class BlazeBowItem extends BowItem implements ITooltip, ISwitchable, IBow
         }
     }
 
-//    private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
-//        int j = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.POWER, stack);//力量箭矢
-//        if (j > 0) {
-//            arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() + (double) j * 0.5D + 0.5D);
-//        }
-//
-//        int k = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.PUNCH_ARROWS, stack);
-//        if (k > 0) {
-//            arrowEntity.setKnockback(k);
-//        }
-//
-//        if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.FLAMING_ARROWS, stack) > 0) {//火焰箭矢
-//            arrowEntity.setSecondsOnFire(100);
-//        }
-//        stack.hurtAndBreak(1, player, (livingEntity) -> livingEntity.broadcastBreakEvent(player.getUsedItemHand()));
-//        arrowEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-//    }
+    private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
+        Holder<Enchantment> POWER =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.POWER);
+        Holder<Enchantment> FLAMING =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.FLAME);
+
+        int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
+        if (j > 0) {
+            arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() + (double) j * 0.5D + 0.5D);
+        }
+        if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
+            arrowEntity.setRemainingFireTicks(100);
+        }
+        stack.hurtAndBreak(1, player, getSlotForHand(player.getUsedItemHand()));
+        arrowEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+        level.addFreshEntity(arrowEntity);
+    }
 }

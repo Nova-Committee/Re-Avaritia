@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
@@ -43,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
+import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
 /**
  * Description:
@@ -50,7 +53,7 @@ import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
  * Date: 2022/4/2 20:07
  * Version: 1.0
  */
-public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<InfinityMode>, InitEnchantItem, IBowTransform {
+public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchantItem, IUndamageable, IBowTransform {
     private final InitEnchantment initEnchantment;
     public InfinityBowItem() {
         super(new Properties()
@@ -130,11 +133,13 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        if (player.isCrouching() && !pLevel.isClientSide) {
-            changeMode(player, itemstack, hand);
+        InteractionResultHolder<ItemStack> ret = onArrowNock(itemstack, pLevel, player, hand, true);
+        if (ret != null) return ret;
+        if (player.isShiftKeyDown()) {
+            switchMode(pLevel, player, hand, "infinity_bow_tracer");
             return InteractionResultHolder.success(itemstack);
         }
-//        player.startUsingItem(hand);
+        player.startUsingItem(hand);
         return super.use(pLevel, player, hand);
     }
 
@@ -152,41 +157,25 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
                 float draw = getPowerForTime(drawTime);//蓄力时间
                 float powerForTime = draw * VELOCITY_MULTIPLIER;
 
-                boolean isRangeMode = getMode(stack).equals(InfinityMode.RANGE);
+                AbstractArrow arrowEntity = new HeavenArrowEntity(player);
 
-                // 确定需要发射的箭矢数量
-                int arrowCount = isRangeMode ? 2 : 1;
-
-                for (int i = 0; i < arrowCount; i++) {
-                    AbstractArrow arrowEntity = new HeavenArrowEntity(player);
-
-                    if (isRangeMode) {//追踪模式
-                        if ((double) powerForTime >= 0.1D) {
-                            arrowEntity = new TraceArrowEntity(player);
-                        }
+                if (isActive(stack, "infinity_bow_tracer")) {//追踪模式
+                    if ((double) powerForTime >= 0.1D) {
+                        arrowEntity = new TraceArrowEntity(player);
                     }
-
-                    // 如果是第二发箭矢，稍微调整角度
-                    float yawOffset = i == 1 ? 5.0F : 0.0F;
-                    arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot() + yawOffset, 0.0F, powerForTime * 3.0F, 0.01F);
-
-                    if (draw == 1.0F) {
-                        arrowEntity.setCritArrow(true);//蓄力满必暴击
-                    }
-                    arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
-                    addEnchant(stack, level, player, arrowEntity, powerForTime);
-
-                    // 只在第一发箭矢时播放声音和增加统计
-                    if (i == 0) {
-                        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
-                        player.awardStat(Stats.ITEM_USED.get(this));
-                    }
-
-                    level.addFreshEntity(arrowEntity);
                 }
+                arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.01F);
+                if (draw == 1.0F) {
+                    arrowEntity.setCritArrow(true);//蓄力满必暴击
+                }
+                arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
+                addEnchant(stack, level, player, arrowEntity, powerForTime);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
+                player.awardStat(Stats.ITEM_USED.get(this));
             }
         }
     }
+
     @Override
     public void onUseTick(@NotNull Level level, @NotNull LivingEntity living, @NotNull ItemStack stack, int remainingUseDuration) {
         super.onUseTick(level, living, stack, remainingUseDuration);
@@ -233,15 +222,5 @@ public class InfinityBowItem extends BowItem implements ITooltip, IItemMode<Infi
         stack.hurtAndBreak(1, player, getSlotForHand(player.getUsedItemHand()));
         arrowEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         level.addFreshEntity(arrowEntity);
-    }
-
-    @Override
-    public DataComponentType<InfinityMode> getDataComponentType() {
-        return ModDataComponents.INFINITY_MODE.get();
-    }
-
-    @Override
-    public InfinityMode getDefaultMode() {
-        return InfinityMode.DEFAULT;
     }
 }

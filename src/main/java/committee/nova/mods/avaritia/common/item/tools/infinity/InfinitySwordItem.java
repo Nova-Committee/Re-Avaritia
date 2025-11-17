@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
@@ -11,6 +14,7 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -24,14 +28,20 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +54,7 @@ import java.util.List;
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
-public class InfinitySwordItem extends SwordItem implements InitEnchantItem, IToolTransform {
+public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISwitchable, IUndamageable, IToolTransform {
     private final InitEnchantment initEnchantment;
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY,
@@ -81,7 +91,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ITo
 
             if (!victim.isDeadOrDying() && endlessDamage) {
                 victim.setHealth(0);//设置血量为零
-                victim.die(damageSource);//修正设置死亡
+                this.die(victim, damageSource);//修正设置死亡
                 player.killedEntity(serverLevel, victim);//添加至信息统计
                 //player.getCombatTracker().recordDamage(damageSource, victim.getHealth());//添加至伤害记录
             }
@@ -158,7 +168,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ITo
             }
 
             if (victim.isDeadOrDying()) {
-                victim.die(pSource);
+                this.die(victim, pSource);
             } else {
                 SoundEvent soundevent = SoundEvents.GENERIC_HURT;
                 victim.playSound(soundevent, 2F, victim.getVoicePitch());
@@ -180,11 +190,73 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ITo
         }
     }
 
+    public void die(LivingEntity victim, DamageSource pDamageSource) {
+        if (!victim.isRemoved() && !victim.dead) {
+            Entity entity = pDamageSource.getEntity();
+            LivingEntity livingentity = victim.getKillCredit();
+            if (victim.deathScore >= 0 && livingentity != null) {
+                livingentity.awardKillScore(victim, victim.deathScore, pDamageSource);
+            }
+
+            if (victim.isSleeping()) {
+                victim.stopSleeping();
+            }
+
+            if (!victim.level().isClientSide && victim.hasCustomName()) {
+                Const.LOGGER.info("Named entity {} died: {}", this, victim.getCombatTracker().getDeathMessage().getString());
+            }
+
+            victim.dead = true;
+            victim.getCombatTracker().recheckStatus();
+            Level level = victim.level();
+            if (level instanceof ServerLevel serverlevel) {
+                if (entity == null || entity.killedEntity(serverlevel, victim)) {
+                    victim.gameEvent(GameEvent.ENTITY_DIE);
+                    victim.dropAllDeathLoot(pDamageSource);
+                    this.createWitherRose(victim, livingentity);
+                }
+
+                victim.level().broadcastEntityEvent(victim, (byte) 3);
+            }
+
+            victim.setPose(Pose.DYING);
+        }
+    }
+
+    protected void createWitherRose(LivingEntity victim, @Nullable LivingEntity pEntitySource) {
+        if (!victim.level().isClientSide) {
+            boolean flag = false;
+            if (pEntitySource instanceof WitherBoss) {
+                BlockPos blockpos = victim.blockPosition();
+                BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
+                if (victim.level().isEmptyBlock(blockpos) && blockstate.canSurvive(victim.level(), blockpos)) {
+                    victim.level().setBlock(blockpos, blockstate, 3);
+                    flag = true;
+                }
+
+
+                if (!flag) {
+                    ItemEntity itementity = new ItemEntity(victim.level(), victim.getX(), victim.getY(), victim.getZ(), new ItemStack(Items.WITHER_ROSE));
+                    victim.level().addFreshEntity(itementity);
+                }
+            }
+
+        }
+    }
+
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
+        if (player.isShiftKeyDown()) {
+            switchMode(level, player, hand, "infinity_sword_kill");
+            return InteractionResultHolder.success(heldItem);
+        }
         if (!level.isClientSide) {
-            ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), ModConfig.isSwordAttackAnimal.get(), ModConfig.isSwordAttackLightning.get());
+            if (isActive(heldItem, "infinity_sword_kill")) {
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
+            } else {
+                ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());
+            }
             player.getCooldowns().addCooldown(heldItem.getItem(), 20);
         }
         level.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
@@ -232,5 +304,8 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ITo
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
+        if (isActive(stack, "infinity_sword_kill")) {
+            tooltipComponents.add(Component.translatable("tooltip.avaritia.sword_kill_mode.active").withStyle(net.minecraft.ChatFormatting.RED));
+        }
     }
 }

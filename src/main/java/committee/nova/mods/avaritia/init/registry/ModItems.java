@@ -45,6 +45,7 @@ public class ModItems {
     public static DeferredItem<Item> infinity_bucket = item("infinity_bucket", InfinityBucketItem::new);
     public static DeferredItem<Item> infinity_bow = item("infinity_bow", InfinityBowItem::new);
     public static DeferredItem<Item> infinity_crossbow = item("infinity_crossbow", InfinityCrossBowItem::new);
+    public static DeferredItem<Item> infinity_shield = item("infinity_shield", InfinityShieldItem::new);
     public static DeferredItem<Item> infinity_trident = item("infinity_trident", InfinityTridentItem::new);
     //crystal
     public static DeferredItem<Item> crystal_sword = item("crystal_sword", CrystalSwordItem::new);
@@ -74,24 +75,24 @@ public class ModItems {
      * Resource
      */
     //fire
-    public static DeferredItem<Item> blaze_cube = item("blaze_cube", (s) -> new ResourceItem(ModRarities.UNCOMMON, s, true));
+    public static DeferredItem<Item> blaze_cube = item("blaze_cube", () -> new ResourceItem(ModRarities.UNCOMMON, true));
     //wind
-    public static DeferredItem<Item> diamond_lattice = item("diamond_lattice", (s) -> new ResourceItem(ModRarities.UNCOMMON, s, true));
-    public static DeferredItem<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", (s) -> new ResourceItem(ModRarities.RARE, s, true));
+    public static DeferredItem<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(ModRarities.UNCOMMON, true));
+    public static DeferredItem<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(ModRarities.RARE, true));
     //earth
-    public static DeferredItem<Item> neutron_pile = item("neutron_pile", (s) -> new ResourceItem(ModRarities.UNCOMMON, s, true));
-    public static DeferredItem<Item> neutron_nugget = item("neutron_nugget", (s) -> new ResourceItem(ModRarities.RARE, s, true));
-    public static DeferredItem<Item> neutron_ingot = item("neutron_ingot", (s) -> new ResourceItem(ModRarities.EPIC, s, true));
+    public static DeferredItem<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(ModRarities.UNCOMMON, true));
+    public static DeferredItem<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(ModRarities.RARE, true));
+    public static DeferredItem<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(ModRarities.EPIC, true));
     public static DeferredItem<Item> neutron_gear = item("neutron_gear", NeutronGearItem::new);
     //infinity
-    public static DeferredItem<Item> infinity_nugget = item("infinity_nugget", (s) -> new ResourceItem(ModRarities.EPIC, s, true));
-    public static DeferredItem<Item> infinity_catalyst = item("infinity_catalyst", (s) -> new ResourceItem(ModRarities.LEGEND.getValue(), s, true));
-    public static DeferredItem<Item> infinity_ingot = item("infinity_ingot", (s) -> new ResourceItem(ModRarities.COSMIC.getValue(), s, true));
+    public static DeferredItem<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(ModRarities.EPIC, true));
+    public static DeferredItem<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(ModRarities.LEGEND.getValue(), true));
+    public static DeferredItem<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(ModRarities.COSMIC.getValue(), true));
     //singularity
     public static DeferredItem<Item> singularity = item("singularity", SingularityItem::new);
     public static DeferredItem<Item> eternal_singularity = item("eternal_singularity", EternalSingularityItem::new);
     //misc
-    public static DeferredItem<Item> record_fragment = item("record_fragment", (s) -> new ResourceItem(ModRarities.RARE, s, true));
+    public static DeferredItem<Item> record_fragment = item("record_fragment", () -> new ResourceItem(ModRarities.RARE, true));
     public static DeferredItem<Item> star_fuel = item("star_fuel", StarFuelItem::new);
     public static DeferredItem<Item> refined_coal = item("refined_coal", RefinedCoalItem::new);
     public static DeferredItem<Item> endest_pearl = item("endest_pearl", EndestPearlItem::new);

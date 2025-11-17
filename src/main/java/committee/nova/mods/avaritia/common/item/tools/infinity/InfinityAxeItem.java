@@ -1,5 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -35,7 +37,7 @@ import static committee.nova.mods.avaritia.util.ToolUtils.destroyTree;
  * Date: 2022/5/15 17:11
  * Version: 1.0
  */
-public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> {
+public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageable {
 
     public InfinityAxeItem() {
         super(ModToolTiers.INFINITY,
@@ -76,6 +78,29 @@ public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> 
     }
 
     @Override
+    public int getEnchantmentValue(ItemStack stack) {
+        return 0;
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
+        var itemstack = player.getItemInHand(hand);
+        if (player.isShiftKeyDown()) {
+            switchMode(pLevel, player, hand, "infinity_axe_range");
+            return InteractionResultHolder.success(itemstack);
+        }
+        return super.use(pLevel, player, hand);
+    }
+
+    @Override
+    public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
+        if (level instanceof ServerLevel serverLevel && isActive(stack, "infinity_axe_range") && canHarvest(pos, serverLevel) && miningEntity instanceof ServerPlayer player) {
+            destroyTree(player, serverLevel, pos, state);
+        }
+        return false;
+    }
+
+    @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (entity instanceof ServerPlayer livingEntity) {
             Level level = livingEntity.level();
@@ -84,7 +109,7 @@ public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> 
                 if (livingEntity.isUsingItem() && livingEntity.getUseItem().canPerformAction(ItemAbilities.SHIELD_BLOCK)) {
                     ItemStack shieldStack = livingEntity.getUseItem();
                     ShieldItem shieldItem = (ShieldItem) shieldStack.getItem();
-
+                    boolean isInfinityShield = shieldStack.is(ModItems.infinity_shield.get());
 
                     if (level instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(ParticleTypes.EXPLOSION,
@@ -99,6 +124,10 @@ public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> 
                                 1.0F, 1.0F);
                     }
 
+                    // 如果是无尽盾，只产生粒子效果
+                    if (isInfinityShield) {
+                        return true;
+                    }
 
                     livingEntity.stopUsingItem();
 
@@ -112,38 +141,5 @@ public class InfinityAxeItem extends AxeItem implements IItemMode<InfinityMode> 
             }
         }
         return super.onLeftClickEntity(stack, player, entity);
-    }
-
-    @Override
-    public int getEnchantmentValue(@NotNull ItemStack stack) {
-        return 0;
-    }
-
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
-        var itemstack = player.getItemInHand(hand);
-        if (player.isCrouching() && !pLevel.isClientSide) {
-            changeMode(player, itemstack, hand);
-            return InteractionResultHolder.success(itemstack);
-        }
-        return super.use(pLevel, player, hand);
-    }
-
-    @Override
-    public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (level instanceof ServerLevel serverLevel && getMode(stack).equals(InfinityMode.RANGE) && canHarvest(pos, level) && miningEntity instanceof ServerPlayer player) {
-            destroyTree(player, serverLevel, pos, state);
-        }
-        return false;
-    }
-
-    @Override
-    public DataComponentType<InfinityMode> getDataComponentType() {
-        return ModDataComponents.INFINITY_MODE.get();
-    }
-
-    @Override
-    public InfinityMode getDefaultMode() {
-        return InfinityMode.DEFAULT;
     }
 }

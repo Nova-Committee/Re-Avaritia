@@ -1,9 +1,13 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.ITooltip;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
@@ -15,6 +19,7 @@ import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -27,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +47,7 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, IItemMode<InfinityMode> {
+public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable, ITooltip, IUndamageable {
     private final InitEnchantment initEnchantment;
 
     public InfinityPickaxeItem() {
@@ -89,25 +95,39 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
 
     @Override
     public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
-        if (getMode(stack).equals(InfinityMode.RANGE)) {
+        if (isActive(stack, "infinity_pickaxe_hammer")) {
             return 8888.0F;
         }
         return Math.max(super.getDestroySpeed(stack, state), 9999.0F);
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
-        var itemstack = player.getItemInHand(hand);
-        if (player.isCrouching() && !pLevel.isClientSide) {
-            changeMode(player, itemstack, hand);
-            return InteractionResultHolder.success(itemstack);
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
+        var stack = player.getItemInHand(hand);
+        Holder<Enchantment> BLOCK_FORTUNE =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.FORTUNE);
+        Holder<Enchantment> SILK_TOUCH =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.SILK_TOUCH);
+        if (player.isShiftKeyDown()) {
+            switchMode(world, player, hand, "infinity_pickaxe_hammer");
+            return InteractionResultHolder.success(stack);
         }
-        return super.use(pLevel, player, hand);
+        if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
+            ItemUtils.clearEnchants(stack);
+            stack.enchant(BLOCK_FORTUNE, 10);
+            return InteractionResultHolder.success(stack);
+        } else {
+            ItemUtils.clearEnchants(stack);
+            stack.enchant(SILK_TOUCH, 1);
+            return InteractionResultHolder.success(stack);
+        }
     }
 
     @Override
     public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity victim, @NotNull LivingEntity player) {
-        if (getMode(stack).equals(InfinityMode.RANGE)) {
+        if (isActive(stack, "infinity_pickaxe_hammer")) {
             if (!(victim instanceof Player)) {
                 int i = 10;
                 victim.setDeltaMovement(-Mth.sin(player.yBodyRot * (float) Math.PI / 180.0F) * i * 0.5F, 2.0D, Mth.cos(player.yBodyRot * (float) Math.PI / 180.0F) * i * 0.5F);
@@ -119,8 +139,8 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (miningEntity instanceof Player player && getMode(stack).equals(InfinityMode.RANGE)) {
-            ToolUtils.destroyMaterialBlocks((ServerPlayer) player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
+        if (miningEntity instanceof ServerPlayer player && isActive(stack, "infinity_pickaxe_hammer")) {
+            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
         }
         return false;
     }
@@ -134,15 +154,11 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 
     @Override
-    public DataComponentType<InfinityMode> getDataComponentType() {
-        return ModDataComponents.INFINITY_MODE.get();
-    }
-
-    @Override
-    public InfinityMode getDefaultMode() {
-        return InfinityMode.DEFAULT;
+    public boolean hasDescTooltip() {
+        return true;
     }
 }
