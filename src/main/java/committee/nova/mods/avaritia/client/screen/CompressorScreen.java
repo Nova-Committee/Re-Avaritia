@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.common.menu.CompressorMenu;
-import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
+import committee.nova.mods.avaritia.common.tile.compressor.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,10 +22,10 @@ import java.util.List;
  * Date: 2022/4/2 18:16
  * Version: 1.0
  */
-public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
+public class CompressorScreen extends BaseContainerScreen<NeutronCompressorMenu> {
     private static final ResourceLocation BACKGROUND = Const.rl("textures/gui/compressor.png");
 
-    public CompressorScreen(CompressorMenu container, Inventory inventory, Component title) {
+    public CompressorScreen(NeutronCompressorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, BACKGROUND);
     }
 
@@ -85,7 +85,7 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
             var container = this.getMenu();
             var tile = level.getBlockEntity(container.getBlockPos());
 
-            if (tile instanceof BaseNeutronCompressorTile compressor) {
+            if (tile instanceof NeutronCompressorTile compressor) {
                 var materialStack = compressor.getMaterialStack();
 
                 return materialStack.getHoverName();
@@ -95,13 +95,13 @@ public class CompressorScreen extends BaseContainerScreen<CompressorMenu> {
         return Component.literal("");
     }
 
-    private BaseNeutronCompressorTile getTileEntity() {
+    private NeutronCompressorTile getTileEntity() {
         var level = this.getMinecraft().level;
 
         if (level != null) {
             var tile = level.getBlockEntity(this.getMenu().getBlockPos());
 
-            if (tile instanceof BaseNeutronCompressorTile compressor)
+            if (tile instanceof NeutronCompressorTile compressor)
                 return compressor;
         }
 

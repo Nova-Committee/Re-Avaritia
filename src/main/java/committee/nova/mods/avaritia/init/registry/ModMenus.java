@@ -60,8 +60,8 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<TierCraftMenu>)TierCraftMenu::extreme, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<NeutronCollectorMenu>> neutron_collector = menu("neutron_collector",
             () -> new MenuType<>((IContainerFactory<NeutronCollectorMenu>)NeutronCollectorMenu::new, FeatureFlagSet.of()));
-    public static DeferredHolder<MenuType<?>, MenuType<CompressorMenu>> compressor = menu("compressor",
-            () -> new MenuType<>((IContainerFactory<CompressorMenu>)CompressorMenu::new, FeatureFlagSet.of()));
+    public static DeferredHolder<MenuType<?>, MenuType<NeutronCompressorMenu>> compressor = menu("compressor",
+            () -> new MenuType<>((IContainerFactory<NeutronCompressorMenu>) NeutronCompressorMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<ExtremeSmithingMenu>> extreme_smithing_table = menu("extreme_smithing_table",
             () -> new MenuType<>((IContainerFactory<ExtremeSmithingMenu>)ExtremeSmithingMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<InfinityChestMenu>> infinity_chest = menu("infinity_chest",

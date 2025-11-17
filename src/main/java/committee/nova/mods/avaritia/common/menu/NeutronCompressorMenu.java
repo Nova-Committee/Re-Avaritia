@@ -4,8 +4,9 @@ import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
-import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
+import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,15 +22,52 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 18:09
  * Version: 1.0
  */
-public class CompressorMenu extends BaseTileMenu<BaseNeutronCompressorTile> {
+public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     private final ContainerData progressData;
-    public CompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(id, playerInventory, BaseNeutronCompressorTile.createInventoryHandler(null), buffer.readBlockPos(), new SimpleContainerData(1));
+    public NeutronCompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
     }
 
-    public CompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
+    public NeutronCompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
         super(ModMenus.compressor.get(), id, playerInventory, pos);
         this.progressData = data;
+        this.addDataSlots(progressData);
+        inventory.isItemValid((integer, itemStack) -> {
+            if (integer == 1) {
+                // 获取压缩器实例检查锁定状态
+                var tile = level.getBlockEntity(pos);
+                if (tile instanceof NeutronCompressorTile compressor) {
+                    if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
+                        // 锁定状态下，只接受锁定配方的材料
+                        var ingredients = compressor.getLockedRecipe().getIngredients();
+                        if (!ingredients.isEmpty()) {
+                            var ingredient = ingredients.get(0);
+                            var items = ingredient.getItems();
+                            return items.length > 0 && itemStack.is(items[0].getItem());
+                        }
+                        return false;
+                    }
+                }
+
+                // 正常状态下的验证逻辑
+                var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
+                if (recipes.isEmpty()) return true;
+
+                for (var recipe : recipes) {
+                    var ingredients = recipe.getIngredients();
+                    if (!ingredients.isEmpty()) {
+                        var ingredient = ingredients.get(0);
+                        var items = ingredient.getItems();
+                        if (items.length > 0 && itemStack.is(items[0].getItem())) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
+        });
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
         this.addSlot(new ItemStackWrapperSlot(inventory, 1, 39, 35));
         createInventorySlots(playerInventory);

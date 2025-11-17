@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.tile.collector.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.collector.CollectorTier;
 import committee.nova.mods.avaritia.common.tile.compressor.CompressorTier;
-import committee.nova.mods.avaritia.common.tile.compressor.BaseNeutronCompressorTile;
+import committee.nova.mods.avaritia.common.tile.compressor.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -50,7 +50,7 @@ public class InfinityUpgradeItem extends ResourceItem {
         var tile = pContext.getLevel().getBlockEntity(pContext.getClickedPos());
         var player = pContext.getPlayer();
         var itemInHand = pContext.getItemInHand();
-        if (tile instanceof BaseNeutronCompressorTile compressorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
+        if (tile instanceof NeutronCompressorTile compressorTile && player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()) {
             switch (compressorTile.getTier()) {
                 case DEFAULT -> {
                     compressorTile.setTier(CompressorTier.DENSE);

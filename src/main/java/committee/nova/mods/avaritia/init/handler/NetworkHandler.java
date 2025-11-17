@@ -2,8 +2,12 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
+import committee.nova.mods.avaritia.core.io.SideConfiguration;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -24,9 +28,14 @@ public class NetworkHandler {
                 new S2CSingularitiesPack.Handler());
         registrar.playToClient(S2CTotemPack.TYPE, S2CTotemPack.STREAM_CODEC,
                 new S2CTotemPack.Handler());
+        registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,
+                new S2CSideConfigSyncPacket.Handler());
 
 
-
+        registrar.playToServer(C2SSideConfigPacket.TYPE, C2SSideConfigPacket.STREAM_CODEC,
+                new C2SSideConfigPacket.Handler());
+        registrar.playToServer(C2SCompressorLockPacket.TYPE, C2SCompressorLockPacket.STREAM_CODEC,
+                new C2SCompressorLockPacket.Handler());
         registrar.playToServer(C2SRenamePack.TYPE, C2SRenamePack.STREAM_CODEC,
                 new C2SRenamePack.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
@@ -48,4 +57,13 @@ public class NetworkHandler {
 //        CHANNEL.sendToServer(new NbtDataPack(tag));
 //    }
 
+    public static void sendSideConfigUpdate(BlockPos blockPos, SideConfiguration sideConfig) {
+        // 解析字符串格式的位置: BlockPos{x=123, y=456, z=789}
+        PacketDistributor.sendToServer(new C2SSideConfigPacket(blockPos, sideConfig));
+    }
+    // 便捷方法：发送方块配置同步包给附近玩家
+    public static void sendSideConfigSync(BlockPos pos, SideConfiguration sideConfig) {
+        // 暂时使用空参数，后续可以改进为指定位置的广播
+        PacketDistributor.sendToAllPlayers(new S2CSideConfigSyncPacket(pos, sideConfig));
+    }
 }

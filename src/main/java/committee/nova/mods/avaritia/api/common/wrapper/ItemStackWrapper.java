@@ -218,7 +218,7 @@ public class ItemStackWrapper extends ItemStackHandler {
     }
 
     public static ItemStackWrapper create(int size, Consumer<ItemStackWrapper> builder) {
-        return create(size, (OnContentsChangedFunction)null, builder);
+        return create(size, null, builder);
     }
 
     public static ItemStackWrapper create(int size, OnContentsChangedFunction onContentsChanged, Consumer<ItemStackWrapper> builder) {
