@@ -42,7 +42,8 @@ public abstract class WrappedItemModel implements PerspectiveModel {
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
     private static final FaceBakery FACE_BAKERY = new FaceBakery();
     protected BakedModel wrapped;
-    protected ModelState parentState;
+    protected PerspectiveModelState parentState;
+    protected boolean cosmic = false;
     @Nullable
     protected LivingEntity entity;
     @Nullable
@@ -55,7 +56,7 @@ public abstract class WrappedItemModel implements PerspectiveModel {
             public BakedModel resolve(final @NotNull BakedModel originalModel, final @NotNull ItemStack stack, final ClientLevel world, final LivingEntity entity, final int seed) {
                 WrappedItemModel.this.entity = entity;
                 WrappedItemModel.this.world = ((world == null) ? ((entity == null) ? null : ((ClientLevel) entity.level())) : null);
-                if (WrappedItemModel.this.isCosmic()) {
+                if (WrappedItemModel.this.cosmic) {
                     return WrappedItemModel.this.wrapped.getOverrides().resolve(originalModel, stack, world, entity, seed);
                 }
                 return originalModel;
@@ -79,26 +80,9 @@ public abstract class WrappedItemModel implements PerspectiveModel {
         return quads;
     }
 
-    public static <E> void checkArgument(final E argument, final Predicate<E> predicate) {
-        if (predicate.test(argument)) {
-            throw new RuntimeException("");
-        }
-    }
-
-    public static <T> boolean isNullOrContainsNull(final T[] input) {
-        if (input != null) {
-            for (final T t : input) {
-                if (t == null) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isCosmic() {
-        return false;
+    @Override
+    public @Nullable PerspectiveModelState getModelState() {
+        return this.parentState;
     }
 
     @Override

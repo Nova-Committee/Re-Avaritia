@@ -10,7 +10,9 @@ import committee.nova.mods.avaritia.client.model.entity.InfinityArmorModel;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
+import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
+import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -18,9 +20,16 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -39,6 +48,8 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.NotNull;
 
+
+import java.util.Map;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.*;
@@ -121,17 +132,6 @@ public class AvaritiaModClient {
 
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        event.registerItem(new IClientItemExtensions() {
-            @Override
-            public @NotNull HumanoidModel<Player> getHumanoidArmorModel(@NotNull LivingEntity entityLiving, @NotNull ItemStack itemstack, @NotNull EquipmentSlot armorSlot, @NotNull HumanoidModel _deafult) {
-                InfinityArmorModel model =
-                        armorSlot == EquipmentSlot.LEGS
-                                ? new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, true).getRoot().bake(64, 64))
-                                : new InfinityArmorModel(InfinityArmorModel.createMesh(new CubeDeformation(1.0F), 0.0F, false).getRoot().bake(64, 64));
-                model.update(entityLiving, itemstack, armorSlot);
-                return model;
-            }
-        }, ModItems.infinity_helmet, ModItems.infinity_chestplate, ModItems.infinity_pants, ModItems.infinity_boots);
         event.registerItem(new IClientItemExtensions() {}, ModBlocks.infinity_chest.asItem());
     }
 
@@ -166,13 +166,17 @@ public class AvaritiaModClient {
 
     @SubscribeEvent
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
-        addLayer(event, "default");
-        addLayer(event, "slim");
-    }
+        EntityRenderer<?> entityRenderer = event.getRenderer(EntityType.PLAYER);
+        if (entityRenderer instanceof PlayerRenderer playerRenderer) {
+            if (playerRenderer.getModel() instanceof HumanoidModel) {
+                playerRenderer.addLayer(new InfinityArmorRender(playerRenderer, event.getEntityModels(), false));
+            }
+        }
 
-    private static void addLayer(final EntityRenderersEvent.AddLayers e, final String s) {
-        final LivingEntityRenderer entityRenderer = e.getSkin(PlayerSkin.Model.byName(s));
-        entityRenderer.addLayer(new InfinityArmorModel.PlayerRender((RenderLayerParent<Player, PlayerModel<Player>>) entityRenderer));
+        for (var model : event.getSkins()) {
+            LivingEntityRenderer eventSkin = event.getSkin(model);
+            eventSkin.addLayer(new InfinityArmorRender(eventSkin, event.getEntityModels(), model.equals(PlayerSkin.Model.SLIM.name())));
+        }
     }
 
     public static int getCurrentRainbowColor() {

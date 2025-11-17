@@ -14,8 +14,10 @@ import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -26,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -33,27 +37,32 @@ import java.util.List;
  * @Description:
  */
 public class CosmicBakeModel extends WrappedItemModel {
-    public static final float[] COSMIC_UVS = new float[40];
     private final List<ResourceLocation> maskSprite;
 
     public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
+        this.cosmic = true;
     }
 
     @Override
-    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source, int light, int overlay) {
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                           int packedLight, int packedOverlay) {
         if (stack.getItem() instanceof IToolTransform) {
             this.parentState = TransformUtils.DEFAULT_TOOL;
-        }else if (stack.getItem() instanceof IBowTransform){
+        } else if (stack.getItem() instanceof IBowTransform) {
             this.parentState = TransformUtils.DEFAULT_BOW;
-        }else {
+        } else {
             this.parentState = TransformUtils.DEFAULT_ITEM;
         }
-        this.renderWrapped(stack, pStack, source, light, overlay, true);
+
+        // 模型渲染
+        this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }
+
+        //cosmic效果
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
@@ -64,9 +73,7 @@ public class CosmicBakeModel extends WrappedItemModel {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
         }
-
-        AvaritiaShaders.cosmicTime
-                .set((System.currentTimeMillis() - AvaritiaForgeClient.renderTime) / 2000.0F);
+        AvaritiaShaders.cosmicTime.set(mc.level.getGameTime() % Integer.MAX_VALUE);
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
@@ -77,13 +84,6 @@ public class CosmicBakeModel extends WrappedItemModel {
             AvaritiaShaders.cosmicOpacity.set(1.0F);
         }
 
-        for (int i = 0; i < 10; ++i) {
-            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Const.rl("misc/cosmic_" + i));
-            COSMIC_UVS[i * 4] = sprite.getU0();
-            COSMIC_UVS[i * 4 + 1] = sprite.getV0();
-            COSMIC_UVS[i * 4 + 2] = sprite.getU1();
-            COSMIC_UVS[i * 4 + 3] = sprite.getV1();
-        }
         if (AvaritiaShaders.cosmicUVs != null) {
             AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
         }
@@ -93,16 +93,6 @@ public class CosmicBakeModel extends WrappedItemModel {
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, light, overlay);
-    }
-
-    @Override
-    public @Nullable PerspectiveModelState getModelState() {
-        return (PerspectiveModelState) this.parentState;
-    }
-
-    @Override
-    public boolean isCosmic() {
-        return true;
+        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
     }
 }

@@ -158,7 +158,7 @@ public class TransformUtils {
      * @param itemTransforms the {@link ItemTransforms} to decompose.
      * @return The {@link PerspectiveModelState}
      */
-    public static ModelState stateFromItemTransforms(ItemTransforms itemTransforms) {
+    public static PerspectiveModelState stateFromItemTransforms(ItemTransforms itemTransforms) {
         if (itemTransforms == ItemTransforms.NO_TRANSFORMS) return IDENTITY;
 
         ImmutableMap.Builder<ItemDisplayContext, Transformation> map = ImmutableMap.builder();
