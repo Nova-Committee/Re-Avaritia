@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.render.pipeline.attribute;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.VertexAttribute;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.colour.ColorRGBA;
 
 /**
  * Sets colour in CCRS to the specified colour in the model.
@@ -27,7 +27,7 @@ public class ColourAttribute extends VertexAttribute<int[]> {
     @Override
     public void operate(CCRenderState ccrs) {
         if (colourRef != null) {
-            ccrs.colour = ColourRGBA.multiply(ccrs.baseColour, colourRef[ccrs.vertexIndex]);
+            ccrs.colour = ColorRGBA.multiply(ccrs.baseColour, colourRef[ccrs.vertexIndex]);
         } else {
             ccrs.colour = ccrs.baseColour;
         }

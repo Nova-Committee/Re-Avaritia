@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemMode
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
+import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -57,7 +58,7 @@ public class CosmicBakeModel extends WrappedItemModel {
         float yaw = 0.0f;
         float pitch = 0.0f;
         float scale = 1f;
-        if (AvaritiaShaders.inventoryRender || transformType == ItemDisplayContext.GUI) {
+        if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
         } else {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
@@ -65,7 +66,7 @@ public class CosmicBakeModel extends WrappedItemModel {
         }
 
         AvaritiaShaders.cosmicTime
-                .set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
+                .set((System.currentTimeMillis() - AvaritiaForgeClient.renderTime) / 2000.0F);
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);

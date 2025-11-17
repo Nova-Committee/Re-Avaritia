@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.lighting;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.colour.ColorRGBA;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -162,7 +162,7 @@ public class LightMatrix implements IVertexOperation {
         float[] a = ao(lc.side);
         float f = (a[0] * lc.fa + a[1] * lc.fb + a[2] * lc.fc + a[3] * lc.fd);
         int[] b = brightness(lc.side);
-        ccrs.colour = ColourRGBA.multiplyC(ccrs.colour, f);
+        ccrs.colour = ColorRGBA.multiplyC(ccrs.colour, f);
         //System.out.println("0x808080FF * " + f + " = 0x" + Integer.toHexString(state.colour));
         ccrs.brightness = (int) (b[0] * lc.fa + b[1] * lc.fb + b[2] * lc.fc + b[3] * lc.fd) & 0xFF00FF;
     }

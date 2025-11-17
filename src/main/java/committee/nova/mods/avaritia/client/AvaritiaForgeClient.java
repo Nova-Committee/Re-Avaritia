@@ -12,6 +12,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.nbt.CompoundTag;
@@ -215,20 +216,18 @@ public class AvaritiaForgeClient {
      * 渲染黑暗遮罩
      *
      * @param guiGraphics GUI图形对象
-     * @param width       屏幕宽度
-     * @param height      屏幕高度
      * @param intensity   黑暗强度
      */
-    private static void renderDarknessOverlay(GuiGraphics guiGraphics, int width, int height, float intensity) {
+    private static void renderDarknessOverlay(GuiGraphics guiGraphics, float intensity) {
         // 使用纯黑色渲染一个覆盖整个屏幕的矩形，透明度由intensity决定
         int alpha = (int) (intensity * 255);
         if (alpha > 255) alpha = 255;
-        guiGraphics.fill(0, 0, width, height, (alpha << 24) | 0x000000);
+        guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), (alpha << 24) | 0x000000);
     }
 
-    public static final IGuiOverlay DARKNESS_OVERLAY = (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
+    public static final LayeredDraw.Layer DARKNESS_OVERLAY = (guiGraphics, deltaTracker) -> {
         if (darknessIntensity > 0.01f) {
-            renderDarknessOverlay(guiGraphics, screenWidth, screenHeight, darknessIntensity);
+            renderDarknessOverlay(guiGraphics, darknessIntensity);
         }
     };
 

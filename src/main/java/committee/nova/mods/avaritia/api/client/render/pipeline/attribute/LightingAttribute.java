@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.pipeline.attribute;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.VertexAttribute;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.colour.ColorRGBA;
 
 /**
  * Created by covers1624 on 10/10/2016.
@@ -33,6 +33,6 @@ public class LightingAttribute extends VertexAttribute<int[]> {
 
     @Override
     public void operate(CCRenderState ccrs) {
-        ccrs.colour = ColourRGBA.multiply(ccrs.colour, colourRef[ccrs.vertexIndex]);
+        ccrs.colour = ColorRGBA.multiply(ccrs.colour, colourRef[ccrs.vertexIndex]);
     }
 }

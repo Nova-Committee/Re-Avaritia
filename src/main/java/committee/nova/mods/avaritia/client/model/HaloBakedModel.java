@@ -7,7 +7,7 @@ import committee.nova.mods.avaritia.api.client.model.Quad;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourARGB;
+import committee.nova.mods.avaritia.api.client.util.colour.ColorARGB;
 import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import net.minecraft.client.Minecraft;
@@ -43,7 +43,7 @@ public class HaloBakedModel extends WrappedItemModel {
     }
 
     static BakedQuad generateHaloQuad(final TextureAtlasSprite sprite, final int size, final int color) {
-        final float[] colors = new ColourARGB(color).getRGBA();
+        final float[] colors = new ColorARGB(color).getRGBA();
         final double spread = size / 16.0;
         final double min = 0.0 - spread;
         final double max = 1.0 + spread;

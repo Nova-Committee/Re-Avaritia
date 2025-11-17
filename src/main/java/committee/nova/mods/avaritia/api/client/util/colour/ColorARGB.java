@@ -1,31 +1,31 @@
 package committee.nova.mods.avaritia.api.client.util.colour;
 
-public class ColourARGB extends Colour {
+public class ColorARGB extends Color {
 
-    public ColourARGB(int colour) {
+    public ColorARGB(int colour) {
         super((colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF, (colour >> 24) & 0xFF);
     }
 
-    public ColourARGB(int a, int r, int g, int b) {
+    public ColorARGB(int a, int r, int g, int b) {
         super(r, g, b, a);
     }
 
-    public ColourARGB(ColourARGB colour) {
+    public ColorARGB(ColorARGB colour) {
         super(colour);
     }
 
-    public static int pack(Colour colour) {
-        return (colour.a & 0xFF) << 24 | (colour.r & 0xFF) << 16 | (colour.g & 0xFF) << 8 | (colour.b & 0xFF);
+    public static int pack(Color color) {
+        return (color.a & 0xFF) << 24 | (color.r & 0xFF) << 16 | (color.g & 0xFF) << 8 | (color.b & 0xFF);
     }
 
     @Override
-    public ColourARGB copy() {
-        return new ColourARGB(this);
+    public ColorARGB copy() {
+        return new ColorARGB(this);
     }
 
     @Override
-    public Colour set(int colour) {
-        return set(new ColourARGB(colour));
+    public Color set(int colour) {
+        return set(new ColorARGB(colour));
     }
 
     @Override

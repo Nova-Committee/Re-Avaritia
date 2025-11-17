@@ -7,8 +7,8 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.buffer.TransformingVertexConsumer;
 import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
-import committee.nova.mods.avaritia.api.client.util.colour.Colour;
-import committee.nova.mods.avaritia.api.client.util.colour.ColourRGBA;
+import committee.nova.mods.avaritia.api.client.util.colour.Color;
+import committee.nova.mods.avaritia.api.client.util.colour.ColorRGBA;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -33,11 +33,11 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         super(context);
     }
 
-    public static Colour getColour(final double age, final double a) {
+    public static Color getColour(final double age, final double a) {
         final double l = age / 186.0;
         double f = Math.max(0.0, (l - 0.95) / 0.050000000000000044);
         f = Math.max(f, 1.0 - l * 30.0);
-        return new ColourRGBA(f, f, f, a);
+        return new ColorRGBA(f, f, f, a);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
     @Override
     public void render(@NotNull GapingVoidEntity ent, float entityYaw, float ticks, @NotNull PoseStack stack, @NotNull MultiBufferSource buf, int packedLightIn) {
         final float age = ent.getAge() + ticks;
-        final Colour colour = getColour(age, 1.0);
+        final Color color = getColour(age, 1.0);
         final double scale = GapingVoidEntity.getVoidScale(age);
         double halocoord = 0.58 * scale;
         final double haloScaleDist = 2.2 * scale;
@@ -69,17 +69,17 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         stack.pushPose();
         stack.mulPose(Axis.XP.rotationDegrees(90.0f));
         final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(AvaritiaRenderTypes.VOID_HALO), stack);
-        cons.addVertex((float) -halocoord, 0.0f, (float) -halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(0.0f, 0.0f);
-        cons.addVertex((float) -halocoord, 0.0f, (float) halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(0.0f, 1.0f);
-        cons.addVertex((float) halocoord, 0.0f, (float) halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(1.0f, 1.0f);
-        cons.addVertex((float) halocoord, 0.0f, (float) -halocoord).setColor(colour.r, colour.g, colour.b, colour.a).setUv(1.0f, 0.0f);
+        cons.addVertex((float) -halocoord, 0.0f, (float) -halocoord).setColor(color.r, color.g, color.b, color.a).setUv(0.0f, 0.0f);
+        cons.addVertex((float) -halocoord, 0.0f, (float) halocoord).setColor(color.r, color.g, color.b, color.a).setUv(0.0f, 1.0f);
+        cons.addVertex((float) halocoord, 0.0f, (float) halocoord).setColor(color.r, color.g, color.b, color.a).setUv(1.0f, 1.0f);
+        cons.addVertex((float) halocoord, 0.0f, (float) -halocoord).setColor(color.r, color.g, color.b, color.a).setUv(1.0f, 0.0f);
         stack.popPose();
 
         stack.scale((float) scale, (float) scale, (float) scale);
         final CCRenderState cc = CCRenderState.instance();
         cc.reset();
         cc.bind(AvaritiaRenderTypes.VOID, buf, stack);
-        cc.baseColour = colour.rgba();
+        cc.baseColour = color.rgba();
         new OBJParser(Const.rl("models/hemisphere.obj")).parse().get("model").render(cc);
 
         stack.popPose();

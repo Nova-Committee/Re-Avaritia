@@ -32,11 +32,11 @@ public class MatLib {
             assert curr != null : "newmtl line not found yet";
 
             switch (splits[0]) {
-                case "Ka" -> curr.ambientColour.set(parseDoubles(splits[1], " "));
+                case "Ka" -> curr.ambientColor.set(parseDoubles(splits[1], " "));
                 case "map_Ka" -> curr.ambientColourMap = splits[1];
-                case "Kd" -> curr.diffuseColour.set(parseDoubles(splits[1], " "));
+                case "Kd" -> curr.diffuseColor.set(parseDoubles(splits[1], " "));
                 case "map_Kd" -> curr.diffuseColourMap = splits[1];
-                case "Ks" -> curr.specularColour.set(parseDoubles(splits[1], " "));
+                case "Ks" -> curr.specularColor.set(parseDoubles(splits[1], " "));
                 case "Ns" -> curr.specularHighlight = Float.parseFloat(splits[1]);
                 case "map_Ks" -> curr.specularColourMap = splits[1];
                 case "d" -> curr.dissolve = Float.parseFloat(splits[1]);

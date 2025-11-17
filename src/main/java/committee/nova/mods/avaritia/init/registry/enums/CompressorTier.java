@@ -1,8 +1,7 @@
-package committee.nova.mods.avaritia.common.tile.compressor;
+package committee.nova.mods.avaritia.init.registry.enums;
 
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 
 /**

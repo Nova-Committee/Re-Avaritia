@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
+import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.init.registry.ModItems;
@@ -152,7 +153,7 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
             f3 = 0.0f;
         }
         AvaritiaShaders.cosmicOpacity.set(1.0f);
-        if (AvaritiaShaders.inventoryRender) {
+        if (AvaritiaForgeClient.inventoryRender) {
             AvaritiaShaders.cosmicExternalScale.set(25.0f);
         } else {
             AvaritiaShaders.cosmicExternalScale.set(1.0f);
@@ -185,12 +186,12 @@ public class InfinityArmorModel extends HumanoidModel<Player> {
         pPoseStack.scale(f, f, f);
         pPoseStack.translate(0.0, this.babyYHeadOffset / 16.0f * f3, -0.029999999329447746);
         this.hat.render(pPoseStack, material(MASK).buffer(this.bufferSource, AvaritiaRenderTypes::mask), pPackedLight, pPackedOverlay, color);
-        if (InfinityArmorModel.modelRender && !AvaritiaShaders.inventoryRender) {
+        if (InfinityArmorModel.modelRender && !AvaritiaForgeClient.inventoryRender) {
             this.hat.render(pPoseStack, this.vertex(AvaritiaRenderTypes.COSMIC_ARMOR), pPackedLight, pPackedOverlay, col);
         }
         pPoseStack.popPose();
 
-        if (InfinityArmorModel.playerFlying && !AvaritiaShaders.inventoryRender) {
+        if (InfinityArmorModel.playerFlying && !AvaritiaForgeClient.inventoryRender) {
             pPoseStack.pushPose();
             this.rebuildWings();
             pPoseStack.scale(f2, f2, f2);

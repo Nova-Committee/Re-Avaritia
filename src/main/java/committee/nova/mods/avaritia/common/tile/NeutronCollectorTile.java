@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.tile.collector;
+package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.init.registry.enums.CollectorTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

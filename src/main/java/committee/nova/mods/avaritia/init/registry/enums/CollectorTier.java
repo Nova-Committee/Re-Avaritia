@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.common.tile.collector;
+package committee.nova.mods.avaritia.init.registry.enums;
 
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import net.minecraft.world.item.crafting.Ingredient;
