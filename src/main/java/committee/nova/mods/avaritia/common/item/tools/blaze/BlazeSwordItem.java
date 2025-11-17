@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
@@ -33,11 +34,10 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeSwordItem extends SwordItem implements ITooltip, InitEnchantItem {
-    private final String name;
+public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, InitEnchantItem {
     private final InitEnchantment initEnchantment;
 
-    public BlazeSwordItem(String name) {
+    public BlazeSwordItem() {
         super(ModToolTiers.BLAZE,
                 new Properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
@@ -46,8 +46,6 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, InitEnchantIt
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
-
-        this.name = name;
         this.initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
     }
 
@@ -62,10 +60,15 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, InitEnchantIt
     }
 
     @Override
+    public boolean hasDescTooltip() {
+        return true;
+    }
+
+    @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 
     @Override
@@ -78,6 +81,7 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, InitEnchantIt
                 fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                 fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                 level.addFreshEntity(fireBallEntity);
+                player.getCooldowns().addCooldown(heldItem.getItem(), 40);
             }
 
         }

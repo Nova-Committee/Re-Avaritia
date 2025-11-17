@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.common.item.tools.blaze;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
@@ -12,7 +11,6 @@ import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -36,12 +34,11 @@ import java.util.List;
  * Version: 1.0
  */
 public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchable, InitEnchantItem {
-    private final String name;
     private final InitEnchantment fire_aspect;
     private final InitEnchantment silk_touch;
     private final InitEnchantment block_fortune;
 
-    public BlazePickaxeItem(String name) {
+    public BlazePickaxeItem() {
         super(ModToolTiers.BLAZE,
                 new Properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
@@ -51,7 +48,6 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
                         .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
 
-        this.name = name;
         this.fire_aspect = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
         this.silk_touch = new InitEnchantment(Enchantments.SILK_TOUCH, 0);
         this.block_fortune = new InitEnchantment(Enchantments.FORTUNE, 4);
@@ -71,7 +67,7 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
 
     @Override
     public boolean hasDescTooltip() {
-        return false;
+        return true;
     }
 
     @Override

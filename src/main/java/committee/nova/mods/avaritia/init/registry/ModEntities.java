@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.*;
+import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
 import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
@@ -101,6 +102,12 @@ public class ModEntities {
                     .setTrackingRange(256)
                     .setUpdateInterval(10)
                     .build(Const.rl("fire_ball").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<BurningBallEntity>> BURNING_BALL = ENTITIES.register("burning_ball",
+            () -> EntityType.Builder.of(BurningBallEntity::new, MobCategory.MISC)
+                    .setTrackingRange(256)
+                    .setUpdateInterval(10)
+                    .build(Const.rl("burning_ball").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BladeSlashEntity>> BLADE_SLASH = ENTITIES.register("blade_slash",
             () -> EntityType.Builder.<BladeSlashEntity>of(BladeSlashEntity::new, MobCategory.MISC)

@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.common.item.tools.blaze;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
@@ -40,11 +40,10 @@ import java.util.List;
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
-public class BlazeHoeItem extends HoeItem implements ITooltip, IItemMode<ToolMode>, InitEnchantItem {
-    private final String name;
+public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, InitEnchantItem {
     private final InitEnchantment initEnchantment;
 
-    public BlazeHoeItem(String name) {
+    public BlazeHoeItem() {
         super(ModToolTiers.BLAZE,
                 new Properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
@@ -54,7 +53,6 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, IItemMode<ToolMod
                         .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
 
-        this.name = name;
         this.initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
     }
 
@@ -69,17 +67,22 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, IItemMode<ToolMod
     }
 
     @Override
+    public boolean hasDescTooltip() {
+        return true;
+    }
+
+    @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
-        this.appendTooltip(stack, context, tooltipComponents, isAdvanced, name);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isCrouching() && !world.isClientSide) {
-            changeMode(player, stack, hand, ToolMode.ADVANCE);
+        if (player.isShiftKeyDown() && !world.isClientSide) {
+            switchMode(world, player, hand, "smelt");
             return InteractionResultHolder.success(stack);
         }
         return super.use(world, player, hand);
@@ -88,35 +91,35 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, IItemMode<ToolMod
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext pContext) {
         var level = pContext.getLevel();
+        var stack = pContext.getItemInHand();
         var blockpos = pContext.getClickedPos();
         var blockstate = level.getBlockState(blockpos);
         var player = pContext.getPlayer();
-        if (blockstate.is(Blocks.SOUL_SAND)) {
-            level.setBlockAndUpdate(blockpos, Blocks.SOUL_SOIL.defaultBlockState());
-            level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            return InteractionResult.SUCCESS;
-        } else if (blockstate.is(Blocks.SOUL_SOIL)) {
-            level.setBlockAndUpdate(blockpos, ModBlocks.soul_farmland.get().defaultBlockState());
-            level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            return InteractionResult.SUCCESS;
-        } else return super.useOn(pContext);
+        if (isActive(stack, "smelt")) {
+            if (blockstate.is(Blocks.SOUL_SAND)) {
+                level.setBlockAndUpdate(blockpos, Blocks.SOUL_SOIL.defaultBlockState());
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return InteractionResult.SUCCESS;
+            } else if (blockstate.is(Blocks.SOUL_SOIL)) {
+                level.setBlockAndUpdate(blockpos, ModBlocks.soul_farmland.get().defaultBlockState());
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return InteractionResult.SUCCESS;
+            } else if (blockstate.is(ModBlocks.soul_farmland.get())) {
+                return InteractionResult.PASS;
+            }
+        } else if (!isActive(stack, "smelt")) {
+            if (blockstate.is(ModBlocks.soul_farmland.get())) {
+                return InteractionResult.PASS;
+            }
+        }
+        return super.useOn(pContext);
     }
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (getMode(stack).equals(ToolMode.ADVANCE) && miningEntity instanceof Player player) {
+        if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
             ToolUtils.melting(state, level, pos, player, stack);
         }
         return super.mineBlock(stack, level, state, pos, miningEntity);
-    }
-
-    @Override
-    public DataComponentType<ToolMode> getDataComponentType() {
-        return ModDataComponents.TOOL_MODE.get();
-    }
-
-    @Override
-    public ToolMode getDefaultMode() {
-        return ToolMode.DEFAULT;
     }
 }
