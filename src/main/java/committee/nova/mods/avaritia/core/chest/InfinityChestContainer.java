@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.core.chest;
 
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
@@ -198,7 +199,12 @@ public class InfinityChestContainer extends SimpleContainer {
         long count = this.menu.chest.storageItems.getOrDefault(itemId, 0L);
         Tag tag = this.menu.chest.nbtDataCache.get(itemId);
         ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), (int) Math.min(Integer.MAX_VALUE, count));
-        if (tag instanceof CompoundTag cTag) itemStack.setTag(cTag);
+        if (tag instanceof CompoundTag cTag) {
+            ItemUtils.updateTag(itemStack, compoundTag1 -> {
+                compoundTag1 = new CompoundTag();
+                compoundTag1.merge(cTag);
+            });
+        };
         return itemStack;
     }
 

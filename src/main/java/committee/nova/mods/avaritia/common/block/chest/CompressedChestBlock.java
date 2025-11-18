@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
+import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.ChatFormatting;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -86,8 +88,8 @@ public class CompressedChestBlock extends ChestBlock {
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
         if (pLevel.isClientSide()) return;
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (pStack.get(DataComponents.CUSTOM_DATA) != CustomData.EMPTY && blockentity instanceof CompressedChestTile chestTile) {
-            chestTile.setChestTag(pStack.get(DataComponents.CUSTOM_DATA).copyTag());
+        if (pStack.get(DataComponents.BLOCK_ENTITY_DATA) != CustomData.EMPTY && blockentity instanceof CompressedChestTile chestTile) {
+            chestTile.setChestTag(pStack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag());
         }
     }
 
@@ -110,7 +112,7 @@ public class CompressedChestBlock extends ChestBlock {
                 ItemStack is = new ItemStack(newItem);
                 is.setCount(countTag.getInt(index));
                 if (nbtTag != null && !nbtTag.getCompound(index).isEmpty()) {
-                    CustomData.set(DataComponents.CUSTOM_DATA, is, nbtTag.getCompound(index));
+                    CustomData.set(DataComponents.BLOCK_ENTITY_DATA, is, nbtTag.getCompound(index));
                 }
                 container.setItem(Integer.parseInt(index), is);
             }
@@ -133,7 +135,7 @@ public class CompressedChestBlock extends ChestBlock {
                     stackCount++;
                     nameTag.putString(String.valueOf(i), BuiltInRegistries.ITEM.getKey(item.getItem()).toString());
                     countTag.putInt(String.valueOf(i), item.getCount());
-                    nbtTag.put(String.valueOf(i), item.get(DataComponents.CUSTOM_DATA).copyTag());
+                    nbtTag.put(String.valueOf(i), item.get(DataComponents.BLOCK_ENTITY_DATA).copyTag());
                 }
                 chestTag.put("name", nameTag);
                 chestTag.put("count", countTag);
@@ -149,13 +151,13 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void playerDestroy(@NotNull Level pLevel, @NotNull Player pPlayer, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable BlockEntity pBlockEntity, @NotNull ItemStack pTool) {
-        if (pLevel instanceof ServerLevel serverLevel && pBlockEntity instanceof CompressedChestTile chestTile) {
-            var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
-            CustomData.set(DataComponents.CUSTOM_DATA, pStack, chestTile.getChestTag());
-            popResource(serverLevel, pPos, pStack);
-            pState.spawnAfterBreak(serverLevel, pPos, pTool, false);
+    public @NotNull BlockState playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
+        if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof CompressedChestTile chestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+            ItemStack stack = new ItemStack(this);
+            chestTile.saveToItem(stack, pLevel.registryAccess());
+            popResource(pLevel, pPos, stack);
         }
+        return super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
 
     @Override

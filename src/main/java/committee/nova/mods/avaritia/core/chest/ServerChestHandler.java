@@ -1,14 +1,15 @@
 package committee.nova.mods.avaritia.core.chest;
 
-import committee.nova.mods.avaritia.common.net.channel.ChannelState;
+import committee.nova.mods.avaritia.common.net.chest.ChannelState;
+import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashSet;
 
@@ -39,7 +40,7 @@ public class ServerChestHandler extends ChestHandler {
         if (dat.contains("items")) {
             CompoundTag items = dat.getCompound("items");
             items.getAllKeys().forEach(itemId -> {
-                if (items.getLong(itemId) > 0 && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(StorageUtils.getBaseItemId(itemId)))) {
+                if (items.getLong(itemId) > 0 && BuiltInRegistries.ITEM.containsKey(ResourceLocation.tryParse(StorageUtils.getBaseItemId(itemId)))) {
                     storageItems.put(itemId, items.getLong(itemId));
                 }
             });
@@ -61,7 +62,7 @@ public class ServerChestHandler extends ChestHandler {
 
     public void addListener(ServerPlayer player) {
         players.add(player);
-        NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CInfinityChestStatePack(ChannelState.FULL, buildData()));
+        PacketDistributor.sendToAllPlayers(new S2CInfinityChestStatePack(ChannelState.FULL, buildData()));
     }
 
     public void removeListener(ServerPlayer player) {
@@ -90,7 +91,7 @@ public class ServerChestHandler extends ChestHandler {
             tag.put("items", items);
             tag.put("nbtData", nbtData);
 
-            players.forEach(player -> NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CInfinityChestStatePack(ChannelState.COMMON, tag)));
+            players.forEach(player -> PacketDistributor.sendToPlayer(player, new S2CInfinityChestStatePack(ChannelState.COMMON, tag)));
         }
         resetChanged();
     }
@@ -106,7 +107,7 @@ public class ServerChestHandler extends ChestHandler {
     public void sendFullUpdate() {
         if (!hasChanged()) return;
         if (!players.isEmpty()) {
-            players.forEach(player -> NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CInfinityChestStatePack(ChannelState.FULL, buildData())));
+            players.forEach(player -> PacketDistributor.sendToPlayer(player, new S2CInfinityChestStatePack(ChannelState.FULL, buildData())));
         }
         changedItems.clear();
     }

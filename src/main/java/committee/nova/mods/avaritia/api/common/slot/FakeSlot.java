@@ -1,10 +1,14 @@
 package committee.nova.mods.avaritia.api.common.slot;
 
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * @Project: Avaritia
@@ -12,23 +16,44 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2024/11/22 01:42
  * @Description:
  */
-public class FakeSlot extends SlotItemHandler {
-    public int slotIndex;
-
-    public FakeSlot(IItemHandler itemHandler, int index, int x, int y) {
-        super(itemHandler, index, x, y);
-        this.slotIndex = index;
+public class FakeSlot extends Slot {
+    public FakeSlot(Container pContainer, int pSlot, int pX, int pY) {
+        super(pContainer, pSlot, pX, pY);
     }
 
     @Override
-    public boolean mayPickup(@NotNull Player player) {
-        return false;
+    public void set(@NotNull ItemStack pStack) {
     }
 
     @Override
-    public void set(ItemStack stack) {
-        if (stack.isEmpty() || this.mayPlace(stack)) {
-            super.set(stack);
-        }
+    public void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
+    }
+
+    @Override
+    public @NotNull ItemStack remove(int pAmount) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull Optional<ItemStack> tryRemove(int pCount, int pDecrement, @NotNull Player pPlayer) {
+        return Optional.of(ItemStack.EMPTY);
+    }
+
+    @Override
+    public @NotNull ItemStack safeInsert(@NotNull ItemStack pStack, int pIncrement) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack safeTake(int pCount, int pDecrement, @NotNull Player pPlayer) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void onQuickCraft(@NotNull ItemStack pOldStack, @NotNull ItemStack pNewStack) {
+    }
+
+    @Override
+    public void setChanged() {
     }
 }

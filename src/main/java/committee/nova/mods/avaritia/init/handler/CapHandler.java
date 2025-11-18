@@ -3,10 +3,12 @@ package committee.nova.mods.avaritia.init.handler;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.item.IItemCapability;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 /**
@@ -27,6 +29,18 @@ public class CapHandler {
                 iItemCapability.attachCapabilities(event);
             }
         }
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ModTileEntities.infinity_chest_tile.get(),
+                (be, side) -> {
+                    if(be.getChannel() != null) {
+                        if (be.getChannel().isRemoved()) return null;
+                        else return be.getChannel();
+                    }
+                    return null;
+                }
+        );
+
     }
 
 }
