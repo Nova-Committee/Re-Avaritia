@@ -111,7 +111,8 @@ void main (void)
         int tv = int(mod(floor(v*uvtiles),uvtiles));
 
         // get pseudorandom variants
-        int position = ((1777541 * tu) + (7649689 * tv) + (361273 * (i+31)) + 1723609 ) ^ 50943779;
+        //int position = ((1777541 * tu) + (7649689 * tv) + (3612703 * (i+31)) + 1723609 ) ^ 50943779;
+        int position = ((171 * tu) + (489 * tv) + (303 * (i+31)) + 17209 ) ^ 10;
         int symbol = int(mod(position, cosmicoutof));
         int rotation = int(mod(pow(tu,float(tv)) + tu + 3 + tv*i, 8));
         bool flip = false;

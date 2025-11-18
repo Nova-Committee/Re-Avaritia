@@ -67,7 +67,7 @@ public class HellBakeModel extends WrappedItemModel {
         AvaritiaShaders.hellExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.hellOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.hellOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
         } else {
             AvaritiaShaders.hellOpacity.set(1.0F);
         }

@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
@@ -46,11 +47,11 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     }
 
     public boolean getCurrentChanneling(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean(CHANNELING_NBT);
+        return ItemUtils.getOrCreateTag(stack).getBoolean(CHANNELING_NBT);
     }
 
     public boolean getCurrentShockwave(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean(SHOCKWAVE_NBT);
+        return ItemUtils.getOrCreateTag(stack).getBoolean(SHOCKWAVE_NBT);
     }
 
     @Override
@@ -59,12 +60,12 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     }
 
     @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+    public boolean isBookEnchantable(@NotNull ItemStack stack, @NotNull ItemStack book) {
         return false;
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+    public boolean supportsEnchantment(@NotNull ItemStack stack, @NotNull Holder<Enchantment> enchantment) {
         return false;
     }
 
@@ -74,14 +75,14 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     }
 
     @Override
-    public int getUseDuration(@NotNull ItemStack stack) {
+    public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return 18000;
     }
 
     @Override
     public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
         if (livingEntity instanceof Player player) {
-            int i = this.getUseDuration(itemStack) - timeLeft;
+            int i = this.getUseDuration(itemStack, player) - timeLeft;
             int currentMode = ISwitchable.getCurrentMode(itemStack, FUNC_MODES);
             if (i >= 10) {
                 switch (currentMode) {

@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -107,8 +108,8 @@ public class TileIOHandler {
         if (level != null && tileEntity instanceof ITileIO ITileIO) {
             BlockEntity targetTile = level.getBlockEntity(targetPos);
             if (targetTile != null) {
-                targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
-                        .ifPresent(targetHandler -> ITileIO.extractFromHandler(targetHandler, actualDirection));
+                var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, tileEntity.getBlockPos(), tileEntity.getBlockState(), tileEntity, actualDirection.getOpposite());
+                if (cap != null) ITileIO.extractFromHandler(cap, actualDirection);
             }
         }
     }
@@ -129,8 +130,8 @@ public class TileIOHandler {
         if (level != null && tileEntity instanceof ITileIO ITileIO) {
             BlockEntity targetTile = level.getBlockEntity(targetPos);
             if (targetTile != null) {
-                targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
-                        .ifPresent(targetHandler -> ITileIO.insertToHandler(targetHandler, actualDirection));
+                var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, tileEntity.getBlockPos(), tileEntity.getBlockState(), tileEntity, actualDirection.getOpposite());
+                if (cap != null) ITileIO.insertToHandler(cap, actualDirection);
             }
         }
     }
@@ -152,11 +153,11 @@ public class TileIOHandler {
             BlockEntity targetTile = level.getBlockEntity(targetPos);
             if (targetTile != null) {
                 // 先尝试输入，再尝试输出
-                targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
-                        .ifPresent(targetHandler -> ITileIO.extractFromHandler(targetHandler, actualDirection));
-
-                targetTile.getCapability(ForgeCapabilities.ITEM_HANDLER, actualDirection.getOpposite())
-                        .ifPresent(targetHandler -> ITileIO.insertToHandler(targetHandler, actualDirection));
+                var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, tileEntity.getBlockPos(), tileEntity.getBlockState(), tileEntity, actualDirection.getOpposite());
+                if (cap != null) {
+                    ITileIO.extractFromHandler(cap, actualDirection);
+                    ITileIO.insertToHandler(cap, actualDirection);
+                }
             }
         }
     }

@@ -99,7 +99,7 @@ public class HaloEternalBakedModel extends WrappedItemModel {
         AvaritiaShaders.eternalExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
         } else {
             AvaritiaShaders.eternalOpacity.set(1.5F);
         }

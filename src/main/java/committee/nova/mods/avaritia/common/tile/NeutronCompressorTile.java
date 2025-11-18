@@ -276,7 +276,8 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     }
 
     // 新增方法：输入槽锁定验证
-    public boolean canPlaceItem(int slot, ItemStack stack) {
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         if (slot == 1) { // 输入槽
             if (this.recipeLocked && this.lockedRecipe != null) {
                 // 锁定状态下，只接受锁定配方的材料

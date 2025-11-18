@@ -14,6 +14,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -36,6 +37,10 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     @Getter
     private final boolean compatible;
     private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
+
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack output) {
+        this(pattern, output, 0, false);
+    }
 
     public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result, int tier, boolean compatible) {
         this.pattern = pattern;

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NeutronRingItem extends ResourceItem{
     public NeutronRingItem() {
-        super(ModRarities.EPIC, "neutron_ring", true, new Properties().stacksTo(1));
+        super(ModRarities.EPIC, true, new Properties().stacksTo(1));
     }
 
     @Override

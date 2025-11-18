@@ -10,6 +10,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+
+import java.util.List;
 
 /**
  * CapHandler
@@ -40,6 +44,19 @@ public class CapHandler {
                     return null;
                 }
         );
+
+        var sidedVanillaContainers = List.of(
+                ModTileEntities.neutron_collector_tile.get(),
+                ModTileEntities.neutron_compressor_tile.get()
+        );
+
+        for (var type : sidedVanillaContainers) {
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (sidedContainer, side) -> {
+                // 如果没有指定面向,则使用普通的库存包装器(InvWrapper)
+                // 否则,使用支持面向访问的库存包装器(SidedInvWrapper)
+                return side == null ? new InvWrapper(sidedContainer) : new SidedInvWrapper(sidedContainer, side);
+            });
+        }
 
     }
 

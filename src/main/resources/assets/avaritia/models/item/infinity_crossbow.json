@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "item/generated",
   "textures": {
     "layer0": "avaritia:item/tools/infinity_crossbow/standby"
   },
@@ -28,27 +28,21 @@
   "overrides": [
     {
       "predicate": {
-        "avaritia:pulling": 1
+        "pulling": 1
       },
       "model": "avaritia:item/infinity_crossbow_pulling_0"
     },
     {
       "predicate": {
-        "avaritia:pulling": 1,
-        "avaritia:pull": 0.58
+        "pulling": 1,
+        "pull": 0.58
       },
       "model": "avaritia:item/infinity_crossbow_pulling_1"
     },
     {
       "predicate": {
-        "avaritia:pulling": 1,
-        "avaritia:pull": 1.0
-      },
-      "model": "avaritia:item/infinity_crossbow_pulling_2"
-    },
-    {
-      "predicate": {
-        "avaritia:charged": 1
+        "pulling": 1,
+        "pull": 1.0
       },
       "model": "avaritia:item/infinity_crossbow_pulling_2"
     }

@@ -69,7 +69,7 @@ public class UnstableBakeModel extends WrappedItemModel {
         AvaritiaShaders.unstableExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.unstableOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.unstableOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
         } else {
             AvaritiaShaders.unstableOpacity.set(1.5F);
         }

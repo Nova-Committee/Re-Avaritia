@@ -44,7 +44,7 @@ public class InfinityClockItem extends ResourceItem {
     private static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
 
     public InfinityClockItem() {
-        super(ModRarities.COSMIC.getValue(), "infinity_clock", false, new Item.Properties().stacksTo(1));
+        super(ModRarities.COSMIC.getValue(), false, new Item.Properties().stacksTo(1));
     }
 
     @Override

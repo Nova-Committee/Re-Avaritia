@@ -24,8 +24,8 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class InfinityUpgradeItem extends ResourceItem {
-    public InfinityUpgradeItem(String registryName) {
-        super(ModRarities.LEGEND.getValue(), registryName, true,
+    public InfinityUpgradeItem() {
+        super(ModRarities.LEGEND.getValue(), true,
                 new Properties()
                         .durability(16)
 

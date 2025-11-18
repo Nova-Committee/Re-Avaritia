@@ -108,14 +108,6 @@ public class CompressorScreen extends BaseContainerScreen<NeutronCompressorMenu>
         return null;
     }
 
-    public boolean isEjecting() {
-        if (this.menu.getTileEntity() == null)
-            return false;
-
-        return this.menu.getTileEntity().isEjecting();
-    }
-
-
     public boolean hasRecipe() {
         if (this.menu.getTileEntity() == null)
             return false;

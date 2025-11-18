@@ -7,19 +7,26 @@
   "overrides": [
     {
       "predicate": {
-        "avaritia:mode": 1
+        "mode": 0
+      },
+      "model": "avaritia:item/infinity_umbrella_normal"
+    },
+
+    {
+      "predicate": {
+        "mode": 1
       },
       "model": "avaritia:item/infinity_umbrella_sun"
     },
     {
       "predicate": {
-        "avaritia:mode": 2
+        "mode": 2
       },
       "model": "avaritia:item/infinity_umbrella_rain"
     },
     {
       "predicate": {
-        "avaritia:mode": 3
+        "mode": 3
       },
       "model": "avaritia:item/infinity_umbrella_storm"
     }

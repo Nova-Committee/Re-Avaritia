@@ -3,8 +3,8 @@
   "textures": {
     "layer0": "avaritia:item/tools/infinity_bow/tracer/pull_1"
   },
-  "loader": "avaritia:cosmic",
-  "cosmic": {
-    "mask": "avaritia:mask/infinity_bow/pull_1_mask"
+  "loader": "avaritia:hell",
+  "hell": {
+    "mask": "avaritia:mask/item/infinity_bow/pull_1_mask"
   }
 }

@@ -212,7 +212,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
             if (level instanceof ServerLevel serverlevel) {
                 if (entity == null || entity.killedEntity(serverlevel, victim)) {
                     victim.gameEvent(GameEvent.ENTITY_DIE);
-                    victim.dropAllDeathLoot(pDamageSource);
+                    victim.dropAllDeathLoot(serverlevel, pDamageSource);
                     this.createWitherRose(victim, livingentity);
                 }
 
