@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
+import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
 import committee.nova.mods.avaritia.common.entity.*;
 import committee.nova.mods.avaritia.common.entity.arrow.*;
 import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
@@ -158,15 +159,21 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);
         EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
+        EntityRenderers.register(ModEntities.NEUTRON_ARROW.get(),NeutronArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
-        EntityRenderers.register(ModEntities.NEUTRON_ARROW.get(), NeutronArrowRender::new);
+        EntityRenderers.register(ModEntities.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_ARROW.get(), BurningArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_BALL.get(), BurningBallRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
-        EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRenderer::new);
+        EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRender::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
         EntityRenderers.register(ModEntities.BLADE_SLASH.get(), BladeSlashRender::new);
         EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
         EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
+        EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRender::new);
+        EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
+        EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityThrownTridentRender::new);
     }
 
 }
