@@ -40,6 +40,7 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     private final ItemLike result;
     private final ItemStack resultStack;
     private final int tier;
+    private final boolean compatible;
     private final List<String> rows = Lists.newArrayList();
     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
@@ -48,22 +49,27 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     private ICondition[] conditions;
 
     public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count) {
-        this(category, new ItemStack(result, count), 4);
+        this(category, new ItemStack(result, count), 4, false);
     }
 
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count, int tier) {
-        this(category, new ItemStack(result, count), tier);
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count, boolean compatible) {
+        this(category, new ItemStack(result, count), 4, compatible);
     }
 
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemStack result) {
-        this(category, result, 4);
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count, int tier, boolean compatible) {
+        this(category, new ItemStack(result, count), tier, compatible);
     }
 
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemStack result, int tier) {
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemStack result, boolean compatible) {
+        this(category, result, 4, compatible);
+    }
+
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemStack result, int tier, boolean compatible) {
         this.category = category;
         this.result = result.getItem();
         this.resultStack = result;
         this.tier = tier;
+        this.compatible = compatible;
     }
 
     public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result) {
@@ -75,11 +81,15 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
      */
 
     public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int tier) {
-        return new ModShapedRecipeBuilder(category, new ItemStack(result, 1), tier);
+        return new ModShapedRecipeBuilder(category, new ItemStack(result, 1), tier, false);
     }
 
-    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemStack result, int tier) {
-        return new ModShapedRecipeBuilder(category, result, tier);
+    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int tier, boolean compatible) {
+        return new ModShapedRecipeBuilder(category, new ItemStack(result, 1), tier, compatible);
+    }
+
+    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemStack result, int tier, boolean compatible) {
+        return new ModShapedRecipeBuilder(category, result, tier, compatible);
     }
 
 
@@ -155,7 +165,8 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
         ShapedTableCraftingRecipe shapedrecipe = new ShapedTableCraftingRecipe(
                 shapedrecipepattern,
                 this.resultStack,
-                this.tier
+                this.tier,
+                this.compatible
         );
         var advancement = advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
         if (this.conditions != null) {

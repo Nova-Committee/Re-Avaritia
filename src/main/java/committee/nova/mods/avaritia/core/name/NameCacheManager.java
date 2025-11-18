@@ -40,20 +40,34 @@ public class NameCacheManager {
         return instance;
     }
 
-    private static void newInstance(MinecraftServer server) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onServerLoad(ServerAboutToStartEvent event) {
         if (instance == null) {
             synchronized (NameCacheManager.class) {
-                if (instance == null) instance = new NameCacheManager(server);
+                if (instance == null) instance = new NameCacheManager(event.getServer());
             }
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onServerLoad(ServerAboutToStartEvent event) {
-        newInstance(event.getServer());
+    @SubscribeEvent
+    public static void onLevelSave(LevelEvent.Save event) {
+        if (!event.getLevel().isClientSide()) getInstance().save(event.getLevel().getServer());
     }
 
+    @SubscribeEvent
+    public static void onServerDown(ServerStoppingEvent event) {
+        getInstance().save(event.getServer());
+        instance = null;
+    }
 
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        getInstance().userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
+        //NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
+        PacketDistributor.sendToAllPlayers(new S2CInfinityChestStatePack(ChannelState.NAME, getInstance().userCache));
+        if (!getInstance().loadSuccess)
+            event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
+    }
 
     public CompoundTag userCache;
     private File saveDataPath;
@@ -62,29 +76,7 @@ public class NameCacheManager {
 
     private NameCacheManager(MinecraftServer server) {
         this.server = server;
-        NeoForge.EVENT_BUS.register(this);
         this.load();
-    }
-
-    @SubscribeEvent
-    public void onLevelSave(LevelEvent.Save event) {
-        if (!event.getLevel().isClientSide()) this.save(event.getLevel().getServer());
-    }
-
-    @SubscribeEvent
-    public void onServerDown(ServerStoppingEvent event) {
-        this.save(event.getServer());
-        NeoForge.EVENT_BUS.unregister(this);
-        instance = null;
-    }
-
-    @SubscribeEvent
-    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        this.userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
-        //NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
-        PacketDistributor.sendToAllPlayers(new S2CInfinityChestStatePack(ChannelState.NAME, userCache));
-        if (!loadSuccess)
-            event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
     }
 
     private void load() {

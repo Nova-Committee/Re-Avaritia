@@ -1,7 +1,10 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import committee.nova.mods.avaritia.api.iface.item.IInfinityClockSwitchable;
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
+import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
@@ -39,7 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class InfinityClockItem extends ResourceItem {
+public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
     public static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
     private static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
 
@@ -71,7 +74,7 @@ public class InfinityClockItem extends ResourceItem {
         }
 
         if (upMode) {
-            int current = stack.getOrCreateTag().getInt("SpeedMultiplier");
+            int current = ItemUtils.getOrCreateTag(stack).getInt("SpeedMultiplier");
             int next;
 
             switch (current) {
@@ -83,7 +86,7 @@ public class InfinityClockItem extends ResourceItem {
                 default -> next = 1;
             }
 
-            stack.getOrCreateTag().putInt("SpeedMultiplier", next);
+            ItemUtils.getOrCreateTag(stack).putInt("SpeedMultiplier", next);
             player.displayClientMessage(Component.literal(next + "x"), true);
             return InteractionResultHolder.success(stack);
         }
@@ -114,7 +117,7 @@ public class InfinityClockItem extends ResourceItem {
 
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemUtils.getOrCreateTag(stack);
         int multiplier = tag.getInt("SpeedMultiplier");
 
         if (multiplier == 0) {

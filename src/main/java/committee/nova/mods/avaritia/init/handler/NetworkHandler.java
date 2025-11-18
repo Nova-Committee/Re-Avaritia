@@ -33,6 +33,8 @@ public class NetworkHandler {
         registrar.playToClient(S2CInfinityChestStatePack.TYPE, S2CInfinityChestStatePack.STREAM_CODEC,
                 new S2CInfinityChestStatePack.Handler());
 
+        registrar.playToServer(C2SSetTimePacket.TYPE, C2SSetTimePacket.STREAM_CODEC,
+                new C2SSetTimePacket.Handler());
         registrar.playToServer(C2SSideConfigPacket.TYPE, C2SSideConfigPacket.STREAM_CODEC,
                 new C2SSideConfigPacket.Handler());
         registrar.playToServer(C2SCompressorLockPacket.TYPE, C2SCompressorLockPacket.STREAM_CODEC,

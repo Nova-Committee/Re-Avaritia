@@ -17,7 +17,7 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
  * @author cnlimiter
  */
 public class ArcRender {
-    public static final RenderType ARC_RENDER_TYPE = new RenderType.CompositeRenderType(
+    public static final RenderType ARC_RENDER_TYPE = RenderType.create(
             "arc_render_type",
             DefaultVertexFormat.POSITION_TEX,
             VertexFormat.Mode.QUADS,

@@ -17,13 +17,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Name: Avaritia-forge / InfinityCatalystRecipe
- * Author: cnlimiter
- * CreateTime: 2023/9/16 17:19
- * Description:
- */
-
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     private static final Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     private final String group;
@@ -32,7 +25,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     private final NonNullList<Ingredient> originalInputs;
 
     public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
-        super(inputs, new ItemStack(ModItems.infinity_catalyst.get()), 4);
+        super(NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get()), 4);
         this.group = pGroup;
         this.count = count;
         this.originalInputs = inputs;

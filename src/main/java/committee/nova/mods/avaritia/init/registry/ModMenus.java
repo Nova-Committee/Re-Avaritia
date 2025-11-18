@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
 import committee.nova.mods.avaritia.common.menu.*;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -42,6 +43,7 @@ public class ModMenus {
         event.register(infinity_chest.get(), InfinityChestScreen::new);
         event.register(extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         event.register(extreme_anvil.get(), ExtremeAnvilScreen::new);
+        event.register(infinity_clock_menu.get(), InfinityClockScreen::new);
     }
 
     public static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> menu(String name, Supplier<? extends MenuType<T>> container) {
@@ -66,6 +68,8 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<ExtremeSmithingMenu>)ExtremeSmithingMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<InfinityChestMenu>> infinity_chest = menu("infinity_chest",
             () -> new MenuType<>((IContainerFactory<InfinityChestMenu>)InfinityChestMenu::new, FeatureFlagSet.of()));
+    public static DeferredHolder<MenuType<?>, MenuType<InfinityClockMenu>> infinity_clock_menu = menu("infinity_clock_menu",
+            () -> new MenuType<>((IContainerFactory<InfinityClockMenu>)(id, inv, buf) -> new InfinityClockMenu(id, inv), FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<CompressedChestMenu>> GENERIC_9x27 = menu("generic_9x27",
             () -> new MenuType<>((IContainerFactory<CompressedChestMenu>)CompressedChestMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<ExtremeAnvilMenu>> extreme_anvil = menu("extreme_anvil",

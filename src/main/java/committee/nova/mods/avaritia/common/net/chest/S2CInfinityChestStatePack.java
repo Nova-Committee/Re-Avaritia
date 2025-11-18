@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public record S2CInfinityChestStatePack(ChannelState channelState, CompoundTag tag) implements CustomPacketPayload {
-    public static final Type<S2CInfinityChestStatePack> TYPE = new Type<>(Const.rl("c2s_infinity_chest_State"));
+    public static final Type<S2CInfinityChestStatePack> TYPE = new Type<>(Const.rl("s2c_infinity_chest_state"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CInfinityChestStatePack> STREAM_CODEC = StreamCodec.composite(
             ChannelState.STREAM_CODEC,

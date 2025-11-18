@@ -26,7 +26,8 @@ public class ClientChestManager {
         return instance;
     }
 
-    private static void newInstance() {
+    @SubscribeEvent
+    public static void onLoggingInServer(ClientPlayerNetworkEvent.LoggingIn event) {
         if (instance == null) {
             synchronized (ClientChestManager.class) {
                 if (instance == null) instance = new ClientChestManager();
@@ -35,13 +36,7 @@ public class ClientChestManager {
     }
 
     @SubscribeEvent
-    public static void onLoggingInServer(ClientPlayerNetworkEvent.LoggingIn event) {
-        newInstance();
-    }
-
-    @SubscribeEvent
-    public void onLoggingOutServer(ClientPlayerNetworkEvent.LoggingOut event) {
-        NeoForge.EVENT_BUS.unregister(this);
+    public static void onLoggingOutServer(ClientPlayerNetworkEvent.LoggingOut event) {
         instance = null;
     }
 
@@ -50,9 +45,7 @@ public class ClientChestManager {
     private final ClientChestHandler channel = new ClientChestHandler();
 
 
-    public ClientChestManager() {
-        NeoForge.EVENT_BUS.register(this);
-    }
+    public ClientChestManager() {}
 
     public void setUserCache(CompoundTag userCache) {
         this.userCache = userCache;

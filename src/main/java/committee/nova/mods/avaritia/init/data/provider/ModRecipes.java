@@ -654,9 +654,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .group("eternal_singularity")
                 .unlockedBy("has_item", has(ModItems.eternal_singularity.get())).save(consumer, Const.rl("infinity_catalyst_eternal"));
 
-        ModEternalRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .unlockedBy("has_item", has(ModItems.singularity.get())).save(consumer, Const.rl("eternal_singularity"));
-
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.extreme_smithing_table.get())
                 .pattern("aaaaaaaaa")
                 .pattern("bccfgfccb")

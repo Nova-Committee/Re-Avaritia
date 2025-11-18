@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -42,17 +41,35 @@ public class ServerChestManager {
         return instance;
     }
 
-    private static void newInstance(MinecraftServer server) {
+    @SubscribeEvent
+    public static void onServerLoad(ServerAboutToStartEvent event) {
         if (instance == null) {
             synchronized (ServerChestManager.class) {
-                if (instance == null) instance = new ServerChestManager(server);
+                if (instance == null) instance = new ServerChestManager(event.getServer());
             }
         }
     }
 
     @SubscribeEvent
-    public static void onServerLoad(ServerAboutToStartEvent event) {
-        newInstance(event.getServer());
+    public static void onLevelSave(LevelEvent.Save event) {
+        if (!event.getLevel().isClientSide()) getInstance().save(event.getLevel().getServer());
+    }
+
+    @SubscribeEvent
+    public static void onServerDown(ServerStoppingEvent event) {
+        getInstance().save(event.getServer());
+        instance = null;
+    }
+
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent.Post event) {
+        MinecraftServer server = event.getServer();
+        if (server == null) return;
+        int tickCount = server.getTickCount();
+        if (tickCount % ModConfig.CHANNEL_FULL_UPDATE_RATE.get() == 0)
+            getInstance().chestList.forEach((uuid, map) -> map.forEach((id, chestHandler) -> chestHandler.sendFullUpdate()));
+        else if (tickCount % ModConfig.CHANNEL_FAST_UPDATE_RATE.get() == 0)
+            getInstance().chestList.forEach((uuid, map) -> map.forEach((id, channel) -> channel.sendUpdate()));
     }
 
     private File saveDataPath;
@@ -60,32 +77,8 @@ public class ServerChestManager {
     private final MinecraftServer server;
     private final HashMap<UUID, HashMap<UUID, ServerChestHandler>> chestList = new HashMap<>();
 
-    @SubscribeEvent
-    public void onTick(ServerTickEvent.Post event) {
-        MinecraftServer server = event.getServer();
-        if (server == null) return;
-        int tickCount = server.getTickCount();
-        if (tickCount % ModConfig.CHANNEL_FULL_UPDATE_RATE.get() == 0)
-            chestList.forEach((uuid, map) -> map.forEach((id, chestHandler) -> chestHandler.sendFullUpdate()));
-        else if (tickCount % ModConfig.CHANNEL_FAST_UPDATE_RATE.get() == 0)
-            chestList.forEach((uuid, map) -> map.forEach((id, channel) -> channel.sendUpdate()));
-    }
-
-    @SubscribeEvent
-    public void onLevelSave(LevelEvent.Save event) {
-        if (!event.getLevel().isClientSide()) save(event.getLevel().getServer());
-    }
-
-    @SubscribeEvent
-    public void onServerDown(ServerStoppingEvent event) {
-        this.save(event.getServer());
-        NeoForge.EVENT_BUS.unregister(this);
-        instance = null;
-    }
-
     private ServerChestManager(MinecraftServer server) {
         this.server = server;
-        NeoForge.EVENT_BUS.register(this);
         this.load();
     }
 
