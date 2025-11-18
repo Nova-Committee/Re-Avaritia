@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;

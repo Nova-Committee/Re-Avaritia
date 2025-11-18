@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
-import com.blamejared.crafttweaker.api.loot.condition.LootConditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;

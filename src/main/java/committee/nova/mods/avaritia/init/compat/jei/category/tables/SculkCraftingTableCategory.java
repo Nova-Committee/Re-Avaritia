@@ -3,7 +3,10 @@ package committee.nova.mods.avaritia.init.compat.jei.category.tables;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
-import committee.nova.mods.avaritia.common.crafting.recipe.*;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import mezz.jei.api.constants.VanillaTypes;
@@ -24,9 +27,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Description:

@@ -1,14 +1,9 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import committee.nova.mods.avaritia.api.client.model.CachedFormat;
-import committee.nova.mods.avaritia.api.client.model.PerspectiveModelState;
-import committee.nova.mods.avaritia.api.client.model.Quad;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
-import committee.nova.mods.avaritia.api.client.util.colour.ColorARGB;
-import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import committee.nova.mods.avaritia.client.model.loader.base.HaloSetting;
 import committee.nova.mods.avaritia.client.model.loader.base.HaloUtils;
@@ -17,15 +12,12 @@ import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;

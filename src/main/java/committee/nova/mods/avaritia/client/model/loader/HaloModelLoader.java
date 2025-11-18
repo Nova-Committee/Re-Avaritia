@@ -1,40 +1,22 @@
-package committee.nova.mods.avaritia.client.model;
+package committee.nova.mods.avaritia.client.model.loader;
 
-import com.google.gson.*;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
-import committee.nova.mods.avaritia.api.client.model.CachedFormat;
-import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
-import committee.nova.mods.avaritia.api.client.model.Quad;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import committee.nova.mods.avaritia.client.model.loader.base.BaseGeometry;
 import committee.nova.mods.avaritia.client.model.loader.base.BaseModelLoader;
 import committee.nova.mods.avaritia.client.model.loader.base.HaloSetting;
 import committee.nova.mods.avaritia.client.model.loader.base.HaloUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.util.RandomSource;
-import net.neoforged.neoforge.client.RenderTypeGroup;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 /**

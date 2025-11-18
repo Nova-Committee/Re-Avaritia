@@ -1,28 +1,20 @@
 package committee.nova.mods.avaritia.init.data;
 
-import com.enderio.regilite.data.RegiliteBlockLootProvider;
 import committee.nova.mods.avaritia.init.data.provider.*;
-import committee.nova.mods.avaritia.init.data.provider.loot.ModBlockLootTables;
 import committee.nova.mods.avaritia.init.data.provider.loot.ModLootTables;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**

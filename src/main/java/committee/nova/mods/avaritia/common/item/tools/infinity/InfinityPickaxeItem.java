@@ -1,12 +1,11 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
+import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.item.mode.IItemMode;
-import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -18,7 +17,6 @@ import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

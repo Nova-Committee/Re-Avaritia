@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.core.name;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.chest.ChannelState;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -20,7 +19,6 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-
 
 import java.io.File;
 

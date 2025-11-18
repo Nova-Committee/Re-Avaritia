@@ -8,7 +8,6 @@ import committee.nova.mods.avaritia.api.utils.math.MathUtils;
 import committee.nova.mods.avaritia.api.utils.vec.Vector3;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;

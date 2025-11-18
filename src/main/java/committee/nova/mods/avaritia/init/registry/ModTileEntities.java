@@ -3,8 +3,6 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.common.tile.*;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
-import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;

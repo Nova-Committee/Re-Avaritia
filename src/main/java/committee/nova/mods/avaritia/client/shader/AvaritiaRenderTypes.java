@@ -7,7 +7,6 @@ import committee.nova.mods.avaritia.Res;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.util.TriState;
 
 import static net.minecraft.client.renderer.RenderStateShard.*;
 

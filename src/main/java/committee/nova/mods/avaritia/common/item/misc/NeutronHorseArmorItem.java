@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.common.item.misc;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
-import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;

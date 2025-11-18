@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.core.chest;
 
 import committee.nova.mods.avaritia.common.net.chest.ChannelState;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;

@@ -9,7 +9,6 @@ import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

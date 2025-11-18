@@ -1,10 +1,6 @@
 package committee.nova.mods.avaritia.common.net.chest;
 
-import committee.nova.mods.avaritia.core.io.SideConfiguration;
-import committee.nova.mods.avaritia.core.singularity.Singularity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 

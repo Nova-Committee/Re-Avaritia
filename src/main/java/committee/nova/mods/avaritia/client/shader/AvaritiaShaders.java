@@ -3,17 +3,9 @@ package committee.nova.mods.avaritia.client.shader;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import committee.nova.mods.avaritia.Const;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.*;
-
-import java.io.IOException;
-import java.util.Objects;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
 /**
  * Name: Avaritia-forge / AvaritiaShaders

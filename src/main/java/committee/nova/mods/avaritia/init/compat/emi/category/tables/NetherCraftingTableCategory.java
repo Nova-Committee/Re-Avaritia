@@ -2,7 +2,10 @@ package committee.nova.mods.avaritia.init.compat.emi.category.tables;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
-import committee.nova.mods.avaritia.common.crafting.recipe.*;
+import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import dev.emi.emi.api.recipe.EmiRecipe;

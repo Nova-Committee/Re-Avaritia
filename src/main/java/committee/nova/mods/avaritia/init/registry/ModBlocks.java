@@ -12,9 +12,9 @@ import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlo
 import committee.nova.mods.avaritia.common.block.craft.CompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.DoubleCompressedCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
-import committee.nova.mods.avaritia.common.block.misc.BlazeCubeBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
+import committee.nova.mods.avaritia.common.block.misc.BlazeCubeBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;

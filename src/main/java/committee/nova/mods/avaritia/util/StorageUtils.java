@@ -1,13 +1,8 @@
 package committee.nova.mods.avaritia.util;
 
-import committee.nova.mods.avaritia.common.wrappers.StorageItem;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * @Project: Avaritia
