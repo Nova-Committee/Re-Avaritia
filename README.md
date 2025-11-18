@@ -106,6 +106,18 @@ ServerEvents.recipes(
         console.log('Hello! The avaritia recipe event has fired!')
     }
 )
+AvaritiaEvents.singularity(event => {
+    event.register("avaritia:example", s => {
+        s
+            .setDisplayName("singularity.avaritia.example")
+            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
+            .setCount(1000)
+            .setTimeCost(200)
+            .setIngredient(Ingredient.of("minecraft:iron_ingot"))
+            .setEnabled(true)
+            .setRecipeDisabled(false)
+    })
+})
 ```
 ### **InfinityCatalyst:**
 ```json5
