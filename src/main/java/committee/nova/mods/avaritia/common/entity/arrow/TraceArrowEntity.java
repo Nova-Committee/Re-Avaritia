@@ -253,7 +253,7 @@ public class TraceArrowEntity extends Arrow {
 
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SPECTRAL_TIME, 0);
         builder.define(JUMP_COUNT, 0);

@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.ModApi;
 import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
 import committee.nova.mods.avaritia.core.singularity.SingularityRuntimeEvent;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -18,36 +19,6 @@ import static committee.nova.mods.avaritia.Const.LOGGER;
  */
 @EventBusSubscriber(modid = Const.MOD_ID)
 public class SingularityHandler {
-    @SubscribeEvent
-    public static void onAddSingularity(SingularityRuntimeEvent.Add event) {
-        if (!event.getSingularity().isRecipeEnabled()) return;
-        try {
-            var compressorRecipe = ModApi.addSingularityRecipe(event.getSingularity());
-            if (compressorRecipe != null) {
-                // 尝试动态添加配方到配方管理器
-                RecipeUtils.addRecipe(compressorRecipe);
-                LOGGER.info("Singularity: Added compressor recipe for runtime singularity: {}", event.getSingularity().getId());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Singularity: Failed to add compressor recipe for runtime singularity: {}", event.getSingularity().getId(), e);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRemoveSingularity(SingularityRuntimeEvent.Remove event) {
-        try {
-            // 构建配方ID（奇点ID + _singularity后缀）
-            ResourceLocation recipeId = ResourceLocation.fromNamespaceAndPath(
-                    event.getSingularityId().getNamespace(),
-                    event.getSingularityId().getPath() + "_singularity"
-            );
-
-            RecipeUtils.removeRecipe(ModRecipeTypes.COMPRESSOR_RECIPE.get(), recipeId);
-            LOGGER.info("Singularity: Removed compressor recipe {} for singularity: {}", recipeId, event.getSingularityId());
-        } catch (Exception e) {
-            LOGGER.warn("Singularity: Failed to remove compressor recipe for singularity: {}", event.getSingularityId(), e);
-        }
-    }
 
     /**
      * 重新生成压缩机配方
@@ -56,16 +27,10 @@ public class SingularityHandler {
     @SubscribeEvent
     public static void onReloadSingularity(SingularityReloadEvent event) {
         try {
-            // 清理旧的压缩机配方
-            RecipeUtils.byType(ModRecipeTypes.COMPRESSOR_RECIPE.get()).forEach(recipe -> {
-                if (recipe.id().getPath().endsWith("_singularity")) {
-                    RecipeUtils.removeRecipe(ModRecipeTypes.COMPRESSOR_RECIPE.get(), recipe.id());
-                }
-            });
-
+            SingularityDataManager.getInstance().setCachedSingularities(event.getSingularities());
             // 为新的奇点生成压缩机配方
             int generatedCount = 0;
-            for (Singularity singularity : event.getSingularities().values()) {
+            for (Singularity singularity : SingularityDataManager.getInstance().getSingularities()) {
                 if (!singularity.isRecipeEnabled()) {
                     continue;
                 }

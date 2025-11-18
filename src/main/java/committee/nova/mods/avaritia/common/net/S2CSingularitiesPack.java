@@ -42,7 +42,7 @@ public record S2CSingularitiesPack(List<Singularity> singularities) implements C
                 SingularityDataManager.getInstance().getCachedSingularities().clear();
                 SingularityDataManager.getInstance().getCachedSingularities().putAll(
                         packet.singularities.stream()
-                                .collect(Collectors.toMap(Singularity::getId, s -> s))
+                                .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
                 );
             });
         }

@@ -8,10 +8,8 @@ import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
-import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -20,8 +18,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -35,13 +31,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
+import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
 import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 
 /**
@@ -54,7 +50,6 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     private final InitEnchantment initEnchantment;
     public InfinityBowItem() {
         super(new Properties()
-                .component(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT)
                 .stacksTo(1)
                 .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
@@ -97,7 +92,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
-        return 7200;
+        return 1200;
     }//使用时间
 
     @Override
@@ -128,16 +123,16 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var itemstack = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = onArrowNock(itemstack, pLevel, player, hand, true);
+        InteractionResultHolder<ItemStack> ret = onArrowNock(itemstack, level, player, hand, true);
         if (ret != null) return ret;
         if (player.isShiftKeyDown()) {
-            switchMode(pLevel, player, hand, "infinity_bow_tracer");
+            switchMode(level, player, hand, "infinity_bow_tracer");
             return InteractionResultHolder.success(itemstack);
         }
         player.startUsingItem(hand);
-        return super.use(pLevel, player, hand);
+        return InteractionResultHolder.success(itemstack);
     }
 
     @Override
@@ -145,10 +140,11 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
         if (!level.isClientSide) {
             if (entity instanceof Player player) {
                 int drawTime = this.getUseDuration(stack, player) - timeLeft;
-                drawTime = EventHooks.onArrowLoose(stack, level, player, drawTime, true);
+                drawTime = onArrowLoose(stack, level, player, drawTime, true);
                 if (drawTime < 0) {
                     return;
                 }
+
                 float VELOCITY_MULTIPLIER = 1.2F;
                 float DAMAGE_MULTIPLIER = 5000.0F;
                 float draw = getPowerForTime(drawTime);//蓄力时间
@@ -161,6 +157,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
                         arrowEntity = new TraceArrowEntity(player);
                     }
                 }
+
                 arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.01F);
                 if (draw == 1.0F) {
                     arrowEntity.setCritArrow(true);//蓄力满必暴击
@@ -172,34 +169,6 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
             }
         }
     }
-
-    @Override
-    public void onUseTick(@NotNull Level level, @NotNull LivingEntity living, @NotNull ItemStack stack, int remainingUseDuration) {
-        super.onUseTick(level, living, stack, remainingUseDuration);
-
-        if (!level.isClientSide && living instanceof Player player) {
-            int elapsed = this.getUseDuration(stack, player) - remainingUseDuration;
-            double vy = player.getDeltaMovement().y;
-
-            if (elapsed <= 28) {
-                if (vy > 0) {
-                    player.setDeltaMovement(player.getDeltaMovement().x, vy + 0.07, player.getDeltaMovement().z);
-                    player.hurtMarked = true;
-                }
-            }
-
-            if (vy < 0) {
-                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 18, 0, false, false, false));
-            }
-
-            if (elapsed % 2 == 0) {
-                if (player.getHealth() < player.getMaxHealth()) {
-                    player.heal(1F);
-                }
-            }
-        }
-    }
-
 
     private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
         Holder<Enchantment> POWER =

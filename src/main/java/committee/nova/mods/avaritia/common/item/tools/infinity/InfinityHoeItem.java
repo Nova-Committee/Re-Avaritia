@@ -3,8 +3,10 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
-import committee.nova.mods.avaritia.init.registry.*;
-import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModEntities;
+import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,7 +39,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
     public InfinityHoeItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
-                        .component(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT)
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()

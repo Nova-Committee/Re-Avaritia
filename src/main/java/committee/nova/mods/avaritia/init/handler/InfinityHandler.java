@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -150,7 +151,8 @@ public class InfinityHandler {
                 if (!event.getEntity().isInWater()) {
                     event.setNewSpeed(event.getNewSpeed() * 5F);
                 }
-                if (held.getOrDefault(ModDataComponents.INFINITY_MODE, InfinityMode.DEFAULT).equals(InfinityMode.RANGE)) {
+                if (ISwitchable.isMode(held, "infinity_pickaxe_hammer")
+                        || ISwitchable.isMode(held, "infinity_shovel_destroyer")) {
                     event.setNewSpeed(event.getNewSpeed() * 0.5F);
                 }
             }

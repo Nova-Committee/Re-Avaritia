@@ -8,9 +8,11 @@ import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -21,12 +23,14 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Name: Avaritia-forge / ModRecipeBuilder
@@ -38,9 +42,10 @@ import java.util.Map;
 public class ModShapedRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final ItemLike result;
-    private final ItemStack resultStack;
+    private final ResourceLocation result2;
+    private final int count;
     private final int tier;
-    private final boolean compatible;
+    private final CompoundTag nbt;
     private final List<String> rows = Lists.newArrayList();
     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
@@ -48,65 +53,77 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     private String group;
     private ICondition[] conditions;
 
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count) {
-        this(category, new ItemStack(result, count), 4, false);
-    }
-
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count, boolean compatible) {
-        this(category, new ItemStack(result, count), 4, compatible);
-    }
-
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike result, int count, int tier, boolean compatible) {
-        this(category, new ItemStack(result, count), tier, compatible);
-    }
-
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemStack result, boolean compatible) {
-        this(category, result, 4, compatible);
-    }
-
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemStack result, int tier, boolean compatible) {
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier, CompoundTag nbt) {
         this.category = category;
-        this.result = result.getItem();
-        this.resultStack = result;
+        this.result = itemLike;
+        this.result2 = itemLocation;
+        this.count = count;
+        this.nbt = nbt;
         this.tier = tier;
-        this.compatible = compatible;
     }
 
-    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result) {
-        return shaped(category, result, 4);
+    @Contract("_, _, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, CompoundTag nbt, int tier) {
+        return shaped(category, null, itemLocation, 1, tier, nbt);
     }
 
-    /**
-     * Creates a new builder for a shaped recipe.
-     */
-
-    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int tier) {
-        return new ModShapedRecipeBuilder(category, new ItemStack(result, 1), tier, false);
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, CompoundTag nbt) {
+        return shaped(category, null, itemLocation, 1, 4, nbt);
     }
 
-    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int tier, boolean compatible) {
-        return new ModShapedRecipeBuilder(category, new ItemStack(result, 1), tier, compatible);
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, int tier) {
+        return shaped(category, null, itemLocation, 1, tier, new CompoundTag());
     }
 
-    public static ModShapedRecipeBuilder shaped(RecipeCategory category, ItemStack result, int tier, boolean compatible) {
-        return new ModShapedRecipeBuilder(category, result, tier, compatible);
+    @Contract("_, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation) {
+        return shaped(category, null, itemLocation, 1, 4, new CompoundTag());
+    }
+
+    @Contract("_, _, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, CompoundTag nbt, int tier) {
+        return shaped(category, itemLike, null, 1, tier, nbt);
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, CompoundTag nbt) {
+        return shaped(category, itemLike, null, 1, 4, nbt);
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, int tier) {
+        return shaped(category, itemLike, null, 1, tier, new CompoundTag());
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike) {
+        return shaped(category, itemLike, null, 1, 4, new CompoundTag());
+    }
+
+    @Contract("_, _, _, _, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier, CompoundTag nbt) {
+        return new ModShapedRecipeBuilder(category, itemLike, itemLocation, count, tier, nbt);
+    }
+
+    @Contract("_,_,_,_ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, int count, int tier) {
+        return shaped(category, itemLike, null, count, tier, new CompoundTag());
     }
 
 
-    public ModShapedRecipeBuilder define(Character symbol, TagKey<Item> tag) {
-        return this.define(symbol, Ingredient.of(tag));
+    public ModShapedRecipeBuilder define(Character character, TagKey<Item> tagKey) {
+        return this.define(character, Ingredient.of(tagKey));
     }
 
-    public ModShapedRecipeBuilder define(Character symbol, ItemStack item) {
-        return this.define(symbol, DataComponentIngredient.of(true, item));
+    public ModShapedRecipeBuilder define(Character character, ItemLike itemLike) {
+        return this.define(character, Ingredient.of(itemLike));
     }
 
-    /**
-     * Adds a key to the recipe pattern.
-     */
-    public ModShapedRecipeBuilder define(Character symbol, ItemLike item) {
-        return this.define(symbol, Ingredient.of(item));
-    }
+//    public ModShapedRecipeBuilder define(Character character, ItemStack stack) {
+//        return this.define(character, StrictNBTIngredient.of(stack));
+//    }
 
     public ModShapedRecipeBuilder define(Character character, Ingredient ingredient) {
         if (this.key.containsKey(character)) {
@@ -162,11 +179,17 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
                 .requirements(AdvancementRequirements.Strategy.OR);
         this.criteria.forEach(advancement$builder::addCriterion);
 
+        ItemStack resultStack = ItemStack.EMPTY;
+        if (this.result != null)
+            resultStack = new ItemStack(this.result, this.count);
+        if (this.result2 != null)
+            resultStack = new ItemStack(BuiltInRegistries.ITEM.get(this.result2), this.count);
+
         ShapedTableCraftingRecipe shapedrecipe = new ShapedTableCraftingRecipe(
                 shapedrecipepattern,
-                this.resultStack,
+                resultStack,
                 this.tier,
-                this.compatible
+                false
         );
         var advancement = advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
         if (this.conditions != null) {

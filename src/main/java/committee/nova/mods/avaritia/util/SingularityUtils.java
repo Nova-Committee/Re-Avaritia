@@ -38,33 +38,29 @@ public class SingularityUtils {
         int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
         int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
 
-        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
-
-        Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
+        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
-        var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
+        var recipeEnabled = GsonHelper.getAsBoolean(json, "recipeEnabled", false);
 
-        if (ing == null) {
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
-        } else if (ing.has("tag")) {
-            var tag = ing.get("tag").getAsString();
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
-        } else {
-            var ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, json.get("ingredient")).getOrThrow().getFirst();
-            singularity = new Singularity(id, name, new int[] { overlayColor, underlayColor }, ingredient, materialCount, time);
+        Singularity singularity = new Singularity(id).setDisplayName(name).setColors(overlayColor, underlayColor).setCount(materialCount).setTimeCost(time).setEnabled(enabled).setRecipeEnabled(recipeEnabled);
+
+        if (ing != null) {
+            if (ing.has("tag")) {
+                var tag = ing.get("tag").getAsString();
+                singularity.setTag(tag);
+            } else {
+                var ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, json.get("ingredient")).getOrThrow().getFirst();
+                singularity.setIngredient(ingredient);
+            }
         }
-
-        singularity.setEnabled(enabled);
-        singularity.setRecipeEnabled(!recipeDisabled);
-
         return singularity;
     }
 
     public static JsonObject writeToJson(Singularity singularity) {
         var json = new JsonObject();
 
-        json.addProperty("name", singularity.getName());
+        json.addProperty("name", singularity.getDisplayName());
 
         var colors = new JsonArray();
 
@@ -72,7 +68,7 @@ public class SingularityUtils {
         colors.add(Integer.toHexString(singularity.getUnderlayColor() & 0x00FFFFFF));
 
         json.add("colors", colors);
-        json.addProperty("timeRequired", singularity.getTimeRequired());
+        json.addProperty("timeRequired", singularity.getTimeCost());
 
         JsonElement ingredient;
         if (singularity.getTag() != null) {
@@ -103,13 +99,12 @@ public class SingularityUtils {
         json.addProperty("enabled", singularity.isEnabled());
         json.addProperty("recipeEnabled", singularity.isRecipeEnabled());
 
-
         return json;
     }
 
     public static ItemStack getItemForSingularity(Singularity singularity) {
         var stack = new ItemStack(ModItems.singularity.get());
-        stack.set(ModDataComponents.SINGULARITY_ID, singularity.getId());
+        stack.set(ModDataComponents.SINGULARITY_ID, singularity.getRegistryName());
         return stack;
     }
 

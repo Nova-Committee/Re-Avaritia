@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.init.data.listener.SingularityJsonReloadListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -13,6 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 import java.util.Optional;
 
@@ -24,22 +26,12 @@ import java.util.Optional;
  */
 @EventBusSubscriber(modid = Const.MOD_ID)
 public class ResourceReloadHandler {
-
+    @SubscribeEvent
+    public static void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new SingularityJsonReloadListener());
+    }
     @SubscribeEvent
     public static void addPackFinders(AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            var resourcePath = ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia");
-            var supplier = new PathPackResources.PathResourcesSupplier(resourcePath);
 
-            event.addRepositorySource(packConsumer -> {
-                final PackLocationInfo packInfo = new PackLocationInfo(
-                        "builtin/avaritia_vanilla",
-                        Component.literal("Re:Avaritia Vanilla"),
-                        PackSource.BUILT_IN,
-                        Optional.of(new KnownPack(Const.MOD_ID, "builtin/avaritia_vanilla", "1.0")));
-                final PackSelectionConfig selectionConfig = new PackSelectionConfig(false, Pack.Position.TOP, false);
-                packConsumer.accept(Pack.readMetaAndCreate(packInfo, supplier, PackType.CLIENT_RESOURCES, selectionConfig));
-            });
-        }
     }
 }

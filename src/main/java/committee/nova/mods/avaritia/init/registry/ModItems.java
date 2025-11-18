@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.item.BaseItem;
+import committee.nova.mods.avaritia.common.item.block.InfinityChestItem;
 import committee.nova.mods.avaritia.common.item.misc.*;
 import committee.nova.mods.avaritia.common.item.resources.*;
 import committee.nova.mods.avaritia.common.item.singularity.EternalSingularityItem;
@@ -33,6 +34,9 @@ public class ModItems {
     public static DeferredItem<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
     public static DeferredItem<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
     public static DeferredItem<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
+    public static DeferredItem<Item> infinity_chest = item("infinity_chest",
+            () -> new InfinityChestItem(ModBlocks.infinity_chest.get()));
+    public static DeferredItem<Item> side_config_card = item("side_config_card", SideConfigurationCardItem::new);
     /**
      * Tools
      */
@@ -60,6 +64,7 @@ public class ModItems {
     public static DeferredItem<Item> blaze_pickaxe = item("blaze_pickaxe", name -> new BlazePickaxeItem());
     public static DeferredItem<Item> blaze_shovel = item("blaze_shovel", name -> new BlazeShovelItem());
     public static DeferredItem<Item> blaze_axe = item("blaze_axe", name -> new BlazeAxeItem());
+    public static DeferredItem<Item> blaze_bow= item("blaze_bow", BlazeBowItem::new);
 
     /**
      * Armor

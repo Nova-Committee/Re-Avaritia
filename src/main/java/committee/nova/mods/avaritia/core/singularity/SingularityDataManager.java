@@ -71,7 +71,7 @@ public class SingularityDataManager {
 
         // 加载默认奇点
         for (var singularity : ModSingularities.getDefaults()) {
-            this.cachedSingularities.put(singularity.getId(), singularity);
+            this.cachedSingularities.put(singularity.getRegistryName(), singularity);
         }
         LOGGER.info("Singularity: Loaded {} fallback singularities", this.cachedSingularities.size());
     }
@@ -110,12 +110,12 @@ public class SingularityDataManager {
      * 注册运行时奇点（用于KubeJS）
      */
     public void registerRuntimeSingularity(Singularity singularity) {
-        if (singularity != null && singularity.getId() != null) {
-            var oldSingularity = this.runtimeSingularities.put(singularity.getId(), singularity);
+        if (singularity != null && singularity.getRegistryName() != null) {
+            var oldSingularity = this.runtimeSingularities.put(singularity.getRegistryName(), singularity);
             if (oldSingularity == null) {
-                LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getId());
+                LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getRegistryName());
             } else {
-                LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getId());
+                LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
             }
 
             // 使EternalSingularityCraftRecipe缓存失效
