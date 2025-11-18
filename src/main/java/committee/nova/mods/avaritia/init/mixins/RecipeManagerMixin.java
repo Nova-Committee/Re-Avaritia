@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.sugar.Local;
 import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -33,12 +35,10 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
         super(gson, directory);
     }
 
+    @Definition(id = "builder", method = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;")
+    @Expression("? = builder()")
     @Inject(
-            at = {@At(
-                    value = "INVOKE_ASSIGN",
-                    target = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;",
-                    ordinal = 0
-            )},
+            at = {@At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER)},
             method = {"apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V"}
     )
     public void avaritia$apply(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_, CallbackInfo ci, @Local ImmutableMultimap.Builder<RecipeType<?>, RecipeHolder<?>> byType, @Local ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> byName) {

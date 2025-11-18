@@ -128,7 +128,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         if (Minecraft.getInstance().player == null) return;
         if (!stack.isComponentsPatchEmpty()) return;
-        if (!stack.get(DataComponents.BLOCK_ENTITY_DATA).isEmpty()) {
+        if (stack.get(DataComponents.BLOCK_ENTITY_DATA) != null) {
             CompoundTag nbt = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag();
             if (nbt.contains("owner") && nbt.contains("channelID")) {
                 var owner = nbt.getUUID("owner");
