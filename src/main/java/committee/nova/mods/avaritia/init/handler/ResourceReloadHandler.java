@@ -28,7 +28,7 @@ public class ResourceReloadHandler {
     @SubscribeEvent
     public static void addPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            var resourcePath = ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia_vanilla");
+            var resourcePath = ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia");
             var supplier = new PathPackResources.PathResourcesSupplier(resourcePath);
 
             event.addRepositorySource(packConsumer -> {
