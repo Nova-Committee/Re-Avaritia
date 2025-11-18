@@ -4,8 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
-import committee.nova.mods.avaritia.client.model.loader.CosmicModelLoader;
-import committee.nova.mods.avaritia.client.model.loader.HaloModelLoader;
+import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
 import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
@@ -145,7 +144,13 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register(Const.rl("cosmic"), CosmicModelLoader.INSTANCE);
+        event.register(Const.rl("cosmic_arc"), CosmicArcModelLoader.INSTANCE);
+        event.register(Const.rl("hell"), HellModelLoader.INSTANCE);
+        event.register(Const.rl("eternal"), EternalModelLoader.INSTANCE);
+        event.register(Const.rl("unstable"), UnstableModelLoader.INSTANCE);
         event.register(Const.rl("halo"), HaloModelLoader.INSTANCE);
+        event.register(Const.rl("halo_cosmic"), HaloCosmicModelLoader.INSTANCE);
+        event.register(Const.rl("halo_eternal"), HaloEternalModelLoader.INSTANCE);
     }
 
     @SubscribeEvent

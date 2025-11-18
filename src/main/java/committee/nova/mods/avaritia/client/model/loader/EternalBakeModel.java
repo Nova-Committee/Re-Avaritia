@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
-import committee.nova.mods.avaritia.api.iface.IBowTransform;
-import committee.nova.mods.avaritia.api.iface.IToolTransform;
+import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
+import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -69,7 +69,7 @@ public class EternalBakeModel extends WrappedItemModel {
         AvaritiaShaders.eternalExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(stack) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
         } else {
             AvaritiaShaders.eternalOpacity.set(1.5F);
         }

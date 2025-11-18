@@ -3,20 +3,22 @@ package committee.nova.mods.avaritia.core.chest;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +28,7 @@ import java.util.UUID;
 /**
  * @author cnlimiter
  */
-@Mod.EventBusSubscriber(modid = Const.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class ServerChestManager {
     private static volatile ServerChestManager instance;
 
@@ -60,7 +62,7 @@ public class ServerChestManager {
     private final HashMap<UUID, HashMap<UUID, ServerChestHandler>> chestList = new HashMap<>();
 
     @SubscribeEvent
-    public void onTick(TickEvent.ServerTickEvent event) {
+    public void onTick(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
         if (server == null) return;
         int tickCount = server.getTickCount();
@@ -78,13 +80,13 @@ public class ServerChestManager {
     @SubscribeEvent
     public void onServerDown(ServerStoppingEvent event) {
         this.save(event.getServer());
-        MinecraftForge.EVENT_BUS.unregister(this);
+        NeoForge.EVENT_BUS.unregister(this);
         instance = null;
     }
 
     private ServerChestManager(MinecraftServer server) {
         this.server = server;
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
         this.load();
     }
 
@@ -102,7 +104,7 @@ public class ServerChestManager {
                     HashMap<UUID, ServerChestHandler> playerChannels = new HashMap<>();
                     for (File channelFile : channels) {
                         UUID channelID = UUID.fromString(channelFile.getName().substring(0, channelFile.getName().lastIndexOf(".")));
-                        CompoundTag channelDat = NbtIo.readCompressed(channelFile);
+                        CompoundTag channelDat = NbtIo.readCompressed(channelFile.toPath(), NbtAccounter.unlimitedHeap());
                         ServerChestHandler channel = new ServerChestHandler(channelDat);
                         playerChannels.put(channelID, channel);
                         Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.load_success", dir.getName(), channelID, "").getString());
@@ -128,7 +130,7 @@ public class ServerChestManager {
                     File channelDat = new File(user, id.toString() + ".dat");
                     try {
                         if (!channelDat.exists()) channelDat.createNewFile();
-                        NbtIo.writeCompressed(channel.buildData(), channelDat);
+                        NbtIo.writeCompressed(channel.buildData(), channelDat.toPath());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

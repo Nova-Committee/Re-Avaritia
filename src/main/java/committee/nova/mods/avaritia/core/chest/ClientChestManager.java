@@ -2,18 +2,18 @@ package committee.nova.mods.avaritia.core.chest;
 
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.UUID;
 
 /**
  * @author cnlimiter
  */
-@Mod.EventBusSubscriber(modid = Const.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class ClientChestManager {
     private static volatile ClientChestManager instance;
 
@@ -41,7 +41,7 @@ public class ClientChestManager {
 
     @SubscribeEvent
     public void onLoggingOutServer(ClientPlayerNetworkEvent.LoggingOut event) {
-        MinecraftForge.EVENT_BUS.unregister(this);
+        NeoForge.EVENT_BUS.unregister(this);
         instance = null;
     }
 
@@ -51,7 +51,7 @@ public class ClientChestManager {
 
 
     public ClientChestManager() {
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     public void setUserCache(CompoundTag userCache) {

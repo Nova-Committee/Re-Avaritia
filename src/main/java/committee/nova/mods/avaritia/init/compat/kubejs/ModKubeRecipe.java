@@ -12,7 +12,6 @@ import java.util.function.Supplier;
  * @CreateTime: 2025/5/18 22:16
   * @Description:
  */
- **/
 public abstract class ModKubeRecipe extends KubeRecipe {
     @HideFromJS
     public <T> T computeIfAbsent(RecipeKey<T> key, Supplier<T> supplier) {
