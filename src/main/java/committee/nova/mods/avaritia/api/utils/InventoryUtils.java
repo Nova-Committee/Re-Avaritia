@@ -1,13 +1,13 @@
 package committee.nova.mods.avaritia.api.utils;
 
+import committee.nova.mods.avaritia.init.compat.curios.CuriosTools;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static committee.nova.mods.avaritia.Const.curios;
 
 /**
  * @Project: Avaritia
@@ -153,13 +151,11 @@ public class InventoryUtils {
      * @return 找到的值
      */
     public static ItemStack findItemInInv(Player player, Predicate<ItemStack> is, Function<ItemStack, ItemStack> map) {
-        if(curios) {
-            AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
-            CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
-                s.set(curiosInventory.findCurios(is));
-            });
-            if(!s.get().isEmpty())return map.apply(s.get().get(0).stack());
-        }//从饰品栏中获取
+        if (ModList.get().isLoaded("curios")) {
+            ItemStack resultStack = CuriosTools.getFirstItemFromCuriosInv(player, is);
+            if (!resultStack.isEmpty()) return map.apply(resultStack);
+        }
+        //从饰品栏中获取
         if(is.test(player.getMainHandItem()))return map.apply(player.getMainHandItem());
         if(is.test(player.getOffhandItem()))return map.apply(player.getOffhandItem());
         Inventory inv = player.getInventory();

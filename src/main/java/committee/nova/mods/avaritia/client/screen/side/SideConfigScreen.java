@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.screen.side;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
@@ -7,6 +8,7 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -67,13 +69,44 @@ public class SideConfigScreen extends Screen {
         // 添加一键清除配置按钮
         this.addRenderableWidget(
                 new ImageButton(x + 135, y + 93, 17, 18,
-                        17, 164, 18, Res.SIDE_CONFIG_TEX,
-                        (button) -> setAllSides(SideConfiguration.SideMode.OFF)));
+                        new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
+                        (button) -> setAllSides(SideConfiguration.SideMode.OFF)) {
+                    @Override
+                    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                        int vOffset = 164, textureDifference = 18;
+                        int i = vOffset;
+                        if (!this.isActive()) {
+                            i = vOffset + textureDifference * 2;
+                        } else if (this.isHoveredOrFocused()) {
+                            i = vOffset + textureDifference;
+                        }
+
+                        RenderSystem.enableDepthTest();
+                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 17, i, width, height, 256, 256);
+                    }
+                }
+
+        );
         // 添加返回按钮
         this.addRenderableWidget(
                 new ImageButton(x + 4, y + 4, 17, 18,
-                        0, 164, 18, Res.SIDE_CONFIG_TEX,
-                        (button) -> onClose()));
+                        new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
+                        (button) -> onClose()) {
+                    @Override
+                    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                        int vOffset = 164, textureDifference = 18;
+                        int i = vOffset;
+                        if (!this.isActive()) {
+                            i = vOffset + textureDifference * 2;
+                        } else if (this.isHoveredOrFocused()) {
+                            i = vOffset + textureDifference;
+                        }
+
+                        RenderSystem.enableDepthTest();
+                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, i, width, height, 256, 256);
+                    }
+                }
+        );
     }
 
     /**

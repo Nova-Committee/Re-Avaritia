@@ -86,10 +86,12 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     @Override
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         if (this.bgTexture != null) pGuiGraphics.blit(this.bgTexture, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
-        this.renderBgOthers(pGuiGraphics, this.leftPos, this.topPos);
+        this.renderBgs(pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
     }
 
-    protected abstract void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY);
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY){
+
+    }
 
 
     public void dataChanged(@NotNull AbstractContainerMenu pContainerMenu, int pDataSlotIndex, int pValue) {

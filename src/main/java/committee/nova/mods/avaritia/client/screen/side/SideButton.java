@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -22,7 +23,7 @@ class SideButton extends ImageButton {
     private final List<FormattedCharSequence> tooltip;
 
     public SideButton(int x, int y, Direction direction, SideConfiguration.SideMode mode, SideConfigScreen sideConfigScreen) {
-        super(x, y, 22, 23, 0, 118, 23, Res.SIDE_CONFIG_TEX, button -> {
+        super(x, y, 22, 23, new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX), button -> {
             sideConfigScreen.cycleModeForDirection(direction);
             // 更新按钮显示
             sideConfigScreen.updateAllButtons();

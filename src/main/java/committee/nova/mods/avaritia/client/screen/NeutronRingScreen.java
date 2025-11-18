@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.common.menu.NeutronRingMenu;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,11 +22,6 @@ public class NeutronRingScreen extends BaseContainerScreen<NeutronRingMenu> {
     public NeutronRingScreen(NeutronRingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, BACKGROUND, 256, 276, 256, 276);
         this.inventoryLabelY = this.imageHeight - 94;
-    }
-
-    @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
-
     }
 
     @Override

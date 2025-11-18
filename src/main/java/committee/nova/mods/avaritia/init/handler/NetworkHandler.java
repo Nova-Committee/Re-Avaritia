@@ -64,13 +64,19 @@ public class NetworkHandler {
 //        CHANNEL.sendToServer(new NbtDataPack(tag));
 //    }
 
+    public static void sendCompressorLockPacket(BlockPos pos, boolean locked) {
+        PacketDistributor.sendToServer(new C2SCompressorLockPacket(pos, locked));
+    }
+
+    public static void sendCompressorEjectPacket(BlockPos pos) {
+        PacketDistributor.sendToServer(new C2SCompressorEjectPacket(pos));
+    }
+
     public static void sendSideConfigUpdate(BlockPos blockPos, SideConfiguration sideConfig) {
-        // 解析字符串格式的位置: BlockPos{x=123, y=456, z=789}
         PacketDistributor.sendToServer(new C2SSideConfigPacket(blockPos, sideConfig));
     }
-    // 便捷方法：发送方块配置同步包给附近玩家
+
     public static void sendSideConfigSync(BlockPos pos, SideConfiguration sideConfig) {
-        // 暂时使用空参数，后续可以改进为指定位置的广播
         PacketDistributor.sendToAllPlayers(new S2CSideConfigSyncPacket(pos, sideConfig));
     }
 }

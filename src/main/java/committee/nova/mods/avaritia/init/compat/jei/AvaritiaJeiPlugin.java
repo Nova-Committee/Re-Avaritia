@@ -2,9 +2,9 @@ package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.RecipeUtils;
-import committee.nova.mods.avaritia.client.screen.CompressorScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
+import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
 import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
@@ -106,7 +106,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(NeutronCompressorMenu.class, ModMenus.compressor.get(), CompressorCategory.RECIPE_TYPE, 1, 1, 2, 36);
+        registration.addRecipeTransferHandler(NeutronCompressorMenu.class, ModMenus.neutron_compressor.get(), CompressorCategory.RECIPE_TYPE, 1, 1, 2, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.sculk_crafting_tile_table.get(), SculkCraftingTableCategory.RECIPE_TYPE, 1, 9, 10, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.nether_crafting_tile_table.get(), NetherCraftingTableCategory.RECIPE_TYPE, 1, 25, 26, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.end_crafting_tile_table.get(), EndCraftingTableCategory.RECIPE_TYPE, 1, 49, 50, 36);
@@ -117,7 +117,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(CompressorScreen.class, 84, 35, 31, 12, CompressorCategory.RECIPE_TYPE);
+        registration.addRecipeClickArea(NeutronCompressorScreen.class, 84, 35, 31, 12, CompressorCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(SculkCraftScreen.class, 90, 40, 22, 12, SculkCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(NetherCraftScreen.class, 105, 58, 22, 12, NetherCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(EndCraftScreen.class, 135, 76, 22, 12, EndCraftingTableCategory.RECIPE_TYPE);

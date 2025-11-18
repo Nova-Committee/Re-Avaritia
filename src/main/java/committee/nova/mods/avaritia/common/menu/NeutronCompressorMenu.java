@@ -6,7 +6,6 @@ import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,7 +28,7 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
     }
 
     public NeutronCompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
-        super(ModMenus.compressor.get(), id, playerInventory, pos);
+        super(ModMenus.neutron_compressor.get(), id, playerInventory, pos);
         this.progressData = data;
         this.addDataSlots(progressData);
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));

@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.core.chest;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.StorageUtils;
-import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;

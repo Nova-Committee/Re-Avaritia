@@ -23,7 +23,7 @@ public class SideConfigButton extends ImageButton {
     private final List<FormattedCharSequence> tips = new ArrayList<>();
 
     public SideConfigButton(BaseContainerScreen<?> parentScreen, int pX, int pY) {
-        super(pX, pY, 20, 24, new WidgetSprites(Res.SIDE_CONFIG_TEX) , pButton -> {
+        super(pX, pY, 20, 24, new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX), pButton -> {
             if (parentScreen.getMinecraft().player != null) {
                 var level = parentScreen.getMinecraft().level;
                 if (level != null && parentScreen.getMenu() instanceof BaseTileMenu menu) {
@@ -46,11 +46,13 @@ public class SideConfigButton extends ImageButton {
     @Override
     @ParametersAreNonnullByDefault
     public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        var xTexStart = 156;
+        var yTexStart = 0;
         if (this.isHovered) {
             parentScreen.setTooltipForNextRenderPass(tips);
-            pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart + 24, this.width, this.height, 256, 256);
+            pPoseStack.blit(Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), xTexStart, yTexStart + 24, this.width, this.height, 256, 256);
         } else {
-            pPoseStack.blit(resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
+            pPoseStack.blit(Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
         }
     }
 }

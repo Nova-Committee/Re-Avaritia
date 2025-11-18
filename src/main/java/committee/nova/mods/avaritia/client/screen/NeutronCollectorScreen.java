@@ -1,13 +1,13 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
-import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -22,39 +22,30 @@ import java.util.List;
  * Version: 1.0
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
-    private static final ResourceLocation BACKGROUND = Const.rl( "textures/gui/neutron_collector.png");
-    private NeutronCollectorTile tile;
+    private Button configButton;
 
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title, BACKGROUND);
+        super(container, inventory, title, Res.NEUTRON_COLLECTOR_TEX);
     }
 
     @Override
     protected void init() {
         super.init();
-        this.tile = this.getTileEntity();
-    }
-
-    private NeutronCollectorTile getTileEntity() {
-        var level = this.getMinecraft().level;
-
-        if (level != null) {
-            var tile = level.getBlockEntity(this.getMenu().getBlockPos());
-
-            if (tile instanceof NeutronCollectorTile compressor)
-                return compressor;
-        }
-
-        return null;
-    }
-
-    @Override
-    public void render(@NotNull GuiGraphics stack, int mouseX, int mouseY, float partialTicks) {
-        super.render(stack, mouseX, mouseY, partialTicks);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
 
-        if (mouseX > x + 99 && mouseX < x + 104 && mouseY > y + 30 && mouseY < y + 50) {
+        // 添加配置按钮
+        this.configButton = new SideConfigButton(this, x - 20, y);
+
+        this.addRenderableWidget(this.configButton);
+    }
+
+    @Override
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+
+        if (pMouseX > x + 99 && pMouseX < x + 104 && pMouseY > y + 30 && pMouseY < y + 50) {
             List<Component> tooltip = new ArrayList<>();
 
             if (this.getProgress() > 0) {
@@ -63,7 +54,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
                 tooltip.add(text);
             }
 
-            stack.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+            pGuiGraphics.renderComponentTooltip(font, tooltip, pMouseX, pMouseY);
         }
     }
 
@@ -76,27 +67,27 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderBgOthers(GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         int i = this.getGuiLeft();
         int j = this.getGuiTop();
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(18);
-            pGuiGraphics.blit(BACKGROUND, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
+            pGuiGraphics.blit(Res.NEUTRON_COLLECTOR_TEX, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
         }
     }
 
     public int getProgress() {
-        if (this.tile == null)
+        if (this.menu.getTileEntity() == null)
             return 0;
 
         return this.menu.getProgress();//data by menu
     }
 
     public int getTimeRequired() {
-        if (this.tile == null)
+        if (this.menu.getTileEntity() == null)
             return 0;
 
-        return this.tile.getProductionTicks();// final data will not use menu
+        return this.menu.getTileEntity().getProductionTicks();// final data will not use menu
     }
 
     public int getProgressBarScaled(int pixels) {
@@ -104,6 +95,4 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int j = this.getTimeRequired();
         return (int) (j != 0 && i != 0 ? (long) i * pixels / j : 0);
     }
-
-
 }

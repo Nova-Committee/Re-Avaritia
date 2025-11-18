@@ -31,6 +31,11 @@ public class Res {
     public static final ResourceLocation WING_TEX = Const.rl("textures/models/armor/infinity_armor_wing.png");
     public static final ResourceLocation WING_GLOW_TEX = Const.rl("textures/models/armor/infinity_armor_wing_glow.png");
 
+    public static final ResourceLocation END_CRAFT_TEX =  Const.rl( "textures/gui/craft/end_crafting_table_gui.png");
+    public static final ResourceLocation NETHER_CRAFT_TEX =  Const.rl( "textures/gui/craft/nether_crafting_table_gui.png");
+    public static final ResourceLocation SCULK_CRAFT_TEX =  Const.rl( "textures/gui/craft/sculk_crafting_table_gui.png");
+    public static final ResourceLocation EXTREME_CRAFT_TEX =  Const.rl( "textures/gui/craft/extreme_crafting_table_gui.png");
+
     public static final ResourceLocation INFINITY_CLOCK_TIME_TEX = Const.rl("textures/gui/machine/infinity_clock_time.png");
     public static final ResourceLocation NEUTRON_COLLECTOR_TEX = Const.rl("textures/gui/machine/neutron_collector.png");
     public static final ResourceLocation NEUTRON_COMPRESSOR_TEX = Const.rl("textures/gui/machine/neutron_compressor.png");

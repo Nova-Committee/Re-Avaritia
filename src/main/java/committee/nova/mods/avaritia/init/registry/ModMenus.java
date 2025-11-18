@@ -36,7 +36,7 @@ public class ModMenus {
         event.register(end_crafting_tile_table.get(), EndCraftScreen::new);
         event.register(extreme_crafting_table.get(), ExtremeCraftScreen::new);
         event.register(neutron_collector.get(), NeutronCollectorScreen::new);
-        event.register(compressor.get(), CompressorScreen::new);
+        event.register(neutron_compressor.get(), NeutronCompressorScreen::new);
         event.register(GENERIC_9x27.get(), CompressedChestScreen::new);
         event.register(neutron_ring.get(), NeutronRingScreen::new);
         event.register(infinity_chest.get(), InfinityChestScreen::new);
@@ -60,7 +60,7 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<TierCraftMenu>)TierCraftMenu::extreme, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<NeutronCollectorMenu>> neutron_collector = menu("neutron_collector",
             () -> new MenuType<>((IContainerFactory<NeutronCollectorMenu>)NeutronCollectorMenu::new, FeatureFlagSet.of()));
-    public static DeferredHolder<MenuType<?>, MenuType<NeutronCompressorMenu>> compressor = menu("compressor",
+    public static DeferredHolder<MenuType<?>, MenuType<NeutronCompressorMenu>> neutron_compressor = menu("neutron_compressor",
             () -> new MenuType<>((IContainerFactory<NeutronCompressorMenu>) NeutronCompressorMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<ExtremeSmithingMenu>> extreme_smithing_table = menu("extreme_smithing_table",
             () -> new MenuType<>((IContainerFactory<ExtremeSmithingMenu>)ExtremeSmithingMenu::new, FeatureFlagSet.of()));

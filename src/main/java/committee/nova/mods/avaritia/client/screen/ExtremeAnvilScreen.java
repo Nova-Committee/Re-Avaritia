@@ -91,7 +91,7 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
     }
 
     @Override
-    protected void renderBgOthers(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void renderBgs(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem()) && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
             pGuiGraphics.blit(ANVIL_LOCATION, pX + 99, pY + 47, this.imageWidth, 0, 28, 21);
         }
