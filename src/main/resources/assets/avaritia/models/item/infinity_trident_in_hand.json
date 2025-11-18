@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:builtin/entity",
+  "gui_light": "front",
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_trident/layer_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "throwing": 1
+      },
+      "model": "avaritia:item/infinity_trident_throwing"
+    }
+  ]
+}
