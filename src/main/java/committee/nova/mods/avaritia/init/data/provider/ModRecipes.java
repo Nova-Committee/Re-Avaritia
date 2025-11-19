@@ -1,9 +1,5 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import appeng.core.definitions.AEBlocks;
-import com.enderio.machines.common.init.MachineBlocks;
-import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
-import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.data.provider.recipe.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -11,7 +7,6 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.init.registry.ModTags;
 import committee.nova.mods.avaritia.util.SingularityUtils;
-import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -23,13 +18,10 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -1312,7 +1304,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('A', ModItems.neutron_gear.get())
                 .define('B', ModItems.neutron_pile.get())
                 .define('C', ModItems.blaze_cube.get())
-                .define('D', SingularityUtils.getItemForSingularity(ModSingularities.GOLD))
+                .define('D', Ingredient.of(SingularityUtils.getItemForSingularity(ModSingularities.GOLD)))
                 .define('E', ModBlocks.blaze_cube_block.get())
                 .define('F', Blocks.GOLD_BLOCK)
                 .define('G', ModBlocks.dense_neutron_collector.get())
@@ -1370,7 +1362,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('A', ModItems.neutron_gear.get())
                 .define('B', ModItems.neutron_pile.get())
                 .define('C', ModItems.blaze_cube.get())
-                .define('D', SingularityUtils.getItemForSingularity(ModSingularities.GOLD))
+                .define('D', Ingredient.of(SingularityUtils.getItemForSingularity(ModSingularities.GOLD)))
                 .define('E', ModBlocks.blaze_cube_block.get())
                 .define('F', Blocks.GOLD_BLOCK)
                 .define('G', ModBlocks.dense_neutron_compressor.get())
@@ -1391,7 +1383,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('B', ModItems.neutron_ingot.get())
                 .define('C', ModItems.neutron_gear.get())
                 .define('X', ModBlocks.denser_neutron_collector.get())
-                .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE))
+                .define('Y', Ingredient.of(SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE)))
                 
                 .unlockedBy("has_item", has(ModBlocks.denser_neutron_collector.get())).save(consumer);
 
@@ -1409,7 +1401,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('B', ModItems.neutron_ingot.get())
                 .define('C', ModItems.neutron_gear.get())
                 .define('X', ModBlocks.denser_neutron_compressor.get())
-                .define('Y', SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE))
+                .define('Y', Ingredient.of(SingularityUtils.getItemForSingularity(ModSingularities.REDSTONE)))
 
                 .unlockedBy("has_item", has(ModBlocks.denser_neutron_compressor.get())).save(consumer);
 
@@ -1425,26 +1417,27 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-//        ConditionalRecipe.builder().addCondition(modLoaded("ae2")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ae2", "creative_energy_cell"))
-//                        .pattern("YYYYXYYYY")
-//                        .pattern("YCACXCACY")
-//                        .pattern("YACBXBCAY")
-//                        .pattern("YCBBXBBCY")
-//                        .pattern("XXXXDXXXX")
-//                        .pattern("YCBBXBBCY")
-//                        .pattern("YACBXBCAY")
-//                        .pattern("YCACXCACY")
-//                        .pattern("YYYYXYYYY")
-//
-//                        .define('A', Const.getIngredient("ae2", "vibration_chamber"))
-//                        .define('B', Const.getIngredient("ae2", "calculation_processor"))
-//                        .define('C', ModItems.infinity_ingot.get())
-//                        .define('D', Const.getIngredient("ae2", "cell_component_256k"))
-//                        .define('Y', Const.getIngredient("ae2", "dense_energy_cell"))
-//                        .define('X', Const.getIngredient("ae2", "singularity"))
-//                        .unlockedBy("has_item", has(Const.getItem("ae2", "dense_energy_cell")))::save
-//        ).build(consumer, Const.rl("ae2_creative_energy_cell"));
+        ModShapedRecipeBuilder
+                .shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("ae2", "creative_energy_cell"))
+                .conditions(modLoaded("ae2"))
+                .pattern("YYYYXYYYY")
+                .pattern("YCACXCACY")
+                .pattern("YACBXBCAY")
+                .pattern("YCBBXBBCY")
+                .pattern("XXXXDXXXX")
+                .pattern("YCBBXBBCY")
+                .pattern("YACBXBCAY")
+                .pattern("YCACXCACY")
+                .pattern("YYYYXYYYY")
+
+                .define('A', Const.getIngredient("ae2", "vibration_chamber"))
+                .define('B', Const.getIngredient("ae2", "calculation_processor"))
+                .define('C', ModItems.infinity_ingot.get())
+                .define('D', Const.getIngredient("ae2", "cell_component_256k"))
+                .define('Y', Const.getIngredient("ae2", "dense_energy_cell"))
+                .define('X', Const.getIngredient("ae2", "singularity"))
+                .unlockedBy("has_item", has(Const.getItem("ae2", "dense_energy_cell"))).save(consumer, Const.rl("ae2_creative_energy_cell"));
+
 //
 //        var mana_tablet_tag = new CompoundTag();
 //        mana_tablet_tag.putInt("mana", 500000);
@@ -1507,129 +1500,129 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //                        .unlockedBy("has_item", has(Const.getItem("botania", "mana_tablet")))::save
 //        ).build(consumer, Const.rl("botania_creative_pool"));
 //
-//        ConditionalRecipe.builder().addCondition(modLoaded("draconicevolution")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("draconicevolution", "creative_capacitor"))
-//                        .pattern("AAAACAAAA")
-//                        .pattern("AEEBCBEEA")
-//                        .pattern("AEBFCFBEA")
-//                        .pattern("ABFFCFFBA")
-//                        .pattern("CCCCDCCCC")
-//                        .pattern("ABFFCFFBA")
-//                        .pattern("AEBFCFBEA")
-//                        .pattern("AEEBCBEEA")
-//                        .pattern("AAAACAAAA")
-//
-//                        .define('A', ModItems.infinity_ingot.get())
-//                        .define('B', Const.getIngredient("draconicevolution", "chaotic_crafting_injector"))
-//                        .define('C', Const.getIngredient("draconicevolution", "reactor_stabilizer"))
-//                        .define('D', Const.getIngredient("draconicevolution", "reactor_core"))
-//                        .define('E', Const.getIngredient("draconicevolution", "chaotic_core"))
-//                        .define('F', Const.getIngredient("draconicevolution", "chaotic_capacitor"))
-//                        .unlockedBy("has_item", has(Const.getItem("draconicevolution", "chaotic_capacitor")))::save
-//        ).build(consumer, Const.rl("de_creative_capacitor"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("draconicevolution")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("draconicevolution", "creative_op_capacitor"))
-//                        .pattern("BBCCCCCBB")
-//                        .pattern("BBBBBBBBB")
-//                        .pattern("CBAAAAABC")
-//                        .pattern("CBACECABC")
-//                        .pattern("CBAEDEABC")
-//                        .pattern("CBACECABC")
-//                        .pattern("CBAAAAABC")
-//                        .pattern("BBBBBBBBB")
-//                        .pattern("BBCCCCCBB")
-//
-//                        .define('A', ModItems.infinity_ingot.get())
-//                        .define('B', ModBlocks.infinity.get())
-//                        .define('C', Const.getIngredient("draconicevolution", "reactor_stabilizer"))
-//                        .define('D', Const.getIngredient("draconicevolution", "reactor_core"))
-//                        .define('E', Const.getIngredient("draconicevolution", "creative_capacitor"))
-//                        .unlockedBy("has_item", has(Const.getItem("draconicevolution", "creative_capacitor")))::save
-//        ).build(consumer, Const.rl("de_creative_op_capacitor"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_controller"))
-//                        .pattern("ABBBCBBBA")
-//                        .pattern("BDDDCDDDB")
-//                        .pattern("BDDCCCDDB")
-//                        .pattern("BDCCFCCDB")
-//                        .pattern("CCCFAFCCC")
-//                        .pattern("BECCFCCEB")
-//                        .pattern("BEECCCEEB")
-//                        .pattern("BEEECEEEB")
-//                        .pattern("ABBBCBBBA")
-//
-//                        .define('A', ModItems.infinity_catalyst.get())
-//                        .define('B', ModItems.neutron_ingot.get())
-//                        .define('C', Const.getIngredient("refinedstorage", "advanced_processor"))
-//                        .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
-//                        .define('E', Const.getIngredient("refinedstorage", "64k_storage_part"))
-//                        .define('F', ItemTags.create(new ResourceLocation("refinedstorage", "controller")))
-//                        .unlockedBy("has_item", has(ItemTags.create(new ResourceLocation("refinedstorage", "controller"))))::save
-//        ).build(consumer, Const.rl("rs_creative_controller"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_fluid_storage_disk"))
-//                        .pattern("CAAABAAAC")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("AAADCDAAA")
-//                        .pattern("BBBCDCBBB")
-//                        .pattern("AAADCDAAA")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("CAAABAAAC")
-//
-//                        .define('A', ModBlocks.infinity.get())
-//                        .define('B', ModBlocks.neutron_compressor.get())
-//                        .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
-//                        .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
-//                        .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))::save
-//        ).build(consumer, Const.rl("rs_creative_fluid_storage_disk"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_storage_disk"))
-//                        .pattern("CAAABAAAC")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("AAADCDAAA")
-//                        .pattern("BBBCDCBBB")
-//                        .pattern("AAADCDAAA")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("AAAABAAAA")
-//                        .pattern("CAAABAAAC")
-//
-//                        .define('A', ModBlocks.infinity.get())
-//                        .define('B', ModBlocks.neutron_compressor.get())
-//                        .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
-//                        .define('D', Const.getIngredient("refinedstorage", "64k_storage_part"))
-//                        .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))::save
-//        ).build(consumer, Const.rl("rs_creative_storage_disk"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("refinedstorage")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("refinedstorage", "creative_wireless_grid"))
-//                        .pattern("HH     HH")
-//                        .pattern("H       H")
-//                        .pattern(" BCCCCCB ")
-//                        .pattern(" CDDFEEC ")
-//                        .pattern(" CGFAFGC ")
-//                        .pattern(" CDDFEEC ")
-//                        .pattern(" BCCCCCB ")
-//                        .pattern("H       H")
-//                        .pattern("HH     HH")
-//
-//
-//                        .define('A', ModItems.endest_pearl.get())
-//                        .define('B', Const.getIngredient("refinedstorage", "range_upgrade"))
-//                        .define('C', Const.getIngredient("refinedstorage", "wireless_transmitter"))
-//                        .define('D', Const.getIngredient("refinedstorage", "destruction_core"))
-//                        .define('E', Const.getIngredient("refinedstorage", "construction_core"))
-//                        .define('F', Const.getIngredient("refinedstorage", "wireless_grid"))
-//                        .define('G', Const.getIngredient("refinedstorage", "network_receiver"))
-//                        .define('H', Const.getIngredient("refinedstorage", "storage_housing"))
-//                        .unlockedBy("has_item", has(Const.getItem("refinedstorage", "wireless_grid")))::save
-//        ).build(consumer, Const.rl("rs_creative_wireless_grid"));
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("draconicevolution", "creative_capacitor"))
+                .conditions(modLoaded("draconicevolution"))
+                .pattern("AAAACAAAA")
+                .pattern("AEEBCBEEA")
+                .pattern("AEBFCFBEA")
+                .pattern("ABFFCFFBA")
+                .pattern("CCCCDCCCC")
+                .pattern("ABFFCFFBA")
+                .pattern("AEBFCFBEA")
+                .pattern("AEEBCBEEA")
+                .pattern("AAAACAAAA")
+
+                .define('A', ModItems.infinity_ingot.get())
+                .define('B', Const.getIngredient("draconicevolution", "chaotic_crafting_injector"))
+                .define('C', Const.getIngredient("draconicevolution", "reactor_stabilizer"))
+                .define('D', Const.getIngredient("draconicevolution", "reactor_core"))
+                .define('E', Const.getIngredient("draconicevolution", "chaotic_core"))
+                .define('F', Const.getIngredient("draconicevolution", "chaotic_capacitor"))
+                .unlockedBy("has_item", has(Const.getItem("draconicevolution", "chaotic_capacitor")))
+                .save(consumer, Const.rl("de_creative_capacitor"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("draconicevolution", "creative_op_capacitor"))
+                .conditions(modLoaded("draconicevolution"))
+                .pattern("BBCCCCCBB")
+                .pattern("BBBBBBBBB")
+                .pattern("CBAAAAABC")
+                .pattern("CBACECABC")
+                .pattern("CBAEDEABC")
+                .pattern("CBACECABC")
+                .pattern("CBAAAAABC")
+                .pattern("BBBBBBBBB")
+                .pattern("BBCCCCCBB")
+
+                .define('A', ModItems.infinity_ingot.get())
+                .define('B', ModBlocks.infinity.get())
+                .define('C', Const.getIngredient("draconicevolution", "reactor_stabilizer"))
+                .define('D', Const.getIngredient("draconicevolution", "reactor_core"))
+                .define('E', Const.getIngredient("draconicevolution", "creative_capacitor"))
+                .unlockedBy("has_item", has(Const.getItem("draconicevolution", "creative_capacitor")))
+                .save(consumer, Const.rl("de_creative_op_capacitor"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("refinedstorage", "creative_controller"))
+                .conditions(modLoaded("refinedstorage"))
+                .pattern("ABBBCBBBA")
+                .pattern("BDDDCDDDB")
+                .pattern("BDDCCCDDB")
+                .pattern("BDCCFCCDB")
+                .pattern("CCCFAFCCC")
+                .pattern("BECCFCCEB")
+                .pattern("BEECCCEEB")
+                .pattern("BEEECEEEB")
+                .pattern("ABBBCBBBA")
+
+                .define('A', ModItems.infinity_catalyst.get())
+                .define('B', ModItems.neutron_ingot.get())
+                .define('C', Const.getIngredient("refinedstorage", "advanced_processor"))
+                .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
+                .define('E', Const.getIngredient("refinedstorage", "64k_storage_part"))
+                .define('F', ItemTags.create(ResourceLocation.fromNamespaceAndPath("refinedstorage", "controller")))
+                .unlockedBy("has_item", has(ItemTags.create(ResourceLocation.fromNamespaceAndPath("refinedstorage", "controller"))))
+                .save(consumer, Const.rl("rs_creative_controller"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("refinedstorage", "creative_fluid_storage_disk"))
+                .conditions(modLoaded("refinedstorage"))
+                .pattern("CAAABAAAC")
+                .pattern("AAAABAAAA")
+                .pattern("AAAABAAAA")
+                .pattern("AAADCDAAA")
+                .pattern("BBBCDCBBB")
+                .pattern("AAADCDAAA")
+                .pattern("AAAABAAAA")
+                .pattern("AAAABAAAA")
+                .pattern("CAAABAAAC")
+
+                .define('A', ModBlocks.infinity.get())
+                .define('B', ModBlocks.neutron_compressor.get())
+                .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
+                .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
+                .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))
+                .save(consumer, Const.rl("rs_creative_fluid_storage_disk"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("refinedstorage", "creative_storage_disk"))
+                .conditions(modLoaded("refinedstorage"))
+                .pattern("CAAABAAAC")
+                .pattern("AAAABAAAA")
+                .pattern("AAAABAAAA")
+                .pattern("AAADCDAAA")
+                .pattern("BBBCDCBBB")
+                .pattern("AAADCDAAA")
+                .pattern("AAAABAAAA")
+                .pattern("AAAABAAAA")
+                .pattern("CAAABAAAC")
+
+                .define('A', ModBlocks.infinity.get())
+                .define('B', ModBlocks.neutron_compressor.get())
+                .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
+                .define('D', Const.getIngredient("refinedstorage", "64k_storage_part"))
+                .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))
+                .save(consumer, Const.rl("rs_creative_storage_disk"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("refinedstorage", "creative_wireless_grid"))
+                .conditions(modLoaded("refinedstorage"))
+                .pattern("HH     HH")
+                .pattern("H       H")
+                .pattern(" BCCCCCB ")
+                .pattern(" CDDFEEC ")
+                .pattern(" CGFAFGC ")
+                .pattern(" CDDFEEC ")
+                .pattern(" BCCCCCB ")
+                .pattern("H       H")
+                .pattern("HH     HH")
+
+
+                .define('A', ModItems.endest_pearl.get())
+                .define('B', Const.getIngredient("refinedstorage", "range_upgrade"))
+                .define('C', Const.getIngredient("refinedstorage", "wireless_transmitter"))
+                .define('D', Const.getIngredient("refinedstorage", "destruction_core"))
+                .define('E', Const.getIngredient("refinedstorage", "construction_core"))
+                .define('F', Const.getIngredient("refinedstorage", "wireless_grid"))
+                .define('G', Const.getIngredient("refinedstorage", "network_receiver"))
+                .define('H', Const.getIngredient("refinedstorage", "storage_housing"))
+                .unlockedBy("has_item", has(Const.getItem("refinedstorage", "wireless_grid")))
+                .save(consumer, Const.rl("rs_creative_wireless_grid"));
 //
 //        var creative_slot_abilities = new CompoundTag();
 //        creative_slot_abilities.putString("slot", "abilities");
@@ -1732,23 +1725,23 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //                        .unlockedBy("has_item", has(Const.getItem("tconstruct", "ender_slime_crystal")))::save
 //        ).build(consumer, Const.rl("tc3_creative_slot_upgrades"));
 //
-//        ConditionalRecipe.builder().addCondition(modLoaded("storagedrawers")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("storagedrawers", "creative_storage_upgrade"))
-//                        .pattern("    S    ")
-//                        .pattern(" NDDDDDN ")
-//                        .pattern(" DNDDDND ")
-//                        .pattern(" DDNDNDD ")
-//                        .pattern("SDDDEDDDS")
-//                        .pattern(" DDNDNDD ")
-//                        .pattern(" DNDDDND ")
-//                        .pattern(" NDDDDDN ")
-//                        .pattern("    S    ")
-//                        .define('N', ModItems.neutron_nugget.get())
-//                        .define('S', Items.NETHER_STAR)
-//                        .define('D', ModTags.DRAWERS)
-//                        .define('E', Const.getIngredient("storagedrawers", "emerald_storage_upgrade"))
-//                        .unlockedBy("has_item", has(Const.getItem("storagedrawers", "emerald_storage_upgrade")))::save
-//        ).build(consumer, Const.rl("creative_storage_upgrade"));
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("storagedrawers", "creative_storage_upgrade"))
+                .conditions(modLoaded("storagedrawers"))
+                .pattern("    S    ")
+                .pattern(" NDDDDDN ")
+                .pattern(" DNDDDND ")
+                .pattern(" DDNDNDD ")
+                .pattern("SDDDEDDDS")
+                .pattern(" DDNDNDD ")
+                .pattern(" DNDDDND ")
+                .pattern(" NDDDDDN ")
+                .pattern("    S    ")
+                .define('N', ModItems.neutron_nugget.get())
+                .define('S', Items.NETHER_STAR)
+                .define('D', ModTags.DRAWERS)
+                .define('E', Const.getIngredient("storagedrawers", "emerald_storage_upgrade"))
+                .unlockedBy("has_item", has(Const.getItem("storagedrawers", "emerald_storage_upgrade")))
+                .save(consumer, Const.rl("creative_storage_upgrade"));
 //
 //        var creative_energy_cube_main = new CompoundTag();
 //        var energyContainers = new ListTag();
@@ -1784,94 +1777,91 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //                        .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_energy_cube")))::save
 //        ).build(consumer, Const.rl("mek_creative_energy_cube"));
 //
-//        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_fluid_tank"))
-//                        .pattern("         ")
-//                        .pattern(" SAADAAS ")
-//                        .pattern(" ABBCBBA ")
-//                        .pattern(" ABBCBBA ")
-//                        .pattern(" ACCICCA ")
-//                        .pattern(" ABBCBBA ")
-//                        .pattern(" ABBCBBA ")
-//                        .pattern(" SAADAAS ")
-//                        .pattern("         ")
-//
-//                        .define('I', ModItems.infinity_ingot.get())
-//                        .define('S', ModItems.infinity_catalyst.get())
-//                        .define('A', Const.getIngredient("mekanism", "ultimate_fluid_tank"))
-//                        .define('B', Const.getIngredient("mekanism", "dynamic_tank"))
-//                        .define('C', Const.getIngredient("mekanism", "structural_glass"))
-//                        .define('D', Const.getIngredient("mekanism", "dynamic_valve"))
-//                        .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_fluid_tank")))::save
-//        ).build(consumer, Const.rl("mek_creative_fluid_tank"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_chemical_tank"))
-//                        .pattern("   B B   ")
-//                        .pattern(" SAADAAS ")
-//                        .pattern(" ABBBBBA ")
-//                        .pattern(" ABBCBBA ")
-//                        .pattern(" ABCICBA ")
-//                        .pattern(" ABBCBBA ")
-//                        .pattern(" ABBBBBA ")
-//                        .pattern(" SAADAAS ")
-//                        .pattern("         ")
-//
-//                        .define('I', ModItems.infinity_ingot.get())
-//                        .define('S', ModItems.infinity_catalyst.get())
-//                        .define('A', Const.getIngredient("mekanism", "ultimate_chemical_tank"))
-//                        .define('B', Const.getIngredient("mekanism", "dynamic_tank"))
-//                        .define('C', Const.getIngredient("mekanism", "structural_glass"))
-//                        .define('D', Const.getIngredient("mekanism", "dynamic_valve"))
-//                        .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_chemical_tank")))::save
-//        ).build(consumer, Const.rl("mek_creative_chemical_tank"));
-//
-//        ConditionalRecipe.builder()
-//                .addCondition(modLoaded("mekanism"))
-//                .addCondition(modLoaded("mekanismgenerators"))
-//                .addRecipe(
-//                        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_bin"))
-//                                .pattern("AAAAAAAAA")
-//                                .pattern("AEIIIIIEA")
-//                                .pattern("AEIIIIIEA")
-//                                .pattern("AEIIIIIEA")
-//                                .pattern("AEEESEEEA")
-//                                .pattern("AEEEEEEEA")
-//                                .pattern("AEBCDCBEA")
-//                                .pattern("AEBCDCBEA")
-//                                .pattern("AAAAAAAAA")
-//
-//                                .define('I', ModItems.infinity_ingot.get())
-//                                .define('S', ModItems.infinity_catalyst.get())
-//                                .define('A', Const.getIngredient("mekanismgenerators", "fusion_reactor_frame"))
-//                                .define('B', Const.getIngredient("mekanism", "ultimate_energy_cube"))
-//                                .define('C', Const.getIngredient("mekanism", "ultimate_fluid_tank"))
-//                                .define('D', Const.getIngredient("mekanism", "ultimate_chemical_tank"))
-//                                .define('E', Const.getIngredient("mekanism", "ultimate_bin"))
-//                                .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_bin")))::save
-//                ).build(consumer, Const.rl("mek_creative_bin"));
-//
-//        ConditionalRecipe.builder().addCondition(modLoaded("enderio")).addRecipe(
-//                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("enderio", "creative_power"))
-//                        .pattern("INIIIIINI")
-//                        .pattern("NZEEEEEZN")
-//                        .pattern("IECWWWCEI")
-//                        .pattern("IEWZIZWEI")
-//                        .pattern("IEWIVIWEI")
-//                        .pattern("IEWZIZWEI")
-//                        .pattern("IECWWWCEI")
-//                        .pattern("NZEEEEEZN")
-//                        .pattern("INIIIIINI")
-//
-//                        .define('I', ModItems.infinity_ingot.get())
-//                        .define('N', ModItems.neutron_ingot.get())
-//                        .define('W', Const.getIngredient("enderio", "weather_crystal"))
-//                        .define('V', Const.getIngredient("enderio", "vibrant_capacitor_bank"))
-//                        .define('Z', Const.getIngredient("enderio", "frank_n_zombie"))
-//                        .define('E', Const.getIngredient("enderio", "sentient_ender"))
-//                        .define('C', Const.getIngredient("enderio", "ender_crystal"))
-//                        .unlockedBy("has_item", has(ModItems.infinity_ingot.get()))::save
-//        ).build(consumer, Const.rl("eio_creative_power"));
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_fluid_tank"))
+                .conditions(modLoaded("mekanism"))
+                .pattern("         ")
+                .pattern(" SAADAAS ")
+                .pattern(" ABBCBBA ")
+                .pattern(" ABBCBBA ")
+                .pattern(" ACCICCA ")
+                .pattern(" ABBCBBA ")
+                .pattern(" ABBCBBA ")
+                .pattern(" SAADAAS ")
+                .pattern("         ")
+
+                .define('I', ModItems.infinity_ingot.get())
+                .define('S', ModItems.infinity_catalyst.get())
+                .define('A', Const.getIngredient("mekanism", "ultimate_fluid_tank"))
+                .define('B', Const.getIngredient("mekanism", "dynamic_tank"))
+                .define('C', Const.getIngredient("mekanism", "structural_glass"))
+                .define('D', Const.getIngredient("mekanism", "dynamic_valve"))
+                .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_fluid_tank")))
+                .save(consumer, Const.rl("mek_creative_fluid_tank"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_chemical_tank"))
+                .conditions(modLoaded("mekanism"))
+                .pattern("   B B   ")
+                .pattern(" SAADAAS ")
+                .pattern(" ABBBBBA ")
+                .pattern(" ABBCBBA ")
+                .pattern(" ABCICBA ")
+                .pattern(" ABBCBBA ")
+                .pattern(" ABBBBBA ")
+                .pattern(" SAADAAS ")
+                .pattern("         ")
+
+                .define('I', ModItems.infinity_ingot.get())
+                .define('S', ModItems.infinity_catalyst.get())
+                .define('A', Const.getIngredient("mekanism", "ultimate_chemical_tank"))
+                .define('B', Const.getIngredient("mekanism", "dynamic_tank"))
+                .define('C', Const.getIngredient("mekanism", "structural_glass"))
+                .define('D', Const.getIngredient("mekanism", "dynamic_valve"))
+                .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_chemical_tank")))
+                .save(consumer, Const.rl("mek_creative_chemical_tank"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_bin"))
+                .conditions(modLoaded("mekanism"), modLoaded("mekanismgenerators"))
+                .pattern("AAAAAAAAA")
+                .pattern("AEIIIIIEA")
+                .pattern("AEIIIIIEA")
+                .pattern("AEIIIIIEA")
+                .pattern("AEEESEEEA")
+                .pattern("AEEEEEEEA")
+                .pattern("AEBCDCBEA")
+                .pattern("AEBCDCBEA")
+                .pattern("AAAAAAAAA")
+
+                .define('I', ModItems.infinity_ingot.get())
+                .define('S', ModItems.infinity_catalyst.get())
+                .define('A', Const.getIngredient("mekanismgenerators", "fusion_reactor_frame"))
+                .define('B', Const.getIngredient("mekanism", "ultimate_energy_cube"))
+                .define('C', Const.getIngredient("mekanism", "ultimate_fluid_tank"))
+                .define('D', Const.getIngredient("mekanism", "ultimate_chemical_tank"))
+                .define('E', Const.getIngredient("mekanism", "ultimate_bin"))
+                .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_bin")))
+                .save(consumer, Const.rl("mek_creative_bin"));
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("enderio", "creative_power"))
+                .conditions(modLoaded("enderio"))
+                .pattern("INIIIIINI")
+                .pattern("NZEEEEEZN")
+                .pattern("IECWWWCEI")
+                .pattern("IEWZIZWEI")
+                .pattern("IEWIVIWEI")
+                .pattern("IEWZIZWEI")
+                .pattern("IECWWWCEI")
+                .pattern("NZEEEEEZN")
+                .pattern("INIIIIINI")
+
+                .define('I', ModItems.infinity_ingot.get())
+                .define('N', ModItems.neutron_ingot.get())
+                .define('W', Const.getIngredient("enderio", "weather_crystal"))
+                .define('V', Const.getIngredient("enderio", "vibrant_capacitor_bank"))
+                .define('Z', Const.getIngredient("enderio", "frank_n_zombie"))
+                .define('E', Const.getIngredient("enderio", "sentient_ender"))
+                .define('C', Const.getIngredient("enderio", "ender_crystal"))
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get()))
+                .save(consumer, Const.rl("eio_creative_power"));
 
     }
 }

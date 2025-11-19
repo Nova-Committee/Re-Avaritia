@@ -8,40 +8,76 @@
       "item": "minecraft:golden_apple"
     },
     {
-      "item": "minecraft:bread"
-    },
-    {
-      "item": "minecraft:kelp"
-    },
-    {
-      "item": "minecraft:cocoa_beans"
-    },
-    {
-      "item": "minecraft:cake"
+      "item": "minecraft:melon_slice"
     },
     {
       "item": "minecraft:glistering_melon_slice"
     },
     {
-      "item": "minecraft:carrot"
-    },
-    {
-      "item": "minecraft:poisonous_potato"
+      "item": "minecraft:sweet_berries"
     },
     {
       "item": "minecraft:chorus_fruit"
     },
     {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:golden_carrot"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:poisonous_potato"
+    },
+    {
       "item": "minecraft:beetroot"
     },
     {
-      "item": "minecraft:mushroom_stew"
+      "item": "minecraft:kelp"
+    },
+    {
+      "item": "minecraft:nether_wart"
+    },
+    {
+      "item": "minecraft:cocoa_beans"
+    },
+    {
+      "item": "minecraft:pitcher_pod"
     },
     {
       "item": "minecraft:honey_bottle"
     },
     {
-      "item": "minecraft:sweet_berries"
+      "item": "minecraft:cactus"
+    },
+    {
+      "item": "minecraft:bamboo"
+    },
+    {
+      "item": "minecraft:sugar_cane"
+    },
+    {
+      "item": "minecraft:sea_pickle"
+    },
+    {
+      "item": "minecraft:brown_mushroom"
+    },
+    {
+      "item": "minecraft:red_mushroom"
+    },
+    {
+      "item": "minecraft:crimson_fungus"
+    },
+    {
+      "item": "minecraft:warped_fungus"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:pumpkin"
     },
     {
       "item": "avaritia:neutron_nugget"

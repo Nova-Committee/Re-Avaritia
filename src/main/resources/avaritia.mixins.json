@@ -6,7 +6,9 @@
   "mixins": [
     "EnchantmentHelperMixin",
     "ItemMixin",
+    "ItemStackMixin",
     "NetherWartBlockMixin",
+    "PlayerMixin",
     "RecipeManagerMixin",
     "ReloadableServerResourcesMixin"
   ],

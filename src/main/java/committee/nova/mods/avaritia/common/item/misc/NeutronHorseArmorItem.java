@@ -41,7 +41,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
                         .rarity(ModRarities.RARE)
                         .fireResistant()
                         .setNoRepair());
-        this.FROST_WALKER = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
+        this.FROST_WALKER = new InitEnchantment(Enchantments.FROST_WALKER, 10);
         this.ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
         this.FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
     }

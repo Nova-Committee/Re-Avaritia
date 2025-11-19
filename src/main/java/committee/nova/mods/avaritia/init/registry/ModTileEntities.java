@@ -44,7 +44,7 @@ public class ModTileEntities {
             }
     );
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<NeutronCompressorTile>> neutron_compressor_tile = blockEntity(
-            "compressor_tile",
+            "neutron_compressor_tile",
             (NeutronCompressorTile::new),
             () -> new Block[]{
                     ModBlocks.neutron_compressor.get(),

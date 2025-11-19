@@ -5,10 +5,10 @@
       "item": "minecraft:golden_carrot"
     },
     {
-      "item": "minecraft:dragon_egg"
+      "item": "avaritia:enhancement_core"
     },
     {
-      "item": "avaritia:enhancement_core"
+      "item": "minecraft:dragon_egg"
     }
   ],
   "base": {

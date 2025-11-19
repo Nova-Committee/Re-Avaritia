@@ -1,37 +1,37 @@
 package committee.nova.mods.avaritia.init.data.provider.recipe;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import committee.nova.mods.avaritia.common.crafting.recipe.FullMatterClusterRecipe;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ModMatterClusterRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final Item result;
     private final int count;
-    private final List<Ingredient> ingredients = Lists.newArrayList();
-    private final Advancement.Builder advancement = Advancement.Builder.advancement();
+    private final NonNullList<Ingredient> ingredients = NonNullList.create();
+    private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     @Nullable
     private String group;
+    private ICondition[] conditions;
 
     public ModMatterClusterRecipeBuilder(RecipeCategory category, ItemLike result, int count) {
         this.category = category;
@@ -65,9 +65,14 @@ public class ModMatterClusterRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
+    public @NotNull ModMatterClusterRecipeBuilder conditions(@Nullable ICondition... conditions) {
+        this.conditions = conditions;
+        return this;
+    }
+
     @Override
-    public @NotNull ModMatterClusterRecipeBuilder unlockedBy(@NotNull String criterionName, @NotNull CriterionTriggerInstance criterion) {
-        this.advancement.addCriterion(criterionName, criterion);
+    public @NotNull ModMatterClusterRecipeBuilder unlockedBy(@NotNull String criterionName, @NotNull Criterion<?> criterion) {
+        this.criteria.put(criterionName, criterion);
         return this;
     }
 
@@ -83,97 +88,29 @@ public class ModMatterClusterRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(@NotNull Consumer<FinishedRecipe> consumer, @NotNull ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, @NotNull ResourceLocation id) {
         this.ensureValid(id);
-        this.advancement.parent(ROOT_RECIPE_ADVANCEMENT)
+        Advancement.Builder advancement$builder = recipeOutput.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
                 .rewards(AdvancementRewards.Builder.recipe(id))
-                .requirements(RequirementsStrategy.OR);
+                .requirements(AdvancementRequirements.Strategy.OR);
+        this.criteria.forEach(advancement$builder::addCriterion);
 
-        consumer.accept(new Result(
-                id,
-                this.group == null ? "" : this.group,
-                determineBookCategory(this.category),
+
+        FullMatterClusterRecipe shapedrecipe = new FullMatterClusterRecipe(
+                this.group,
                 this.ingredients,
-                this.result,
-                this.count,
-                this.advancement,
-                id.withPrefix("recipes/" + this.category.getFolderName() + "/") // 关键：用RecipeCategory获取路径
-        ));
+                this.count
+        );
+        var advancement = advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/"));
+        if (this.conditions != null) {
+            recipeOutput.accept(id, shapedrecipe, advancement, this.conditions);
+        } else recipeOutput.accept(id, shapedrecipe, advancement);
     }
 
     private void ensureValid(ResourceLocation id) {
-        if (this.advancement.getCriteria().isEmpty()) {
+        if (this.criteria.isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + id);
-        }
-    }
-
-    public static class Result extends CraftingRecipeBuilder.CraftingResult {
-        private final ResourceLocation id;
-        private final String group;
-        private final List<Ingredient> ingredients;
-        private final Item result;
-        private final int count;
-        private final Advancement.Builder advancement;
-        private final ResourceLocation advancementId;
-
-        public Result(ResourceLocation id, String group, CraftingBookCategory bookCategory,
-                      List<Ingredient> ingredients, Item result, int count,
-                      Advancement.Builder advancement, ResourceLocation advancementId) {
-            super(bookCategory);
-            this.id = id;
-            this.group = group;
-            this.ingredients = ingredients;
-            this.result = result;
-            this.count = count;
-            this.advancement = advancement;
-            this.advancementId = advancementId;
-        }
-
-        @Override
-        public void serializeRecipeData(@NotNull JsonObject json) {
-            super.serializeRecipeData(json);
-
-            json.addProperty("type", "avaritia:full_matter_cluster");
-
-            if (!this.group.isEmpty()) {
-                json.addProperty("group", this.group);
-            }
-
-            JsonArray ingredients = new JsonArray();
-            for (Ingredient ingredient : this.ingredients) {
-                ingredients.add(ingredient.toJson());
-            }
-            json.add("ingredients", ingredients);
-
-            json.addProperty("count", this.count);
-            JsonObject resultObj = new JsonObject();
-            resultObj.addProperty("item", new ResourceLocation(
-                    "avaritia", "full_matter_cluster"
-            ).toString());
-            json.add("result", resultObj);
-        }
-
-        @Override
-        public @NotNull RecipeSerializer<?> getType() {
-            return ModRecipeSerializers.FULL_MATTER_CLUSTER_SERIALIZER.get();
-        }
-
-        @Override
-        public @NotNull ResourceLocation getId() {
-            return this.id;
-        }
-
-        @Nullable
-        @Override
-        public JsonObject serializeAdvancement() {
-            return this.advancement.serializeToJson();
-        }
-
-        @Nullable
-        @Override
-        public ResourceLocation getAdvancementId() {
-            return this.advancementId;
         }
     }
 }

@@ -10,7 +10,6 @@ import committee.nova.mods.avaritia.common.item.tools.infinity.InfinitySwordItem
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
-import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;

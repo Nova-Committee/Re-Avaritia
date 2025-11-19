@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.client.shader;
 
 import com.mojang.blaze3d.shaders.AbstractUniform;
-import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import committee.nova.mods.avaritia.Const;
 import net.minecraft.client.renderer.ShaderInstance;

@@ -1,31 +1,5 @@
 {
   "type": "avaritia:infinity_catalyst",
-  "count": 1,
   "group": "eternal_singularity",
-  "ingredients": [
-    {
-      "item": "minecraft:emerald_block"
-    },
-    {
-      "item": "avaritia:crystal_matrix_ingot"
-    },
-    {
-      "item": "avaritia:neutron_ingot"
-    },
-    {
-      "item": "avaritia:cosmic_meatballs"
-    },
-    {
-      "item": "avaritia:ultimate_stew"
-    },
-    {
-      "item": "avaritia:endest_pearl"
-    },
-    {
-      "item": "avaritia:record_fragment"
-    },
-    {
-      "item": "avaritia:eternal_singularity"
-    }
-  ]
+  "ingredients": []
 }

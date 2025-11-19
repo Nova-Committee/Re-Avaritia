@@ -8,9 +8,11 @@
   "type": "avaritia:shaped_table",
   "key": {
     "C": {
+      "type": "avaritia:nbt_item",
       "item": "enderio:ender_crystal"
     },
     "E": {
+      "type": "avaritia:nbt_item",
       "item": "enderio:sentient_ender"
     },
     "I": {
@@ -20,12 +22,15 @@
       "item": "avaritia:neutron_ingot"
     },
     "V": {
+      "type": "avaritia:nbt_item",
       "item": "enderio:vibrant_capacitor_bank"
     },
     "W": {
+      "type": "avaritia:nbt_item",
       "item": "enderio:weather_crystal"
     },
     "Z": {
+      "type": "avaritia:nbt_item",
       "item": "enderio:frank_n_zombie"
     }
   },

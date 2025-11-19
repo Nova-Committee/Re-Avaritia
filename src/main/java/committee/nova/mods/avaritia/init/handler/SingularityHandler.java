@@ -6,9 +6,6 @@ import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
-import committee.nova.mods.avaritia.core.singularity.SingularityRuntimeEvent;
-import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 

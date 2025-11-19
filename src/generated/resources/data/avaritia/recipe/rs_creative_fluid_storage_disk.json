@@ -14,10 +14,12 @@
       "item": "avaritia:neutron_compressor"
     },
     "C": {
+      "type": "avaritia:nbt_item",
       "item": "refinedstorage:creative_controller"
     },
     "D": {
-      "item": "refinedstorage:4096b_fluid_storage_part"
+      "type": "avaritia:nbt_item",
+      "item": "refinedstorage:4096k_fluid_storage_part"
     }
   },
   "pattern": [

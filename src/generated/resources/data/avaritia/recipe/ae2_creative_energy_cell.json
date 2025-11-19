@@ -8,21 +8,26 @@
   "type": "avaritia:shaped_table",
   "key": {
     "A": {
+      "type": "avaritia:nbt_item",
       "item": "ae2:vibration_chamber"
     },
     "B": {
+      "type": "avaritia:nbt_item",
       "item": "ae2:calculation_processor"
     },
     "C": {
       "item": "avaritia:infinity_ingot"
     },
     "D": {
+      "type": "avaritia:nbt_item",
       "item": "ae2:cell_component_256k"
     },
     "X": {
+      "type": "avaritia:nbt_item",
       "item": "ae2:singularity"
     },
     "Y": {
+      "type": "avaritia:nbt_item",
       "item": "ae2:dense_energy_cell"
     }
   },

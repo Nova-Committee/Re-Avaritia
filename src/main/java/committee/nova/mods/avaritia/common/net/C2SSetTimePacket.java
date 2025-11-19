@@ -1,17 +1,11 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.iface.ITileIO;
-import committee.nova.mods.avaritia.core.io.SideConfiguration;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;

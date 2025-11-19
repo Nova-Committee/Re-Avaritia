@@ -97,7 +97,6 @@ public class ModBlocks {
     public static DeferredBlock<Block> dense_neutron_compressor = itemBlock("dense_neutron_compressor", NeutronCompressorBlock::new , ModRarities.EPIC);
     public static DeferredBlock<Block> denser_neutron_compressor = itemBlock("denser_neutron_compressor", NeutronCompressorBlock::new, ModRarities.LEGEND.getValue());
     public static DeferredBlock<Block> densest_neutron_compressor = itemBlock("densest_neutron_compressor", NeutronCompressorBlock::new, ModRarities.COSMIC.getValue());
-
     public static DeferredBlock<Block> extreme_smithing_table = itemBlock("extreme_smithing_table", ExtremeSmithingTableBlock::new, ModRarities.LEGEND.getValue());
 
     public static DeferredBlock<Block> extreme_anvil = itemBlock("extreme_anvil", ExtremeAnvilBlock::new, ModRarities.LEGEND.getValue());

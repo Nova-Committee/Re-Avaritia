@@ -11,6 +11,7 @@
       "tag": "storagedrawers:drawers"
     },
     "E": {
+      "type": "avaritia:nbt_item",
       "item": "storagedrawers:emerald_storage_upgrade"
     },
     "N": {

@@ -77,10 +77,8 @@ repositories {
     maven { url = "https://www.jitpack.io" }
     maven { url = "https://maven.terraformersmc.com/" }
     maven { url = "https://maven.rover656.dev/releases" }
-    maven {
-        name = 'Twilight Forest'
-        url = 'https://modmaven.dev/'
-    }
+    maven { url = "https://modmaven.dev/" }
+    maven { url = "https://maven.creeperhost.net/release" }
     maven {
         url = "https://www.cursemaven.com"
         content {
@@ -101,6 +99,12 @@ repositories {
             includeGroup "com.github.rtyley"
         }
     }
+    maven {
+        url = "https://nexus.covers1624.net/repository/maven-releases/"
+        content {
+            includeGroup "com.brandon3055.draconicevolution"
+        }
+    }
 }
 
 dependencies {
@@ -113,20 +117,20 @@ dependencies {
     runtimeOnly ("curse.maven:caelus-308989:${caelus_version}")
 
     implementation ("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
-    //implementation ("dev.latvian.mods:rhino-neoforge:${rhino_version}")
-    //implementation ("dev.architectury:architectury-neoforge:${architectury_version}")
+    implementation ("io.codechicken:CodeChickenLib:${ccl_version}")
+    implementation ("com.brandon3055.brandonscore:BrandonsCore:${bdc_version}")
+    implementation ("com.brandon3055.draconicevolution:Draconic-Evolution:${de_version}")
+    implementation ("mekanism:Mekanism:${mek_version}")
+    implementation ("mekanism:Mekanism:${mek_version}:generators")
+    implementation ("org.appliedenergistics:guideme:${gd_version}")
+    implementation ("org.appliedenergistics:appliedenergistics2:${ae2_version}")
+    implementation ("com.enderio:enderio-machines:${eio_version}")
+    implementation ("com.enderio:enderio-base:${eio_version}")
 
     implementation ("curse.maven:charm-of-undying-316873:${cou_version}")
     implementation ("curse.maven:projecte-226410:${projecte_version}")
-    implementation ("curse.maven:mekanism-268560:${mek_version}")
-    implementation "curse.maven:mekanism-generators-268566:${mek_generators_version}"
-    implementation ("curse.maven:guideme-1173950:${gd_version}")
-    implementation ("curse.maven:applied-energistics-2-223794:${ae2_version}")
-    implementation ("curse.maven:refined-storage-243076:${rs_version}")
     implementation ("curse.maven:storage-drawers-223852:${sd_version}")
-    compileOnly ("com.enderio:enderio-machines:7.1.8-alpha")
-
-    runtimeOnly ("curse.maven:ender-io-64578:${eio_version}")
+    implementation ("curse.maven:refined-storage-243076:${rs_version}")
 
     compileOnly ("org.projectlombok:lombok:$lombok_version")
     annotationProcessor ("org.projectlombok:lombok:$lombok_version")

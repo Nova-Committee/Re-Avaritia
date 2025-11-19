@@ -10,15 +10,15 @@
   },
   "pattern": [
     "       ",
+    "       ",
     "   a   ",
-    "  aaa  ",
-    " aabaa ",
-    "  aaa  ",
+    "  aba  ",
     "   a   ",
+    "       ",
     "       "
   ],
   "result": {
-    "count": 1,
+    "count": 4,
     "id": "avaritia:record_fragment"
   },
   "tier": 3

@@ -1,6 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "type": "avaritia:shaped_table",
   "key": {
     "x": {
       "item": "avaritia:diamond_lattice"
@@ -16,5 +15,6 @@
   "result": {
     "count": 1,
     "id": "avaritia:crystal_matrix_ingot"
-  }
+  },
+  "tier": 1
 }

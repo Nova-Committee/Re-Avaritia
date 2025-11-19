@@ -1,13 +1,10 @@
 package committee.nova.mods.avaritia.core.singularity;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import dev.latvian.mods.rhino.Context;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;

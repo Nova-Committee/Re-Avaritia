@@ -14,12 +14,15 @@
       "item": "avaritia:neutron_ingot"
     },
     "C": {
+      "type": "avaritia:nbt_item",
       "item": "refinedstorage:advanced_processor"
     },
     "D": {
-      "item": "refinedstorage:4096b_fluid_storage_part"
+      "type": "avaritia:nbt_item",
+      "item": "refinedstorage:4096k_fluid_storage_part"
     },
     "E": {
+      "type": "avaritia:nbt_item",
       "item": "refinedstorage:64k_storage_part"
     },
     "F": {

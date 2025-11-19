@@ -2,8 +2,11 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import net.minecraft.core.Cloner;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
@@ -20,7 +23,8 @@ import java.util.concurrent.CompletableFuture;
 public class ModRegistries extends DatapackBuiltinEntriesProvider {
 
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap)
+            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
+
 //            .add(Registries.BIOME, ModBiomes::bootstrap)
 //            .add(Registries.CONFIGURED_FEATURE, ModConfiguredFeatures::bootstrap)
 //            .add(Registries.CONFIGURED_CARVER, ModConfiguredCarvers::bootstrap)
@@ -36,6 +40,10 @@ public class ModRegistries extends DatapackBuiltinEntriesProvider {
 //            .add(Registries.ENCHANTMENT, ModEnchantments::bootstrap)
 //            .add(Registries.JUKEBOX_SONG, ModJukeboxSongs::bootstrap)
             ;
+
+    public static HolderLookup.Provider append(HolderLookup.Provider original) {
+        return BUILDER.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), original, new Cloner.Factory()).patches();
+    }
 
     public ModRegistries(PackOutput output, CompletableFuture<HolderLookup.Provider> future) {
         super(output, future, BUILDER, Set.of("minecraft", Const.MOD_ID));

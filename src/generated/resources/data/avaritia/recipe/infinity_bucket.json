@@ -5,10 +5,10 @@
       "item": "minecraft:lava_bucket"
     },
     {
-      "item": "minecraft:powder_snow_bucket"
+      "item": "avaritia:enhancement_core"
     },
     {
-      "item": "avaritia:enhancement_core"
+      "item": "minecraft:powder_snow_bucket"
     }
   ],
   "base": {
