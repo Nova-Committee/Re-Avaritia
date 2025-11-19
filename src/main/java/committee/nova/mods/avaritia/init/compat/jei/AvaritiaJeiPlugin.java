@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
@@ -19,6 +20,7 @@ import committee.nova.mods.avaritia.init.compat.jei.category.tables.EndCraftingT
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.ExtremeCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.NetherCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.SculkCraftingTableCategory;
+import committee.nova.mods.avaritia.init.compat.jei.handler.JeiContainerHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -124,6 +126,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(ExtremeCraftScreen.class, 174, 90, 22, 12, ExtremeCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeSmithingScreen.class, 86, 40, 22, 12, ExtremeSmithingRecipeCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeAnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
+        registration.addGenericGuiContainerHandler(BaseContainerScreen.class, new JeiContainerHandler());
     }
 
     @Override
