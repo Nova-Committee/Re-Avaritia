@@ -1,0 +1,24 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": [
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "avaritia:enhancement_core"
+    },
+    {
+      "item": "avaritia:eternal_singularity"
+    }
+  ],
+  "base": {
+    "item": "minecraft:clock"
+  },
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_clock"
+  },
+  "template": {
+    "item": "avaritia:upgrade_smithing_template"
+  }
+}

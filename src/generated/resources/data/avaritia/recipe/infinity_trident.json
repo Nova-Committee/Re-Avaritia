@@ -1,0 +1,39 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:crystal_matrix"
+    },
+    "C": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "I": {
+      "item": "avaritia:infinity_ingot"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "P": {
+      "item": "minecraft:heart_of_the_sea"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    }
+  },
+  "pattern": [
+    "     I  I",
+    "    I  I ",
+    "   CAAI  ",
+    "    AXA I",
+    "    PAAI ",
+    "   N  C  ",
+    "  N      ",
+    " C       ",
+    "A        "
+  ],
+  "result": {
+    "count": 1,
+    "id": "avaritia:infinity_trident"
+  },
+  "tier": 4
+}

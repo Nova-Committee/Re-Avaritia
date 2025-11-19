@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "forge:ingots/invar"
+      }
+    }
+  ],
+  "colors": [
+    "bcc5bb",
+    "5d7877"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/invar"
+  },
+  "name": "singularity.avaritia.invar",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}

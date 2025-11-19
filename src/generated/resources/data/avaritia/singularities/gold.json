@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "fdf55f",
+    "d98e04"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:gold_ingot"
+  },
+  "name": "singularity.avaritia.gold",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}

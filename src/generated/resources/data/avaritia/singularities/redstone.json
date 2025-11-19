@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "ff0000",
+    "8a0901"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:redstone"
+  },
+  "name": "singularity.avaritia.redstone",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}

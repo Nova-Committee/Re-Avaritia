@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "forge:ingots/nickel"
+      }
+    }
+  ],
+  "colors": [
+    "e1d798",
+    "b1976c"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/nickel"
+  },
+  "name": "singularity.avaritia.nickel",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}

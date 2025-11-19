@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "forge:ingots/refined_obsidian"
+      }
+    }
+  ],
+  "colors": [
+    "a9a1b8",
+    "8d78b7"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/refined_obsidian"
+  },
+  "name": "singularity.avaritia.refined_obsidian",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}

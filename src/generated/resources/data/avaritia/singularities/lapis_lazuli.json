@@ -1,0 +1,13 @@
+{
+  "colors": [
+    "678dea",
+    "1b53a7"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "name": "singularity.avaritia.lapis_lazuli",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}

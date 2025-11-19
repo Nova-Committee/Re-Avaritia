@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "forge:ingots/steel"
+      }
+    }
+  ],
+  "colors": [
+    "565656",
+    "232323"
+  ],
+  "enabled": true,
+  "ingredient": {
+    "tag": "forge:ingots/steel"
+  },
+  "name": "singularity.avaritia.steel",
+  "recipeEnabled": true,
+  "timeRequired": 240
+}
