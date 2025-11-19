@@ -26,7 +26,7 @@ public class SideConfigButton extends ImageButton {
         super(pX, pY, 20, 24, new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX), pButton -> {
             if (parentScreen.getMinecraft().player != null) {
                 var level = parentScreen.getMinecraft().level;
-                if (level != null && parentScreen.getMenu() instanceof BaseTileMenu menu) {
+                if (level != null && parentScreen.getMenu() instanceof BaseTileMenu<?> menu) {
                     var tile = level.getBlockEntity(menu.getBlockPos());
                     if (tile instanceof ITileIO tileIO) {
                         var sideConfig = tileIO.getSideConfiguration();

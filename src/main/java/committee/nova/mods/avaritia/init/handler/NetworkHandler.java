@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -49,6 +50,8 @@ public class NetworkHandler {
                 new C2SInfinityChestActionPack.Handler());
         registrar.playToServer(C2SInfinityChestFilterPack.TYPE, C2SInfinityChestFilterPack.STREAM_CODEC,
                 new C2SInfinityChestFilterPack.Handler());
+
+        registrar.playBidirectional(NbtDataPack.TYPE, NbtDataPack.STREAM_CODEC, new NbtDataPack.Handler());
         //CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
         //CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 //        CHANNEL.registerMessage(id++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
@@ -62,9 +65,9 @@ public class NetworkHandler {
     }
 
 
-//    public static void sendNbtDataToServer(CompoundTag tag) {
-//        CHANNEL.sendToServer(new NbtDataPack(tag));
-//    }
+    public static void sendNbtDataToServer(CompoundTag tag) {
+        PacketDistributor.sendToServer(new NbtDataPack(tag));
+    }
 
     public static void sendCompressorLockPacket(BlockPos pos, boolean locked) {
         PacketDistributor.sendToServer(new C2SCompressorLockPacket(pos, locked));

@@ -128,7 +128,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
-        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.singularity.get(), (stack, context) -> {
+        registration.registerSubtypeInterpreter(ModItems.singularity.get(), (stack, context) -> {
             var singularity = SingularityUtils.getSingularity(stack);
             return singularity != null ? singularity.getRegistryName().toString() : "";
         });

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class NeutronCollectorBlock extends BaseTileEntityBlock {
-    private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public NeutronCollectorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50f, 2000f);

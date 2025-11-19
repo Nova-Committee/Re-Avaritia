@@ -154,8 +154,7 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void onItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(new IColored.ItemColors(), ModItems.singularity.get());
-        event.register(
-                (stack, index) -> getCurrentRainbowColor(),
+        event.register((stack, index) -> getCurrentRainbowColor(),
                 ModItems.eternal_singularity.get()
         );
     }
