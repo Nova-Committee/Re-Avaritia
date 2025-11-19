@@ -99,8 +99,8 @@ public class InfinityArmorItem extends ArmorItem {
         return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
-    @Override
-    public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
-        return Const.rl("textures/models/infinity_armor.png");
-    }
+//    @Override
+//    public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
+//        return Const.rl("textures/models/infinity_armor.png");
+//    }
 }

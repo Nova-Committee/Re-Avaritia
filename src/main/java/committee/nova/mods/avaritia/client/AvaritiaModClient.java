@@ -181,8 +181,8 @@ public class AvaritiaModClient {
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers event) {
         EntityRenderer<?> entityRenderer = event.getRenderer(EntityType.PLAYER);
         if (entityRenderer instanceof PlayerRenderer playerRenderer) {
-            if (playerRenderer.getModel() instanceof HumanoidModel) {
-                playerRenderer.addLayer(new InfinityArmorRender(playerRenderer, event.getEntityModels(), false));
+            if (playerRenderer.getModel() instanceof HumanoidModel model) {
+                playerRenderer.addLayer(new InfinityArmorRender(playerRenderer, event.getEntityModels(), model.equals(PlayerSkin.Model.SLIM.name())));
             }
         }
 
