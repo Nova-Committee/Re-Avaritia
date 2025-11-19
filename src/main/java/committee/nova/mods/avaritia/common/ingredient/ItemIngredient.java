@@ -35,12 +35,12 @@ public record ItemIngredient(ResourceLocation item) implements ICustomIngredient
 
     @Override
     public @NotNull Stream<ItemStack> getItems() {
-        return Stream.of(new ItemStack(BuiltInRegistries.ITEM.get(this.item)));
+        return Stream.of(BuiltInRegistries.ITEM.containsKey(this.item) ? new ItemStack(BuiltInRegistries.ITEM.get(this.item)) : ItemStack.EMPTY);
     }
 
     @Override
     public boolean isSimple() {
-        return true;
+        return false;
     }
 
     @Override

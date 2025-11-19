@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import committee.nova.mods.avaritia.init.registry.ModTags;
+import committee.nova.mods.avaritia.init.registry.enums.Mods;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -1430,12 +1431,12 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .pattern("YCACXCACY")
                 .pattern("YYYYXYYYY")
 
-                .define('A', Const.getIngredient("ae2", "vibration_chamber"))
-                .define('B', Const.getIngredient("ae2", "calculation_processor"))
+                .define('A', Const.getIngredient(Mods.AE2, "vibration_chamber"))
+                .define('B', Const.getIngredient(Mods.AE2, "calculation_processor"))
                 .define('C', ModItems.infinity_ingot.get())
-                .define('D', Const.getIngredient("ae2", "cell_component_256k"))
-                .define('Y', Const.getIngredient("ae2", "dense_energy_cell"))
-                .define('X', Const.getIngredient("ae2", "singularity"))
+                .define('D', Const.getIngredient(Mods.AE2, "cell_component_256k"))
+                .define('Y', Const.getIngredient(Mods.AE2, "dense_energy_cell"))
+                .define('X', Const.getIngredient(Mods.AE2, "singularity"))
                 .unlockedBy("has_item", has(Const.getItem("ae2", "dense_energy_cell"))).save(consumer, Const.rl("ae2_creative_energy_cell"));
 
 //
@@ -1513,11 +1514,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .pattern("AAAACAAAA")
 
                 .define('A', ModItems.infinity_ingot.get())
-                .define('B', Const.getIngredient("draconicevolution", "chaotic_crafting_injector"))
-                .define('C', Const.getIngredient("draconicevolution", "reactor_stabilizer"))
-                .define('D', Const.getIngredient("draconicevolution", "reactor_core"))
-                .define('E', Const.getIngredient("draconicevolution", "chaotic_core"))
-                .define('F', Const.getIngredient("draconicevolution", "chaotic_capacitor"))
+                .define('B', Const.getIngredient(Mods.DE,  "chaotic_crafting_injector"))
+                .define('C', Const.getIngredient(Mods.DE,  "reactor_stabilizer"))
+                .define('D', Const.getIngredient(Mods.DE,  "reactor_core"))
+                .define('E', Const.getIngredient(Mods.DE,  "chaotic_core"))
+                .define('F', Const.getIngredient(Mods.DE,  "chaotic_capacitor"))
                 .unlockedBy("has_item", has(Const.getItem("draconicevolution", "chaotic_capacitor")))
                 .save(consumer, Const.rl("de_creative_capacitor"));
 
@@ -1535,10 +1536,10 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('A', ModItems.infinity_ingot.get())
                 .define('B', ModBlocks.infinity.get())
-                .define('C', Const.getIngredient("draconicevolution", "reactor_stabilizer"))
-                .define('D', Const.getIngredient("draconicevolution", "reactor_core"))
-                .define('E', Const.getIngredient("draconicevolution", "creative_capacitor"))
-                .unlockedBy("has_item", has(Const.getItem("draconicevolution", "creative_capacitor")))
+                .define('C', Const.getIngredient(Mods.DE, "reactor_stabilizer"))
+                .define('D', Const.getIngredient(Mods.DE, "reactor_core"))
+                .define('E', Const.getIngredient(Mods.DE, "creative_capacitor"))
+                .unlockedBy("has_item", has(Const.getItem(Mods.DE.getId(), "creative_capacitor")))
                 .save(consumer, Const.rl("de_creative_op_capacitor"));
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.fromNamespaceAndPath("refinedstorage", "creative_controller"))
@@ -1555,9 +1556,9 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('A', ModItems.infinity_catalyst.get())
                 .define('B', ModItems.neutron_ingot.get())
-                .define('C', Const.getIngredient("refinedstorage", "advanced_processor"))
-                .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
-                .define('E', Const.getIngredient("refinedstorage", "64k_storage_part"))
+                .define('C', Const.getIngredient(Mods.RS, "advanced_processor"))
+                .define('D', Const.getIngredient(Mods.RS, "4096k_fluid_storage_part"))
+                .define('E', Const.getIngredient(Mods.RS, "64k_storage_part"))
                 .define('F', ItemTags.create(ResourceLocation.fromNamespaceAndPath("refinedstorage", "controller")))
                 .unlockedBy("has_item", has(ItemTags.create(ResourceLocation.fromNamespaceAndPath("refinedstorage", "controller"))))
                 .save(consumer, Const.rl("rs_creative_controller"));
@@ -1576,8 +1577,8 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('A', ModBlocks.infinity.get())
                 .define('B', ModBlocks.neutron_compressor.get())
-                .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
-                .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
+                .define('C', Const.getIngredient(Mods.RS, "creative_controller"))
+                .define('D', Const.getIngredient(Mods.RS, "4096k_fluid_storage_part"))
                 .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))
                 .save(consumer, Const.rl("rs_creative_fluid_storage_disk"));
 
@@ -1595,8 +1596,8 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('A', ModBlocks.infinity.get())
                 .define('B', ModBlocks.neutron_compressor.get())
-                .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
-                .define('D', Const.getIngredient("refinedstorage", "64k_storage_part"))
+                .define('C', Const.getIngredient(Mods.RS, "creative_controller"))
+                .define('D', Const.getIngredient(Mods.RS, "64k_storage_part"))
                 .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))
                 .save(consumer, Const.rl("rs_creative_storage_disk"));
 
@@ -1614,13 +1615,13 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
 
                 .define('A', ModItems.endest_pearl.get())
-                .define('B', Const.getIngredient("refinedstorage", "range_upgrade"))
-                .define('C', Const.getIngredient("refinedstorage", "wireless_transmitter"))
-                .define('D', Const.getIngredient("refinedstorage", "destruction_core"))
-                .define('E', Const.getIngredient("refinedstorage", "construction_core"))
-                .define('F', Const.getIngredient("refinedstorage", "wireless_grid"))
-                .define('G', Const.getIngredient("refinedstorage", "network_receiver"))
-                .define('H', Const.getIngredient("refinedstorage", "storage_housing"))
+                .define('B', Const.getIngredient(Mods.RS, "range_upgrade"))
+                .define('C', Const.getIngredient(Mods.RS, "wireless_transmitter"))
+                .define('D', Const.getIngredient(Mods.RS, "destruction_core"))
+                .define('E', Const.getIngredient(Mods.RS, "construction_core"))
+                .define('F', Const.getIngredient(Mods.RS, "wireless_grid"))
+                .define('G', Const.getIngredient(Mods.RS, "network_receiver"))
+                .define('H', Const.getIngredient(Mods.RS, "storage_housing"))
                 .unlockedBy("has_item", has(Const.getItem("refinedstorage", "wireless_grid")))
                 .save(consumer, Const.rl("rs_creative_wireless_grid"));
 //
@@ -1739,7 +1740,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('N', ModItems.neutron_nugget.get())
                 .define('S', Items.NETHER_STAR)
                 .define('D', ModTags.DRAWERS)
-                .define('E', Const.getIngredient("storagedrawers", "emerald_storage_upgrade"))
+                .define('E', Const.getIngredient(Mods.SD, "emerald_storage_upgrade"))
                 .unlockedBy("has_item", has(Const.getItem("storagedrawers", "emerald_storage_upgrade")))
                 .save(consumer, Const.rl("creative_storage_upgrade"));
 //
@@ -1769,11 +1770,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //
 //                        .define('I', ModItems.infinity_ingot.get())
 //                        .define('S', ModItems.infinity_catalyst.get())
-//                        .define('A', Const.getIngredient("mekanism", "ultimate_energy_cube"))
-//                        .define('B', Const.getIngredient("mekanism", "induction_casing"))
-//                        .define('C', Const.getIngredient("mekanism", "induction_port"))
-//                        .define('D', Const.getIngredient("mekanism", "ultimate_induction_cell"))
-//                        .define('E', Const.getIngredient("mekanism", "ultimate_induction_provider"))
+//                        .define('A', Const.getIngredient(Mods.MEK, "ultimate_energy_cube"))
+//                        .define('B', Const.getIngredient(Mods.MEK, "induction_casing"))
+//                        .define('C', Const.getIngredient(Mods.MEK, "induction_port"))
+//                        .define('D', Const.getIngredient(Mods.MEK, "ultimate_induction_cell"))
+//                        .define('E', Const.getIngredient(Mods.MEK, "ultimate_induction_provider"))
 //                        .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_energy_cube")))::save
 //        ).build(consumer, Const.rl("mek_creative_energy_cube"));
 //
@@ -1791,10 +1792,10 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('I', ModItems.infinity_ingot.get())
                 .define('S', ModItems.infinity_catalyst.get())
-                .define('A', Const.getIngredient("mekanism", "ultimate_fluid_tank"))
-                .define('B', Const.getIngredient("mekanism", "dynamic_tank"))
-                .define('C', Const.getIngredient("mekanism", "structural_glass"))
-                .define('D', Const.getIngredient("mekanism", "dynamic_valve"))
+                .define('A', Const.getIngredient(Mods.MEK, "ultimate_fluid_tank"))
+                .define('B', Const.getIngredient(Mods.MEK, "dynamic_tank"))
+                .define('C', Const.getIngredient(Mods.MEK, "structural_glass"))
+                .define('D', Const.getIngredient(Mods.MEK, "dynamic_valve"))
                 .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_fluid_tank")))
                 .save(consumer, Const.rl("mek_creative_fluid_tank"));
 
@@ -1812,10 +1813,10 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('I', ModItems.infinity_ingot.get())
                 .define('S', ModItems.infinity_catalyst.get())
-                .define('A', Const.getIngredient("mekanism", "ultimate_chemical_tank"))
-                .define('B', Const.getIngredient("mekanism", "dynamic_tank"))
-                .define('C', Const.getIngredient("mekanism", "structural_glass"))
-                .define('D', Const.getIngredient("mekanism", "dynamic_valve"))
+                .define('A', Const.getIngredient(Mods.MEK, "ultimate_chemical_tank"))
+                .define('B', Const.getIngredient(Mods.MEK, "dynamic_tank"))
+                .define('C', Const.getIngredient(Mods.MEK, "structural_glass"))
+                .define('D', Const.getIngredient(Mods.MEK, "dynamic_valve"))
                 .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_chemical_tank")))
                 .save(consumer, Const.rl("mek_creative_chemical_tank"));
 
@@ -1833,11 +1834,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('I', ModItems.infinity_ingot.get())
                 .define('S', ModItems.infinity_catalyst.get())
-                .define('A', Const.getIngredient("mekanismgenerators", "fusion_reactor_frame"))
-                .define('B', Const.getIngredient("mekanism", "ultimate_energy_cube"))
-                .define('C', Const.getIngredient("mekanism", "ultimate_fluid_tank"))
-                .define('D', Const.getIngredient("mekanism", "ultimate_chemical_tank"))
-                .define('E', Const.getIngredient("mekanism", "ultimate_bin"))
+                .define('A', Const.getIngredient(Mods.MEK_GEN, "fusion_reactor_frame"))
+                .define('B', Const.getIngredient(Mods.MEK, "ultimate_energy_cube"))
+                .define('C', Const.getIngredient(Mods.MEK, "ultimate_fluid_tank"))
+                .define('D', Const.getIngredient(Mods.MEK, "ultimate_chemical_tank"))
+                .define('E', Const.getIngredient(Mods.MEK, "ultimate_bin"))
                 .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_bin")))
                 .save(consumer, Const.rl("mek_creative_bin"));
 
@@ -1855,11 +1856,11 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                 .define('I', ModItems.infinity_ingot.get())
                 .define('N', ModItems.neutron_ingot.get())
-                .define('W', Const.getIngredient("enderio", "weather_crystal"))
-                .define('V', Const.getIngredient("enderio", "vibrant_capacitor_bank"))
-                .define('Z', Const.getIngredient("enderio", "frank_n_zombie"))
-                .define('E', Const.getIngredient("enderio", "sentient_ender"))
-                .define('C', Const.getIngredient("enderio", "ender_crystal"))
+                .define('W', Const.getIngredient(Mods.EIO, "weather_crystal"))
+                .define('V', Const.getIngredient(Mods.EIO, "vibrant_capacitor_bank"))
+                .define('Z', Const.getIngredient(Mods.EIO, "frank_n_zombie"))
+                .define('E', Const.getIngredient(Mods.EIO, "sentient_ender"))
+                .define('C', Const.getIngredient(Mods.EIO, "ender_crystal"))
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get()))
                 .save(consumer, Const.rl("eio_creative_power"));
 

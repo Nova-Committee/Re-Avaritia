@@ -8,20 +8,36 @@
   "type": "avaritia:shaped_table",
   "key": {
     "A": {
-      "type": "avaritia:nbt_item",
-      "item": "mekanism:ultimate_fluid_tank"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:ultimate_fluid_tank"
+        }
+      ]
     },
     "B": {
-      "type": "avaritia:nbt_item",
-      "item": "mekanism:dynamic_tank"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:dynamic_tank"
+        }
+      ]
     },
     "C": {
-      "type": "avaritia:nbt_item",
-      "item": "mekanism:structural_glass"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:structural_glass"
+        }
+      ]
     },
     "D": {
-      "type": "avaritia:nbt_item",
-      "item": "mekanism:dynamic_valve"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "mekanism:dynamic_valve"
+        }
+      ]
     },
     "I": {
       "item": "avaritia:infinity_ingot"

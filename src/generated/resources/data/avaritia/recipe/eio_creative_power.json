@@ -8,12 +8,20 @@
   "type": "avaritia:shaped_table",
   "key": {
     "C": {
-      "type": "avaritia:nbt_item",
-      "item": "enderio:ender_crystal"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:ender_crystal"
+        }
+      ]
     },
     "E": {
-      "type": "avaritia:nbt_item",
-      "item": "enderio:sentient_ender"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:sentient_ender"
+        }
+      ]
     },
     "I": {
       "item": "avaritia:infinity_ingot"
@@ -22,16 +30,28 @@
       "item": "avaritia:neutron_ingot"
     },
     "V": {
-      "type": "avaritia:nbt_item",
-      "item": "enderio:vibrant_capacitor_bank"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:vibrant_capacitor_bank"
+        }
+      ]
     },
     "W": {
-      "type": "avaritia:nbt_item",
-      "item": "enderio:weather_crystal"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:weather_crystal"
+        }
+      ]
     },
     "Z": {
-      "type": "avaritia:nbt_item",
-      "item": "enderio:frank_n_zombie"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "enderio:frank_n_zombie"
+        }
+      ]
     }
   },
   "pattern": [

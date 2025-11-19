@@ -14,12 +14,20 @@
       "item": "avaritia:neutron_compressor"
     },
     "C": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:creative_controller"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:creative_controller"
+        }
+      ]
     },
     "D": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:4096k_fluid_storage_part"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:4096k_fluid_storage_part"
+        }
+      ]
     }
   },
   "pattern": [

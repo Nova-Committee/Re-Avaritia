@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import committee.nova.mods.avaritia.common.ingredient.ItemIngredient;
+import committee.nova.mods.avaritia.common.ingredient.SimpleDatagenIngredient;
+import committee.nova.mods.avaritia.init.registry.enums.Mods;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -48,8 +50,8 @@ public class Const {
         return ModList.get().isLoaded(name);
     }
 
-    public static Ingredient getIngredient(String modid, String name) {
-        return new ItemIngredient(ResourceLocation.fromNamespaceAndPath(modid, name)).toVanilla();
+    public static Ingredient getIngredient(Mods modid, String name) {
+        return new SimpleDatagenIngredient(modid, name).toVanilla();
     }
 
     public static Item getItem(String modid, String name) {

@@ -11,8 +11,12 @@
       "tag": "storagedrawers:drawers"
     },
     "E": {
-      "type": "avaritia:nbt_item",
-      "item": "storagedrawers:emerald_storage_upgrade"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "storagedrawers:emerald_storage_upgrade"
+        }
+      ]
     },
     "N": {
       "item": "avaritia:neutron_nugget"

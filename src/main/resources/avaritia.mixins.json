@@ -10,7 +10,8 @@
     "NetherWartBlockMixin",
     "PlayerMixin",
     "RecipeManagerMixin",
-    "ReloadableServerResourcesMixin"
+    "ReloadableServerResourcesMixin",
+    "accessor.MappedRegistryAccessor"
   ],
   "client": [
     "ClientPacketListenerMixin",

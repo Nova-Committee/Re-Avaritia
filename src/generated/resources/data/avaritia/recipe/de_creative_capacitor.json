@@ -11,24 +11,44 @@
       "item": "avaritia:infinity_ingot"
     },
     "B": {
-      "type": "avaritia:nbt_item",
-      "item": "draconicevolution:chaotic_crafting_injector"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "draconicevolution:chaotic_crafting_injector"
+        }
+      ]
     },
     "C": {
-      "type": "avaritia:nbt_item",
-      "item": "draconicevolution:reactor_stabilizer"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "draconicevolution:reactor_stabilizer"
+        }
+      ]
     },
     "D": {
-      "type": "avaritia:nbt_item",
-      "item": "draconicevolution:reactor_core"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "draconicevolution:reactor_core"
+        }
+      ]
     },
     "E": {
-      "type": "avaritia:nbt_item",
-      "item": "draconicevolution:chaotic_core"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "draconicevolution:chaotic_core"
+        }
+      ]
     },
     "F": {
-      "type": "avaritia:nbt_item",
-      "item": "draconicevolution:chaotic_capacitor"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "draconicevolution:chaotic_capacitor"
+        }
+      ]
     }
   },
   "pattern": [

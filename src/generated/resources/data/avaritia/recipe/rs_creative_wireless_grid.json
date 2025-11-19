@@ -11,32 +11,60 @@
       "item": "avaritia:endest_pearl"
     },
     "B": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:range_upgrade"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:range_upgrade"
+        }
+      ]
     },
     "C": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:wireless_transmitter"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:wireless_transmitter"
+        }
+      ]
     },
     "D": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:destruction_core"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:destruction_core"
+        }
+      ]
     },
     "E": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:construction_core"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:construction_core"
+        }
+      ]
     },
     "F": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:wireless_grid"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:wireless_grid"
+        }
+      ]
     },
     "G": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:network_receiver"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:network_receiver"
+        }
+      ]
     },
     "H": {
-      "type": "avaritia:nbt_item",
-      "item": "refinedstorage:storage_housing"
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:storage_housing"
+        }
+      ]
     }
   },
   "pattern": [

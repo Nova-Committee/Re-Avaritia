@@ -19,7 +19,7 @@ import net.neoforged.fml.loading.FMLLoader;
  */
 public class Singularity {
     public static final StreamCodec<RegistryFriendlyByteBuf, Singularity> STREAM_CODEC = StreamCodec.of(
-            Singularity::encode, Singularity::read
+            Singularity::write, Singularity::read
     );
 
     @Getter private final ResourceLocation registryName;
@@ -118,10 +118,9 @@ public class Singularity {
 
     public static Singularity read(RegistryFriendlyByteBuf buffer) {
         var id = buffer.readResourceLocation();
-        var name = buffer.readUtf();
+        var displayName = buffer.readUtf();
         int[] colors = buffer.readVarIntArray();
         var isTagIngredient = buffer.readBoolean();
-        int timeRequired = buffer.readVarInt();
 
         String tag = null;
         var ingredient = Ingredient.EMPTY;
@@ -132,35 +131,32 @@ public class Singularity {
             ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
         }
 
-        int ingredientCount = buffer.readVarInt();
+        int timeCost = buffer.readVarInt();
+        int count = buffer.readVarInt();
         var enabled = buffer.readBoolean();
         var recipeEnable = buffer.readBoolean();
 
         return isTagIngredient
-                ? new Singularity(id).setDisplayName(name).setColors(colors[0], colors[1])
-                .setTag(tag).setCount(ingredientCount).setTimeCost(timeRequired).setEnabled(enabled).setRecipeEnabled(recipeEnable)
-                : new Singularity(id).setDisplayName(name).setColors(colors[0], colors[1])
-                .setIngredient(ingredient).setCount(ingredientCount).setTimeCost(timeRequired).setEnabled(enabled).setRecipeEnabled(recipeEnable);
+                ? new Singularity(id).setDisplayName(displayName).setColors(colors[0], colors[1])
+                .setTag(tag).setCount(count).setTimeCost(timeCost).setEnabled(enabled).setRecipeEnabled(recipeEnable)
+                : new Singularity(id).setDisplayName(displayName).setColors(colors[0], colors[1])
+                .setIngredient(ingredient).setCount(count).setTimeCost(timeCost).setEnabled(enabled).setRecipeEnabled(recipeEnable);
     }
 
-    public static void encode(RegistryFriendlyByteBuf buffer, Singularity singularity) {
-        singularity.write(buffer);
-    }
-
-    public void write(RegistryFriendlyByteBuf buffer) {
-        buffer.writeResourceLocation(this.registryName);
-        buffer.writeUtf(this.displayName);
-        buffer.writeVarIntArray(this.colors);
-        buffer.writeBoolean(this.tag != null);
-        if (this.tag != null) {
-            buffer.writeUtf(this.tag);
+    public static void write(RegistryFriendlyByteBuf buffer, Singularity singularity) {
+        buffer.writeResourceLocation(singularity.registryName);
+        buffer.writeUtf(singularity.displayName);
+        buffer.writeVarIntArray(singularity.colors);
+        buffer.writeBoolean(singularity.tag != null);
+        if (singularity.tag != null) {
+            buffer.writeUtf(singularity.tag);
         } else {
-            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, this.ingredient != null ? this.ingredient : Ingredient.EMPTY);
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, singularity.ingredient != null ? singularity.ingredient : Ingredient.EMPTY);
         }
-        buffer.writeVarInt(this.timeCost);
-        buffer.writeVarInt(this.getCount());
-        buffer.writeBoolean(this.enabled);
-        buffer.writeBoolean(this.recipeEnabled);
+        buffer.writeVarInt(singularity.timeCost);
+        buffer.writeVarInt(singularity.getCount());
+        buffer.writeBoolean(singularity.enabled);
+        buffer.writeBoolean(singularity.recipeEnabled);
     }
 
     public static Singularity wrap(Context context, Object object) {

@@ -3,6 +3,8 @@ package committee.nova.mods.avaritia.init.data.provider.recipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapedTableCraftingRecipe;
+import committee.nova.mods.avaritia.common.ingredient.SimpleDatagenIngredient;
+import committee.nova.mods.avaritia.init.registry.enums.Mods;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
@@ -119,9 +121,9 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
         return this.define(character, Ingredient.of(itemLike));
     }
 
-//    public ModShapedRecipeBuilder define(Character character, ItemStack stack) {
-//        return this.define(character, StrictNBTIngredient.of(stack));
-//    }
+    public ModShapedRecipeBuilder define(Character character, Mods mod, String stack) {
+        return this.define(character, new SimpleDatagenIngredient(mod,  stack).toVanilla());
+    }
 
     public ModShapedRecipeBuilder define(Character character, Ingredient ingredient) {
         if (this.key.containsKey(character)) {
