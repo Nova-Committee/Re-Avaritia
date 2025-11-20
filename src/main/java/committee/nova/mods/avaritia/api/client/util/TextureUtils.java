@@ -2,8 +2,8 @@ package committee.nova.mods.avaritia.api.client.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
-import committee.nova.mods.avaritia.api.client.util.colour.Color;
-import committee.nova.mods.avaritia.api.client.util.colour.ColorARGB;
+import committee.nova.mods.avaritia.api.client.util.color.Color;
+import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;

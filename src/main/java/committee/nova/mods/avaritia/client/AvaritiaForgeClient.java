@@ -266,8 +266,8 @@ public class AvaritiaForgeClient {
 
     private static void singularityIconTimer(){
         if (renderTime % 20 != 0) return;
-        if (SingularityItem.enabledSingularities != null && !SingularityItem.enabledSingularities.isEmpty()) {
-            SingularityItem.currentSingularityIndex.set((SingularityItem.currentSingularityIndex.get() + 1) % SingularityItem.enabledSingularities.size());
+        if (AvaritiaModClient.enabledSingularities != null && !AvaritiaModClient.enabledSingularities.isEmpty()) {
+            AvaritiaModClient.currentSingularityIndex.set((AvaritiaModClient.currentSingularityIndex.get() + 1) % AvaritiaModClient.enabledSingularities.size());
         }
     }
 

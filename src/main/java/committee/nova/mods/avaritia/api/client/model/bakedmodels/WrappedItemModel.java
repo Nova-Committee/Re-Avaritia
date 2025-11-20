@@ -147,8 +147,8 @@ public abstract class WrappedItemModel implements PerspectiveModel {
     protected void renderWrapped(ItemStack stack, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay, boolean fabulous, Function<VertexConsumer, VertexConsumer> consOverride) {
         BakedModel model = this.wrapped.getOverrides().resolve(this.wrapped, stack, this.world, this.entity, 0);
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        for (BakedModel bakedModel : model.getRenderPasses(stack, true)) {
-            for (RenderType rendertype : bakedModel.getRenderTypes(stack, true)) {
+        for (BakedModel bakedModel : model.getRenderPasses(stack, fabulous)) {
+            for (RenderType rendertype : bakedModel.getRenderTypes(stack, fabulous)) {
                 itemRenderer.renderModelLists(bakedModel, stack, packedLight, packedOverlay, pStack,
                         consOverride.apply(buffers.getBuffer(rendertype)));
             }

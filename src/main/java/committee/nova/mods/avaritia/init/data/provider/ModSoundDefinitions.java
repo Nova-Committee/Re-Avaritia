@@ -29,7 +29,7 @@ public class ModSoundDefinitions extends SoundDefinitionsProvider {
     @Override
     public void registerSounds() {
         addSoundEvent(ModSounds.GAPING_VOID, Const.rl("gaping_void"));
-        //addSoundEvent(ModSounds.HEAL, Const.rl("heal"));
-        //addSoundEvent(ModSounds.MODE, Const.rl("mode"));
+        addSoundEvent(ModSounds.HEAL, Const.rl("heal"));
+        addSoundEvent(ModSounds.MODE, Const.rl("mode"));
     }
 }

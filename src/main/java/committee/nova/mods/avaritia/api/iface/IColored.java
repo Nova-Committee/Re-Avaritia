@@ -13,7 +13,7 @@ public interface IColored {
         return -1;
     }
 
-    default int getColor(int index, ItemStack stack) {
+    default int getColor(ItemStack stack, int index) {
         return this.getColor(index);
     }
 
@@ -23,7 +23,7 @@ public interface IColored {
 
         @Override
         public int getColor(ItemStack stack, int index) {
-            return ((IColored) Block.byItem(stack.getItem())).getColor(index, stack);
+            return ((IColored) Block.byItem(stack.getItem())).getColor(stack, index);
         }
     }
 
@@ -33,7 +33,7 @@ public interface IColored {
 
         @Override
         public int getColor(ItemStack stack, int index) {
-            return ((IColored) stack.getItem()).getColor(index, stack);
+            return ((IColored) stack.getItem()).getColor(stack, index);
         }
     }
 

@@ -3,5 +3,15 @@
     "sounds": [
       "avaritia:gaping_void"
     ]
+  },
+  "heal": {
+    "sounds": [
+      "avaritia:heal"
+    ]
+  },
+  "mode": {
+    "sounds": [
+      "avaritia:mode"
+    ]
   }
 }

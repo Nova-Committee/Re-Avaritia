@@ -1,11 +1,10 @@
 <p align="center">
-    <img width="200" src="web/avaritia.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">  
 </p>
 <hr>
-<p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
 <p align="center">
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1/1.21.1-c70039" alt="Supported Versions">
+        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions">
     </a>
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
         <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
@@ -14,8 +13,8 @@
 </p>
 
 <p align="center">
-    <a href="README.md">English</a> | 
-    <a href="README_CN.md">简体中文</a>
+    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README.md">English</a> | 
+    <a href="https://github.com/Nova-Committee/Re-Avaritia/blob/1.20.1-forged/README_CN.md">简体中文</a>
 </p>
 
 
@@ -47,8 +46,10 @@
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
 
+## **🔎Wiki:**
+* [Wiki](wiki)
 
-## **🔎Develop:**
+## **⚙️Develop:**
 ### **CraftTweaker:**
 ```
 mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
@@ -109,7 +110,7 @@ AvaritiaEvents.singularity(event => {
     event.register("avaritia:example", s => {
         s
             .setDisplayName("singularity.avaritia.example")
-            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
+            .setColors(C0C0C0, 808080) // [overlay color, underlay color]
             .setCount(1000)
             .setTimeCost(200)
             .setIngredient(Ingredient.of("minecraft:iron_ingot"))
@@ -148,5 +149,19 @@ AvaritiaEvents.singularity(event => {
   ]
 }
 ```
+### **Dependencies:**
+avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
+```groovy
+repositories {
+    maven {
+        url "https://maven.nova-committee.cn/s3"
+    }
+}
+
+dependencies {
+    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
+}
+```
+
 
 

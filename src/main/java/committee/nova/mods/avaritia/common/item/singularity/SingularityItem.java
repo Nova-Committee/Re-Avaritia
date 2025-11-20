@@ -65,7 +65,18 @@ public class SingularityItem extends Item implements IColored {
     }
 
     @Override
-    public int getColor(int i, ItemStack stack) {
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
+        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+    }
+
+    @Override
+    public int getColor(ItemStack stack, int i) {
         // 检查是否是创造模式标签页的图标 - 使用数据组件方式
         if (stack.has(ModDataComponents.IS_CREATIVE_TAB_ICON.get())) {
             // 初始化奇点列表（如果尚未初始化）
@@ -89,17 +100,5 @@ public class SingularityItem extends Item implements IColored {
             return -1;
 
         return i == 0 ? singularity.getUnderlayColor() : i == 1 ? singularity.getOverlayColor() : -1;
-    }
-
-
-    @Override
-    public boolean hasCustomEntity(@NotNull ItemStack stack) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 }

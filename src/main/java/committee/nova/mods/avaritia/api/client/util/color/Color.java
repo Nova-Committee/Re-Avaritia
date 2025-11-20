@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.client.util.colour;
+package committee.nova.mods.avaritia.api.client.util.color;
 
 import committee.nova.mods.avaritia.api.utils.java.Copyable;
 import committee.nova.mods.avaritia.api.utils.math.MathUtils;

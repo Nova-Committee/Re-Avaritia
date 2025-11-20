@@ -15,7 +15,10 @@ import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.registry.*;
+import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -24,8 +27,10 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -38,6 +43,9 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
 import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.*;
@@ -151,9 +159,11 @@ public class AvaritiaModClient {
         event.registerLayerDefinition(INFINITY_SHIELD, InfinityShieldModel::createLayer);
     }
 
+    public static List<Singularity> enabledSingularities = null;
+    public static final AtomicInteger currentSingularityIndex = new AtomicInteger(0);
     @SubscribeEvent
     public static void onItemColors(RegisterColorHandlersEvent.Item event) {
-        event.register(new IColored.ItemColors(), ModItems.singularity.get());
+        event.register((stack, index) -> FastColor.ARGB32.opaque(new IColored.ItemColors().getColor(stack, index)), ModItems.singularity.get());
         event.register((stack, index) -> getCurrentRainbowColor(),
                 ModItems.eternal_singularity.get()
         );

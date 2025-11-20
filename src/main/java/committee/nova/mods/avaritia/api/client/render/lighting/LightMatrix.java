@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.api.client.render.lighting;
 
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
 import committee.nova.mods.avaritia.api.client.render.pipeline.IVertexOperation;
-import committee.nova.mods.avaritia.api.client.util.colour.ColorRGBA;
+import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;

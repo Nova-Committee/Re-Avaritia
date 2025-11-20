@@ -44,15 +44,15 @@ public class HaloBakedModel extends WrappedItemModel {
     @Override
     public void renderItem(ItemStack stack, ItemDisplayContext itemDisplayContext, PoseStack pPoseStack, MultiBufferSource bufferSource,
                            int packedLight, int packedOverlay) {
-        if (Screen.hasShiftDown()) {
-            if (stack.getItem() instanceof SingularityItem && SingularityUtils.getSingularity(stack) != null) {
-                var itemRender= Minecraft.getInstance().getItemRenderer();
-                BakedModel bakedModel = itemRender.getModel(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0],null,null,1);
-                pPoseStack.pushPose();
-                pPoseStack.translate(0.5, 0.5, 0);
-                itemRender.render(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0], ItemDisplayContext.NONE, false, pPoseStack, bufferSource, packedLight, packedOverlay, bakedModel);
-                pPoseStack.popPose();
-            }
+        if (stack.getItem() instanceof SingularityItem
+                && Screen.hasShiftDown()
+                && SingularityUtils.getSingularity(stack) != null) {
+            var itemRender= Minecraft.getInstance().getItemRenderer();
+            BakedModel bakedModel = itemRender.getModel(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0],null,null,1);
+            pPoseStack.pushPose();
+            pPoseStack.translate(0.5, 0.5, 0);
+            itemRender.render(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0], ItemDisplayContext.NONE, false, pPoseStack, bufferSource, packedLight, packedOverlay, bakedModel);
+            pPoseStack.popPose();
         } else {
             if (stack.getItem() instanceof IToolTransform) {
                 this.parentState = TransformUtils.DEFAULT_TOOL;

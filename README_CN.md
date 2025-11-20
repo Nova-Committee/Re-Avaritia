@@ -1,11 +1,10 @@
 <p align="center">
-    <img width="200" src="web/avaritia.png" alt="title">  
+    <img width="690" src="web/logo.png" alt="title">  
 </p>
 <hr>
-<p align="center">Avaritia Reforged is a Minecraft mod made for Minecraft Forge</p>
 <p align="center">
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
-        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1/1.21.1-c70039" alt="Supported Versions">
+        <img src="https://img.shields.io/badge/Available%20for-MC%201.20.1-c70039" alt="Supported Versions">
     </a>
     <a href="https://www.curseforge.com/minecraft/mc-mods/re-avaritia">
         <img src="https://cf.way2muchnoise.eu/623969.svg" alt="CurseForge Download">
@@ -47,9 +46,10 @@
 * 使用CraftTweaker修改无尽工作台和中子态素压缩机配方!
 * 使用KubeJs修改无尽工作台和中子态素压缩机配方!
 
+## **🔎文档:**
+* [Wiki](wiki)
 
-## **🔎开发:**
-
+## **⚙️开发:**
 ### **Singularities**
     位于config/avaritia/singularities文件夹下，可以利用json自定义奇点：
 ```json5
@@ -162,6 +162,19 @@ ServerEvents.recipes(
       "item": "avaritia:record_fragment"
     }
   ]
+}
+```
+### **Dependencies:**
+avaritia_version 请查看这里 [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
+```groovy
+repositories {
+    maven {
+        url "https://maven.nova-committee.cn/s3"
+    }
+}
+
+dependencies {
+    implementation fg.deobf("committee.nova.mods:avaritia-forge:${avaritia_version}")
 }
 ```
 

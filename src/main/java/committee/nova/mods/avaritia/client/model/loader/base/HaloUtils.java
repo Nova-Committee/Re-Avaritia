@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import committee.nova.mods.avaritia.api.client.model.CachedFormat;
 import committee.nova.mods.avaritia.api.client.model.IVertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.Quad;
-import committee.nova.mods.avaritia.api.client.util.colour.ColorARGB;
+import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;

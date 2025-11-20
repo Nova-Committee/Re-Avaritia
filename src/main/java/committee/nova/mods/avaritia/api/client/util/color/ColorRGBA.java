@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.api.client.util.colour;
+package committee.nova.mods.avaritia.api.client.util.color;
 
 public class ColorRGBA extends Color {
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -64,8 +65,8 @@ public class SingularityUtils {
 
         var colors = new JsonArray();
 
-        colors.add(Integer.toHexString(singularity.getOverlayColor() & 0x00FFFFFF));
-        colors.add(Integer.toHexString(singularity.getUnderlayColor() & 0x00FFFFFF));
+        colors.add(Integer.toString(singularity.getOverlayColor(), 16));
+        colors.add(Integer.toString(singularity.getUnderlayColor(), 16));
 
         json.add("colors", colors);
         json.addProperty("timeRequired", singularity.getTimeCost());
