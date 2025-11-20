@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
@@ -32,7 +33,7 @@ public record ShapedRecipePatternComponent() implements RecipeComponent<ShapedRe
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "shaped_recipe_pattern";
     }
 }
