@@ -20,4 +20,20 @@ mods.avaritia.CraftingTable.addShapeless("diamond_blocks", 4, <item:minecraft:di
 ]
 );
 
-mods.avaritia.Compressor.addRecipe("diamond_blocks2", <item:minecraft:coal_block>, <item:minecraft:diamond>, 2000, 240);
+mods.avaritia.CraftingTable.addCatalyst("catalyst2",
+[
+    <item:minecraft:coal_block>, <item:minecraft:coal_block>, <item:minecraft:coal_block>,
+    <item:minecraft:coal_block>, <item:minecraft:diamond>, <item:minecraft:coal_block>,
+    <item:minecraft:coal_block>, <item:minecraft:coal_block>, <item:minecraft:coal_block>
+]
+, 1);
+
+mods.avaritia.CraftingTable.addEternal("eternal2",
+[
+    <item:minecraft:coal_block>, <item:minecraft:coal_block>, <item:minecraft:coal_block>,
+    <item:minecraft:coal_block>, <item:minecraft:diamond>, <item:minecraft:coal_block>,
+    <item:minecraft:coal_block>, <item:minecraft:coal_block>, <item:minecraft:coal_block>
+]
+, true);
+
+mods.avaritia.Compressor.addRecipe("diamond_blocks3", <item:minecraft:coal_block>, <item:minecraft:diamond>, 2000, 240);
