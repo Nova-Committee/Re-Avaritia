@@ -1,10 +1,19 @@
 package committee.nova.mods.avaritia.init.compat.kubejs;
 
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.compat.kubejs.component.ShapedRecipePatternComponent;
+import committee.nova.mods.avaritia.init.compat.kubejs.event.AvaritiaEvents;
+import committee.nova.mods.avaritia.init.compat.kubejs.event.SingularityRegisterEventJS;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.ClassFilter;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
+import dev.latvian.mods.kubejs.script.ScriptManager;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
+import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 
 /**
  * Name: Avaritia-forge / KubeJSAvaritiaPlugin
@@ -32,5 +41,27 @@ public class AvaritiaKubeJSPlugin implements KubeJSPlugin {
         //event.register(ModRecipeSerializers.COMPRESSOR_SERIALIZER.getId(), CompressRecipeSchema.SCHEMA);
        // event.register(ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.getId(), InfinityCatalystRecipeSchema.SCHEMA);
         //event.register(ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.getId(), ExtremeSmithingRecipeSchema.SCHEMA);
+    }
+
+
+    @Override
+    public void registerBindings(BindingRegistry event) {
+        event.add("Singularity", Singularity.class);
+    }
+
+    @Override
+    public void registerEvents(EventGroupRegistry registry) {
+        registry.register(AvaritiaEvents.GROUP);
+    }
+
+    @Override
+    public void afterScriptsLoaded(ScriptManager manager) {
+        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS();
+        AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
+    }
+
+    @Override
+    public void registerTypeWrappers(TypeWrapperRegistry wrapperRegistry) {
+        wrapperRegistry.register(Singularity.class, Singularity::wrap);
     }
 }
