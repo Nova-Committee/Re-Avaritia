@@ -6,10 +6,10 @@ import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 
 public class NeutronArrowEntity extends Arrow {
-    private int life = 0;
     public NeutronArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
         super(entityType, level);
         this.setNoGravity(true);
@@ -20,12 +20,9 @@ public class NeutronArrowEntity extends Arrow {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        ++this.life;
-        if (this.life >= 600) {
-            this.discard();
-        }
+    protected void onHit(@NotNull HitResult result) {
+        super.onHit(result);
+        this.discard();
     }
 
     @Override
