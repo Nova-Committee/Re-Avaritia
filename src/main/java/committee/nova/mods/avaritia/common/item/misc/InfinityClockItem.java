@@ -6,10 +6,12 @@ import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,6 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -26,6 +29,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -44,7 +48,7 @@ import java.util.Map;
 
 public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
     public static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
-    private static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
+    public static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
 
     public InfinityClockItem() {
         super(ModRarities.COSMIC.getValue(), false, new Item.Properties().stacksTo(1));
@@ -56,7 +60,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public boolean isDamageable(@NotNull ItemStack stack) {
         return false;
     }
 
@@ -74,23 +78,28 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         }
 
         if (upMode) {
-            int current = ItemUtils.getOrCreateTag(stack).getInt("SpeedMultiplier");
-            int next;
+            stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                    (customData) ->
+                            customData.update(
+                                    tag -> {
+                                        int current  = tag.contains("SpeedMultiplier") ? tag.getInt("SpeedMultiplier") : 1;
+                                        int next;
 
-            switch (current) {
-                case 1 -> next = 4;
-                case 4 -> next = 16;
-                case 16 -> next = 64;
-                case 64 -> next = 256;
-                case 256 -> next = 512;
-                default -> next = 1;
-            }
-
-            ItemUtils.getOrCreateTag(stack).putInt("SpeedMultiplier", next);
-            player.displayClientMessage(Component.literal(next + "x"), true);
+                                        switch (current) {
+                                            case 1 -> next = 4;
+                                            case 4 -> next = 16;
+                                            case 16 -> next = 64;
+                                            case 64 -> next = 256;
+                                            case 256 -> next = 512;
+                                            default -> next = 1;
+                                        }
+                                        player.displayClientMessage(Component.literal(next + "x"), true);
+                                        tag.putInt("SpeedMultiplier", next);
+                                    }
+                            )
+            );
             return InteractionResultHolder.success(stack);
         }
-
 
         player.openMenu(
                 new SimpleMenuProvider(
@@ -110,43 +119,36 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         Direction face = ctx.getClickedFace(); // 获取点击的面
 
         if (!isActive(stack, "infinity_clock_up")) {
-
             removeAcceleration(level, pos);
             return InteractionResult.CONSUME;
         }
 
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
-        CompoundTag tag = ItemUtils.getOrCreateTag(stack);
-        int multiplier = tag.getInt("SpeedMultiplier");
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                (customData) ->
+                        customData.update(
+                                tag -> {
+                                    int multiplier  = tag.contains("SpeedMultiplier") ? tag.getInt("SpeedMultiplier") : 1;
 
-        if (multiplier == 0) {
-            multiplier = 1;
-            tag.putInt("SpeedMultiplier", multiplier);
-        }
+                                    if (multiplier == 1) {
+                                        removeAcceleration(level, pos);
+                                        return;
+                                    }
 
+                                    acceleratedBlocks
+                                            .computeIfAbsent(level.dimension(), k -> new HashMap<>())
+                                            .put(pos.immutable(), multiplier);
 
-        if (multiplier == 1) {
-            removeAcceleration(level, pos);
-            return InteractionResult.CONSUME;
-        }
-
-
-        acceleratedBlocks
-                .computeIfAbsent(level.dimension(), k -> new HashMap<>())
-                .put(pos.immutable(), multiplier);
-
-
-        if (level instanceof ServerLevel serverLevel) {
-
-            removeDisplayEntity(level, pos);
-
-
-            AcceleratorDisplayEntity entity = new AcceleratorDisplayEntity(level, pos, multiplier, face); // 传递面信息
-            serverLevel.addFreshEntity(entity);
-            displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), entity);
-        }
-
+                                    if (level instanceof ServerLevel serverLevel) {
+                                        removeDisplayEntity(level, pos);
+                                        AcceleratorDisplayEntity entity = new AcceleratorDisplayEntity(level, pos, multiplier, face); // 传递面信息
+                                        serverLevel.addFreshEntity(entity);
+                                        displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), entity);
+                                    }
+                                }
+                        )
+        );
         return InteractionResult.CONSUME;
     }
 
@@ -283,137 +285,4 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     }
 
 
-    @EventBusSubscriber
-    public static class TickHandler {
-        @SubscribeEvent
-        public static void onServerTick(LevelTickEvent.Post event) {
-            if (!(event.getLevel() instanceof ServerLevel level)) return;
-            Map<BlockPos, Integer> map = acceleratedBlocks.get(level.dimension());
-            if (map == null || map.isEmpty()) return;
-
-            Iterator<Map.Entry<BlockPos, Integer>> it = map.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<BlockPos, Integer> entry = it.next();
-                BlockPos pos = entry.getKey();
-                int times = entry.getValue();
-
-
-                if (times == 1) {
-                    it.remove();
-                    removeDisplayEntity(level, pos);
-                    continue;
-                }
-
-                if (!level.isLoaded(pos)) {
-                    // 不要移除未加载的方块，它们可能在其他区块中
-                    continue;
-                }
-
-                BlockState state = level.getBlockState(pos);
-                Block block = state.getBlock();
-
-
-                if (block instanceof BonemealableBlock growable) {
-                    RandomSource random = level.getRandom();
-                    for (int i = 0; i < times; i++) {
-                        if (!growable.isValidBonemealTarget(level, pos, state)) break;
-                        if (growable.isBonemealSuccess(level, random, pos, state)) {
-                            try {
-                                growable.performBonemeal(level, random, pos, state);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                break;
-                            }
-                            state = level.getBlockState(pos);
-                        }
-                    }
-
-                    // 添加粒子效果
-                    if (level.getGameTime() % 5 == 0) {
-                        addAccelerationParticles(level, pos, times);
-                    }
-                    continue;
-                }
-
-
-                BlockEntity be = level.getBlockEntity(pos);
-                if (be != null) {
-                    ToolUtils.accelerateBlockEntity(level, pos, be, times);
-
-                    // 添加粒子效果
-                    if (level.getGameTime() % 5 == 0) {
-                        addAccelerationParticles(level, pos, times);
-                    }
-                } else {
-                    // 只有当方块实体不存在时才移除加速
-                    it.remove();
-                    removeDisplayEntity(level, pos);
-                }
-
-                // 更新实体显示
-                AcceleratorDisplayEntity entity = displayEntities.getOrDefault(level.dimension(), new HashMap<>()).get(pos);
-                if (entity != null) {
-                    if (entity.getSpeedMultiplier() != times) {
-                        entity.setSpeedMultiplier(times);
-                    }
-                } else {
-
-                    if (times > 1) {
-
-                        AcceleratorDisplayEntity newEntity = new AcceleratorDisplayEntity(level, pos, times, net.minecraft.core.Direction.NORTH);
-                        level.addFreshEntity(newEntity);
-                        displayEntities.computeIfAbsent(level.dimension(), k -> new HashMap<>()).put(pos.immutable(), newEntity);
-                    }
-                }
-            }
-        }
-
-        private static void addAccelerationParticles(ServerLevel level, BlockPos pos, int times) {
-            long gameTime = level.getGameTime();
-            for (int i = 0; i < 10; i++) {
-                double hAngle = (gameTime * 0.5 + i * 40) % 360;
-                double hRadius = 0.6;
-                double hX = pos.getX() + 0.5 + Math.cos(Math.toRadians(hAngle)) * hRadius;
-                double hZ = pos.getZ() + 0.5 + Math.sin(Math.toRadians(hAngle)) * hRadius;
-                double hY = pos.getY() + 0.5 + (i % 3 - 1) * 0.2;
-
-                level.sendParticles(
-                        ParticleTypes.ENCHANT,
-                        hX, hY, hZ,
-                        1,
-                        0, 0, 0,
-                        0.0D
-                );
-
-
-                double vAngle = (gameTime * 0.7 + i * 60) % 360;
-                double vRadius = 0.6;
-                double vX = pos.getX() + 0.5 + Math.cos(Math.toRadians(vAngle)) * vRadius;
-                double vY = pos.getY() + 0.5 + Math.sin(Math.toRadians(vAngle)) * vRadius;
-                double vZ = pos.getZ() + 0.5 + (i % 2 - 0.5) * 0.2;
-
-                level.sendParticles(
-                        ParticleTypes.ENCHANT,
-                        vX, vY, vZ,
-                        1,
-                        0, 0, 0,
-                        0.0D
-                );
-            }
-        }
-
-        private static void removeDisplayEntity(Level level, BlockPos pos) {
-            ResourceKey<Level> dimension = level.dimension();
-            if (displayEntities.containsKey(dimension)) {
-                AcceleratorDisplayEntity entity = displayEntities.get(dimension).get(pos);
-                if (entity != null && !entity.isRemoved()) {
-                    entity.remove(AcceleratorDisplayEntity.RemovalReason.DISCARDED);
-                }
-                displayEntities.get(dimension).remove(pos);
-                if (displayEntities.get(dimension).isEmpty()) {
-                    displayEntities.remove(dimension);
-                }
-            }
-        }
-    }
 }

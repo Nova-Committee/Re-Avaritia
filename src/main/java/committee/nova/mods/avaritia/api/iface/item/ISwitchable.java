@@ -63,28 +63,27 @@ public interface ISwitchable {
      * 设置指定模式为激活状态
      */
     default void setMode(ItemStack stack, List<String> modeList, int modeIndex) {
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag root = data != null ? data.copyTag() : new CompoundTag();
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                (customData) ->
+                        customData.update(
+                                tag -> {
+                                    CompoundTag modeTag  = new CompoundTag();
+                                    modeTag = tag.contains("mode") ? tag.getCompound("mode") : modeTag;
 
-        if (!root.contains("mode", CompoundTag.TAG_COMPOUND)) {
-            root.put("mode", new CompoundTag());
-        }
+                                    // 先关闭所有模式
+                                    for (String mode : modeList) {
+                                        modeTag.putBoolean(mode, false);
+                                    }
 
-        CompoundTag modeTag = root.getCompound("mode");
+                                    // 激活指定模式
+                                    if (modeIndex >= 0 && modeIndex < modeList.size()) {
+                                        modeTag.putBoolean(modeList.get(modeIndex), true);
+                                    }
 
-        // 先关闭所有模式
-        for (String mode : modeList) {
-            modeTag.putBoolean(mode, false);
-        }
+                                    tag.put("mode", modeTag);
+                                }
+                        ));
 
-        // 激活指定模式
-        if (modeIndex >= 0 && modeIndex < modeList.size()) {
-            modeTag.putBoolean(modeList.get(modeIndex), true);
-        }
-
-        // 保存更新后的数据
-        root.put("mode", modeTag);
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
     }
 
     /**
@@ -143,30 +142,30 @@ public interface ISwitchable {
     default void switchMode(@NotNull Level world, Player player, @NotNull InteractionHand hand, String funcName) {
         ItemStack stack = player.getItemInHand(hand);
 
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag root = data != null ? data.copyTag() : new CompoundTag();
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                (customData) ->
+                        customData.update(
+                                tag -> {
+                                    CompoundTag modeTag  = new CompoundTag();
+                                    modeTag = tag.contains("mode") ? tag.getCompound("mode") : modeTag;
 
-        if (!root.contains("mode", CompoundTag.TAG_COMPOUND)) {
-            root.put("mode", new CompoundTag());
-        }
+                                    Component funcTooltip = Component.translatable("tooltip.avaritia.tool." + funcName);
 
-        CompoundTag modeTag = root.getCompound("mode");
-        Component funcTooltip = Component.translatable("tooltip.avaritia.tool." + funcName);
+                                    modeTag.putBoolean(funcName, !modeTag.getBoolean(funcName));
 
-        modeTag.putBoolean(funcName, !modeTag.getBoolean(funcName));
+                                    if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
+                                        serverPlayer.sendSystemMessage(
+                                                modeTag.getBoolean(funcName)
+                                                        ? ModTooltips.ACTIVE.args(funcTooltip).build()
+                                                        : ModTooltips.INACTIVE.args(funcTooltip).build(),
+                                                true
+                                        );
+                                    }
 
-        // 保存更新后的数据
-        root.put("mode", modeTag);
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
-
-        if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.sendSystemMessage(
-                    modeTag.getBoolean(funcName)
-                            ? ModTooltips.ACTIVE.args(funcTooltip).build()
-                            : ModTooltips.INACTIVE.args(funcTooltip).build(),
-                    true
-            );
-        }
+                                    tag.put("mode", modeTag);
+                                }
+                        )
+        );
         player.swing(hand);
     }
 }

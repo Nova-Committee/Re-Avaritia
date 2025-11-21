@@ -31,9 +31,9 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems( Const.MOD_ID);
 
     //curios
-    public static DeferredItem<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);
+    public static DeferredItem<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new, false);
     public static DeferredItem<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
-    public static DeferredItem<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
+    public static DeferredItem<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new, false);
     public static DeferredItem<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
     public static DeferredItem<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
     public static DeferredItem<Item> side_config_card = item("side_config_card", SideConfigurationCardItem::new);

@@ -86,28 +86,22 @@ public class ItemUtils {
 
     public static CompoundTag getOrCreateTag(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag root;
-
-        if (data == null) {
-            root = new CompoundTag();
-        } else {
-            root = data.copyTag();
-        }
+        CompoundTag root = data != null ? data.copyTag() : new CompoundTag();
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
         return root;
     }
 
     public static CompoundTag getOrCreateChildTag(ItemStack stack, String childTagName) {
         CompoundTag root = getOrCreateTag(stack);
-        CompoundTag modeTag;
-        if (root.contains(childTagName, CompoundTag.TAG_COMPOUND)) {
-            modeTag = new CompoundTag();
-            root.put(childTagName, modeTag);
+        CompoundTag childTag;
+        if (!root.contains(childTagName, CompoundTag.TAG_COMPOUND)) {
+            childTag = new CompoundTag();
+            root.put(childTagName, childTag);
         } else {
-            modeTag = root.getCompound(childTagName);
+            childTag = root.getCompound(childTagName);
         }
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
-        return modeTag;
+        return childTag;
     }
 
     public static CompoundTag updateTag(ItemStack stack, Consumer<CompoundTag> consumer) {

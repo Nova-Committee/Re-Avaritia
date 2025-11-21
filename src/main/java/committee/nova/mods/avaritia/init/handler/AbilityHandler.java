@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -39,6 +40,7 @@ public class AbilityHandler {
     public static final Set<String> entitiesWithHelmets = new HashSet<>();
     public static final Set<String> entitiesWithLeggings = new HashSet<>();
     public static final Set<String> entitiesWithBoots = new HashSet<>();
+    public static final Set<String> entitiesWithHands = new HashSet<>();
     public static final Map<String, FlightInfo> entitiesWithFlight = new ConcurrentHashMap<>();
 
 
@@ -171,7 +173,17 @@ public class AbilityHandler {
         }
     }
 
-    //跳跃增强
+    private static void handleHandItemChange(Player player, String key, ItemStack itemStack) {
+        if (player.getMainHandItem().is(itemStack.getItem()) || player.getOffhandItem().is(itemStack.getItem())) {
+            if (entitiesWithHands.contains(key)) {
+
+            }
+
+        }
+    }
+
+
+        //跳跃增强
     @SubscribeEvent
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
