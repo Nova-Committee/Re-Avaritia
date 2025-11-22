@@ -14,8 +14,7 @@ public enum ChannelState {
 
 
     COMMON(0, "common"),
-    FULL(1, "full"),
-    NAME(2, "name");
+    FULL(1, "full");
     private final String name;
     private final int id;
 

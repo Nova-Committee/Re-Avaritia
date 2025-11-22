@@ -38,12 +38,12 @@
 //    private int mainInventorySize;
 //    private int swapIndex;
 //
-//    public _NeutronRingMenu(int id, Inventory playerInventory, FriendlyByteBuf buf) {
-//        this(id, playerInventory, buf.readInt(), OffsetContainer.dummy(54));
+//    public _NeutronRingMenu(int itemSuper, Inventory playerInventory, FriendlyByteBuf buf) {
+//        this(itemSuper, playerInventory, buf.readInt(), OffsetContainer.dummy(54));
 //    }
 //
-//    public _NeutronRingMenu(int id, Inventory playerInventory, int slot, OffsetContainer container) {
-//        super(ModMenus.neutron_ring.get(), id, playerInventory);
+//    public _NeutronRingMenu(int itemSuper, Inventory playerInventory, int slot, OffsetContainer container) {
+//        super(ModMenus.neutron_ring.get(), itemSuper, playerInventory);
 //        this.swapIndex = -1;
 //        this.playerInventory = playerInventory;
 //        this.slot = slot;

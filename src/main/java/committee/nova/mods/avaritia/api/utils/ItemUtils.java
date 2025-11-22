@@ -114,9 +114,9 @@ public class ItemUtils {
 
     public static String getNbtString(ItemStack itemStack) {
         String json = "";
-//        if (itemStack.hasTag() && itemStack.getTag() != null) {
-//            json = itemStack.getTag().toString();
-//        }
+        if (!itemStack.isComponentsPatchEmpty() && itemStack.get(DataComponents.CUSTOM_DATA) != null) {
+            json = itemStack.get(DataComponents.CUSTOM_DATA).copyTag().toString();
+        }
         return json;
     }
 
@@ -136,7 +136,7 @@ public class ItemUtils {
             if (json.has("nbt")) {
                 try {
                     CompoundTag nbt = TagParser.parseTag(json.get("nbt").getAsString());
-                    //itemStack.setTag(nbt);
+                    itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
                 } catch (CommandSyntaxException e) {
                     throw new JsonParseException("Failed to parse NBT data", e);
                 }
@@ -155,11 +155,9 @@ public class ItemUtils {
             json.addProperty("count", reward.getCount());
 
             // 如果物品有NBT数据，则序列化
-//            if (reward.hasTag()) {
-//                if (reward.getTag() != null) {
-//                    json.addProperty("nbt", getNbtString(reward));
-//                }
-//            }
+            if (reward.get(DataComponents.CUSTOM_DATA) != null) {
+                json.addProperty("nbt", getNbtString(reward));
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to serialize item reward", e);
             json.addProperty("item", getId(Items.AIR));
@@ -332,7 +330,7 @@ public class ItemUtils {
 //        ListTag listtag = stack.getOrCreateTag().getList("Enchantments", Tag.TAG_COMPOUND);
 //        listtag.stream().filter(tag -> {
 //            CompoundTag compoundtag = (CompoundTag) tag;
-//            return Enchantment.byId(compoundtag.getShort("id")) == pEnchantment;
+//            return Enchantment.byId(compoundtag.getShort("itemSuper")) == pEnchantment;
 //        }).forEach(listtag::remove);
 //    }
 

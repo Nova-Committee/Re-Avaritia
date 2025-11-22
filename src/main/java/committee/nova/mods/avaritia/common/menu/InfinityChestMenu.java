@@ -4,10 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.core.chest.ChestHandler;
-import committee.nova.mods.avaritia.core.chest.ClientChestManager;
-import committee.nova.mods.avaritia.core.chest.InfinityChestContainer;
-import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
+import committee.nova.mods.avaritia.core.chest.*;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.BlockPos;
@@ -76,7 +73,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                 this.addSlot(new FakeSlot(chestContainer, i * 15 + j, 8 + j * 18, 16 + i * 18)
                 {
                     @Override
-                    public ItemStack getItem()
+                    public @NotNull ItemStack getItem()
                     {
                         ItemStack itemStack = super.getItem();
                         itemStack.setCount(1);
@@ -99,8 +96,8 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         this.locked = blockEntity.isLocked();
         this.filter = blockEntity.getFilter();
         this.sortType = blockEntity.getSortType();
-        this.channelID = blockEntity.getChannelID();
-        this.chest = blockEntity.getChannel();
+        this.channelID = blockEntity.getChestID();
+        this.chest = blockEntity.getChest();
         if (!chest.isRemoved()) ((ServerChestHandler) this.chest).addListener((ServerPlayer) player);
         addSlots(player, player.getInventory());
     }
@@ -140,7 +137,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
 
     //本类方法
-    public void action(int actionId, String id) {
+    public void action(int actionId, ItemSuper id) {
         switch (actionId) {
             case StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT -> onLeftClickDummySlot(id);
             case StorageUtils.Action.Right_CLICK_DUMMY_SLOT -> onRightClickDummySlot(id);
@@ -155,10 +152,10 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         }
     }
 
-    public void onLeftClickDummySlot(String id) {
+    public void onLeftClickDummySlot(ItemSuper id) {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
-            if (id.equals("minecraft:air")) return;
+            if (id.getStack().isEmpty()) return;
             setCarried(chest.saveTakeItem(id, false));
         } else {
             //叠堆大于1不处理特殊操作，防止意外。
@@ -177,7 +174,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     if (!chest.storageItems.containsKey(id)) return;
                     int slots = iItemHandler.getSlots();
                     for (int i = 0; i < slots; i++) {
-                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
+                        ItemStack tryInsertItem = id.getStack();
                         if (!ItemStack.isSameItemSameComponents(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
                             continue;
                         int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
@@ -208,10 +205,10 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         }
     }
 
-    public void onRightClickDummySlot(String id) {
+    public void onRightClickDummySlot(ItemSuper id) {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
-            if (id.equals("minecraft:air")) return;
+            if (id.getStack().isEmpty()) return;
             setCarried(chest.saveTakeItem(id, true));
         } else {
             if (carried.getCount() > 1) {
@@ -238,12 +235,12 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         }
     }
 
-    public void onLeftShiftDummySlot(String id) {
-        if (id.equals("minecraft:air")) return;
+    public void onLeftShiftDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty()) return;
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
             if (!chest.storageItems.containsKey(id)) return;
-            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
+            ItemStack itemStack = id.getStack();
             itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), chest.storageItems.get(id)));
             int i = itemStack.getCount();
             moveItemStackTo(itemStack, 41, 50, false);
@@ -267,7 +264,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     transmitAmount = Math.max(transmitAmount, 64000);
                     transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
                     int markAmount = transmitAmount;
-                    ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
+                    ItemStack tryInsertItem = id.getStack().copyWithCount(transmitAmount);
                     int slots = iItemHandler.getSlots();
                     for (int i = 0; i < slots; i++) {
                         for (int j = 0; j < 64; j++) {
@@ -290,12 +287,12 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         }
     }
 
-    public void onRightShiftDummySlot(String id) {
+    public void onRightShiftDummySlot(ItemSuper id) {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) {
-            if (id.equals("minecraft:air")) return;
+            if (id.getStack().isEmpty()) return;
             if (!chest.storageItems.containsKey(id)) return;
-            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
+            ItemStack itemStack = id.getStack();
             moveItemStackTo(itemStack, 41, 50, false);
             if (itemStack.isEmpty()) chest.takeItem(id, 1);
         } else {
@@ -322,38 +319,38 @@ public class InfinityChestMenu extends AbstractContainerMenu {
         }
     }
 
-    public void tryThrowOneFromDummySlot(String id) {
-        if (id.equals("minecraft:air")) return;
+    public void tryThrowOneFromDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty()) return;
         if (!chest.storageItems.containsKey(id)) return;
         ItemStack itemStack = chest.takeItem(id, 1);
         player.drop(itemStack, false);
     }
 
-    public void tryThrowStickFromDummySlot(String id) {
-        if (id.equals("minecraft:air")) return;
+    public void tryThrowStickFromDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty()) return;
         if (!chest.storageItems.containsKey(id)) return;
         ItemStack itemStack = chest.saveTakeItem(id, false);
         player.drop(itemStack, false);
     }
 
-    public void onLeftDragDummySlot(String id) {
+    public void onLeftDragDummySlot(ItemSuper id) {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) return;
         chest.addItem(carried);
     }
 
-    public void onRightDragDummySlot(String id) {
+    public void onRightDragDummySlot(ItemSuper id) {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) return;
         chest.fillItemStack(carried, -1);
     }
 
-    public void onCloneFormDummySlot(String id) {
-        if (id.equals("minecraft:air") || !player.isCreative()) return;
+    public void onCloneFormDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty() || !player.isCreative()) return;
         chest.addItem(id, Long.max(chest.getRealItemAmount(id), 64L));
     }
 
-    public void onDragCloneDummySlot(String id) {
+    public void onDragCloneDummySlot(ItemSuper id) {
         ItemStack carried = getCarried();
         if (carried.isEmpty()) return;
         ItemStack itemStack = carried.copy();
@@ -383,10 +380,10 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     public void clicked(int pSlotId, int pButton, ClickType pClickType, Player pPlayer) {
         if (pSlotId >= CONTAINER_SLOT_START) {
             //仅客户端能触发
-            String object;
+            ItemSuper object;
             if (pSlotId - CONTAINER_SLOT_START < chestContainer.viewingObject.size())
                 object = chestContainer.viewingObject.get(pSlotId - CONTAINER_SLOT_START);
-            else object = "minecraft:air";
+            else object = ItemSuper.EMPTY;
 
             switch (pButton) {
                 case 0 -> {
@@ -435,7 +432,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                 case 4 -> {
                     if (pClickType == ClickType.CLONE) {
                         //复制
-                        if (object.equals("minecraft:air")) return;
+                        if (object.getStack().isEmpty()) return;
                         PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.CLONE, object));
                         onCloneFormDummySlot(object);
                     }

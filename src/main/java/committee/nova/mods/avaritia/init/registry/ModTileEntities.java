@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
+import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.common.tile.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +32,7 @@ public class ModTileEntities {
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
+        BlockEntityRenderers.register(infinity_chest_tile.get(), InfinityChestBlockRender::new);
     }
 
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(

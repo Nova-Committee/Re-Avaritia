@@ -1,27 +1,17 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.api.iface.item.IInfinityClockSwitchable;
-import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.AcceleratorDisplayEntity;
 import committee.nova.mods.avaritia.common.item.resources.ResourceItem;
 import committee.nova.mods.avaritia.common.menu.InfinityClockMenu;
+import committee.nova.mods.avaritia.init.data.save.AcceleratedBlocksSavedData;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
-import committee.nova.mods.avaritia.init.registry.ModTooltips;
-import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -32,18 +22,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class InfinityClockItem extends ResourceItem implements IInfinityClockSwitchable {
@@ -181,69 +163,6 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
             if (displayEntities.get(dimension).isEmpty()) {
                 displayEntities.remove(dimension);
             }
-        }
-    }
-
-    public static class AcceleratedBlocksSavedData extends SavedData {
-        public static final String NAME = "avaritia_accelerated_blocks";
-        private final Map<ResourceKey<Level>, Map<BlockPos, Integer>> acceleratedBlocks = new HashMap<>();
-
-        public AcceleratedBlocksSavedData() {
-        }
-
-        public AcceleratedBlocksSavedData(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registries) {
-            ListTag dimensionsList = nbt.getList("Dimensions", Tag.TAG_COMPOUND);
-            for (int i = 0; i < dimensionsList.size(); i++) {
-                CompoundTag dimensionTag = dimensionsList.getCompound(i);
-                ResourceLocation dimensionLocation = ResourceLocation.tryParse(dimensionTag.getString("Dimension"));
-                ResourceKey<Level> dimensionKey = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimensionLocation);
-
-                Map<BlockPos, Integer> blocksMap = new HashMap<>();
-                ListTag blocksList = dimensionTag.getList("Blocks", Tag.TAG_COMPOUND);
-
-                for (int j = 0; j < blocksList.size(); j++) {
-                    CompoundTag blockTag = blocksList.getCompound(j);
-                    BlockPos pos = BlockPos.of(blockTag.getLong("Pos"));
-                    int multiplier = blockTag.getInt("Multiplier");
-                    blocksMap.put(pos, multiplier);
-                }
-
-                this.acceleratedBlocks.put(dimensionKey, blocksMap);
-            }
-        }
-
-        @Override
-        public @NotNull CompoundTag save(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries) {
-            ListTag dimensionsList = new ListTag();
-
-            for (Map.Entry<ResourceKey<Level>, Map<BlockPos, Integer>> dimensionEntry : acceleratedBlocks.entrySet()) {
-                CompoundTag dimensionTag = new CompoundTag();
-                dimensionTag.putString("Dimension", dimensionEntry.getKey().location().toString());
-
-                ListTag blocksList = new ListTag();
-                for (Map.Entry<BlockPos, Integer> blockEntry : dimensionEntry.getValue().entrySet()) {
-                    CompoundTag blockTag = new CompoundTag();
-                    blockTag.putLong("Pos", blockEntry.getKey().asLong());
-                    blockTag.putInt("Multiplier", blockEntry.getValue());
-                    blocksList.add(blockTag);
-                }
-
-                dimensionTag.put("Blocks", blocksList);
-                dimensionsList.add(dimensionTag);
-            }
-
-            compound.put("Dimensions", dimensionsList);
-            return compound;
-        }
-
-        public Map<ResourceKey<Level>, Map<BlockPos, Integer>> getAcceleratedBlocks() {
-            return acceleratedBlocks;
-        }
-
-        public void setAcceleratedBlocks(Map<ResourceKey<Level>, Map<BlockPos, Integer>> blocks) {
-            this.acceleratedBlocks.clear();
-            this.acceleratedBlocks.putAll(blocks);
-            setDirty();
         }
     }
 

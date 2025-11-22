@@ -4,14 +4,17 @@ import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author cnlimiter
@@ -20,11 +23,11 @@ public class InfinityChestContainer extends SimpleContainer {
     public static final int SIZE = 15 * 9;
     public static final int WIDTH = 15;
     public static final int HEIGHT = 9;
-    public final ArrayList<String> sortedObject = new ArrayList<>();
-    public final ArrayList<String> viewingObject = new ArrayList<>();
+    public final ArrayList<ItemSuper> sortedObject = new ArrayList<>();
+    public final ArrayList<ItemSuper> viewingObject = new ArrayList<>();
     public final ArrayList<String> formatCount = new ArrayList<>();
-    private final InfinityChestMenu menu;
-    public ArrayList<String> sortedItems = new ArrayList<>();
+    public final InfinityChestMenu menu;
+    public ArrayList<ItemSuper> sortedItems = new ArrayList<>();
     private double scrollTo = 0.0D;
 
     public InfinityChestContainer(InfinityChestMenu menu) {
@@ -52,7 +55,7 @@ public class InfinityChestContainer extends SimpleContainer {
             viewingObject.clear();
             viewingObject.addAll(sortedObject);
         } else {
-            int i = (int) Math.ceil(sortedObject.size() / WIDTH);
+            int i = (int) Math.ceil((double) sortedObject.size() / WIDTH);
             i -= HEIGHT;
             int j = Math.round(i * (float) scrollTo);
             if (offset != 0) {
@@ -77,31 +80,29 @@ public class InfinityChestContainer extends SimpleContainer {
         if ((fullUpdate || this.menu.sortType >= 6) && !this.menu.LShifting) {
             sortedItems = new ArrayList<>(this.menu.chest.storageItems.keySet());
             if (!this.menu.filter.isEmpty()) {
-                ArrayList<String> temp = new ArrayList<>();
+                ArrayList<ItemSuper> temp = new ArrayList<>();
                 char head = this.menu.filter.charAt(0);
                 if (head == '*') {
                     String s = this.menu.filter.substring(1);
-                    for (String itemName : sortedItems) if (itemName.contains(s)) temp.add(itemName);
+                    for (var itemSuper : sortedItems) if (itemSuper.toString().contains(s)) temp.add(itemSuper);
                 } else if (head == '$') {
                     String s = this.menu.filter.substring(1);
-                    for (String itemName : sortedItems) {
-                        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
+                    for (var itemSuper : sortedItems) {
                         ArrayList<String> tags = new ArrayList<>();
-                        itemStack.getTags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
+                        itemSuper.getStack().getTags().forEach(itemTagKey -> tags.add(itemTagKey.location().getPath()));
                         for (String tag : tags) {
                             if (tag.contains(s)) {
-                                temp.add(itemName);
+                                temp.add(itemSuper);
                                 break;
                             }
                         }
                     }
                 } else {
-                    for (String itemName : sortedItems) {
-                        if (itemName.contains(this.menu.filter)) temp.add(itemName);
+                    for (var itemSuper : sortedItems) {
+                        if (itemSuper.toString().contains(this.menu.filter)) temp.add(itemSuper);
                         else {
-                            ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemName));
-                            if (itemStack.getDisplayName().getString().toLowerCase().contains(this.menu.filter))
-                                temp.add(itemName);
+                            if (itemSuper.getStack().getDisplayName().getString().toLowerCase().contains(this.menu.filter))
+                                temp.add(itemSuper);
                         }
                     }
                 }
@@ -109,22 +110,22 @@ public class InfinityChestContainer extends SimpleContainer {
             }
             switch (this.menu.sortType) {
                 case SortUtils.Sort.ID_ASCENDING -> {
-                    sortedItems.sort(SortUtils::sortFromRightID);
+                    sortedItems.sort((s1, s2) -> SortUtils.sortFromRightID(s1.toString(), s2.toString()));
                 }
                 case SortUtils.Sort.ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromRightID));
+                    sortedItems.sort(Collections.reverseOrder((s1, s2) -> SortUtils.sortFromRightID(s1.toString(), s2.toString())));
                 }
                 case SortUtils.Sort.NAMESPACE_ID_ASCENDING -> {
-                    sortedItems.sort(String::compareTo);
+                    sortedItems.sort(Comparator.comparing(ItemSuper::toString));
                 }
                 case SortUtils.Sort.NAMESPACE_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(String::compareTo));
+                    sortedItems.sort(Collections.reverseOrder(Comparator.comparing(ItemSuper::toString)));
                 }
                 case SortUtils.Sort.MIRROR_ID_ASCENDING -> {
-                    sortedItems.sort(SortUtils::sortFromMirrorID);
+                    sortedItems.sort((s1, s2) -> SortUtils.sortFromMirrorID(s1.toString(), s2.toString()));
                 }
                 case SortUtils.Sort.MIRROR_ID_DESCENDING -> {
-                    sortedItems.sort(Collections.reverseOrder(SortUtils::sortFromMirrorID));
+                    sortedItems.sort(Collections.reverseOrder((s1, s2) -> SortUtils.sortFromMirrorID(s1.toString(), s2.toString())));
                 }
                 case SortUtils.Sort.COUNT_ASCENDING -> {
                     sortedItems.sort((s1, s2) -> SortUtils.sortFromCount(s1, s2, this.menu.chest.storageItems, false));
@@ -145,7 +146,7 @@ public class InfinityChestContainer extends SimpleContainer {
         formatCount.clear();
         for (int j = 0; j < SIZE; j++) {
             if (j < viewingObject.size() && viewingObject.get(j) != null) {
-                String id = viewingObject.get(j);
+                var id = viewingObject.get(j);
 
                 //叠堆数为1避开原版的数字渲染
                 if (fullUpdate) {
@@ -157,7 +158,7 @@ public class InfinityChestContainer extends SimpleContainer {
                         this.setItem(j, stack);
                     } else {
                         // 如果超出范围，使用基础物品
-                        ItemStack stack = new ItemStack(StorageUtils.getItem(id));
+                        ItemStack stack = id.getStack();
                         this.setItem(j, stack);
                     }
                 }
@@ -193,19 +194,11 @@ public class InfinityChestContainer extends SimpleContainer {
     @Override
     public @NotNull ItemStack getItem(int index) {
         if (index < 0 || index >= viewingObject.size()) return ItemStack.EMPTY;
-        String itemId = viewingObject.get(index);
-        if (itemId == null || itemId.isEmpty()) return ItemStack.EMPTY;
+        var itemId = viewingObject.get(index);
+        if (itemId == null || itemId.getStack().isEmpty()) return ItemStack.EMPTY;
 
         long count = this.menu.chest.storageItems.getOrDefault(itemId, 0L);
-        Tag tag = this.menu.chest.nbtDataCache.get(itemId);
-        ItemStack itemStack = new ItemStack(StorageUtils.getItem(itemId), (int) Math.min(Integer.MAX_VALUE, count));
-        if (tag instanceof CompoundTag cTag) {
-            ItemUtils.updateTag(itemStack, compoundTag1 -> {
-                compoundTag1 = new CompoundTag();
-                compoundTag1.merge(cTag);
-            });
-        };
-        return itemStack;
+        return itemId.getStack().copyWithCount((int) Math.min(Integer.MAX_VALUE, count));
     }
 
     @Override

@@ -33,6 +33,8 @@ public class NetworkHandler {
                 new S2CSideConfigSyncPacket.Handler());
         registrar.playToClient(S2CInfinityChestStatePack.TYPE, S2CInfinityChestStatePack.STREAM_CODEC,
                 new S2CInfinityChestStatePack.Handler());
+        registrar.playToClient(S2CNameCachePack.TYPE, S2CNameCachePack.STREAM_CODEC,
+                new S2CNameCachePack.Handler());
 
         registrar.playToServer(C2SSetTimePacket.TYPE, C2SSetTimePacket.STREAM_CODEC,
                 new C2SSetTimePacket.Handler());
@@ -52,16 +54,16 @@ public class NetworkHandler {
                 new C2SInfinityChestFilterPack.Handler());
 
         registrar.playBidirectional(NbtDataPack.TYPE, NbtDataPack.STREAM_CODEC, new NbtDataPack.Handler());
-        //CHANNEL.registerMessage(id++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
-        //CHANNEL.registerMessage(id++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(id++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(id++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-//        CHANNEL.registerMessage(id++, S2CChannelListPack.class, S2CChannelListPack::write, S2CChannelListPack::new, S2CChannelListPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-//        CHANNEL.registerMessage(id++, S2CChannelStatePack.class, S2CChannelStatePack::write, S2CChannelStatePack::new, S2CChannelStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-//        CHANNEL.registerMessage(id++, C2SFilterChannelPack.class, C2SFilterChannelPack::write, C2SFilterChannelPack::new, C2SFilterChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(id++, C2SSetChannelPack.class, C2SSetChannelPack::write, C2SSetChannelPack::new, C2SSetChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(id++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(id++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        //CHANNEL.registerMessage(itemSuper++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
+        //CHANNEL.registerMessage(itemSuper++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(itemSuper++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(itemSuper++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+//        CHANNEL.registerMessage(itemSuper++, S2CChannelListPack.class, S2CChannelListPack::write, S2CChannelListPack::new, S2CChannelListPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+//        CHANNEL.registerMessage(itemSuper++, S2CChannelStatePack.class, S2CChannelStatePack::write, S2CChannelStatePack::new, S2CChannelStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+//        CHANNEL.registerMessage(itemSuper++, C2SFilterChannelPack.class, C2SFilterChannelPack::write, C2SFilterChannelPack::new, C2SFilterChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(itemSuper++, C2SSetChannelPack.class, C2SSetChannelPack::write, C2SSetChannelPack::new, C2SSetChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(itemSuper++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+//        CHANNEL.registerMessage(itemSuper++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
 

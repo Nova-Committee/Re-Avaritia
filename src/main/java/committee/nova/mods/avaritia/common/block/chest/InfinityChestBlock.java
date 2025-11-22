@@ -140,7 +140,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
                     ++j;
                     if (i <= 4) {
                         ++i;
-                        MutableComponent textComponent = StorageUtils.getItem(item).getDefaultInstance().getHoverName().copy();
+                        MutableComponent textComponent = item.getStack().getHoverName().copy();
                         textComponent.append(" x").append(String.format("%,d",  channel.storageItems.get(item)));
                         tooltipComponents.add(textComponent);
                     }
@@ -159,7 +159,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             if (blockEntity != null) {
                 blockEntity.setOwner(player.getUUID());
                 blockEntity.setChannelId(UUID.randomUUID());
-                ServerChestManager.getInstance().tryAddChest(player, blockEntity.getChannelID());
+                ServerChestManager.getInstance().tryAddChest(player, blockEntity.getChestID());
             }
         }
     }
@@ -189,7 +189,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
                     buf.writeBoolean(chestTile.isLocked());
                     buf.writeUtf(chestTile.getFilter(), 64);
                     buf.writeByte(chestTile.getSortType());
-                    buf.writeUUID(chestTile.getChannelID());
+                    buf.writeUUID(chestTile.getChestID());
                 });
                 player.awardStat(Stats.CUSTOM.get(Stats.OPEN_CHEST));
 

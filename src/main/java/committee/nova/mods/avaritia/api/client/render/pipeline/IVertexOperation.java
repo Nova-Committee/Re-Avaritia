@@ -27,7 +27,7 @@ public interface IVertexOperation {
     void operate(CCRenderState ccrs);
 
     /**
-     * Get the unique id representing this type of operation. Duplicate operation IDs within the pipeline may have unexpected results.
+     * Get the unique itemSuper representing this type of operation. Duplicate operation IDs within the pipeline may have unexpected results.
      * ID should be obtained from CCRenderState.registerOperation() and stored in a static variable
      */
     int operationID();

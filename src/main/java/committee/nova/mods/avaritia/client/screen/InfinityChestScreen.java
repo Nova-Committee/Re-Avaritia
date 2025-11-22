@@ -12,6 +12,7 @@ import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.core.chest.ClientChestHandler;
 import committee.nova.mods.avaritia.core.chest.ClientChestManager;
+import committee.nova.mods.avaritia.core.chest.ItemSuper;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import lombok.Getter;
@@ -46,7 +47,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
     private final String ownerName;
-    private String lastHoveredItem = "";
+    private ItemSuper lastHoveredItem = ItemSuper.EMPTY;
     private long lastCount = 0;
     private String lastFormatCountTemp = "";
     private SortButton sortButton;
@@ -305,7 +306,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     private String getSortKey(int sortType) {
         return switch (sortType) {
-            case SortUtils.Sort.ID_ASCENDING, SortUtils.Sort.ID_DESCENDING -> "gui.avaritia.sort.id";
+            case SortUtils.Sort.ID_ASCENDING, SortUtils.Sort.ID_DESCENDING -> "gui.avaritia.sort.itemSuper";
             case SortUtils.Sort.NAMESPACE_ID_ASCENDING, SortUtils.Sort.NAMESPACE_ID_DESCENDING ->
                     "gui.avaritia.sort.nid";
             case SortUtils.Sort.MIRROR_ID_ASCENDING, SortUtils.Sort.MIRROR_ID_DESCENDING ->

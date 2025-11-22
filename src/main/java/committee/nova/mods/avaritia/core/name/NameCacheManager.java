@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.core.name;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.net.S2CNameCachePack;
 import committee.nova.mods.avaritia.common.net.chest.ChannelState;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import net.minecraft.nbt.CompoundTag;
@@ -62,8 +63,7 @@ public class NameCacheManager {
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         getInstance().userCache.getCompound("nameCache").putString(event.getEntity().getUUID().toString(), event.getEntity().getGameProfile().getName());
-        //NetworkHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CChannelStatePack(ChannelState.NAME, userCache));
-        PacketDistributor.sendToAllPlayers(new S2CInfinityChestStatePack(ChannelState.NAME, getInstance().userCache));
+        PacketDistributor.sendToAllPlayers(new S2CNameCachePack(getInstance().userCache));
         if (!getInstance().loadSuccess)
             event.getEntity().sendSystemMessage(Component.translatable("info.avaritia.channel.load_error"));
     }

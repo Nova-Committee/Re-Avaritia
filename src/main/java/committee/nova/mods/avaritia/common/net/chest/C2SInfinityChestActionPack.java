@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.net.chest;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
+import committee.nova.mods.avaritia.core.chest.ItemSuper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public record C2SInfinityChestActionPack(int containerId, int actionId, String id) implements CustomPacketPayload {
+public record C2SInfinityChestActionPack(int containerId, int actionId, ItemSuper itemSuper) implements CustomPacketPayload {
     public static final Type<C2SInfinityChestActionPack> TYPE = new Type<>(Const.rl("c2s_infinity_chest_action"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SInfinityChestActionPack> STREAM_CODEC = StreamCodec.composite(
@@ -26,8 +27,8 @@ public record C2SInfinityChestActionPack(int containerId, int actionId, String i
             C2SInfinityChestActionPack::containerId,
             ByteBufCodecs.INT,
             C2SInfinityChestActionPack::actionId,
-            ByteBufCodecs.STRING_UTF8,
-            C2SInfinityChestActionPack::id,
+            ItemSuper.STREAM_CODEC,
+            C2SInfinityChestActionPack::itemSuper,
             C2SInfinityChestActionPack::new
     );
 
@@ -45,7 +46,7 @@ public record C2SInfinityChestActionPack(int containerId, int actionId, String i
                     if (!player.containerMenu.stillValid(player)) {
                         Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
                     } else {
-                        ((InfinityChestMenu) player.containerMenu).action(packet.actionId, packet.id);
+                        ((InfinityChestMenu) player.containerMenu).action(packet.actionId, packet.itemSuper);
                         player.containerMenu.broadcastChanges();
                     }
                 }

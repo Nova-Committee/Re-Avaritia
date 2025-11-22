@@ -97,7 +97,7 @@ public class ServerChestManager {
                     for (File channelFile : channels) {
                         UUID channelID = UUID.fromString(channelFile.getName().substring(0, channelFile.getName().lastIndexOf(".")));
                         CompoundTag channelDat = NbtIo.readCompressed(channelFile.toPath(), NbtAccounter.unlimitedHeap());
-                        ServerChestHandler channel = new ServerChestHandler(channelDat);
+                        ServerChestHandler channel = new ServerChestHandler(this.server, channelDat);
                         playerChannels.put(channelID, channel);
                         Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.load_success", dir.getName(), channelID, "").getString());
                     }

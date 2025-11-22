@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.util;
 
 import committee.nova.mods.avaritia.common.wrappers.StorageItem;
+import committee.nova.mods.avaritia.core.chest.ItemSuper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
@@ -18,46 +19,16 @@ import java.util.stream.Collectors;
  * @Description:
  */
 public class SortUtils {
-    public static final Comparator<StorageItem> ITEM_REGISTRY_NAME = (item1, item2) -> {
-        ResourceLocation registryName1 = BuiltInRegistries.ITEM.getKey(item1.getStack().getItem());
-        ResourceLocation registryName2 = BuiltInRegistries.ITEM.getKey(item2.getStack().getItem());
-        return registryName1.getPath().compareTo(registryName2.getPath());
-    };
-    public static final Comparator<StorageItem> ITEM_COUNT = Comparator.comparingLong(StorageItem::getCount);
-    public static final Comparator<StorageItem> MOD_ID = (item1, item2) -> {
-        ResourceLocation registryName1 = BuiltInRegistries.ITEM.getKey(item1.getStack().getItem());
-        ResourceLocation registryName2 = BuiltInRegistries.ITEM.getKey(item2.getStack().getItem());
-        return registryName1.getNamespace().compareTo(registryName2.getNamespace());
-    };
-    public static final Comparator<StorageItem> ITEM_NAME = (item1, item2) -> {
-        String name1 = item1.getStack().getDisplayName().getString();
-        String name2 = item2.getStack().getDisplayName().getString();
-        return name1.compareTo(name2);
-    };
-    public static final Comparator<StorageItem> DEFAULT_1 = ITEM_REGISTRY_NAME.thenComparing(MOD_ID).thenComparing(ITEM_COUNT.reversed());
-    public static final Comparator<StorageItem> DEFAULT_2 = ITEM_NAME.thenComparing(ITEM_COUNT.reversed());
-    public static final Comparator<StorageItem> DEFAULT_3 = ITEM_COUNT.reversed().thenComparing(ITEM_NAME);
 
-    public static <K1, K2, V> Map<K2, V> convertKeys(
-            Map<K1, V> originalMap,
-            Function<K1, K2> keyConverter) {
-
-        return originalMap.entrySet().stream()
-                .map(entry -> {
-                    try {
-                        K2 newKey = keyConverter.apply(entry.getKey());
-                        return new AbstractMap.SimpleEntry<>(newKey, entry.getValue());
-                    } catch (Exception e) {
-                        return null; // 返回null，后续过滤
-                    }
-                })
-                .filter(entry -> entry != null && entry.getKey() != null)
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldVal, newVal) -> oldVal,
-                        HashMap::new
-                ));
+    public static int sortFromCount(ItemSuper s1, ItemSuper s2, Map<ItemSuper, Long> storageItems, boolean reverseOrder) {
+        int i;
+        if (reverseOrder) {
+            i = storageItems.get(s2).compareTo(storageItems.get(s1));
+        } else {
+            i = storageItems.get(s1).compareTo(storageItems.get(s2));
+        }
+        if (i == 0) i = s1.toString().compareTo(s2.toString());
+        return i;
     }
 
     public static int sortFromCount(String s1, String s2, Map<String, Long> storageItems, boolean reverseOrder) {

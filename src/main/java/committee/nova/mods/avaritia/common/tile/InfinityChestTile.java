@@ -41,9 +41,9 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     @Getter
     private byte sortType = 4;
     @Getter
-    private UUID channelID = UUID.randomUUID();
+    private UUID chestID = UUID.randomUUID();
     @Getter
-    private ServerChestHandler channel = new ServerChestHandler();
+    private ServerChestHandler chest = new ServerChestHandler();
 
     public InfinityChestTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.infinity_chest_tile.get(), pos, state);
@@ -68,8 +68,8 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         }
         if (pTag.contains("filter")) filter = pTag.getString("filter");
         if (pTag.contains("sortType")) sortType = pTag.getByte("sortType");
-        if (pTag.contains("channelID")) channelID = pTag.getUUID("channelID");
-        channel = ServerChestManager.getInstance().getChest(owner, channelID);
+        if (pTag.contains("chestID")) chestID = pTag.getUUID("chestID");
+        chest = ServerChestManager.getInstance().getChest(owner, chestID);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         }
         pTag.putString("filter", filter);
         pTag.putByte("sortType", sortType);
-        pTag.putUUID("channelID", channelID);
+        pTag.putUUID("chestID", chestID);
     }
 
     public void setOwner(UUID owner) {
@@ -104,7 +104,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     }
 
     public void setChannelId(UUID id) {
-        this.channelID = id;
+        this.chestID = id;
         this.setChanged();
     }
 

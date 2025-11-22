@@ -2,66 +2,56 @@ package committee.nova.mods.avaritia.core.chest;
 
 import committee.nova.mods.avaritia.common.net.chest.ChannelState;
 import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
-import committee.nova.mods.avaritia.util.StorageUtils;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author cnlimiter
  */
 public class ServerChestHandler extends ChestHandler {
-    private final HashSet<String> changedItems = new HashSet<>();
+    private final HashSet<ItemSuper> changedItems = new HashSet<>();
     private final HashSet<ServerPlayer> players = new HashSet<>();
     private boolean removed = false;
+    private MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
     public ServerChestHandler() {}
 
-    public ServerChestHandler(CompoundTag dat) {
+    public ServerChestHandler(MinecraftServer server, CompoundTag dat) {
+        this.server = server;
         initialize(dat);
     }
 
     @Override
-    public void onItemChanged(String itemId, boolean listChanged) {
+    public void onItemChanged(ItemSuper itemId, boolean listChanged) {
         super.onItemChanged(itemId, listChanged);
         changedItems.add(itemId);
     }
 
     public void initialize(CompoundTag dat) {
         storageItems.clear();
-        nbtDataCache.clear();
 
         if (dat.contains("items")) {
-            CompoundTag items = dat.getCompound("items");
-            items.getAllKeys().forEach(itemId -> {
-                if (items.getLong(itemId) > 0 && BuiltInRegistries.ITEM.containsKey(ResourceLocation.tryParse(StorageUtils.getBaseItemId(itemId)))) {
-                    storageItems.put(itemId, items.getLong(itemId));
-                }
-            });
+            var items = dat.getList("items", Tag.TAG_COMPOUND);
+            for (int i = 0; i < items.size(); ++i) {
+                final CompoundTag item = items.getCompound(i);
+                var itemSuper = ItemSuper.fromTag(this.server.registryAccess(), item);
+                if (itemSuper != null) storageItems.put(itemSuper, itemSuper.getRealCount());
+            }
         }
-
-        // 加载NBT数据（如果有）
-        if (dat.contains("nbtData")) {
-            CompoundTag nbtData = dat.getCompound("nbtData");
-            nbtData.getAllKeys().forEach(itemId -> {
-                Tag nbtTag = nbtData.get(itemId);
-                if (nbtTag instanceof CompoundTag compoundTag) {
-                    nbtDataCache.put(itemId, compoundTag);
-                }
-            });
-        }
-
         updateItemKeys();
     }
 
     public void addListener(ServerPlayer player) {
         players.add(player);
-        PacketDistributor.sendToAllPlayers(new S2CInfinityChestStatePack(ChannelState.FULL, buildData()));
+        PacketDistributor.sendToAllPlayers(new S2CInfinityChestStatePack(ChannelState.FULL, this.storageItems.keySet()));
     }
 
     public void removeListener(ServerPlayer player) {
@@ -71,26 +61,8 @@ public class ServerChestHandler extends ChestHandler {
     public void sendUpdate() {
         if (!hasChanged()) return;
         if (!players.isEmpty()) {
-            CompoundTag tag = new CompoundTag();
-            CompoundTag items = new CompoundTag();
-            CompoundTag nbtData = new CompoundTag();
-
-            changedItems.forEach(itemId -> {
-                items.putLong(itemId, storageItems.getOrDefault(itemId, 0L));
-
-                // 发送NBT数据（如果是NBT物品）
-                if (itemId.contains("#") && nbtDataCache.containsKey(itemId)) {
-                    Tag nbtTag = nbtDataCache.get(itemId);
-                    if (nbtTag instanceof CompoundTag compoundTag) {
-                        nbtData.put(itemId, compoundTag);
-                    }
-                }
-            });
-
-            tag.put("items", items);
-            tag.put("nbtData", nbtData);
-
-            players.forEach(player -> PacketDistributor.sendToPlayer(player, new S2CInfinityChestStatePack(ChannelState.COMMON, tag)));
+            List<ItemSuper> changed = changedItems.stream().toList();
+            players.forEach(player -> PacketDistributor.sendToPlayer(player, new S2CInfinityChestStatePack(ChannelState.COMMON, changed)));
         }
         resetChanged();
     }
@@ -106,31 +78,21 @@ public class ServerChestHandler extends ChestHandler {
     public void sendFullUpdate() {
         if (!hasChanged()) return;
         if (!players.isEmpty()) {
-            players.forEach(player -> PacketDistributor.sendToPlayer(player, new S2CInfinityChestStatePack(ChannelState.FULL, buildData())));
+            players.forEach(player -> PacketDistributor.sendToPlayer(player, new S2CInfinityChestStatePack(ChannelState.FULL, storageItems.keySet())));
         }
         changedItems.clear();
     }
 
     public CompoundTag buildData() {
-        CompoundTag items = new CompoundTag();
-        CompoundTag nbtData = new CompoundTag();
+        CompoundTag tag = new CompoundTag();
+        ListTag items = new ListTag();
 
-        storageItems.forEach((itemId, count) -> {
-            items.putLong(itemId, count);
-
-            // 发送NBT数据（如果是NBT物品）
-            if (itemId.contains("#") && nbtDataCache.containsKey(itemId)) {
-                Tag nbtTag = nbtDataCache.get(itemId);
-                if (nbtTag instanceof CompoundTag compoundTag) {
-                    nbtData.put(itemId, compoundTag);
-                }
-            }
+        storageItems.forEach((itemSuper, count) -> {
+            items.add(itemSuper.toTag(this.server.registryAccess()));
         });
 
-        CompoundTag data = new CompoundTag();
-        data.put("items", items);
-        data.put("nbtData", nbtData);
-        return data;
+        tag.put("items", items);
+        return tag;
     }
 
     public boolean isRemoved() {

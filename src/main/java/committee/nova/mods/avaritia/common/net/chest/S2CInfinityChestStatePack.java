@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.common.net.chest;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.chest.ClientChestManager;
+import committee.nova.mods.avaritia.core.chest.ItemSuper;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -11,6 +13,10 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * S2CSingularitiesPacket
  * Description:
@@ -18,14 +24,14 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public record S2CInfinityChestStatePack(ChannelState channelState, CompoundTag tag) implements CustomPacketPayload {
+public record S2CInfinityChestStatePack(ChannelState channelState, Collection<ItemSuper> items) implements CustomPacketPayload {
     public static final Type<S2CInfinityChestStatePack> TYPE = new Type<>(Const.rl("s2c_infinity_chest_state"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CInfinityChestStatePack> STREAM_CODEC = StreamCodec.composite(
             ChannelState.STREAM_CODEC,
             S2CInfinityChestStatePack::channelState,
-            ByteBufCodecs.COMPOUND_TAG,
-            S2CInfinityChestStatePack::tag,
+            ByteBufCodecs.collection(ArrayList::new, ItemSuper.STREAM_CODEC),
+            S2CInfinityChestStatePack::items,
             S2CInfinityChestStatePack::new
     );
 
@@ -39,9 +45,8 @@ public record S2CInfinityChestStatePack(ChannelState channelState, CompoundTag t
         public void handle(@NotNull S2CInfinityChestStatePack packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 switch (packet.channelState) {
-                    case COMMON -> ClientChestManager.getInstance().updateChest(packet.tag);
-                    case FULL -> ClientChestManager.getInstance().fullUpdateChest(packet.tag);
-                    case NAME -> ClientChestManager.getInstance().setUserCache(packet.tag);
+                    case COMMON -> ClientChestManager.getInstance().updateChest(packet.items);
+                    case FULL -> ClientChestManager.getInstance().fullUpdateChest(packet.items);
                 }
             });
         }
