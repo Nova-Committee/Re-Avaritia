@@ -31,12 +31,15 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         this.originalInputs = inputs;
     }
 
+    public static void invalidate() {
+        INGREDIENTS_LOADED.clear();
+    }
+
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
             if ("default".equals(group)) {
-
                 super.getIngredients().addAll(originalInputs);
                 SingularityDataManager.getInstance().getSingularities()
                         .stream()
@@ -84,7 +87,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                                         },
                                         DataResult::success
                                 )
-                                .forGetter(ShapelessTableCraftingRecipe::getInputs),
+                                .forGetter(recipe -> recipe.originalInputs),
                         Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
                 ).apply(builder, InfinityCatalystCraftRecipe::new)
         );
@@ -115,8 +118,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, InfinityCatalystCraftRecipe recipe) {
             buffer.writeUtf(recipe.group);
-            buffer.writeVarInt(recipe.getInputs().size());
-            for (var ingredient : recipe.getInputs()) {
+            buffer.writeVarInt(recipe.originalInputs.size());
+            for (var ingredient : recipe.originalInputs) {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             buffer.writeInt(recipe.count);

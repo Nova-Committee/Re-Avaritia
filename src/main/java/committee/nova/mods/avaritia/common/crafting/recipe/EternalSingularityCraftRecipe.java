@@ -46,7 +46,8 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         var ingredients = this.getIngredients();
         if (ingredients.isEmpty()) return false;
 
-        int singularityCount = SingularityDataManager.getInstance().getSingularities()
+        int singularityCount = SingularityDataManager.getInstance()
+                .getSingularities()
                 .stream()
                 .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                 .mapToInt(singularity -> 1)

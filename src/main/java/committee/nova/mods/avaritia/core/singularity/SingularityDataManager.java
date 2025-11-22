@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import lombok.Getter;
 import lombok.Setter;
@@ -119,6 +120,7 @@ public class SingularityDataManager {
             }
 
             // 使EternalSingularityCraftRecipe缓存失效
+            InfinityCatalystCraftRecipe.invalidate();
             EternalSingularityCraftRecipe.invalidate();
             // 通知奇点更新
             NeoForge.EVENT_BUS.post(new SingularityRuntimeEvent.Add(getAllSingularities(), singularity));
@@ -134,6 +136,7 @@ public class SingularityDataManager {
             LOGGER.info("Singularity: Removed runtime singularity: {}", id);
 
             // 使EternalSingularityCraftRecipe缓存失效
+            InfinityCatalystCraftRecipe.invalidate();
             EternalSingularityCraftRecipe.invalidate();
 
             // 通知奇点更新

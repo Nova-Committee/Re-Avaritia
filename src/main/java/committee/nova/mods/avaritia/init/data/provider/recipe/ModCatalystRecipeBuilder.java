@@ -113,7 +113,7 @@ public class ModCatalystRecipeBuilder implements RecipeBuilder {
                 .requirements(AdvancementRequirements.Strategy.OR);
         this.criteria.forEach(advancement$builder::addCriterion);
         InfinityCatalystCraftRecipe shapelessrecipe = new InfinityCatalystCraftRecipe(
-                this.group,
+                this.group == null ? "" : this.group,
                 this.ingredients,
                 this.count
         );

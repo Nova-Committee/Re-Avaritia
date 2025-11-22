@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.data.listener;
 import com.google.gson.JsonElement;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
+import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
@@ -50,6 +51,7 @@ public class SingularityJsonReloadListener extends SimpleJsonResourceReloadListe
      */
     private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
         // 使EternalSingularityCraftRecipe缓存失效
+        InfinityCatalystCraftRecipe.invalidate();
         EternalSingularityCraftRecipe.invalidate();
         // 通知奇点更新
         NeoForge.EVENT_BUS.post(new SingularityReloadEvent(singularities));
