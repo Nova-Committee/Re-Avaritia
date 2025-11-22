@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.compat.emi.category.CompressorCategory;
-import committee.nova.mods.avaritia.init.compat.emi.category.handler.*;
+import committee.nova.mods.avaritia.init.compat.emi.handler.*;
 import committee.nova.mods.avaritia.init.compat.emi.category.ExtremeSmithingRecipeCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.EndCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.ExtremeCraftingTableCategory;
@@ -35,7 +35,9 @@ import java.util.List;
 public class AvaritiaEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
-        registry.setDefaultComparison(ModItems.singularity.get(), Comparison.of((stack1, stack2) -> SingularityUtils.getSingularity(stack1.getItemStack()) == SingularityUtils.getSingularity(stack2.getItemStack())));
+        registry.setDefaultComparison(ModItems.singularity.get(), Comparison.of((stack1, stack2) ->
+                SingularityUtils.getSingularity(stack1.getItemStack()) == SingularityUtils.getSingularity(stack2.getItemStack()))
+        );
 
         registry.addWorkstation(VanillaEmiRecipeCategories.ANVIL_REPAIRING, EmiStack.of(ModBlocks.extreme_anvil.get()));
 

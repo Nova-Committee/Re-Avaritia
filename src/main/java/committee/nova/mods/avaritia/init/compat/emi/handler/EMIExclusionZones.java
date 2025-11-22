@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.compat.emi.category.handler;
+package committee.nova.mods.avaritia.init.compat.emi.handler;
 
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.client.screen.element.GuiElementAccess;

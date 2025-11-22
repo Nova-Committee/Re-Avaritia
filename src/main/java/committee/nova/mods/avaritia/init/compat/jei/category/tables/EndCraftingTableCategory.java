@@ -20,6 +20,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -59,8 +60,18 @@ public class EndCraftingTableCategory implements IRecipeCategory<RecipeHolder<IT
     }
 
     @Override
-    public @NotNull IDrawable getBackground() {
-        return this.background;
+    public int getWidth() {
+        return 194;
+    }
+
+    @Override
+    public int getHeight() {
+        return 134;
+    }
+
+    @Override
+    public void draw(@NotNull RecipeHolder<ITierCraftingRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        this.background.draw(guiGraphics);
     }
 
     @Override

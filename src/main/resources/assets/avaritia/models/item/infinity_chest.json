@@ -1,5 +1,5 @@
 {
-  "parent": "builtin/entity",
+  "parent": "minecraft:builtin/entity",
   "textures": {
     "particle": "avaritia:block/resource/infinity"
   },

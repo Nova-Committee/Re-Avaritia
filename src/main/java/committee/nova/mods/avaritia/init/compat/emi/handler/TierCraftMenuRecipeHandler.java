@@ -1,4 +1,4 @@
-package committee.nova.mods.avaritia.init.compat.emi.category.handler;
+package committee.nova.mods.avaritia.init.compat.emi.handler;
 
 import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;

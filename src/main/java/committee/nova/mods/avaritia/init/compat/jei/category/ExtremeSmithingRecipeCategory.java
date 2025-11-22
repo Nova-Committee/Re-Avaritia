@@ -1,17 +1,20 @@
 package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -37,8 +40,8 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHold
     private final IDrawable background;
 
     public ExtremeSmithingRecipeCategory(IGuiHelper helper) {
-        icon = helper.createDrawableItemStack(new ItemStack(ModBlocks.extreme_smithing_table.get()));
         this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 64);
+        this.icon = helper.createDrawableItemStack(new ItemStack(ModBlocks.extreme_smithing_table.get()));
     }
 
     @Override
@@ -52,10 +55,19 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHold
     }
 
     @Override
-    public @NotNull IDrawable getBackground() {
-        return this.background;
+    public int getWidth() {
+        return 170;
     }
 
+    @Override
+    public int getHeight() {
+        return 64;
+    }
+
+    @Override
+    public void draw(@NotNull RecipeHolder<ExtremeSmithingRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        this.background.draw(guiGraphics);
+    }
     @Override
     public @NotNull IDrawable getIcon() {
         return icon;

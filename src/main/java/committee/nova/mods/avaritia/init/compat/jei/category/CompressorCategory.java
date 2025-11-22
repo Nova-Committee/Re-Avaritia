@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.compat.jei.category;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ITierCraftingRecipe;
 import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -17,6 +18,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -37,8 +39,8 @@ public class CompressorCategory implements IRecipeCategory<RecipeHolder<ICompres
 
 
     public CompressorCategory(IGuiHelper helper) {
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.neutron_compressor.get()));
         this.background = helper.createDrawable(TEXTURE, 0, 0, 170, 63);
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.neutron_compressor.get()));
     }
 
 
@@ -53,10 +55,19 @@ public class CompressorCategory implements IRecipeCategory<RecipeHolder<ICompres
     }
 
     @Override
-    public @NotNull IDrawable getBackground() {
-        return this.background;
+    public int getWidth() {
+        return 170;
     }
 
+    @Override
+    public int getHeight() {
+        return 63;
+    }
+
+    @Override
+    public void draw(@NotNull RecipeHolder<ICompressorRecipe> recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        this.background.draw(guiGraphics);
+    }
     @Override
     public @NotNull IDrawable getIcon() {
         return this.icon;
