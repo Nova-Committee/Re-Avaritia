@@ -168,7 +168,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         List<Component> components;
         long count;
         components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
-        count = menu.chest.getRealItemAmount(hoveredObject);
+        count = hoveredObject.getRealCount();
 
         if (!hoveredObject.equals(lastHoveredItem)) {
             String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);

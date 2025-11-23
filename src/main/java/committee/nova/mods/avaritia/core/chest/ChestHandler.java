@@ -33,28 +33,8 @@ public abstract class ChestHandler implements IItemHandler {
         slotItemTemp = storageItems.keySet().toArray(ItemSuper[]::new);
     }
 
-    public boolean hasItem(String item) {
+    public boolean hasItem(ItemSuper item) {
         return storageItems.containsKey(item);
-    }
-
-    public int getItemAmount(String item) {
-        return (int) Long.min(Integer.MAX_VALUE, storageItems.getOrDefault(item, 0L));
-    }
-
-    public long getRealItemAmount(ItemSuper item) {
-        return storageItems.getOrDefault(item, 0L);
-    }
-
-    public int getStorageAmount(ItemSuper item) {
-        // 累加所有具有相同基础ID的物品（包括NBT变体）
-        long total = 0;
-        for (Map.Entry<ItemSuper, Long> entry : storageItems.entrySet()) {
-            ItemSuper key = entry.getKey();
-            if (key.equals(item)) {
-                total += entry.getValue();
-            }
-        }
-        return (int) Long.min(Integer.MAX_VALUE, total);
     }
 
     public int canStorageAmount(ItemStack itemStack) {
@@ -65,70 +45,63 @@ public abstract class ChestHandler implements IItemHandler {
         return (int) Math.min(Integer.MAX_VALUE, Long.MAX_VALUE - a);
     }
 
-    public boolean canStorageItem(String item) {
-        if (storageItems.containsKey(item)) {
-            return storageItems.get(item) < Long.MAX_VALUE;
+    public boolean canStorageItem(ItemStack itemStack) {
+        if (storageItems.containsKey(ItemSuper.of(itemStack))) {
+            return storageItems.get(ItemSuper.of(itemStack)) < Long.MAX_VALUE;
         } else return true;
-    }
-
-    public int canStorageItemAmount(String item) {
-        long a = storageItems.getOrDefault(item, 0L);
-        if (a == 0L) {
-           return Integer.MAX_VALUE;
-        }
-        return (int) Math.min(Integer.MAX_VALUE, Long.MAX_VALUE - a);
     }
 
     /**
      * @param itemStack 会被修改，塞不进去会有余，
-     * @return 存进去的量
      */
-    public int addItem(ItemStack itemStack) {
-        if (itemStack.isEmpty()) return 0;
-        var itemId = ItemSuper.of(itemStack);
-        int count = itemStack.getCount();
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+    public void addItem(ItemStack itemStack) {
+        var itemSuper = ItemSuper.of(itemStack);
+        if (itemStack.isEmpty() || itemSuper == null || itemSuper.getStack().isEmpty()) return;
+        if (storageItems.containsKey(itemSuper)) {
+            long storageCount = storageItems.get(itemSuper);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (remainingSpaces >= itemStack.getCount()) {
-                storageItems.replace(itemId, storageCount + itemStack.getCount());
+                var actionItemSuper = itemSuper.copyWithCount(storageCount + itemStack.getCount());
+                storageItems.replace(actionItemSuper, storageCount + itemStack.getCount());
                 itemStack.setCount(0);
-                onItemChanged(itemId, false);
-                return count;
+                onItemChanged(actionItemSuper, false);
             } else {
-                storageItems.replace(itemId, Long.MAX_VALUE);
+                var actionItemSuper = itemSuper.copyWithCount(Long.MAX_VALUE);
+                storageItems.replace(actionItemSuper, Long.MAX_VALUE);
                 itemStack.setCount(itemStack.getCount() - (int) remainingSpaces);
-                onItemChanged(itemId, false);
-                return (int) remainingSpaces;
+                onItemChanged(actionItemSuper, false);
             }
         } else {
-            storageItems.put(itemId, (long) itemStack.getCount());
+            var actionItemSuper = itemSuper.copyWithCount(itemStack.getCount());
+            storageItems.put(actionItemSuper, (long) itemStack.getCount());
             itemStack.setCount(0);
-            onItemChanged(itemId, true);
-            return count;
+            onItemChanged(actionItemSuper, true);
         }
     }
 
     /**
      * @return 成功进入的
      */
-    public long addItem(ItemSuper itemId, long count) {
-        if (itemId.getStack().isEmpty() || count == 0) return 0L;
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+    public long addItem(ItemSuper itemSuper, long count) {
+        if (itemSuper.getStack().isEmpty() || count == 0) return 0L;
+        if (storageItems.containsKey(itemSuper)) {
+            long storageCount = storageItems.get(itemSuper);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (remainingSpaces >= count) {
-                storageItems.replace(itemId, storageCount + count);
-                onItemChanged(itemId, false);
+                var actionItemSuper = itemSuper.copyWithCount(storageCount + count);
+                storageItems.replace(actionItemSuper, storageCount + count);
+                onItemChanged(actionItemSuper, false);
                 return count;
             } else {
-                storageItems.replace(itemId, Long.MAX_VALUE);
-                onItemChanged(itemId, false);
+                var actionItemSuper = itemSuper.copyWithCount(Long.MAX_VALUE);
+                storageItems.replace(actionItemSuper, Long.MAX_VALUE);
+                onItemChanged(actionItemSuper, false);
                 return remainingSpaces;
             }
         } else {
-            storageItems.put(itemId, count);
-            onItemChanged(itemId, true);
+            var actionItemSuper = itemSuper.copyWithCount(count);
+            storageItems.put(actionItemSuper, count);
+            onItemChanged(actionItemSuper, true);
             return count;
         }
     }
@@ -140,29 +113,32 @@ public abstract class ChestHandler implements IItemHandler {
      * @param count     要填充的数量，负数为扣除。
      */
     public void fillItemStack(ItemStack itemStack, int count) {
-        if (itemStack.isEmpty() || count == 0) return;
-        var itemId = ItemSuper.of(itemStack);
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+        var itemSuper = ItemSuper.of(itemStack);
+        if (itemStack.isEmpty() || itemSuper == null || count == 0) return;
+        if (storageItems.containsKey(itemSuper)) {
+            long storageCount = storageItems.get(itemSuper);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (count >= storageCount) {
-                storageItems.remove(itemId);
+                storageItems.remove(itemSuper);
                 itemStack.setCount(itemStack.getCount() + (int) storageCount);
-                onItemChanged(itemId, true);
+                onItemChanged(itemSuper, true);
             } else if (remainingSpaces < -count) {
-                storageItems.replace(itemId, Long.MAX_VALUE);
+                var actionItemSuper = itemSuper.copyWithCount(Long.MAX_VALUE);
+                storageItems.replace(actionItemSuper, Long.MAX_VALUE);
                 itemStack.setCount(itemStack.getCount() - (int) remainingSpaces);
-                onItemChanged(itemId, false);
+                onItemChanged(actionItemSuper, false);
             } else {
-                storageItems.replace(itemId, storageCount - count);
+                var actionItemSuper = itemSuper.copyWithCount(storageCount - count);
+                storageItems.replace(actionItemSuper, storageCount - count);
                 itemStack.setCount(itemStack.getCount() + count);
-                onItemChanged(itemId, false);
+                onItemChanged(actionItemSuper, false);
             }
         } else {
             if (count < 0) {
-                storageItems.put(itemId, (long) -count);
+                var actionItemSuper = itemSuper.copyWithCount(-count);
+                storageItems.put(actionItemSuper, (long) -count);
                 itemStack.setCount(itemStack.getCount() + count);
-                onItemChanged(itemId, true);
+                onItemChanged(actionItemSuper, true);
             }
         }
     }
@@ -170,80 +146,85 @@ public abstract class ChestHandler implements IItemHandler {
     /**
      * 获取物品，但不限制数量。
      */
-    public ItemStack takeItem(ItemSuper itemId, int count) {
-        if (!storageItems.containsKey(itemId) || itemId.getStack().isEmpty() || count == 0) return ItemStack.EMPTY;
-        long storageCount = storageItems.get(itemId);
+    public ItemStack takeItem(ItemSuper itemSuper, int count) {
+        if (!storageItems.containsKey(itemSuper) || itemSuper.getStack().isEmpty() || count == 0) return ItemStack.EMPTY;
+        long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
-            storageItems.replace(itemId, storageCount - count);
-            onItemChanged(itemId, false);
+            var actionItemSuper = itemSuper.copyWithCount(storageCount -count);
+            storageItems.replace(actionItemSuper, storageCount - count);
+            onItemChanged(actionItemSuper, false);
         } else {
-            storageItems.remove(itemId);
+            storageItems.remove(itemSuper);
             count = (int) storageCount;
-            onItemChanged(itemId, true);
+            onItemChanged(itemSuper, true);
         }
-        return itemId.getStack().copyWithCount(count);
+        return itemSuper.getStack().copyWithCount(count);
     }
 
     /**
      * 获取物品，数量限制在叠堆最大值。
      */
-    public ItemStack saveTakeItem(ItemSuper itemId, int count) {
-        if (!storageItems.containsKey(itemId) || itemId.getStack().isEmpty() || count == 0) return ItemStack.EMPTY;
-        ItemStack itemStack = itemId.getStack();
+    public ItemStack saveTakeItem(ItemSuper itemSuper, int count) {
+        if (!storageItems.containsKey(itemSuper) || itemSuper.getStack().isEmpty() || count == 0) return ItemStack.EMPTY;
+        ItemStack itemStack = itemSuper.getStack();
         count = Integer.min(count, itemStack.getMaxStackSize());
-        long storageCount = storageItems.get(itemId);
+        long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
-            storageItems.replace(itemId, storageCount - count);
-            onItemChanged(itemId, false);
+            var actionItemSuper = itemSuper.copyWithCount(storageCount -count);
+            storageItems.replace(actionItemSuper, storageCount - count);
+            onItemChanged(actionItemSuper, false);
         } else {
-            storageItems.remove(itemId);
+            storageItems.remove(itemSuper);
             count = (int) storageCount;
-            onItemChanged(itemId, true);
+            onItemChanged(itemSuper, true);
         }
         itemStack.setCount(count);
         return itemStack;
     }
 
-    public ItemStack saveTakeItem(ItemSuper itemId, boolean half) {
-        if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
-        ItemStack itemStack = itemId.getStack();
+    public ItemStack saveTakeItem(ItemSuper itemSuper, boolean half) {
+        if (!storageItems.containsKey(itemSuper)) return ItemStack.EMPTY;
+        ItemStack itemStack = itemSuper.getStack();
         int count = half ? (itemStack.getMaxStackSize() + 1) / 2 : itemStack.getMaxStackSize();
-        long storageCount = storageItems.get(itemId);
+        long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
-            storageItems.replace(itemId, storageCount - count);
-            onItemChanged(itemId, false);
+            var actionItemSuper = itemSuper.copyWithCount(storageCount -count);
+            storageItems.replace(actionItemSuper, storageCount - count);
+            onItemChanged(actionItemSuper, false);
         } else {
-            storageItems.remove(itemId);
+            storageItems.remove(itemSuper);
             count = (int) storageCount;
-            onItemChanged(itemId, true);
+            onItemChanged(itemSuper, true);
         }
         itemStack.setCount(count);
         return itemStack;
     }
 
     public void removeItem(ItemStack itemStack) {
-        if (itemStack.isEmpty()) return;
-        var itemId = ItemSuper.of(itemStack);
-        if (!storageItems.containsKey(itemId)) return;
-        long storageCount = storageItems.get(itemId);
+        var itemSuper = ItemSuper.of(itemStack);
+        if (itemStack.isEmpty() || itemSuper == null) return;
+        if (!storageItems.containsKey(itemSuper)) return;
+        long storageCount = storageItems.get(itemSuper);
         if (itemStack.getCount() < storageCount) {
-            storageItems.replace(itemId, storageCount - itemStack.getCount());
-            onItemChanged(itemId, false);
+            var actionItemSuper = itemSuper.copyWithCount(storageCount - itemStack.getCount());
+            storageItems.replace(actionItemSuper, storageCount - itemStack.getCount());
+            onItemChanged(actionItemSuper, false);
         } else {
-            storageItems.remove(itemId);
-            onItemChanged(itemId, true);
+            storageItems.remove(itemSuper);
+            onItemChanged(itemSuper, true);
         }
     }
 
-    public void removeItem(ItemSuper itemId, long count) {
-        if (!storageItems.containsKey(itemId)) return;
-        long storageCount = storageItems.get(itemId);
+    public void removeItem(ItemSuper itemSuper, long count) {
+        if (!storageItems.containsKey(itemSuper)) return;
+        long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
-            storageItems.replace(itemId, storageCount - count);
-            onItemChanged(itemId, false);
+            var actionItemSuper = itemSuper.copyWithCount(storageCount - count);
+            storageItems.replace(itemSuper, storageCount - count);
+            onItemChanged(itemSuper, false);
         } else {
-            storageItems.remove(itemId);
-            onItemChanged(itemId, true);
+            storageItems.remove(itemSuper);
+            onItemChanged(itemSuper, true);
         }
     }
 
@@ -267,24 +248,32 @@ public abstract class ChestHandler implements IItemHandler {
 
     @Override
     public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack itemStack, boolean simulate) {
-        if (itemStack.isEmpty()) return itemStack;
-        var itemId = ItemSuper.of(itemStack);
+        var itemSuper = ItemSuper.of(itemStack);
+        if (itemStack.isEmpty() || itemSuper == null) return itemStack;
         ItemStack remainingStack = ItemStack.EMPTY;
-        if (storageItems.containsKey(itemId)) {
-            long storageCount = storageItems.get(itemId);
+        if (storageItems.containsKey(itemSuper)) {
+            long storageCount = storageItems.get(itemSuper);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
             if (remainingSpaces >= itemStack.getCount()) {
-                if (!simulate) storageItems.replace(itemId, storageCount + itemStack.getCount());
+                if (!simulate) {
+                    var actionItemSuper = itemSuper.copyWithCount(storageCount + itemStack.getCount());
+                    storageItems.replace(actionItemSuper, storageCount + itemStack.getCount());
+                    onItemChanged(actionItemSuper, false);
+                }
             } else {
-                if (!simulate) storageItems.replace(itemId, Long.MAX_VALUE);
+                if (!simulate) {
+                    var actionItemSuper = itemSuper.copyWithCount(Long.MAX_VALUE);
+                    storageItems.replace(actionItemSuper, Long.MAX_VALUE);
+                    onItemChanged(actionItemSuper, false);
+                }
                 remainingStack = itemStack.copy();
                 remainingStack.setCount(itemStack.getCount() - (int) remainingSpaces);
             }
-            if (!simulate) onItemChanged(itemId, false);
         } else {
             if (!simulate) {
-                storageItems.put(itemId, (long) itemStack.getCount());
-                onItemChanged(itemId, true);
+                var actionItemSuper = itemSuper.copyWithCount(itemStack.getCount());
+                storageItems.put(actionItemSuper, (long) itemStack.getCount());
+                onItemChanged(actionItemSuper, true);
             }
         }
         return remainingStack;
@@ -294,20 +283,21 @@ public abstract class ChestHandler implements IItemHandler {
     @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
-        var itemId = slotItemTemp[slot - 27];
-        var itemStack = itemId.getStack();
-        if (!storageItems.containsKey(itemId)) return ItemStack.EMPTY;
+        var itemSuper = slotItemTemp[slot - 27];
+        var itemStack = itemSuper.getStack();
+        if (!storageItems.containsKey(itemSuper)) return ItemStack.EMPTY;
         int count = Math.min(itemStack.getMaxStackSize(), amount);
-        long storageCount = storageItems.get(itemId);
+        long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
             if (!simulate) {
-                storageItems.replace(itemId, storageCount - count);
-                onItemChanged(itemId, false);
+                var actionItemSuper = itemSuper.copyWithCount(storageCount - count);
+                storageItems.replace(actionItemSuper, storageCount - count);
+                onItemChanged(actionItemSuper, false);
             }
         } else {
             if (!simulate) {
-                storageItems.remove(itemId);
-                onItemChanged(itemId, true);
+                storageItems.remove(itemSuper);
+                onItemChanged(itemSuper, true);
             }
             count = (int) storageCount;
         }

@@ -347,7 +347,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
     public void onCloneFormDummySlot(ItemSuper id) {
         if (id.getStack().isEmpty() || !player.isCreative()) return;
-        chest.addItem(id, Long.max(chest.getRealItemAmount(id), 64L));
+        chest.addItem(id, Long.max(id.getRealCount(), 64L));
     }
 
     public void onDragCloneDummySlot(ItemSuper id) {

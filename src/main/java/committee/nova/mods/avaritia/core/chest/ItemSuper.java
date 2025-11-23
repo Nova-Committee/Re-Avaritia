@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
@@ -62,6 +63,10 @@ public class ItemSuper {
         }
 
         return new ItemSuper(stack.copy(), stack.getCount());
+    }
+
+    public ItemSuper copyWithCount(long realCount){
+        return new ItemSuper(stack.copy(), realCount);
     }
 
     public boolean hasComponents() {
