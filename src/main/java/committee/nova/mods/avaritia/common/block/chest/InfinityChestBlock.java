@@ -1,8 +1,10 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
+import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.ChatFormatting;
@@ -12,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -158,13 +161,16 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public void playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
-        if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof InfinityChestTile infinityChestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-            ItemStack stack = new ItemStack(this);
-            infinityChestTile.saveToItem(stack);
-            popResource(pLevel, pPos, stack);
+    public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
+        if (pLevel instanceof ServerLevel serverLevel && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+            var pStack = new ItemStack(ModBlocks.infinity_chest.get().asItem());
+
+            if (blockEntity instanceof InfinityChestTile infinityChestTile) {
+                infinityChestTile.saveToItem(pStack);
+            }
+            popResource(serverLevel, pPos, pStack);
+            state.spawnAfterBreak(serverLevel, pPos, tool, false);
         }
-        super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
 
     @Override
