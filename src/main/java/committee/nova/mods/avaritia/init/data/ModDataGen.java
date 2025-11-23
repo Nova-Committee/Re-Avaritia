@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
  */
 public class ModDataGen {
 
-
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();

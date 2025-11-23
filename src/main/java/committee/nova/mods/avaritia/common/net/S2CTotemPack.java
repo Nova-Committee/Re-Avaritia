@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -56,14 +55,7 @@ public class S2CTotemPack {
                     }
                 }
             });
-            playTotem(this.stack, this.entityId); //处理服务端发送给客户端的消息
         });
         ctx.get().setPacketHandled(true);
-    }
-
-    //播放图腾动画，声音，粒子
-    @OnlyIn(Dist.CLIENT)
-    public static void playTotem(ItemStack stack, int entityId) {
-
     }
 }

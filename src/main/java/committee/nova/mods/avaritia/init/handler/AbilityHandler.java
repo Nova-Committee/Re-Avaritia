@@ -44,9 +44,8 @@ public class AbilityHandler {
 
 
     @SubscribeEvent
-    public static void updateAbilities(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && event.side.isServer()) {
-            var player = event.player;
+    public static void updateAbilities(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity() instanceof Player player) {
             String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
 
             boolean hasHelmet = isPlayerWearing(player, HEAD, item -> item instanceof InfinityArmorItem);
