@@ -154,7 +154,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
 
     @Override
     public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
-        if (pPlacer instanceof ServerPlayer player && !pStack.isComponentsPatchEmpty()) {
+        if (pPlacer instanceof ServerPlayer player && pStack.isComponentsPatchEmpty()) {
             InfinityChestTile blockEntity = (InfinityChestTile) pLevel.getBlockEntity(pPos);
             if (blockEntity != null) {
                 blockEntity.setOwner(player.getUUID());

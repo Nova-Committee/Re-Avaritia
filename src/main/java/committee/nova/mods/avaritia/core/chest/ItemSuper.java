@@ -86,12 +86,12 @@ public class ItemSuper {
     }
 
     public static void writeToPacket(RegistryFriendlyByteBuf data, ItemSuper itemSuper) {
-        ItemStack.STREAM_CODEC.encode(data, itemSuper.stack);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(data, itemSuper.stack);
         data.writeLong(itemSuper.realCount);
     }
 
     public static ItemSuper fromPacket(RegistryFriendlyByteBuf data) {
-        var stack = ItemStack.STREAM_CODEC.decode(data);
+        var stack = ItemStack.OPTIONAL_STREAM_CODEC.decode(data);
         var realCount = data.readLong();
         return new ItemSuper(stack, realCount);
     }

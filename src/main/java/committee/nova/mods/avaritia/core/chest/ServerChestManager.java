@@ -99,7 +99,7 @@ public class ServerChestManager {
                         CompoundTag channelDat = NbtIo.readCompressed(channelFile.toPath(), NbtAccounter.unlimitedHeap());
                         ServerChestHandler channel = new ServerChestHandler(this.server, channelDat);
                         playerChannels.put(channelID, channel);
-                        Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.load_success", dir.getName(), channelID, "").getString());
+                        Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.load_success", dir.getName(), channelID.toString(), "").getString());
                     }
                     chestList.put(player, playerChannels);
                 }
@@ -126,7 +126,7 @@ public class ServerChestManager {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.save_success", uuid, id, "").getString());
+                    Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.save_success", uuid.toString(), id.toString(), "").getString());
                 });
             });
 
@@ -152,7 +152,7 @@ public class ServerChestManager {
             chestList.put(uuid, playerChannels);
         }
         playerChannels.put(chestId, new ServerChestHandler());
-        Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.add_success", uuid, chestId, "").getString());
+        Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.add_success", uuid.toString(), chestId.toString(), "").getString());
     }
 
 
