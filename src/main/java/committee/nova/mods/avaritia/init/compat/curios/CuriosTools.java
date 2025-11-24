@@ -17,10 +17,12 @@ import java.util.function.Predicate;
 
 public class CuriosTools {
 
-    public static ItemStack getFirstItemFromCuriosInv(Player player, Predicate<ItemStack> is) {
+    public static ItemStack getFirstItemFromCuriosInv(Player player, Predicate<ItemStack> filter) {
         return CuriosApi.getCuriosInventory(player)
-                .map(curiosInventory -> curiosInventory.findCurios(is).get(0).stack())
-                .orElse(ItemStack.EMPTY);
+            .map(handler -> handler.findFirstCurio(filter)
+                    .map(SlotResult::stack)
+                    .orElse(ItemStack.EMPTY))
+            .orElse(ItemStack.EMPTY);
     }
 
     // TODO 我不知道原代码创建的CuriosProvider具体是做什么的，所以随便取了个方法名，稍后可以自己改一下
