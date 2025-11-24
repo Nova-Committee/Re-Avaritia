@@ -23,15 +23,25 @@ import java.util.List;
 public class ModArmorMaterial {
     public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, Const.MOD_ID);
 
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> infinite_armor = ARMOR_MATERIALS.register("infinite_armor", () ->
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> infinity_armor = ARMOR_MATERIALS.register("infinity_armor", () ->
                     new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266655_) -> {
-                        p_266655_.put(ArmorItem.Type.BOOTS, 3);
-                        p_266655_.put(ArmorItem.Type.LEGGINGS, 6);
-                        p_266655_.put(ArmorItem.Type.CHESTPLATE, 8);
-                        p_266655_.put(ArmorItem.Type.HELMET, 3);
-                    }), 15, SoundEvents.ARMOR_EQUIP_DIAMOND,
+                        p_266655_.put(ArmorItem.Type.BOOTS, 10);
+                        p_266655_.put(ArmorItem.Type.LEGGINGS, 10);
+                        p_266655_.put(ArmorItem.Type.CHESTPLATE, 10);
+                        p_266655_.put(ArmorItem.Type.HELMET, 10);
+                    }), 20, SoundEvents.ARMOR_EQUIP_DIAMOND,
                             () -> Ingredient.of(ModItems.infinity_ingot.get()), List.of(new ArmorMaterial.Layer(Const.rl("infinity_armor"))),1.0f, 1.0f)
             );
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> infinity_horse_armor = ARMOR_MATERIALS.register("infinity_horse_armor", () ->
+            new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266655_) -> {
+                p_266655_.put(ArmorItem.Type.BOOTS, 5);
+                p_266655_.put(ArmorItem.Type.LEGGINGS, 5);
+                p_266655_.put(ArmorItem.Type.CHESTPLATE, 5);
+                p_266655_.put(ArmorItem.Type.HELMET, 5);
+            }), 10, SoundEvents.ARMOR_EQUIP_DIAMOND,
+                    () -> Ingredient.of(ModItems.infinity_ingot.get()), List.of(new ArmorMaterial.Layer(Const.rl("infinity_armor"))),1.0f, 1.0f)
+    );
+
     private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266653_) -> {
         p_266653_.put(ArmorItem.Type.BOOTS, 13);
         p_266653_.put(ArmorItem.Type.LEGGINGS, 15);

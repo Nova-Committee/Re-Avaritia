@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infinite_armor;
+import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infinity_horse_armor;
 
 /**
  * InfinityHorseArmorItem
@@ -35,7 +35,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
     private final InitEnchantment ALL_DAMAGE_PROTECTION;
     private final InitEnchantment FALL_PROTECTION;
     public NeutronHorseArmorItem() {
-        super(infinite_armor, BodyType.EQUESTRIAN, false,
+        super(infinity_horse_armor, BodyType.EQUESTRIAN, false,
                 new Item.Properties()
                         .stacksTo(1)
                         .rarity(ModRarities.RARE)
@@ -89,7 +89,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
 
     @Override
     public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
-        if (infinite_armor.value().layers().contains(layer)) return Res.NEUTRON_HORSE_ARMOR;
+        if (infinity_horse_armor.value().layers().contains(layer)) return Res.NEUTRON_HORSE_ARMOR;
         else return super.getArmorTexture(stack, entity, slot, layer, innerModel);
     }
 }

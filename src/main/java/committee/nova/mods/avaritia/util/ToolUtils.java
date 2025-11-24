@@ -799,6 +799,7 @@ public class ToolUtils {
      * @param randomTicks 随机刻
      * from Torcherino
      */
+    @Deprecated
     public static void speedBlockTick(BlockPos pos, ServerLevel level, int speed, int randomTicks) {
         int random_tick_rate = 4;
         var targetState = level.getBlockState(pos);

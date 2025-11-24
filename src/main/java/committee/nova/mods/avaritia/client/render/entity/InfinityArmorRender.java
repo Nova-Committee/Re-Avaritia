@@ -106,6 +106,7 @@ public class InfinityArmorRender<T extends LivingEntity, M extends EntityModel<T
     public void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, @NotNull T livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         this.getParentModel().copyPropertiesTo((EntityModel<T>) this.model);
         this.setModelProperties(livingEntity, ageInTicks);
+        this.model.prepareMobModel(livingEntity, limbSwing, limbSwingAmount, partialTicks);
         this.model.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         poseStack.pushPose();
         VertexConsumer vertexconsumer = multiBufferSource.getBuffer(RenderType.armorCutoutNoCull(Res.WING_TEX));

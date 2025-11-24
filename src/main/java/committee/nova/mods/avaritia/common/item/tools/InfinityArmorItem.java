@@ -36,7 +36,7 @@ import java.util.List;
 public class InfinityArmorItem extends ArmorItem {
     public InfinityArmorItem(Type pSlot) {
         super(
-                ModArmorMaterial.infinite_armor,
+                ModArmorMaterial.infinity_armor,
                 pSlot,
                 new Properties()
                         .rarity(ModRarities.COSMIC.getValue())
@@ -101,6 +101,6 @@ public class InfinityArmorItem extends ArmorItem {
 
 //    @Override
 //    public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
-//        return Const.rl("textures/models/infinity_armor.png");
+//        return Const.rl("textures/models/armor/infinity_armor.png");
 //    }
 }

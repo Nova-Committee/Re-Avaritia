@@ -27,6 +27,7 @@ public class Res {
 
     public static final ResourceLocation NEUTRON_HORSE_ARMOR = Const.rl("textures/item/armor/horse/neutron_horse_armor.png");
 
+    public static final ResourceLocation INFINITY_ARMOR_TEX = Const.rl("textures/models/armor/infinity_armor.png");
     public static final ResourceLocation EYE_TEX = Const.rl("textures/models/armor/infinity_armor_eyes.png");
     public static final ResourceLocation WING_TEX = Const.rl("textures/models/armor/infinity_armor_wing.png");
     public static final ResourceLocation WING_GLOW_TEX = Const.rl("textures/models/armor/infinity_armor_wing_glow.png");
