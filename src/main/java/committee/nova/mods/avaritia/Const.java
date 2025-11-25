@@ -3,8 +3,8 @@ package committee.nova.mods.avaritia;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
-import committee.nova.mods.avaritia.common.ingredient.ItemIngredient;
 import committee.nova.mods.avaritia.common.ingredient.SimpleDatagenIngredient;
+import committee.nova.mods.avaritia.common.ingredient.StackIngredient;
 import committee.nova.mods.avaritia.init.registry.enums.Mods;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -50,8 +50,12 @@ public class Const {
         return ModList.get().isLoaded(name);
     }
 
-    public static Ingredient getIngredient(Mods modid, String name) {
+    public static Ingredient getDataIngredient(Mods modid, String name) {
         return new SimpleDatagenIngredient(modid, name).toVanilla();
+    }
+
+    public static Ingredient getStackIngredient(ItemStack stack) {
+        return new StackIngredient(stack).toVanilla();
     }
 
     public static Item getItem(String modid, String name) {

@@ -14,7 +14,14 @@
       "item": "avaritia:denser_neutron_collector"
     },
     "Y": {
-      "item": "avaritia:singularity"
+      "type": "avaritia:stack",
+      "item": {
+        "components": {
+          "avaritia:singularity_id": "avaritia:redstone"
+        },
+        "count": 1,
+        "id": "avaritia:singularity"
+      }
     }
   },
   "pattern": [

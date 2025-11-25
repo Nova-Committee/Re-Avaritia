@@ -11,7 +11,14 @@
       "item": "avaritia:blaze_cube"
     },
     "D": {
-      "item": "avaritia:singularity"
+      "type": "avaritia:stack",
+      "item": {
+        "components": {
+          "avaritia:singularity_id": "avaritia:gold"
+        },
+        "count": 1,
+        "id": "avaritia:singularity"
+      }
     },
     "E": {
       "item": "avaritia:blaze_cube_block"

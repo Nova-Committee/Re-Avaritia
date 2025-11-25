@@ -5,8 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.init.registry.ModIngredients;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -22,20 +23,20 @@ import java.util.stream.Stream;
  * @description
  * @date 2024/6/16 下午2:02
  */
-public record ItemIngredient(ResourceLocation item) implements ICustomIngredient {
-    public static final MapCodec<ItemIngredient> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("item").forGetter(ItemIngredient::item)
-    ).apply(instance, ItemIngredient::new));
+public record StackIngredient(ItemStack item) implements ICustomIngredient {
+    public static final MapCodec<StackIngredient> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ItemStack.STRICT_CODEC.fieldOf("item").forGetter(StackIngredient::item)
+    ).apply(instance, StackIngredient::new));
 
-    public static final StreamCodec<ByteBuf, ItemIngredient> STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(ItemIngredient::new, ItemIngredient::item);
+    public static final StreamCodec<RegistryFriendlyByteBuf, StackIngredient> STREAM_CODEC = ItemStack.STREAM_CODEC.map(StackIngredient::new, StackIngredient::item);
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return stack.is(BuiltInRegistries.ITEM.get(this.item));
+        return ItemStack.isSameItem(stack, this.item);
     }
 
     @Override
     public @NotNull Stream<ItemStack> getItems() {
-        return Stream.of(BuiltInRegistries.ITEM.containsKey(this.item) ? new ItemStack(BuiltInRegistries.ITEM.get(this.item)) : ItemStack.EMPTY);
+        return Stream.of(this.item);
     }
 
     @Override
@@ -45,6 +46,6 @@ public record ItemIngredient(ResourceLocation item) implements ICustomIngredient
 
     @Override
     public @NotNull IngredientType<?> getType() {
-        return ModIngredients.NBT_ITEM.get();
+        return ModIngredients.STACK_ITEM.get();
     }
 }
