@@ -8,11 +8,14 @@ import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 
@@ -22,7 +25,7 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalShovelItem extends ShovelItem implements ITooltip {
+public class CrystalShovelItem extends ShovelItem implements ITooltip, ICurioItem {
     public CrystalShovelItem() {
         super(ModToolTiers.CRYSTAL,
                 new Properties()
@@ -31,6 +34,22 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
+    }
+
+    @Override
+    public void curioTick(SlotContext slotContext, ItemStack stack) {
+        LivingEntity entity = slotContext.entity();
+        if (entity instanceof Player player && !player.level().isClientSide) {
+            player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+
+            List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
+            for (MobEffectInstance potion : Collections2.filter(effects, potion ->
+                    (potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN) ||
+                            potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)))) {
+                player.removeEffect(potion.getEffect());
+            }
+        }
     }
 
     @Override
