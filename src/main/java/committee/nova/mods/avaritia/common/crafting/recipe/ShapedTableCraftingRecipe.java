@@ -37,8 +37,8 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     private final boolean compatible;
     private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
 
-    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack output) {
-        this(pattern, output, 0, false);
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result) {
+        this(pattern, result, 0, false);
     }
 
     public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result, int tier, boolean compatible) {

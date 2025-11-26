@@ -18,6 +18,5 @@ public interface ExtremeSmithingRecipeSchema {
     RecipeKey<ItemStack> ADDITION = ItemStackComponent.ITEM_STACK.inputKey("addition");
 
     RecipeSchema SCHEMA = new RecipeSchema(RESULT, TEMPLATE, BASE, ADDITION)
-            .uniqueId(RESULT)
             .constructor(RESULT, TEMPLATE, BASE, ADDITION);
 }

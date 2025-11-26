@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe {
     private static final Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
-    public NonNullList<Ingredient> inputs = NonNullList.create();
+    public NonNullList<Ingredient> inputs;
     public final boolean custom;
 
     public EternalSingularityCraftRecipe(NonNullList<Ingredient> inputs, boolean custom) {
@@ -39,54 +39,6 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
 
     public static void invalidate() {
         INGREDIENTS_LOADED.clear();
-    }
-
-    @Override
-    public boolean matches(@NotNull TierInput input, @NotNull Level level) {
-        var ingredients = this.getIngredients();
-        if (ingredients.isEmpty()) return false;
-
-        int singularityCount = SingularityDataManager.getInstance()
-                .getSingularities()
-                .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .mapToInt(singularity -> 1)
-                .sum();
-
-        boolean[] found = new boolean[singularityCount];
-        int validItems = 0;
-
-        for (int i = 0; i < input.size(); i++) {
-            ItemStack stack = input.getItem(i);
-            if (!stack.isEmpty()) {
-                validItems++;
-                boolean matched = false;
-                int index = 0;
-                for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
-                    if (singularity.getIngredient() != Ingredient.EMPTY) {
-                        ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                        if (ItemStack.isSameItem(stack, singularityStack)) {
-                            if (!found[index]) {
-                                found[index] = true;
-                                matched = true;
-                                break;
-                            }
-                        }
-                        index++;
-                    }
-                }
-                if (!matched) {
-                    return false;
-                }
-            }
-        }
-
-        for (boolean b : found) {
-            if (!b) return false;
-        }
-
-
-        return validItems == singularityCount;
     }
 
     @Override
