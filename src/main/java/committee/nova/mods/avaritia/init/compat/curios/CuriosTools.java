@@ -6,6 +6,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -18,14 +19,11 @@ import java.util.function.Predicate;
 
 public class CuriosTools {
 
-    public static ItemStack getFirstItemFromCuriosInv(Player player, Predicate<ItemStack> filter) {
-        return CuriosApi.getCuriosInventory(player)
-            .map(handler -> handler.findFirstCurio(filter)
-                    .map(SlotResult::stack)
-                    .orElse(ItemStack.EMPTY))
-            .orElse(ItemStack.EMPTY);
+    public static ItemStack getFirstItemFromCuriosInv(LivingEntity player, Predicate<ItemStack> filter) {
+        return CuriosApi.getCuriosHelper().findFirstCurio(player, filter)
+                .map(SlotResult::stack)
+                .orElse(ItemStack.EMPTY);
     }
-
     // TODO 我不知道原代码创建的CuriosProvider具体是做什么的，所以随便取了个方法名，稍后可以自己改一下
     public static ICapabilityProvider getIDKCuriosProvider(ItemStack stack) {
 
