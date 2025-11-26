@@ -5,7 +5,6 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -37,7 +36,6 @@ public class CompressedChestTile extends ChestBlockEntity {
 
     protected final int SIZE = 243;
     private final ContainerOpenersCounter openersCounter;
-    protected CompoundTag chestTag;
 
     protected CompressedChestTile(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
@@ -131,13 +129,5 @@ public class CompressedChestTile extends ChestBlockEntity {
     protected void signalOpenCount(Level pLevel, @NotNull BlockPos pPos, BlockState pState, int pEventId, int pEventParam) {
         Block block = pState.getBlock();
         pLevel.blockEvent(pPos, block, 1, pEventParam);
-    }
-
-    public CompoundTag getChestTag() {
-        return chestTag;
-    }
-
-    public void setChestTag(CompoundTag chestTag) {
-        this.chestTag = chestTag;
     }
 }

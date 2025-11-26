@@ -1,6 +1,9 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
 import committee.nova.mods.avaritia.common.tile.CompressedChestTile;
+import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -10,9 +13,12 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,17 +28,23 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -57,6 +69,7 @@ public class CompressedChestBlock extends ChestBlock {
 
             if (tile instanceof CompressedChestTile chestTile) {
                 player.openMenu(chestTile, pos);
+                player.awardStat(Stats.OPEN_CHEST);
             }
         }
         return InteractionResult.SUCCESS;
@@ -76,81 +89,27 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull LivingEntity pPlacer, @NotNull ItemStack pStack) {
-        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
-        if (pLevel.isClientSide()) return;
-        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (pStack.get(DataComponents.BLOCK_ENTITY_DATA) != CustomData.EMPTY && blockentity instanceof CompressedChestTile chestTile) {
-            chestTile.setChestTag(pStack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag());
-        }
-    }
-
-    @Override
-    public void onPlace(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pOldState, boolean pMovedByPiston) {
-        if (pLevel.isClientSide()) return;
-        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        CompoundTag chestTag, nameTag = null, countTag = null, nbtTag = null;
-        if (blockentity instanceof CompressedChestTile chestTile && chestTile.getChestTag() != null) {
-            chestTag = chestTile.getChestTag();
-            if (chestTag.contains("name")) nameTag = chestTag.getCompound("name");
-            if (chestTag.contains("count")) countTag = chestTag.getCompound("count");
-            if (chestTag.contains("nbt")) nbtTag = chestTag.getCompound("nbt");
-        }
-        if (nameTag != null && countTag != null) {
-            Container container = (Container) blockentity;
-            for (String index : nameTag.getAllKeys()) {
-                var name = nameTag.getString(index);
-                var newItem = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(name));
-                ItemStack is = new ItemStack(newItem);
-                is.setCount(countTag.getInt(index));
-                if (nbtTag != null && !nbtTag.getCompound(index).isEmpty()) {
-                    CustomData.set(DataComponents.BLOCK_ENTITY_DATA, is, nbtTag.getCompound(index));
-                }
-                container.setItem(Integer.parseInt(index), is);
-            }
-        }
-    }
-
-    @Override
-    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            CompoundTag chestTag = new CompoundTag();
-            int stackCount = 0;
-            if (blockentity instanceof Container container) {
-                CompoundTag nameTag = new CompoundTag();
-                CompoundTag countTag = new CompoundTag();
-                CompoundTag nbtTag = new CompoundTag();
-                for (int i = 0; i < container.getContainerSize(); ++i) {
-                    var item = container.getItem(i);
-                    if (item.isEmpty()) continue;
-                    stackCount++;
-                    nameTag.putString(String.valueOf(i), BuiltInRegistries.ITEM.getKey(item.getItem()).toString());
-                    countTag.putInt(String.valueOf(i), item.getCount());
-                    nbtTag.put(String.valueOf(i), item.get(DataComponents.BLOCK_ENTITY_DATA).copyTag());
-                }
-                chestTag.put("name", nameTag);
-                chestTag.put("count", countTag);
-                chestTag.put("nbt", nbtTag);
-                chestTag.putInt("stackCount", stackCount);
+            if (pState.hasBlockEntity()) pLevel.removeBlockEntity(pPos);
+            if (blockentity instanceof CompressedChestTile) {
+                pLevel.updateNeighbourForOutputSignal(pPos, pState.getBlock());
             }
-
-            if (blockentity instanceof CompressedChestTile chestTile) {
-                chestTile.setChestTag(chestTag);
-            }
-            pLevel.removeBlockEntity(pPos);
         }
     }
 
     @Override
-    public @NotNull BlockState playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
-        if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof CompressedChestTile chestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-            ItemStack stack = new ItemStack(this);
-            chestTile.saveToItem(stack, pLevel.registryAccess());
-            popResource(pLevel, pPos, stack);
+    public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
+        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof CompressedChestTile chestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+            var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
+            pStack.applyComponents(chestTile.collectComponents());
+            popResource(serverLevel, pPos, pStack);
+            state.spawnAfterBreak(serverLevel, pPos, tool, false);
         }
-        return super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
+
+
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
@@ -173,5 +132,12 @@ public class CompressedChestBlock extends ChestBlock {
         if (j - i > 0) {
             tooltipComponents.add(Component.translatable("container.shulkerBox.more", j - i).withStyle(ChatFormatting.ITALIC));
         }
+    }
+
+    @Override
+    public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state) {
+        ItemStack itemstack = super.getCloneItemStack(level, pos, state);
+        level.getBlockEntity(pos, ModTileEntities.compressed_chest_tile.get()).ifPresent(chestTile -> chestTile.saveToItem(itemstack, level.registryAccess()));
+        return itemstack;
     }
 }
