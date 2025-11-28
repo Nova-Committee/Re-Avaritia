@@ -37,8 +37,8 @@ ServerEvents.recipes(
         })
         event.custom({
             type: 'avaritia:compressor',
-            ingredient: { tag: 'forge:ingots/copper' },
-            result: { item: 'avaritia:singularity', count: 2 , nbt: {Id: 'avaritia:copper'}},
+            ingredient: { tag: 'c:ingots/copper' },
+            result: { item: 'avaritia:singularity[avaritia:singularity_id=\"avaritia:copper\"]', count: 2},
             inputCount: 2000,
             timeCost: 300
         })

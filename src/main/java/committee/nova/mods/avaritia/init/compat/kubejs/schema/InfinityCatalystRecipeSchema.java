@@ -1,17 +1,13 @@
 package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
-import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.init.compat.kubejs.ModKubeRecipe;
-import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.*;
-import dev.latvian.mods.kubejs.recipe.schema.KubeRecipeFactory;
+import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
+import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
+import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
+import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.util.IntBounds;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static committee.nova.mods.avaritia.init.compat.kubejs.KjsUtils.optionalList;

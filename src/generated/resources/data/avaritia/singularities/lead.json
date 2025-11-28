@@ -4,7 +4,7 @@
       "type": "neoforge:not",
       "value": {
         "type": "neoforge:tag_empty",
-        "tag": "forge:ingots/lead"
+        "tag": "c:ingots/lead"
       }
     }
   ],
@@ -14,7 +14,7 @@
   ],
   "enabled": true,
   "ingredient": {
-    "tag": "forge:ingots/lead"
+    "tag": "c:ingots/lead"
   },
   "name": "singularity.avaritia.lead",
   "recipeEnabled": true,

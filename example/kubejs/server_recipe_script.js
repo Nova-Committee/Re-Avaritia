@@ -27,7 +27,7 @@ ServerEvents.recipes(
         );
 
         // 中子态素压缩机
-        avaritia.compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
+        avaritia.compressor(Ingredient.of("#c:ingots/copper"), Item.of("avaritia:singularity[avaritia:singularity_id=\"avaritia:copper\"]"))
             .inputCount(2000)
             .timeCost(240)
         ;

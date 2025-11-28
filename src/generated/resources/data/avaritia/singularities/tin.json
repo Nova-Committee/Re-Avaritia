@@ -4,7 +4,7 @@
       "type": "neoforge:not",
       "value": {
         "type": "neoforge:tag_empty",
-        "tag": "forge:ingots/tin"
+        "tag": "c:ingots/tin"
       }
     }
   ],
@@ -14,7 +14,7 @@
   ],
   "enabled": true,
   "ingredient": {
-    "tag": "forge:ingots/tin"
+    "tag": "c:ingots/tin"
   },
   "name": "singularity.avaritia.tin",
   "recipeEnabled": true,

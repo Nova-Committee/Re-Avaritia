@@ -45,7 +45,6 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     private final ResourceLocation result2;
     private final int count;
     private final int tier;
-    private final CompoundTag nbt;
     private final List<String> rows = Lists.newArrayList();
     private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
@@ -53,63 +52,43 @@ public class ModShapedRecipeBuilder implements RecipeBuilder {
     private String group;
     private ICondition[] conditions;
 
-    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier, CompoundTag nbt) {
+    public ModShapedRecipeBuilder(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier) {
         this.category = category;
         this.result = itemLike;
         this.result2 = itemLocation;
         this.count = count;
-        this.nbt = nbt;
         this.tier = tier;
-    }
-
-    @Contract("_, _, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, CompoundTag nbt, int tier) {
-        return shaped(category, null, itemLocation, 1, tier, nbt);
-    }
-
-    @Contract("_, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, CompoundTag nbt) {
-        return shaped(category, null, itemLocation, 1, 4, nbt);
     }
 
     @Contract("_, _, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation, int tier) {
-        return shaped(category, null, itemLocation, 1, tier, new CompoundTag());
+        return shaped(category, null, itemLocation, 1, tier);
     }
 
     @Contract("_, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ResourceLocation itemLocation) {
-        return shaped(category, null, itemLocation, 1, 4, new CompoundTag());
+        return shaped(category, null, itemLocation, 1, 4);
     }
 
-    @Contract("_, _, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, CompoundTag nbt, int tier) {
-        return shaped(category, itemLike, null, 1, tier, nbt);
-    }
-
-    @Contract("_, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, CompoundTag nbt) {
-        return shaped(category, itemLike, null, 1, 4, nbt);
-    }
 
     @Contract("_, _, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, int tier) {
-        return shaped(category, itemLike, null, 1, tier, new CompoundTag());
+        return shaped(category, itemLike, null, 1, tier);
     }
 
     @Contract("_, _ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike) {
-        return shaped(category, itemLike, null, 1, 4, new CompoundTag());
+        return shaped(category, itemLike, null, 1, 4);
     }
 
-    @Contract("_, _, _, _, _, _ -> new")
-    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier, CompoundTag nbt) {
-        return new ModShapedRecipeBuilder(category, itemLike, itemLocation, count, tier, nbt);
+    @Contract("_, _, _, _, _ -> new")
+    public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, ResourceLocation itemLocation, int count, int tier) {
+        return new ModShapedRecipeBuilder(category, itemLike, itemLocation, count, tier);
     }
 
     @Contract("_,_,_,_ -> new")
     public static @NotNull ModShapedRecipeBuilder shaped(RecipeCategory category, ItemLike itemLike, int count, int tier) {
-        return shaped(category, itemLike, null, count, tier, new CompoundTag());
+        return shaped(category, itemLike, null, count, tier);
     }
 
 

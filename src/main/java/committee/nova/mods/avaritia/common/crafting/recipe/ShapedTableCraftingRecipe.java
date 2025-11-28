@@ -87,7 +87,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(TierInput inventory) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull TierInput inventory) {
         var remaining = ITierCraftingRecipe.super.getRemainingItems(inventory);
 
         if (this.transformers != null) {

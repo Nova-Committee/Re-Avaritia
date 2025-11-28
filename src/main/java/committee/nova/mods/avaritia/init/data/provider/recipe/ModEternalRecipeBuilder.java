@@ -36,41 +36,47 @@ public class ModEternalRecipeBuilder implements RecipeBuilder {
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     @Nullable
     private String group;
-    private boolean custom;
+    private final boolean custom;
 
-    public ModEternalRecipeBuilder(RecipeCategory p_250837_) {
-        this.category = p_250837_;
+    public ModEternalRecipeBuilder(RecipeCategory recipeCategory, boolean custom) {
+        this.category = recipeCategory;
+        this.custom = custom;
     }
 
     @Contract("_ -> new")
-    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory p_250714_) {
-        return new ModEternalRecipeBuilder(p_250714_);
+    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory recipeCategory) {
+        return new ModEternalRecipeBuilder(recipeCategory, false);
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory recipeCategory, boolean custom) {
+        return new ModEternalRecipeBuilder(recipeCategory, custom);
     }
 
 
-    public ModEternalRecipeBuilder requires(TagKey<Item> p_206420_) {
-        return this.requires(Ingredient.of(p_206420_));
+    public ModEternalRecipeBuilder requires(TagKey<Item> itemTagKey) {
+        return this.requires(Ingredient.of(itemTagKey));
     }
 
-    public ModEternalRecipeBuilder requires(ItemLike p_126210_) {
-        return this.requires(p_126210_, 1);
+    public ModEternalRecipeBuilder requires(ItemLike itemLike) {
+        return this.requires(itemLike, 1);
     }
 
-    public ModEternalRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
+    public ModEternalRecipeBuilder requires(ItemLike itemLike, int p_126213_) {
         for (int i = 0; i < p_126213_; ++i) {
-            this.requires(Ingredient.of(p_126212_));
+            this.requires(Ingredient.of(itemLike));
         }
 
         return this;
     }
 
-    public ModEternalRecipeBuilder requires(Ingredient p_126185_) {
-        return this.requires(p_126185_, 1);
+    public ModEternalRecipeBuilder requires(Ingredient ingredient) {
+        return this.requires(ingredient, 1);
     }
 
-    public ModEternalRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
-        for (int i = 0; i < p_126188_; ++i) {
-            this.ingredients.add(p_126187_);
+    public ModEternalRecipeBuilder requires(Ingredient ingredient, int i1) {
+        for (int i = 0; i < i1; ++i) {
+            this.ingredients.add(ingredient);
         }
 
         return this;
@@ -84,8 +90,8 @@ public class ModEternalRecipeBuilder implements RecipeBuilder {
 
 
     @Override
-    public @NotNull ModEternalRecipeBuilder group(@Nullable String p_126195_) {
-        this.group = p_126195_;
+    public @NotNull ModEternalRecipeBuilder group(@Nullable String groupName) {
+        this.group = groupName;
         return this;
     }
 

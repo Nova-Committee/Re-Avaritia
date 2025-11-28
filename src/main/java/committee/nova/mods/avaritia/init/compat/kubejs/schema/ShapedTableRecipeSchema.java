@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
-import committee.nova.mods.avaritia.init.compat.kubejs.component.ShapedRecipePatternComponent;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.*;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
@@ -8,8 +7,6 @@ import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
-import net.minecraft.world.level.block.state.pattern.BlockPattern;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@
       "type": "neoforge:not",
       "value": {
         "type": "neoforge:tag_empty",
-        "tag": "forge:ingots/refined_obsidian"
+        "tag": "c:ingots/refined_obsidian"
       }
     }
   ],
@@ -14,7 +14,7 @@
   ],
   "enabled": true,
   "ingredient": {
-    "tag": "forge:ingots/refined_obsidian"
+    "tag": "c:ingots/refined_obsidian"
   },
   "name": "singularity.avaritia.refined_obsidian",
   "recipeEnabled": true,

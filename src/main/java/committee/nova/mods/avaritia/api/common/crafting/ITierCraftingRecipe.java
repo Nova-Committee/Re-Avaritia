@@ -16,16 +16,4 @@ public interface ITierCraftingRecipe extends Recipe<TierInput> {
     public int getTier();
 
     public boolean hasRequiredTier();
-
-    default @NotNull NonNullList<ItemStack> getRemainingItems(TierInput inventory) {
-        var remaining = NonNullList.withSize(inventory.size(), ItemStack.EMPTY);
-
-        for (int i = 0; i < remaining.size(); ++i) {
-            var item = inventory.getItem(i);
-            if (item.hasCraftingRemainingItem()) {
-                remaining.set(i, item.getCraftingRemainingItem());
-            }
-        }
-        return remaining;
-    }
 }
