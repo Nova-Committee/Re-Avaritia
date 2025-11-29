@@ -19,6 +19,7 @@ import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,9 +59,9 @@ public class ModBlocks {
     public static DeferredBlock<Block> double_compressed_crafting_table = itemBlock("double_compressed_crafting_table", DoubleCompressedCraftTableBlock::new, ModRarities.UNCOMMON);
 
     //RESOURCE
-    public static DeferredBlock<Block> neutron = itemBlock("neutron", () -> new ResourceBlock(ModResourceBlocks.NEUTRON), ModRarities.EPIC);
-    public static DeferredBlock<Block> infinity = itemBlock("infinity", () -> new ResourceBlock(ModResourceBlocks.INFINITY), ModRarities.COSMIC.getValue());
-    public static DeferredBlock<Block> crystal_matrix = itemBlock("crystal_matrix", () -> new ResourceBlock(ModResourceBlocks.CRYSTAL), ModRarities.RARE);
+    public static DeferredBlock<Block> neutron = itemBlock("neutron", () -> new ResourceBlock(ModResourceBlocks.NEUTRON),new Item.Properties().fireResistant().rarity(ModRarities.EPIC));
+    public static DeferredBlock<Block> infinity = itemBlock("infinity", () -> new ResourceBlock(ModResourceBlocks.INFINITY),new Item.Properties().fireResistant().rarity(ModRarities.COSMIC.getValue()));
+    public static DeferredBlock<Block> crystal_matrix = itemBlock("crystal_matrix", () -> new ResourceBlock(ModResourceBlocks.CRYSTAL),new Item.Properties().fireResistant().rarity(ModRarities.RARE));
     public static DeferredBlock<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new BlazeCubeBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static DeferredBlock<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND.getValue());
@@ -142,7 +143,9 @@ public class ModBlocks {
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, Rarity rarity) {
         return itemBlock(name, block, true, b -> () -> new BaseBlockItem(b.get(), p -> p.rarity(rarity)));
     }
-
+    public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block,Item.Properties properties) {
+        return itemBlock(name, block, true, b -> () -> new BaseBlockItem(b.get(), p-> properties));
+    }
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties){
         return itemBlock(name, block, hasItem, b -> () -> new BaseBlockItem(b.get(), p -> properties));
     }

@@ -147,6 +147,8 @@
   "tooltip.avaritia.tool.infinity_umbrella_rain": "雨天",
   "tooltip.avaritia.tool.infinity_umbrella_storm": "雷暴",
   "tooltip.avaritia.tool.infinity_crossbow_multi": "多重射击",
+  "tooltip.crystal_pickaxe.enchant_2": "切换到 精准采集",
+  "tooltip.crystal_pickaxe.enchant_1": "切换到 时运 III",
   "tooltip.avaritia.tool.blaze_shovel_trans": "物质转换",
   "tooltip.avaritia.tool.infinity_hoe.type_1": "切换到 普通模式",
   "tooltip.avaritia.tool.infinity_hoe.type_2": "切换到 范围模式",
@@ -484,5 +486,9 @@
   "tooltip.avaritia.side_config_card.apply_success": "配置已应用到机器",
   "tooltip.avaritia.side_config_card.cleared": "配置已清除",
   "tooltip.avaritia.side_config_card.already_empty": "配置已经是空的了",
-  "tooltip.avaritia.side_config_card.no_config_to_apply": "没有可应用的配置"
+  "tooltip.avaritia.side_config_card.no_config_to_apply": "没有可应用的配置",
+  "container.extreme_crafting_table": "终焉工作台",
+  "container.end_crafting_table": "终末工作台",
+  "container.nether_crafting_table": "炼狱工作台",
+  "container.sculk_crafting_table": "幽匿工作台"
 }

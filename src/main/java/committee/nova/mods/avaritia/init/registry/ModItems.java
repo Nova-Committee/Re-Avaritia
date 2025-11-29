@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.blaze.*;
 import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -80,19 +81,19 @@ public class ModItems {
      * Resource
      */
     //fire
-    public static DeferredItem<Item> blaze_cube = item("blaze_cube", () -> new ResourceItem(ModRarities.UNCOMMON, true));
+    public static DeferredItem<Item> blaze_cube = item("blaze_cube", () -> new ResourceItem(ModRarities.UNCOMMON, true,new Item.Properties().fireResistant()));
     //wind
     public static DeferredItem<Item> diamond_lattice = item("diamond_lattice", () -> new ResourceItem(ModRarities.UNCOMMON, true));
-    public static DeferredItem<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(ModRarities.RARE, true));
+    public static DeferredItem<Item> crystal_matrix_ingot = item("crystal_matrix_ingot", () -> new ResourceItem(ModRarities.RARE, true,new Item.Properties().fireResistant()));
     //earth
     public static DeferredItem<Item> neutron_pile = item("neutron_pile", () -> new ResourceItem(ModRarities.UNCOMMON, true));
     public static DeferredItem<Item> neutron_nugget = item("neutron_nugget", () -> new ResourceItem(ModRarities.RARE, true));
     public static DeferredItem<Item> neutron_ingot = item("neutron_ingot", () -> new ResourceItem(ModRarities.EPIC, true));
     public static DeferredItem<Item> neutron_gear = item("neutron_gear", NeutronGearItem::new);
     //infinity
-    public static DeferredItem<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(ModRarities.EPIC, true));
-    public static DeferredItem<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(ModRarities.LEGEND.getValue(), true));
-    public static DeferredItem<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(ModRarities.COSMIC.getValue(), true));
+    public static DeferredItem<Item> infinity_nugget = item("infinity_nugget", () -> new ResourceItem(ModRarities.EPIC, true,new Item.Properties().fireResistant()));
+    public static DeferredItem<Item> infinity_catalyst = item("infinity_catalyst", () -> new ResourceItem(ModRarities.LEGEND.getValue(), true,new Item.Properties().fireResistant()));
+    public static DeferredItem<Item> infinity_ingot = item("infinity_ingot", () -> new ResourceItem(ModRarities.COSMIC.getValue(), true,new Item.Properties().fireResistant()));
     //singularity
     public static DeferredItem<Item> singularity = item("singularity", SingularityItem::new);
     public static DeferredItem<Item> eternal_singularity = item("eternal_singularity", EternalSingularityItem::new);

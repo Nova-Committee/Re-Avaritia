@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
-    private static final ResourceLocation ANVIL_LOCATION = Const.rl("textures/gui/extreme_anvil_gui.png");
+    private static final ResourceLocation ANVIL_LOCATION = Const.rl("textures/gui/machine/extreme_anvil_gui.png");
     private EditBox name;
 
     public ExtremeAnvilScreen(ExtremeAnvilMenu pMenu, Inventory pPlayerInventory, Component pTitle) {

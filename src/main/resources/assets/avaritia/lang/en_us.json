@@ -148,6 +148,8 @@
   "tooltip.avaritia.tool.infinity_umbrella_rain": "Rain",
   "tooltip.avaritia.tool.infinity_umbrella_storm": "Storm",
   "tooltip.avaritia.tool.infinity_crossbow_multi": "MultiShoot",
+  "tooltip.crystal_pickaxe.enchant_2": "Set to Channeling",
+  "tooltip.crystal_pickaxe.enchant_1": "Set to Fortune III",
   "tooltip.avaritia.tool.infinity_clock.overclock_enabled": "Set to TimeUp Mode",
   "tooltip.avaritia.tool.infinity_clock.overclock_disabled": "Set to SpeedUp Mode",
   "tooltip.avaritia.tool.infinity_hoe.type_1": "Set to Base Mode",
@@ -484,5 +486,9 @@
   "tooltip.avaritia.side_config_card.apply_success": "Configuration applied to machine",
   "tooltip.avaritia.side_config_card.cleared": "Configuration cleared",
   "tooltip.avaritia.side_config_card.already_empty": "Configuration is already empty",
-  "tooltip.avaritia.side_config_card.no_config_to_apply": "No configuration to apply"
+  "tooltip.avaritia.side_config_card.no_config_to_apply": "No configuration to apply",
+  "container.extreme_crafting_table": "Extreme Crafting Table",
+  "container.end_crafting_table": "End Crafting Table",
+  "container.nether_crafting_table": "Nether Crafting Table",
+  "container.sculk_crafting_table": "Sculk Crafting Table"
 }

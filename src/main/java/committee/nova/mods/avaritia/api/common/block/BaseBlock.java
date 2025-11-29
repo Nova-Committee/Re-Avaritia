@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.common.block;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -47,4 +48,5 @@ public class BaseBlock extends Block {
                         : Properties.of().sound(sound).strength(hardness, resistance).mapColor(color)
         );
     }
+
 }
