@@ -344,14 +344,14 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .requires(Blocks.SCULK)
                 .unlockedBy("has_item", has(Blocks.SCULK)).save(consumer);
 
-        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.ANCIENT_DEBRIS, 8)
+        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.ANCIENT_DEBRIS, 8,1)
                 .pattern("cbc")
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.infinity_catalyst.get())
                 .define('b', Items.NETHERITE_SCRAP)
                 .define('c', Items.DIAMOND)
-                .tier(1)
+
                 .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer, Const.rl("ancient_debris_eight"));
 
 
@@ -668,7 +668,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
-        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(), 2)
+        NoConsumeCatalystShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(), 2,4)
                 .pattern("         ")
                 .pattern(" abbbbba ")
                 .pattern(" bdcccdb ")
@@ -684,7 +684,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .define('d', ModItems.neutron_pile.get())
                 .define('e', ModItems.infinity_catalyst.get())
                 .define('f', ModItems.upgrade_smithing_template.get())
-                .tier(4)
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer, Const.rl("upgrade_smithing_template_too"));
 
         ModShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get())
