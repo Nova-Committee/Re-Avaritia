@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import committee.nova.mods.avaritia.api.utils.vec.Vector3;
 import lombok.NonNull;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +18,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -334,8 +337,23 @@ public class ItemUtils {
 //        }).forEach(listtag::remove);
 //    }
 
-    public static void clearEnchants(ItemStack stack) {
-        stack.getTagEnchantments().enchantments.clear();
+    @SafeVarargs
+    public static void clearEnchants(ItemStack stack, Holder<Enchantment>... enchantments) {
+        if (enchantments.length == 0) {
+            stack.getTagEnchantments().enchantments.clear();
+        } else {
+            Map<Holder<Enchantment>, Integer> currentEnchants = stack.getTagEnchantments().enchantments;
+            boolean modified = false;
+
+            for (Holder<Enchantment> enchantment : enchantments) {
+                if (currentEnchants.remove(enchantment) != null) {
+                    modified = true;
+                }
+            }
+
+            if (modified) {
+            }
+        }
     }
 
 }

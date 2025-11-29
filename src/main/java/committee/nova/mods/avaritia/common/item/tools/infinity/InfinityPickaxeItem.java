@@ -110,11 +110,11 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
             return InteractionResultHolder.success(stack);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
-            ItemUtils.clearEnchants(stack);
+            ItemUtils.clearEnchants(stack, SILK_TOUCH);
             stack.enchant(BLOCK_FORTUNE, 10);
             return InteractionResultHolder.success(stack);
         } else {
-            ItemUtils.clearEnchants(stack);
+            ItemUtils.clearEnchants(stack, BLOCK_FORTUNE);
             stack.enchant(SILK_TOUCH, 1);
             return InteractionResultHolder.success(stack);
         }
