@@ -198,6 +198,9 @@ public class AvaritiaConfigScreen extends Screen {
         addDoubleEntry("infinity_elytra_flying_damage_range", ModConfig.infinityElytraFlyingRangeDamage, 0.0, 10000.0,
                 Component.translatable("config.avaritia.infinity_elytra_flying_damage_range.tooltip"),
                 ModConfig.infinityElytraFlyingRangeDamage::set,ModConfig.infinityElytraFlyingRangeDamage);
+        addBooleanEntry("infinity_elytra_night_vision", ModConfig.InfinityArmorNightVision,
+                Component.translatable("config.avaritia.infinity_elytra_night_vision.tooltip"),
+                ModConfig.InfinityArmorNightVision::set, ModConfig.InfinityArmorNightVision);
     }
 
     private void addBooleanEntry(String titleKey, ModConfigSpec.BooleanValue configValue,
@@ -330,6 +333,7 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.immortalItemEntityRange.set(ModConfig.immortalItemEntityRange.getDefault());
         ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
         ModConfig.infinityElytraFlyingRangeDamage.set(ModConfig.infinityElytraFlyingRangeDamage.getDefault());
+        ModConfig.InfinityArmorNightVision.set(ModConfig.InfinityArmorNightVision.getDefault());
     }
 
     private void updateWidgetValues() {

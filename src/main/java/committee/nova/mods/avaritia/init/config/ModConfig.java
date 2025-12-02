@@ -59,6 +59,7 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue immortalItemEntitySpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingSpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingRangeDamage;
+    public static final ModConfigSpec.BooleanValue InfinityArmorNightVision;
 
     //SERVER
     static {
@@ -114,6 +115,7 @@ public class ModConfig {
         immortalItemEntitySpeed = buildDouble(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
         infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5, 1, 10, "Infinity Elytra Flying Speed");
         infinityElytraFlyingRangeDamage = buildDouble(common, "Infinity Elytra Flying Range Damage", 100, 0, 10000, "Infinity Elytra Flying Range Damage");
+        InfinityArmorNightVision = buildBoolean(common, "Infinity Open or Off Night Vision", true, "Infinity Armor Night Vision");
         common.pop();
         COMMON = common.build();
     }
