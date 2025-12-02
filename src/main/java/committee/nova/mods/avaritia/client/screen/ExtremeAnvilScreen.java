@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
+import static committee.nova.mods.avaritia.Res.EXTREME_ANVIL_TEX;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -23,11 +25,10 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
-    private static final ResourceLocation ANVIL_LOCATION = Const.rl("textures/gui/machine/extreme_anvil_gui.png");
     private EditBox name;
 
     public ExtremeAnvilScreen(ExtremeAnvilMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle, ANVIL_LOCATION);
+        super(pMenu, pPlayerInventory, pTitle, EXTREME_ANVIL_TEX);
         this.titleLabelX = 60;
     }
 
@@ -82,7 +83,7 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
     @Override
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         super.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
-        pGuiGraphics.blit(ANVIL_LOCATION, this.leftPos + 59, this.topPos + 23, 0, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
+        pGuiGraphics.blit(EXTREME_ANVIL_TEX, this.leftPos + 59, this.topPos + 23, 0, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 110, 16);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
     @Override
     protected void renderBgs(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
         if ((this.menu.getSlot(0).hasItem() || this.menu.getSlot(1).hasItem()) && !this.menu.getSlot(this.menu.getResultSlot()).hasItem()) {
-            pGuiGraphics.blit(ANVIL_LOCATION, pX + 99, pY + 47, this.imageWidth, 0, 28, 21);
+            pGuiGraphics.blit(EXTREME_ANVIL_TEX, pX + 99, pY + 47, this.imageWidth, 0, 28, 21);
         }
 
     }

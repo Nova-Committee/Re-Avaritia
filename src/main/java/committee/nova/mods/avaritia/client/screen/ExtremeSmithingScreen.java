@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Optional;
 
+import static committee.nova.mods.avaritia.Res.EXTREME_SMITHING_TEX;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -24,7 +26,6 @@ import java.util.Optional;
  * @Description:
  */
 public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu>  {
-    private static final ResourceLocation SMITHING_LOCATION = Const.rl("textures/gui/extreme_smithing_table_gui.png");
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
     private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
@@ -33,7 +34,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private static final ResourceLocation EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = ResourceLocation.tryParse("item/empty_slot_smithing_template_netherite_upgrade");
     private static final List<ResourceLocation> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
     public ExtremeSmithingScreen(ExtremeSmithingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle, SMITHING_LOCATION);
+        super(pMenu, pPlayerInventory, pTitle, EXTREME_SMITHING_TEX);
         this.titleLabelX = 72;
         this.titleLabelY = 7;
     }
@@ -47,7 +48,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     @Override
     protected void renderErrorIcon(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
         if (this.hasRecipeError()) {
-            pGuiGraphics.blit(SMITHING_LOCATION, pX + 65, pY + 46, this.imageWidth, 0, 28, 21);
+            pGuiGraphics.blit(EXTREME_SMITHING_TEX, pX + 65, pY + 46, this.imageWidth, 0, 28, 21);
         }
     }
 
