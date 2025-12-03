@@ -116,7 +116,6 @@ public class GapingVoidEntity extends Entity {
     @Override
     protected void defineSynchedData() {
         this.entityData.define(AGE_PARAMETER, 0);
-
     }
 
     @Override
@@ -275,11 +274,6 @@ public class GapingVoidEntity extends Entity {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean canBeCollidedWith() {
-        return false;
     }
 
     @Override

@@ -182,7 +182,7 @@ public class InventoryUtils {
      */
     public static ICapabilityProvider createCurioProvider(ItemStack stack, CompoundTag unused) {
         if (ModList.get().isLoaded("curios")) {
-            return CuriosTools.getIDKCuriosProvider(stack);
+            return CuriosTools.getSlowProvider(stack);
         }
         return null;
     }

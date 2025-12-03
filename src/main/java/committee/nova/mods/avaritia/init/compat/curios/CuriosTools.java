@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.ModList;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
@@ -26,8 +27,7 @@ public class CuriosTools {
             .orElse(ItemStack.EMPTY);
     }
 
-    // TODO 我不知道原代码创建的CuriosProvider具体是做什么的，所以随便取了个方法名，稍后可以自己改一下
-    public static ICapabilityProvider getIDKCuriosProvider(ItemStack stack) {
+    public static ICapabilityProvider getSlowProvider(ItemStack stack) {
 
         return CuriosApi.createCurioProvider(new ICurio() {
 
