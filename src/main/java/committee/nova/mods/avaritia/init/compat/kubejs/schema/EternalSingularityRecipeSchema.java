@@ -1,9 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.kubejs.schema;
 
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
-import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
-import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
+import dev.latvian.mods.kubejs.recipe.component.*;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -19,9 +17,13 @@ import static committee.nova.mods.avaritia.init.compat.kubejs.KjsUtils.optionalL
  */
 
 public interface EternalSingularityRecipeSchema {
+    RecipeKey<String> GROUP = StringComponent.STRING
+            .key("group", ComponentRole.INPUT)
+            .optional("default");
     RecipeKey<List<Ingredient>> INGREDIENTS = optionalList(IngredientComponent.INGREDIENT, "ingredients", ComponentRole.INPUT);
-    RecipeKey<Boolean> CUSTOM = BooleanComponent.BOOLEAN.inputKey("custom").optional(false);
-    RecipeSchema SCHEMA = new RecipeSchema(INGREDIENTS, CUSTOM)
-            .constructor(INGREDIENTS, CUSTOM)
-            .constructor(INGREDIENTS);
+    RecipeKey<Integer> COUNT = NumberComponent.INT.inputKey("count").optional(1);
+    RecipeSchema SCHEMA = new RecipeSchema(GROUP, INGREDIENTS, COUNT)
+            .constructor(GROUP, INGREDIENTS, COUNT)
+            .constructor(INGREDIENTS, COUNT)
+            ;
 }

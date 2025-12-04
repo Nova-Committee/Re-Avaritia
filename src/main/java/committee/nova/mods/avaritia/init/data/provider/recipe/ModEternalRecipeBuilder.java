@@ -16,7 +16,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import org.jetbrains.annotations.Contract;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -32,25 +32,23 @@ import java.util.Map;
 
 public class ModEternalRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
+    private final int count;
     private final NonNullList<Ingredient> ingredients = NonNullList.create();
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     @Nullable
-    private String group;
-    private final boolean custom;
+    private ICondition[] conditions;
 
-    public ModEternalRecipeBuilder(RecipeCategory recipeCategory, boolean custom) {
+    public ModEternalRecipeBuilder(RecipeCategory recipeCategory, int count) {
         this.category = recipeCategory;
-        this.custom = custom;
+        this.count = count;
     }
 
-    @Contract("_ -> new")
     public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory recipeCategory) {
-        return new ModEternalRecipeBuilder(recipeCategory, false);
+        return new ModEternalRecipeBuilder(recipeCategory, 1);
     }
 
-    @Contract("_, _ -> new")
-    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory recipeCategory, boolean custom) {
-        return new ModEternalRecipeBuilder(recipeCategory, custom);
+    public static @NotNull ModEternalRecipeBuilder shapeless(RecipeCategory recipeCategory, int count) {
+        return new ModEternalRecipeBuilder(recipeCategory, count);
     }
 
 
@@ -91,13 +89,17 @@ public class ModEternalRecipeBuilder implements RecipeBuilder {
 
     @Override
     public @NotNull ModEternalRecipeBuilder group(@Nullable String groupName) {
-        this.group = groupName;
         return this;
     }
 
     @Override
     public @NotNull Item getResult() {
         return ModItems.eternal_singularity.get();
+    }
+
+    public @NotNull ModEternalRecipeBuilder conditions(@Nullable ICondition... conditions) {
+        this.conditions = conditions;
+        return this;
     }
 
     @Override
@@ -110,10 +112,13 @@ public class ModEternalRecipeBuilder implements RecipeBuilder {
         this.criteria.forEach(advancement$builder::addCriterion);
         EternalSingularityCraftRecipe shapelessrecipe = new EternalSingularityCraftRecipe(
                 this.ingredients,
-                this.custom
+                this.count
         );
-
-        recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        if (this.conditions != null) {
+            recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")), this.conditions);
+        } else {
+            recipeOutput.accept(id, shapelessrecipe, advancement$builder.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        }
     }
 
     private void ensureValid(ResourceLocation id) {

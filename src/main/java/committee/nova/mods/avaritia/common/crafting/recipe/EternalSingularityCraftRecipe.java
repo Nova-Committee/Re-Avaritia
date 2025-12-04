@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
@@ -16,7 +15,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,13 +26,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe {
     private static final Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
-    public NonNullList<Ingredient> inputs;
-    public final boolean custom;
+    private final int count;
+    public final NonNullList<Ingredient> originalInputs;
 
-    public EternalSingularityCraftRecipe(NonNullList<Ingredient> inputs, boolean custom) {
+    public EternalSingularityCraftRecipe(NonNullList<Ingredient> originalInputs, int count) {
         super(NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get()), 4);
-        this.inputs = inputs;
-        this.custom = custom;
+        this.count = count;
+        this.originalInputs = originalInputs;
     }
 
     public static void invalidate() {
@@ -45,16 +43,15 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
-            if (this.custom) {
-                super.getIngredients().addAll(inputs);
-            } else {
                 SingularityDataManager.getInstance().getSingularities()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)
                         .map(Ingredient::of)
                         .forEach(super.getIngredients()::add);
-            }
+                if (!originalInputs.isEmpty()) {
+                    super.getIngredients().addAll(originalInputs);
+                }
             INGREDIENTS_LOADED.put(this, true);
         }
         return super.getIngredients();
@@ -68,7 +65,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public static class Serializer implements RecipeSerializer<EternalSingularityCraftRecipe> {
         public static final MapCodec<EternalSingularityCraftRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
-                        Ingredient.CODEC_NONEMPTY
+                        Ingredient.CODEC
                                 .listOf()
                                 .fieldOf("ingredients")
                                 .flatXmap(
@@ -85,8 +82,8 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                                         },
                                         DataResult::success
                                 )
-                                .forGetter(recipe -> recipe.inputs),
-                        Codec.BOOL.optionalFieldOf("custom", false).forGetter(recipe -> recipe.custom)
+                                .forGetter(recipe -> recipe.originalInputs),
+                        Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
                 ).apply(builder, EternalSingularityCraftRecipe::new)
         );
         public static final StreamCodec<RegistryFriendlyByteBuf, EternalSingularityCraftRecipe> STREAM_CODEC = StreamCodec.of(
@@ -110,19 +107,16 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             for (int i = 0; i < size; ++i) {
                 inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
-
-            var custom = buffer.readBoolean();
-            return new EternalSingularityCraftRecipe(inputs, custom);
+            int count = buffer.readInt();
+            return new EternalSingularityCraftRecipe(inputs, count);
         }
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, EternalSingularityCraftRecipe recipe) {
-            buffer.writeVarInt(recipe.inputs.size());
-
-            for (var ingredient : recipe.inputs) {
+            buffer.writeVarInt(recipe.originalInputs.size());
+            for (var ingredient : recipe.originalInputs) {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
-
-            buffer.writeBoolean(recipe.custom);
+            buffer.writeInt(recipe.count);
         }
     }
 }

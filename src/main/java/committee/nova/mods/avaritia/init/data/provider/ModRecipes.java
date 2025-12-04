@@ -768,6 +768,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
 
         ModEternalRecipeBuilder.shapeless(RecipeCategory.MISC)
+                .requires(Items.AIR)
                 .unlockedBy("has_item", has(ModItems.singularity.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.extreme_smithing_table.get())
