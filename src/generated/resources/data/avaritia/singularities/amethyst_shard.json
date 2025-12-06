@@ -1,0 +1,10 @@
+{
+  "count": 10000,
+  "displayName": "singularity.avaritia.amethyst_shard",
+  "ingredient": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "name": "avaritia:amethyst_shard",
+  "overlayColor": 13607155,
+  "underlayColor": 9267916
+}

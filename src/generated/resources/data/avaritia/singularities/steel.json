@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/steel"
+      }
+    }
+  ],
+  "count": 10000,
+  "displayName": "singularity.avaritia.steel",
+  "ingredient": {
+    "tag": "c:ingots/steel"
+  },
+  "name": "avaritia:steel",
+  "overlayColor": 5658198,
+  "underlayColor": 2302755
+}

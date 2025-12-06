@@ -1,0 +1,10 @@
+{
+  "count": 10000,
+  "displayName": "singularity.avaritia.gold",
+  "ingredient": {
+    "item": "minecraft:gold_ingot"
+  },
+  "name": "avaritia:gold",
+  "overlayColor": 16643423,
+  "underlayColor": 14257668
+}

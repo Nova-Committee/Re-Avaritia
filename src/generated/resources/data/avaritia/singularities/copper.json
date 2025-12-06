@@ -1,0 +1,10 @@
+{
+  "count": 10000,
+  "displayName": "singularity.avaritia.copper",
+  "ingredient": {
+    "item": "minecraft:copper_ingot"
+  },
+  "name": "avaritia:copper",
+  "overlayColor": 16422780,
+  "underlayColor": 12342320
+}

@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/platinum"
+      }
+    }
+  ],
+  "count": 10000,
+  "displayName": "singularity.avaritia.platinum",
+  "ingredient": {
+    "tag": "c:ingots/platinum"
+  },
+  "name": "avaritia:platinum",
+  "overlayColor": 7334639,
+  "underlayColor": 5748924
+}

@@ -1,0 +1,10 @@
+{
+  "count": 10000,
+  "displayName": "singularity.avaritia.coal",
+  "ingredient": {
+    "item": "minecraft:coal"
+  },
+  "name": "avaritia:coal",
+  "overlayColor": 3553081,
+  "underlayColor": 2498084
+}

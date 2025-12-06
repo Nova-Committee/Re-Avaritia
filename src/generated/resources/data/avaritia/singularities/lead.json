@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/lead"
+      }
+    }
+  ],
+  "count": 10000,
+  "displayName": "singularity.avaritia.lead",
+  "ingredient": {
+    "tag": "c:ingots/lead"
+  },
+  "name": "avaritia:lead",
+  "overlayColor": 7110034,
+  "underlayColor": 3290466
+}
