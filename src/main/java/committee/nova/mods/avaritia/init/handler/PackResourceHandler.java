@@ -18,10 +18,10 @@ import java.util.Optional;
 /**
  * @author cnlimiter
  */
-@EventBusSubscriber()
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class PackResourceHandler {
     @SubscribeEvent
-    public static void addPackFinders(AddPackFindersEvent event) {
+    public static void addPackFinders(final AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
             var resourcePath = net.neoforged.fml.ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia");
             var supplier = new PathPackResources.PathResourcesSupplier(resourcePath);

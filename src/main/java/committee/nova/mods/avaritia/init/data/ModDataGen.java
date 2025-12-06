@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -23,9 +24,8 @@ import java.util.concurrent.CompletableFuture;
  * Name ModDataGen
  * Description
  */
+@EventBusSubscriber
 public class ModDataGen {
-
-
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
@@ -53,7 +53,7 @@ public class ModDataGen {
             generator.addProvider(true, new ModDamageTypeTags(output, datapackProvider.getRegistryProvider(), helper));
 //            generator.addProvider(true, new ModFluidTags(output, lookupProvider, helper));
 
-            generator.addProvider(true, new ModSingularityProvider(generator, helper));
+            generator.addProvider(true, new ModSingularityGen(generator, lookupProvider, helper));
             generator.addProvider(true, new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(
                     Component.literal("Re:Avaritia Modern Resources"),
                     DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES)

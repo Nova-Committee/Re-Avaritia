@@ -1,20 +1,27 @@
 package committee.nova.mods.avaritia.init.compat.kubejs;
 
+import com.google.gson.JsonElement;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.compat.kubejs.component.ShapedRecipePatternComponent;
 import committee.nova.mods.avaritia.init.compat.kubejs.event.AvaritiaEvents;
 import committee.nova.mods.avaritia.init.compat.kubejs.event.SingularityRegisterEventJS;
 import committee.nova.mods.avaritia.init.compat.kubejs.schema.*;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
+import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.ClassFilter;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
-import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.Map;
+
+import static dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents.GROUP;
 
 /**
  * Name: Avaritia-forge / KubeJSAvaritiaPlugin
@@ -58,8 +65,8 @@ public class AvaritiaKubeJSPlugin implements KubeJSPlugin {
     }
 
     @Override
-    public void afterScriptsLoaded(ScriptManager manager) {
-        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS();
+    public void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
+        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS(event, recipeJsons);
         AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
     }
 

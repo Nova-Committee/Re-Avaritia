@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.util.SingularityUtils;
@@ -41,7 +41,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             super.getIngredients().clear();
             if ("default".equals(group)) {
                 super.getIngredients().addAll(originalInputs);
-                SingularityDataManager.getInstance().getSingularities()
+                SingularityReloadListener.INSTANCE.getAllSingularities()
+                        .values()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)

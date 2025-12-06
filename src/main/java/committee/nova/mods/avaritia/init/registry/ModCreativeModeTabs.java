@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -39,7 +39,7 @@ public class ModCreativeModeTabs {
             .title(Component.translatable("itemGroup.tab.Singularity"))
             .icon(ModCreativeModeTabs::makeIcon)
             .displayItems((parameters, output) -> {
-                for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
+                for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
                     if (singularity.isEnabled()) {
                         output.accept(SingularityUtils.getItemForSingularity(singularity));
                     }

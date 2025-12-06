@@ -3,12 +3,9 @@ package committee.nova.mods.avaritia.init.handler;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.ModApi;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
-import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-
-import java.util.List;
 
 /**
  * Description:
@@ -20,7 +17,7 @@ import java.util.List;
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
-        var allSingularities = SingularityDataManager.getInstance().getSingularities();
+        var allSingularities = SingularityReloadListener.INSTANCE.getAllSingularities().values();
 
         int generatedCount = 0;
         for (var singularity : allSingularities) {

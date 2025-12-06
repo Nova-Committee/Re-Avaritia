@@ -1,15 +1,18 @@
 package committee.nova.mods.avaritia;
 
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
-import committee.nova.mods.avaritia.init.compat.projecte.ModEMCHandler;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
+import committee.nova.mods.avaritia.init.handler.InternalRecipeHandler;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 /**
  * @Project: Avaritia
@@ -40,12 +43,10 @@ public class Avaritia {
         ModIngredients.INGREDIENT.register(modEventBus);
 
         modEventBus.addListener(this::setup);
-        modEventBus.addListener(ModDataGen::gatherData);
     }
 
     public void setup(final FMLCommonSetupEvent event) {
         //if (Const.isLoad("projecte")) ModEMCHandler.init();
-        SingularityDataManager.onCommonSetup();
         DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }
 

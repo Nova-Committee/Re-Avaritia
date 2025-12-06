@@ -7,5 +7,4 @@ AvaritiaEvents.singularity(
                 .setTimeCost(100)
                 .setIngredient(Ingredient.of("minecraft:dragon_egg"))
         })
-    }
-    )
+    })

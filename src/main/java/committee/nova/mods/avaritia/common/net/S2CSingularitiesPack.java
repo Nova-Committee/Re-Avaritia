@@ -2,8 +2,7 @@ package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
-import dev.latvian.mods.kubejs.script.ConsoleLine;
+import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +40,8 @@ public record S2CSingularitiesPack(Collection<Singularity> singularities) implem
         @Override
         public void handle(@NotNull S2CSingularitiesPack packet, IPayloadContext context) {
             context.enqueueWork(() -> {
-                SingularityDataManager.getInstance().getCachedSingularities().clear();
-                SingularityDataManager.getInstance().setCachedSingularities(packet.singularities.stream()
+                SingularityReloadListener.INSTANCE.getDataSingularities().clear();
+                SingularityReloadListener.INSTANCE.setDataSingularities(packet.singularities.stream()
                         .collect(Collectors.toMap(Singularity::getRegistryName, s -> s)));
             });
         }
