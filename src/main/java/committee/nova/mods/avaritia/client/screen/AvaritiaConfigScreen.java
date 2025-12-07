@@ -68,6 +68,10 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.sword_attack_range.tooltip"),
                 ModConfig.swordAttackRange::set, ModConfig.swordAttackRange);
 
+        addBooleanEntry("is_sword_attack_item_entity", ModConfig.isSwordAttackItemEntity,
+                Component.translatable("config.avaritia.is_sword_attack_item_entity.tooltip"),
+                ModConfig.isSwordAttackItemEntity::set, ModConfig.isSwordAttackItemEntity);
+
         addBooleanEntry("is_sword_attack_lightning", ModConfig.isSwordAttackLightning,
                 Component.translatable("config.avaritia.is_sword_attack_lightning.tooltip"),
                 ModConfig.isSwordAttackLightning::set, ModConfig.isSwordAttackLightning);
@@ -198,8 +202,8 @@ public class AvaritiaConfigScreen extends Screen {
         addDoubleEntry("infinity_elytra_flying_damage_range", ModConfig.infinityElytraFlyingRangeDamage, 0.0, 10000.0,
                 Component.translatable("config.avaritia.infinity_elytra_flying_damage_range.tooltip"),
                 ModConfig.infinityElytraFlyingRangeDamage::set,ModConfig.infinityElytraFlyingRangeDamage);
-        addBooleanEntry("infinity_elytra_night_vision", ModConfig.InfinityArmorNightVision,
-                Component.translatable("config.avaritia.infinity_elytra_night_vision.tooltip"),
+        addBooleanEntry("infinity_helmet_night_vision", ModConfig.InfinityArmorNightVision,
+                Component.translatable("config.avaritia.infinity_helmet_night_vision.tooltip"),
                 ModConfig.InfinityArmorNightVision::set, ModConfig.InfinityArmorNightVision);
     }
 
@@ -294,6 +298,7 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.isMergeMatterCluster.set(ModConfig.isMergeMatterCluster.getDefault());
         ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
         ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
+        ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
         ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
         ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
         ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
