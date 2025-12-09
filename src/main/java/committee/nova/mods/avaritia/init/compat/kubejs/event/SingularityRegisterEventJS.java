@@ -21,7 +21,20 @@ public class SingularityRegisterEventJS extends EventJS {
         SingularityReloadListener.INSTANCE.registerSingularity(singularity);
     }
 
+    public void removeAll() {
+        SingularityReloadListener.INSTANCE.setRemoveAll(true);
+    }
+
+    public void removeAllRecipe() {
+        SingularityReloadListener.INSTANCE.setRemoveAllRecipes(true);
+    }
+
+
     public void remove(ResourceLocation key) {
         SingularityReloadListener.INSTANCE.removeSingularity(key);
+    }
+
+    public void removeRecipe(ResourceLocation key) {
+        SingularityReloadListener.INSTANCE.removeSingularityRecipe(key);
     }
 }

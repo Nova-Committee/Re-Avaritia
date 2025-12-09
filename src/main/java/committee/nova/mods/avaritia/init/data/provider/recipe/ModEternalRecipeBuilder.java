@@ -101,7 +101,7 @@ public class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements Re
     public void save(@NotNull Consumer<FinishedRecipe> p_126205_, @NotNull ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new ModEternalRecipeBuilder.Result(p_126206_, this.group == null ? "" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        p_126205_.accept(new ModEternalRecipeBuilder.Result(p_126206_, determineBookCategory(this.category), this.ingredients, this.advancement, p_126206_.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -112,15 +112,13 @@ public class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements Re
 
     public static class Result extends CraftingResult {
         private final ResourceLocation id;
-        private final String group;
         private final List<Ingredient> ingredients;
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
 
-        public Result(ResourceLocation p_249007_, String p_248592_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
+        public Result(ResourceLocation p_249007_, CraftingBookCategory p_249485_, List<Ingredient> p_252312_, Advancement.Builder p_249909_, ResourceLocation p_249109_) {
             super(p_249485_);
             this.id = p_249007_;
-            this.group = p_248592_;
             this.ingredients = p_252312_;
             this.advancement = p_249909_;
             this.advancementId = p_249109_;
@@ -128,10 +126,6 @@ public class ModEternalRecipeBuilder extends CraftingRecipeBuilder implements Re
 
         public void serializeRecipeData(@NotNull JsonObject p_126230_) {
             super.serializeRecipeData(p_126230_);
-            if (!this.group.isEmpty()) {
-                p_126230_.addProperty("group", this.group);
-            }
-
             JsonArray jsonarray = new JsonArray();
 
             for (Ingredient ingredient : this.ingredients) {

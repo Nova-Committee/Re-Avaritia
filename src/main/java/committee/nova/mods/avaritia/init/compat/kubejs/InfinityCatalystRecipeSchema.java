@@ -16,8 +16,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
  */
 
 public interface InfinityCatalystRecipeSchema {
-    RecipeKey<String> GROUP = StringComponent.NON_EMPTY.key("group").optional("default");
     RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.INPUT_ARRAY.key("ingredients");
     RecipeKey<Integer> COUNT = NumberComponent.INT.key("count").optional(1);
-    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, GROUP, INGREDIENTS, COUNT);
+    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS, COUNT);
 }

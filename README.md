@@ -42,7 +42,7 @@
 ## **❗Attention:**
 * You&nbsp;<span style="color: #00ff00;"> **DEFINITELY CAN** </span>&nbsp;add the mod to your modpack.
 * Recipe viewing is supported via JEI.
-* You can add&nbsp;singularity by using json!
+* You can add&nbsp;singularity by using CraftTweaker and KubeJs!
 * You can add recipes by CraftTweaker!
 * You can add recipes by KubeJs!
 
@@ -52,15 +52,41 @@
 ## **⚙️Develop:**
 ### **CraftTweaker:**
 ```
-mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
-mods.avaritia.Compressor.remove(output);
 mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);
 mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);
 mods.avaritia.CraftingTable.remove(output);
+
+mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
+mods.avaritia.Compressor.remove(output);
+
+mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnable);
+mods.avaritia.Singularity.remove("key");
+mods.avaritia.Singularity.removeAll();
+mods.avaritia.Singularity.removeRecipe("key");
+mods.avaritia.Singularity.removeAllRecipe();
+
+mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)
+mods.avaritia.CraftingTable.addEternal("name", ingredients)
 ```
 
 ### **KubeJs:**
 ```javascript
+AvaritiaEvents.singularity(event => {
+    event.removeRecipe("avaritia:coal")//remove recipe
+    event.remove("avaritia:coal")//remove singularity
+    event.removeAllRecipe()//remove all singularity recipe
+    event.removeAll()//remove all singularity
+    event.register("avaritia:example", s => {
+        s
+            .setDisplayName("singularity.avaritia.example")
+            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
+            .setCount(1000)
+            .setTimeCost(200)
+            .setIngredient(Ingredient.of("minecraft:iron_ingot"))
+            .setEnabled(true)
+            .setRecipeEnabled(true)
+    })
+})
 ServerEvents.recipes(
     event => {
         const { avaritia } = event.recipes;
@@ -91,6 +117,10 @@ ServerEvents.recipes(
             .compressor("#forge:ingots/copper", Item.of("avaritia:singularity", '{Id:"avaritia:copper"}'))
             .timeCost(240)
             .inputCount(2000);
+        avaritia.compressor(Item.of("minecraft:coal"), Item.of("avaritia:singularity", '{Id:"avaritia:coal"}'))
+            .inputCount(10000)
+            .timeCost(100)
+        ;//remove singularity recipe first
         //infinity catalyst
         avaritia.infinity_catalyst(
             [
@@ -100,55 +130,27 @@ ServerEvents.recipes(
                 "avaritia:cosmic_meatballs",
                 "avaritia:ultimate_stew",
                 "avaritia:endest_pearl",
-                "avaritia:record_fragment",
-            ]
+                "avaritia:record_fragment"
+            ],
+            2//custom infinity catalyst count
+        );
+
+        avaritia.eternal_singularity(
+            [
+                "minecraft:emerald_block",
+                "avaritia:crystal_matrix_ingot",
+                "avaritia:neutron_ingot",
+                "avaritia:cosmic_meatballs",
+                "avaritia:ultimate_stew",
+                "avaritia:endest_pearl",
+                "avaritia:record_fragment"
+            ],
         );
         console.log('Hello! The avaritia recipe event has fired!')
     }
 )
-AvaritiaEvents.singularity(event => {
-    event.register("avaritia:example", s => {
-        s
-            .setDisplayName("singularity.avaritia.example")
-            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
-            .setCount(1000)
-            .setTimeCost(200)
-            .setIngredient(Ingredient.of("minecraft:iron_ingot"))
-            .setEnabled(true)
-            .setRecipeDisabled(false)
-    })
-})
 ```
-### **InfinityCatalyst:**
-```json5
-{
-  "type": "avaritia:infinity_catalyst",//Infinity Catalyst recipe type
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:emerald_block"
-    },
-    {
-      "item": "avaritia:crystal_matrix_ingot"
-    },
-    {
-      "item": "avaritia:neutron_ingot"
-    },
-    {
-      "item": "avaritia:cosmic_meatballs"
-    },
-    {
-      "item": "avaritia:ultimate_stew"
-    },
-    {
-      "item": "avaritia:endest_pearl"
-    },
-    {
-      "item": "avaritia:record_fragment"
-    }
-  ]
-}
-```
+
 ### **Dependencies:**
 avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/nova/mods/avaritia-forge/)
 ```groovy

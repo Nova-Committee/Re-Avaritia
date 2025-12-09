@@ -22,7 +22,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
  * Version: 1.0
  */
 public class SingularityUtils {
-    public static Singularity loadFromJson(ResourceLocation id, JsonObject json) {
+    public static Singularity loadFromJson(JsonObject json) {
         var name = GsonHelper.getAsString(json, "name");
         var displayName = GsonHelper.getAsString(json, "displayName");
         int materialCount = Const.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "count", 1000);

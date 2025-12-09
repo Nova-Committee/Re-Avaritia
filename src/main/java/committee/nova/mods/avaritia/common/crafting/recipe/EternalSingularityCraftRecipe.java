@@ -27,12 +27,10 @@ import org.jetbrains.annotations.NotNull;
 public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe {
     private static final Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     public final NonNullList<Ingredient> inputs;
-    public final boolean custom;
 
-    public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, boolean custom) {
+    public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs) {
         super(recipeId, NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get()), 4);
         this.inputs = inputs;
-        this.custom = custom;
     }
 
     public static void invalidate() {
@@ -90,7 +88,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
-            if (this.custom) {
+            if (!this.inputs.isEmpty()) {
                 super.getIngredients().addAll(inputs);
             } else {
                 SingularityReloadListener.INSTANCE.getAllSingularities().values()
@@ -119,8 +117,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             for (int i = 0; i < ingredients.size(); i++) {
                 inputs.add(Ingredient.fromJson(ingredients.get(i)));
             }
-            boolean custom = GsonHelper.getAsBoolean(json, "custom", false);
-            return new EternalSingularityCraftRecipe(recipeId, inputs, custom);
+            return new EternalSingularityCraftRecipe(recipeId, inputs);
         }
 
         @Override
@@ -131,8 +128,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             for (int i = 0; i < size; ++i) {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
-            boolean custom = buffer.readBoolean();
-            return new EternalSingularityCraftRecipe(recipeId, inputs, custom);
+            return new EternalSingularityCraftRecipe(recipeId, inputs);
         }
 
         @Override
@@ -141,7 +137,6 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             for (var ingredient : recipe.inputs) {
                 ingredient.toNetwork(buffer);
             }
-            buffer.writeBoolean(recipe.custom);
         }
     }
 }

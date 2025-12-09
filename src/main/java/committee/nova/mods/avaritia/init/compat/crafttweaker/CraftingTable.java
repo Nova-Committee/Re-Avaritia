@@ -85,17 +85,7 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
     @ZenCodeType.Method
     public static void addCatalyst(String name, IIngredient[] inputs, int count) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new InfinityCatalystCraftRecipe(id, "default", toIngredientsList(inputs), count);
-
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
-
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
-    }
-
-    @ZenCodeType.Method
-    public static void addCatalyst(String name, String group, IIngredient[] inputs, int count) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new InfinityCatalystCraftRecipe(id, group, toIngredientsList(inputs), count);
+        var recipe = new InfinityCatalystCraftRecipe(id, toIngredientsList(inputs), count);
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 
@@ -105,17 +95,7 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
     @ZenCodeType.Method
     public static void addEnternal(String name, IIngredient[] inputs) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), false);
-
-        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
-
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
-    }
-
-    @ZenCodeType.Method
-    public static void addEnternal(String name, IIngredient[] inputs, boolean custom) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), custom);
+        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs));
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 

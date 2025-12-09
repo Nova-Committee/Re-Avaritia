@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.core.singularity;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -19,7 +20,9 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.Const.GSON;
 
@@ -27,10 +30,18 @@ import static committee.nova.mods.avaritia.Const.GSON;
  * @author cnlimiter
  */
 public class SingularityReloadListener extends SimpleJsonResourceReloadListener {
-    public static SingularityReloadListener INSTANCE;
-    public final ICondition.IContext context;
+    public static SingularityReloadListener INSTANCE = new SingularityReloadListener();
+    public ICondition.IContext context;
     @Getter @Setter private Map<ResourceLocation, Singularity> dataSingularities = Maps.newConcurrentMap();
     @Getter @Setter private Map<ResourceLocation, Singularity> runSingularities = Maps.newConcurrentMap();
+    @Getter @Setter private List<ResourceLocation> removeRecipes = Lists.newCopyOnWriteArrayList();
+    @Getter @Setter private List<ResourceLocation> removeSingularities = Lists.newCopyOnWriteArrayList();
+    @Getter @Setter private boolean removeAllRecipes = false;
+    @Getter @Setter private boolean removeAll = false;
+
+    public SingularityReloadListener() {
+        super(GSON, "singularities");
+    }
 
     public SingularityReloadListener(ICondition.IContext context) {
         super(GSON, "singularities");
@@ -48,7 +59,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
                     Const.LOGGER.debug("Singularity: Skipping loading singularity {} as it's conditions were not met", resourcelocation);
                     continue;
                 }
-                Singularity singularity = SingularityUtils.loadFromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
+                Singularity singularity = SingularityUtils.loadFromJson(GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
                 if (singularity == null) {
                     Const.LOGGER.info("Singularity: Skipping loading singularity {} as it's serializer returned null", resourcelocation);
                     continue;
@@ -58,12 +69,18 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
                 Const.LOGGER.error("Singularity: Parsing error loading singularity {}", resourcelocation, jsonparseexception);
             }
         }
-        onSingularitiesReloaded(dataSingularities);
+        onSingularitiesReloaded(getAllSingularities());
     }
 
     public Map<ResourceLocation, Singularity> getAllSingularities() {
-        Map<ResourceLocation, Singularity> all = new LinkedHashMap<>(this.dataSingularities);
+        Map<ResourceLocation, Singularity> all = new ConcurrentHashMap<>(this.dataSingularities);
         all.putAll(this.runSingularities);
+        all.forEach((id, singularity) -> {
+            if (this.removeRecipes.contains(id)) all.get(id).setRecipeEnabled(false);
+        });
+        all.forEach((id, singularity) -> {
+            if (this.removeSingularities.contains(id)) all.remove(id);
+        });
         return all;
     }
 
@@ -79,13 +96,14 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         }
     }
 
+    public void removeSingularityRecipe(ResourceLocation id) {
+        this.removeRecipes.add(id);
+    }
+
     public void removeSingularity(ResourceLocation id) {
-        if (this.runSingularities.remove(id) != null) {
-            Const.LOGGER.info("Singularity: Removed runtime singularity: {}", id);
-        } else if (this.dataSingularities.remove(id) != null) {
-            Const.LOGGER.info("Singularity: Removed data singularity: {}", id);
-        }
+        this.removeSingularities.add(id);
         MinecraftForge.EVENT_BUS.post(new SingularityEvent.Remove(getAllSingularities(), id));
+
     }
 
     public Singularity getSingularity(ResourceLocation id) {

@@ -1,7 +1,6 @@
 {
   "type": "avaritia:infinity_catalyst",
   "category": "misc",
-  "group": "eternal_singularity",
   "ingredients": [
     {
       "item": "minecraft:bedrock"

@@ -20,7 +20,7 @@ public class SingularityHandler {
      */
     @SubscribeEvent
     public static void onReloadSingularity(SingularityEvent.Reload event) {
-        var allSingularities = SingularityReloadListener.INSTANCE.getAllSingularities().values();
+        var allSingularities = event.getAllSingularities().values();
 
         int generatedCount = 0;
         for (var singularity : allSingularities) {

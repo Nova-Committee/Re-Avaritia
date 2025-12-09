@@ -16,6 +16,5 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface EternalSingularityRecipeSchema {
     RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.INPUT_ARRAY.key("ingredients");
-    RecipeKey<Boolean> CUSTOM = BooleanComponent.BOOLEAN.key("custom").optional(false);
-    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS, CUSTOM);
+    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS);
 }
