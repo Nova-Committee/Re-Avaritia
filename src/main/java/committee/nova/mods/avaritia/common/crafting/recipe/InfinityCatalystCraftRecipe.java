@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.util.SingularityUtils;
@@ -29,6 +29,10 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         this.originalInputs = inputs;
     }
 
+    public static void invalidate() {
+        INGREDIENTS_LOADED.clear();
+    }
+
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
@@ -36,7 +40,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             if ("default".equals(group)) {
 
                 super.getIngredients().addAll(originalInputs);
-                SingularityDataManager.getInstance().getSingularities()
+                SingularityReloadListener.INSTANCE.getAllSingularities().values()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)

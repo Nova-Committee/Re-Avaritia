@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -48,32 +48,15 @@ public class S2CSingularitiesPack {
 
     private void writeSingularities(FriendlyByteBuf buffer, Collection<Singularity> singularities) {
         buffer.writeVarInt(singularities.size());
-        singularities.forEach(singularity -> {
-            buffer.writeResourceLocation(singularity.getRegistryName());
-            buffer.writeUtf(singularity.getDisplayName());
-            buffer.writeVarIntArray(singularity.getColors());
-            buffer.writeBoolean(singularity.getTag() != null);
-            buffer.writeVarInt(singularity.getTimeCost());
-
-            if (singularity.getTag() != null) {
-                buffer.writeUtf(singularity.getTag());
-            } else {
-                singularity.getIngredient().toNetwork(buffer);
-            }
-
-            buffer.writeVarInt(singularity.getCount());
-            buffer.writeBoolean(singularity.isEnabled());
-            buffer.writeBoolean(singularity.isRecipeDisabled());
-        });
+        singularities.forEach(singularity -> Singularity.write(buffer, singularity));
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                SingularityDataManager.getInstance().getCachedSingularities().clear();
-                SingularityDataManager.getInstance().getCachedSingularities().putAll(
-                        this.cacheSingularities.stream()
-                                .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
+                SingularityReloadListener.INSTANCE.getDataSingularities().clear();
+                SingularityReloadListener.INSTANCE.setDataSingularities(this.cacheSingularities.stream()
+                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
                 );
             });
         });

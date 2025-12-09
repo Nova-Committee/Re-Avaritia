@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "bcc5bb",
-    "5d7877"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 10000,
+  "displayName": "singularity.avaritia.invar",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/invar"
   },
-  "name": "singularity.avaritia.invar",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:invar",
+  "overlayColor": "bcc5bb",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "5d7877"
 }

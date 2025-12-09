@@ -5,10 +5,16 @@ import committee.nova.mods.avaritia.init.compat.kubejs.event.AvaritiaEvents;
 import committee.nova.mods.avaritia.init.compat.kubejs.event.SingularityRegisterEventJS;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+
+import java.util.Map;
 
 /**
  * Name: Avaritia-forge / KubeJSAvaritiaPlugin
@@ -40,7 +46,7 @@ public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
     }
 
     @Override
-    public void onServerReload() {
+    public void injectRuntimeRecipes(RecipesEventJS event, RecipeManager manager, Map<ResourceLocation, Recipe<?>> recipesByName) {
         SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS();
         AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
     }

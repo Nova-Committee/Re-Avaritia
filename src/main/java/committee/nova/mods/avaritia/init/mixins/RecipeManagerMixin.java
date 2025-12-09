@@ -71,7 +71,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
 
 
     @Inject(
-            at = @At("TAIL"),
+            at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;"),
             method = {"apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V"}
     )
     public void avaritia$apply2(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager,

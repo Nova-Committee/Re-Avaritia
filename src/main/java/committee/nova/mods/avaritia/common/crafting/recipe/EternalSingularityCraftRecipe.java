@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.util.SingularityUtils;
@@ -44,7 +44,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         var ingredients = this.getIngredients();
         if (ingredients.isEmpty()) return false;
 
-        int singularityCount = SingularityDataManager.getInstance().getSingularities()
+        int singularityCount = SingularityReloadListener.INSTANCE.getAllSingularities().values()
                 .stream()
                 .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                 .mapToInt(singularity -> 1)
@@ -59,7 +59,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                 validItems++;
                 boolean matched = false;
                 int index = 0;
-                for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
+                for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
                     if (singularity.getIngredient() != Ingredient.EMPTY) {
                         ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
                         if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
@@ -93,7 +93,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             if (this.custom) {
                 super.getIngredients().addAll(inputs);
             } else {
-                SingularityDataManager.getInstance().getSingularities()
+                SingularityReloadListener.INSTANCE.getAllSingularities().values()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)

@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "d99f43",
-    "bb6b3b"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 10000,
+  "displayName": "singularity.avaritia.bronze",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/bronze"
   },
-  "name": "singularity.avaritia.bronze",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:bronze",
+  "overlayColor": "d99f43",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "bb6b3b"
 }

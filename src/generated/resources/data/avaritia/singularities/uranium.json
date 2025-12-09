@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "d2f9d1",
-    "a6c5a4"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 10000,
+  "displayName": "singularity.avaritia.uranium",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/uranium"
   },
-  "name": "singularity.avaritia.uranium",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:uranium",
+  "overlayColor": "d2f9d1",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "a6c5a4"
 }

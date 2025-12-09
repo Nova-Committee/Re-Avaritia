@@ -1,13 +1,14 @@
 {
-  "colors": [
-    "363739",
-    "261e24"
-  ],
+  "conditions": [],
+  "count": 10000,
+  "displayName": "singularity.avaritia.coal",
   "enabled": true,
   "ingredient": {
     "item": "minecraft:coal"
   },
-  "name": "singularity.avaritia.coal",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:coal",
+  "overlayColor": "363739",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "261e24"
 }

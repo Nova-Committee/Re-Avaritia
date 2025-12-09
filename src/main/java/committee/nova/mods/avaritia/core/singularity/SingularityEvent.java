@@ -10,10 +10,10 @@ import java.util.Map;
 /**
  * 奇点添加事件
  */
-public class SingularityRuntimeEvent extends Event {
+public class SingularityEvent extends Event {
     private final Map<ResourceLocation, Singularity> allSingularities;
 
-    public SingularityRuntimeEvent(Map<ResourceLocation, Singularity> allSingularities) {
+    public SingularityEvent(Map<ResourceLocation, Singularity> allSingularities) {
         this.allSingularities = new LinkedHashMap<>(allSingularities);
     }
 
@@ -21,19 +21,23 @@ public class SingularityRuntimeEvent extends Event {
         return new LinkedHashMap<>(this.allSingularities);
     }
 
-    public static class Add extends SingularityRuntimeEvent {
+    public static class Add extends SingularityEvent {
         @Getter private final Singularity singularity;
         public Add(Map<ResourceLocation, Singularity> allSingularities, Singularity singularity) {
             super(allSingularities);
             this.singularity = singularity;
         }
     }
-    public static class Remove extends SingularityRuntimeEvent {
+    public static class Remove extends SingularityEvent {
         @Getter private final ResourceLocation singularityId;
         public Remove(Map<ResourceLocation, Singularity> allSingularities, ResourceLocation singularityId) {
             super(allSingularities);
             this.singularityId = singularityId;
         }
     }
-
+    public static class Reload extends SingularityEvent {
+        public Reload(Map<ResourceLocation, Singularity> allSingularities) {
+            super(allSingularities);
+        }
+    }
 }
