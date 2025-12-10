@@ -124,8 +124,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
 
             if (recipe != null) {
                 if (tile.materialCount >= recipe.getInputCount() * tile.tier.inputAmplifier) {
-                    tile.progress++;
-                    tile.data.set(0, tile.progress);
+                    tile.setProgress(tile.progress + 1);
                     if (tile.progress >= recipe.getTimeCost() * tile.tier.timeAmplifier) {
 
                         CraftingInput craftingInput = tile.recipeInventory.toShapelessCraftingInput();
@@ -134,7 +133,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
 
                         if (ItemUtils.canCombineStacks(result, output)) {
                             tile.updateResult(result);
-                            tile.progress = 0;
+                            tile.setProgress(0);
                             tile.materialCount -= Mth.ceil(recipe.getInputCount() * tile.tier.inputAmplifier);
 
                             if (tile.materialCount <= 0) {
