@@ -77,10 +77,10 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         all.putAll(this.runSingularities);
         all.forEach((id, singularity) -> {
             if (this.removeRecipes.contains(id)) all.get(id).setRecipeEnabled(false);
-        });
-        all.forEach((id, singularity) -> {
             if (this.removeSingularities.contains(id)) all.remove(id);
         });
+        if (this.removeAllRecipes) all.forEach((id, singularity) -> singularity.setRecipeEnabled(false));
+        if (this.removeAll) all.clear();
         return all;
     }
 

@@ -17,12 +17,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     private static final Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
+    private final String group;
     private final int count;
     // 存储原始输入配料（用于非默认组）
     private final NonNullList<Ingredient> originalInputs;
 
-    public InfinityCatalystCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs, int count) {
-        super(recipeId, NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get()), 4);
+    public InfinityCatalystCraftRecipe(ResourceLocation recipeId, String pGroup, NonNullList<Ingredient> inputs, int count) {
+        super(recipeId, NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get(), count), 4);
+        this.group = pGroup;
         this.count = count;
         this.originalInputs = inputs;
     }
@@ -35,9 +37,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
-            if(!originalInputs.isEmpty()){
-                super.getIngredients().addAll(originalInputs);
-            } else {
+            if ("default".equals(group)) {
 
                 super.getIngredients().addAll(originalInputs);
                 SingularityReloadListener.INSTANCE.getAllSingularities().values()
@@ -46,10 +46,17 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                         .map(SingularityUtils::getItemForSingularity)
                         .map(Ingredient::of)
                         .forEach(super.getIngredients()::add);
+            } else {
+                super.getIngredients().addAll(originalInputs);
             }
             INGREDIENTS_LOADED.put(this, true);
         }
         return super.getIngredients();
+    }
+
+    @Override
+    public @NotNull String getGroup() {
+        return this.group;
     }
 
     @Override
@@ -60,28 +67,31 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     public static class Serializer implements RecipeSerializer<InfinityCatalystCraftRecipe> {
         @Override
         public @NotNull InfinityCatalystCraftRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
+            String group1 = GsonHelper.getAsString(json, "group", "default");
             NonNullList<Ingredient> inputs = NonNullList.create();
             var ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
             for (int i = 0; i < ingredients.size(); i++) {
                 inputs.add(Ingredient.fromJson(ingredients.get(i)));
             }
             int count = GsonHelper.getAsInt(json, "count", 1);
-            return new InfinityCatalystCraftRecipe(recipeId, inputs, count);
+            return new InfinityCatalystCraftRecipe(recipeId, group1, inputs, count);
         }
 
         @Override
         public InfinityCatalystCraftRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
+            String group = buffer.readUtf();
             int size = buffer.readVarInt();
             var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
             for (int i = 0; i < size; ++i) {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
             int count = buffer.readInt();
-            return new InfinityCatalystCraftRecipe(recipeId, inputs, count);
+            return new InfinityCatalystCraftRecipe(recipeId, group, inputs, count);
         }
 
         @Override
         public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull InfinityCatalystCraftRecipe recipe) {
+            buffer.writeUtf(recipe.group);
             buffer.writeVarInt(recipe.originalInputs.size());
             for (var ingredient : recipe.originalInputs) {
                 ingredient.toNetwork(buffer);

@@ -127,6 +127,7 @@ ServerEvents.recipes(
         ;
         //infinity catalyst
         avaritia.infinity_catalyst(
+            "default1",
             [
                 "minecraft:emerald_block",
                 "avaritia:crystal_matrix_ingot",

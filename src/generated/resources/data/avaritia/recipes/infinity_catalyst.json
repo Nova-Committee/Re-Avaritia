@@ -1,6 +1,7 @@
 {
   "type": "avaritia:infinity_catalyst",
   "category": "misc",
+  "group": "default",
   "ingredients": [
     {
       "item": "minecraft:bedrock"
