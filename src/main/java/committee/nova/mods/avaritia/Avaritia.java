@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia;
 
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.compat.curios.AvaritiaCuriosPlugin;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
@@ -47,7 +46,6 @@ public class Avaritia {
 
         modEventBus.addListener(this::constructMod);
         modEventBus.addListener(this::setup);
-        modEventBus.addListener(ModDataGen::gatherData);
     }
 
     private void constructMod(final FMLConstructModEvent event)
@@ -59,7 +57,6 @@ public class Avaritia {
 
     public void setup(final FMLCommonSetupEvent event) {
         //if (Const.isLoad("projecte")) ModEMCHandler.init();
-        SingularityDataManager.onCommonSetup();
         DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }
 

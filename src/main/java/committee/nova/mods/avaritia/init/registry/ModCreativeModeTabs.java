@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -11,11 +11,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static committee.nova.mods.avaritia.init.registry.ModDataComponents.IS_CREATIVE_TAB_ICON;
 
 /**
  * Description:
@@ -41,26 +40,23 @@ public class ModCreativeModeTabs {
                     CreativeModeTab.builder()
                             .title(Component.translatable("itemGroup.tab.Singularity"))
                             .displayItems((parameters, output) -> {
-                                for (var singularity : SingularityDataManager.getInstance().getSingularities()) {
+                                for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
                                     if (singularity.isEnabled()) {
                                         output.accept(SingularityUtils.getItemForSingularity(singularity));
                                     }
                                 }
-                            }),
-                    new ArrayList<>()
+                            })
             )
     );
     private static class CyclingTab extends CreativeModeTab {
-        private final List<ItemStack> stacks;
 
-        public CyclingTab(CreativeModeTab.Builder builder, List<ItemStack> stacks) {
+        public CyclingTab(CreativeModeTab.Builder builder) {
             super(builder);
-            this.stacks = stacks;
         }
 
         @Override
-        public ItemStack getIconItem() {
-            var enabledSingularities = SingularityDataManager.getInstance().getSingularities()
+        public @NotNull ItemStack getIconItem() {
+            var enabledSingularities = SingularityReloadListener.INSTANCE.getAllSingularities().values()
                     .stream()
                     .filter(Singularity::isEnabled)
                     .toList();
