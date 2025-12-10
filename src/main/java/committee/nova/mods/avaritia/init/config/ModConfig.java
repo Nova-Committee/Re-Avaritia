@@ -60,6 +60,7 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingSpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingRangeDamage;
     public static final ModConfigSpec.BooleanValue InfinityArmorNightVision;
+    public static final ModConfigSpec.BooleanValue swordAttckItemEntity;
 
     //SERVER
     static {
@@ -73,6 +74,7 @@ public class ModConfig {
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", true, "Whether to merge matter cluster");
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
+        swordAttckItemEntity = buildBoolean(common, "Is Sword Damage ItemEntity", false, "Does the right key range attack of endless sword attack item entity");
         isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
         isSwordAttackItemEntity = buildBoolean(common, "config.avaritia.is_sword_attack_item_entity", false, "config.avaritia.is_sword_attack_item_entity.tooltip");
         isSwordAttackLightning = buildBoolean(common, "Is Sword Cause Lightning", false, "Does the right key spawn lightning with range of attack");
