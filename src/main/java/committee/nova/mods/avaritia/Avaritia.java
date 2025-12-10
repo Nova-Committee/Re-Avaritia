@@ -1,18 +1,17 @@
 package committee.nova.mods.avaritia;
 
+import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.init.compat.curios.AvaritiaCuriosPlugin;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
-import committee.nova.mods.avaritia.init.handler.InternalRecipeHandler;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 
 /**
  * @Project: Avaritia
@@ -23,7 +22,11 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 @Mod(Const.MOD_ID)
 public class Avaritia {
 
+    public static IEventBus MOD_EVENT_BUS;
+
     public Avaritia(IEventBus modEventBus, ModContainer modContainer) {
+        MOD_EVENT_BUS = modEventBus;
+
         ModConfig.register(modContainer);
 
 
@@ -42,11 +45,21 @@ public class Avaritia {
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModIngredients.INGREDIENT.register(modEventBus);
 
+        modEventBus.addListener(this::constructMod);
         modEventBus.addListener(this::setup);
+        modEventBus.addListener(ModDataGen::gatherData);
+    }
+
+    private void constructMod(final FMLConstructModEvent event)
+    {
+        if(ModList.get().isLoaded("curios")) {
+            MOD_EVENT_BUS.addListener(AvaritiaCuriosPlugin::registerCapabilities);
+        }
     }
 
     public void setup(final FMLCommonSetupEvent event) {
         //if (Const.isLoad("projecte")) ModEMCHandler.init();
+        SingularityDataManager.onCommonSetup();
         DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }
 

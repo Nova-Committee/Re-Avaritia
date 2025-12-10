@@ -22,7 +22,7 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalShovelItem extends ShovelItem implements ITooltip{
+public class CrystalShovelItem extends ShovelItem implements ITooltip {
     public CrystalShovelItem() {
         super(ModToolTiers.CRYSTAL,
                 new Properties()
