@@ -62,11 +62,11 @@ public abstract class ReloadableServerResourcesMixin {
         RecipeUtils.setRecipeManager(this.recipes);
     }
 
-    @Inject(
-            at = {@At(value = "RETURN")},
-            method = {"listeners"},
-            cancellable = true)
-    public void avaritia$listeners(CallbackInfoReturnable<List<PreparableReloadListener>> cir) {
-        cir.setReturnValue(List.of(this.tagManager, SingularityReloadListener.INSTANCE, this.recipes, this.functionLibrary, this.advancements));
-    }
+//    @Inject(
+//            at = {@At(value = "RETURN")},
+//            method = {"listeners"},
+//            cancellable = true)
+//    public void avaritia$listeners(CallbackInfoReturnable<List<PreparableReloadListener>> cir) {
+//        cir.setReturnValue(List.of(this.tagManager, SingularityReloadListener.INSTANCE, this.recipes, this.functionLibrary, this.advancements));
+//    }
 }

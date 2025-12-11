@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * @date 2025/9/15 23:40
  */
 @Mixin(ItemStack.class)
-public class ItemStackMixin {
+public abstract class ItemStackMixin {
 
     /**
      * 拦截ItemStack的hurtAndBreak方法
