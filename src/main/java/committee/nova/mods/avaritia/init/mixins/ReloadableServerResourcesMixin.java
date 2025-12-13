@@ -62,7 +62,7 @@ public abstract class ReloadableServerResourcesMixin {
             method = {"<init>"}
     )
     public void avaritia$constructor(RegistryAccess.Frozen registryAccess, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
-        SingularityReloadListener.INSTANCE = new SingularityReloadListener(this.context, this.recipes);
+        SingularityReloadListener.INSTANCE = new SingularityReloadListener(this.context);
     }
 
     @Inject(

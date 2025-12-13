@@ -10,10 +10,18 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.RecipeMatcher;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     public static Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
@@ -50,6 +58,105 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     @Override
     public @NotNull String getGroup() {
         return this.group;
+    }
+
+    @Override
+    public boolean matches(@NotNull Container input, @NotNull Level level) {
+        // 如果是默认组，需要特殊处理（包含所有奇点）
+        if ("default".equals(group)) {
+            return matchesSingularityRecipe(input);
+        } else {
+            // 对于非默认组，使用标准的无形合成匹配
+            return matchesStandardRecipe(input);
+        }
+    }
+
+    /**
+     * 处理默认组的奇点匹配逻辑
+     * 要求玩家必须放置所有已注册的奇点，每个奇点只能使用一次
+     */
+    private boolean matchesSingularityRecipe(@NotNull Container input) {
+        // 获取配料列表（会加载所有奇点）
+        var ingredients = this.getIngredients();
+        if (ingredients.isEmpty()) return false;
+
+        // 统计所有有效的奇点数量
+        var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
+        if (singularities == null || singularities.isEmpty()) {
+            return false;
+        }
+
+        int singularityCount = singularities.values()
+                .stream()
+                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                .mapToInt(singularity -> 1)
+                .sum();
+
+        if (singularityCount == 0) return false;
+
+        // 使用boolean数组追踪哪些奇点已被放置
+        boolean[] found = new boolean[singularityCount];
+        int validItems = 0;
+
+        // 遍历容器中的每个物品
+        for (int i = 0; i < input.getContainerSize(); i++) {
+            ItemStack stack = input.getItem(i);
+            if (!stack.isEmpty()) {
+                validItems++;
+                boolean matched = false;
+                int index = 0;
+
+                // 检查是否与某个奇点匹配
+                for (var singularity : singularities.values()) {
+                    if (singularity.getIngredient() != Ingredient.EMPTY) {
+                        ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                        if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                            // 确保每个奇点只能使用一次
+                            if (!found[index]) {
+                                found[index] = true;
+                                matched = true;
+                                break;
+                            }
+                        }
+                        index++;
+                    }
+                }
+
+                // 如果有物品不匹配任何奇点，返回false
+                if (!matched) {
+                    return false;
+                }
+            }
+        }
+
+        // 验证所有奇点都被放置
+        for (boolean b : found) {
+            if (!b) return false;
+        }
+
+        // 验证物品数量与奇点总数完全匹配
+        return validItems == singularityCount;
+    }
+
+    /**
+     * 处理非默认组的标准无形合成匹配逻辑
+     */
+    private boolean matchesStandardRecipe(@NotNull Container input) {
+        List<ItemStack> inputs = new ArrayList<>();
+        int matched = 0;
+
+        // 收集容器中的所有非空物品
+        for (int i = 0; i < input.getContainerSize(); i++) {
+            var stack = input.getItem(i);
+            if (!stack.isEmpty()) {
+                inputs.add(stack);
+                matched++;
+            }
+        }
+
+        // 使用RecipeMatcher进行标准匹配
+        return matched == this.originalInputs.size() &&
+               RecipeMatcher.findMatches(inputs, this.originalInputs) != null;
     }
 
     @Override
