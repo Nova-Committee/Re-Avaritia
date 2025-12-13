@@ -31,7 +31,7 @@ public class S2CSingularitiesPack {
     }
 
     public S2CSingularitiesPack(FriendlyByteBuf buf) {
-        List<Singularity> cacheSingularities = new ArrayList<>();
+        List<Singularity> dataSingularities = new ArrayList<>();
         List<Singularity> runSingularities = new ArrayList<>();
 
         int cacheSize = buf.readVarInt();
@@ -39,7 +39,7 @@ public class S2CSingularitiesPack {
         for (int i = 0; i < cacheSize; i++) {
             var singularity = Singularity.read(buf);
 
-            cacheSingularities.add(singularity);
+            dataSingularities.add(singularity);
         }
 
         int runSize = buf.readVarInt();
@@ -50,7 +50,7 @@ public class S2CSingularitiesPack {
             runSingularities.add(singularity);
         }
 
-        this.dataSingularities = cacheSingularities;
+        this.dataSingularities = dataSingularities;
         this.runSingularities = runSingularities;
     }
 

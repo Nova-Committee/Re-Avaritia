@@ -15,12 +15,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +31,6 @@ import static committee.nova.mods.avaritia.Const.GSON;
 public class SingularityReloadListener extends SimpleJsonResourceReloadListener {
     public static SingularityReloadListener INSTANCE = new SingularityReloadListener();
     public ICondition.IContext context;
-    public RecipeManager recipeManager;
     @Getter @Setter private Map<ResourceLocation, Singularity> dataSingularities = Maps.newConcurrentMap();
     @Getter @Setter private Map<ResourceLocation, Singularity> runSingularities = Maps.newConcurrentMap();
     @Getter @Setter private List<ResourceLocation> removeRecipes = Lists.newCopyOnWriteArrayList();
@@ -45,10 +42,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         super(GSON, "singularities");
     }
 
-    public SingularityReloadListener(ICondition.IContext context, RecipeManager recipeManager) {
+    public SingularityReloadListener(ICondition.IContext context) {
         super(GSON, "singularities");
         this.context = context;
-        this.recipeManager = recipeManager;
     }
 
     @Override
@@ -120,9 +116,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
 
 
     private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
-        InfinityCatalystCraftRecipe.invalidate();
-        EternalSingularityCraftRecipe.invalidate();
-        MinecraftForge.EVENT_BUS.post(new SingularityEvent.Reload(singularities, recipeManager));
+        InfinityCatalystCraftRecipe.INGREDIENTS_LOADED.clear();
+        EternalSingularityCraftRecipe.INGREDIENTS_LOADED.clear();
+        MinecraftForge.EVENT_BUS.post(new SingularityEvent.Reload(singularities));
     }
 
     @Override

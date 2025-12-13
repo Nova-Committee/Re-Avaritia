@@ -25,16 +25,12 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe {
-    private static final Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
+    public static Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     public final NonNullList<Ingredient> inputs;
 
     public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs) {
         super(recipeId, NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get()), 4);
         this.inputs = inputs;
-    }
-
-    public static void invalidate() {
-        INGREDIENTS_LOADED.clear();
     }
 
     @Override

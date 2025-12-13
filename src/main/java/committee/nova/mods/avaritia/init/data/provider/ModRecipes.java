@@ -745,7 +745,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .requires(ModItems.ultimate_stew.get())
                 .requires(ModItems.endest_pearl.get())
                 .requires(ModItems.record_fragment.get())
-                .group("default")
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)

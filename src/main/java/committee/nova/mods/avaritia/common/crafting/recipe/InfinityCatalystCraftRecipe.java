@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
 
 public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
-    private static final Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
+    public static Object2BooleanOpenHashMap<InfinityCatalystCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
     private final String group;
     private final int count;
     // 存储原始输入配料（用于非默认组）
@@ -29,25 +29,18 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         this.originalInputs = inputs;
     }
 
-    public static void invalidate() {
-        INGREDIENTS_LOADED.clear();
-    }
-
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
+            super.getIngredients().addAll(originalInputs);
             if ("default".equals(group)) {
-
-                super.getIngredients().addAll(originalInputs);
                 SingularityReloadListener.INSTANCE.getAllSingularities().values()
                         .stream()
                         .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)
                         .map(Ingredient::of)
                         .forEach(super.getIngredients()::add);
-            } else {
-                super.getIngredients().addAll(originalInputs);
             }
             INGREDIENTS_LOADED.put(this, true);
         }

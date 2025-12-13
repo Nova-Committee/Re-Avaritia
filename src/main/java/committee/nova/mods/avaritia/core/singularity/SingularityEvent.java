@@ -37,10 +37,8 @@ public class SingularityEvent extends Event {
         }
     }
     public static class Reload extends SingularityEvent {
-        @Getter private final RecipeManager recipeManager;
-        public Reload(Map<ResourceLocation, Singularity> allSingularities, RecipeManager recipeManager) {
+        public Reload(Map<ResourceLocation, Singularity> allSingularities) {
             super(allSingularities);
-            this.recipeManager = recipeManager;
         }
     }
 }
