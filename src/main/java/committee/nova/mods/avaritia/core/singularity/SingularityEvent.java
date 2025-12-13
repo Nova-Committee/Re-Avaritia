@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.LinkedHashMap;
@@ -36,8 +37,10 @@ public class SingularityEvent extends Event {
         }
     }
     public static class Reload extends SingularityEvent {
-        public Reload(Map<ResourceLocation, Singularity> allSingularities) {
+        @Getter private final RecipeManager recipeManager;
+        public Reload(Map<ResourceLocation, Singularity> allSingularities, RecipeManager recipeManager) {
             super(allSingularities);
+            this.recipeManager = recipeManager;
         }
     }
 }

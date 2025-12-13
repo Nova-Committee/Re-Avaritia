@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.api.util.recipe.RecipeUtils;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
@@ -11,6 +10,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.tags.TagManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.storage.loot.LootDataManager;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,6 +50,10 @@ public abstract class ReloadableServerResourcesMixin {
     @Final
     private ICondition.IContext context;
 
+    @Shadow
+    @Final
+    private LootDataManager lootData;
+
     public ReloadableServerResourcesMixin() {
     }
 
@@ -58,15 +62,14 @@ public abstract class ReloadableServerResourcesMixin {
             method = {"<init>"}
     )
     public void avaritia$constructor(RegistryAccess.Frozen registryAccess, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
-        SingularityReloadListener.INSTANCE = new SingularityReloadListener(this.context);
-        RecipeUtils.setRecipeManager(this.recipes);
+        SingularityReloadListener.INSTANCE = new SingularityReloadListener(this.context, this.recipes);
     }
 
-//    @Inject(
-//            at = {@At(value = "RETURN")},
-//            method = {"listeners"},
-//            cancellable = true)
-//    public void avaritia$listeners(CallbackInfoReturnable<List<PreparableReloadListener>> cir) {
-//        cir.setReturnValue(List.of(this.tagManager, SingularityReloadListener.INSTANCE, this.recipes, this.functionLibrary, this.advancements));
-//    }
+    @Inject(
+            at = {@At(value = "RETURN")},
+            method = {"listeners"},
+            cancellable = true)
+    public void avaritia$listeners(CallbackInfoReturnable<List<PreparableReloadListener>> cir) {
+        cir.setReturnValue(List.of(this.tagManager, this.lootData, SingularityReloadListener.INSTANCE, this.recipes, this.functionLibrary, this.advancements));
+    }
 }

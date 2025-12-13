@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.ModApi;
-import committee.nova.mods.avaritia.api.util.recipe.RecipeUtils;
+import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.core.singularity.SingularityEvent;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,22 +20,5 @@ public class SingularityHandler {
      */
     @SubscribeEvent
     public static void onReloadSingularity(SingularityEvent.Reload event) {
-        var allSingularities = event.getAllSingularities().values();
-
-        int generatedCount = 0;
-        for (var singularity : allSingularities) {
-            if (!singularity.isEnabled() || !singularity.isRecipeEnabled()) {
-                continue;
-            }
-
-            var compressorRecipe = ModApi.addSingularityRecipe(singularity);
-
-            if (compressorRecipe != null) {
-                RecipeUtils.addRecipe(compressorRecipe);
-                generatedCount++;
-            }
-
-        }
-        Const.LOGGER.info("Singularity: Regenerated {} recipes", generatedCount);
     }
 }

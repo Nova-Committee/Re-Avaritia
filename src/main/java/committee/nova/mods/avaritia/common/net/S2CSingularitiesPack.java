@@ -22,14 +22,17 @@ import java.util.stream.Collectors;
  */
 public class S2CSingularitiesPack {
 
-    private final Collection<Singularity> cacheSingularities;
+    private final Collection<Singularity> dataSingularities;
+    private final Collection<Singularity> runSingularities;
 
-    public S2CSingularitiesPack(Collection<Singularity> cacheSingularities) {
-        this.cacheSingularities = cacheSingularities;
+    public S2CSingularitiesPack(Collection<Singularity> dataSingularities, Collection<Singularity> runSingularities) {
+        this.dataSingularities = dataSingularities;
+        this.runSingularities = runSingularities;
     }
 
     public S2CSingularitiesPack(FriendlyByteBuf buf) {
         List<Singularity> cacheSingularities = new ArrayList<>();
+        List<Singularity> runSingularities = new ArrayList<>();
 
         int cacheSize = buf.readVarInt();
 
@@ -39,11 +42,21 @@ public class S2CSingularitiesPack {
             cacheSingularities.add(singularity);
         }
 
-        this.cacheSingularities = cacheSingularities;
+        int runSize = buf.readVarInt();
+
+        for (int i = 0; i < runSize; i++) {
+            var singularity = Singularity.read(buf);
+
+            runSingularities.add(singularity);
+        }
+
+        this.dataSingularities = cacheSingularities;
+        this.runSingularities = runSingularities;
     }
 
     public void write(FriendlyByteBuf buffer) {
-        writeSingularities(buffer, this.cacheSingularities);
+        writeSingularities(buffer, this.dataSingularities);
+        writeSingularities(buffer, this.runSingularities);
     }
 
     private void writeSingularities(FriendlyByteBuf buffer, Collection<Singularity> singularities) {
@@ -55,7 +68,11 @@ public class S2CSingularitiesPack {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
                 SingularityReloadListener.INSTANCE.getDataSingularities().clear();
-                SingularityReloadListener.INSTANCE.setDataSingularities(this.cacheSingularities.stream()
+                SingularityReloadListener.INSTANCE.getRunSingularities().clear();
+                SingularityReloadListener.INSTANCE.setDataSingularities(this.dataSingularities.stream()
+                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
+                );
+                SingularityReloadListener.INSTANCE.setRunSingularities(this.runSingularities.stream()
                         .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
                 );
             });
