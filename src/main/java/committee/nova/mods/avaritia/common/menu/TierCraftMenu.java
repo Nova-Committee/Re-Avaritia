@@ -30,7 +30,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final ResultContainer result;
     private final Player player;
     private final ModCraftTier tier;
-    private final ModCraftContainer matrix;
+    private final ModCraftContainer craftContainer;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
         this(type, id, playerInventory, buf.readBlockPos(), tier);
@@ -45,14 +45,14 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.result = new ResultContainer();
         this.tier = tier;
 
-        this.matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size);
+        this.craftContainer = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size);
 
-        this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, 0, tier.outX, tier.outY));
+        this.addSlot(new ModCraftResultSlot(this.player, this, craftContainer, this.result, 0, tier.outX, tier.outY));
 
         int i, j;
         for (i = 0; i < tier.size; i++) {
             for (j = 0; j < tier.size; j++) {
-                this.addSlot(new Slot(matrix, j + i * tier.size, tier.mainX + j * 18, tier.mainY + i * 18));
+                this.addSlot(new Slot(craftContainer, j + i * tier.size, tier.mainX + j * 18, tier.mainY + i * 18));
             }
         }
 
@@ -66,7 +66,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
             this.addSlot(new Slot(playerInventory, j, tier.hotBarX + j * 18, tier.hotBarY));
         }
 
-        this.slotsChanged(matrix);
+        this.slotsChanged(craftContainer);
     }
 
     public static TierCraftMenu sculk(int windowId, Inventory playerInventory, FriendlyByteBuf buf) {
@@ -103,7 +103,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var inventory = this.matrix.asCraftInput();
+        var inventory = this.craftContainer.asCraftInput();
         var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world);
 
         if (recipe.isPresent()) {

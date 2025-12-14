@@ -8,6 +8,8 @@ import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
@@ -36,13 +38,40 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
         return ModRecipeSerializers.NO_CONSUME_CATALYST_SHAPED_SERIALIZER.get();
     }
 
-    public static class Serializer extends ShapedTableCraftingRecipe.Serializer {
+    public static class Serializer implements RecipeSerializer<NoConsumeCatalystShapedRecipe> {
         public static final MapCodec<NoConsumeCatalystShapedRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
                         ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                        Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier)
+                        Codec.INT.optionalFieldOf("tier", 4).forGetter(recipe -> recipe.tier)
                 ).apply(builder, NoConsumeCatalystShapedRecipe::new)
         );
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, NoConsumeCatalystShapedRecipe> STREAM_CODEC = StreamCodec.of(
+                Serializer::toNetwork, Serializer::fromNetwork
+        );
+
+        @Override
+        public @NotNull MapCodec<NoConsumeCatalystShapedRecipe> codec() {
+            return CODEC;
+        }
+
+        @Override
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, NoConsumeCatalystShapedRecipe> streamCodec() {
+            return STREAM_CODEC;
+        }
+
+        private static NoConsumeCatalystShapedRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
+            var result = ItemStack.STREAM_CODEC.decode(buffer);
+            int tier = buffer.readVarInt();
+            return new NoConsumeCatalystShapedRecipe(pattern, result, tier);
+        }
+
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, NoConsumeCatalystShapedRecipe recipe) {
+            ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            buffer.writeVarInt(recipe.tier);
+        }
     }
 }

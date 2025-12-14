@@ -22,15 +22,15 @@ import org.jetbrains.annotations.NotNull;
 public class ModCraftResultSlot extends Slot {
 
     private final AbstractContainerMenu container;
-    private final ModCraftContainer matrix;
+    private final ModCraftContainer craftContainer;
     private final Player player;
     private int removeCount;
 
-    public ModCraftResultSlot(Player pPlayer, AbstractContainerMenu menu, ModCraftContainer matrix, Container container, int index, int xPosition, int yPosition) {
+    public ModCraftResultSlot(Player pPlayer, AbstractContainerMenu menu, ModCraftContainer craftContainer, Container container, int index, int xPosition, int yPosition) {
         super(container, index, xPosition, yPosition);
         this.player = pPlayer;
         this.container = menu;
-        this.matrix = matrix;
+        this.craftContainer = craftContainer;
     }
 
     @Override
@@ -62,28 +62,28 @@ public class ModCraftResultSlot extends Slot {
     public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
         this.checkTakeAchievements(stack);
         var level = player.level();
-        var inventory = this.matrix.asCraftInput();
+        var inventory = this.craftContainer.asCraftInput();
         CommonHooks.setCraftingPlayer(player);
         NonNullList<ItemStack> remaining = level.getRecipeManager().getRemainingItemsFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, level);
         CommonHooks.setCraftingPlayer(null);
 
         for (int k = 0; k < inventory.height(); k++) {
             for (int l = 0; l < inventory.width(); l++) {
-                var index = l + inventory.left() + (k + inventory.top()) * this.matrix.getWidth();
-                var slotStack = this.matrix.getItem(index);
+                var index = l + inventory.left() + (k + inventory.top()) * this.craftContainer.getWidth();
+                var slotStack = this.craftContainer.getItem(index);
 
                 if (!slotStack.isEmpty()) {
-                    this.matrix.removeItem(index, 1);
-                    slotStack = this.matrix.getItem(index);
+                    this.craftContainer.removeItem(index, 1);
+                    slotStack = this.craftContainer.getItem(index);
                 }
 
                 var remainingStack = remaining.get(l + k * inventory.width());
                 if (!remainingStack.isEmpty()) {
                     if (slotStack.isEmpty()) {
-                        this.matrix.setItem(index, remainingStack);
+                        this.craftContainer.setItem(index, remainingStack);
                     } else if (ItemStack.isSameItemSameComponents(slotStack, remainingStack)) {
                         remainingStack.grow(slotStack.getCount());
-                        this.matrix.setItem(index, remainingStack);
+                        this.craftContainer.setItem(index, remainingStack);
                     } else if (!player.getInventory().add(remainingStack)) {
                         player.drop(remainingStack, false);
                     }
@@ -91,18 +91,18 @@ public class ModCraftResultSlot extends Slot {
             }
         }
 
-        this.container.slotsChanged(this.matrix);
+        this.container.slotsChanged(this.craftContainer);
     }
 
     @Override
     protected void checkTakeAchievements(@NotNull ItemStack pStack) {
         if (this.removeCount > 0) {
             pStack.onCraftedBy(this.player.level(), this.player, this.removeCount);
-            EventHooks.firePlayerCraftingEvent(this.player, pStack, this.matrix);
+            EventHooks.firePlayerCraftingEvent(this.player, pStack, this.craftContainer);
         }
 
         if (this.container instanceof RecipeCraftingHolder recipeholder) {
-            recipeholder.awardUsedRecipes(this.player, this.matrix.getItems());
+            recipeholder.awardUsedRecipes(this.player, this.craftContainer.getItems());
         }
 
         this.removeCount = 0;
