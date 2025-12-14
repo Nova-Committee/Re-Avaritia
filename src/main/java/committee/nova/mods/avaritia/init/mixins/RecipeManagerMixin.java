@@ -88,6 +88,6 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
         this.recipes = ImmutableMap.copyOf(newRecipes);
         this.byName = ImmutableMap.copyOf(newByName);
 
-        Lib.LOGGER.info("Registered {} recipes in {} ms", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
+        Lib.LOGGER.info("Avaritia: Registered {} recipes in {} ms", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 }
