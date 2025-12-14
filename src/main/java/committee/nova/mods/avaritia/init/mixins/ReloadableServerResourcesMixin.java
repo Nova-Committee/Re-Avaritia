@@ -71,5 +71,5 @@ public abstract class ReloadableServerResourcesMixin {
             cancellable = true)
     public void avaritia$listeners(CallbackInfoReturnable<List<PreparableReloadListener>> cir) {
         cir.setReturnValue(List.of(this.tagManager, this.lootData, SingularityReloadListener.INSTANCE, this.recipes, this.functionLibrary, this.advancements));
-    }
+    }//确保SingularityReloadListener在RecipeManager之前执行
 }

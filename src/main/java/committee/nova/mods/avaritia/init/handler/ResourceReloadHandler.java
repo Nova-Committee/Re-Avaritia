@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -13,9 +12,9 @@ import net.minecraftforge.fml.common.Mod;
  */
 @Mod.EventBusSubscriber
 public class ResourceReloadHandler {
-    @SubscribeEvent
+    @SubscribeEvent//指定不了加载顺序
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        SingularityReloadListener.INSTANCE = new SingularityReloadListener(event.getConditionContext());
-        event.addListener(SingularityReloadListener.INSTANCE);
+//        SingularityReloadListener.INSTANCE = new SingularityReloadListener(event.getConditionContext());
+//        event.addListener(SingularityReloadListener.INSTANCE);
     }
 }

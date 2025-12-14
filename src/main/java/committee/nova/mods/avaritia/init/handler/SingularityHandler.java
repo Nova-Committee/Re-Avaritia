@@ -1,10 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
-import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.ModApi;
-import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.core.singularity.SingularityEvent;
-import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
