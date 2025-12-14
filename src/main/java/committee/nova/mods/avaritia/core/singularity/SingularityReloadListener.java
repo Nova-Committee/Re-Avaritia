@@ -1,5 +1,6 @@
-package committee.nova.mods.avaritia.init.data.listener;
+package committee.nova.mods.avaritia.core.singularity;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,9 +9,6 @@ import com.mojang.serialization.JsonOps;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
-import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
-import committee.nova.mods.avaritia.core.singularity.SingularityRuntimeEvent;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup;
@@ -23,7 +21,9 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.Const.GSON;
 
@@ -35,7 +35,10 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
 
     @Getter @Setter private Map<ResourceLocation, Singularity> dataSingularities = Maps.newConcurrentMap();
     @Getter @Setter private Map<ResourceLocation, Singularity> runSingularities = Maps.newConcurrentMap();
-    public Map<ResourceLocation, JsonElement> jsons = Maps.newConcurrentMap();
+    @Getter @Setter private List<ResourceLocation> removeRecipes = Lists.newCopyOnWriteArrayList();
+    @Getter @Setter private List<ResourceLocation> removeSingularities = Lists.newCopyOnWriteArrayList();
+    @Getter @Setter private boolean removeAllRecipes = false;
+    @Getter @Setter private boolean removeAll = false;
 
     public SingularityReloadListener() {
         super(GSON, "singularities");
@@ -44,8 +47,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     @Override
     protected void apply(@NotNull Map<ResourceLocation, JsonElement> object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         RegistryOps<JsonElement> registryops = this.makeConditionalOps();
-        jsons.putAll(object);
-        for (Map.Entry<ResourceLocation, JsonElement> entry : jsons.entrySet()) {
+        for (Map.Entry<ResourceLocation, JsonElement> entry : object.entrySet()) {
             ResourceLocation resourcelocation = entry.getKey();
             if (resourcelocation.getPath().startsWith("_")) continue;
 
@@ -65,8 +67,14 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     }
 
     public Map<ResourceLocation, Singularity> getAllSingularities() {
-        Map<ResourceLocation, Singularity> all = new LinkedHashMap<>(this.dataSingularities);
+        Map<ResourceLocation, Singularity> all = new ConcurrentHashMap<>(this.dataSingularities);
         all.putAll(this.runSingularities);
+        all.forEach((id, singularity) -> {
+            if (this.removeRecipes.contains(id)) all.get(id).setRecipeEnabled(false);
+            if (this.removeSingularities.contains(id)) all.remove(id);
+        });
+        if (this.removeAllRecipes) all.forEach((id, singularity) -> singularity.setRecipeEnabled(false));
+        if (this.removeAll) all.clear();
         return all;
     }
 
@@ -78,17 +86,17 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
             } else {
                 Const.LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
             }
-            NeoForge.EVENT_BUS.post(new SingularityRuntimeEvent.Add(runSingularities, singularity));
+            NeoForge.EVENT_BUS.post(new SingularityEvent.Add(runSingularities, singularity));
         }
     }
 
-    public Singularity removeSingularity(ResourceLocation id) {
-        var removed = this.runSingularities.remove(id);
-        if (removed != null) {
-            Const.LOGGER.info("Singularity: Removed runtime singularity: {}", id);
-            NeoForge.EVENT_BUS.post(new SingularityRuntimeEvent.Remove(runSingularities, id));
-        }
-        return removed;
+    public void removeSingularityRecipe(ResourceLocation id) {
+        this.removeRecipes.add(id);
+    }
+
+    public void removeSingularity(ResourceLocation id) {
+        this.removeSingularities.add(id);
+        NeoForge.EVENT_BUS.post(new SingularityEvent.Remove(getAllSingularities(), id));
     }
 
     public Singularity getSingularity(ResourceLocation id) {
@@ -111,7 +119,7 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
         InfinityCatalystCraftRecipe.invalidate();
         EternalSingularityCraftRecipe.invalidate();
-        NeoForge.EVENT_BUS.post(new SingularityReloadEvent(singularities));
+        NeoForge.EVENT_BUS.post(new SingularityEvent.Reload(singularities));
     }
 
     @Override

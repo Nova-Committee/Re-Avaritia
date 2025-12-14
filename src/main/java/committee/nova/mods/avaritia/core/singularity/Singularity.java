@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import dev.latvian.mods.rhino.Context;
 import lombok.Getter;
 import net.minecraft.network.RegistryFriendlyByteBuf;

@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -16,6 +15,5 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 public class ResourceReloadHandler {
     @SubscribeEvent
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        //event.addListener(SingularityReloadListener.INSTANCE);
     }
 }

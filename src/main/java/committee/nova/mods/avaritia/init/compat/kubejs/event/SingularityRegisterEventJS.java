@@ -2,17 +2,15 @@ package committee.nova.mods.avaritia.init.compat.kubejs.event;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.JsonOps;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -20,9 +18,7 @@ import java.util.function.Consumer;
  */
 public class SingularityRegisterEventJS implements KubeEvent {
     private final RecipesKubeEvent event;
-    private final Map<ResourceLocation, JsonElement> recipeJsons;
-    public SingularityRegisterEventJS(RecipesKubeEvent event, Map<ResourceLocation, JsonElement> recipeJsons) {
-        this.recipeJsons = recipeJsons;
+    public SingularityRegisterEventJS(RecipesKubeEvent event) {
         this.event = event;
     }
     public void register(ResourceLocation key) {
@@ -42,6 +38,22 @@ public class SingularityRegisterEventJS implements KubeEvent {
         }, () -> {
             Const.LOGGER.debug("Singularity: Skipping loading singularity {} as its conditions were not met", key);
         });
-
     }
+    public void removeAll() {
+        SingularityReloadListener.INSTANCE.setRemoveAll(true);
+    }
+
+    public void removeAllRecipe() {
+        SingularityReloadListener.INSTANCE.setRemoveAllRecipes(true);
+    }
+
+
+    public void remove(ResourceLocation key) {
+        SingularityReloadListener.INSTANCE.removeSingularity(key);
+    }
+
+    public void removeRecipe(ResourceLocation key) {
+        SingularityReloadListener.INSTANCE.removeSingularityRecipe(key);
+    }
+
 }

@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.core.singularity.SingularityReloadEvent;
+import committee.nova.mods.avaritia.core.singularity.SingularityEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -12,10 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class SingularityHandler {
 
     @SubscribeEvent
-    public static void onReloadSingularity(SingularityReloadEvent event) {
-//        var compressorRecipe = ModApi.addSingularityRecipe(event.getCrruentSingularity());
-//        if (compressorRecipe != null) {
-//            RecipeUtils.addRecipe(compressorRecipe);
-//        }
+    public static void onReloadSingularity(SingularityEvent.Reload event) {
+
     }
 }

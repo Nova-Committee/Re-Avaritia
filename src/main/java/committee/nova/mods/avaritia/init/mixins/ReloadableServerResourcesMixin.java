@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.init.mixins;
 
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;

@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;

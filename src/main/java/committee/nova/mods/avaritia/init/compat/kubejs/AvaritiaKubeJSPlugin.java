@@ -21,8 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
-import static dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents.GROUP;
-
 /**
  * Name: Avaritia-forge / KubeJSAvaritiaPlugin
  * Author: cnlimiter
@@ -66,7 +64,7 @@ public class AvaritiaKubeJSPlugin implements KubeJSPlugin {
 
     @Override
     public void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
-        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS(event, recipeJsons);
+        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS(event);
         AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
     }
 

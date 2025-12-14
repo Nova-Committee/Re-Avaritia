@@ -1,7 +1,7 @@
 package committee.nova.mods.avaritia.util;
 
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.world.item.ItemStack;

@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
-import committee.nova.mods.avaritia.api.utils.RecipeUtils;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
@@ -74,12 +73,12 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         ClientLevel world = Minecraft.getInstance().level;
         if (world != null) {
             var manager = world.getRecipeManager();
-            registration.addRecipes(CompressorCategory.RECIPE_TYPE, RecipeUtils.byType(manager, ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList());
+            registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.byType(ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList());
 
-            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, RecipeUtils.byType(manager, ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList());
+            registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, manager.byType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList());
 
             var recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
-                    RecipeUtils.byType(manager, ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
+                    manager.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
                             .stream()
                             .filter(recipe -> recipe.value().hasRequiredTier() ? tier == recipe.value().getTier() : tier >= recipe.value().getTier())
                             .toList()

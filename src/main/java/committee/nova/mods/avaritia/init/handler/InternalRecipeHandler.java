@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.init.handler;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.ModApi;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
-import committee.nova.mods.avaritia.init.data.listener.SingularityReloadListener;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 

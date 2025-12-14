@@ -90,10 +90,18 @@ public class SculkCraftingTableCategory implements IRecipeCategory<RecipeHolder<
             int heightOffset = Math.floorDiv(3 - shaped.getHeight(), 2);
             int widthOffset = Math.floorDiv(3 - shaped.getWidth(), 2);
 
-            for (int i = heightOffset; i < shaped.getHeight() + heightOffset; i++) {
-                for (int j = widthOffset; j < shaped.getWidth() + widthOffset; j++) {
-                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2).addIngredients(inputs.get(stackIndex));
-                    stackIndex++;
+            // 遍历完整的 3x3 网格
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    var slot = builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2);
+
+                    // 判断是否在配方有效区域内
+                    if (i >= heightOffset && i < heightOffset + shaped.getHeight()
+                            && j >= widthOffset && j < widthOffset + shaped.getWidth()) {
+                        slot.addIngredients(inputs.get(stackIndex));
+                        stackIndex++;
+                    }
+                    // 区域外的槽位保持空白，但仍然存在
                 }
             }
             builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 20).addItemStack(output);

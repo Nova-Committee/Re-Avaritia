@@ -91,10 +91,18 @@ public class EndCraftingTableCategory implements IRecipeCategory<RecipeHolder<IT
             int heightOffset = Math.floorDiv(7 - shaped.getHeight(), 2);
             int widthOffset = Math.floorDiv(7 - shaped.getWidth(), 2);
 
-            for (int i = heightOffset; i < shaped.getHeight() + heightOffset; i++) {
-                for (int j = widthOffset; j < shaped.getWidth() + widthOffset; j++) {
-                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 5, i * 18 + 5).addIngredients(inputs.get(stackIndex));
-                    stackIndex++;
+            // 遍历完整的 7x7 网格
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 7; j++) {
+                    var slot = builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 5, i * 18 + 5);
+
+                    // 判断是否在配方有效区域内
+                    if (i >= heightOffset && i < heightOffset + shaped.getHeight()
+                            && j >= widthOffset && j < widthOffset + shaped.getWidth()) {
+                        slot.addIngredients(inputs.get(stackIndex));
+                        stackIndex++;
+                    }
+                    // 区域外的槽位保持空白，但仍然存在
                 }
             }
             builder.addSlot(RecipeIngredientRole.OUTPUT, 169, 58).addItemStack(output);

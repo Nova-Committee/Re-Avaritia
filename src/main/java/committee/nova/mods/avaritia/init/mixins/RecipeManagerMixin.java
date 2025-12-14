@@ -1,28 +1,28 @@
 package committee.nova.mods.avaritia.init.mixins;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.sugar.Local;
-import committee.nova.mods.avaritia.api.utils.RecipeUtils;
-import net.minecraft.core.HolderLookup;
+import committee.nova.mods.avaritia.api.Lib;
+import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
-import org.spongepowered.asm.mixin.Final;
+import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Project: Avaritia
@@ -49,6 +49,22 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
             @Local ImmutableMultimap.Builder<RecipeType<?>, RecipeHolder<?>> byType,
             @Local ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> byName
     ) {
-        RecipeUtils.fireRecipeManagerLoadingEvent((RecipeManager) (Object) this, byType, byName, this.getRegistryLookup(), this.getContext());
+        RecipeManager manager = (RecipeManager) (Object) this;
+        Lib.LOGGER.info("Avaritia: Loading recipes...");
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        ArrayList<RecipeHolder<?>> recipes = new ArrayList<>();
+
+        try {
+            NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, recipes, this.getRegistryLookup(), this.getContext()));
+        } catch (Exception e) {
+            Lib.LOGGER.error("Avaritia: An error occurred while firing RecipeManagerLoadingEvent", e);
+        }
+
+        for(RecipeHolder<?> recipe : recipes) {
+            byType.put(recipe.value().getType(), recipe);
+            byName.put(recipe.id(), recipe);
+        }
+
+        Lib.LOGGER.info("Avaritia: Registered {} recipes in {} ms", recipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 }
