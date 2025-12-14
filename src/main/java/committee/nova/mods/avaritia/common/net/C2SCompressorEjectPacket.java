@@ -54,40 +54,56 @@ public record C2SCompressorEjectPacket(BlockPos pos) implements CustomPacketPayl
                             if (compressor.getMaterialCount() > 0) {
                                 ItemStack materialStack = compressor.getMaterialStack();
                                 if (!materialStack.isEmpty()) {
-                                    // 创建弹出物品堆
-                                    ItemStack ejectStack = materialStack.copy();
-                                    ejectStack.setCount(compressor.getMaterialCount());
+                                    int materialCount = compressor.getMaterialCount();
+                                    int maxStackSize = materialStack.getMaxStackSize();
+                                    int successfullyEjected = 0;
 
                                     Inventory playerInventory = player.getInventory();
-                                    boolean addedToInventory = false;
 
-                                    // 尝试添加到玩家物品栏
-                                    for (int i = 0; i < playerInventory.getContainerSize(); i++) {
-                                        ItemStack slotStack = playerInventory.getItem(i);
-                                        if (slotStack.isEmpty()) {
-                                            // 空槽位，直接放入
-                                            playerInventory.setItem(i, ejectStack);
-                                            addedToInventory = true;
-                                            break;
-                                        } else if (ItemUtils.areStacksSameType(slotStack, ejectStack) &&
-                                                slotStack.getCount() < slotStack.getMaxStackSize()) {
-                                            // 相同物品且有空间
-                                            int canAdd = Math.min(ejectStack.getCount(),
-                                                    slotStack.getMaxStackSize() - slotStack.getCount());
-                                            if (canAdd > 0) {
-                                                slotStack.grow(canAdd);
-                                                ejectStack.shrink(canAdd);
-                                                if (ejectStack.isEmpty()) {
-                                                    addedToInventory = true;
-                                                    break;
+                                    // 按堆叠上限分批处理弹出的材料
+                                    while (materialCount > 0) {
+                                        // 计算当前批次数量（不超过堆叠上限）
+                                        int currentBatchCount = Math.min(materialCount, maxStackSize);
+
+                                        // 创建弹出物品堆
+                                        ItemStack ejectStack = materialStack.copy();
+                                        ejectStack.setCount(currentBatchCount);
+
+                                        // 尝试添加到玩家物品栏
+                                        boolean addedToInventory = false;
+                                        for (int i = 0; i < playerInventory.getContainerSize(); i++) {
+                                            ItemStack slotStack = playerInventory.getItem(i);
+                                            if (slotStack.isEmpty()) {
+                                                // 空槽位，直接放入
+                                                playerInventory.setItem(i, ejectStack);
+                                                addedToInventory = true;
+                                                break;
+                                            } else if (ItemUtils.areStacksSameType(slotStack, ejectStack) &&
+                                                    slotStack.getCount() < slotStack.getMaxStackSize()) {
+                                                // 相同物品且有空间
+                                                int canAdd = Math.min(ejectStack.getCount(),
+                                                        slotStack.getMaxStackSize() - slotStack.getCount());
+                                                if (canAdd > 0) {
+                                                    slotStack.grow(canAdd);
+                                                    ejectStack.shrink(canAdd);
+                                                    if (ejectStack.isEmpty()) {
+                                                        addedToInventory = true;
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    // 如果物品栏装不下，弹出到地上
-                                    if (!addedToInventory) {
-                                        player.drop(ejectStack, false);
+                                        // 如果物品栏装不下，弹出到地上
+                                        if (!addedToInventory) {
+                                            player.drop(ejectStack, false);
+                                        }
+
+                                        // 更新已成功弹出的数量
+                                        successfullyEjected += currentBatchCount;
+
+                                        // 减少剩余需要弹出的材料数量
+                                        materialCount -= currentBatchCount;
                                     }
 
                                     // 清空压缩器中的材料
@@ -95,7 +111,7 @@ public record C2SCompressorEjectPacket(BlockPos pos) implements CustomPacketPayl
 
                                     // 发送成功消息
                                     player.sendSystemMessage(Component.literal("§a[中子压缩器] §f已弹出材料: " +
-                                            ejectStack.getCount() + "x " + ejectStack.getDisplayName().getString()));
+                                            successfullyEjected + "x " + materialStack.getDisplayName().getString()));
                                 }
                             } else {
                                 // 没有材料可弹出
