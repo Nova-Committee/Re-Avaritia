@@ -45,6 +45,12 @@ public class CapHandler {
                 }
         );
 
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ModTileEntities.compressed_chest_tile.get(),
+                (be, side) -> new InvWrapper(be)
+        );
+
         var sidedVanillaContainers = List.of(
                 ModTileEntities.neutron_collector_tile.get(),
                 ModTileEntities.neutron_compressor_tile.get()

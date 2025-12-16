@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.api.client.screen.ItemSelectScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationButton;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;
@@ -21,6 +22,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -149,12 +151,17 @@ public class ItemFilterScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderTransparentBackground(graphics);
+        GuiUtils.fill(graphics, (int) (this.bgX - this.margin), (int) (this.bgY - this.margin), (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5), 0xCCC6C6C6, 2);
+        GuiUtils.fillOutLine(graphics, (int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.itemPerLine + this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.maxLine + this.margin), 1, 0xFF000000, 1);
+
+    }
+
+    @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 绘制背景
-        this.renderBackground(graphics, mouseX, mouseY, delta);
-        GuiUtils.fill(graphics, (int) (this.bgX - this.margin), (int) (this.bgY - this.margin), (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5), 0xCCC6C6C6, 2);
-        GuiUtils.fillOutLine(graphics, (int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.itemPerLine + this.margin), (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.maxLine + this.margin), 1, 0xFF000000, 1);
         super.render(graphics, mouseX, mouseY, delta);
         this.renderButton(graphics, mouseX, mouseY);
     }
