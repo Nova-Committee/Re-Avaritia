@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.tile;
 
 import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
+import committee.nova.mods.avaritia.api.common.crafting.ShapelessCraftingInput;
 import committee.nova.mods.avaritia.api.common.inventory.OnContentsChangedFunction;
 import committee.nova.mods.avaritia.api.common.tile.BaseInventoryTileEntity;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
@@ -35,6 +36,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Description:
@@ -305,14 +308,26 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
                 // 锁定状态下，只接受锁定配方的材料
                 var ingredients = this.lockedRecipe.getIngredients();
                 if (!ingredients.isEmpty()) {
-                    var ingredient = ingredients.get(0);
+                    var ingredient = ingredients.getFirst();
                     var items = ingredient.getItems();
                     return items.length > 0 && stack.is(items[0].getItem());
                 }
                 return false;
+            } else {
+                var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
+                if (compressorRecipe != null) {
+                    var ingredients = compressorRecipe.getIngredients();
+                    if (!ingredients.isEmpty()) {
+                        var ingredient = ingredients.getFirst();
+                        var items = ingredient.getItems();
+                        return items.length > 0 && stack.is(items[0].getItem());
+                    }
+                    return false;
+                }
+                return false;
             }
         }
-        return true; // 默认允许放置
+        return false; // 默认不允许放置
     }
 
     private void handleActiveIO() {
@@ -447,10 +462,10 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     @Override
     public int @NotNull [] getSlotsForFace(@NotNull Direction direction) {
         if (sideConfig.getSideMode(direction).canInput()) {
-            return new int[1];
+            return new int[]{1};
         } else if (sideConfig.getSideMode(direction).canOutput()) {
-            return new int[0];
-        } else return new int[]{1};
+            return new int[]{0};
+        } else return new int[1];
     }
 
     @Override
@@ -458,7 +473,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
         if (stack.isEmpty()) {
             return false;
         }
-        if (index == 1) { //input
+        if (index == 1 && ioHandler.shouldAllowPassiveIO(direction)) { //input
             if (this.getInventory().getStackInSlot(1).isEmpty()) {
                 return true;
             }
@@ -470,6 +485,14 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             if (!this.materialStack.isEmpty()) {
                 return ItemStack.isSameItemSameComponents(this.getInventory().getStackInSlot(1), this.materialStack);
             }
+
+            var ingredients = this.getActiveRecipe().getIngredients();
+            if (!ingredients.isEmpty()) {
+                var ingredient = ingredients.getFirst();
+                var items = ingredient.getItems();
+                return items.length > 0 && stack.is(items[0].getItem());
+            }
+
         }
         return false;
     }
