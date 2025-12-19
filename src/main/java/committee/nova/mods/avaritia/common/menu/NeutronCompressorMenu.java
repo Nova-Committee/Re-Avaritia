@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
+import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,6 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**

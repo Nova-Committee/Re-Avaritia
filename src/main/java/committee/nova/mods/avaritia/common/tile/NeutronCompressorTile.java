@@ -23,6 +23,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -88,6 +89,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
         return ItemStackWrapper.create(2, builder -> {
             builder.setOutputSlots(0);
             builder.setCanInsert((slot, stack) -> slot == 1);
+            builder.setCanExtract((slot) -> slot == 1 || slot == 0);
         });
     }
 
@@ -102,7 +104,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             tile.activeIOtick++;
             if (tile.activeIOtick >= ACTIVE_IO_INTERVAL) {
                 tile.activeIOtick = 0;
-                tile.handleActiveIO();
+                tile.ioHandler.handleActiveIO();
             }
 
             // 处理材料输入
@@ -298,8 +300,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     }
 
 
-
-
     // 新增方法：输入槽锁定验证
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
@@ -328,10 +328,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             }
         }
         return false; // 默认不允许放置
-    }
-
-    private void handleActiveIO() {
-        ioHandler.handleActiveIO();
     }
 
     // IO接口实现方法
