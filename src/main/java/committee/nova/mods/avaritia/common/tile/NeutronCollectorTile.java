@@ -238,16 +238,14 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
 
     @Override
     public int @NotNull [] getSlotsForFace(@NotNull Direction direction) {
-        if (direction == Direction.DOWN) {
-            return new int[] { 0 };
-        } else {
-            return new int[] { 1 };
-        }
+        if (sideConfig.getSideMode(direction).canOutput()) {
+            return new int[]{0};
+        } else return new int[1];
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int i, @NotNull ItemStack itemStack, @Nullable Direction direction) {
-        return false;
+        return ioHandler.shouldAllowPassiveIO(direction);
     }
 
     @Override

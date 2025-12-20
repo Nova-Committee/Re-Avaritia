@@ -182,15 +182,17 @@ public class SideConfigScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // 先渲染背景
+    public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderTransparentBackground(guiGraphics);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
         guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
-        // 渲染子组件（按钮等）
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
+    @Override
+    protected void renderBlurredBackground(float partialTick) {
+        super.renderBlurredBackground(partialTick);
+    }
 
     @Override
     public void onClose() {

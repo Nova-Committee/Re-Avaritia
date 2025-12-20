@@ -80,9 +80,9 @@ public class CompressorRecipe implements ICompressorRecipe {
     }
     @Override
     public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
-        if (inv.ingredientCount() != 1)
-            return false;
+        if (inv.size() != 1) return false;
         var input = inv.getItem(0);
+        if (input.isEmpty()) return false;  // 明确检查空物品
         return Arrays.stream(this.inputs.getFirst().getItems()).anyMatch(s -> s.is(input.getItem()));
     }
 

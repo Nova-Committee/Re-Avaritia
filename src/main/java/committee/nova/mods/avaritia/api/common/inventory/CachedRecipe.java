@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.common.inventory;
 
+import lombok.Setter;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.Level;
  */
 public class CachedRecipe <I extends RecipeInput, T extends Recipe<I>> {
     private final RecipeType<T> type;
-    private T recipe;
+    @Setter private T recipe;
 
     public CachedRecipe(RecipeType<T> type) {
         this.type = type;

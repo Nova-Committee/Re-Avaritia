@@ -23,8 +23,8 @@ public class ItemStackWrapperSlot extends SlotItemHandler {
     }
 
     @Override
-    public boolean mayPickup(Player player) {
-        return !this.inventory.extractItem(this.index, 1, true).isEmpty();
+    public boolean mayPickup(@NotNull Player player) {
+        return !this.inventory.extractItem(this.index, 1, true, true).isEmpty();
     }
 
     @Override

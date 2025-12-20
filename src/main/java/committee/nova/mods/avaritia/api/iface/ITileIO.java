@@ -36,5 +36,25 @@ public interface ITileIO {
      * 自定义的面模式切换逻辑
      */
     void cycleSideModeForNeutronCollector(Direction direction);
+
+    /**
+     * 检查是否可以从指定面放置物品进来（用于被动输入）
+     * @param direction 要检查的面方向
+     * @param itemStack 要放置的物品（可以为 null，用于通配符检查）
+     * @return 如果允许放置则返回 true
+     */
+    default boolean canPlaceItemFromSide(Direction direction, net.minecraft.world.item.ItemStack itemStack) {
+        return true; // 默认允许
+    }
+
+    /**
+     * 检查是否可以从指定面提取物品出去（用于被动输出）
+     * @param direction 要检查的面方向
+     * @param itemStack 要提取的物品（可以为 null，用于通配符检查）
+     * @return 如果允许提取则返回 true
+     */
+    default boolean canTakeItemToSide(Direction direction, net.minecraft.world.item.ItemStack itemStack) {
+        return true; // 默认允许
+    }
 }
 
