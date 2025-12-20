@@ -2,9 +2,9 @@ name: Forge Action
 
 on:
   push:
-    branches: [ "*-forged" ]
+    branches: [ "forge/*" ]
   pull_request:
-    branches: [ "*-forged" ]
+    branches: [ "forge/*" ]
 
 permissions:
   contents: read
