@@ -2,9 +2,9 @@ name: Forge Action
 
 on:
   push:
-    branches: [ "*-forged" ]
+    branches: [ "neo/*" ]
   pull_request:
-    branches: [ "*-forged" ]
+    branches: [ "neo/*" ]
 
 permissions:
   contents: read
@@ -39,7 +39,7 @@ jobs:
       - name: Find Correct JAR
         id: findjar
         run: |
-          output="$(find build/libs/ ! -name "*-sources.jar" -type f -printf "%f\n")"
+          output="$(find build/libs/ -name "*-release.jar" -type f -printf "%f\n")"
           echo "::set-output name=jarname::$output"
 
       - name: Upload Build Artifacts
