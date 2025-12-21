@@ -127,7 +127,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
 
     @Override
     public boolean hasDescTooltip() {
-        return true;
+        return false;
     }
 
     @Override

@@ -37,6 +37,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -92,6 +93,11 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
             registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.get().asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
             registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
+            registration.addIngredientInfo(new ItemStack(ModItems.crystal_pickaxe.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.crystal_pickaxe"));
+            registration.addIngredientInfo(new ItemStack(ModItems.full_matter_cluster.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.full_matter_cluster"));
+            registration.addIngredientInfo(new ItemStack(ModItems.refined_coal.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.refined_coal"));
+            registration.addIngredientInfo(new ItemStack(Items.BEDROCK), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.bedrock"));
+            registration.addIngredientInfo(new ItemStack(Items.END_PORTAL_FRAME), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.end_portal_frame"));
         }
     }
 
