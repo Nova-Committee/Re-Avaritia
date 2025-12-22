@@ -24,10 +24,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -125,12 +122,25 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         return ModItems.infinity_trident.toStack();
     }
 
+
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        Entity thrower = getOwner();
+        var blockPos = result.getBlockPos();
+        ToolUtils.trySummonLightning(level(), 2, blockPos,
+                thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity hitEntity = result.getEntity();
         float damage = Float.MAX_VALUE;
         Entity thrower = getOwner();
         DamageSource damagesource = damageSources().trident(this, thrower == null ? this : thrower);
+        var blockPos = result.getEntity().blockPosition();
+        ToolUtils.trySummonLightning(level(), 2, blockPos,
+                thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
         this.dealtDamage = true;
         if (hitEntity.hurt(damagesource, damage)) {
             if (this.level() instanceof ServerLevel serverlevel1) {

@@ -31,10 +31,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class InfinityTridentItem extends TridentItem implements IUndamageable, ISwitchable {
-    public static final List<String> FUNC_MODES = Arrays.asList("infinity_trident_normal", "infinity_trident_loyalty", "infinity_trident_riptide");
-    public static final byte MODE_NORMAL = 0;
-    public static final byte MODE_LOYALTY = 1;
-    public static final byte MODE_RIPTIDE = 2;
+    public static final List<String> FUNC_MODES = Arrays.asList("infinity_trident_loyalty", "infinity_trident_riptide");
+
+    public static final byte MODE_LOYALTY = 0;
+    public static final byte MODE_RIPTIDE = 1;
 
     private static final String CHANNELING_NBT = "Channeling";
     private static final String SHOCKWAVE_NBT = "Shockwave";
@@ -86,9 +86,6 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
             int currentMode = ISwitchable.getCurrentMode(itemStack, FUNC_MODES);
             if (i >= 10) {
                 switch (currentMode) {
-                    case MODE_NORMAL -> {
-                        shootTrident(itemStack, level, player, true);
-                    }
                     case MODE_LOYALTY -> {
                         player.awardStat(Stats.ITEM_USED.get(this));
                         shootTrident(itemStack, level, player,  false);
@@ -122,7 +119,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     private void shootTrident(@NotNull ItemStack itemStack, @NotNull Level level, Player player, boolean noReturn) {
         if (!level.isClientSide) {
             InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack, null);
-            throwntrident.setLoyaltyLevel(noReturn ? 0 : 3);
+            throwntrident.setLoyaltyLevel(noReturn ? 0 : 2);
             throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);
             if (player.getAbilities().instabuild) {
                 throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;

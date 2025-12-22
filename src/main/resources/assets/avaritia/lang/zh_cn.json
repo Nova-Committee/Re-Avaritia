@@ -175,6 +175,7 @@
   "container.extreme_crafting_table": "终焉工作台",
   "container.nether_crafting_table": "炼狱工作台",
   "container.sculk_crafting_table": "幽匿工作台",
+  "container.extreme_smithing": "终焉锻造台",
 
   "death.attack.infinity": "%1$s 被 %2$s 彻底粉碎",
   "death.attack.infinity.0": "%1$s 被蒸发",

@@ -41,6 +41,9 @@ public interface ISwitchable {
     /**
      * 获取当前激活的模式
      */
+    /**
+     * 获取当前激活的模式，如果没有激活模式则默认激活第一个
+     */
     static int getCurrentMode(ItemStack stack, List<String> modeList) {
         CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
         for (int i = 0; i < modeList.size(); i++) {
@@ -48,6 +51,11 @@ public interface ISwitchable {
             if (modeTag.contains(mode) && modeTag.getBoolean(mode)) {
                 return i;
             }
+        }
+        // 如果没有找到激活的模式且模式列表不为空，默认激活第一个模式
+        if (!modeList.isEmpty()) {
+            modeTag.putBoolean(modeList.get(0), true);
+            return 0;
         }
         return -1; // 无激活模式
     }

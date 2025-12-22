@@ -17,12 +17,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
@@ -32,6 +37,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +53,9 @@ import java.util.List;
 public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable, ITooltip, IUndamageable {
     private final InitEnchantment initEnchantment;
 
+    private static final float SMASH_FALL_THRESHOLD = 1.5F;
+    private static final double SMASH_RADIUS = 3.5D;
+
     public InfinityPickaxeItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
@@ -54,7 +64,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
-        this.initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 20);
+        this.initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 10);
     }
 
     @Override
@@ -126,6 +136,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
             if (!(victim instanceof Player)) {
                 int i = 10;
                 victim.setDeltaMovement(-Mth.sin(player.yBodyRot * (float) Math.PI / 180.0F) * i * 0.5F, 2.0D, Mth.cos(player.yBodyRot * (float) Math.PI / 180.0F) * i * 0.5F);
+
             }
         }
         return true;
