@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
@@ -12,9 +13,12 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,6 +42,54 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public static void invalidate() {
         INGREDIENTS_LOADED.clear();
     }
+
+    @Override
+    public boolean matches(@NotNull TierInput input, @NotNull Level level) {
+        var ingredients = this.getIngredients();
+        if (ingredients.isEmpty()) return false;
+
+        int singularityCount = SingularityReloadListener.INSTANCE.getAllSingularities().values()
+                .stream()
+                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                .mapToInt(singularity -> 1)
+                .sum();
+
+        boolean[] found = new boolean[singularityCount];
+        int validItems = 0;
+
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
+            if (!stack.isEmpty()) {
+                validItems++;
+                boolean matched = false;
+                int index = 0;
+                for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
+                    if (singularity.getIngredient() != Ingredient.EMPTY) {
+                        ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                        if (ItemStack.isSameItemSameComponents(stack, singularityStack)) {
+                            if (!found[index]) {
+                                found[index] = true;
+                                matched = true;
+                                break;
+                            }
+                        }
+                        index++;
+                    }
+                }
+                if (!matched) {
+                    return false;
+                }
+            }
+        }
+
+        for (boolean b : found) {
+            if (!b) return false;
+        }
+
+
+        return validItems == singularityCount;
+    }
+
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
