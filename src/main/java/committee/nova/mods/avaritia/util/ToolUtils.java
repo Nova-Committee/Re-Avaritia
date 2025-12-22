@@ -584,12 +584,11 @@ public class ToolUtils {
             Block block = state.getBlock();
             if (block instanceof BonemealableBlock bonemealableBlock && !(block instanceof GrassBlock)
                     && bonemealableBlock.isValidBonemealTarget(serverLevel, pos, state)
-                    //&& ForgeHooks.onCropsGrowPre(serverLevel, pos, state, true)
+
             ) {
                 for (int i = 0; i < cost; i++) {
                     bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, pos, state);
                     serverLevel.levelEvent(2005, pos, 0);
-                    //ForgeHooks.onCropsGrowPost(serverLevel, pos, state);
                 }
             }
         }

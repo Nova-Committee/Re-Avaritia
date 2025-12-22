@@ -175,6 +175,7 @@
   "container.extreme_crafting_table": "Extreme Crafting Table",
   "container.nether_crafting_table": "Nether Crafting Table",
   "container.sculk_crafting_table": "Sculk Crafting Table",
+  "container.extreme_smithing": "Extreme Smithing Table",
 
   "death.attack.infinity": "%1$s was obliterated by %2$s",
   "death.attack.infinity.0": "%1$s was sliced to ribbons",

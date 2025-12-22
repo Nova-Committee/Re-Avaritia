@@ -16,8 +16,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -96,7 +99,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
             int rang = 7;
             int height = 2;
             ToolUtils.rangeHarvest(serverLevel, player, stack, blockPos, rang, height);
-            ToolUtils.rangeBonemealable(serverLevel, blockPos, rang, height, 3);
+            ToolUtils.rangeBonemealable(serverLevel, blockPos, rang, height,3);
             player.getCooldowns().addCooldown(stack.getItem(), 10);
             serverLevel.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         }
@@ -216,4 +219,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
         }
         world.destroyBlock(pos, false);
     }
+
+
+
 }
