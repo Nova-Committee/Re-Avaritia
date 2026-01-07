@@ -251,9 +251,7 @@ public class AbilityHandler {
     private static void updateClientServerFlight(Player player, boolean allowFlying, boolean isFlying) {
         player.getAbilities().mayfly = allowFlying;
         player.getAbilities().flying = isFlying;
-        if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.onUpdateAbilities();
-        }
+        player.onUpdateAbilities(); 
     }
 
     public static class FlightInfo {
