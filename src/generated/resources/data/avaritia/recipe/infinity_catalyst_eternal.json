@@ -3,7 +3,7 @@
   "group": "eternal_singularity",
   "ingredients": [
     {
-      "tag": "c:storage_bloks/steel"
+      "tag": "c:storage_blocks/steel"
     },
     {
       "item": "avaritia:crystal_matrix_ingot"
