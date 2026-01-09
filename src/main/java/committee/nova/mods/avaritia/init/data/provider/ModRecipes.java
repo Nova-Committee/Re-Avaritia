@@ -625,14 +625,15 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
                 .save(consumer);
 
-        ModExtremeSmithingRecipeBuilder.smithing(
-                        Ingredient.of(ModItems.upgrade_smithing_template.get()),
-                        Ingredient.of(ModBlocks.compressed_chest.get()),
-                        CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.infinity.get())),
-                        RecipeCategory.MISC,
-                        ModBlocks.infinity_chest.get().asItem().getDefaultInstance())
-                .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
-                .save(consumer);
+        //先注释了,把无尽箱子的物品移除了,等修复完再启用
+//        ModExtremeSmithingRecipeBuilder.smithing(
+//                        Ingredient.of(ModItems.upgrade_smithing_template.get()),
+//                        Ingredient.of(ModBlocks.compressed_chest.get()),
+//                        CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.infinity.get())),
+//                        RecipeCategory.MISC,
+//                        ModBlocks.infinity_chest.get().asItem().getDefaultInstance())
+//                .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))
+//                .save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get())
                 .pattern(" aaabaaa ")
@@ -742,7 +743,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                 .requires(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/steel")))
+                .requires(Items.BEDROCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -753,7 +754,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                 .requires(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/steel")))
+                .requires(Items.BEDROCK)
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -772,7 +773,6 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
 
         ModEternalRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.AIR)
                 .unlockedBy("has_item", has(ModItems.singularity.get())).save(consumer);
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.extreme_smithing_table.get())

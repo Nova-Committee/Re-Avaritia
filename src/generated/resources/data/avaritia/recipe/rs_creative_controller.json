@@ -25,7 +25,7 @@
       "type": "neoforge:compound",
       "ingredients": [
         {
-          "item": "refinedstorage:4096k_fluid_storage_part"
+          "item": "refinedstorage:4096b_fluid_storage_part"
         }
       ]
     },

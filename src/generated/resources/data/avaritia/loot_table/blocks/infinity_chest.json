@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "avaritia:infinity_chest"
+          "name": "minecraft:air"
         }
       ],
       "rolls": 1.0

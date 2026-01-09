@@ -25,7 +25,7 @@ import java.io.File;
 /**
  * @author cnlimiter
  */
-@EventBusSubscriber(modid = Const.MOD_ID)
+//@EventBusSubscriber(modid = Const.MOD_ID)
 public class NameCacheManager {
     private static volatile NameCacheManager instance;
 

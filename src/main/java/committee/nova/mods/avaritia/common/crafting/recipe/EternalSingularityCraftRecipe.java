@@ -102,9 +102,9 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                         .map(SingularityUtils::getItemForSingularity)
                         .map(Ingredient::of)
                         .forEach(super.getIngredients()::add);
-                if (!originalInputs.isEmpty()) {
-                    super.getIngredients().addAll(originalInputs);
-                }
+            if (!originalInputs.isEmpty()) {
+                super.getIngredients().addAll(originalInputs);
+            }
             INGREDIENTS_LOADED.put(this, true);
         }
         return super.getIngredients();
@@ -125,13 +125,10 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                                         field -> {
                                             var max = 81;
                                             var ingredients = field.toArray(Ingredient[]::new);
-                                            if (ingredients.length == 0) {
-                                                return DataResult.error(() -> "No ingredients for Combination recipe");
-                                            } else {
-                                                return ingredients.length > max
-                                                        ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
-                                                        : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
-                                            }
+                                            return ingredients.length > max
+                                                    ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
+                                                    : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
+
                                         },
                                         DataResult::success
                                 )

@@ -2,7 +2,7 @@
   "type": "avaritia:infinity_catalyst",
   "ingredients": [
     {
-      "tag": "c:storage_blocks/steel"
+      "item": "minecraft:bedrock"
     },
     {
       "item": "avaritia:crystal_matrix_ingot"

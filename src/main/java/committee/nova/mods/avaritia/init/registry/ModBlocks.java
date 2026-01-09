@@ -64,7 +64,7 @@ public class ModBlocks {
     public static DeferredBlock<Block> crystal_matrix = itemBlock("crystal_matrix", () -> new ResourceBlock(ModResourceBlocks.CRYSTAL),new Item.Properties().fireResistant().rarity(ModRarities.RARE));
     public static DeferredBlock<Block> blaze_cube_block = itemBlock("blaze_cube_block", () -> new BlazeCubeBlock(ModResourceBlocks.BLAZE), ModRarities.RARE);
     public static DeferredBlock<Block> compressed_chest = itemBlock("compressed_chest", CompressedChestBlock::new, ModRarities.RARE);
-    public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, ModRarities.LEGEND.getValue());
+    public static DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, false, new Item.Properties().rarity(ModRarities.LEGEND.getValue()));
     public static DeferredBlock<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
             () -> new BaseBlock(BlockBehaviour.Properties.of()

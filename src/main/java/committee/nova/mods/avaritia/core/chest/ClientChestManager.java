@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * @author cnlimiter
  */
-@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
+//@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class ClientChestManager {
     private static volatile ClientChestManager instance;
 
