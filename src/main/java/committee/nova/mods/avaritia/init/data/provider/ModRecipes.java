@@ -14,6 +14,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -29,10 +30,13 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -738,7 +742,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_nugget.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.BEDROCK)
+                 .requires(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/steel")))
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -749,7 +753,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.neutron_ingot.get())).save(consumer);
 
         ModCatalystRecipeBuilder.shapeless(RecipeCategory.MISC)
-                .requires(Items.BEDROCK)
+                 .requires(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/steel")))
                 .requires(ModItems.crystal_matrix_ingot.get())
                 .requires(ModItems.neutron_ingot.get())
                 .requires(ModItems.cosmic_meatballs.get())
@@ -1753,7 +1757,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //        energyContainers.add(stored);
 //        mekData.put("EnergyContainers", energyContainers);
 //        creative_energy_cube_main.put("mekData", mekData);
-//
+
 //        ConditionalRecipe.builder().addCondition(modLoaded("mekanism")).addRecipe(
 //                ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_energy_cube"),
 //                                creative_energy_cube_main
@@ -1767,7 +1771,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //                        .pattern("BDSDADSDB")
 //                        .pattern("BDDDADDDB")
 //                        .pattern("BBBCECBBB")
-//
+
 //                        .define('I', ModItems.infinity_ingot.get())
 //                        .define('S', ModItems.infinity_catalyst.get())
 //                        .define('A', Const.getIngredient(Mods.MEK, "ultimate_energy_cube"))
@@ -1777,7 +1781,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 //                        .define('E', Const.getIngredient(Mods.MEK, "ultimate_induction_provider"))
 //                        .unlockedBy("has_item", has(Const.getItem("mekanism", "ultimate_energy_cube")))::save
 //        ).build(consumer, Const.rl("mek_creative_energy_cube"));
-//
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ResourceLocation.tryBuild("mekanism", "creative_fluid_tank"))
                 .conditions(modLoaded("mekanism"))
                 .pattern("         ")
