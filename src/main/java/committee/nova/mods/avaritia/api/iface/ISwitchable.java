@@ -58,6 +58,11 @@ public interface ISwitchable {
                 return i;
             }
         }
+        // 如果没有找到激活的模式且模式列表不为空，默认激活第一个模式
+        if (!modeList.isEmpty()) {
+            modeTag.putBoolean(modeList.get(0), true);
+            return 0;
+        }
         return -1; // 无激活模式
     }
 
