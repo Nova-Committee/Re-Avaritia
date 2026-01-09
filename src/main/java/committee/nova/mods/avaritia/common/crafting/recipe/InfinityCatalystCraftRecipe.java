@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
@@ -73,7 +74,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
 
     /**
      * 处理默认组的奇点匹配逻辑
-     * 要求玩家必须放置所有已注册的奇点，每个奇点只能使用一次
+     * 要求玩家必须放置所有已注册的奇点（每个奇点只能使用一次），
+     * 以及 originalInputs 中的物品
      */
     private boolean matchesSingularityRecipe(@NotNull Container input) {
         // 获取配料列表（会加载所有奇点）
@@ -86,46 +88,66 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             return false;
         }
 
-        int singularityCount = singularities.values()
+        // 收集所有有效的奇点对象
+        List<Singularity> validSingularities = singularities.values()
                 .stream()
                 .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .mapToInt(singularity -> 1)
-                .sum();
+                .toList();
 
+        int singularityCount = validSingularities.size();
         if (singularityCount == 0) return false;
 
         // 使用boolean数组追踪哪些奇点已被放置
         boolean[] found = new boolean[singularityCount];
-        int validItems = 0;
+        int totalInputItems = 0;
 
-        // 遍历容器中的每个物品
+        // 收集容器中的所有非空物品
+        List<ItemStack> inputStacks = new ArrayList<>();
         for (int i = 0; i < input.getContainerSize(); i++) {
             ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
-                validItems++;
-                boolean matched = false;
-                int index = 0;
+                inputStacks.add(stack);
+                totalInputItems++;
+            }
+        }
 
-                // 检查是否与某个奇点匹配
-                for (var singularity : singularities.values()) {
-                    if (singularity.getIngredient() != Ingredient.EMPTY) {
-                        ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                        if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                            // 确保每个奇点只能使用一次
-                            if (!found[index]) {
-                                found[index] = true;
-                                matched = true;
-                                break;
-                            }
-                        }
-                        index++;
+        // 计算期望的总物品数量：奇点数 + originalInputs数
+        int expectedTotalItems = singularityCount + this.originalInputs.size();
+        if (totalInputItems != expectedTotalItems) {
+            return false;
+        }
+
+        // 检查每个输入物品：要么匹配奇点，要么匹配 originalInputs
+        for (ItemStack stack : inputStacks) {
+            boolean matched = false;
+
+            // 首先检查是否与某个奇点匹配
+            for (int i = 0; i < validSingularities.size(); i++) {
+                var singularity = validSingularities.get(i);
+                ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                    // 确保每个奇点只能使用一次
+                    if (!found[i]) {
+                        found[i] = true;
+                        matched = true;
+                        break;
                     }
                 }
+            }
 
-                // 如果有物品不匹配任何奇点，返回false
-                if (!matched) {
-                    return false;
+            // 如果没有匹配奇点，检查是否匹配 originalInputs
+            if (!matched) {
+                for (Ingredient ingredient : this.originalInputs) {
+                    if (ingredient.test(stack)) {
+                        matched = true;
+                        break;
+                    }
                 }
+            }
+
+            // 如果有物品既不匹配奇点也不匹配 originalInputs，返回false
+            if (!matched) {
+                return false;
             }
         }
 
@@ -134,8 +156,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             if (!b) return false;
         }
 
-        // 验证物品数量与奇点总数完全匹配
-        return validItems == singularityCount;
+        return true;
     }
 
     /**
