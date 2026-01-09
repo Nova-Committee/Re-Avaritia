@@ -309,7 +309,7 @@
   "gui.avaritia.apply": "应用",
   "gui.avaritia.cancel": "取消",
   "gui.avaritia.search.tip1": "无前缀搜索ID和名字",
-  "gui.avaritia.search.tip2": "前缀 \"§a*§r\" 仅搜索ID",
+  "gui.avaritia.search.tip2": "前缀 \"§a@§r\" 仅搜索ID",
   "gui.avaritia.search.tip3": "前缀 \"§a$§r\" 搜索Tag",
   "gui.avaritia.sort.ascending": "升序",
   "gui.avaritia.sort.descending": "降序",

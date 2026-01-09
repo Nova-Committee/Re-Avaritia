@@ -149,7 +149,7 @@
   "gui.avaritia.rule.tip": "輪以擇之",
   "gui.avaritia.search": "求……",
   "gui.avaritia.search.tip1": "無前綴則求以碼名",
-  "gui.avaritia.search.tip2": "前綴 \"§a*§r\" 則惟求以碼",
+  "gui.avaritia.search.tip2": "前綴 \"§a@§r\" 則惟求以碼",
   "gui.avaritia.search.tip3": "前綴 \"§a$§r\" 則求以籖",
   "gui.avaritia.sort.ascending": "昇序",
   "gui.avaritia.sort.count": "序：§a數",

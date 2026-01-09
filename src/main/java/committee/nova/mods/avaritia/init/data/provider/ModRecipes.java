@@ -1555,7 +1555,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                         .define('A', ModItems.infinity_catalyst.get())
                         .define('B', ModItems.neutron_ingot.get())
                         .define('C', Const.getIngredient("refinedstorage", "advanced_processor"))
-                        .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
+                        .define('D', Const.getIngredient("refinedstorage", "4096b_fluid_storage_part"))
                         .define('E', Const.getIngredient("refinedstorage", "64k_storage_part"))
                         .define('F', ItemTags.create(new ResourceLocation("refinedstorage", "controller")))
                         .unlockedBy("has_item", has(ItemTags.create(new ResourceLocation("refinedstorage", "controller"))))::save
@@ -1576,7 +1576,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                         .define('A', ModBlocks.infinity.get())
                         .define('B', ModBlocks.neutron_compressor.get())
                         .define('C', Const.getIngredient("refinedstorage", "creative_controller"))
-                        .define('D', Const.getIngredient("refinedstorage", "4096k_fluid_storage_part"))
+                        .define('D', Const.getIngredient("refinedstorage", "4096b_fluid_storage_part"))
                         .unlockedBy("has_item", has(Const.getItem("refinedstorage", "creative_controller")))::save
         ).build(consumer, Const.rl("rs_creative_fluid_storage_disk"));
 

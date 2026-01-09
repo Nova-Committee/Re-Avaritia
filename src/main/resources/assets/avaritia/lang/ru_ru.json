@@ -228,7 +228,7 @@
   "gui.avaritia.rule.tip": "Выберите колесом мыши",
   "gui.avaritia.search": "поиск",
   "gui.avaritia.search.tip1": "Поиск ID и имени без префикса",
-  "gui.avaritia.search.tip2": "Префикс \"§a*§r\" только поиск ID",
+  "gui.avaritia.search.tip2": "Префикс \"§a@§r\" только поиск ID",
   "gui.avaritia.search.tip3": "Префикс \"§a$§r\" поиск тегов",
   "gui.avaritia.sort.ascending": "По возрастанию",
   "gui.avaritia.sort.count": "Сортировка : §aКоличество",

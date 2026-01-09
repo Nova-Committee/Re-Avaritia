@@ -227,7 +227,7 @@
   "gui.avaritia.rule.tip": "用鼠標滾輪選擇",
   "gui.avaritia.search": "搜索",
   "gui.avaritia.search.tip1": "無前綴搜索ID和名字",
-  "gui.avaritia.search.tip2": "前綴 \"§a*§r\" 僅搜索ID",
+  "gui.avaritia.search.tip2": "前綴 \"§a@§r\" 僅搜索ID",
   "gui.avaritia.search.tip3": "前綴 \"§a$§r\" 搜索Tag",
   "gui.avaritia.sort.ascending": "升序",
   "gui.avaritia.sort.count": "排序 : §a數量",

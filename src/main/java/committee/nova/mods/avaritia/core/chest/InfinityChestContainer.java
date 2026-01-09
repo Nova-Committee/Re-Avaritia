@@ -78,7 +78,7 @@ public class InfinityChestContainer extends SimpleContainer {
             if (!this.menu.filter.isEmpty()) {
                 ArrayList<String> temp = new ArrayList<>();
                 char head = this.menu.filter.charAt(0);
-                if (head == '*') {
+                if (head == '@') {
                     String s = this.menu.filter.substring(1);
                     for (String itemName : sortedItems) if (itemName.contains(s)) temp.add(itemName);
                 } else if (head == '$') {

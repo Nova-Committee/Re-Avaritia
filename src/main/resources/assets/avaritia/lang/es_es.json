@@ -228,7 +228,7 @@
   "gui.avaritia.rule.tip": "Seleccionar con la rueda del ratón",
   "gui.avaritia.search": "buscar",
   "gui.avaritia.search.tip1": "Búsqueda sin prefijo de ID y Nombre",
-  "gui.avaritia.search.tip2": "Prefijo \"§a*§r\" buscar solo ID",
+  "gui.avaritia.search.tip2": "Prefijo \"§a@§r\" buscar solo ID",
   "gui.avaritia.search.tip3": "Prefijo \"§a$§r\" buscar Etiquetas",
   "gui.avaritia.sort.ascending": "Ascendente",
   "gui.avaritia.sort.count": "Ordenar : §aContar",

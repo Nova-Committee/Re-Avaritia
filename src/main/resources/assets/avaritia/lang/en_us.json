@@ -262,7 +262,7 @@
   "gui.avaritia.save": "Save",
   "gui.avaritia.search": "search",
   "gui.avaritia.search.tip1": "Empty prefix search ID and Name",
-  "gui.avaritia.search.tip2": "Prefix \"§a*§r\" search ID only",
+  "gui.avaritia.search.tip2": "Prefix \"§a@§r\" search ID only",
   "gui.avaritia.search.tip3": "Prefix \"§a$§r\" search Tags",
   "gui.avaritia.sort.ascending": "Ascending",
   "gui.avaritia.sort.count": "Sort : §aCount",

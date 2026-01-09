@@ -228,7 +228,7 @@
   "gui.avaritia.rule.tip": "マウスホイールで選択",
   "gui.avaritia.search": "検索",
   "gui.avaritia.search.tip1": "プレフィックスなしでIDと名前を検索",
-  "gui.avaritia.search.tip2": "プレフィックス \"§a*§r\" でIDのみ検索",
+  "gui.avaritia.search.tip2": "プレフィックス \"§a@§r\" でIDのみ検索",
   "gui.avaritia.search.tip3": "プレフィックス \"§a$§r\" でタグを検索",
   "gui.avaritia.sort.ascending": "昇順",
   "gui.avaritia.sort.count": "並べ替え : §aカウント",
