@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
+import committee.nova.mods.avaritia.client.model.AvaritiaModelCache;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
@@ -113,6 +114,11 @@ public class AvaritiaModClient {
     }
 
     @SubscribeEvent
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        AvaritiaModelCache.INSTANCE.setup(event);
+    }
+
+    @SubscribeEvent
     public static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRender::createSingleBodyLayer);
         event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRender::createDoubleBodyLeftLayer);
@@ -168,6 +174,11 @@ public class AvaritiaModClient {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
         // ModelResourceLocation location = new ModelResourceLocation(Const.getItemName(ModItems.infinity_trident.get()), "inventory");
 
+    }
+
+    @SubscribeEvent
+    public static void onModelBake(ModelEvent.BakingCompleted event) {
+        AvaritiaModelCache.INSTANCE.onBake(event);
     }
 
     public static int getCurrentRainbowColor() {

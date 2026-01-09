@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
+import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 /**
@@ -16,5 +17,6 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface EternalSingularityRecipeSchema {
     RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.INPUT_ARRAY.key("ingredients");
-    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS);
+    RecipeKey<Integer> COUNT = NumberComponent.INT.key("count").optional(1);
+    RecipeSchema SCHEMA = new RecipeSchema(RecipeJS.class, RecipeJS::new, INGREDIENTS, COUNT);
 }

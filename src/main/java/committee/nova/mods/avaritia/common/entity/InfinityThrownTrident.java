@@ -55,7 +55,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
     }
 
     public InfinityThrownTrident(Level world, LivingEntity thrower, ItemStack thrownStackIn) {
-        super(ModEntities.infinity_thrown_trident.get(), thrower, world);
+        super(ModEntities.INFINITY_THROWN_TRIDENT.get(), thrower, world);
         setStackAndLoyalty(thrownStackIn.copy());
         this.entityData.set(SHOCKWAVE, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentShockwave(tridentItem));
         this.entityData.set(CHANNELING, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentChanneling(tridentItem));

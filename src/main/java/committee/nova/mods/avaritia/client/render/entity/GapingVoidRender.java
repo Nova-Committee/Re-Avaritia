@@ -105,7 +105,7 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         cc.reset();
         cc.bind(AvaritiaRenderTypes.VOID, buf, stack);
         cc.baseColour = color.rgba();
-        new OBJParser(Const.rl("models/hemisphere.obj")).parse().get("model").render(cc);
+        new OBJParser(Const.rl("models/obj/hemisphere.obj")).parse().get("model").render(cc);
         stack.popPose();
     }
 }

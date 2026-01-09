@@ -103,9 +103,19 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
     }
 
     @ZenCodeType.Method
+    public void addEnternal(String name, IIngredient[] inputs, int count) {
+        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
+        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), count);
+
+        recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
+
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
+    }
+
+    @ZenCodeType.Method
     public static void addEnternal(String name, IIngredient[] inputs) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs));
+        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), 1);
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 

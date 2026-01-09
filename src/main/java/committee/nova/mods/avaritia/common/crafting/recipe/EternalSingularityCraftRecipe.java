@@ -26,11 +26,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe {
     public static Object2BooleanOpenHashMap<EternalSingularityCraftRecipe> INGREDIENTS_LOADED = new Object2BooleanOpenHashMap<>();
-    public final NonNullList<Ingredient> inputs;
+    public final NonNullList<Ingredient> originalInputs;
+    private final int count;
 
-    public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> inputs) {
+    public EternalSingularityCraftRecipe(ResourceLocation recipeId, NonNullList<Ingredient> originalInputs, int count) {
         super(recipeId, NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get()), 4);
-        this.inputs = inputs;
+        this.originalInputs = originalInputs;
+        this.count = count;
     }
 
     @Override
@@ -84,15 +86,14 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
-            if (!this.inputs.isEmpty()) {
-                super.getIngredients().addAll(inputs);
-            } else {
-                SingularityReloadListener.INSTANCE.getAllSingularities().values()
-                        .stream()
-                        .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                        .map(SingularityUtils::getItemForSingularity)
-                        .map(Ingredient::of)
-                        .forEach(super.getIngredients()::add);
+            SingularityReloadListener.INSTANCE.getAllSingularities().values()
+                    .stream()
+                    .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                    .map(SingularityUtils::getItemForSingularity)
+                    .map(Ingredient::of)
+                    .forEach(super.getIngredients()::add);
+            if (!originalInputs.isEmpty()) {
+                super.getIngredients().addAll(originalInputs);
             }
             INGREDIENTS_LOADED.put(this, true);
         }
@@ -113,7 +114,8 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             for (int i = 0; i < ingredients.size(); i++) {
                 inputs.add(Ingredient.fromJson(ingredients.get(i)));
             }
-            return new EternalSingularityCraftRecipe(recipeId, inputs);
+            int count = GsonHelper.getAsInt(json, "count", 1);
+            return new EternalSingularityCraftRecipe(recipeId, inputs, count);
         }
 
         @Override
@@ -124,15 +126,17 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             for (int i = 0; i < size; ++i) {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
-            return new EternalSingularityCraftRecipe(recipeId, inputs);
+            int count = buffer.readInt();
+            return new EternalSingularityCraftRecipe(recipeId, inputs, count);
         }
 
         @Override
         public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull EternalSingularityCraftRecipe recipe) {
-            buffer.writeVarInt(recipe.inputs.size());
-            for (var ingredient : recipe.inputs) {
+            buffer.writeVarInt(recipe.originalInputs.size());
+            for (var ingredient : recipe.originalInputs) {
                 ingredient.toNetwork(buffer);
             }
+            buffer.writeInt(recipe.count);
         }
     }
 }

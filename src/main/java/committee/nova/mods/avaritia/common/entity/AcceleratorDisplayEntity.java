@@ -39,7 +39,7 @@ public class AcceleratorDisplayEntity extends Entity {
     }
 
     public AcceleratorDisplayEntity(Level level, BlockPos targetPos, int speed, Direction face) {
-        this(ModEntities.acceleratorDisplayEntity.get(), level);
+        this(ModEntities.ACCELERATOR_DISPLAY_ENTITY.get(), level);
         this.targetPos = targetPos;
         this.entityData.set(SPEED_MULTIPLIER, speed);
         this.entityData.set(FACE, face.get3DDataValue()); // 保存面信息

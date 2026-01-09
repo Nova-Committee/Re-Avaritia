@@ -32,7 +32,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     public TNTProEntity(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner) {
-        this(ModEntities.tntProEntity.get(), pLevel);
+        this(ModEntities.TNT_PRO_ENTITY.get(), pLevel);
         this.setPos(pX, pY, pZ);
         double d = pLevel.random.nextDouble() * (double) ((float) Math.PI * 2F);
         this.setDeltaMovement(-Math.sin(d) * 0.02, (double) 0.2F, -Math.cos(d) * 0.02);

@@ -41,14 +41,19 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
     @Nullable
     private String group;
+    private final int count;
 
-    public ModCatalystRecipeBuilder(RecipeCategory p_250837_) {
+    public ModCatalystRecipeBuilder(RecipeCategory p_250837_, int count) {
         this.category = p_250837_;
+        this.count = count;
     }
 
-    @Contract("_ -> new")
     public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory recipeCategory) {
-        return new ModCatalystRecipeBuilder(recipeCategory);
+        return new ModCatalystRecipeBuilder(recipeCategory, 1);
+    }
+
+    public static @NotNull ModCatalystRecipeBuilder shapeless(RecipeCategory recipeCategory, int count) {
+        return new ModCatalystRecipeBuilder(recipeCategory, count);
     }
 
     public ModCatalystRecipeBuilder requires(TagKey<Item> p_206420_) {
@@ -100,7 +105,7 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
     public void save(@NotNull Consumer<FinishedRecipe> recipeConsumer, @NotNull ResourceLocation recipeId) {
         this.ensureValid(recipeId);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).requirements(RequirementsStrategy.OR);
-        recipeConsumer.accept(new ModCatalystRecipeBuilder.Result(recipeId, this.group == null ? "default" : this.group, determineBookCategory(this.category), this.ingredients, this.advancement, recipeId.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+        recipeConsumer.accept(new ModCatalystRecipeBuilder.Result(recipeId, this.group == null ? "default" : this.group, determineBookCategory(this.category), this.ingredients, this.count, this.advancement, recipeId.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -113,14 +118,16 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
         private final ResourceLocation id;
         private final String group;
         private final List<Ingredient> ingredients;
+        private final int count;
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
 
-        public Result(ResourceLocation resourceLocation, String string, CraftingBookCategory bookCategory, List<Ingredient> ingredients, Advancement.Builder builder, ResourceLocation resourceLocation1) {
+        public Result(ResourceLocation resourceLocation, String string, CraftingBookCategory bookCategory, List<Ingredient> ingredients, int count, Advancement.Builder builder, ResourceLocation resourceLocation1) {
             super(bookCategory);
             this.id = resourceLocation;
             this.group = string;
             this.ingredients = ingredients;
+            this.count = count;
             this.advancement = builder;
             this.advancementId = resourceLocation1;
         }
@@ -138,6 +145,9 @@ public class ModCatalystRecipeBuilder extends CraftingRecipeBuilder implements R
             }
 
             json.add("ingredients", jsonarray);
+            if (this.count > 1) {
+                json.addProperty("count", this.count);
+            }
         }
 
         @Override
