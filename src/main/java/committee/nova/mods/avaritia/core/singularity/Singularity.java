@@ -123,7 +123,6 @@ public class Singularity {
     public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, Ingredient ingredient) {
         Singularity singularity = new Singularity(registryName);
         singularity.setDisplayName(displayName);
-        singularity.setCount(Const.isLoad("projecte") ? 10000 : 1000);
         singularity.setColors(colors[0], colors[1]);
         singularity.setIngredient(ingredient);
         return singularity;
@@ -133,7 +132,7 @@ public class Singularity {
         if (this.count == -1) {
             return 1000;
         }
-        return this.count;
+        return this.count > 10000 ? this.count : Const.isLoad("projecte") ? 10000 : this.count;
     }
 
     public static Singularity read(RegistryFriendlyByteBuf buffer) {
