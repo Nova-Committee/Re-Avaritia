@@ -17,8 +17,8 @@ public class DataPackSyncHandler {
     @SubscribeEvent
     public static void onDatapackSync(OnDatapackSyncEvent event) {
         ServerPlayer player = event.getPlayer();
-        var message = new S2CSingularitiesPack(SingularityReloadListener.INSTANCE.getDataSingularities().values());
-
+        var message = new S2CSingularitiesPack(SingularityReloadListener.INSTANCE.getDataSingularities().values(),
+                SingularityReloadListener.INSTANCE.getRunSingularities().values());
         if (player != null) {
             PacketDistributor.sendToPlayer(player, message);
         } else {

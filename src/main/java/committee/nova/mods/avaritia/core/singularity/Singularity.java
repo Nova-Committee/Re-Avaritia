@@ -51,7 +51,7 @@ public class Singularity {
     @Getter private String displayName;
     @Getter private int overlayColor = 0x3B2754;
     @Getter private int underlayColor = 0x3B2754;
-    private int count = Const.isLoad("projecte") ? 10000 : 1000;
+    private int count = 1000;
     @Getter private int timeCost = FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
     @Getter private Ingredient ingredient = Ingredient.EMPTY;
     @Getter private boolean enabled = true;
@@ -123,6 +123,7 @@ public class Singularity {
     public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, Ingredient ingredient) {
         Singularity singularity = new Singularity(registryName);
         singularity.setDisplayName(displayName);
+        singularity.setCount(Const.isLoad("projecte") ? 10000 : 1000);
         singularity.setColors(colors[0], colors[1]);
         singularity.setIngredient(ingredient);
         return singularity;

@@ -22,12 +22,14 @@ import java.util.stream.Collectors;
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public record S2CSingularitiesPack(Collection<Singularity> singularities) implements CustomPacketPayload {
+public record S2CSingularitiesPack(Collection<Singularity> dataSingularities, Collection<Singularity> runSingularities) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<S2CSingularitiesPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_singularities"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CSingularitiesPack> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.collection(ArrayList::new, Singularity.STREAM_CODEC),
-            S2CSingularitiesPack::singularities,
+            S2CSingularitiesPack::dataSingularities,
+            ByteBufCodecs.collection(ArrayList::new, Singularity.STREAM_CODEC),
+            S2CSingularitiesPack::runSingularities,
             S2CSingularitiesPack::new
     );
 
@@ -41,8 +43,13 @@ public record S2CSingularitiesPack(Collection<Singularity> singularities) implem
         public void handle(@NotNull S2CSingularitiesPack packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 SingularityReloadListener.INSTANCE.getDataSingularities().clear();
-                SingularityReloadListener.INSTANCE.setDataSingularities(packet.singularities.stream()
-                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s)));
+                SingularityReloadListener.INSTANCE.getRunSingularities().clear();
+                SingularityReloadListener.INSTANCE.setDataSingularities(packet.dataSingularities.stream()
+                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
+                );
+                SingularityReloadListener.INSTANCE.setRunSingularities(packet.runSingularities.stream()
+                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
+                );
             });
         }
     }
