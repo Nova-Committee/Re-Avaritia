@@ -128,6 +128,10 @@ public class Singularity {
         return singularity;
     }
 
+    public int getRealCount() {
+        return this.count;
+    }
+
     public int getCount() {
         if (this.count == -1) {
             return 1000;

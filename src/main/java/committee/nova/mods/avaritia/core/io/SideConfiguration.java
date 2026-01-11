@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2025/11/01
  * Version: 1.0
  */
-public class SideConfiguration {
+public class  SideConfiguration {
     public static final StreamCodec<FriendlyByteBuf, SideConfiguration> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public @NotNull SideConfiguration decode(@NotNull FriendlyByteBuf buffer) {
@@ -266,32 +266,6 @@ public class SideConfiguration {
         config.west = SideMode.fromName(tag.getString("west"));
         config.up = SideMode.fromName(tag.getString("up"));
         config.down = SideMode.fromName(tag.getString("down"));
-        return config;
-    }
-
-    /**
-     * 写入网络包
-     */
-    public void toNetwork(FriendlyByteBuf buf) {
-        buf.writeEnum(north);
-        buf.writeEnum(south);
-        buf.writeEnum(east);
-        buf.writeEnum(west);
-        buf.writeEnum(up);
-        buf.writeEnum(down);
-    }
-
-    /**
-     * 从网络包读取
-     */
-    public static SideConfiguration fromNetwork(FriendlyByteBuf buf) {
-        SideConfiguration config = new SideConfiguration();
-        config.north = buf.readEnum(SideMode.class);
-        config.south = buf.readEnum(SideMode.class);
-        config.east = buf.readEnum(SideMode.class);
-        config.west = buf.readEnum(SideMode.class);
-        config.up = buf.readEnum(SideMode.class);
-        config.down = buf.readEnum(SideMode.class);
         return config;
     }
 
