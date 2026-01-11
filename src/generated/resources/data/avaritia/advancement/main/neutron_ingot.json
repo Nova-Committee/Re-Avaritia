@@ -16,7 +16,6 @@
     "description": {
       "translate": "advancements.avaritia.neutron_ingot.desc"
     },
-    "frame": "goal",
     "hidden": true,
     "icon": {
       "count": 1,

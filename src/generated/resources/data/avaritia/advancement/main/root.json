@@ -4,7 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": "avaritia:diamond_lattice"
+            "items": "avaritia:compressed_crafting_table"
           }
         ]
       },
@@ -15,15 +15,15 @@
     "announce_to_chat": false,
     "background": "avaritia:textures/block/resource/neutron.png",
     "description": {
-      "translate": "advancements.avaritia.diamond_lattice.desc"
+      "translate": "advancements.avaritia.compressed_crafting_table.desc"
     },
     "icon": {
       "count": 1,
-      "id": "avaritia:diamond_lattice"
+      "id": "avaritia:compressed_crafting_table"
     },
     "show_toast": false,
     "title": {
-      "translate": "advancements.avaritia.diamond_lattice.title"
+      "translate": "advancements.avaritia.compressed_crafting_table.title"
     }
   },
   "requirements": [

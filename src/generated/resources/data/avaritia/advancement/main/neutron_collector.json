@@ -1,11 +1,11 @@
 {
-  "parent": "avaritia:main/neutron_pile",
+  "parent": "avaritia:main/extreme_crafting_table",
   "criteria": {
     "main": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:neutron_compressor"
+            "items": "avaritia:neutron_collector"
           }
         ]
       },
@@ -14,15 +14,15 @@
   },
   "display": {
     "description": {
-      "translate": "advancements.avaritia.neutron_compressor.desc"
+      "translate": "advancements.avaritia.neutron_collector.desc"
     },
     "hidden": true,
     "icon": {
       "count": 1,
-      "id": "avaritia:neutron_compressor"
+      "id": "avaritia:neutron_collector"
     },
     "title": {
-      "translate": "advancements.avaritia.neutron_compressor.title"
+      "translate": "advancements.avaritia.neutron_collector.title"
     }
   },
   "requirements": [

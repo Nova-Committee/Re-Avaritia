@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:main/extreme_crafting_table",
+  "parent": "avaritia:main/neutron_collector",
   "criteria": {
     "main": {
       "conditions": {
