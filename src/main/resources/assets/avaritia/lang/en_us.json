@@ -523,6 +523,8 @@
   "tooltip.avaritia.ticks": "%s Ticks",
   "tooltip.avaritia.tier": "Tier: %s",
   "tooltip.avaritia.time_consume": "Time Required: %s",
+
+  "tooltip.avaritia.tool.fire_ball": "Fire Ball",
   "tooltip.avaritia.tool.blade_slash": "Blade Slash",
   "tooltip.avaritia.tool.blaze_bow_burning": "Area Burning",
   "tooltip.avaritia.tool.blaze_shovel_trans": "Material conversion",
