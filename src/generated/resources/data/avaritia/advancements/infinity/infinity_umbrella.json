@@ -1,12 +1,12 @@
 {
-  "parent": "avaritia:main/extreme_crafting_table",
+  "parent": "avaritia:infinity/infinity_ingot",
   "criteria": {
     "main": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:blaze_sword"
+              "avaritia:infinity_umbrella"
             ]
           }
         ]
@@ -17,17 +17,16 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "advancements.avaritia.skull_sword.desc"
+      "translate": "advancements.avaritia.infinity_umbrella.desc"
     },
-    "frame": "task",
+    "frame": "challenge",
     "hidden": true,
     "icon": {
-      "item": "avaritia:blaze_sword",
-      "nbt": "{Damage:0}"
+      "item": "avaritia:infinity_umbrella"
     },
     "show_toast": true,
     "title": {
-      "translate": "advancements.avaritia.skull_sword.title"
+      "translate": "advancements.avaritia.infinity_umbrella.title"
     }
   },
   "requirements": [

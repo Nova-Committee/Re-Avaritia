@@ -1,4 +1,5 @@
 {
+  "parent": "avaritia:main/sculk_crafting_table",
   "criteria": {
     "main": {
       "conditions": {
@@ -14,19 +15,18 @@
     }
   },
   "display": {
-    "announce_to_chat": false,
-    "background": "avaritia:textures/block/resource/neutron.png",
+    "announce_to_chat": true,
     "description": {
-      "translate": "advancements.avaritia.compressed_crafting_table.desc"
+      "translate": "advancements.avaritia.diamond_lattice.desc"
     },
     "frame": "task",
-    "hidden": false,
+    "hidden": true,
     "icon": {
-      "item": "avaritia:compressed_crafting_table"
+      "item": "avaritia:diamond_lattice"
     },
-    "show_toast": false,
+    "show_toast": true,
     "title": {
-      "translate": "advancements.avaritia.compressed_crafting_table.title"
+      "translate": "advancements.avaritia.diamond_lattice.title"
     }
   },
   "requirements": [

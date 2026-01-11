@@ -1,12 +1,12 @@
 {
-  "parent": "avaritia:main/end_crafting_table",
+  "parent": "avaritia:infinity/infinity_ingot",
   "criteria": {
     "main": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:extreme_crafting_table"
+              "avaritia:upgrade_smithing_template"
             ]
           }
         ]
@@ -17,16 +17,16 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "advancements.avaritia.extreme_crafting_table.desc"
+      "translate": "advancements.avaritia.upgrade_smithing_template.desc"
     },
-    "frame": "task",
+    "frame": "goal",
     "hidden": true,
     "icon": {
-      "item": "avaritia:extreme_crafting_table"
+      "item": "avaritia:upgrade_smithing_template"
     },
     "show_toast": true,
     "title": {
-      "translate": "advancements.avaritia.extreme_crafting_table.title"
+      "translate": "advancements.avaritia.upgrade_smithing_template.title"
     }
   },
   "requirements": [

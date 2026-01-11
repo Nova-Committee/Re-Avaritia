@@ -1,11 +1,12 @@
 {
+  "parent": "avaritia:main/nether_crafting_table",
   "criteria": {
     "main": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:diamond_lattice"
+              "avaritia:end_crafting_table"
             ]
           }
         ]
@@ -14,19 +15,18 @@
     }
   },
   "display": {
-    "announce_to_chat": false,
-    "background": "avaritia:textures/block/resource/neutron.png",
+    "announce_to_chat": true,
     "description": {
-      "translate": "advancements.avaritia.compressed_crafting_table.desc"
+      "translate": "advancements.avaritia.end_crafting_table.desc"
     },
     "frame": "task",
-    "hidden": false,
+    "hidden": true,
     "icon": {
-      "item": "avaritia:compressed_crafting_table"
+      "item": "avaritia:end_crafting_table"
     },
-    "show_toast": false,
+    "show_toast": true,
     "title": {
-      "translate": "advancements.avaritia.compressed_crafting_table.title"
+      "translate": "advancements.avaritia.end_crafting_table.title"
     }
   },
   "requirements": [

@@ -19,7 +19,7 @@
     "description": {
       "translate": "advancements.avaritia.neutron_ingot.desc"
     },
-    "frame": "goal",
+    "frame": "task",
     "hidden": true,
     "icon": {
       "item": "avaritia:neutron_ingot"

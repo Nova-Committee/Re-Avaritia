@@ -1,12 +1,12 @@
 {
-  "parent": "avaritia:main/neutron_ingot",
+  "parent": "avaritia:infinity/infinity_ingot",
   "criteria": {
     "main": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:endest_pearl"
+              "avaritia:infinity_clock"
             ]
           }
         ]
@@ -17,16 +17,16 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "advancements.avaritia.endest_pearl.desc"
+      "translate": "advancements.avaritia.infinity_clock.desc"
     },
-    "frame": "goal",
+    "frame": "challenge",
     "hidden": true,
     "icon": {
-      "item": "avaritia:endest_pearl"
+      "item": "avaritia:infinity_clock"
     },
     "show_toast": true,
     "title": {
-      "translate": "advancements.avaritia.endest_pearl.title"
+      "translate": "advancements.avaritia.infinity_clock.title"
     }
   },
   "requirements": [

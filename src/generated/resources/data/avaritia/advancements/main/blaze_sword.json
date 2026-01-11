@@ -1,12 +1,12 @@
 {
-  "parent": "avaritia:singularity/infinity_catalyst",
+  "parent": "avaritia:main/blaze_cube",
   "criteria": {
     "main": {
       "conditions": {
         "items": [
           {
             "items": [
-              "avaritia:star_fuel"
+              "avaritia:blaze_sword"
             ]
           }
         ]
@@ -17,16 +17,17 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "advancements.avaritia.star_fuel.desc"
+      "translate": "advancements.avaritia.blaze_sword.desc"
     },
-    "frame": "goal",
+    "frame": "task",
     "hidden": true,
     "icon": {
-      "item": "avaritia:star_fuel"
+      "item": "avaritia:blaze_sword",
+      "nbt": "{Damage:0}"
     },
     "show_toast": true,
     "title": {
-      "translate": "advancements.avaritia.star_fuel.title"
+      "translate": "advancements.avaritia.blaze_sword.title"
     }
   },
   "requirements": [
