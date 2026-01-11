@@ -1,4 +1,6 @@
 {
+  "advancements.avaritia.start.title": "欢迎来到无尽贪婪：重生！",
+  "advancements.avaritia.start.desc": "",
   "advancements.avaritia.compressed_crafting_table.desc": "获得压缩工作台",
   "advancements.avaritia.compressed_crafting_table.title": "初次接触",
   "advancements.avaritia.sculk_crafting_table.desc": "获得幽匿工作台",
@@ -521,6 +523,7 @@
   "tooltip.avaritia.ticks": "%s刻",
   "tooltip.avaritia.tier": "等级：%s",
   "tooltip.avaritia.time_consume": "消耗时间：%s",
+  "tooltip.avaritia.tool.fire_ball": "火球",
   "tooltip.avaritia.tool.blade_slash": "剑气",
   "tooltip.avaritia.tool.blaze_bow_burning": "范围灼烧",
   "tooltip.avaritia.tool.blaze_shovel_trans": "物质转换",
