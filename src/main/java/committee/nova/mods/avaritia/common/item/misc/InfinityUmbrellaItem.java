@@ -126,7 +126,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         if (!pLevel.isClientSide && pEntity instanceof Player player) {
             boolean isInEitherHand = pIsSelected || player.getOffhandItem() == pStack;
-            var effect = new MobEffectInstance(MobEffects.SLOW_FALLING, 600, 0, false, false);
+            var effect = new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 0, false, false);
             if (isInEitherHand) {
                 player.addEffect(effect);
             } else {

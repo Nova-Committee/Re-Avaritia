@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:main/neutron_pile",
+  "parent": "avaritia:main/root",
   "criteria": {
     "main": {
       "conditions": {
