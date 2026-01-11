@@ -23,7 +23,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -88,6 +87,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     public static ItemStackWrapper createInventoryHandler(OnContentsChangedFunction onContentsChanged) {
         return ItemStackWrapper.create(2, builder -> {
             builder.setOutputSlots(0);
+            builder.setCanExtract((slot) -> slot == 1 || slot == 0);
         });
     }
 
@@ -302,28 +302,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         if (slot == 1) { // 输入槽
-            if (this.recipeLocked && this.lockedRecipe != null) {
-                // 锁定状态下，只接受锁定配方的材料
-                var ingredients = this.lockedRecipe.getIngredients();
-                if (!ingredients.isEmpty()) {
-                    var ingredient = ingredients.getFirst();
-                    var items = ingredient.getItems();
-                    return items.length > 0 && stack.is(items[0].getItem());
-                }
-                return false;
-            } else {
-                var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
-                if (compressorRecipe != null) {
-                    var ingredients = compressorRecipe.getIngredients();
-                    if (!ingredients.isEmpty()) {
-                        var ingredient = ingredients.getFirst();
-                        var items = ingredient.getItems();
-                        return items.length > 0 && stack.is(items[0].getItem());
-                    }
-                    return false;
-                }
-                return false;
-            }
+            return canInsertItem(stack);
         }
         return false; // 默认不允许放置
     }
@@ -393,6 +372,9 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
         for (int i = 0; i < externalHandler.getSlots(); i++) {
             ItemStack stack = externalHandler.getStackInSlot(i);
             if (stack.isEmpty()) continue;
+
+            // 检查输入物品是否在配方中
+            if (!canInsertItem(stack)) continue;
 
             // 检查是否与当前材料类型匹配
             if (!materialStack.isEmpty() && !ItemUtils.areStacksSameType(stack, materialStack)) {
@@ -554,5 +536,30 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     @Override
     public void clearContent() {
 
+    }
+
+    public boolean canInsertItem(ItemStack stack) {
+        if (this.recipeLocked && this.lockedRecipe != null) {
+            // 锁定状态下，只接受锁定配方的材料
+            var ingredients = this.lockedRecipe.getIngredients();
+            if (!ingredients.isEmpty()) {
+                var ingredient = ingredients.getFirst();
+                var items = ingredient.getItems();
+                return items.length > 0 && stack.is(items[0].getItem());
+            }
+            return false;
+        } else {
+            var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
+            if (compressorRecipe != null) {
+                var ingredients = compressorRecipe.getIngredients();
+                if (!ingredients.isEmpty()) {
+                    var ingredient = ingredients.getFirst();
+                    var items = ingredient.getItems();
+                    return items.length > 0 && stack.is(items[0].getItem());
+                }
+                return false;
+            }
+            return false;
+        }
     }
 }
