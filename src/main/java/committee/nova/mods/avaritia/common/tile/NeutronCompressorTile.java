@@ -46,7 +46,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class NeutronCompressorTile extends BaseInventoryTileEntity implements WorldlyContainer, ITileIO {
-    // 新的面配置系统，替代原来的boolean控制
+    // 面配置系统
     private SideConfiguration sideConfig = new SideConfiguration();
     // 主动IO操作计时器
     private int activeIOtick = 0;

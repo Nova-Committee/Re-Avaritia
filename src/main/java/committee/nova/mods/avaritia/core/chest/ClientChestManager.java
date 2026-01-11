@@ -1,14 +1,10 @@
 package committee.nova.mods.avaritia.core.chest;
 
-import committee.nova.mods.avaritia.Const;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 /**

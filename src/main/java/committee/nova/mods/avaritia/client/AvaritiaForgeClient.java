@@ -6,7 +6,6 @@ import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
-import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.KeyMapping;

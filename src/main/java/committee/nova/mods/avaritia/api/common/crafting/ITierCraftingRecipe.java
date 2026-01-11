@@ -1,9 +1,6 @@
 package committee.nova.mods.avaritia.api.common.crafting;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia

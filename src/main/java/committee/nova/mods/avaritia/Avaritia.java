@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.init.compat.curios.AvaritiaCuriosPlugin;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.data.ModDataGen;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;

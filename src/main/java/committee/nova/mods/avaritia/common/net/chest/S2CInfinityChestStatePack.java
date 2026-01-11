@@ -3,8 +3,6 @@ package committee.nova.mods.avaritia.common.net.chest;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.chest.ClientChestManager;
 import committee.nova.mods.avaritia.core.chest.ItemSuper;
-import committee.nova.mods.avaritia.core.singularity.Singularity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -15,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * S2CSingularitiesPacket

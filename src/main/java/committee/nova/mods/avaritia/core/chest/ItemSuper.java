@@ -1,18 +1,13 @@
 package committee.nova.mods.avaritia.core.chest;
 
-import appeng.api.stacks.AEItemKey;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.util.StorageUtils;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;

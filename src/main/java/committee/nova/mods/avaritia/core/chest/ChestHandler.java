@@ -1,16 +1,10 @@
 package committee.nova.mods.avaritia.core.chest;
 
-import committee.nova.mods.avaritia.api.utils.ItemUtils;
-import committee.nova.mods.avaritia.util.StorageUtils;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author cnlimiter

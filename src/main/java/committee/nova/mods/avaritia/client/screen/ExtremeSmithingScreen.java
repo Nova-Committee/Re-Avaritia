@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.item.resources.UpgradeSmithingTemplateItem;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
 import net.minecraft.client.gui.GuiGraphics;

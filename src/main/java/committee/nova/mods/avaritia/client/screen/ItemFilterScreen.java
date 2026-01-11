@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.client.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.api.client.screen.ItemSelectScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationButton;
 import committee.nova.mods.avaritia.api.client.screen.component.Text;

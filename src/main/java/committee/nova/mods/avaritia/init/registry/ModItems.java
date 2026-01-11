@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.registry;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.item.BaseItem;
-import committee.nova.mods.avaritia.common.item.block.InfinityChestItem;
 import committee.nova.mods.avaritia.common.item.misc.*;
 import committee.nova.mods.avaritia.common.item.resources.*;
 import committee.nova.mods.avaritia.common.item.singularity.EternalSingularityItem;
@@ -11,7 +10,6 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.blaze.*;
 import committee.nova.mods.avaritia.common.item.tools.crystal.*;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;

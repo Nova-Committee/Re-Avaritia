@@ -2,8 +2,6 @@ package committee.nova.mods.avaritia.core.name;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.S2CNameCachePack;
-import committee.nova.mods.avaritia.common.net.chest.ChannelState;
-import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -12,7 +10,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;

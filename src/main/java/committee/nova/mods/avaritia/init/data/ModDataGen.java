@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.data;
 
 import committee.nova.mods.avaritia.init.data.provider.*;
 import committee.nova.mods.avaritia.init.data.provider.loot.ModLootTables;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;

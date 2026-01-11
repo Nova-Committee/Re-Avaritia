@@ -1,7 +1,5 @@
 package committee.nova.mods.avaritia.init.compat.projecte;
 
-import moze_intel.projecte.emc.mappers.CustomEMCMapper;
-
 /**
  * @Project: Avaritia
  * @Author: cnlimiter

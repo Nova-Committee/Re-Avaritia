@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.core.chest;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

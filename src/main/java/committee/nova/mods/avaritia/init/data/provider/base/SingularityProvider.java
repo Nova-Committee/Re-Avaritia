@@ -1,8 +1,6 @@
 package committee.nova.mods.avaritia.init.data.provider.base;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.init.registry.ModSingularities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;

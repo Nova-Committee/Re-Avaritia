@@ -1,7 +1,8 @@
 package committee.nova.mods.avaritia.init.mixins;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.sugar.Local;

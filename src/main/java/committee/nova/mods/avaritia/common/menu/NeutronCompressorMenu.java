@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.crafting.ShapelessCraftingInput;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
-import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;

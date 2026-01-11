@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.api.common.block;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
