@@ -88,8 +88,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     public static ItemStackWrapper createInventoryHandler(OnContentsChangedFunction onContentsChanged) {
         return ItemStackWrapper.create(2, builder -> {
             builder.setOutputSlots(0);
-            builder.setCanInsert((slot, stack) -> slot == 1);
-            builder.setCanExtract((slot) -> slot == 1 || slot == 0);
         });
     }
 
@@ -300,7 +298,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     }
 
 
-    // 新增方法：输入槽锁定验证
+    // 从别的容器输入到本容器的验证
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         if (slot == 1) { // 输入槽

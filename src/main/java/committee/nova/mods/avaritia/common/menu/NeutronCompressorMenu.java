@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.menu;
 
+import committee.nova.mods.avaritia.api.common.crafting.ShapelessCraftingInput;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
@@ -18,6 +19,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Description:
  * Author: cnlimiter
@@ -34,8 +37,38 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
         super(ModMenus.neutron_compressor.get(), id, playerInventory, pos);
         this.progressData = data;
         this.addDataSlots(progressData);
+        inventory.setCanInsert((integer, stack) -> {
+            if (integer == 1) {
+                // 获取压缩器实例检查锁定状态
+                if (level.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
+                    if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
+                        // 锁定状态下，只接受锁定配方的材料
+                        var ingredients = compressor.getLockedRecipe().getIngredients();
+                        if (!ingredients.isEmpty()) {
+                            var ingredient = ingredients.get(0);
+                            var items = ingredient.getItems();
+                            return items.length > 0 && stack.is(items[0].getItem());
+                        }
+                        return false;
+                    }else {
+                        var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
+                        if (compressorRecipe != null) {
+                            var ingredients = compressorRecipe.getIngredients();
+                            if (!ingredients.isEmpty()) {
+                                var ingredient = ingredients.getFirst();
+                                var items = ingredient.getItems();
+                                return items.length > 0 && stack.is(items[0].getItem());
+                            }
+                            return false;
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
-        this.addSlot(new ItemStackWrapperSlot(inventory, 1, 39, 35));
+        this.addSlot(new SlotItemHandler(inventory, 1, 39, 35));
         createInventorySlots(playerInventory);
     }
 
