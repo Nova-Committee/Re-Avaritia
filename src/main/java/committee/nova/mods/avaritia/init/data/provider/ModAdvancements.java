@@ -67,26 +67,29 @@ public class ModAdvancements extends AdvancementProvider {
 
         @Override
         public void generate(@NotNull AdvancementHolder root, HolderLookup.@NotNull Provider holderProvider, @NotNull Consumer<AdvancementHolder> consumer) {
-            AdvancementHolder neutron_pile = Advancement.Builder.advancement()
-                    .display(ModItems.neutron_pile.get(), Component.translatable("advancements.avaritia.neutron_pile.title"), Component.translatable("advancements.avaritia.neutron_pile.desc"), null, AdvancementType.TASK, true, true, true)
+
+            AdvancementHolder skull_fire_sword = Advancement.Builder.advancement()
+                    .display(ModItems.blaze_sword.get(), Component.translatable("advancements.avaritia.skull_sword.title"), Component.translatable("advancements.avaritia.skull_sword.desc"), null, AdvancementType.TASK, true, true, true)
                     .parent(root)
-                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.neutron_pile.get()))
+                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.blaze_sword.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Const.MOD_ID + ":main/neutron_pile");
+                    .save(consumer, Const.MOD_ID + ":main/skull_sword");
 
 
             AdvancementHolder extreme_crafting_table = Advancement.Builder.advancement()
                     .display(ModBlocks.extreme_crafting_table.get(), Component.translatable("advancements.avaritia.extreme_crafting_table.title"), Component.translatable("advancements.avaritia.extreme_crafting_table.desc"), null, AdvancementType.TASK, true, true, true)
-                    .parent(neutron_pile)
+                    .parent(root)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.extreme_crafting_table.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
                     .save(consumer, Const.MOD_ID + ":main/extreme_crafting_table");
-            AdvancementHolder skull_fire_sword = Advancement.Builder.advancement()
-                    .display(ModItems.blaze_sword.get(), Component.translatable("advancements.avaritia.skull_sword.title"), Component.translatable("advancements.avaritia.skull_sword.desc"), null, AdvancementType.TASK, true, true, true)
+
+            AdvancementHolder neutron_pile = Advancement.Builder.advancement()
+                    .display(ModItems.neutron_pile.get(), Component.translatable("advancements.avaritia.neutron_pile.title"), Component.translatable("advancements.avaritia.neutron_pile.desc"), null, AdvancementType.TASK, true, true, true)
                     .parent(extreme_crafting_table)
-                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.blaze_sword.get()))
+                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.neutron_pile.get()))
                     .requirements(AdvancementRequirements.Strategy.OR)
-                    .save(consumer, Const.MOD_ID + ":main/skull_sword");
+                    .save(consumer, Const.MOD_ID + ":main/neutron_pile");
+
 
             AdvancementHolder neutron_ingot = Advancement.Builder.advancement()
                     .display(ModItems.neutron_ingot.get(), Component.translatable("advancements.avaritia.neutron_ingot.title"), Component.translatable("advancements.avaritia.neutron_ingot.desc"), null, AdvancementType.GOAL, true, true, true)
