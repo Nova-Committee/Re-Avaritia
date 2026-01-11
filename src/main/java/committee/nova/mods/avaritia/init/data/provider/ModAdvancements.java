@@ -50,10 +50,10 @@ public class ModAdvancements extends ForgeAdvancementProvider {
         public void generate(HolderLookup.@NotNull Provider registries, @NotNull Consumer<Advancement> consumer, @NotNull ExistingFileHelper existingFileHelper) {
 
             Advancement root = Advancement.Builder.advancement()
-                    .display(ModBlocks.compressed_crafting_table.get(), Component.translatable("advancements.avaritia.compressed_crafting_table.title"),
-                    Component.translatable("advancements.avaritia.compressed_crafting_table.desc"),
+                    .display(ModItems.infinity_catalyst.get(), Component.translatable("advancements.avaritia.start.title"),
+                    Component.translatable("advancements.avaritia.start.desc"),
                             new ResourceLocation(Const.MOD_ID, "textures/block/resource/neutron.png"), FrameType.TASK, false, false, false)
-                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.diamond_lattice.get()))
+                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_catalyst.get()))
                     .requirements(RequirementsStrategy.OR)
                     .save(consumer, Const.MOD_ID + ":main/root");
 
@@ -67,9 +67,17 @@ public class ModAdvancements extends ForgeAdvancementProvider {
         @Override
         public void generate(@NotNull Advancement root, HolderLookup.@NotNull Provider holderProvider, @NotNull Consumer<Advancement> consumer) {
 
+            Advancement compressed_crafting_table = Advancement.Builder.advancement()
+                    .display(ModBlocks.compressed_crafting_table.get(), Component.translatable("advancements.avaritia.compressed_crafting_table.title"), Component.translatable("advancements.avaritia.compressed_crafting_table.desc"), null, FrameType.TASK, true, true, true)
+                    .parent(root)
+                    .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.compressed_crafting_table.get()))
+                    .requirements(RequirementsStrategy.OR)
+                    .save(consumer, Const.MOD_ID + ":main/compressed_crafting_table");
+
+
             Advancement sculk_crafting_table = Advancement.Builder.advancement()
                     .display(ModBlocks.sculk_crafting_table.get(), Component.translatable("advancements.avaritia.sculk_crafting_table.title"), Component.translatable("advancements.avaritia.sculk_crafting_table.desc"), null, FrameType.TASK, true, true, true)
-                    .parent(root)
+                    .parent(compressed_crafting_table)
                     .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.sculk_crafting_table.get()))
                     .requirements(RequirementsStrategy.OR)
                     .save(consumer, Const.MOD_ID + ":main/sculk_crafting_table");

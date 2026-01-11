@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:main/root",
+  "parent": "avaritia:main/compressed_crafting_table",
   "criteria": {
     "main": {
       "conditions": {
