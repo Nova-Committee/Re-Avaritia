@@ -1,9 +1,7 @@
 package committee.nova.mods.avaritia.api.client.render.model;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.Lib;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-
 import mekanism.client.render.lib.Quad;
 import mekanism.client.render.lib.QuadUtils;
 import mekanism.client.render.lib.Vertex;

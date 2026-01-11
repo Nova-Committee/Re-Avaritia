@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
-import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
@@ -16,6 +15,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,8 +38,7 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
         inventory.setSlotValidator((integer, itemStack) -> {
             if (integer == 1) {
                 // 获取压缩器实例检查锁定状态
-                var tile = level.getBlockEntity(pos);
-                if (tile instanceof NeutronCompressorTile compressor) {
+                if (level.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
                     if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
                         // 锁定状态下，只接受锁定配方的材料
                         var ingredients = compressor.getLockedRecipe().getIngredients();
@@ -48,31 +47,28 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
                             var items = ingredient.getItems();
                             return items.length > 0 && itemStack.is(items[0].getItem());
                         }
-                        return false;
-                    }
-                }
-
-                // 正常状态下的验证逻辑
-                var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
-                if (recipes.isEmpty()) return true;
-
-                for (var recipe : recipes) {
-                    var ingredients = recipe.getIngredients();
-                    if (!ingredients.isEmpty()) {
-                        var ingredient = ingredients.get(0);
-                        var items = ingredient.getItems();
-                        if (items.length > 0 && itemStack.is(items[0].getItem())) {
-                            return true;
+                    } else {
+                        // 正常状态下的验证逻辑
+                        var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
+                        if (!recipes.isEmpty()) {
+                            for (var recipe : recipes) {
+                                var ingredients = recipe.getIngredients();
+                                if (!ingredients.isEmpty()) {
+                                    var ingredient = ingredients.get(0);
+                                    var items = ingredient.getItems();
+                                    if (items.length > 0 && itemStack.is(items[0].getItem())) {
+                                        return true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                return false;
-            } else {
-                return true;
             }
+            return false;
         });
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
-        this.addSlot(new ItemStackWrapperSlot(inventory, 1, 39, 35));
+        this.addSlot(new SlotItemHandler(inventory, 1, 39, 35));
         createInventorySlots(playerInventory);
     }
 

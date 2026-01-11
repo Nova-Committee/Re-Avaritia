@@ -40,13 +40,11 @@ import org.jetbrains.annotations.Nullable;
  * Version: 1.0
  */
 public class NeutronCompressorTile extends BaseInventoryTileEntity implements ITileIO {
-    // 新的面配置系统，替代原来的boolean控制
+    // 面配置系统
     private SideConfiguration sideConfig = new SideConfiguration();
-
     // 主动IO操作计时器
     private int activeIOtick = 0;
     private static final int ACTIVE_IO_INTERVAL = 20; // 每秒执行一次主动IO
-
     // IO处理器
     private final TileIOHandler ioHandler = new TileIOHandler(this, NeutronCompressorBlock.FACING);
 
@@ -383,6 +381,9 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
             ItemStack stack = externalHandler.getStackInSlot(i);
             if (stack.isEmpty()) continue;
 
+            // 检查输入物品是否在配方中
+            if (!canInsertItem(stack)) continue;
+
             // 检查是否与当前材料类型匹配
             if (!materialStack.isEmpty() && !ItemUtils.areStacksSameType(stack, materialStack)) {
                 continue;
@@ -447,5 +448,32 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     {
         this.progress = progress;
         this.data.set(0, this.progress);
+    }
+
+    public boolean canInsertItem(ItemStack stack) {
+        if (this.recipeLocked && this.lockedRecipe != null) {
+            // 锁定状态下，只接受锁定配方的材料
+            var ingredients = this.lockedRecipe.getIngredients();
+            if (!ingredients.isEmpty()) {
+                var ingredient = ingredients.get(0);
+                var items = ingredient.getItems();
+                return items.length > 0 && stack.is(items[0].getItem());
+            }
+        } else {
+            var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
+            if (!recipes.isEmpty()) {
+                for (var recipe : recipes) {
+                    var ingredients = recipe.getIngredients();
+                    if (!ingredients.isEmpty()) {
+                        var ingredient = ingredients.get(0);
+                        var items = ingredient.getItems();
+                        if (items.length > 0 && stack.is(items[0].getItem())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
