@@ -115,7 +115,7 @@ public class AvaritiaModClient {
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
-        AvaritiaModelCache.INSTANCE.setup(event);
+        //AvaritiaModelCache.INSTANCE.setup(event);
     }
 
     @SubscribeEvent
@@ -178,7 +178,7 @@ public class AvaritiaModClient {
 
     @SubscribeEvent
     public static void onModelBake(ModelEvent.BakingCompleted event) {
-        AvaritiaModelCache.INSTANCE.onBake(event);
+        //AvaritiaModelCache.INSTANCE.onBake(event);
     }
 
     public static int getCurrentRainbowColor() {
