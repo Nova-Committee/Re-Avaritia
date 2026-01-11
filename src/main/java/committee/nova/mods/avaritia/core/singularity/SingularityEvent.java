@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.LinkedHashMap;
