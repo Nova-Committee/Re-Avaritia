@@ -45,7 +45,7 @@ public class SingularityUtils {
         json.addProperty("displayName", singularity.getDisplayName());
         json.addProperty("overlayColor", Integer.toString(singularity.getOverlayColor(), 16));
         json.addProperty("underlayColor", Integer.toString(singularity.getUnderlayColor(), 16));
-        json.addProperty("count", singularity.getCount());
+        json.addProperty("count", singularity.getRealCount());
         json.addProperty("timeCost", singularity.getTimeCost());
         json.add("ingredient", singularity.getIngredient().toJson());
         json.addProperty("enabled", singularity.isEnabled());

@@ -24,7 +24,7 @@ public class Singularity {
     @Getter private String displayName;
     @Getter private int overlayColor = 0x3B2754;
     @Getter private int underlayColor = 0x3B2754;
-    private int count = Const.isLoad("projecte") ? 10000 : 1000;
+    private int count = 1000;
     @Getter private int timeCost = FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
     @Getter private Ingredient ingredient = Ingredient.EMPTY;
     @Getter private boolean enabled = true;
@@ -102,11 +102,15 @@ public class Singularity {
         return singularity;
     }
 
+    public int getRealCount() {
+        return this.count;
+    }
+
     public int getCount() {
         if (this.count == -1) {
             return 1000;
         }
-        return this.count;
+        return this.count > 10000 ? this.count : Const.isLoad("projecte") ? 10000 : this.count;
     }
 
 

@@ -235,6 +235,8 @@ public class TraceArrowEntity extends Arrow {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult pResult) {
+        if (pResult.getEntity() instanceof LivingEntity livingEntity)
+            livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20, 0, false, false,false));
         ToolUtils.infinityTraceArrowDamage(level(), pResult, this);
     }
 
