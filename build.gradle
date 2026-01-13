@@ -376,8 +376,8 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-            name 'S3'
-            url = 'https://maven.nova-committee.cn/s3'
+            name 'Releases'
+            url = 'https://maven.nova-committee.cn/releases'
 
             credentials {
                 username System.getenv('MAVEN_USERNAME')

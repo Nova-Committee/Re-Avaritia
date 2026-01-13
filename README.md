@@ -27,7 +27,8 @@
 
 ## **✏️Authors:**
 
-- Programmer: `cnlimiter` `Asek3` `MikhailTapio`
+- Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3` 
+- Artist: `MHanHanBing` `Neo-Tix`
 
 ## **🔒License:**
 
@@ -157,7 +158,7 @@ avaritia_version see this [here](https://maven.nova-committee.cn/s3/committee/no
 ```groovy
 repositories {
     maven {
-        url "https://maven.nova-committee.cn/s3"
+        url "https://maven.nova-committee.cn/releases"
     }
 }
 

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -286,8 +287,8 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
     public boolean canEjectMaterials() {
         return this.materialCount > 0 &&
-               (this.recipe == null ||
-                this.materialCount < this.recipe.getInputCount() * this.tier.inputAmplifier);
+                (this.recipe == null ||
+                        this.materialCount < this.recipe.getInputCount() * this.tier.inputAmplifier);
     }
 
     // 新增方法：输入槽锁定验证
@@ -454,23 +455,34 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         if (this.recipeLocked && this.lockedRecipe != null) {
             // 锁定状态下，只接受锁定配方的材料
             var ingredients = this.lockedRecipe.getIngredients();
-            if (!ingredients.isEmpty()) {
-                var ingredient = ingredients.get(0);
-                var items = ingredient.getItems();
-                return items.length > 0 && stack.is(items[0].getItem());
+            if (ingredients.isEmpty()) return false;
+            var ingredient = ingredients.get(0);
+            if (ingredient.values[0] instanceof Ingredient.ItemValue value) {
+                var items = value.item;
+                return stack.is(items.getItem());
+
+            }
+            if (ingredient.values[0] instanceof Ingredient.TagValue value) {
+                var items = value.tag;
+                return stack.is(items);
+
             }
         } else {
             var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
-            if (!recipes.isEmpty()) {
-                for (var recipe : recipes) {
-                    var ingredients = recipe.getIngredients();
-                    if (!ingredients.isEmpty()) {
-                        var ingredient = ingredients.get(0);
-                        var items = ingredient.getItems();
-                        if (items.length > 0 && stack.is(items[0].getItem())) {
-                            return true;
-                        }
-                    }
+            if (recipes.isEmpty()) return false;
+            for (var recipe : recipes) {
+                var ingredients = recipe.getIngredients();
+                if (ingredients.isEmpty()) return false;
+                var ingredient = ingredients.get(0);
+                if (ingredient.values[0] instanceof Ingredient.ItemValue value) {
+                    var items = value.item;
+                    return stack.is(items.getItem());
+
+                }
+                if (ingredient.values[0] instanceof Ingredient.TagValue value) {
+                    var items = value.tag;
+                    return stack.is(items);
+
                 }
             }
         }
