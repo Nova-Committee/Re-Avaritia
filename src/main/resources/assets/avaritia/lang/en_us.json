@@ -232,6 +232,7 @@
   "direction.avaritia.west": "west",
 
   "effect.avaritia.burning": "Burning",
+  "effect.avaritia.burning.description": "Deals fire damage equal to 5% of maximum health every 20 ticks (1 second). \n\nThis debuff forces the creature to lose health and can only be alleviated in water or powder snow.\n\nThe health loss effect is similar to wither or poison.",
 
   "emi.category.avaritia.compressor": "Neutronium Compressor",
   "emi.category.avaritia.end_crafting_table": "End Craft",

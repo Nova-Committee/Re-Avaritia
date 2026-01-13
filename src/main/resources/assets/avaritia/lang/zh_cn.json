@@ -232,6 +232,7 @@
   "direction.avaritia.west": "左面",
 
   "effect.avaritia.burning": "灼烧",
+  "effect.avaritia.burning.description": "每20Tick(1秒)造成一次5％最大生命值的火焰伤害。\n\n该debuff会让生物强制扣血，只能在水中、细雪中缓解。\n\n扣血效果类似凋零、中毒。",
 
   "emi.category.avaritia.compressor": "中子素压缩",
   "emi.category.avaritia.end_crafting_table": "终末合成",
