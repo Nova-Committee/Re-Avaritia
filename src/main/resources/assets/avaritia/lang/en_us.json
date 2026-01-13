@@ -1,4 +1,6 @@
 {
+  "advancements.avaritia.start.title": "Welcome to Re:Avaritia!",
+  "advancements.avaritia.start.desc": "",
   "advancements.avaritia.compressed_crafting_table.desc": "Craft Compressed Crafting Table",
   "advancements.avaritia.compressed_crafting_table.title": "First Contact",
   "advancements.avaritia.sculk_crafting_table.desc": "Craft Sculk Crafting Table",
@@ -229,6 +231,7 @@
   "direction.avaritia.west": "west",
 
   "effect.avaritia.burning": "Burning",
+  "effect.avaritia.burning.description": "Deals fire damage equal to 5% of maximum health every 20 ticks (1 second). \n\nThis debuff forces the creature to lose health and can only be alleviated in water or powder snow.\n\nThe health loss effect is similar to wither or poison.",
 
   "emi.category.avaritia.compressor": "Neutronium Compressor",
   "emi.category.avaritia.end_crafting_table": "End Craft",
@@ -521,6 +524,8 @@
   "tooltip.avaritia.ticks": "%s Ticks",
   "tooltip.avaritia.tier": "Tier: %s",
   "tooltip.avaritia.time_consume": "Time Required: %s",
+
+  "tooltip.avaritia.tool.fire_ball": "Fire Ball",
   "tooltip.avaritia.tool.blade_slash": "Blade Slash",
   "tooltip.avaritia.tool.blaze_bow_burning": "Area Burning",
   "tooltip.avaritia.tool.blaze_shovel_trans": "Material conversion",
