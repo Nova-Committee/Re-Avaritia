@@ -41,6 +41,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -463,6 +464,12 @@ public class ToolUtils {
                         return !(entity instanceof ItemEntity);
                     } else return true;
                 })
+                .filter(entity -> {
+                    boolean attack = ModConfig.isSwordAttackProjectile.get();
+                    if (attack == false) {
+                        return !(entity instanceof Projectile);
+                    } else return true;
+                })
                 .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
                 .filter(entity -> {
                     if (hurtAnimal) {
@@ -471,6 +478,7 @@ public class ToolUtils {
                         return entity instanceof Enemy && !entity.getType().is(ModTags.NEUTRAL_CREATURES);
                     }
                 })
+
                 .forEach(entity -> {
                     if (entity instanceof LivingEntity livingEntity) {
                         if (livingEntity instanceof EnderDragon dragon) {
@@ -483,7 +491,9 @@ public class ToolUtils {
                         }
                     } else if (entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
                         entity.discard();
-                    } else if (entity instanceof Entity) {
+                    }else if(entity instanceof Projectile){
+                        entity.discard();
+                    }else if (entity instanceof Entity) {
                         entity.hurt(src, damage);
                     }
                     if (lightOn) trySummonLightning(player.level(), 1, entity.blockPosition(),

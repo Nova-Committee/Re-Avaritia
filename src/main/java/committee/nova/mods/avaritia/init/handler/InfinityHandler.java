@@ -232,7 +232,7 @@ public class InfinityHandler {
                         player.setHealth(player.getMaxHealth());
                         player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
                         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
-                        ToolUtils.aoeAttack(player, 8, 1000.0f, false, false);//触发无尽图腾后对附近造成伤害
+                        ToolUtils.aoeAttack(player, 8, 1000.0f, false,false);//触发无尽图腾后对附近造成伤害
                         player.displayClientMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
                     } else {
                         player.setHealth(player.getMaxHealth());

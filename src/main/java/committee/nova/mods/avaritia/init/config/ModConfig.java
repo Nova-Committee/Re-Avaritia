@@ -24,6 +24,7 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue swordAttackRange;
     public static final ModConfigSpec.BooleanValue isSwordAttackAnimal;
     public static final ModConfigSpec.BooleanValue isSwordAttackItemEntity;
+    public static final ModConfigSpec.BooleanValue isSwordAttackProjectile;
     public static final ModConfigSpec.BooleanValue isSwordAttackLightning;
     public static final ModConfigSpec.BooleanValue isSwordAttackEndless;
     public static final ModConfigSpec.IntValue subArrowDamage;
@@ -77,6 +78,7 @@ public class ModConfig {
         swordAttckItemEntity = buildBoolean(common, "Is Sword Damage ItemEntity", false, "Does the right key range attack of endless sword attack item entity");
         isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
         isSwordAttackItemEntity = buildBoolean(common, "config.avaritia.is_sword_attack_item_entity", false, "config.avaritia.is_sword_attack_item_entity.tooltip");
+        isSwordAttackProjectile= buildBoolean(common, "config.avaritia.is_sword_attack_projectile", false, "config.avaritia.is_sword_attack_projectile.tooltip");
         isSwordAttackLightning = buildBoolean(common, "Is Sword Cause Lightning", false, "Does the right key spawn lightning with range of attack");
         isSwordAttackEndless = buildBoolean(common, "Is Sword Cause Endless damage", true, "Does the right key cause infinity damage");
         subArrowDamage = buildInt(common, "Sub Arrow Damage", 10000, 100, 100000, "Infinity bow scattering light arrow damage");

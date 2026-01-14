@@ -72,6 +72,11 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.is_sword_attack_item_entity.tooltip"),
                 ModConfig.isSwordAttackItemEntity::set, ModConfig.isSwordAttackItemEntity);
 
+        addBooleanEntry("is_sword_attack_projectile", ModConfig.isSwordAttackProjectile,
+                Component.translatable("config.avaritia.is_sword_attack_projectile.tooltip"),
+                ModConfig.isSwordAttackProjectile::set, ModConfig.isSwordAttackProjectile);
+
+
         addBooleanEntry("is_sword_attack_lightning", ModConfig.isSwordAttackLightning,
                 Component.translatable("config.avaritia.is_sword_attack_lightning.tooltip"),
                 ModConfig.isSwordAttackLightning::set, ModConfig.isSwordAttackLightning);
@@ -299,6 +304,7 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
         ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
         ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
+        ModConfig.isSwordAttackProjectile.set(ModConfig.isSwordAttackProjectile.getDefault());
         ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
         ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
         ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
