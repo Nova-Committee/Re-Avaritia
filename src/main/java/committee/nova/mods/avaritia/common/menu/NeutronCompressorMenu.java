@@ -43,36 +43,24 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
                     if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
                         // 锁定状态下，只接受锁定配方的材料
                         var ingredients = compressor.getLockedRecipe().getIngredients();
-                        if (ingredients.isEmpty()) return false;
-                        var ingredient = ingredients.get(0);
-                        if (ingredient.values[0] instanceof Ingredient.ItemValue value) {
-                            var items = value.item;
-                            return itemStack.is(items.getItem());
-
+                        if (!ingredients.isEmpty()) {
+                            var ingredient = ingredients.get(0);
+                            var items = ingredient.getItems();
+                            return items.length > 0 && itemStack.is(items[0].getItem());
                         }
-                        if (ingredient.values[0] instanceof Ingredient.TagValue value) {
-                            var items = value.tag;
-                            return itemStack.is(items);
-
-                        }
-
                     } else {
                         // 正常状态下的验证逻辑
                         var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
-                        if (recipes.isEmpty()) return false;
-                        for (var recipe : recipes) {
-                            var ingredients = recipe.getIngredients();
-                            if (ingredients.isEmpty()) return false;
-                            var ingredient = ingredients.get(0);
-                            if (ingredient.values[0] instanceof Ingredient.ItemValue value) {
-                                var items = value.item;
-                                return itemStack.is(items.getItem());
-
-                            }
-                            if (ingredient.values[0] instanceof Ingredient.TagValue value) {
-                                var items = value.tag;
-                                return itemStack.is(items);
-
+                        if (!recipes.isEmpty()) {
+                            for (var recipe : recipes) {
+                                var ingredients = recipe.getIngredients();
+                                if (!ingredients.isEmpty()) {
+                                    var ingredient = ingredients.get(0);
+                                    var items = ingredient.getItems();
+                                    if (items.length > 0 && itemStack.is(items[0].getItem())) {
+                                        return true;
+                                    }
+                                }
                             }
                         }
                     }
