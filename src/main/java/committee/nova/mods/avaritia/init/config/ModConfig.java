@@ -19,6 +19,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue swordRangeDamage;
     public static final ForgeConfigSpec.IntValue swordAttackRange;
     public static final ForgeConfigSpec.BooleanValue isSwordAttackItemEntity;
+    public static final ForgeConfigSpec.BooleanValue isSwordAttackProjectile;
     public static final ForgeConfigSpec.BooleanValue isSwordAttackLightning;
     public static final ForgeConfigSpec.BooleanValue isSwordAttackEndless;
     public static final ForgeConfigSpec.IntValue subArrowDamage;
@@ -71,6 +72,7 @@ public class ModConfig {
         swordRangeDamage = buildInt(common, "config.avaritia.sword_range_damage", 10000, 100, 100000, "config.avaritia.sword_range_damage.tooltip");
         swordAttackRange = buildInt(common, "config.avaritia.sword_attack_range", 32, 8, 64, "config.avaritia.sword_attack_range.tooltip");
         isSwordAttackItemEntity = buildBoolean(common, "config.avaritia.is_sword_attack_item_entity", false, "config.avaritia.is_sword_attack_item_entity.tooltip");
+        isSwordAttackProjectile = buildBoolean(common, "config.avaritia.is_sword_attack_projectile", false, "config.avaritia.is_sword_attack_projectile.tooltip");
         isSwordAttackLightning = buildBoolean(common, "config.avaritia.is_sword_attack_lightning", false, "config.avaritia.is_sword_attack_lightning.tooltip");
         isSwordAttackEndless = buildBoolean(common, "config.avaritia.is_sword_attack_endless", true, "config.avaritia.is_sword_attack_endless.tooltip");
         subArrowDamage = buildInt(common, "config.avaritia.sub_arrow_damage", 10000, 100, 100000, "config.avaritia.sub_arrow_damage.tooltip");
