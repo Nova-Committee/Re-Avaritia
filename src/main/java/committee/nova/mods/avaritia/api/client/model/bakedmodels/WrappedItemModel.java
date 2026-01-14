@@ -37,8 +37,8 @@ import java.util.function.Function;
  */
 public abstract class WrappedItemModel implements PerspectiveModel {
 
-    private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-    private static final FaceBakery FACE_BAKERY = new FaceBakery();
+    public static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
+    public static final FaceBakery FACE_BAKERY = new FaceBakery();
     protected BakedModel wrapped;
     protected PerspectiveModelState parentState;
     protected boolean cosmic = false;

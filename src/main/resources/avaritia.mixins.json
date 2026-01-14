@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "committee.nova.mods.avaritia.init.mixins",
-  "compatibilityLevel": "JAVA_20",
+  "compatibilityLevel": "JAVA_21",
   "refmap": "avaritia.refmap.json",
   "mixins": [
     "EnchantmentHelperMixin",
@@ -11,11 +11,13 @@
     "PlayerMixin",
     "RecipeManagerMixin",
     "ReloadableServerResourcesMixin",
-    "accessor.MappedRegistryAccessor"
+    "accessor.MappedRegistryAccessor",
+    "iris.MixinBakedModelCosmic"
   ],
   "client": [
     "ItemRendererMixin",
-    "PlayerRendererMixin"
+    "PlayerRendererMixin",
+    "iris.MixinShaderInstance"
   ],
   "injectors": {
     "defaultRequire": 1

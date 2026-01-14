@@ -131,6 +131,10 @@ dependencies {
     implementation ("curse.maven:storage-drawers-223852:${sd_version}")
     implementation ("curse.maven:refined-storage-243076:${rs_version}")
 
+    //Sodium and Iris
+    implementation "curse.maven:sodium-394468:6382651"
+    implementation "curse.maven:irisshaders-455508:6661598"
+
     compileOnly ("org.projectlombok:lombok:$lombok_version")
     annotationProcessor ("org.projectlombok:lombok:$lombok_version")
 

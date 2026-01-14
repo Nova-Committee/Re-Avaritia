@@ -82,7 +82,15 @@ public class InfinityArmorRender<T extends LivingEntity, M extends EntityModel<T
     }
 
     private void setModelProperties(LivingEntity livingEntity, float ageInTicks) {
-        this.model.crouching = livingEntity.isShiftKeyDown();
+        if (livingEntity instanceof net.minecraft.world.entity.player.Player player) {
+            if (player.getAbilities().flying) {
+                this.model.crouching = false;
+            } else {
+                this.model.crouching = livingEntity.isShiftKeyDown();
+            }
+        } else {
+            this.model.crouching = livingEntity.isShiftKeyDown();
+        }
         this.model.young = livingEntity.isBaby();
         this.model.riding = livingEntity.isPassenger();
 
