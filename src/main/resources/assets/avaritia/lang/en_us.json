@@ -163,6 +163,8 @@
   "config.avaritia.is_sword_attack_endless.tooltip": "Does the right key cause infinity damage",
   "config.avaritia.is_sword_attack_item_entity": "Sword Damage Item Entity",
   "config.avaritia.is_sword_attack_item_entity.tooltip": "In kill mode does kill item_entity?",
+  "config.avaritia.is_sword_attack_projectile": "Sword Damage projectile",
+  "config.avaritia.is_sword_attack_projectile.tooltip": "In kill mode does kill projectile?",
   "config.avaritia.is_sword_attack_lightning": "Sword Cause Lightning",
   "config.avaritia.is_sword_attack_lightning.tooltip": "Does the right key spawn lightning with range of attack",
   "config.avaritia.max_channels_pre_player": "Max Player Channels",

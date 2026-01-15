@@ -416,6 +416,8 @@
   "config.avaritia.sword_attack_range.tooltip": "无尽剑右键攻击范围",
   "config.avaritia.is_sword_attack_item_entity": "剑攻击掉落物",
   "config.avaritia.is_sword_attack_item_entity.tooltip": "在杀戮模式下是否攻击掉落物？",
+  "config.avaritia.is_sword_attack_projectile": "剑攻击弹幕",
+  "config.avaritia.is_sword_attack_projectile.tooltip": "在杀戮模式下是否攻击弹幕？",
   "config.avaritia.is_sword_attack_lightning": "无尽剑召唤闪电",
   "config.avaritia.is_sword_attack_lightning.tooltip": "右键是否在攻击范围内召唤闪电",
   "config.avaritia.is_sword_attack_endless": "剑造成无限伤害",
