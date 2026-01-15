@@ -1,8 +1,6 @@
 package committee.nova.mods.avaritia.api.common.crafting;
 
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 
