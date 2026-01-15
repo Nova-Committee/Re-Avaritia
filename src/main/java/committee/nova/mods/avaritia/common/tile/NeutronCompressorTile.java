@@ -437,23 +437,17 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     public boolean canInsertItem(ItemStack stack) {
         if (this.recipeLocked && this.lockedRecipe != null) {
             // 锁定状态下，只接受锁定配方的材料
-            var ingredients = this.lockedRecipe.getIngredients();
-            if (!ingredients.isEmpty()) {
-                var ingredient = ingredients.get(0);
-                var items = ingredient.getItems();
-                return items.length > 0 && stack.is(items[0].getItem());
-            }
+            var ingredients = this.lockedRecipe.getInput();
+            var items = ingredients.getItems();
+            return items.length > 0 && stack.is(items[0].getItem());
         } else {
             var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
             if (!recipes.isEmpty()) {
                 for (var recipe : recipes) {
-                    var ingredients = recipe.getIngredients();
-                    if (!ingredients.isEmpty()) {
-                        var ingredient = ingredients.get(0);
-                        var items = ingredient.getItems();
-                        if (items.length > 0 && stack.is(items[0].getItem())) {
-                            return true;
-                        }
+                    var ingredients = recipe.getInput();
+                    var items = ingredients.getItems();
+                    if (items.length > 0 && stack.is(items[0].getItem())) {
+                        return true;
                     }
                 }
             }

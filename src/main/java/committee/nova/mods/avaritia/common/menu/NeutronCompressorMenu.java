@@ -42,24 +42,18 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
                 if (level.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
                     if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
                         // 锁定状态下，只接受锁定配方的材料
-                        var ingredients = compressor.getLockedRecipe().getIngredients();
-                        if (!ingredients.isEmpty()) {
-                            var ingredient = ingredients.get(0);
-                            var items = ingredient.getItems();
-                            return items.length > 0 && itemStack.is(items[0].getItem());
-                        }
+                        var ingredients = compressor.getLockedRecipe().getInput();
+                        var items = ingredients.getItems();
+                        return items.length > 0 && itemStack.is(items[0].getItem());
                     } else {
                         // 正常状态下的验证逻辑
                         var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
                         if (!recipes.isEmpty()) {
                             for (var recipe : recipes) {
-                                var ingredients = recipe.getIngredients();
-                                if (!ingredients.isEmpty()) {
-                                    var ingredient = ingredients.get(0);
-                                    var items = ingredient.getItems();
-                                    if (items.length > 0 && itemStack.is(items[0].getItem())) {
-                                        return true;
-                                    }
+                                var ingredients = recipe.getInput();
+                                var items = ingredients.getItems();
+                                if (items.length > 0 && itemStack.is(items[0].getItem())) {
+                                    return true;
                                 }
                             }
                         }
