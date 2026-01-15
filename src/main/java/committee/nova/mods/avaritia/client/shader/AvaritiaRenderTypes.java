@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.util.RenderUtils;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +45,7 @@ public class AvaritiaRenderTypes {
                     .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
                     .createCompositeState(true)
     );
 
@@ -102,7 +103,7 @@ public class AvaritiaRenderTypes {
                     .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
                     .createCompositeState(true)
     );
 
@@ -114,7 +115,7 @@ public class AvaritiaRenderTypes {
                     .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
                     .createCompositeState(true)
     );
 
@@ -126,7 +127,7 @@ public class AvaritiaRenderTypes {
                     .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
                     .createCompositeState(true)
     );
 
