@@ -46,6 +46,7 @@ public class ModConfig {
 
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
     public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
+    public static final ForgeConfigSpec.IntValue bedrockEmc;
 
     public static final ForgeConfigSpec.IntValue chestMaxItemSize;
     public static final ForgeConfigSpec.BooleanValue useSinglePageMode;
@@ -90,6 +91,7 @@ public class ModConfig {
         common.push("emc");
         neutronPileEmc = buildInt(common, "config.avaritia.neutron_pile_emc", 100, 0, Integer.MAX_VALUE, "config.avaritia.neutron_pile_emc.tooltip");
         vanillaTotemEmc = buildInt(common, "config.avaritia.vanilla_totem_emc", 1000, 0, Integer.MAX_VALUE, "config.avaritia.vanilla_totem_emc.tooltip");
+        bedrockEmc = buildInt(common, "config.avaritia.bedrock_emc", 10, 0, Integer.MAX_VALUE, "config.avaritia.bedrock_emc.tooltip");
         common.pop();
         common.push("storage");
         chestMaxItemSize = buildInt(common, "config.avaritia.chest_max_item_size", 32768, 2048, Integer.MAX_VALUE, "config.avaritia.chest_max_item_size.tooltip");

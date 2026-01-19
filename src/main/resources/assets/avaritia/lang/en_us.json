@@ -203,6 +203,8 @@
   "config.avaritia.use_single_page_mode.tooltip": "Use single page mode",
   "config.avaritia.vanilla_totem_emc": "Vanilla Totem EMC",
   "config.avaritia.vanilla_totem_emc.tooltip": "EMC of Totem Of Undying",
+  "config.avaritia.bedrock_emc": "Bedrock EMC",
+  "config.avaritia.bedrock_emc.tooltip": "EMC of Bedrock",
   "config.jade.plugin_avaritia.compressor": "Compressor",
   "config.jade.plugin_avaritia.crafting_table": "Avaritia Crafting",
   "config.jade.plugin_avaritia.extreme_smithing": "Extreme Smithing",

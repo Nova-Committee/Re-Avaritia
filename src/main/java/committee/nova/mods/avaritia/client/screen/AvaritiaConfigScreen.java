@@ -139,6 +139,10 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
+        addIntEntry("bedrock_emc", ModConfig.bedrockEmc, 0, Integer.MAX_VALUE,
+                Component.translatable("config.avaritia.bedrock_emc.tooltip"),
+                ModConfig.bedrockEmc::set, ModConfig.bedrockEmc);
+
         addCategoryHeader("config.avaritia.category.storage");
 
         addIntEntry("chest_max_item_size", ModConfig.chestMaxItemSize, 2048, Integer.MAX_VALUE,
@@ -234,6 +238,63 @@ public class AvaritiaConfigScreen extends Screen {
                 ModConfig.bootSpeedSprintingMultiplier::set, ModConfig.bootSpeedSprintingMultiplier);
     }
 
+    private void resetToDefaults() {
+        // Tools 配置项
+        ModConfig.isKeepStone.set(ModConfig.isKeepStone.getDefault());
+        ModConfig.isMergeMatterCluster.set(ModConfig.isMergeMatterCluster.getDefault());
+        ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
+        ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
+        ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
+        ModConfig.isSwordAttackProjectile.set(ModConfig.isSwordAttackProjectile.getDefault());
+        ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
+        ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
+        ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
+        ModConfig.axeChainCount.set(ModConfig.axeChainCount.getDefault());
+        ModConfig.foodTime.set(ModConfig.foodTime.getDefault());
+        ModConfig.pickAxeBreakRange.set(ModConfig.pickAxeBreakRange.getDefault());
+        ModConfig.shovelBreakRange.set(ModConfig.shovelBreakRange.getDefault());
+        ModConfig.neutronCollectorProductTick.set(ModConfig.neutronCollectorProductTick.getDefault());
+        ModConfig.singularityTimeRequired.set(ModConfig.singularityTimeRequired.getDefault());
+        ModConfig.growthSoulFarmland.set(ModConfig.growthSoulFarmland.getDefault());
+        ModConfig.bladeSlashDamage.set(ModConfig.bladeSlashDamage.getDefault());
+        ModConfig.bladeSlashRadius.set(ModConfig.bladeSlashRadius.getDefault());
+        ModConfig.internalInfinityCatalystCraft.set(ModConfig.internalInfinityCatalystCraft.getDefault());
+
+        // EMC 配置项
+        ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
+        ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
+        ModConfig.bedrockEmc.set(ModConfig.bedrockEmc.getDefault());
+
+        // Storage 配置项
+        ModConfig.chestMaxItemSize.set(ModConfig.chestMaxItemSize.getDefault());
+        ModConfig.useSinglePageMode.set(ModConfig.useSinglePageMode.getDefault());
+        ModConfig.slotStackLimit.set(ModConfig.slotStackLimit.getDefault());
+        ModConfig.maxPageLimit.set(ModConfig.maxPageLimit.getDefault());
+        ModConfig.resetMaxPage.set(ModConfig.resetMaxPage.getDefault());
+        ModConfig.inventoryRows.set(ModConfig.inventoryRows.getDefault());
+
+        // Channel 配置项
+        ModConfig.MAX_SIZE_PRE_CHANNEL.set(ModConfig.MAX_SIZE_PRE_CHANNEL.getDefault());
+        ModConfig.MAX_CHANNELS_PRE_PLAYER.set(ModConfig.MAX_CHANNELS_PRE_PLAYER.getDefault());
+        ModConfig.MAX_PUBLIC_CHANNELS.set(ModConfig.MAX_PUBLIC_CHANNELS.getDefault());
+        ModConfig.CHANNEL_FAST_UPDATE_RATE.set(ModConfig.CHANNEL_FAST_UPDATE_RATE.getDefault());
+        ModConfig.CHANNEL_FULL_UPDATE_RATE.set(ModConfig.CHANNEL_FULL_UPDATE_RATE.getDefault());
+
+        // Misc 配置项
+        ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
+        ModConfig.immortalItemEntitySpeed.set(ModConfig.immortalItemEntitySpeed.getDefault());
+        ModConfig.immortalItemEntityRange.set(ModConfig.immortalItemEntityRange.getDefault());
+        ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
+        ModConfig.bootSpeedSwimmingMultiplier.set(ModConfig.bootSpeedSwimmingMultiplier.getDefault());
+        ModConfig.bootSpeedBackwardMultiplier.set(ModConfig.bootSpeedBackwardMultiplier.getDefault());
+        ModConfig.bootSpeedSprintingMultiplier.set(ModConfig.bootSpeedSprintingMultiplier.getDefault());
+        ModConfig.bootSpeedSneakingMultiplier.set(ModConfig.bootSpeedSneakingMultiplier.getDefault());
+        ModConfig.bootSpeedStrafingMultiplier.set(ModConfig.bootSpeedStrafingMultiplier.getDefault());
+        ModConfig.bootSpeedBase.set(ModConfig.bootSpeedBase.getDefault());
+        ModConfig.bootSpeedFlyingMultiplier.set(ModConfig.bootSpeedFlyingMultiplier.getDefault());
+    }
+
+
     private void addBooleanEntry(String titleKey, ForgeConfigSpec.BooleanValue configValue,
                                  Component description, Consumer<Boolean> onValueChange, Supplier<Boolean> valueSupplier) {
         configEntries.add(new BooleanConfigEntry(
@@ -319,60 +380,6 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
 
-    private void resetToDefaults() {
-        // Tools 配置项
-        ModConfig.isKeepStone.set(ModConfig.isKeepStone.getDefault());
-        ModConfig.isMergeMatterCluster.set(ModConfig.isMergeMatterCluster.getDefault());
-        ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
-        ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
-        ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
-        ModConfig.isSwordAttackProjectile.set(ModConfig.isSwordAttackProjectile.getDefault());
-        ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
-        ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
-        ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
-        ModConfig.axeChainCount.set(ModConfig.axeChainCount.getDefault());
-        ModConfig.foodTime.set(ModConfig.foodTime.getDefault());
-        ModConfig.pickAxeBreakRange.set(ModConfig.pickAxeBreakRange.getDefault());
-        ModConfig.shovelBreakRange.set(ModConfig.shovelBreakRange.getDefault());
-        ModConfig.neutronCollectorProductTick.set(ModConfig.neutronCollectorProductTick.getDefault());
-        ModConfig.singularityTimeRequired.set(ModConfig.singularityTimeRequired.getDefault());
-        ModConfig.growthSoulFarmland.set(ModConfig.growthSoulFarmland.getDefault());
-        ModConfig.bladeSlashDamage.set(ModConfig.bladeSlashDamage.getDefault());
-        ModConfig.bladeSlashRadius.set(ModConfig.bladeSlashRadius.getDefault());
-        ModConfig.internalInfinityCatalystCraft.set(ModConfig.internalInfinityCatalystCraft.getDefault());
-
-        // EMC 配置项
-        ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
-        ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
-
-        // Storage 配置项
-        ModConfig.chestMaxItemSize.set(ModConfig.chestMaxItemSize.getDefault());
-        ModConfig.useSinglePageMode.set(ModConfig.useSinglePageMode.getDefault());
-        ModConfig.slotStackLimit.set(ModConfig.slotStackLimit.getDefault());
-        ModConfig.maxPageLimit.set(ModConfig.maxPageLimit.getDefault());
-        ModConfig.resetMaxPage.set(ModConfig.resetMaxPage.getDefault());
-        ModConfig.inventoryRows.set(ModConfig.inventoryRows.getDefault());
-
-        // Channel 配置项
-        ModConfig.MAX_SIZE_PRE_CHANNEL.set(ModConfig.MAX_SIZE_PRE_CHANNEL.getDefault());
-        ModConfig.MAX_CHANNELS_PRE_PLAYER.set(ModConfig.MAX_CHANNELS_PRE_PLAYER.getDefault());
-        ModConfig.MAX_PUBLIC_CHANNELS.set(ModConfig.MAX_PUBLIC_CHANNELS.getDefault());
-        ModConfig.CHANNEL_FAST_UPDATE_RATE.set(ModConfig.CHANNEL_FAST_UPDATE_RATE.getDefault());
-        ModConfig.CHANNEL_FULL_UPDATE_RATE.set(ModConfig.CHANNEL_FULL_UPDATE_RATE.getDefault());
-
-        // Misc 配置项
-        ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
-        ModConfig.immortalItemEntitySpeed.set(ModConfig.immortalItemEntitySpeed.getDefault());
-        ModConfig.immortalItemEntityRange.set(ModConfig.immortalItemEntityRange.getDefault());
-        ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
-        ModConfig.bootSpeedSwimmingMultiplier.set(ModConfig.bootSpeedSwimmingMultiplier.getDefault());
-        ModConfig.bootSpeedBackwardMultiplier.set(ModConfig.bootSpeedBackwardMultiplier.getDefault());
-        ModConfig.bootSpeedSprintingMultiplier.set(ModConfig.bootSpeedSprintingMultiplier.getDefault());
-        ModConfig.bootSpeedSneakingMultiplier.set(ModConfig.bootSpeedSneakingMultiplier.getDefault());
-        ModConfig.bootSpeedStrafingMultiplier.set(ModConfig.bootSpeedStrafingMultiplier.getDefault());
-        ModConfig.bootSpeedBase.set(ModConfig.bootSpeedBase.getDefault());
-        ModConfig.bootSpeedFlyingMultiplier.set(ModConfig.bootSpeedFlyingMultiplier.getDefault());
-    }
 
     private void updateWidgetValues() {
         for (ConfigEntry<?> entry : configEntries) {
