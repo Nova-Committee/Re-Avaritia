@@ -40,6 +40,7 @@ public class ModConfig {
 
     public static final ModConfigSpec.IntValue neutronPileEmc;
     public static final ModConfigSpec.IntValue vanillaTotemEmc;
+    public static final ModConfigSpec.IntValue bedrockEmc;
 
     public static final ModConfigSpec.IntValue chestMaxItemSize;
     public static final ModConfigSpec.BooleanValue useSinglePageMode;
@@ -96,6 +97,7 @@ public class ModConfig {
         common.push("emc");
         neutronPileEmc = buildInt(common, "Neutron Pile Emc", 100, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
         vanillaTotemEmc = buildInt(common, "Vanilla Totem Emc", 1000, 0, Integer.MAX_VALUE, "Emc of Totem Of Undying");
+        bedrockEmc = buildInt(common, "Bedrock Emc", 10, 0, Integer.MAX_VALUE, "Emc of Bedrock");
         common.pop();
         common.push("storage");
         chestMaxItemSize = buildInt(common, "Chest Max ItemSize", 32768, 2048, Integer.MAX_VALUE, "Define the maximum number of item .types. that can be stored in a Infinity Chest.");

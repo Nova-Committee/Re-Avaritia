@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.init.compat.curios.AvaritiaCuriosPlugin;
+import committee.nova.mods.avaritia.init.compat.projecte.ModEMCHandler;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -55,7 +56,7 @@ public class Avaritia {
     }
 
     public void setup(final FMLCommonSetupEvent event) {
-        //if (Const.isLoad("projecte")) ModEMCHandler.init();
+//        if (Const.isLoad("projecte")) ModEMCHandler.init();
         DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }
 
