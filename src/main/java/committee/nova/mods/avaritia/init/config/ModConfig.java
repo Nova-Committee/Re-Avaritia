@@ -16,9 +16,6 @@ public class ModConfig {
 
     public static final ModConfigSpec.BooleanValue isInfinityLight;
 
-
-    public static final ModConfigSpec.DoubleValue foodTime; //foodTime
-    public static final ModConfigSpec.BooleanValue isKeepStone;
     public static final ModConfigSpec.BooleanValue isMergeMatterCluster;
     public static final ModConfigSpec.IntValue swordRangeDamage;
     public static final ModConfigSpec.IntValue swordAttackRange;
@@ -31,38 +28,24 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue axeChainCount;
     public static final ModConfigSpec.IntValue pickAxeBreakRange;
     public static final ModConfigSpec.IntValue shovelBreakRange;
-    public static final ModConfigSpec.IntValue neutronCollectorProductTick;
     public static final ModConfigSpec.IntValue singularityTimeRequired;
     public static final ModConfigSpec.DoubleValue growthSoulFarmland;
     public static final ModConfigSpec.IntValue bladeSlashDamage;
     public static final ModConfigSpec.IntValue bladeSlashRadius;
-    public static final ModConfigSpec.BooleanValue internalInfinityCatalystCraft;
 
     public static final ModConfigSpec.IntValue neutronPileEmc;
     public static final ModConfigSpec.IntValue vanillaTotemEmc;
     public static final ModConfigSpec.IntValue bedrockEmc;
 
-    public static final ModConfigSpec.IntValue chestMaxItemSize;
-    public static final ModConfigSpec.BooleanValue useSinglePageMode;
-    public static final ModConfigSpec.LongValue slotStackLimit;
-    public static final ModConfigSpec.IntValue maxPageLimit;
-    public static final ModConfigSpec.IntValue resetMaxPage;
-    public static final ModConfigSpec.IntValue inventoryRows;
-
-    public static ModConfigSpec.IntValue MAX_SIZE_PRE_CHANNEL;
-    public static ModConfigSpec.IntValue MAX_CHANNELS_PRE_PLAYER;
-    public static ModConfigSpec.IntValue MAX_PUBLIC_CHANNELS;
     public static ModConfigSpec.IntValue CHANNEL_FAST_UPDATE_RATE;
     public static ModConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
 
     public static final ModConfigSpec.BooleanValue useAdvanceTooltips;
-    public static final ModConfigSpec.BooleanValue useModDifficulty;
     public static final ModConfigSpec.DoubleValue immortalItemEntityRange;
     public static final ModConfigSpec.DoubleValue immortalItemEntitySpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingSpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingRangeDamage;
     public static final ModConfigSpec.BooleanValue InfinityArmorNightVision;
-    public static final ModConfigSpec.BooleanValue swordAttckItemEntity;
 
     //SERVER
     static {
@@ -72,11 +55,9 @@ public class ModConfig {
         isInfinityLight = buildBoolean(common, "Is Infinity Light", false, "The blocks near the infinity blocks are the brightest");
         common.pop();
         common.push("tools");
-        isKeepStone = buildBoolean(common, "Is Stone", false, "Does the super mode of endless tools retain stone and soil");
         isMergeMatterCluster = buildBoolean(common, "Is Merge Matter Cluster", true, "Whether to merge matter cluster");
         swordRangeDamage = buildInt(common, "Sword Range Damage", 10000, 100, 100000, "Range damage value of the right key of Infinity sword");
         swordAttackRange = buildInt(common, "Sword Attack Range", 32, 8, 64, "Infinity sword right click attack range");
-        swordAttckItemEntity = buildBoolean(common, "Is Sword Damage ItemEntity", false, "Does the right key range attack of endless sword attack item entity");
         isSwordAttackAnimal = buildBoolean(common, "Is Sword Damage Animal", false, "Does the right key range attack of endless sword attack neutral creatures");
         isSwordAttackItemEntity = buildBoolean(common, "config.avaritia.is_sword_attack_item_entity", false, "config.avaritia.is_sword_attack_item_entity.tooltip");
         isSwordAttackProjectile= buildBoolean(common, "config.avaritia.is_sword_attack_projectile", false, "config.avaritia.is_sword_attack_projectile.tooltip");
@@ -84,39 +65,24 @@ public class ModConfig {
         isSwordAttackEndless = buildBoolean(common, "Is Sword Cause Endless damage", true, "Does the right key cause infinity damage");
         subArrowDamage = buildInt(common, "Sub Arrow Damage", 10000, 100, 100000, "Infinity bow scattering light arrow damage");
         axeChainCount = buildInt(common, "Axe Chain Count", 64, 16, 128, "Chain number of endless axe cutting trees");
-        foodTime = buildDouble(common, "Food Time", 1d, 0.1d, 5d, "Food effect time scaling factor");
         pickAxeBreakRange = buildInt(common, "PickAxe Break Range", 8, 2, 32, "The range of Infinity PickAxe can break");
         shovelBreakRange = buildInt(common, "Shovel Break Range", 8, 2, 32, "The range of Infinity Shovel can break");
-        neutronCollectorProductTick = buildInt(common, "Neutron Collector Product Tick", 3600, 1200, Integer.MAX_VALUE, "The product tick of NeutronCollector");
         singularityTimeRequired = buildInt(common, "Singularity Time Required", 240, 0, Integer.MAX_VALUE, "Singularity default time required");
         growthSoulFarmland = buildDouble(common, "Growth soul farmland rate", 0.8, 0.0, 1.0, "Growth soul farmland rate");
         bladeSlashDamage = buildInt(common, "BladeSlash Damage", 200, 0, Integer.MAX_VALUE, "Damage of BladeSlash for Crystal Sword");
         bladeSlashRadius = buildInt(common, "BladeSlash Radius", 10, 5, 100, "Radius of BladeSlash for Crystal Sword");
-        internalInfinityCatalystCraft = buildBoolean(common, "Internal InfinityCatalyst Craft", true, "Is InfinityCatalyst Craft use all Singularity");
         common.pop();
         common.push("emc");
         neutronPileEmc = buildInt(common, "Neutron Pile Emc", 100, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
         vanillaTotemEmc = buildInt(common, "Vanilla Totem Emc", 1000, 0, Integer.MAX_VALUE, "Emc of Totem Of Undying");
         bedrockEmc = buildInt(common, "Bedrock Emc", 10, 0, Integer.MAX_VALUE, "Emc of Bedrock");
         common.pop();
-        common.push("storage");
-        chestMaxItemSize = buildInt(common, "Chest Max ItemSize", 32768, 2048, Integer.MAX_VALUE, "Define the maximum number of item .types. that can be stored in a Infinity Chest.");
-        useSinglePageMode = buildBoolean(common, "Use Single PageMode", false, "Use single page mode");
-        slotStackLimit = buildLong(common, "Slot Stack Limit", 4294967295L, 64L, 4294967295L, "Stack size limit of slot");
-        maxPageLimit = buildInt(common, "Max Page Limit", 79536431, 2, 79536431, "Maximum page limit");
-        resetMaxPage = buildInt(common, "Reset Max Page", 1, 1, 79536431, "*Recovery options* Reset the max page that is 0.");
-        inventoryRows =buildInt(common, "Inventory Rows", 6, 1, 6, "Inventory rows for multi page mode");
-        common.pop();
         common.push("channel");
-        MAX_SIZE_PRE_CHANNEL = buildInt(common, "Channel Size", 32768, 2048, Integer.MAX_VALUE, "");
-        MAX_CHANNELS_PRE_PLAYER = buildInt(common, "MaxPlayer Channels", 16, 4, 64, "");
-        MAX_PUBLIC_CHANNELS = buildInt(common, "MaxPublic Channels", 128, 32, 1024, "");
         CHANNEL_FAST_UPDATE_RATE = buildInt(common,  "FastUpdate Rate", 1, 1, 40, "");
         CHANNEL_FULL_UPDATE_RATE = buildInt(common, "FullUpdate Rate", 40, 20, 1200, "");
         common.pop();
         common.push("misc");
         useAdvanceTooltips = buildBoolean(common, "Use Advance Tooltips", false, "For develop");
-        useModDifficulty = buildBoolean(common, "Use Mod Difficulty", true, "For some mods");
         immortalItemEntityRange = buildDouble(common, "Endless ItemEntity Range", 1000, 1, 10000, "The range of Endless ItemEntity");
         immortalItemEntitySpeed = buildDouble(common, "Endless ItemEntity Speed", 3, 1, 10,"The speed of Endless ItemEntity");
         infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5, 1, 10, "Infinity Elytra Flying Speed");
