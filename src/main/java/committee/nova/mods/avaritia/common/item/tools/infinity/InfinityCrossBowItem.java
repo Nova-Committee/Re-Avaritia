@@ -62,7 +62,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         } else {
 
             if (!level.isClientSide) {
-
                 setCharged(stack, true);
             }
             player.startUsingItem(hand);
@@ -89,7 +88,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
 
     private void performShooting(Level level, Player player, InteractionHand hand, ItemStack crossbow, float velocity, float inaccuracy) {
         if (level.isClientSide) return;
-
+        ItemStack stack = player.getItemInHand(hand);
         ItemStack ammo = findAmmo(player);
         boolean isMulti = isActive(crossbow, "infinity_crossbow_multi");
         int projectileCount = isMulti ? 5 : 1;
@@ -98,10 +97,16 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         for (int i = 0; i < projectileCount; i++) {
             float angle = angles[Math.min(i, angles.length - 1)];
             if (!ammo.isEmpty()) {
+
                 shootBasedOnAmmo(level, player, ammo, angle);
             } else {
                 shootInfnityArrow(level, player, 3.0F, 1.0F, angle);
             }
+        }
+        if (isMulti) {
+            player.getCooldowns().addCooldown(stack.getItem(), 200);
+        }else {
+            player.getCooldowns().addCooldown(stack.getItem(), 20);
         }
     }
 
