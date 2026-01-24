@@ -34,6 +34,7 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue bladeSlashRadius;
 
     public static final ModConfigSpec.IntValue neutronPileEmc;
+    public static final ModConfigSpec.IntValue blazeCubeEmc;
     public static final ModConfigSpec.IntValue vanillaTotemEmc;
     public static final ModConfigSpec.IntValue bedrockEmc;
 
@@ -74,6 +75,7 @@ public class ModConfig {
         common.pop();
         common.push("emc");
         neutronPileEmc = buildInt(common, "Neutron Pile Emc", 100, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
+        blazeCubeEmc = buildInt(common, "Blaze Cube Emc", 30568, 0, Integer.MAX_VALUE, "Emc of Blaze Cube");
         vanillaTotemEmc = buildInt(common, "Vanilla Totem Emc", 1000, 0, Integer.MAX_VALUE, "Emc of Totem Of Undying");
         bedrockEmc = buildInt(common, "Bedrock Emc", 10, 0, Integer.MAX_VALUE, "Emc of Bedrock");
         common.pop();

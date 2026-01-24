@@ -16,106 +16,141 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 
-/**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2024/7/26 下午6:11
- * @Description:
- */
 public class ClustersUtils {
-    public static Set<String> defaultTrashOres = Sets.newHashSet("minecraft:dirt");
+
+    public static final Set<String> defaultTrashOres =
+            Sets.newHashSet("minecraft:dirt");
 
 
     public static void spawnClusters(Level world, Player player, Set<ItemStack> drops) {
-        if (!world.isClientSide) {
-            Containers.dropItemStack(world, player.getX(), player.getY() + 0.5F, player.getZ(), MatterClusterItem.makeClusters(drops));
+        if (world.isClientSide) return;
+
+        List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
+        for (ItemStack cluster : clusters) {
+            Containers.dropItemStack(
+                    world,
+                    player.getX(),
+                    player.getY() + 0.5F,
+                    player.getZ(),
+                    cluster
+            );
         }
     }
 
     public static void spawnClusters(Level world, Player player, Map<ItemStack, Integer> map) {
-        if (!world.isClientSide) {
-            HashSet<ItemStack> stacks = new HashSet<>();
-            Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), MatterClusterItem.makeClusters(stacks));
+        if (world.isClientSide) return;
+
+        Set<ItemStack> stacks = new HashSet<>();
+        map.forEach((stack, count) -> {
+            ItemStack copy = stack.copy();
+            copy.setCount(count);
+            stacks.add(copy);
+        });
+
+        List<ItemStack> clusters = MatterClusterItem.makeClusters(stacks);
+        for (ItemStack cluster : clusters) {
+            Containers.dropItemStack(
+                    world,
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    cluster
+            );
         }
     }
 
+
     public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
-        ItemStack itemStack = ItemUtils.mapEquals(drop, map);
-        if (!itemStack.isEmpty())
-            map.put(itemStack, map.get(itemStack) + drop.getCount());
-        else map.put(drop, drop.getCount());
+        ItemStack existed = ItemUtils.mapEquals(drop, map);
+        if (!existed.isEmpty()) {
+            map.put(existed, map.get(existed) + drop.getCount());
+        } else {
+            map.put(drop.copy(), drop.getCount());
+        }
     }
 
-    public static void putMapDrops(Level world, BlockPos pos, Player player, ItemStack stack, Map<ItemStack, Integer> map) {
-        for (ItemStack drop : Block.getDrops(world.getBlockState(pos), (ServerLevel) world, pos, world.getBlockEntity(pos), player, stack)) {
+    public static void putMapDrops(
+            Level world,
+            BlockPos pos,
+            Player player,
+            ItemStack tool,
+            Map<ItemStack, Integer> map
+    ) {
+        for (ItemStack drop : Block.getDrops(
+                world.getBlockState(pos),
+                (ServerLevel) world,
+                pos,
+                world.getBlockEntity(pos),
+                player,
+                tool
+        )) {
             putMapItem(drop, map);
         }
     }
 
-    public static Set<ItemStack> removeTrash(Set<ItemStack> drops, Set<String> defaultTrashOres) {
-        Set<ItemStack> trashItems = new HashSet<>();
-        for (ItemStack drop : drops) {
-            if (isTrash(drop, defaultTrashOres)) {
-                trashItems.add(drop);
-            }
-        }
-        drops.removeAll(trashItems);
+
+    public static Set<ItemStack> removeTrash(Set<ItemStack> drops, Set<String> trashList) {
+        drops.removeIf(drop -> isTrash(drop, trashList));
         return drops;
     }
 
-    private static boolean isTrash(ItemStack suspect, Set<String> defaultTrashOres) {
-        boolean isTrash = false;
-        for (String ore : defaultTrashOres) {
-            if (suspect.is(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(ore)))) {
+    private static boolean isTrash(ItemStack stack, Set<String> trashList) {
+        for (String id : trashList) {
+            ResourceLocation rl = ResourceLocation.tryParse(id);
+            if (rl != null && stack.is(BuiltInRegistries.ITEM.get(rl))) {
                 return true;
             }
         }
-        return isTrash;
+        return false;
     }
+
 
     public static List<ItemStack> collateDropList(Set<ItemStack> input) {
         return collateMatterClusterContents(collateMatterCluster(input));
     }
 
-    public static List<ItemStack> collateMatterClusterContents(Map<ItemStack, Integer> input) {
-        List<ItemStack> collated = new ArrayList<>();
+    public static List<ItemStack> collateMatterClusterContents(
+            Map<ItemStack, Integer> input
+    ) {
+        List<ItemStack> result = new ArrayList<>();
 
         for (Map.Entry<ItemStack, Integer> e : input.entrySet()) {
             int count = e.getValue();
-            ItemStack wrap = e.getKey();
+            ItemStack base = e.getKey();
 
-            int size = wrap.getMaxStackSize();
-            int fullstacks = Mth.floor((float) count / size);
+            int max = base.getMaxStackSize();
+            int full = Mth.floor((float) count / max);
 
-            for (int i = 0; i < fullstacks; i++) {
-                count -= size;
-                ItemStack stack = wrap.copy();
-                stack.setCount(size);
-                collated.add(stack);
+            for (int i = 0; i < full; i++) {
+                ItemStack stack = base.copy();
+                stack.setCount(max);
+                result.add(stack);
+                count -= max;
             }
 
             if (count > 0) {
-                ItemStack stack = wrap.copy();
+                ItemStack stack = base.copy();
                 stack.setCount(count);
-                collated.add(stack);
+                result.add(stack);
             }
         }
 
-        return collated;
+        return result;
     }
 
     public static Map<ItemStack, Integer> collateMatterCluster(Set<ItemStack> input) {
         Map<ItemStack, Integer> counts = new HashMap<>();
 
-        if (input != null) {
-            for (ItemStack entity : input) {
-                ItemStack wrap = new ItemStack(entity.getItem());
-                if (!counts.containsKey(wrap)) {
-                    counts.put(wrap, 0);
-                }
+        if (input == null) return counts;
 
-                counts.put(wrap, counts.get(wrap) + entity.getCount());
-            }
+        for (ItemStack stack : input) {
+            ItemStack key = stack.copy();
+            key.setCount(1);
+
+            counts.put(
+                    key,
+                    counts.getOrDefault(key, 0) + stack.getCount()
+            );
         }
 
         return counts;

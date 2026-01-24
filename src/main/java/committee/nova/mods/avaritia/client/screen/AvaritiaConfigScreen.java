@@ -122,6 +122,10 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.neutron_pile_emc.tooltip"),
                 ModConfig.neutronPileEmc::set, ModConfig.neutronPileEmc);
 
+        addIntEntry("blaze_cube_emc", ModConfig.blazeCubeEmc, 0, Integer.MAX_VALUE,
+                Component.translatable("config.avaritia.blaze_cube_emc.tooltip"),
+                ModConfig.blazeCubeEmc::set, ModConfig.blazeCubeEmc);
+
         addIntEntry("vanilla_totem_emc", ModConfig.vanillaTotemEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
@@ -185,6 +189,7 @@ public class AvaritiaConfigScreen extends Screen {
 
         // EMC 配置项
         ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
+        ModConfig.blazeCubeEmc.set(ModConfig.blazeCubeEmc.getDefault());
         ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
         ModConfig.bedrockEmc.set(ModConfig.bedrockEmc.getDefault());
 

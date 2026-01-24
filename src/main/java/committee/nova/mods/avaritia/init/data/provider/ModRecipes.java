@@ -579,7 +579,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                         Ingredient.of(ModItems.upgrade_smithing_template.get()),
                         Ingredient.of(Items.DIAMOND_HORSE_ARMOR),
                         CompoundIngredient.of(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.SWIFTNESS), Items.POTION),
-                                Ingredient.of(Items.BLUE_ICE), Ingredient.of(ModItems.enhancement_core.get())),
+                                Ingredient.of(ModItems.enhancement_core.get()),Ingredient.of(Items.BLUE_ICE)),
                         RecipeCategory.MISC,
                         ModItems.neutron_horse_armor.get().getDefaultInstance())
                 .unlockedBy("has_item", has(ModItems.upgrade_smithing_template.get()))

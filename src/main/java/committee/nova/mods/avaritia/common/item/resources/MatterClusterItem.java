@@ -1,10 +1,11 @@
 package committee.nova.mods.avaritia.common.item.resources;
 
+import committee.nova.mods.avaritia.api.common.container.NoMenuContainer;
 import committee.nova.mods.avaritia.api.utils.ContainerUtils;
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
+import committee.nova.mods.avaritia.api.utils.NBTUtils;
 import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
-import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
-import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -14,38 +15,24 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-/**
- * Description:
- * Author: cnlimiter
- * Date: 2022/3/31 14:09
- * Version: 1.0
- */
 public class MatterClusterItem extends Item {
-    public static final int INV_SIZE = 512;
 
-    public static int CAPACITY = 4096;
+    public static final int CAPACITY = 64 * 64;
 
     public MatterClusterItem() {
         super(new Properties()
                 .rarity(ModRarities.RARE)
                 .stacksTo(1));
     }
-
 
     public static List<ItemStack> getClusterItems(ItemStack cluster) {
         InfinityContainerContents clusterContainer = cluster.getOrDefault(ModDataComponents.MATTER_CLUSTER.get(),
@@ -64,137 +51,150 @@ public class MatterClusterItem extends Item {
         return itemCount;
     }
 
-    public static ItemStack makeClusters(Set<ItemStack> input) {
-        SimpleContainer clusterInventory = new SimpleContainer(INV_SIZE);
-        int count = 0;
-        for (ItemStack itemStack : input) {
-            if (count < CAPACITY) {
-                if (clusterInventory.canAddItem(itemStack)) {
-                    clusterInventory.addItem(itemStack.copy());
-                    count += itemStack.getCount();
-                    itemStack.setCount(0);
-                }
-            }
+
+    private static NoMenuContainer readClusterInventory(ItemStack stack) {
+        NoMenuContainer inv = new NoMenuContainer(CAPACITY);
+
+        InfinityContainerContents contents = NBTUtils.getClusterItems(stack);
+        if (contents != null) {
+            NBTUtils.readClusterItems(inv.items, contents);
         }
-        if (count > 0) {
-            ItemStack cluster = new ItemStack(ModItems.matter_cluster.get());
-            cluster.update(ModDataComponents.MATTER_CLUSTER.get(), InfinityContainerContents.EMPTY,
-                    clusterContainer -> InfinityContainerContents.fromItems(clusterInventory.getItems()));
-            return cluster;
-        }
-        return ItemStack.EMPTY;
+
+        return inv;
     }
 
-    public static boolean mergeClusters(ItemStack spawnCluster, ItemStack slotCluster) {
-        var slotClusterInv = readClusterInventory(slotCluster);
-        var slotClusterItems = slotClusterInv.getItems().toArray(ItemStack[]::new);
-        SimpleContainer receivingInv = new SimpleContainer(slotClusterInv.getItems().toArray(ItemStack[]::new));
-        int recipientCount = Arrays.stream(slotClusterItems).mapToInt(ItemStack::getCount).sum();
-        if (recipientCount >= CAPACITY) {
-            return false;
+    private static void writeClusterInventory(ItemStack stack, NoMenuContainer inv) {
+        NBTUtils.writeClusterItems(stack, inv.items);
+    }
+
+    public static int getClusterSize(ItemStack stack) {
+        if (!NBTUtils.hasClusterItems(stack)) return 0;
+        return Arrays.stream(readClusterInventory(stack).items)
+                .mapToInt(ItemStack::getCount)
+                .sum();
+    }
+
+    public static List<ItemStack> makeClusters(Collection<ItemStack> input) {
+        LinkedList<ItemStack> clusters = new LinkedList<>();
+        LinkedList<ItemStack> stacks = new LinkedList<>(input);
+
+        while (!stacks.isEmpty()) {
+            NoMenuContainer inv = new NoMenuContainer(CAPACITY);
+            int inserted = 0;
+
+            while (!stacks.isEmpty() && inserted < CAPACITY) {
+                ItemStack stack = stacks.poll();
+                int remainder = ContainerUtils.insertItem(inv, stack, false);
+                inserted += stack.getCount() - remainder;
+
+                if (remainder > 0) {
+                    stack.setCount(remainder);
+                    stacks.addFirst(stack);
+                    break;
+                }
+            }
+
+            if (inserted > 0) {
+                ItemStack cluster = new ItemStack(ModItems.matter_cluster.get());
+                writeClusterInventory(cluster, inv);
+                clusters.add(cluster);
+            }
+        }
+
+        return clusters;
+    }
+
+    public static boolean mergeClusters(ItemStack from, ItemStack to) {
+        NoMenuContainer toInv = readClusterInventory(to);
+        int current = Arrays.stream(toInv.items).mapToInt(ItemStack::getCount).sum();
+        if (current >= CAPACITY) return false;
+
+        NoMenuContainer fromInv = readClusterInventory(from);
+        int remaining = CAPACITY - current;
+        boolean merged = false;
+
+        for (ItemStack stack : fromInv.items) {
+            if (stack.isEmpty() || remaining <= 0) break;
+
+            int move = Math.min(stack.getCount(), remaining);
+            ItemStack copy = stack.copy();
+            copy.setCount(move);
+
+            int rem = ContainerUtils.insertItem(toInv, copy, false);
+            int actual = move - rem;
+
+            if (actual > 0) {
+                merged = true;
+                stack.shrink(actual);
+                remaining -= actual;
+            }
+        }
+
+        writeClusterInventory(to, toInv);
+
+        int left = Arrays.stream(fromInv.items).mapToInt(ItemStack::getCount).sum();
+        if (left == 0) {
+            NBTUtils.clearClusterItems(from);
+            from.setCount(0);
         } else {
-            boolean mergedAny = false;
-            SimpleContainer spawnClusterInv = readClusterInventory(spawnCluster);
-            var spawnClusterItems = spawnClusterInv.getItems().toArray(ItemStack[]::new);
-            for (ItemStack stack : spawnClusterInv.getItems()) {
-                if (stack.isEmpty()) {
-                    break;
-                }
+            writeClusterInventory(from, fromInv);
+        }
 
-                int remainder = ContainerUtils.insertItem(receivingInv, stack, false);
-                if (remainder <= stack.getCount()) {
-                    mergedAny = true;
-                }
+        return merged;
+    }
 
-                recipientCount += stack.getCount() - remainder;
-                stack.setCount(remainder);
-                if (recipientCount >= CAPACITY) {
-                    break;
-                }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        if (!NBTUtils.hasClusterItems(stack)) return;
+
+        int total = getClusterSize(stack);
+        tooltip.add(Component.translatable(
+                "tooltip.avaritia.matter_cluster.counter",
+                total, CAPACITY));
+
+        tooltip.add(Component.literal(""));
+
+        if (Screen.hasShiftDown()) {
+            Object2IntMap<Item> counts = new Object2IntOpenHashMap<>();
+
+            for (ItemStack item : readClusterInventory(stack).items) {
+                if (item.isEmpty()) break;
+                counts.put(item.getItem(),
+                        counts.getOrDefault(item.getItem(), 0) + item.getCount());
             }
 
-            writeClusterInventory(slotCluster, receivingInv);
-            int spawnClusterRemaining = Arrays.stream(spawnClusterItems).mapToInt(ItemStack::getCount).sum();
-            if (spawnClusterRemaining == 0) {
-                spawnCluster.setCount(0);
-            } else {
-                writeClusterInventory(spawnCluster, spawnClusterInv);
-            }
-
-            return mergedAny;
+            counts.forEach((item, count) ->
+                    tooltip.add(
+                            Component.translatable(item.getDescriptionId())
+                                    .withStyle(ChatFormatting.WHITE)
+                                    .append(Component.literal(" x " + count)
+                                            .withStyle(ChatFormatting.GRAY))
+                    )
+            );
+        } else {
+            tooltip.add(Component.translatable(
+                            "tooltip.avaritia.matter_cluster.desc")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add(Component.translatable(
+                            "tooltip.avaritia.matter_cluster.desc2")
+                    .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
         }
     }
 
 
-    private static void writeClusterInventory(ItemStack cluster, SimpleContainer clusterContents) {
-        cluster.update(ModDataComponents.MATTER_CLUSTER.get(), InfinityContainerContents.EMPTY,
-                clusterContainer -> InfinityContainerContents.fromItems(clusterContents.getItems()));
-    }
-
-    private static SimpleContainer readClusterInventory(ItemStack cluster) {
-        var slotClusterInv = cluster.getOrDefault(ModDataComponents.MATTER_CLUSTER.get(), InfinityContainerContents.EMPTY);
-        return new SimpleContainer(slotClusterInv.getItems().toArray(ItemStack[]::new));
-    }
-
     @Override
-    public void appendHoverText(ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        if (stack.has(ModDataComponents.MATTER_CLUSTER.get())) {
-            List<ItemStack> itemStacks = getClusterItems(stack);
-            int total = getClusterSize(itemStacks);
-            if (total > 0) {
-                tooltip.add(Component.translatable("tooltip.matter_cluster.counter", total, Math.max(total, CAPACITY)));
-                tooltip.add(Component.literal(""));
-            }
-            if (Screen.hasShiftDown()) {
-                Object2IntMap<Item> itemCounts = new Object2IntOpenHashMap<>();
-                for (ItemStack item : readClusterInventory(stack).getItems()) {
-                    if (item.isEmpty()) {
-                        break;
-                    }
-                    itemCounts.put(item.getItem(), item.getCount() + itemCounts.getOrDefault(item.getItem(), 0));
-                }
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level level, Player player, @NotNull InteractionHand hand) {
 
-                itemCounts.forEach((itemx, count) -> {
-                    tooltip.add((Component.translatable(itemx.getDescriptionId())).append((Component.literal(" x " + count)).withStyle(ChatFormatting.GRAY)));
-                });
-            } else {
-                tooltip.add((Component.translatable("tooltip.matter_cluster.desc")).withStyle(ChatFormatting.DARK_GRAY));
-                tooltip.add((Component.translatable("tooltip.matter_cluster.desc2")).withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
-            }
-
-        }
-    }
-
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        List<ItemStack> itemStacks = getClusterItems(stack);
 
-        if (stack.has(ModDataComponents.MATTER_CLUSTER.get()) && !itemStacks.isEmpty()) {
-            if (!level.isClientSide()) {
-                for (ItemStack itemStack : itemStacks) {
-                    ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(),
-                            itemStack);
-                    itemEntity.setDefaultPickUpDelay();
-                    level.addFreshEntity(itemEntity);
-                }
-            }
-            player.setItemInHand(hand, ItemStack.EMPTY);
+        if (!level.isClientSide) {
+            ItemUtils.dropInventory(level, player.blockPosition(),
+                    readClusterInventory(stack));
         }
 
         player.setItemInHand(hand, ItemStack.EMPTY);
         return InteractionResultHolder.success(ItemStack.EMPTY);
     }
-
-    @Override
-    public boolean hasCustomEntity(@NotNull ItemStack stack) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
-    }
-
 }
