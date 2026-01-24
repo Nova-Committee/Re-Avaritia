@@ -40,6 +40,7 @@ public class ModConfig {
 
 
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
+    public static final ForgeConfigSpec.IntValue blazeCubeEmc;
     public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
     public static final ForgeConfigSpec.IntValue bedrockEmc;
 
@@ -73,6 +74,7 @@ public class ModConfig {
         common.pop();
         common.push("emc");
         neutronPileEmc = buildInt(common, "config.avaritia.neutron_pile_emc", 100, 0, Integer.MAX_VALUE, "config.avaritia.neutron_pile_emc.tooltip");
+        blazeCubeEmc = buildInt(common, "config.avaritia.blaze_cube_emc", 30568, 0, Integer.MAX_VALUE, "config.avaritia.blaze_cube_emc.tooltip");
         vanillaTotemEmc = buildInt(common, "config.avaritia.vanilla_totem_emc", 1000, 0, Integer.MAX_VALUE, "config.avaritia.vanilla_totem_emc.tooltip");
         bedrockEmc = buildInt(common, "config.avaritia.bedrock_emc", 10, 0, Integer.MAX_VALUE, "config.avaritia.bedrock_emc.tooltip");
         common.pop();
