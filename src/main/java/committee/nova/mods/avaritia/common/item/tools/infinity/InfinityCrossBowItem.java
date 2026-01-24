@@ -91,7 +91,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
 
     private void performShooting(Level level, Player player, InteractionHand hand, ItemStack crossbow, float velocity, float inaccuracy) {
         if (level.isClientSide) return;
-
+        ItemStack stack = player.getItemInHand(hand);
         ItemStack ammo = findAmmo(player);
         boolean isMulti = isActive(crossbow, "infinity_crossbow_multi");
         int projectileCount = isMulti ? 5 : 1;
