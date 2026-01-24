@@ -105,6 +105,11 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
                 shootInfinityArrow(level, player, 3.0F, 1.0F, angle);
             }
         }
+        if (isMulti) {
+            player.getCooldowns().addCooldown(stack.getItem(), 200);
+        }else {
+            player.getCooldowns().addCooldown(stack.getItem(), 20);
+        }
     }
 
     //在这里添加方法到发射,默认发射天堂箭
