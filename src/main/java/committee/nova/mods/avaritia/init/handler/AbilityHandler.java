@@ -102,14 +102,16 @@ public class AbilityHandler {
                 player.setAirSupply(300);
                 player.getFoodData().setFoodLevel(20);
                 player.getFoodData().setSaturation(20f);
-                MobEffectInstance nv = player.getEffect(MobEffects.NIGHT_VISION);
-                if (nv == null) {
-                    nv = new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false);
-                    player.addEffect(nv);
-                }
-                nv.duration = 300;
+                if (ModConfig.InfinityArmorNightVision.get()) {
+                    MobEffectInstance nv = player.getEffect(MobEffects.NIGHT_VISION);
+                    if (nv == null) {
+                        nv = new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false);
+                        player.addEffect(nv);
+                    }
+                    nv.duration = 300;
 
-            } else {
+                }
+            }else {
                 entitiesWithHelmets.add(key);
             }
         } else {
