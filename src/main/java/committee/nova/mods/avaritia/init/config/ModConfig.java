@@ -47,6 +47,13 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingSpeed;
     public static final ModConfigSpec.DoubleValue infinityElytraFlyingRangeDamage;
     public static final ModConfigSpec.BooleanValue InfinityArmorNightVision;
+    public static final ModConfigSpec.DoubleValue bootSpeedBase;
+    public static final ModConfigSpec.DoubleValue bootSpeedFlyingMultiplier;
+    public static final ModConfigSpec.DoubleValue bootSpeedSwimmingMultiplier;
+    public static final ModConfigSpec.DoubleValue bootSpeedSneakingMultiplier;
+    public static final ModConfigSpec.DoubleValue bootSpeedBackwardMultiplier;
+    public static final ModConfigSpec.DoubleValue bootSpeedStrafingMultiplier;
+    public static final ModConfigSpec.DoubleValue bootSpeedSprintingMultiplier;
 
     //SERVER
     static {
@@ -90,6 +97,13 @@ public class ModConfig {
         infinityElytraFlyingSpeed = buildDouble(common, "Infinity Elytra Flying Speed", 1.5, 1, 10, "Infinity Elytra Flying Speed");
         infinityElytraFlyingRangeDamage = buildDouble(common, "Infinity Elytra Flying Range Damage", 100, 0, 10000, "Infinity Elytra Flying Range Damage");
         InfinityArmorNightVision = buildBoolean(common, "Infinity Open or Off Night Vision", true, "Infinity Armor Night Vision");
+        bootSpeedBase = buildDouble(common, "config.avaritia.boot_speed_base", 0.1, 0.01, 1.0, "config.avaritia.boot_speed_base.tooltip");
+        bootSpeedFlyingMultiplier = buildDouble(common, "config.avaritia.boot_speed_flying_multiplier", 1.1, 0.1, 5.0, "config.avaritia.boot_speed_flying_multiplier.tooltip");
+        bootSpeedSwimmingMultiplier = buildDouble(common, "config.avaritia.boot_speed_swimming_multiplier", 1.2, 0.1, 5.0, "config.avaritia.boot_speed_swimming_multiplier.tooltip");
+        bootSpeedSneakingMultiplier = buildDouble(common, "config.avaritia.boot_speed_sneaking_multiplier", 0.1, 0.01, 1.0, "config.avaritia.boot_speed_sneaking_multiplier");
+        bootSpeedBackwardMultiplier = buildDouble(common, "config.avaritia.boot_speed_backward_multiplier", 0.25, 0.01, 1.0, "config.avaritia.boot_speed_backward_multiplier.tooltip");
+        bootSpeedStrafingMultiplier = buildDouble(common, "config.avaritia.boot_speed_strafing_multiplier", 0.45, 0.01, 1.0, "config.avaritia.boot_speed_strafing_multiplier");
+        bootSpeedSprintingMultiplier = buildDouble(common, "config.avaritia.boot_speed_sprinting_multiplier", 0.2, 0.01, 1.0, "config.avaritia.boot_speed_sprinting_multiplier");
         common.pop();
         COMMON = common.build();
     }
