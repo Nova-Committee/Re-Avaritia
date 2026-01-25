@@ -37,7 +37,11 @@ public class TierCraftTile extends BaseInventoryTileEntity {
         } else if (blockState.is(ModBlocks.extreme_crafting_table.get())) {
             tier = ModCraftTier.EXTREME;
         }
-        this.inventory = new ItemStackWrapper(tier.size * tier.size, Integer.MAX_VALUE, this::setChangedAndDispatch);
+        this.inventory = ItemStackWrapper.create(tier.size * tier.size, slot -> this.setChangedAndDispatch(),
+                    builder -> {
+                        builder.setDefaultSlotLimit(Integer.MAX_VALUE);
+                    }
+                );
         this.inventory.setOutputSlots(tier.size * tier.size);
     }
 

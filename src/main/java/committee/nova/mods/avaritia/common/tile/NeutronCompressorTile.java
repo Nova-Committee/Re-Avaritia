@@ -24,7 +24,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -63,7 +62,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     public NeutronCompressorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler();
-        this.recipeInventory = new ItemStackWrapper(1);
+        this.recipeInventory = ItemStackWrapper.create(1);
         if (state.is(ModBlocks.neutron_compressor.get())) {
             tier = CompressorTier.DEFAULT;
         } else if (state.is(ModBlocks.dense_neutron_compressor.get())) {
@@ -76,9 +75,13 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     }
 
     public static ItemStackWrapper createInventoryHandler() {
-        var inventory = new ItemStackWrapper(2);
-        inventory.setOutputSlots(0);
-        return inventory;
+        return ItemStackWrapper.create(2
+                , (builder) -> {
+            builder.setOutputSlots(0);
+            builder.setCanInsert((slot, stack) -> slot == 1);
+            builder.setCanExtract((slot) -> slot == 0 || slot == 1);
+        }
+);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, NeutronCompressorTile tile) {
@@ -366,7 +369,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
             if (stack.isEmpty()) continue;
 
             // 检查输入物品是否在配方中
-            if (!canInsertItem(stack)) continue;
+            //if (!canInsertItem(stack)) continue;
 
             // 检查是否与当前材料类型匹配
             if (!materialStack.isEmpty() && !ItemUtils.areStacksSameType(stack, materialStack)) {
@@ -432,26 +435,5 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     {
         this.progress = progress;
         this.data.set(0, this.progress);
-    }
-
-    public boolean canInsertItem(ItemStack stack) {
-        if (this.recipeLocked && this.lockedRecipe != null) {
-            // 锁定状态下，只接受锁定配方的材料
-            var ingredients = this.lockedRecipe.getInput();
-            var items = ingredients.getItems();
-            return items.length > 0 && stack.is(items[0].getItem());
-        } else {
-            var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
-            if (!recipes.isEmpty()) {
-                for (var recipe : recipes) {
-                    var ingredients = recipe.getInput();
-                    var items = ingredients.getItems();
-                    if (items.length > 0 && stack.is(items[0].getItem())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 }
