@@ -11,13 +11,11 @@
     "PlayerMixin",
     "RecipeManagerMixin",
     "ReloadableServerResourcesMixin",
-    "accessor.MappedRegistryAccessor",
-    "iris.MixinBakedModelCosmic"
+    "accessor.MappedRegistryAccessor"
   ],
   "client": [
     "ItemRendererMixin",
-    "PlayerRendererMixin",
-    "iris.MixinShaderInstance"
+    "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
