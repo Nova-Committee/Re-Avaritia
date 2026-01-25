@@ -6,8 +6,6 @@ import dev.latvian.mods.rhino.Context;
 import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -32,6 +30,7 @@ public class Singularity {
     @Getter private boolean enabled = true;
     @Getter private boolean recipeEnabled  = true;
     @Getter private List<ICondition> conditions = new CopyOnWriteArrayList<>();
+
 
     public Singularity(ResourceLocation registryName, String displayName, int overlayColor, int underlayColor,
                        int count, int timeCost, Ingredient ingredient, boolean enabled, boolean recipeEnable) {
@@ -114,10 +113,6 @@ public class Singularity {
         return this.count > 10000 ? this.count : Const.isLoad("projecte") ? 10000 : this.count;
     }
 
-    public TagKey<Item> getTag() {
-        if (getIngredient().values[0] instanceof Ingredient.TagValue value) return value.tag;
-        return null;
-    }
 
     public static Singularity read(FriendlyByteBuf buffer) {
         var id = buffer.readResourceLocation();

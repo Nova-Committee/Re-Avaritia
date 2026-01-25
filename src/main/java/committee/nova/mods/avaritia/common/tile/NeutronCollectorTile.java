@@ -99,12 +99,9 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     }
 
     public static ItemStackWrapper createInventoryHandler() {
-        return ItemStackWrapper.create(1,
-                builder -> {
-                    builder.setOutputSlots(0);
-                    builder.setCanInsert((slot, stack) -> slot == 0);
-                }
-        );
+        var inventory = new ItemStackWrapper(1, Integer.MAX_VALUE);
+        inventory.setOutputSlots(0);
+        return inventory;
     }
 
     @Override

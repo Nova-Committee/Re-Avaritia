@@ -22,10 +22,8 @@ public class RingStorageProvider implements ICapabilitySerializable<CompoundTag>
     private final LazyOptional<ItemStackWrapper> inventoryCap;
 
     public RingStorageProvider(ItemStack stack, CompoundTag nbt) {
-        this.inv = ItemStackWrapper.create(81, builder -> {
-            builder.setDefaultSlotLimit(Integer.MAX_VALUE);
-            builder.setCanInsert((slot, stack2) -> !(stack2.getItem() instanceof NeutronRingItem));
-        });
+        this.inv = new ItemStackWrapper(81, Integer.MAX_VALUE);
+        this.inv.setSlotValidator((slot, stack2) -> !(stack2.getItem() instanceof NeutronRingItem));
         this.inventoryCap = LazyOptional.of(() -> inv);
     }
 
