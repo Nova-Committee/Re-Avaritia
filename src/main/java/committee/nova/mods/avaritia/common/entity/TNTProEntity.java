@@ -163,6 +163,6 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     static {
-        DATA_FUSE_ID = SynchedEntityData.defineId(PrimedTnt.class, EntityDataSerializers.INT);
+        DATA_FUSE_ID = SynchedEntityData.defineId(TNTProEntity.class, EntityDataSerializers.INT);
     }
 }
