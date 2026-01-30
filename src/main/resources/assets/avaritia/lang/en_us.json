@@ -570,5 +570,8 @@
   "tooltip.crystal_pickaxe.enchant_1": "Set to Fortune III",
   "tooltip.crystal_pickaxe.enchant_2": "Set to Channeling",
   "tooltip.infinity": "Infinity",
-  "tooltip.infinity.desc": "Attack Damage"
+  "tooltip.infinity.desc": "Attack Damage",
+  "tooltip.avaritia.compressor.message_1": "§c[Neutron Compressor] §unlock the recipe first",
+  "tooltip.avaritia.compressor.message_2": "§a[Neutron Compressor] §fThe material has been ejected and packed into a matter cluster.",
+  "tooltip.avaritia.compressor.message_3": "§c[Neutron Compressor] §fNo materials available to pop out"
 }
