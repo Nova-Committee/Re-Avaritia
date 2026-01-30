@@ -50,6 +50,9 @@
 ## **🔎Wiki:**
 * [Wiki](wiki)
 
+## **🦀Discord:**
+* [Discord](https://discord.gg/u5GN2Wqsbx)
+
 ## **⚙️Develop:**
 ### **CraftTweaker:**
 ```
