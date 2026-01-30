@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.api.util.ItemUtils;
+import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,6 +13,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -46,45 +50,45 @@ public class C2SCompressorEjectPacket {
 
             if (tile instanceof NeutronCompressorTile compressor) {
                 if (compressor.isRecipeLocked()) {
-                    player.sendSystemMessage(Component.literal("§c[中子压缩器] §f请先解锁配方"));
+                    player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_eject.message_1"));
                     return;
                 }
                 if (compressor.getMaterialCount() > 0) {
                     ItemStack materialStack = compressor.getMaterialStack();
                     if (!materialStack.isEmpty()) {
                         int materialCount = compressor.getMaterialCount();
-                        int maxStackSize = materialStack.getMaxStackSize();
-                        int successfullyEjected = 0;
 
-                        Inventory playerInventory = player.getInventory();
+                        // 创建一个包含所有材料的集合，用于打包成物质团
+                        Set<ItemStack> drops = new HashSet<>();
+                        ItemStack fullMaterialStack = materialStack.copy();
+                        fullMaterialStack.setCount(materialCount);
+                        drops.add(fullMaterialStack);
 
-                        // 按堆叠上限分批处理弹出的材料
-                        while (materialCount > 0) {
-                            // 计算当前批次数量（不超过堆叠上限）
-                            int currentBatchCount = Math.min(materialCount, maxStackSize);
+                        // 使用ClustersUtils创建物质团
+                        List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
 
-                            // 创建弹出物品堆
-                            ItemStack ejectStack = materialStack.copy();
-                            ejectStack.setCount(currentBatchCount);
+                        // 将生成的物质团添加到玩家物品栏或丢弃到地面
+                        for (ItemStack cluster : clusters) {
+                            boolean addedToInventory = false;
+                            Inventory playerInventory = player.getInventory();
 
                             // 尝试添加到玩家物品栏
-                            boolean addedToInventory = false;
                             for (int i = 0; i < playerInventory.getContainerSize(); i++) {
                                 ItemStack slotStack = playerInventory.getItem(i);
                                 if (slotStack.isEmpty()) {
                                     // 空槽位，直接放入
-                                    playerInventory.setItem(i, ejectStack);
+                                    playerInventory.setItem(i, cluster.copy());
                                     addedToInventory = true;
                                     break;
-                                } else if (ItemUtils.areStacksSameType(slotStack, ejectStack) &&
+                                } else if (ItemUtils.areStacksSameType(slotStack, cluster) &&
                                         slotStack.getCount() < slotStack.getMaxStackSize()) {
                                     // 相同物品且有空间
-                                    int canAdd = Math.min(ejectStack.getCount(),
+                                    int canAdd = Math.min(cluster.getCount(),
                                             slotStack.getMaxStackSize() - slotStack.getCount());
                                     if (canAdd > 0) {
                                         slotStack.grow(canAdd);
-                                        ejectStack.shrink(canAdd);
-                                        if (ejectStack.isEmpty()) {
+                                        cluster.shrink(canAdd);
+                                        if (cluster.isEmpty()) {
                                             addedToInventory = true;
                                             break;
                                         }
@@ -93,30 +97,24 @@ public class C2SCompressorEjectPacket {
                             }
 
                             // 如果物品栏装不下，弹出到地上
-                            if (!addedToInventory) {
-                                player.drop(ejectStack, false);
+                            if (!addedToInventory && !cluster.isEmpty()) {
+                                player.drop(cluster, false);
                             }
-
-                            // 更新已成功弹出的数量
-                            successfullyEjected += currentBatchCount;
-
-                            // 减少剩余需要弹出的材料数量
-                            materialCount -= currentBatchCount;
                         }
 
                         // 清空压缩器中的材料
                         compressor.clearMaterials();
 
                         // 发送成功消息
-                        player.sendSystemMessage(Component.literal("§a[中子压缩器] §f已弹出材料: " +
-                                successfullyEjected + "x " + materialStack.getDisplayName().getString()));
+                        player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_eject.message_2"));
                     }
                 } else {
                     // 没有材料可弹出
-                    player.sendSystemMessage(Component.literal("§c[中子压缩器] §f没有可弹出的材料"));
+                    player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_eject.message_3"));
                 }
             }
         });
         ctx.get().setPacketHandled(true);
     }
+
 }

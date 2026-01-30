@@ -570,5 +570,11 @@
   "tooltip.crystal_pickaxe.enchant_1": "切換到 時運 III",
   "tooltip.crystal_pickaxe.enchant_2": "切換到 精準採集",
   "tooltip.infinity": "無限",
-  "tooltip.infinity.desc": "攻擊傷害"
+  "tooltip.infinity.desc": "攻擊傷害",
+  "tooltip.avaritia.compressor_eject.message_1": "§c[中子壓縮器] §f請先解鎖配方",
+  "tooltip.avaritia.compressor_eject.message_2": "§a[中子壓縮器] §f已彈出材料，已打包為物質團",
+  "tooltip.avaritia.compressor_eject.message_3": "§c[中子壓縮器] §f沒有可彈出的材料",
+  "tooltip.avaritia.compressor_lock.message_1": "§a[中子壓縮器] §f配方已鎖定",
+  "tooltip.avaritia.compressor_lock.message_2": "§e[中子壓縮器] §f配方已解鎖",
+  "tooltip.avaritia.compressor_lock.message_3": "§c[中子壓縮器] §f請先放入一個配方原料"
 }
