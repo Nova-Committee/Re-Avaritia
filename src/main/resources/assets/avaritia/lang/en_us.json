@@ -106,6 +106,15 @@
   "block.avaritia.star_fuel_block": "Star Fuel Block",
   "block.avaritia.tesseract": "Tesseract",
 
+  "button.avaritia.side_config_button_1": "Configure Input and Output",
+  "button.avaritia.side_config_button_2": "Click to open the six-sided configuration interface",
+  "button.avaritia.lock_button_1": "Recipe Locked",
+  "button.avaritia.lock_button_2": "Click to unlock recipe",
+  "button.avaritia.lock_button_3": "Unlocked Recipe",
+  "button.avaritia.lock_button_4": "Can click lock when there is a recipe",
+  "button.avaritia.eject_button_1": "Pop-up material",
+  "button.avaritia.eject_button_2": "Click to pop up all materials into the inventory",
+
   "config.avaritia.axe_chain_count": "Axe Chain Count",
   "config.avaritia.axe_chain_count.tooltip": "Chain number of endless axe cutting trees",
   "config.avaritia.blade_slash_damage": "Blade Slash Damage",

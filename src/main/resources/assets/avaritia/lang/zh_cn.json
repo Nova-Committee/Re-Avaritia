@@ -106,6 +106,15 @@
   "block.avaritia.star_fuel_block": "恒星燃料块",
   "block.avaritia.tesseract": "超立方体",
 
+  "button.avaritia.side_config_button_1": "配置输入输出",
+  "button.avaritia.side_config_button_2": "点击打开六面配置界面",
+  "button.avaritia.lock_button_1": "已锁定配方",
+  "button.avaritia.lock_button_2": "点击解锁配方",
+  "button.avaritia.lock_button_3": "未锁定配方",
+  "button.avaritia.lock_button_4": "有配方时可点击锁定",
+  "button.avaritia.eject_button_1": "弹出材料",
+  "button.avaritia.eject_button_2": "点击弹出所有材料到物品栏",
+
   "config.avaritia.axe_chain_count": "斧连锁数量",
   "config.avaritia.axe_chain_count.tooltip": "无尽斧砍树的连锁数量",
   "config.avaritia.blade_slash_damage": "剑气斩击伤害",
