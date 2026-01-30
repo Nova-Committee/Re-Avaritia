@@ -573,5 +573,8 @@
   "tooltip.infinity.desc": "攻击伤害",
   "tooltip.avaritia.compressor.message_1": "§c[中子压缩器] §f请先解锁配方",
   "tooltip.avaritia.compressor.message_2": "§a[中子压缩器] §f已弹出材料，已打包为物质团",
-  "tooltip.avaritia.compressor.message_3": "§c[中子压缩器] §f没有可弹出的材料"
+  "tooltip.avaritia.compressor.message_3": "§c[中子压缩器] §f没有可弹出的材料",
+  "tooltip.avaritia.compressor_lock.message_1": "§a[中子压缩器] §f配方已锁定",
+  "tooltip.avaritia.compressor_lock.message_2": "§e[中子压缩器] §f配方已解锁",
+  "tooltip.avaritia.compressor_lock.message_3": "§c[中子压缩器] §f请先放入一个配方原料"
 }

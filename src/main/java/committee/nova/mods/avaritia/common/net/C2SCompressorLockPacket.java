@@ -50,15 +50,15 @@ public record C2SCompressorLockPacket(BlockPos pos, boolean lockState) implement
                             // 如果是锁定操作且当前有有效配方，则锁定
                             if (packet.lockState && compressor.hasRecipe() && compressor.hasMaterialStack()) {
                                 compressor.setRecipeLock(true, compressor.getActiveRecipe());
-                                player.sendSystemMessage(Component.literal("§a[中子压缩器] §f配方已锁定"));
+                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_lock.message_1"));
                             }
                             // 如果是解锁操作，则解锁
                             else if (!packet.lockState) {
                                 compressor.setRecipeLock(false, null);
-                                player.sendSystemMessage(Component.literal("§e[中子压缩器] §f配方已解锁"));
+                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_lock.message_2"));
                             } else if (!compressor.hasMaterialStack()){
                                 // 如果没有有效配方，则发送错误消息
-                                player.sendSystemMessage(Component.literal("§c[中子压缩器] §f请先放入一个配方原料"));
+                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_lock.message_3"));
                             }
                         }
                     }
