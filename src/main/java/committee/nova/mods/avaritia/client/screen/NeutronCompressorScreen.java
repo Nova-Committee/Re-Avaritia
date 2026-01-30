@@ -80,11 +80,11 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
         public LockButton(int pX, int pY) {
             super(pX, pY, 14, 13, 177, 47, Res.NEUTRON_COMPRESSOR_TEX, pButton -> lockRecipe());
             if (isRecipeLocked()) {
-                tips.add(Component.literal("已锁定配方").withStyle(ChatFormatting.GREEN).getVisualOrderText());
-                tips.add(Component.literal("点击解锁配方").withStyle(ChatFormatting.GRAY).getVisualOrderText());
+                tips.add(Component.translatable("button.avaritia.lock_button_1").withStyle(ChatFormatting.GREEN).getVisualOrderText());
+                tips.add(Component.translatable("button.avaritia.lock_button_2").withStyle(ChatFormatting.GRAY).getVisualOrderText());
             } else {
-                tips.add(Component.literal("未锁定配方").withStyle(ChatFormatting.YELLOW).getVisualOrderText());
-                tips.add(Component.literal("有配方时可点击锁定").withStyle(ChatFormatting.GRAY).getVisualOrderText());
+                tips.add(Component.translatable("button.avaritia.lock_button_3").withStyle(ChatFormatting.YELLOW).getVisualOrderText());
+                tips.add(Component.translatable("button.avaritia.lock_button_4").withStyle(ChatFormatting.GRAY).getVisualOrderText());
             }
         }
 
@@ -109,8 +109,8 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         public EjectButton(int pX, int pY) {
             super(pX, pY, 14, 11, 177, 35, Res.NEUTRON_COMPRESSOR_TEX, pButton -> ejectMaterials());
-            tips.add(Component.literal("弹出材料").withStyle(ChatFormatting.AQUA).getVisualOrderText());
-            tips.add(Component.literal("点击弹出所有材料到物品栏").withStyle(ChatFormatting.GRAY).getVisualOrderText());
+            tips.add(Component.translatable("button.avaritia.eject_button_1").withStyle(ChatFormatting.AQUA).getVisualOrderText());
+            tips.add(Component.translatable("button.avaritia.eject_button_2").withStyle(ChatFormatting.GRAY).getVisualOrderText());
         }
 
         @Override

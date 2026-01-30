@@ -37,8 +37,8 @@ public class SideConfigButton extends ImageButton {
             }
         });
         this.parentScreen = parentScreen;
-        tips.add(Component.literal("配置输入输出").withStyle(ChatFormatting.LIGHT_PURPLE).getVisualOrderText());
-        tips.add(Component.literal("点击打开六面配置界面").withStyle(ChatFormatting.GRAY).getVisualOrderText());
+        tips.add(Component.translatable("button.avaritia.side_config_button_1").withStyle(ChatFormatting.LIGHT_PURPLE).getVisualOrderText());
+        tips.add(Component.translatable("button.avaritia.side_config_button_2").withStyle(ChatFormatting.GRAY).getVisualOrderText());
     }
 
     @Override
