@@ -80,7 +80,7 @@ public class ModConfig {
         bladeSlashRadius = buildInt(common, "BladeSlash Radius", 10, 5, 100, "Radius of BladeSlash for Crystal Sword");
         common.pop();
         common.push("emc");
-        neutronPileEmc = buildInt(common, "Neutron Pile Emc", 100, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
+        neutronPileEmc = buildInt(common, "Neutron Pile Emc", 512, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
         blazeCubeEmc = buildInt(common, "Blaze Cube Emc", 30568, 0, Integer.MAX_VALUE, "Emc of Blaze Cube");
         vanillaTotemEmc = buildInt(common, "Vanilla Totem Emc", 1000, 0, Integer.MAX_VALUE, "Emc of Totem Of Undying");
         common.pop();

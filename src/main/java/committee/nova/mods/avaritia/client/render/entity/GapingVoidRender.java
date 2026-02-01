@@ -1,11 +1,11 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
-import committee.nova.mods.avaritia.api.client.render.buffer.TransformingVertexConsumer;
 import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
 import committee.nova.mods.avaritia.api.client.util.color.Color;
 import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
@@ -20,15 +20,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/3 10:34
- * Version: 1.0
- */
+
 @OnlyIn(Dist.CLIENT)
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
-
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -57,10 +51,12 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         final double dy = ent.getY() - cam.y();
         final double dz = ent.getZ() - cam.z();
         final double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
         if (len <= haloScaleDist) {
             final double close = (haloScaleDist - len) / haloScaleDist;
             halocoord *= 1.0 + close * close * close * close * 1.5;
         }
+
         stack.pushPose();
 
         stack.mulPose(Axis.YP.rotationDegrees((float) (Math.atan2(dx, dz) * 57.29577951308232)));
@@ -68,11 +64,46 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
 
         stack.pushPose();
         stack.mulPose(Axis.XP.rotationDegrees(90.0f));
-        final TransformingVertexConsumer cons = new TransformingVertexConsumer(buf.getBuffer(AvaritiaRenderTypes.VOID_HALO), stack);
-        cons.addVertex((float) -halocoord, 0.0f, (float) -halocoord).setColor(color.r, color.g, color.b, color.a).setUv(0.0f, 0.0f);
-        cons.addVertex((float) -halocoord, 0.0f, (float) halocoord).setColor(color.r, color.g, color.b, color.a).setUv(0.0f, 1.0f);
-        cons.addVertex((float) halocoord, 0.0f, (float) halocoord).setColor(color.r, color.g, color.b, color.a).setUv(1.0f, 1.0f);
-        cons.addVertex((float) halocoord, 0.0f, (float) -halocoord).setColor(color.r, color.g, color.b, color.a).setUv(1.0f, 0.0f);
+
+        var buffer = buf.getBuffer(AvaritiaRenderTypes.VOID_HALO);
+        stack.translate(0, 0, 0);
+
+        float r = (float) color.r;
+        float g = (float) color.g;
+        float b = (float) color.b;
+        float a = (float) color.a;
+
+        float negCoord = (float) -halocoord;
+        float posCoord = (float) halocoord;
+
+//        buffer.addVertex(stack.last().pose(), negCoord, 0.0f, negCoord)
+//                .setColor(r, g, b, a)
+//                .setUv(0.0f, 0.0f)
+//                .setOverlay(0)
+//                .setLight(packedLightIn)
+//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
+//
+//        buffer.addVertex(stack.last().pose(), negCoord, 0.0f, posCoord)
+//                .setColor(r, g, b, a)
+//                .setUv(0.0f, 1.0f)
+//                .setOverlay(0)
+//                .setLight(packedLightIn)
+//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
+//
+//        buffer.addVertex(stack.last().pose(), posCoord, 0.0f, posCoord)
+//                .setColor(r, g, b, a)
+//                .setUv(1.0f, 1.0f)
+//                .setOverlay(0)
+//                .setLight(packedLightIn)
+//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
+//
+//        buffer.addVertex(stack.last().pose(), posCoord, 0.0f, negCoord)
+//                .setColor(r, g, b, a)
+//                .setUv(1.0f, 0.0f)
+//                .setOverlay(0)
+//                .setLight(packedLightIn)
+//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
+
         stack.popPose();
 
         stack.scale((float) scale, (float) scale, (float) scale);
@@ -83,7 +114,6 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         new OBJParser(Const.rl("models/hemisphere.obj")).parse().get("model").render(cc);
 
         stack.popPose();
-
     }
 
 }
