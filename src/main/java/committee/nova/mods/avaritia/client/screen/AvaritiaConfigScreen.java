@@ -123,10 +123,6 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
-        addIntEntry("bedrock_emc", ModConfig.bedrockEmc, 0, Integer.MAX_VALUE,
-                Component.translatable("config.avaritia.bedrock_emc.tooltip"),
-                ModConfig.bedrockEmc::set, ModConfig.bedrockEmc);
-
         addIntEntry("max_channels_pre_player", ModConfig.MAX_CHANNELS_PRE_PLAYER, 4, 64,
                 Component.translatable("config.avaritia.max_channels_pre_player.tooltip"),
                 val -> ModConfig.MAX_CHANNELS_PRE_PLAYER.set(val), ModConfig.MAX_CHANNELS_PRE_PLAYER);
@@ -219,7 +215,6 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
         ModConfig.blazeCubeEmc.set(ModConfig.blazeCubeEmc.getDefault());
         ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
-        ModConfig.bedrockEmc.set(ModConfig.bedrockEmc.getDefault());
 
         // Channel 配置项
         ModConfig.MAX_CHANNELS_PRE_PLAYER.set(ModConfig.MAX_CHANNELS_PRE_PLAYER.getDefault());

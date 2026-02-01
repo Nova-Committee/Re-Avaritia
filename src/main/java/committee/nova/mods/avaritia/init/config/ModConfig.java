@@ -44,7 +44,6 @@ public class ModConfig {
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
     public static final ForgeConfigSpec.IntValue blazeCubeEmc;
     public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
-    public static final ForgeConfigSpec.IntValue bedrockEmc;
 
 
     public static ForgeConfigSpec.IntValue MAX_CHANNELS_PRE_PLAYER;
@@ -75,10 +74,9 @@ public class ModConfig {
         bladeSlashRadius = buildInt(common, "config.avaritia.blade_slash_radius", 10, 5, 100, "config.avaritia.blade_slash_radius.tooltip");
         common.pop();
         common.push("emc");
-        neutronPileEmc = buildInt(common, "config.avaritia.neutron_pile_emc", 100, 0, Integer.MAX_VALUE, "config.avaritia.neutron_pile_emc.tooltip");
+        neutronPileEmc = buildInt(common, "config.avaritia.neutron_pile_emc", 512, 0, Integer.MAX_VALUE, "config.avaritia.neutron_pile_emc.tooltip");
         blazeCubeEmc = buildInt(common, "config.avaritia.blaze_cube_emc", 30568, 0, Integer.MAX_VALUE, "config.avaritia.blaze_cube_emc.tooltip");
         vanillaTotemEmc = buildInt(common, "config.avaritia.vanilla_totem_emc", 1000, 0, Integer.MAX_VALUE, "config.avaritia.vanilla_totem_emc.tooltip");
-        bedrockEmc = buildInt(common, "config.avaritia.bedrock_emc", 10, 0, Integer.MAX_VALUE, "config.avaritia.bedrock_emc.tooltip");
         common.pop();
         common.push("channel");
         MAX_CHANNELS_PRE_PLAYER = buildInt(common, "config.avaritia.max_channels_pre_player", 16, 4, 64, "config.avaritia.max_channels_pre_player.tooltip");

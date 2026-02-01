@@ -24,6 +24,6 @@ public class ModEMCHandler {
         registerEMC(ModItems.neutron_pile.get(), ModConfig.neutronPileEmc.get());
         registerEMC(ModItems.blaze_cube.get(), ModConfig.blazeCubeEmc.get());
         registerEMC(Items.TOTEM_OF_UNDYING, ModConfig.vanillaTotemEmc.get());
-        registerEMC(Items.BEDROCK, ModConfig.bedrockEmc.get());
+        registerEMC(ModItems.full_matter_cluster.get(),0);
     }
 }
