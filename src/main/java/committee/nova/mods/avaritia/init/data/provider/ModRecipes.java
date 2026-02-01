@@ -1864,5 +1864,12 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get()))
                 .save(consumer, Const.rl("eio_creative_power"));
 
+        CompressorRecipeBuilder.compressing(Blocks.BEDROCK, Ingredient.of(Blocks.DEEPSLATE), 10000, 240)
+                .unlockedBy("has_deepslate", inventoryTrigger(ItemPredicate.Builder.item().of(Blocks.DEEPSLATE).build()))
+                .save(consumer,Const.rl("bedrock_from_deepslate"));
+
+        CompressorRecipeBuilder.compressing(ModItems.full_matter_cluster, Ingredient.of(ModItems.neutron_ingot), 4096, 240)
+                .unlockedBy("has_neutron_ingot", inventoryTrigger(ItemPredicate.Builder.item().of(ModItems.neutron_ingot).build()))
+                .save(consumer,Const.rl("compressor_matter_cluster"));
     }
 }

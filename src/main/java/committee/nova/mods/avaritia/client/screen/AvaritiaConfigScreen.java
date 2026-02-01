@@ -130,10 +130,6 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
-        addIntEntry("bedrock_emc", ModConfig.bedrockEmc, 0, Integer.MAX_VALUE,
-                Component.translatable("config.avaritia.bedrock_emc.tooltip"),
-                ModConfig.bedrockEmc::set, ModConfig.bedrockEmc);
-
         addCategoryHeader("config.avaritia.category.channel");
 
         addIntEntry("channel_fast_update_rate", ModConfig.CHANNEL_FAST_UPDATE_RATE, 1, 40,
@@ -219,7 +215,6 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
         ModConfig.blazeCubeEmc.set(ModConfig.blazeCubeEmc.getDefault());
         ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
-        ModConfig.bedrockEmc.set(ModConfig.bedrockEmc.getDefault());
 
         // Channel 配置项
         ModConfig.CHANNEL_FAST_UPDATE_RATE.set(ModConfig.CHANNEL_FAST_UPDATE_RATE.getDefault());

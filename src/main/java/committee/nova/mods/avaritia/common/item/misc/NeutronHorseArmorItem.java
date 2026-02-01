@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
-import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
@@ -8,9 +7,7 @@ import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -22,20 +19,12 @@ import java.util.List;
 
 import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infinity_horse_armor;
 
-/**
- * InfinityHorseArmorItem
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/4/5 20:04
- */
 public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchantItem {
     private final InitEnchantment FROST_WALKER;
     private final InitEnchantment ALL_DAMAGE_PROTECTION;
     private final InitEnchantment FALL_PROTECTION;
     public NeutronHorseArmorItem() {
-        super(infinity_horse_armor, BodyType.EQUESTRIAN, false,
+        super(infinity_horse_armor, AnimalArmorItem.BodyType.EQUESTRIAN, false,
                 new Item.Properties()
                         .stacksTo(1)
                         .rarity(ModRarities.RARE)
@@ -50,6 +39,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
     public boolean isEnchantable(@NotNull ItemStack pStack) {
         return true;
     }
+
 
     @Override
     public int getEnchantmentValue(@NotNull ItemStack stack) {
@@ -73,11 +63,18 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
 
     @Override
     public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        if (enchantment.is(Enchantments.FROST_WALKER)) return 10;
-        if (enchantment.is(Enchantments.PROTECTION)) return 10;
-        return enchantment.is(Enchantments.FEATHER_FALLING) ? 4 : 0;
-    }
 
+        int frostWalkerLevel = this.FROST_WALKER.getLevel(enchantment);
+        if (frostWalkerLevel > 0) return frostWalkerLevel;
+
+        int protectionLevel = this.ALL_DAMAGE_PROTECTION.getLevel(enchantment);
+        if (protectionLevel > 0) return protectionLevel;
+
+        int featherFallingLevel = this.FALL_PROTECTION.getLevel(enchantment);
+        if (featherFallingLevel > 0) return featherFallingLevel;
+
+        return 0;
+    }
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
@@ -85,11 +82,5 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
         this.FROST_WALKER.appendHoverText(context, tooltipComponents);
         this.ALL_DAMAGE_PROTECTION.appendHoverText(context, tooltipComponents);
         this.FALL_PROTECTION.appendHoverText(context, tooltipComponents);
-    }
-
-    @Override
-    public @Nullable ResourceLocation getArmorTexture(@NotNull ItemStack stack, @NotNull Entity entity, @NotNull EquipmentSlot slot, ArmorMaterial.@NotNull Layer layer, boolean innerModel) {
-        if (infinity_horse_armor.value().layers().contains(layer)) return Res.NEUTRON_HORSE_ARMOR;
-        else return super.getArmorTexture(stack, entity, slot, layer, innerModel);
     }
 }

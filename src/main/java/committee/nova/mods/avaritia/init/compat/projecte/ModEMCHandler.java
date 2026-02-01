@@ -55,17 +55,17 @@ public class ModEMCHandler implements IEMCMapper<NSSItem, Long> {
         registerEMC(ModItems.neutron_pile.get(), ModConfig.neutronPileEmc.get(), registries);
         registerEMC(ModItems.blaze_cube.get(), ModConfig.blazeCubeEmc.get(), registries);
         registerEMC(Items.TOTEM_OF_UNDYING, ModConfig.vanillaTotemEmc.get(), registries);
-        registerEMC(Items.BEDROCK, ModConfig.bedrockEmc.get(), registries);
+        registerEMC(ModItems.full_matter_cluster.get(), 0, registries);
 
         NSSItem neutronPile = NSSItem.createItem(ModItems.neutron_pile.get());
         NSSItem blaze_cube = NSSItem.createItem(ModItems.blaze_cube.get());
         NSSItem totem = NSSItem.createItem(Items.TOTEM_OF_UNDYING);
-        NSSItem bedrock = NSSItem.createItem(Items.BEDROCK);
+        NSSItem full_matter_cluster = NSSItem.createItem(ModItems.full_matter_cluster.get());
 
+        collector.setValueBefore(full_matter_cluster, null);
         collector.setValueBefore(neutronPile, ModConfig.neutronPileEmc.get().longValue());
         collector.setValueBefore(blaze_cube, ModConfig.blazeCubeEmc.get().longValue());
         collector.setValueBefore(totem, ModConfig.vanillaTotemEmc.get().longValue());
-        collector.setValueBefore(bedrock, ModConfig.bedrockEmc.get().longValue());
     }
 
 }
