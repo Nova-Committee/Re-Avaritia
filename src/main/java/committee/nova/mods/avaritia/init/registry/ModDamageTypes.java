@@ -33,6 +33,7 @@ public class ModDamageTypes {
         return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
     }
 
+
     public static class DamageSourceRandomMessages extends DamageSource {
         public DamageSourceRandomMessages(Holder<DamageType> damageTypeHolder, @Nullable Entity entity) {
             super(damageTypeHolder, entity);

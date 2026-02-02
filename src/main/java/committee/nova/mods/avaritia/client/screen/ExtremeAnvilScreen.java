@@ -74,7 +74,6 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
             if (this.menu.setItemName(s)) {
                 PacketDistributor.sendToServer(new C2SRenamePack(s));
             }
-
         }
     }
 

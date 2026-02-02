@@ -152,7 +152,10 @@ public class GapingVoidEntity extends Entity {
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
                             wither.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
-                        } else entity.hurt(ModDamageTypes.causeRandomDamage(user), 1000.0f);
+                        } else {
+                            var damageSource = user != null ? ModDamageTypes.causeRandomDamage(user) : this.damageSources().fellOutOfWorld();
+                            entity.hurt(damageSource, 1000.0f);
+                        }
                     });
             remove(RemovalReason.KILLED);
         } else {
