@@ -17,7 +17,9 @@ import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.init.registry.enums.CompressorTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,6 +35,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description:
@@ -63,7 +68,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     public NeutronCompressorTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.neutron_compressor_tile.get(), pos, state);
         this.inventory = createInventoryHandler();
-        this.recipeInventory = new ItemStackWrapper(1);
+        this.recipeInventory = ItemStackWrapper.create(1);
         if (state.is(ModBlocks.neutron_compressor.get())) {
             tier = CompressorTier.DEFAULT;
         } else if (state.is(ModBlocks.dense_neutron_compressor.get())) {
@@ -76,9 +81,13 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
     }
 
     public static ItemStackWrapper createInventoryHandler() {
-        var inventory = new ItemStackWrapper(2);
-        inventory.setOutputSlots(0);
-        return inventory;
+        return ItemStackWrapper.create(2
+                , (builder) -> {
+                    builder.setOutputSlots(0);
+                    builder.setCanInsert((slot, stack) -> slot == 1);
+                    builder.setCanExtract((slot) -> slot == 0 || slot == 1);
+                }
+        );
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, NeutronCompressorTile tile) {
@@ -116,7 +125,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
                 }
 
                 if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
-                    if (ItemUtils.areStacksSameType(input, tile.materialStack)) {
+                    if (input.is(tile.materialStack.getItem())) {
                         int consumeAmount = input.getCount();
 
                         consumeAmount = Math.min(consumeAmount, Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier) - tile.materialCount);
@@ -357,7 +366,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         var inputSlot = this.inventory.getStackInSlot(1);
 
         // 检查当前输入槽是否已满或材料类型不匹配
-        if (!inputSlot.isEmpty() && !ItemUtils.areStacksSameType(inputSlot, materialStack)) {
+        if (!inputSlot.isEmpty() && !(inputSlot.is(materialStack.getItem()))) {
             return;
         }
 
@@ -366,10 +375,10 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
             if (stack.isEmpty()) continue;
 
             // 检查输入物品是否在配方中
-            if (!canInsertItem(stack)) continue;
+            //if (!canInsertItem(stack)) continue;
 
             // 检查是否与当前材料类型匹配
-            if (!materialStack.isEmpty() && !ItemUtils.areStacksSameType(stack, materialStack)) {
+            if (!materialStack.isEmpty() && !(stack.is(materialStack.getItem()))) {
                 continue;
             }
 

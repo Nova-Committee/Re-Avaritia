@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
+import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
@@ -36,34 +37,8 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
         super(ModMenus.compressor.get(), id, playerInventory, pos);
         this.progressData = data;
         this.addDataSlots(progressData);
-        inventory.setSlotValidator((integer, itemStack) -> {
-            if (integer == 1) {
-                // 获取压缩器实例检查锁定状态
-                if (level.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
-                    if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
-                        // 锁定状态下，只接受锁定配方的材料
-                        var ingredients = compressor.getLockedRecipe().getInput();
-                        var items = ingredients.getItems();
-                        return items.length > 0 && itemStack.is(items[0].getItem());
-                    } else {
-                        // 正常状态下的验证逻辑
-                        var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
-                        if (!recipes.isEmpty()) {
-                            for (var recipe : recipes) {
-                                var ingredients = recipe.getInput();
-                                var items = ingredients.getItems();
-                                if (items.length > 0 && itemStack.is(items[0].getItem())) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        });
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
-        this.addSlot(new SlotItemHandler(inventory, 1, 39, 35));
+        this.addSlot(new ItemStackWrapperSlot(inventory, 1, 39, 35));
         createInventorySlots(playerInventory);
     }
 

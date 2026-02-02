@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     private final ResourceLocation recipeId;
     private final NonNullList<Ingredient> inputs;
-    private final ItemStack output;
+    final ItemStack output;
     private final int width;
     private final int height;
     private final int tier;

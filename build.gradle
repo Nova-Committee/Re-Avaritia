@@ -124,6 +124,11 @@ dependencies {
     modRuntimeOnly("curse.maven:packagedavaritia-308383:${packagedavaritia_version}")
 
     modImplementation("mekanism:Mekanism:${mek_version}")
+    //CoFH Core
+    modRuntimeOnly("curse.maven:cofh-core-69162:${cofh_core_version}")//Thermal Expansion
+    modRuntimeOnly("curse.maven:thermal-expansion-69163:${thermal_expansion_version}")
+    //Thermal Foundation
+    modRuntimeOnly("curse.maven:thermal-foundation-222880:${thermal_foundation_version}")
 
     // compile against the JEI API but do not include it at runtime
     modCompileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
