@@ -154,12 +154,15 @@ public class GapingVoidEntity extends Entity {
                     .filter(entity -> entity != this)
                     .forEach(entity -> {
                         if (entity instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(level(), user), 1000.0f);
+                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(level(),user), 1000.0f);
                             dragon.setHealth(0);
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            wither.hurt(ModDamageTypes.causeRandomDamage(level(), user), 1000.0f);
-                        } else entity.hurt(ModDamageTypes.causeRandomDamage(level(), user), 1000.0f);
+                            wither.hurt(ModDamageTypes.causeRandomDamage(level(),user), 1000.0f);
+                        } else {
+                            var damageSource = user != null ? ModDamageTypes.causeRandomDamage(level(),user) : this.damageSources().fellOutOfWorld();
+                            entity.hurt(damageSource, 1000.0f);
+                        }
                     });
             remove(RemovalReason.KILLED);
         } else {
