@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.util;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.util.NBTUtils;
+import committee.nova.mods.avaritia.api.util.ResourceUtil;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.config.ModConfig;
@@ -34,7 +35,7 @@ public class SingularityUtils {
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
         var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
 
-        return Singularity.create(ResourceLocation.parse(name), displayName, new int[]{overlayColor, underlayColor},  ing == null ? Ingredient.EMPTY : Ingredient.fromJson(ing))
+        return Singularity.create(ResourceUtil.createInstanceWithColon(name), displayName, new int[]{overlayColor, underlayColor},  ing == null ? Ingredient.EMPTY : Ingredient.fromJson(ing))
                 .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeDisabled);
     }
 
@@ -74,7 +75,7 @@ public class SingularityUtils {
     public static Singularity getSingularity(ItemStack stack) {
         var id = NBTUtils.getString(stack, "Id");
         if (!id.isEmpty()) {
-            return SingularityReloadListener.INSTANCE.getSingularity(ResourceLocation.tryParse(id));
+            return SingularityReloadListener.INSTANCE.getSingularity(ResourceUtil.createInstanceWithColon(id));
         }
         return null;
     }

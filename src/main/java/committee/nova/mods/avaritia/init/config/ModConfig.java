@@ -104,6 +104,7 @@ public class ModConfig {
         COMMON = common.build();
     }
 
+    @SuppressWarnings("removal")
     public static void register() {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, COMMON);
     }
