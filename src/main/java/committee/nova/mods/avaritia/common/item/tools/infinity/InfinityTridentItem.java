@@ -118,7 +118,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                         float velocity = Mth.sqrt(xVelocity * xVelocity + yVelocity * yVelocity + zVelocity * zVelocity);
                         float velocityModifier = (0.75F + 0.75F * riptideLevel) / velocity;
                         player.push(xVelocity * velocityModifier, yVelocity * velocityModifier, zVelocity * velocityModifier);
-                        player.startAutoSpinAttack(20, 8.0F, itemStack);
+                        player.startAutoSpinAttack(20, 50.0F, itemStack);
                         if (player.onGround()) {
                             player.move(MoverType.SELF, new Vec3(0.0D, 1.1999999F, 0.0D));
                         }

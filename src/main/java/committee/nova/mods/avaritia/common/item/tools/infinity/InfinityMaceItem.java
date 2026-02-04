@@ -5,7 +5,12 @@ import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.commands.data.DataCommands;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
@@ -29,11 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class InfinityMaceItem extends MaceItem implements InitEnchantItem , IUndamageable {
-
-    private final InitEnchantment Breach;
-    private final InitEnchantment Density;
-    private final InitEnchantment WindBurst;
+public class InfinityMaceItem extends MaceItem implements IUndamageable {
 
     public InfinityMaceItem() {
         super((new Properties())
@@ -42,11 +43,38 @@ public class InfinityMaceItem extends MaceItem implements InitEnchantItem , IUnd
                 .fireResistant()
                 .attributes(createAttributes())
         );
-        this.Breach = new InitEnchantment(Enchantments.BREACH, 10);
-        this.Density = new InitEnchantment(Enchantments.DENSITY, 10);
-        this.WindBurst = new InitEnchantment(Enchantments.WIND_BURST, 5);
     }
 
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+
+        boolean result = super.hurtEnemy(stack, target, attacker);
+
+        if (attacker instanceof ServerPlayer serverPlayer && canSmashAttack(serverPlayer)) {
+            ServerLevel serverLevel = (ServerLevel) attacker.level();
+
+            serverLevel.sendParticles(
+                    ParticleTypes.TRIAL_SPAWNER_DETECTED_PLAYER_OMINOUS,
+                    target.getX(),
+                    target.getY() + target.getBbHeight() / 2,
+                    target.getZ(),
+                    100,
+                    0.5, 1, 0.5,
+                    0.1
+            );
+            serverLevel.sendParticles(
+                    ParticleTypes.TRIAL_SPAWNER_DETECTED_PLAYER,
+                    target.getX(),
+                    target.getY() + target.getBbHeight() / 2,
+                    target.getZ(),
+                    50,
+                    5, 7, 5,
+                    0.1
+            );
+        }
+
+        return result;
+    }
 
     public static @NotNull ItemAttributeModifiers createAttributes() {
         return ItemAttributeModifiers.builder()
@@ -96,18 +124,26 @@ public class InfinityMaceItem extends MaceItem implements InitEnchantItem , IUnd
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        if (enchantment == Enchantments.BREACH) return 10;
-        else if (enchantment == Enchantments.DENSITY) return 10;
-        else if (enchantment == Enchantments.WIND_BURST) return 5;
-        else return 0;
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
+
+        if (!(entity instanceof Player player)) return;
+
+        Holder<Enchantment> WIND_BURST_HOLDER =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.WIND_BURST);
+
+        Holder<Enchantment> BREACH_HOLDER =
+                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.BREACH);
+
+        if (!stack.getTagEnchantments().keySet().contains(WIND_BURST_HOLDER)) {
+            stack.enchant(WIND_BURST_HOLDER, 5);
+        }
+        if (!stack.getTagEnchantments().keySet().contains(BREACH_HOLDER)) {
+            stack.enchant(BREACH_HOLDER, 10);
+        }
     }
 
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        this.Breach.appendHoverText(context, tooltipComponents);
-        this.Density.appendHoverText(context, tooltipComponents);
-        this.WindBurst.appendHoverText(context, tooltipComponents);
-    }
+
 }
