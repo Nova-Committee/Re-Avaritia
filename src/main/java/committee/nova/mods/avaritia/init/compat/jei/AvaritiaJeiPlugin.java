@@ -133,7 +133,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(ExtremeAnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
         registration.addGenericGuiContainerHandler(BaseContainerScreen.class, new JeiContainerHandler());
     }
-
+    @SuppressWarnings("removal")
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(ModItems.singularity.get(), (stack, context) -> {

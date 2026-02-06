@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -29,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
 public class TierCraftTableBlock extends BaseTileEntityBlock {
     ModCraftTier tier;
 
-    public TierCraftTableBlock(ModCraftTier tier) {
-        super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true);
+    public TierCraftTableBlock(ModCraftTier tier, BlockBehaviour.Properties properties) {
+        super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true,properties);
         this.tier = tier;
     }
 
@@ -63,17 +64,4 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
         return new TierCraftTile(pos, state);
     }
 
-    @Override
-    public int getLightEmission(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos) {
-        // 遍历方向列表，检查每个方向的方块状态
-        if (ModConfig.isInfinityLight.get()) {
-            for (Direction direction : Direction.values()) {
-                BlockPos offsetPos = pos.relative(direction);
-                if (level.getBlockState(offsetPos).is(ModBlocks.infinity.get())) {
-                    return 15;
-                }
-            }
-        }
-        return this.tier.lightLevel;
-    }
 }

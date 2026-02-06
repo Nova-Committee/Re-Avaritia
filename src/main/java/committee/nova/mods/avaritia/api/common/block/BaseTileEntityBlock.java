@@ -44,6 +44,10 @@ public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlo
         super(sound, hardness, resistance, tool);
     }
 
+    public BaseTileEntityBlock(MapColor metal, SoundType sound, int hardness, int resistance, boolean b, Properties properties) {
+        super(metal, sound, hardness, resistance, b, properties);
+    }
+
     @SuppressWarnings("unchecked")
     protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTicker(BlockEntityType<A> typeA, BlockEntityType<E> typeB, BlockEntityTicker<? super E> ticker) {
         return typeA == typeB ? (BlockEntityTicker<A>) ticker : null;

@@ -61,7 +61,6 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
         return 0;
     }
 
-
     @Override
     public boolean hasDescTooltip() {
         return true;

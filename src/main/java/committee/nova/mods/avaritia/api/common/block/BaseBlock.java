@@ -48,4 +48,7 @@ public class BaseBlock extends Block {
         );
     }
 
+    public BaseBlock(MapColor metal, SoundType sound, int hardness, int resistance, boolean b, Properties properties) {
+        super(properties);
+    }
 }

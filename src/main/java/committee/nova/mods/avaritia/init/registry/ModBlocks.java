@@ -85,10 +85,10 @@ public class ModBlocks {
             new Item.Properties().rarity(ModRarities.UNCOMMON), RefinedCoalItem.BURN_TIME * 9);
 
     //MACHINE
-    public static DeferredBlock<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK), ModRarities.COMMON);
-    public static DeferredBlock<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER), ModRarities.UNCOMMON);
-    public static DeferredBlock<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END), ModRarities.RARE);
-    public static DeferredBlock<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME), ModRarities.EPIC);
+    public static DeferredBlock<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK,BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.COMMON);
+    public static DeferredBlock<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER,BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.UNCOMMON);
+    public static DeferredBlock<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END,BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.RARE);
+    public static DeferredBlock<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME,BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.EPIC);
     public static DeferredBlock<Block> neutron_collector = itemBlock("neutron_collector", NeutronCollectorBlock::new, ModRarities.RARE);
     public static DeferredBlock<Block> dense_neutron_collector = itemBlock("dense_neutron_collector", NeutronCollectorBlock::new, ModRarities.EPIC);
     public static DeferredBlock<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", NeutronCollectorBlock::new, ModRarities.LEGEND.getValue());
