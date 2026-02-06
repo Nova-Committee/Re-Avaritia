@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author cnlimiter
  */
-public class BlazeBowItem extends BowItem implements ITooltip, ISwitchable, IBowTransform {
+public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform {
     public BlazeBowItem() {
         super(new Properties()
                 .stacksTo(1)
@@ -44,10 +44,6 @@ public class BlazeBowItem extends BowItem implements ITooltip, ISwitchable, IBow
         return false;
     }
 
-    @Override
-    public boolean hasDescTooltip() {
-        return true;
-    }
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents,
