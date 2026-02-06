@@ -29,7 +29,7 @@ public class PackResourceHandler {
             event.addRepositorySource(packConsumer -> {
                 final PackLocationInfo packInfo = new PackLocationInfo(
                         "builtin/avaritia_vanilla",
-                        Component.literal("Re:Avaritia Vanilla"),
+                        Component.translatable("title.avaritia.resourcepack"),
                         PackSource.BUILT_IN,
                         Optional.of(new KnownPack(Const.MOD_ID, "builtin/avaritia_vanilla", "1.0")));
                 final PackSelectionConfig selectionConfig = new PackSelectionConfig(false, Pack.Position.TOP, false);
