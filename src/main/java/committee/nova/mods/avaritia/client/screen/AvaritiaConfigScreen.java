@@ -123,6 +123,8 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
+        addCategoryHeader("config.avaritia.category.channel");
+
         addIntEntry("max_channels_pre_player", ModConfig.MAX_CHANNELS_PRE_PLAYER, 4, 64,
                 Component.translatable("config.avaritia.max_channels_pre_player.tooltip"),
                 val -> ModConfig.MAX_CHANNELS_PRE_PLAYER.set(val), ModConfig.MAX_CHANNELS_PRE_PLAYER);
