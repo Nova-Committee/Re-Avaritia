@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import committee.nova.mods.avaritia.init.registry.ModEnchants;
 import net.minecraft.core.Cloner;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
@@ -23,7 +24,8 @@ import java.util.concurrent.CompletableFuture;
 public class ModRegistries extends DatapackBuiltinEntriesProvider {
 
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
+            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap)
+            .add(Registries.ENCHANTMENT, ModEnchants::bootstrap);
 
 //            .add(Registries.BIOME, ModBiomes::bootstrap)
 //            .add(Registries.CONFIGURED_FEATURE, ModConfiguredFeatures::bootstrap)
@@ -37,7 +39,6 @@ public class ModRegistries extends DatapackBuiltinEntriesProvider {
 //            .add(Registries.STRUCTURE_SET, ModStructures::bootstrapSets)
 //            .add(Registries.TEMPLATE_POOL, ModStructures::bootstrapPools)
 //            .add(Registries.TRIM_MATERIAL, ModTrimMaterials::bootstrap)
-//            .add(Registries.ENCHANTMENT, ModEnchantments::bootstrap)
 //            .add(Registries.JUKEBOX_SONG, ModJukeboxSongs::bootstrap)
             ;
 

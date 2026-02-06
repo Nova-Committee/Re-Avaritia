@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.item.misc;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.init.registry.ModEnchants;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
@@ -20,7 +21,7 @@ import java.util.List;
 import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infinity_horse_armor;
 
 public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchantItem {
-    private final InitEnchantment FROST_WALKER = new InitEnchantment(Enchantments.FROST_WALKER, 10);
+    private final InitEnchantment FROST_WALKER = new InitEnchantment(ModEnchants.FROST_WALKER, 10);
     private final InitEnchantment ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
     private final InitEnchantment FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
     public NeutronHorseArmorItem() {
@@ -60,7 +61,7 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
 
     @Override
     public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
-        if (enchantmentHolder.is(Enchantments.FROST_WALKER)) {
+        if (enchantmentHolder.is(ModEnchants.FROST_WALKER)) {
             return 10;
         }else if (enchantmentHolder.is(Enchantments.PROTECTION)) {
             return 10;
