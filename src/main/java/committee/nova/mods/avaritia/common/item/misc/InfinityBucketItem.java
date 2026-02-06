@@ -140,7 +140,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             NumberFormat formater = DecimalFormat.getInstance();
             String displayName = firstContained.getHoverName().getString();
             String amount = formater.format(firstContained.getAmount());
-            player.displayClientMessage(Component.translatable("tooltip.infinity_bucket.message", displayName, amount), true);
+            player.displayClientMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message", displayName, amount), true);
         }
     }
 
