@@ -34,6 +34,7 @@ public class Avaritia {
 
     public Avaritia() {
         ModConfig.register();
+        @SuppressWarnings("removal")
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(ModDataGen::gatherData);

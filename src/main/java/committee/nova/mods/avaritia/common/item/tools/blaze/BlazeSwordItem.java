@@ -89,11 +89,12 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
                     level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
                     level.addFreshEntity(fireBallEntity);
                     player.getCooldowns().addCooldown(heldItem.getItem(), 40);
+                    return InteractionResultHolder.success(heldItem);
                 }
             }
         }
 
-        return InteractionResultHolder.success(heldItem);
+        return super.use(level, player, hand);
     }
 
     @Override

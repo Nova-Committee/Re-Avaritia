@@ -47,4 +47,8 @@ public class BaseBlock extends Block {
                         : Properties.of().sound(sound).strength(hardness, resistance).mapColor(color)
         );
     }
+
+    public BaseBlock(MapColor metal, SoundType sound, int hardness, int resistance, boolean b, Properties properties) {
+        super(properties);
+    }
 }

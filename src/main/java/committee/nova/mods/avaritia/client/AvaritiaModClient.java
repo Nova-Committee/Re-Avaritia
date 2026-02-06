@@ -184,7 +184,7 @@ public class AvaritiaModClient {
         var hue = (System.currentTimeMillis() % 18000) / 18000F;
         return ColorUtils.HSBToRGB(hue, 1, 1);
     }
-
+    @SuppressWarnings("removal")
     private static void registerConfigScreen() {
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory(
