@@ -53,7 +53,7 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
             Map.entry(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE),
             Map.entry(Blocks.DEAD_BUSH, Blocks.WITHER_ROSE)
     );
-    private final InitEnchantment initEnchantment;
+    private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeShovelItem() {
         super(ModToolTiers.BLAZE,
@@ -64,7 +64,6 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
                         .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
 
-        this.initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
     }
 
     @Override
@@ -73,9 +72,13 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        return this.initEnchantment.getLevel(enchantment);
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.FIRE_ASPECT)) {
+            return 10;
+        }
+        return 0;
     }
+
 
     @Override
     public boolean hasDescTooltip() {

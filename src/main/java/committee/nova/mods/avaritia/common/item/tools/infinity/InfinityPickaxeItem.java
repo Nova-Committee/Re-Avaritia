@@ -43,8 +43,8 @@ import java.util.List;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable, ITooltip, IUndamageable {
-    private final InitEnchantment initEnchantment;
+public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem, IFilterItem, ISwitchable, IUndamageable {
+    private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 10);
 
     private static final float SMASH_FALL_THRESHOLD = 1.5F;
     private static final double SMASH_RADIUS = 3.5D;
@@ -57,7 +57,6 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
-        this.initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 10);
     }
 
     @Override
@@ -102,9 +101,6 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
         var stack = player.getItemInHand(hand);
-        Holder<Enchantment> BLOCK_FORTUNE =
-                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.FORTUNE);
         Holder<Enchantment> SILK_TOUCH =
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                         .getOrThrow(Enchantments.SILK_TOUCH);
@@ -114,13 +110,10 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
             ItemUtils.clearEnchants(stack, SILK_TOUCH);
-            stack.enchant(BLOCK_FORTUNE, 10);
-            return InteractionResultHolder.success(stack);
-        } else {
-            ItemUtils.clearEnchants(stack, BLOCK_FORTUNE);
+        }else {
             stack.enchant(SILK_TOUCH, 1);
-            return InteractionResultHolder.success(stack);
         }
+        return InteractionResultHolder.success(stack);
     }
 
     @Override
@@ -144,9 +137,13 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
         return false;
     }
 
+
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        return this.initEnchantment.getLevel(enchantment);
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.FORTUNE)) {
+            return 10;
+        }
+        return 0;
     }
 
     @Override
@@ -154,10 +151,5 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
         super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
-    }
-
-    @Override
-    public boolean hasDescTooltip() {
-        return true;
     }
 }

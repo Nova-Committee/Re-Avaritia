@@ -49,7 +49,7 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
         );
 
         this.fire_aspect = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
-        this.silk_touch = new InitEnchantment(Enchantments.SILK_TOUCH, 0);
+        this.silk_touch = new InitEnchantment(Enchantments.SILK_TOUCH, 1);
         this.block_fortune = new InitEnchantment(Enchantments.FORTUNE, 4);
     }
 
@@ -59,11 +59,17 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        if (enchantment.is(Enchantments.SILK_TOUCH)) return 0;
-        if (enchantment.is(Enchantments.FORTUNE)) return 4;
-        return enchantment.is(Enchantments.FIRE_ASPECT) ? 10 : 0;
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.FIRE_ASPECT)) {
+            return 10;
+        }else if (enchantmentHolder.is(Enchantments.SILK_TOUCH)) {
+            return 1;
+        }else if (enchantmentHolder.is(Enchantments.FORTUNE)) {
+            return 4;
+        }
+        return 0;
     }
+
 
     @Override
     public boolean hasDescTooltip() {

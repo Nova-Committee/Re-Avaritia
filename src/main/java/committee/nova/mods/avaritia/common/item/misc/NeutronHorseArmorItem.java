@@ -20,9 +20,9 @@ import java.util.List;
 import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infinity_horse_armor;
 
 public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchantItem {
-    private final InitEnchantment FROST_WALKER;
-    private final InitEnchantment ALL_DAMAGE_PROTECTION;
-    private final InitEnchantment FALL_PROTECTION;
+    private final InitEnchantment FROST_WALKER = new InitEnchantment(Enchantments.FROST_WALKER, 10);
+    private final InitEnchantment ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
+    private final InitEnchantment FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
     public NeutronHorseArmorItem() {
         super(infinity_horse_armor, AnimalArmorItem.BodyType.EQUESTRIAN, false,
                 new Item.Properties()
@@ -30,9 +30,6 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
                         .rarity(ModRarities.RARE)
                         .fireResistant()
                         .setNoRepair());
-        this.FROST_WALKER = new InitEnchantment(Enchantments.FROST_WALKER, 10);
-        this.ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
-        this.FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
     }
 
     @Override
@@ -62,19 +59,17 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-
-        int frostWalkerLevel = this.FROST_WALKER.getLevel(enchantment);
-        if (frostWalkerLevel > 0) return frostWalkerLevel;
-
-        int protectionLevel = this.ALL_DAMAGE_PROTECTION.getLevel(enchantment);
-        if (protectionLevel > 0) return protectionLevel;
-
-        int featherFallingLevel = this.FALL_PROTECTION.getLevel(enchantment);
-        if (featherFallingLevel > 0) return featherFallingLevel;
-
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.FROST_WALKER)) {
+            return 10;
+        }else if (enchantmentHolder.is(Enchantments.PROTECTION)) {
+            return 10;
+        }else if (enchantmentHolder.is(Enchantments.FEATHER_FALLING)) {
+            return 4;
+        }
         return 0;
     }
+
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,

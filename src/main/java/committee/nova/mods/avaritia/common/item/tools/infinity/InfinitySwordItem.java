@@ -55,7 +55,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISwitchable, IUndamageable, IToolTransform {
-    private final InitEnchantment initEnchantment;
+    private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.LOOTING, 10);
     public InfinitySwordItem() {
         super(ModToolTiers.INFINITY,
                 new Properties()
@@ -64,7 +64,6 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
-        this.initEnchantment = new InitEnchantment(Enchantments.LOOTING, 10);
     }
 
     @Override
@@ -296,9 +295,13 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        return this.initEnchantment.getLevel(enchantment);
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.LOOTING)) {
+            return 10;
+        }
+        return 0;
     }
+
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,

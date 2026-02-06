@@ -38,6 +38,7 @@ public class ModArmorMaterial {
                 p_266655_.put(ArmorItem.Type.LEGGINGS, 5);
                 p_266655_.put(ArmorItem.Type.CHESTPLATE, 5);
                 p_266655_.put(ArmorItem.Type.HELMET, 5);
+                p_266655_.put(ArmorItem.Type.BODY, 50);
             }), 10, SoundEvents.ARMOR_EQUIP_DIAMOND,
                     () -> Ingredient.of(ModItems.infinity_ingot.get()), List.of(new ArmorMaterial.Layer(Const.rl("infinity_armor"))),1.0f, 1.0f)
     );

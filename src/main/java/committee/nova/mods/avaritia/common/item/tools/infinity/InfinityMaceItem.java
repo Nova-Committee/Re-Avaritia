@@ -6,9 +6,7 @@ import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.commands.data.DataCommands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -34,7 +32,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class InfinityMaceItem extends MaceItem implements IUndamageable {
+public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnchantItem{
+
+    private final InitEnchantment WIND_BURST = new InitEnchantment(Enchantments.WIND_BURST, 5);
+    private final InitEnchantment BREACH = new InitEnchantment(Enchantments.BREACH, 10);
 
     public InfinityMaceItem() {
         super((new Properties())
@@ -124,26 +125,20 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
-
-        if (!(entity instanceof Player player)) return;
-
-        Holder<Enchantment> WIND_BURST_HOLDER =
-                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.WIND_BURST);
-
-        Holder<Enchantment> BREACH_HOLDER =
-                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.BREACH);
-
-        if (!stack.getTagEnchantments().keySet().contains(WIND_BURST_HOLDER)) {
-            stack.enchant(WIND_BURST_HOLDER, 5);
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.BREACH)) {
+            return 10;
+        }else if (enchantmentHolder.is(Enchantments.WIND_BURST)) {
+            return 5;
         }
-        if (!stack.getTagEnchantments().keySet().contains(BREACH_HOLDER)) {
-            stack.enchant(BREACH_HOLDER, 10);
-        }
+        return 0;
     }
 
-
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+                                @NotNull TooltipFlag isAdvanced) {
+        this.WIND_BURST.appendHoverText(context, tooltipComponents);
+        this.BREACH.appendHoverText(context, tooltipComponents);
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+    }
 }

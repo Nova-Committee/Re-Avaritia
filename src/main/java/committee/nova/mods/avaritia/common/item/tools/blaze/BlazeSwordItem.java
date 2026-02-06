@@ -35,7 +35,7 @@ import java.util.List;
  * Version: 1.0
  */
 public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, InitEnchantItem {
-    private final InitEnchantment initEnchantment;
+    private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeSwordItem() {
         super(ModToolTiers.BLAZE,
@@ -46,7 +46,6 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
                         .fireResistant()
                         .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
-        this.initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
     }
 
     @Override
@@ -55,9 +54,13 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
-        return this.initEnchantment.getLevel(enchantment);
+    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+        if (enchantmentHolder.is(Enchantments.FIRE_ASPECT)) {
+            return 10;
+        }
+        return 0;
     }
+
 
     @Override
     public boolean hasDescTooltip() {
