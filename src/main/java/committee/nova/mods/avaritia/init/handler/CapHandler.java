@@ -33,17 +33,6 @@ public class CapHandler {
                 iItemCapability.attachCapabilities(event);
             }
         }
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ModTileEntities.infinity_chest_tile.get(),
-                (be, side) -> {
-                    if(be.getChest() != null) {
-                        if (be.getChest().isRemoved()) return null;
-                        else return be.getChest();
-                    }
-                    return null;
-                }
-        );
 
         event.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK,

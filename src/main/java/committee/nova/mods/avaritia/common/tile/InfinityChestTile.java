@@ -1,137 +1,136 @@
 package committee.nova.mods.avaritia.common.tile;
 
-import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
-import committee.nova.mods.avaritia.api.utils.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
-import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
-import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
-import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.CompoundContainer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.ChestLidController;
-import net.minecraft.world.level.block.entity.LidBlockEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2025/1/31 15:28
- * @Description:
+ * Name: Avaritia-forge / CompressChestTile
+ * Author: cnlimiter
+ * CreateTime: 2023/11/21 3:34
+ * Description:
  */
-public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity {
-    @Getter
-    private UUID owner;
-    @Getter
-    private boolean locked = false;
-    @Getter
-    private String filter = "";
-    @Getter
-    private byte sortType = 4;
-    @Getter
-    private UUID chestID = UUID.randomUUID();
-    @Getter
-    private ServerChestHandler chest = new ServerChestHandler();
 
-    public InfinityChestTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.infinity_chest_tile.get(), pos, state);
+public class InfinityChestTile extends ChestBlockEntity {
+
+
+    protected final int SIZE = 243;
+    private final ContainerOpenersCounter openersCounter;
+
+    protected InfinityChestTile(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
+        super(blockEntityType, pos, blockState);
+        this.openersCounter = new ContainerOpenersCounter() {
+            @Override
+            protected void onOpen(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
+                playSound(pLevel, pPos, pState, SoundEvents.CHEST_OPEN);
+            }
+
+            @Override
+            protected void onClose(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
+                playSound(pLevel, pPos, pState, SoundEvents.CHEST_CLOSE);
+            }
+
+            @Override
+            protected void openerCountChanged(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, int pEventId, int pEventParam) {
+                signalOpenCount(pLevel, pPos, pState, pEventId, pEventParam);
+            }
+
+            @Override
+            protected boolean isOwnContainer(@NotNull Player pPlayer) {
+                if (pPlayer.containerMenu instanceof InfinityChestMenu chestMenu) {
+                    Container container = chestMenu.getContainer();
+                    return container == InfinityChestTile.this || container instanceof CompoundContainer && ((CompoundContainer) container).contains(InfinityChestTile.this);
+                } else {
+                    return false;
+                }
+            }
+        };
+        setItems(NonNullList.withSize(SIZE, ItemStack.EMPTY));
     }
 
-
-    @Override
-    public @NotNull Component getDisplayName() {
-        return Localizable.of("block.avaritia.infinity_chest").build();
+    public InfinityChestTile(BlockPos pos, BlockState blockState) {
+        this(ModTileEntities.infinity_chest_tile.get(), pos, blockState);
     }
 
-    @Override
-    public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new InfinityChestMenu(containerId, player, this);
-    }
+    static void playSound(Level pLevel, BlockPos pPos, BlockState pState, SoundEvent pSound) {
+        ChestType chesttype = pState.getValue(ChestBlock.TYPE);
+        if (chesttype != ChestType.LEFT) {
+            double d0 = (double) pPos.getX() + 0.5;
+            double d1 = (double) pPos.getY() + 0.5;
+            double d2 = (double) pPos.getZ() + 0.5;
+            if (chesttype == ChestType.RIGHT) {
+                Direction direction = ChestBlock.getConnectedDirection(pState);
+                d0 += (double) direction.getStepX() * 0.5;
+                d2 += (double) direction.getStepZ() * 0.5;
+            }
 
-    @Override
-    public void loadAdditional(@NotNull CompoundTag pTag, HolderLookup.@NotNull Provider registries) {
-        if (pTag.contains("owner")) {
-            owner = pTag.getUUID("owner");
-            locked = pTag.getBoolean("locked");
-        }
-        if (pTag.contains("filter")) filter = pTag.getString("filter");
-        if (pTag.contains("sortType")) sortType = pTag.getByte("sortType");
-        if (pTag.contains("chestID")) chestID = pTag.getUUID("chestID");
-        chest = ServerChestManager.getInstance().getChest(owner, chestID);
-    }
-
-    @Override
-    public void saveAdditional(@NotNull CompoundTag pTag, HolderLookup.@NotNull Provider registries) {
-        if (owner != null) {
-            pTag.putUUID("owner", owner);
-            pTag.putBoolean("locked", locked);
-        }
-        pTag.putString("filter", filter);
-        pTag.putByte("sortType", sortType);
-        pTag.putUUID("chestID", chestID);
-    }
-
-    public void setOwner(UUID owner) {
-        this.owner = owner;
-        this.setChanged();
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
-        this.setChanged();
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-        this.setChanged();
-    }
-
-    public void setSortType(byte sortType) {
-        this.sortType = sortType;
-        this.setChanged();
-    }
-
-    public void setChannelId(UUID id) {
-        this.chestID = id;
-        this.setChanged();
-    }
-
-    private final ChestLidController chestLidController = new ChestLidController();
-    public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, InfinityChestTile blockEntity) {
-        blockEntity.chestLidController.tickLid();
-    }
-
-    @Override
-    public boolean triggerEvent(int id, int type) {
-        if (id == 1) {
-            this.chestLidController.shouldBeOpen(type > 0);
-            return true;
-        } else {
-            return super.triggerEvent(id, type);
+            pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
         }
     }
 
     @Override
-    public float getOpenNess(float partialTicks) {
-        return this.chestLidController.getOpenness(partialTicks);
+    public int getContainerSize() {
+        return SIZE;
     }
 
-    public static void playSound(Level pLevel, BlockPos pPos, SoundEvent pSound) {
-        double d0 = (double) pPos.getX() + 0.5;
-        double d1 = (double) pPos.getY() + 0.5;
-        double d2 = (double) pPos.getZ() + 0.5;
-        pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+    @Override
+    protected @NotNull Component getDefaultName() {
+        return Component.translatable("block.avaritia.infinity_chest");
     }
+
+    @Override
+    protected @NotNull AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory) {
+        return new InfinityChestMenu(pContainerId, pInventory, this.getBlockPos(), 9);
+    }
+
+    @Override
+    public void startOpen(@NotNull Player pPlayer) {
+        if (!this.remove && !pPlayer.isSpectator()) {
+            this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
+        }
+
+    }
+
+    @Override
+    public void stopOpen(@NotNull Player pPlayer) {
+        if (!this.remove && !pPlayer.isSpectator()) {
+            this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
+        }
+    }
+
+    @Override
+    public void recheckOpen() {
+        if (!this.remove) {
+            this.openersCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
+        }
+    }
+
+    @Override
+    protected void signalOpenCount(Level pLevel, @NotNull BlockPos pPos, BlockState pState, int pEventId, int pEventParam) {
+        Block block = pState.getBlock();
+        pLevel.blockEvent(pPos, block, 1, pEventParam);
+    }
+
 }
+

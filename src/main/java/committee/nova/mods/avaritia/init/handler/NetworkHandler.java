@@ -2,9 +2,6 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
-import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
-import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
-import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -31,8 +28,6 @@ public class NetworkHandler {
                 new S2CTotemPack.Handler());
         registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,
                 new S2CSideConfigSyncPacket.Handler());
-        registrar.playToClient(S2CInfinityChestStatePack.TYPE, S2CInfinityChestStatePack.STREAM_CODEC,
-                new S2CInfinityChestStatePack.Handler());
         registrar.playToClient(S2CNameCachePack.TYPE, S2CNameCachePack.STREAM_CODEC,
                 new S2CNameCachePack.Handler());
 
@@ -48,10 +43,6 @@ public class NetworkHandler {
                 new C2SRenamePack.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
                 new C2SOpenRingPack.Handler());
-        registrar.playToServer(C2SInfinityChestActionPack.TYPE, C2SInfinityChestActionPack.STREAM_CODEC,
-                new C2SInfinityChestActionPack.Handler());
-        registrar.playToServer(C2SInfinityChestFilterPack.TYPE, C2SInfinityChestFilterPack.STREAM_CODEC,
-                new C2SInfinityChestFilterPack.Handler());
 
         registrar.playBidirectional(NbtDataPack.TYPE, NbtDataPack.STREAM_CODEC, new NbtDataPack.Handler());
         //CHANNEL.registerMessage(itemSuper++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);

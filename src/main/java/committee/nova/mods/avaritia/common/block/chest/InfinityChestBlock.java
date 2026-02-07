@@ -1,54 +1,40 @@
 package committee.nova.mods.avaritia.common.block.chest;
 
-import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Project: Avaritia
@@ -56,181 +42,88 @@ import java.util.UUID;
  * @CreateTime: 2024/7/13 下午12:38
  * @Description:
  */
-//todo 重构
-public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    protected static final VoxelShape AABB = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+public class InfinityChestBlock extends ChestBlock {
+    public static final ResourceLocation CONTENTS = ResourceLocation.withDefaultNamespace("contents");
+    private static final Component UNKNOWN_CONTENTS = Component.translatable("container.shulkerBox.unknownContents");
 
     public InfinityChestBlock() {
-        super(Properties.of()
-                .mapColor(MapColor.GOLD)
-                .instrument(NoteBlockInstrument.BASS)
-                .strength(30.0F, 1200.0F)
-                .sound(SoundType.GLASS)
-                .lightLevel((b) -> 15)
-                .isValidSpawn((state, getter, pos, entityType) -> false)
-                .isSuffocating((state, getter, pos) -> false)
-                .ignitedByLava());
-        this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH)
-                .setValue(WATERLOGGED, Boolean.FALSE)
-        );
+        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava(), () -> ModTileEntities.infinity_chest_tile.get());
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
-    }
+    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
+        if (!level.isClientSide()) {
+            var tile = level.getBlockEntity(pos);
 
-    @Override
-    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState,
-                                           @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
-    }
-
-    @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos,
-                                        @NotNull CollisionContext context) {
-        return AABB;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getHorizontalDirection().getOpposite();
-        FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-        boolean flag = context.isSecondaryUseActive();
-        Direction direction1 = context.getClickedFace();
-        if (direction1.getAxis().isHorizontal() && flag) {
-            Direction direction2 = this.candidatePartnerFacing(context, direction1.getOpposite());
-            if (direction2 != null && direction2.getAxis() != direction1.getAxis()) {
-                direction = direction2;
+            if (tile instanceof InfinityChestTile chestTile) {
+                player.openMenu(chestTile, pos);
+                player.awardStat(Stats.OPEN_CHEST);
             }
         }
-        return this.defaultBlockState().setValue(FACING, direction).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
-    }
-
-    @Nullable
-    private Direction candidatePartnerFacing(BlockPlaceContext context, Direction direction) {
-        BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos().relative(direction));
-        return blockstate.is(this) ? blockstate.getValue(FACING) : null;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new InfinityChestTile(pos, state);
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
+        return new InfinityChestTile(pPos, pState);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        if (Minecraft.getInstance().player == null) return;
-        if (!stack.isComponentsPatchEmpty()) return;
-        if (stack.get(DataComponents.BLOCK_ENTITY_DATA) != null) {
-            CompoundTag nbt = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag();
-            if (nbt.contains("owner") && nbt.contains("channelID")) {
-                var owner = nbt.getUUID("owner");
-                var channelID = nbt.getUUID("channelID");
-                var channel = ServerChestManager.getInstance().getChest(owner, channelID);
-                int i = 0;
-                int j = 0;
-                for (var item : channel.storageItems.keySet()) {
-                    ++j;
-                    if (i <= 4) {
-                        ++i;
-                        MutableComponent textComponent = item.getStack().getHoverName().copy();
-                        textComponent.append(" x").append(String.format("%,d",  channel.storageItems.get(item)));
-                        tooltipComponents.add(textComponent);
-                    }
-                }
-                if (j - i > 0) {
-                    tooltipComponents.add((Component.translatable("container.shulkerBox.more", j - i)).withStyle(ChatFormatting.ITALIC));
-                }
-            }
-        }
+    public @NotNull BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        ChestType chesttype = ChestType.SINGLE;
+        Direction direction = pContext.getHorizontalDirection().getOpposite();
+        FluidState fluidstate = pContext.getLevel().getFluidState(pContext.getClickedPos());
+        return this.defaultBlockState().setValue(FACING, direction).setValue(TYPE, chesttype).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
     }
 
     @Override
-    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
-        if (pPlacer instanceof ServerPlayer player && pStack.isComponentsPatchEmpty()) {
-            InfinityChestTile blockEntity = (InfinityChestTile) pLevel.getBlockEntity(pPos);
-            if (blockEntity != null) {
-                blockEntity.setOwner(player.getUUID());
-                blockEntity.setChannelId(UUID.randomUUID());
-                ServerChestManager.getInstance().tryAddChest(player, blockEntity.getChestID());
+    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
+        if (!pState.is(pNewState.getBlock())) {
+            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+            if (pState.hasBlockEntity()) pLevel.removeBlockEntity(pPos);
+            if (blockentity instanceof InfinityChestTile) {
+                pLevel.updateNeighbourForOutputSignal(pPos, pState.getBlock());
             }
         }
     }
 
     @Override
     public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
-        if (pLevel instanceof ServerLevel serverLevel && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof InfinityChestTile chestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
             var pStack = new ItemStack(ModBlocks.infinity_chest.get().asItem());
-
-            if (blockEntity instanceof InfinityChestTile infinityChestTile) {
-                infinityChestTile.saveToItem(pStack, pLevel.registryAccess());
-            }
+            pStack.applyComponents(chestTile.collectComponents());
             popResource(serverLevel, pPos, pStack);
             state.spawnAfterBreak(serverLevel, pPos, tool, false);
         }
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult trace) {
-        if (!level.isClientSide() && !player.isSpectator()) {
-            var tile = level.getBlockEntity(pos);
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        if (stack.has(DataComponents.CONTAINER_LOOT)) {
+            tooltipComponents.add(UNKNOWN_CONTENTS);
+        }
 
-            if (tile instanceof InfinityChestTile chestTile) {
-                if (chestTile.getOwner() == null) {
-                    chestTile.setOwner(player.getUUID());
-                    chestTile.setLocked(false);
-                }
-                player.openMenu(chestTile, buf -> {
-                    buf.writeBlockPos(pos);
-                    buf.writeUUID(chestTile.getOwner());
-                    buf.writeBoolean(chestTile.isLocked());
-                    buf.writeUtf(chestTile.getFilter(), 64);
-                    buf.writeByte(chestTile.getSortType());
-                    buf.writeUUID(chestTile.getChestID());
-                });
-                player.awardStat(Stats.CUSTOM.get(Stats.OPEN_CHEST));
+        int i = 0;
+        int j = 0;
 
+        for (ItemStack itemstack : stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).nonEmptyItems()) {
+            j++;
+            if (i <= 4) {
+                i++;
+                tooltipComponents.add(Component.translatable("container.shulkerBox.itemCount", itemstack.getHoverName(), itemstack.getCount()));
             }
         }
 
-        return InteractionResult.SUCCESS;
+        if (j - i > 0) {
+            tooltipComponents.add(Component.translatable("container.shulkerBox.more", j - i).withStyle(ChatFormatting.ITALIC));
+        }
     }
 
     @Override
-    protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTicker(type, ModTileEntities.infinity_chest_tile.get(), InfinityChestTile::lidAnimateTick);
-    }
-
-    @Override
-    public boolean hasAnalogOutputSignal(@NotNull BlockState state) {
-        return true;
-    }
-
-    @Override
-    public BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    public BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED);
-    }
-
-    @Override
-    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
-        return false;
+    public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state) {
+        ItemStack itemstack = super.getCloneItemStack(level, pos, state);
+        level.getBlockEntity(pos, ModTileEntities.infinity_chest_tile.get()).ifPresent(chestTile -> chestTile.saveToItem(itemstack, level.registryAccess()));
+        return itemstack;
     }
 }
