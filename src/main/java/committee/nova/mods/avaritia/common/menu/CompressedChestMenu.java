@@ -38,12 +38,12 @@ public class CompressedChestMenu extends BaseTileMenu<CompressedChestTile> {
 
         for ($$10 = 0; $$10 < 3; ++$$10) {
             for ($$9 = 0; $$9 < 9; ++$$9) {
-                this.addSlot(new Slot(pPlayerInventory, $$9 + $$10 * 9 + 9, 170 + $$9 * 18, 104 + $$10 * 18 + $$5));
+                this.addSlot(new Slot(pPlayerInventory, $$9 + $$10 * 9 + 9, 170 + $$9 * 18, 103 + $$10 * 18 + $$5));
             }
         }
 
         for ($$10 = 0; $$10 < 9; ++$$10) {
-            this.addSlot(new Slot(pPlayerInventory, $$10, 170 + $$10 * 18, 162 + $$5));
+            this.addSlot(new Slot(pPlayerInventory, $$10, 170 + $$10 * 18, 161 + $$5));
         }
     }
 

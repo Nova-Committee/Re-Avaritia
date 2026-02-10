@@ -1,6 +1,6 @@
 package committee.nova.mods.avaritia.common.tile;
 
-import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
+import committee.nova.mods.avaritia.common.container.chest.InfinityBoxContainer;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -58,7 +58,7 @@ public class InfinityChestTile extends ChestBlockEntity {
 
             @Override
             protected boolean isOwnContainer(@NotNull Player pPlayer) {
-                if (pPlayer.containerMenu instanceof InfinityChestMenu chestMenu) {
+                if (pPlayer.containerMenu instanceof InfinityBoxContainer chestMenu) {
                     Container container = chestMenu.getContainer();
                     return container == InfinityChestTile.this || container instanceof CompoundContainer && ((CompoundContainer) container).contains(InfinityChestTile.this);
                 } else {
@@ -100,8 +100,8 @@ public class InfinityChestTile extends ChestBlockEntity {
     }
 
     @Override
-    protected @NotNull AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory) {
-        return new InfinityChestMenu(pContainerId, pInventory, this.getBlockPos(), 9);
+    protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
+        return new InfinityBoxContainer(id, inventory, this);
     }
 
     @Override

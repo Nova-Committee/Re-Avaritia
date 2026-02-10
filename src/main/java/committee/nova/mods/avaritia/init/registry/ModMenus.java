@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
+import committee.nova.mods.avaritia.common.container.chest.InfinityBoxContainer;
 import committee.nova.mods.avaritia.common.menu.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -65,8 +66,8 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<NeutronCompressorMenu>) NeutronCompressorMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<ExtremeSmithingMenu>> extreme_smithing_table = menu("extreme_smithing_table",
             () -> new MenuType<>((IContainerFactory<ExtremeSmithingMenu>)ExtremeSmithingMenu::new, FeatureFlagSet.of()));
-    public static DeferredHolder<MenuType<?>, MenuType<InfinityChestMenu>> infinity_chest = menu("infinity_chest",
-            () -> new MenuType<>((IContainerFactory<InfinityChestMenu>)InfinityChestMenu::new, FeatureFlagSet.of()));
+    public static DeferredHolder<MenuType<?>, MenuType<InfinityBoxContainer>> infinity_chest = menu("infinity_chest",
+            () -> new MenuType<>((IContainerFactory<InfinityBoxContainer>)InfinityBoxContainer::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<InfinityClockMenu>> infinity_clock_menu = menu("infinity_clock_menu",
             () -> new MenuType<>((IContainerFactory<InfinityClockMenu>)(id, inv, buf) -> new InfinityClockMenu(id, inv), FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<CompressedChestMenu>> GENERIC_9x27 = menu("generic_9x27",

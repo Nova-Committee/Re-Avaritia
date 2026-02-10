@@ -54,7 +54,7 @@ public class ModCraftResultSlot extends Slot {
     }
 
     @Override
-    protected void onSwapCraft(int pNumItemsCrafted) {
+    public void onSwapCraft(int pNumItemsCrafted) {
         this.removeCount += pNumItemsCrafted;
     }
 
