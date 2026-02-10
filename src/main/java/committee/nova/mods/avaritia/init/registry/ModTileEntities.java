@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
+import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.common.tile.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +33,7 @@ public class ModTileEntities {
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup() {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
-        BlockEntityRenderers.register(infinity_chest_tile.get(), InfinityChestBlockRender::new);
+        BlockEntityRenderers.register(INFINITY_CHEST_TILE.get(), InfinityChestBlockRender::new);
     }
 
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(
@@ -55,7 +56,13 @@ public class ModTileEntities {
                     ModBlocks.densest_neutron_compressor.get()
             }
     );
-   public static DeferredHolder<BlockEntityType<?>,BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InfinityChestTile>> INFINITY_CHEST_TILE = blockEntity(
+            "infinity_chest_tile",
+            InfinityChestTile::new,
+            () -> new Block[]{ModBlocks.infinity_chest.get()}
+    );
+
+    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,
             () -> new Block[]{
                     ModBlocks.sculk_crafting_table.get(),
                     ModBlocks.nether_crafting_table.get(),
@@ -63,6 +70,6 @@ public class ModTileEntities {
                     ModBlocks.extreme_crafting_table.get()
             });
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
-    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
+//    public static DeferredHolder<BlockEntityType<?>,BlockEntityType<InfinityChestTile>> infinity_chest_tile = blockEntity("infinity_chest_tile", InfinityChestTile::new, () -> new Block[]{ModBlocks.infinity_chest.get()});
 
 }

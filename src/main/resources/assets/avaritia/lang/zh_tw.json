@@ -225,6 +225,7 @@
   "container.nether_crafting_table": "煉獄工作台",
   "container.sculk_crafting_table": "幽匿工作台",
   "container.extreme_smithing": "終焉鍛造台",
+  "container.infinity_chest": "§6數量: %s / %s",
 
   "death.attack.infinity": "%1$s 被 %2$s 徹底粉碎",
   "death.attack.infinity.0": "%1$s 被蒸發",
