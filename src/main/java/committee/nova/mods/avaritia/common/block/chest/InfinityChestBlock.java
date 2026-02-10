@@ -4,8 +4,10 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.MapCodec;
 
+import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -72,6 +75,33 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
     }
 
     @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof InfinityChestTile) {
+                InfinityChestTile tile = (InfinityChestTile) blockEntity;
+                ItemStack dropStack = new ItemStack(this);
+                dropStack.set(ModDataComponents.CLUSTER_CONTAINER, ClusterContainerContents.fromItems(tile.chest.getItems()));
+                Block.popResource(level, pos, dropStack);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @org.jetbrains.annotations.Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof InfinityChestTile) {
+            InfinityChestTile tile = (InfinityChestTile) blockEntity;
+            ClusterContainerContents contents = stack.get(ModDataComponents.CLUSTER_CONTAINER);
+            if (contents != null) {
+                contents.copyInto(tile.chest.getItems());
+            }
+        }
+    }
+
+    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
@@ -92,21 +122,7 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
         }
         return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof InfinityChestTile) {
-                InfinityChestTile tile = (InfinityChestTile) blockEntity;
 
-                ItemStack itemStack = new ItemStack(this);
-                tile.saveToItem(itemStack, level.registryAccess());
-
-                popResource(level, pos, itemStack);
-            }
-            super.onRemove(state, level, pos, newState, isMoving);
-        }
-    }
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return AABB;
