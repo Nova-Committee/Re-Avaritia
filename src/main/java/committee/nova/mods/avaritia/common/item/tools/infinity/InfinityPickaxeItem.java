@@ -109,8 +109,12 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
             return InteractionResultHolder.success(stack);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
+            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_2"), true);
             ItemUtils.clearEnchants(stack, SILK_TOUCH);
         }else {
+            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_1"), true);
             stack.enchant(SILK_TOUCH, 1);
         }
         return InteractionResultHolder.success(stack);
@@ -132,7 +136,7 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (miningEntity instanceof ServerPlayer player && isActive(stack, "infinity_pickaxe_hammer")) {
-            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
+            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.pickAxeBreakRange.get());
         }
         return false;
     }

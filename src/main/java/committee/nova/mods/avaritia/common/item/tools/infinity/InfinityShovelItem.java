@@ -95,7 +95,7 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUnda
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (miningEntity instanceof ServerPlayer player && isActive(stack, "infinity_shovel_destroyer")) {
-            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.shovelBreakRange.get(), ToolUtils.materialsAxe);
+            ToolUtils.destroyShovelBlocks(player, pos, ModConfig.shovelBreakRange.get());
         }
         return false;
     }

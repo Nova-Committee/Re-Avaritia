@@ -570,6 +570,8 @@
   "tooltip.avaritia.unlimited_input": "無限輸入",
   "tooltip.crystal_pickaxe.enchant_1": "切換到 時運 III",
   "tooltip.crystal_pickaxe.enchant_2": "切換到 精準採集",
+  "tooltip.infinity_pickaxe.enchant_1": "切換到 時運 X",
+  "tooltip.infinity_pickaxe.enchant_2": "切换到 精準採集",
   "tooltip.infinity": "無限",
   "tooltip.infinity.desc": "攻擊傷害",
   "tooltip.avaritia.compressor.message_1": "§c[中子壓縮器] §f請先解鎖配方",

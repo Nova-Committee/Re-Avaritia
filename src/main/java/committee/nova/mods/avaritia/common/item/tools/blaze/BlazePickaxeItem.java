@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
@@ -11,6 +12,7 @@ import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,8 +38,6 @@ import java.util.List;
  */
 public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchable, InitEnchantItem {
     private final InitEnchantment fire_aspect;
-    private final InitEnchantment silk_touch;
-    private final InitEnchantment block_fortune;
 
     public BlazePickaxeItem() {
         super(ModToolTiers.BLAZE,
@@ -49,8 +50,6 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
         );
 
         this.fire_aspect = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
-        this.silk_touch = new InitEnchantment(Enchantments.SILK_TOUCH, 1);
-        this.block_fortune = new InitEnchantment(Enchantments.FORTUNE, 4);
     }
 
     @Override
@@ -62,10 +61,6 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
     public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.FIRE_ASPECT)) {
             return 10;
-        }else if (enchantmentHolder.is(Enchantments.SILK_TOUCH)) {
-            return 1;
-        }else if (enchantmentHolder.is(Enchantments.FORTUNE)) {
-            return 4;
         }
         return 0;
     }
@@ -80,8 +75,6 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.fire_aspect.appendHoverText(context, tooltipComponents);
-        this.silk_touch.appendHoverText(context, tooltipComponents);
-        this.block_fortune.appendHoverText(context, tooltipComponents);
         super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
     }
 
@@ -95,12 +88,13 @@ public class BlazePickaxeItem extends PickaxeItem implements ITooltip, ISwitchab
         return super.use(world, player, hand);
     }
 
-    @Override
-    public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
-            ToolUtils.melting(state, level, pos, player, stack);
+        @Override
+        public boolean mineBlock (@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState
+        state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity){
+            if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
+                ToolUtils.melting(state, level, pos, player, stack);
+            }
+            return super.mineBlock(stack, level, state, pos, miningEntity);
         }
-        return super.mineBlock(stack, level, state, pos, miningEntity);
-    }
 
 }
