@@ -3,9 +3,11 @@ package committee.nova.mods.avaritia.common.item.tools.crystal;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
+import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
 import committee.nova.mods.avaritia.api.util.ItemUtils;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -17,11 +19,16 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Description:
@@ -29,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
+public class CrystalPickaxeItem extends PickaxeItem implements ITooltip , InitEnchantItem {
+
 
     public CrystalPickaxeItem() {
         super(ModToolTiers.CRYSTAL, -25, 0F,
@@ -90,4 +98,18 @@ public class CrystalPickaxeItem extends PickaxeItem implements ITooltip {
         }
         return multimap;
     }
+
+    @Override
+    public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
+        return enchantment == Enchantments.BLOCK_FORTUNE ? 3 : 0;
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+                                @NotNull TooltipFlag isAdvanced) {
+        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.BLOCK_FORTUNE.getFullname(3)).build());
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    }
+
+
 }

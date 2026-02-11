@@ -47,7 +47,7 @@ public class HaloBakedModel extends WrappedItemModel {
     public void renderItem(ItemStack stack, ItemDisplayContext itemDisplayContext, PoseStack pPoseStack, MultiBufferSource bufferSource,
                            int packedLight, int packedOverlay,
                            ItemModelShaper itemModelShaper, TextureManager textureManager) {
-        if (stack.getItem() instanceof SingularityItem
+        if (itemDisplayContext == ItemDisplayContext.GUI && stack.getItem() instanceof SingularityItem
                 && Screen.hasShiftDown()
                 && SingularityUtils.getSingularity(stack) != null
         ) {
@@ -55,7 +55,7 @@ public class HaloBakedModel extends WrappedItemModel {
             BakedModel bakedModel = itemRender.getModel(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0],null,null,1);
             pPoseStack.pushPose();
             pPoseStack.translate(0.5, 0.5, 0);
-            itemRender.render(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0], ItemDisplayContext.NONE, false, pPoseStack, bufferSource, packedLight, packedOverlay, bakedModel);
+            itemRender.render(SingularityUtils.getSingularity(stack).getIngredient().getItems()[0], ItemDisplayContext.GUI, false, pPoseStack, bufferSource, packedLight, packedOverlay, bakedModel);
             pPoseStack.popPose();
         } else {
             if (stack.getItem() instanceof IToolTransform) {

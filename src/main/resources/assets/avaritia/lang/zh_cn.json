@@ -568,6 +568,8 @@
   "tooltip.avaritia.unlimited_input": "无限输入",
   "tooltip.crystal_pickaxe.enchant_1": "切换到 时运 III",
   "tooltip.crystal_pickaxe.enchant_2": "切换到 精准采集",
+  "tooltip.infinity_pickaxe.enchant_1": "切换到 时运 X",
+  "tooltip.infinity_pickaxe.enchant_2": "切换到 精准采集",
   "tooltip.infinity": "无限",
   "tooltip.infinity.desc": "攻击伤害",
   "tooltip.avaritia.compressor_eject.message_1": "§c[中子压缩器] §f请先解锁配方",

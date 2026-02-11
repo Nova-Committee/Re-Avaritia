@@ -159,7 +159,7 @@ public class ToolUtils {
      * @param startPos 起始坐标
      * @param range    挖掘范围
      */
-    public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
+    public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range) {
         ServerLevel world = player.serverLevel();
 
         // 计算方形范围
@@ -176,9 +176,8 @@ public class ToolUtils {
             BlockPos currentPos = pos.immutable();
             BlockState state = world.getBlockState(currentPos);
 
-            // 仅处理可被工具挖掘的方块
-            if (ToolUtils.canUseTool(state, materials) && state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
-                // 收集掉落物
+            if (state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
+
                 List<ItemStack> blockDrops = Block.getDrops(state, world, currentPos, null);
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
@@ -200,6 +199,45 @@ public class ToolUtils {
         }
 
         // 将所有掉落物合并为物质团
+        ClustersUtils.spawnClusters(world, player, drops);
+    }
+
+    /**
+     * 无尽铲范围挖掘
+     *
+     * @param player   玩家
+     * @param startPos 起始坐标
+     * @param range    挖掘范围
+     */
+    public static void destroyShovelBlocks(ServerPlayer player, BlockPos startPos, int range) {
+        ServerLevel world = player.serverLevel();
+
+        int halfRange = range / 2;
+        BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
+        BlockPos maxPos = startPos.offset(halfRange, halfRange, halfRange);
+
+        Set<ItemStack> drops = Sets.newHashSet();
+
+        for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+            BlockPos currentPos = pos.immutable();
+            BlockState state = world.getBlockState(currentPos);
+
+            if (state.is(BlockTags.MINEABLE_WITH_SHOVEL) && state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
+
+                List<ItemStack> blockDrops = Block.getDrops(state, world, currentPos, null);
+                if (!blockDrops.isEmpty()) {
+                    drops.addAll(blockDrops);
+                } else {
+                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
+                }
+
+                world.destroyBlock(currentPos, false, player);
+                world.playSound(null, currentPos, state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 0.5F, 1.0F);
+            }
+        }
+
         ClustersUtils.spawnClusters(world, player, drops);
     }
 
@@ -640,21 +678,30 @@ public class ToolUtils {
      * @param state  方块状态
      */
     public static void destroyTree(Player player, ServerLevel world, BlockPos pos, BlockState state) {
+        int maxBlocks = ModConfig.axeChainCount.get();
         List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
         Set<ItemStack> drops = Sets.newHashSet();
+        int blockCount = 0;
         for (BlockPos logPos : connectedLogs) {
-            List<ItemStack> blockDrops = Block.getDrops(world.getBlockState(logPos), world, logPos,
-                    null);
+            if (blockCount >= maxBlocks) {
+                break;
+            }
+            BlockState logState = world.getBlockState(logPos);
+            List<ItemStack> blockDrops = Block.getDrops(logState, world, logPos, null);
+
             if (!blockDrops.isEmpty()) {
                 drops.addAll(blockDrops);
             } else {
-                ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(world.getBlockState(logPos).getBlock());
+                ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(logState.getBlock());
 
                 Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
-                drops.add(new ItemStack(blockItem));
+                if (blockItem != Items.AIR && blockItem != null) {
+                    drops.add(new ItemStack(blockItem));
+                }
             }
-            world.levelEvent(2001, pos, Block.getId(state));
+            world.levelEvent(2001, logPos, Block.getId(logState));
             destroy(world, player, logPos);
+            blockCount++; // 增加已砍伐数量
         }
         ClustersUtils.spawnClusters(world, player, drops);
     }

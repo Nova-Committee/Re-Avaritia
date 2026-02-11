@@ -21,6 +21,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.BooleanValue isSwordAttackLightning;
     public static final ForgeConfigSpec.BooleanValue isSwordAttackEndless;
     public static final ForgeConfigSpec.IntValue subArrowDamage;
+    public static final ForgeConfigSpec.IntValue axeChainCount;
     public static final ForgeConfigSpec.IntValue pickAxeBreakRange;
     public static final ForgeConfigSpec.IntValue shovelBreakRange;
     public static final ForgeConfigSpec.IntValue singularityTimeRequired;
@@ -66,6 +67,7 @@ public class ModConfig {
         isSwordAttackLightning = buildBoolean(common, "config.avaritia.is_sword_attack_lightning", false, "config.avaritia.is_sword_attack_lightning.tooltip");
         isSwordAttackEndless = buildBoolean(common, "config.avaritia.is_sword_attack_endless", true, "config.avaritia.is_sword_attack_endless.tooltip");
         subArrowDamage = buildInt(common, "config.avaritia.sub_arrow_damage", 10000, 100, 100000, "config.avaritia.sub_arrow_damage.tooltip");
+        axeChainCount = buildInt(common, "Axe Chain Count", 64, 16, 128, "Chain number of endless axe cutting trees");
         pickAxeBreakRange = buildInt(common, "config.avaritia.pickaxe_break_range", 8, 2, 32, "config.avaritia.pickaxe_break_range.tooltip");
         shovelBreakRange = buildInt(common, "config.avaritia.shovel_break_range", 8, 2, 32, "config.avaritia.shovel_break_range.tooltip");
         singularityTimeRequired = buildInt(common, "config.avaritia.singularity_time_required", 240, 0, Integer.MAX_VALUE, "config.avaritia.singularity_time_required.tooltip");

@@ -84,6 +84,10 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.sub_arrow_damage.tooltip"),
                 ModConfig.subArrowDamage::set, ModConfig.subArrowDamage);
 
+        addIntEntry("axe_chain_count", ModConfig.axeChainCount, 16, 128,
+                Component.translatable("config.avaritia.axe_chain_count.tooltip"),
+                ModConfig.axeChainCount::set, ModConfig.axeChainCount);
+
         addIntEntry("pickaxe_break_range", ModConfig.pickAxeBreakRange, 2, 32,
                 Component.translatable("config.avaritia.pickaxe_break_range.tooltip"),
                 ModConfig.pickAxeBreakRange::set, ModConfig.pickAxeBreakRange);
