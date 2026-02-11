@@ -50,16 +50,6 @@ public class NeutronHorseArmorItem extends AnimalArmorItem implements InitEnchan
     }
 
     @Override
-    public boolean hasCustomEntity(@NotNull ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public @Nullable Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
-    }
-
-    @Override
     public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(ModEnchants.FROST_WALKER)) {
             return 10;

@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.item.tools.infinity;
 
+import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
@@ -7,6 +8,7 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -84,6 +87,11 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
                 )
                 .add(
                         Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, 100.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND
+                )
+                .add(
+                        Attributes.ENTITY_INTERACTION_RANGE,
+                        new AttributeModifier( ResourceLocation.withDefaultNamespace("attack_range_modifier"), 5.0, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND
                 )
                 .build();
     }
