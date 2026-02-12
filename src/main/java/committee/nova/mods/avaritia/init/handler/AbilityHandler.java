@@ -254,16 +254,6 @@ public class AbilityHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void cancelFreezeOverlay(RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay() == VanillaGuiOverlay.FROSTBITE.type()) {
-            Player player = Minecraft.getInstance().player;
-            if (player != null && ToolUtils.isInfinite(player)) {
-                event.setCanceled(true);
-            }
-        }
-    }
-
 
     private static void stripAbilities(Player player) {
         String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
