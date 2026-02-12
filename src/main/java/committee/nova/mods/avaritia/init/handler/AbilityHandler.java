@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -274,17 +275,7 @@ public class AbilityHandler {
             event.setCanceled(true);
         }
     }
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onGuiPre(RenderGuiEvent.Pre event) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
 
-        if (!ToolUtils.isInfinite(player)) return;
-
-        player.setTicksFrozen(0);
-        player.setIsInPowderSnow(false);
-    }
 
 
     private static void stripAbilities(Player player) {
