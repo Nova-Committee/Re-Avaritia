@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.GrassBlock;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -51,7 +52,6 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
 
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
-        super.useOn(context);
         var stack = context.getItemInHand();
         var world = context.getLevel();
         var blockpos = context.getClickedPos();
@@ -81,18 +81,15 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
         // Handle bonemeal functionality
         var targetState = world.getBlockState(blockpos);
         if (world instanceof ServerLevel serverLevel && targetBlock instanceof BonemealableBlock growable) {
-            if (growable.isValidBonemealTarget(serverLevel, blockpos, targetState)
-                    //&& onCropsGrowPre(serverLevel, blockpos, targetState, true)
-            ) {
+            if (growable.isValidBonemealTarget(serverLevel, blockpos, targetState) && CommonHooks.canCropGrow(serverLevel, blockpos, targetState, true)) {
                 growable.performBonemeal(serverLevel, world.random, blockpos, targetState);
                 serverLevel.levelEvent(2005, blockpos, 0);
-                //ForgeHooks.onCropsGrowPost(serverLevel, blockpos, targetState);
+                CommonHooks.fireCropGrowPost(serverLevel, blockpos, targetState);
                 return InteractionResult.CONSUME;
             }
         }
         return InteractionResult.SUCCESS;
     }
-
     @Override
     public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
         if (player instanceof ServerPlayer serverPlayer) {

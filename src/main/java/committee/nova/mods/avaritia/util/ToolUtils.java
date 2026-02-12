@@ -152,6 +152,50 @@ public class ToolUtils {
     }
 
     /**
+     * 身穿无尽头盔
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽头盔
+     */
+    public static boolean isWearingInfinityHelmet(LivingEntity player) {
+        ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
+        return !helmet.isEmpty() && helmet.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
+     * 身穿无尽胸甲
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽胸甲
+     */
+    public static boolean isWearingInfinityChestplate(LivingEntity player) {
+        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
+        return !chestplate.isEmpty() && chestplate.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
+     * 身穿无尽护腿
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽护腿
+     */
+    public static boolean isWearingInfinityPants(LivingEntity player) {
+        ItemStack leggings = player.getItemBySlot(EquipmentSlot.LEGS);
+        return !leggings.isEmpty() && leggings.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
+     * 身穿无尽靴子
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽靴子
+     */
+    public static boolean isWearingInfinityBoots(LivingEntity player) {
+        ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
+        return !boots.isEmpty() && boots.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
      * 无尽镐范围挖掘
      *
      * @param player   玩家

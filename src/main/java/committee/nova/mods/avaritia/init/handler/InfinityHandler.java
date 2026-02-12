@@ -182,6 +182,7 @@ public class InfinityHandler {
         }
     }
 
+
     @SubscribeEvent
     public static void expCancel(ItemExpireEvent event) {
         if (event.getEntity() instanceof ImmortalItemEntity itemEntity) {
@@ -319,16 +320,6 @@ public class InfinityHandler {
         }
     }
 
-//    @SubscribeEvent
-//    public static void entityItemUnDeath(ItemEvent event) {//取消无尽物品受到的伤害
-//        ItemEntity entityItem = event.getEntity();
-//        Item item = entityItem.getItem().getItem();
-//        if (item instanceof InfinityArmorItem || item instanceof InfinityAxeItem || item instanceof InfinityBowItem ||
-//                item instanceof InfinityHoeItem || item instanceof InfinityShovelItem || item instanceof InfinityPickaxeItem ||
-//                item instanceof InfinitySwordItem || item instanceof InfinityCrossBowItem) {
-//            entityItem.setInvulnerable(true);
-//        }
-//    }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {
         ItemEntity entity = new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), drop);

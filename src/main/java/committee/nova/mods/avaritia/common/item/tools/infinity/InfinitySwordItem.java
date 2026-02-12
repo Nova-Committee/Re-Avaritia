@@ -47,6 +47,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -105,11 +106,16 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     public boolean hurt(LivingEntity victim, DamageSource pSource, float pAmount) {
-        if (victim.level().isClientSide) {
-            return false;
-        } else if (victim.isDeadOrDying()) {
+        if (victim.level().isClientSide || victim.isDeadOrDying()) {
             return false;
         } else {
+            if (victim.isMultipartEntity()) {
+                for (Entity part :victim.getParts()) {
+                    if (part instanceof PartEntity<?> partEntity && partEntity.getParent() == victim) {
+                        part.hurt(pSource, pAmount);
+                    }
+                }
+            }
             if (victim.isSleeping() && !victim.level().isClientSide) {
                 victim.stopSleeping();
             }
@@ -193,6 +199,7 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
 
             return flag2;
         }
+
     }
 
     public void die(LivingEntity victim, DamageSource pDamageSource) {

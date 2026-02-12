@@ -7,10 +7,14 @@ import committee.nova.mods.avaritia.api.utils.PlayerUtils;
 import committee.nova.mods.avaritia.common.item.misc.NeutronHorseArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.util.ToolUtils;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -21,9 +25,16 @@ import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.entity.animal.horse.TraderLlama;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -229,6 +240,52 @@ public class AbilityHandler {
             stripAbilities(entity);
         }
     }
+
+    //无尽套免疫视觉效果
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void onRenderOverlay(RenderBlockScreenEffectEvent event) {
+        Player player = Minecraft.getInstance().player;
+        if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.FIRE) {
+            event.setCanceled(true);
+        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.BLOCK) {
+            event.setCanceled(true);
+        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER) {
+            event.setCanceled(true);
+        }
+    }
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void onFog(ViewportEvent.RenderFog event) {
+        Camera camera = event.getCamera();
+        Entity entity = camera.getEntity();
+
+        if (!(entity instanceof Player player)) return;
+        if (!ToolUtils.isWearingInfinityHelmet(player)) return;
+
+        FogType fogType = camera.getFluidInCamera();
+
+        if (fogType == FogType.LAVA || fogType == FogType.POWDER_SNOW) {
+
+            float farPlane = event.getRenderer().getRenderDistance();
+
+            event.setNearPlaneDistance(-8.0f);
+            event.setFarPlaneDistance(Math.min(96.0f, farPlane));
+            event.setCanceled(true);
+        }
+    }
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void onGuiPre(RenderGuiEvent.Pre event) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (!ToolUtils.isInfinite(player)) return;
+
+        player.setTicksFrozen(0);
+        player.setIsInPowderSnow(false);
+    }
+
 
     private static void stripAbilities(Player player) {
         String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
