@@ -97,12 +97,12 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
             if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
-                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_2"), true);
+                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_1"), true);
             ItemUtils.clearEnchants(stack, Enchantments.SILK_TOUCH);
             return InteractionResultHolder.success(stack);
         } else {
             if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
-                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_1"), true);
+                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_2"), true);
             stack.enchant(Enchantments.SILK_TOUCH, 1);
             return InteractionResultHolder.success(stack);
         }
