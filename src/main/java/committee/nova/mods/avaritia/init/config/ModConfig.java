@@ -127,4 +127,7 @@ public class ModConfig {
         return builder.comment(comment).translation(name).defineInRange(name, defaultValue, min, max);
     }
 
+    public static void save() {
+        COMMON.save();
+    }
 }

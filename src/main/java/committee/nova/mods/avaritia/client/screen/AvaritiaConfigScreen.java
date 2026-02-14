@@ -243,7 +243,8 @@ public class AvaritiaConfigScreen extends Screen {
                 description,
                 configValue.get(),
                 onValueChange,
-                valueSupplier
+                valueSupplier,
+                configValue
         ));
     }
 
@@ -256,7 +257,8 @@ public class AvaritiaConfigScreen extends Screen {
                 min,
                 max,
                 onValueChange,
-                valueSupplier
+                valueSupplier,
+                configValue
         ));
     }
 
@@ -269,7 +271,8 @@ public class AvaritiaConfigScreen extends Screen {
                 min,
                 max,
                 onValueChange,
-                valueSupplier
+                valueSupplier,
+                configValue
         ));
     }
 
@@ -282,7 +285,8 @@ public class AvaritiaConfigScreen extends Screen {
                 min,
                 max,
                 onValueChange,
-                valueSupplier
+                valueSupplier,
+                configValue
         ));
     }
 
@@ -302,12 +306,16 @@ public class AvaritiaConfigScreen extends Screen {
                 btn -> {
                     resetToDefaults();
                     updateWidgetValues();
+                    ModConfig.save();
                 }
         ).bounds(width / 2 - 102, height - 30, 100, 20).build());
 
         backButton = addRenderableWidget(Button.builder(
                 Component.translatable("gui.back"),
-                btn -> minecraft.setScreen(parent)
+                btn -> {
+                    ModConfig.save();
+                    minecraft.setScreen(parent);
+                }
         ).bounds(width / 2 + 2, height - 30, 100, 20).build());
 
         for (int i = 0; i < configEntries.size(); i++) {
@@ -447,6 +455,7 @@ public class AvaritiaConfigScreen extends Screen {
 
     @Override
     public void onClose() {
+        ModConfig.save();
         minecraft.setScreen(parent);
     }
 
@@ -456,13 +465,16 @@ public class AvaritiaConfigScreen extends Screen {
         T currentValue;
         final Consumer<T> onValueChange;
         final Supplier<T> valueSupplier;
+        final ModConfigSpec.ConfigValue<T> configValue;
 
-        ConfigEntry(Component title, Component description, T initialValue, Consumer<T> onValueChange, Supplier<T> valueSupplier) {
+        ConfigEntry(Component title, Component description, T initialValue, Consumer<T> onValueChange, Supplier<T> valueSupplier,
+                ModConfigSpec.ConfigValue<T> configValue) {
             this.title = title;
             this.description = description;
             this.currentValue = initialValue;
             this.onValueChange = onValueChange;
             this.valueSupplier = valueSupplier;
+            this.configValue = configValue;
         }
 
         abstract void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width);
@@ -476,12 +488,16 @@ public class AvaritiaConfigScreen extends Screen {
             if (this.onValueChange != null) {
                 this.onValueChange.accept(newValue);
             }
+            if (this.configValue != null) {
+                this.configValue.set(newValue);
+                ModConfig.save();
+            }
         }
     }
 
     private static class CategoryHeaderEntry extends ConfigEntry<Void> {
         CategoryHeaderEntry(Component title) {
-            super(title, Component.empty(), null, null, null);
+            super(title, Component.empty(), null, null, null, null);
         }
 
         @Override
@@ -502,8 +518,8 @@ public class AvaritiaConfigScreen extends Screen {
     private static class BooleanConfigEntry extends ConfigEntry<Boolean> {
         private Button checkBox;
 
-        BooleanConfigEntry(Component title, Component description, Boolean initialValue, Consumer<Boolean> onValueChange, Supplier<Boolean> valueSupplier) {
-            super(title, description, initialValue, onValueChange, valueSupplier);
+        BooleanConfigEntry(Component title, Component description, Boolean initialValue, Consumer<Boolean> onValueChange, Supplier<Boolean> valueSupplier,ModConfigSpec.ConfigValue<Boolean> configValue) {
+            super(title, description, initialValue, onValueChange, valueSupplier, configValue);
         }
 
         @Override
@@ -551,8 +567,8 @@ public class AvaritiaConfigScreen extends Screen {
         private final int max;
 
         IntConfigEntry(Component title, Component description, Integer initialValue,
-                       int min, int max, Consumer<Integer> onValueChange, Supplier<Integer> valueSupplier) {
-            super(title, description, initialValue, onValueChange, valueSupplier);
+                       int min, int max, Consumer<Integer> onValueChange, Supplier<Integer> valueSupplier,ModConfigSpec.ConfigValue<Integer> configValue) {
+            super(title, description, initialValue, onValueChange, valueSupplier, configValue);
             this.min = min;
             this.max = max;
         }
@@ -607,8 +623,8 @@ public class AvaritiaConfigScreen extends Screen {
         private final double max;
 
         DoubleConfigEntry(Component title, Component description, Double initialValue,
-                          double min, double max, Consumer<Double> onValueChange, Supplier<Double> valueSupplier) {
-            super(title, description, initialValue, onValueChange, valueSupplier);
+                          double min, double max, Consumer<Double> onValueChange, Supplier<Double> valueSupplier,ModConfigSpec.ConfigValue<Double> configValue) {
+            super(title, description, initialValue, onValueChange, valueSupplier,configValue);
             this.min = min;
             this.max = max;
         }
@@ -663,8 +679,8 @@ public class AvaritiaConfigScreen extends Screen {
         private final long max;
 
         LongConfigEntry(Component title, Component description, Long initialValue,
-                        long min, long max, Consumer<Long> onValueChange, Supplier<Long> valueSupplier) {
-            super(title, description, initialValue, onValueChange, valueSupplier);
+                        long min, long max, Consumer<Long> onValueChange, Supplier<Long> valueSupplier,ModConfigSpec.ConfigValue<Long> configValue) {
+            super(title, description, initialValue, onValueChange, valueSupplier,configValue);
             this.min = min;
             this.max = max;
         }
