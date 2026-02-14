@@ -89,14 +89,6 @@ public class ModEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Const.rl("trace_arrow").toString()));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<InfinityGolem>> INFINITY_GOLEM = ENTITIES.register("infinity_golem",
-            () -> EntityType.Builder.of(InfinityGolem::new, MobCategory.MISC)
-                    .sized(1.4F, 2.7F)
-                    .clientTrackingRange(10)
-                    .fireImmune()
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Const.rl("infinity_golem").toString()));
-
     public static final DeferredHolder<EntityType<?>, EntityType<FireBallEntity>> FIRE_BALL = ENTITIES.register("fire_ball",
             () -> EntityType.Builder.of(FireBallEntity::new, MobCategory.MISC)
                     .setTrackingRange(256)
@@ -164,7 +156,6 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.BURNING_ARROW.get(), BurningArrowRender::new);
         EntityRenderers.register(ModEntities.BURNING_BALL.get(), BurningBallRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
-        EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRender::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
         EntityRenderers.register(ModEntities.BLADE_SLASH.get(), BladeSlashRender::new);
         EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
