@@ -27,7 +27,8 @@
 
 ## **✏️作者:**
 
-- 程序: `cnlimiter` `Asek3` `MikhailTapio`
+- 程序: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3`
+- 美术: `MHanHanBing` `Neo-Tix`
 
 ## **🔒许可:**
 
@@ -160,7 +161,7 @@ avaritia_version 请查看这里 [here](https://maven.nova-committee.cn/s3/commi
 ```groovy
 repositories {
     maven {
-        url "https://maven.nova-committee.cn/s3"
+        url "https://maven.nova-committee.cn/releases"
     }
 }
 
