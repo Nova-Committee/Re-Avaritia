@@ -7,7 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:44
  * Version: 1.0
  */

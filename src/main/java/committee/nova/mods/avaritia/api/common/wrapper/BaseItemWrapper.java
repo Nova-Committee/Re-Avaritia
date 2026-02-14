@@ -6,7 +6,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/1 02:48
  * @Description:
  */

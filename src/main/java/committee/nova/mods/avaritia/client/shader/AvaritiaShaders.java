@@ -9,7 +9,7 @@ import net.minecraftforge.client.event.RegisterShadersEvent;
 
 /**
  * Name: Avaritia-forge / AvaritiaShaders
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/18 1:37
  * Description:
  */

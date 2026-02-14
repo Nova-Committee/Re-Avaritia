@@ -40,7 +40,7 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
             ItemStack stack = container.getItem(i);
             if (stack.getItem() instanceof MatterClusterItem clusterItem) {
 
-                if (clusterItem.getClusterSize(stack) >= 4096) {
+                if (MatterClusterItem.getClusterSize(stack) >= 4096) {
                     return true;
                 }
             }

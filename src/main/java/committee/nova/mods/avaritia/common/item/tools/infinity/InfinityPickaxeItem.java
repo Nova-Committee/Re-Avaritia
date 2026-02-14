@@ -9,8 +9,10 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
+import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -24,6 +26,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -32,9 +35,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
@@ -91,11 +96,13 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
             return InteractionResultHolder.success(stack);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
-            ItemUtils.clearEnchants(stack);
-            stack.enchant(Enchantments.BLOCK_FORTUNE, 10);
+            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_1"), true);
+            ItemUtils.clearEnchants(stack, Enchantments.SILK_TOUCH);
             return InteractionResultHolder.success(stack);
         } else {
-            ItemUtils.clearEnchants(stack);
+            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_2"), true);
             stack.enchant(Enchantments.SILK_TOUCH, 1);
             return InteractionResultHolder.success(stack);
         }
@@ -115,19 +122,19 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (miningEntity instanceof ServerPlayer player && isActive(stack, "infinity_pickaxe_hammer")) {
-            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsPick);
+            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.pickAxeBreakRange.get());
         }
         return false;
     }
 
     @Override
     public int getInitEnchantLevel(ItemStack stack, Enchantment enchantment) {
-        return enchantment == Enchantments.BLOCK_FORTUNE ? 20 : 0;
+        return enchantment == Enchantments.BLOCK_FORTUNE ? 10 : 0;
     }
 
     @Override
     public boolean hasDescTooltip() {
-        return true;
+        return false;
     }
 
     @Override
@@ -138,5 +145,12 @@ public class InfinityPickaxeItem extends PickaxeItem implements InitEnchantItem,
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getTier().getSpeed(), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
+                                @NotNull TooltipFlag isAdvanced) {
+        tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantments.BLOCK_FORTUNE.getFullname(10)).build());
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
 }

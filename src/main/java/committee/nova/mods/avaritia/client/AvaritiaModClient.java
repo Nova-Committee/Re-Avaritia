@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
 import committee.nova.mods.avaritia.client.model.loader.*;
 import committee.nova.mods.avaritia.client.particle.ChargeParticle;
+import committee.nova.mods.avaritia.client.particle.ShockwaveParticle;
 import committee.nova.mods.avaritia.client.render.entity.InfinityArmorRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRender;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
@@ -36,8 +37,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import java.util.Map;
 
 import static committee.nova.mods.avaritia.Const.LOGGER;
-import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY;
-import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.RING_KEY;
+import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.*;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_SPRITES;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.ETERNAL_SPRITES;
 
@@ -65,6 +65,7 @@ public class AvaritiaModClient {
         LOGGER.debug("Registering key bindings");
         event.register(FILTER_KEY);
         event.register(RING_KEY);
+        event.register(CONFIG_KEY);
     }
 
 
@@ -80,6 +81,7 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
+        event.registerSpriteSet(ModParticles.SHOCKWAVE_PARTICLE.get(), ShockwaveParticle.Provider::new);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -108,6 +110,11 @@ public class AvaritiaModClient {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRegisterShaders(RegisterShadersEvent event) {
         AvaritiaShaders.onRegisterShaders(event);//注册着色器
+    }
+
+    @SubscribeEvent
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        //AvaritiaModelCache.INSTANCE.setup(event);
     }
 
     @SubscribeEvent
@@ -168,11 +175,16 @@ public class AvaritiaModClient {
 
     }
 
+    @SubscribeEvent
+    public static void onModelBake(ModelEvent.BakingCompleted event) {
+        //AvaritiaModelCache.INSTANCE.onBake(event);
+    }
+
     public static int getCurrentRainbowColor() {
         var hue = (System.currentTimeMillis() % 18000) / 18000F;
         return ColorUtils.HSBToRGB(hue, 1, 1);
     }
-
+    @SuppressWarnings("removal")
     private static void registerConfigScreen() {
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory(

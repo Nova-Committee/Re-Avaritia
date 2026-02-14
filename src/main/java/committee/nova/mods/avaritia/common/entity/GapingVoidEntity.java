@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/3 8:34
  * Version: 1.0
  */
@@ -69,7 +69,6 @@ public class GapingVoidEntity extends Entity {
 
     public GapingVoidEntity(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-//        setSharedFlagOnFire(true);
         noCulling = true;
         if (level() instanceof ServerLevel) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) level(), Const.AVARITIA_FAKE_PLAYER);
@@ -117,7 +116,6 @@ public class GapingVoidEntity extends Entity {
     @Override
     protected void defineSynchedData() {
         this.entityData.define(AGE_PARAMETER, 0);
-
     }
 
     @Override
@@ -141,8 +139,6 @@ public class GapingVoidEntity extends Entity {
 
     @Override
     public void tick() {
-        //super.tick();
-
         double posX = this.getX();
         double posY = this.getY();
         double posZ = this.getZ();
@@ -158,12 +154,15 @@ public class GapingVoidEntity extends Entity {
                     .filter(entity -> entity != this)
                     .forEach(entity -> {
                         if (entity instanceof EnderDragon dragon) {
-                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(level(), user), 1000.0f);
+                            dragon.hurt(dragon.head, ModDamageTypes.causeRandomDamage(level(),user), 1000.0f);
                             dragon.setHealth(0);
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            wither.hurt(ModDamageTypes.causeRandomDamage(level(), user), 1000.0f);
-                        } else entity.hurt(ModDamageTypes.causeRandomDamage(level(), user), 1000.0f);
+                            wither.hurt(ModDamageTypes.causeRandomDamage(level(),user), 1000.0f);
+                        } else {
+                            var damageSource = user != null ? ModDamageTypes.causeRandomDamage(level(),user) : this.damageSources().fellOutOfWorld();
+                            entity.hurt(damageSource, 1000.0f);
+                        }
                     });
             remove(RemovalReason.KILLED);
         } else {
@@ -191,7 +190,6 @@ public class GapingVoidEntity extends Entity {
 
         // *slurping noises*
 
-        double particlespeed = 4.5;
         double size = getVoidScale(age) * 0.5 - 0.2;
         int range = (int) (size * suckRange);
         AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
@@ -279,11 +277,6 @@ public class GapingVoidEntity extends Entity {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean canBeCollidedWith() {
-        return false;
     }
 
     @Override

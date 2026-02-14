@@ -7,8 +7,6 @@ import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
 import committee.nova.mods.avaritia.common.menu.*;
-import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
-import committee.nova.mods.avaritia.client.screen.InfinityChestScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -23,7 +21,7 @@ import java.util.function.Supplier;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 11:37
  * Version: 1.0
  */
@@ -58,7 +56,7 @@ public class ModMenus {
     public static RegistryObject<MenuType<TierCraftMenu>> end_crafting_tile_table = menu("end_crafting_tile_table", () -> IForgeMenuType.create(TierCraftMenu::end));
     public static RegistryObject<MenuType<TierCraftMenu>> extreme_crafting_table = menu("extreme_crafting_table", () -> IForgeMenuType.create(TierCraftMenu::extreme));
     public static RegistryObject<MenuType<NeutronCollectorMenu>> neutron_collector = menu("neutron_collector", () -> IForgeMenuType.create(NeutronCollectorMenu::new));
-    public static RegistryObject<MenuType<CompressorMenu>> compressor = menu("compressor", () -> IForgeMenuType.create(CompressorMenu::new));
+    public static RegistryObject<MenuType<NeutronCompressorMenu>> compressor = menu("compressor", () -> IForgeMenuType.create(NeutronCompressorMenu::new));
     public static RegistryObject<MenuType<ExtremeSmithingMenu>> extreme_smithing_table = menu("extreme_smithing_table", () -> IForgeMenuType.create(ExtremeSmithingMenu::new));
     public static RegistryObject<MenuType<CompressedChestMenu>> GENERIC_9x27 = menu("generic_9x27", () -> IForgeMenuType.create(CompressedChestMenu::new));
     public static RegistryObject<MenuType<ExtremeAnvilMenu>> extreme_anvil = menu("extreme_anvil", () -> IForgeMenuType.create(ExtremeAnvilMenu::new));

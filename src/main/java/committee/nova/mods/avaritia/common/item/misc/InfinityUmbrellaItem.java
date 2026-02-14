@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter, cu6
+ * @author cnlimiter, cu6
  * @CreateTime: 2025/08/23
  * @Description: Now, We Did it,Four Modes
  */

@@ -8,7 +8,7 @@ import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/7/10 12:46
  * Version: 1.0
  */

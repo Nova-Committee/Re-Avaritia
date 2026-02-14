@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/26 00:38
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */

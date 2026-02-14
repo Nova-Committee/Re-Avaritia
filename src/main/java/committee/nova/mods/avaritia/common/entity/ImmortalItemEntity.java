@@ -13,15 +13,15 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter,Cu6
+ * @author cnlimiter,Cu6
  * Date: 2022/3/31 14:33
  * Version: 1.0
  */
 public class ImmortalItemEntity extends ItemEntity {
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
-        this.pickupDelay = 5;
-        this.lifespan = 3600;
+        this.lifespan = Integer.MAX_VALUE;
+        this.setPickUpDelay(0);
         this.setUnlimitedLifetime();
     }
 
@@ -30,6 +30,7 @@ public class ImmortalItemEntity extends ItemEntity {
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);
+            entity.setPickUpDelay(0);
         }
         return entity;
 
@@ -80,5 +81,10 @@ public class ImmortalItemEntity extends ItemEntity {
     @Override
     public boolean ignoreExplosion() {
         return true;
+    }
+
+    @Override
+    public boolean canChangeDimensions() {
+        return false;
     }
 }

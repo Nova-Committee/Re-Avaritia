@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
@@ -34,13 +36,13 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.NO_CONSUME_CATALYST_SHAPED_SERIALIZER.get();
     }
 
-    public static class Serializer extends ShapedTableCraftingRecipe.Serializer {
+    public static class Serializer implements RecipeSerializer<NoConsumeCatalystShapedRecipe> {
         @Override
-        public NoConsumeCatalystShapedRecipe fromJson(ResourceLocation recipeId, com.google.gson.JsonObject json) {
+        public @NotNull NoConsumeCatalystShapedRecipe fromJson(@NotNull ResourceLocation recipeId, com.google.gson.@NotNull JsonObject json) {
             var map = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
             var pattern = patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
             int width = pattern[0].length();
@@ -49,6 +51,32 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
             var output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
             int tier = GsonHelper.getAsInt(json, "tier", 0);
             return new NoConsumeCatalystShapedRecipe(recipeId, width, height, inputs, output, tier);
+        }
+
+        @Override
+        public @Nullable NoConsumeCatalystShapedRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
+            int width = buffer.readVarInt();
+            int height = buffer.readVarInt();
+            var inputs = NonNullList.withSize(width * height, Ingredient.EMPTY);
+
+            inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
+
+            var output = buffer.readItem();
+            var tier = buffer.readVarInt();
+            return new NoConsumeCatalystShapedRecipe(recipeId, width, height, inputs, output, tier);
+        }
+
+        @Override
+        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull NoConsumeCatalystShapedRecipe recipe) {
+            buffer.writeVarInt(recipe.getWidth());
+            buffer.writeVarInt(recipe.getHeight());
+
+            for (var ingredient : recipe.getIngredients()) {
+                ingredient.toNetwork(buffer);
+            }
+
+            buffer.writeItem(recipe.output);
+            buffer.writeVarInt(recipe.getTier());
         }
 
         private static String[] patternFromJson(JsonArray jsonArr) {

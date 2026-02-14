@@ -17,7 +17,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/7/16 上午12:41
  * @Description:
  */

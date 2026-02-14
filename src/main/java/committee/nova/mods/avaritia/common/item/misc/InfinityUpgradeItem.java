@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/25 19:21
  * @Description:
  */
@@ -46,7 +46,7 @@ public class InfinityUpgradeItem extends ResourceItem {
         var level = pContext.getLevel();
         var blockpos = pContext.getClickedPos();
         var blockstate = level.getBlockState(blockpos);
-        var tile = pContext.getLevel().getBlockEntity(pContext.getClickedPos());
+        var tile = level.getBlockEntity(blockpos);
         var player = pContext.getPlayer();
         var itemInHand = pContext.getItemInHand();
 
@@ -57,6 +57,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                         collectorTile.setTier(CollectorTier.DENSE);
                         level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_collector.get().withPropertiesOf(blockstate));
                         level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        collectorTile.setSideConfiguration(collectorTile.getSideConfiguration());
                         itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
                         return InteractionResult.SUCCESS;
                     }
@@ -64,6 +65,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                         collectorTile.setTier(CollectorTier.DENSER);
                         level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_collector.get().withPropertiesOf(blockstate));
                         level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        collectorTile.setSideConfiguration(collectorTile.getSideConfiguration());
                         itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
                         return InteractionResult.SUCCESS;
                     }
@@ -71,6 +73,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                         collectorTile.setTier(CollectorTier.DENSEST);
                         level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_collector.get().withPropertiesOf(blockstate));
                         level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        collectorTile.setSideConfiguration(collectorTile.getSideConfiguration());
                         itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
                         return InteractionResult.SUCCESS;
                     }
@@ -84,6 +87,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                         compressorTile.setTier(CompressorTier.DENSE);
                         level.setBlockAndUpdate(blockpos, ModBlocks.dense_neutron_compressor.get().withPropertiesOf(blockstate));
                         level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        compressorTile.setSideConfiguration(compressorTile.getSideConfiguration());
                         itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
                         return InteractionResult.SUCCESS;
                     }
@@ -91,6 +95,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                         compressorTile.setTier(CompressorTier.DENSER);
                         level.setBlockAndUpdate(blockpos, ModBlocks.denser_neutron_compressor.get().withPropertiesOf(blockstate));
                         level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        compressorTile.setSideConfiguration(compressorTile.getSideConfiguration());
                         itemInHand.hurt(1, serverPlayer.getRandom(), serverPlayer);
                         return InteractionResult.SUCCESS;
                     }
@@ -98,6 +103,7 @@ public class InfinityUpgradeItem extends ResourceItem {
                         compressorTile.setTier(CompressorTier.DENSEST);
                         level.setBlockAndUpdate(blockpos, ModBlocks.densest_neutron_compressor.get().withPropertiesOf(blockstate));
                         level.playSound(serverPlayer, blockpos, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS);
+                        compressorTile.setSideConfiguration(compressorTile.getSideConfiguration());
                         itemInHand.hurt(4, serverPlayer.getRandom(), serverPlayer);
                         return InteractionResult.SUCCESS;
                     }

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/3 10:34
  * Version: 1.0
  */
@@ -105,7 +105,7 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity> {
         cc.reset();
         cc.bind(AvaritiaRenderTypes.VOID, buf, stack);
         cc.baseColour = color.rgba();
-        new OBJParser(Const.rl("models/hemisphere.obj")).parse().get("model").render(cc);
+        new OBJParser(Const.rl("models/obj/hemisphere.obj")).parse().get("model").render(cc);
         stack.popPose();
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class RecipeProcessor {
     public static void processRecipes(Map<ResourceLocation, JsonElement> recipes,

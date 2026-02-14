@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/28 13:55
  * @Description:
  */

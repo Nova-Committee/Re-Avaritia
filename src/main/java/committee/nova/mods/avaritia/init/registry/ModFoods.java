@@ -7,7 +7,7 @@ import net.minecraft.world.food.FoodProperties;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/3 0:11
  * Version: 1.0
  */

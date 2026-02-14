@@ -5,7 +5,7 @@ import net.minecraft.world.level.material.MapColor;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/1 21:44
  * Version: 1.0
  */

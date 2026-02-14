@@ -3,8 +3,8 @@ package committee.nova.mods.avaritia.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
-import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
+import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SAddChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SRenameChannelPack;
@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/1 15:00
  * @Description:
  */

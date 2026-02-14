@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/4/13 17:01
  * @Description:
  */

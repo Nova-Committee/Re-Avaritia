@@ -4,7 +4,7 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/19 23:57
  * @Description:
  */

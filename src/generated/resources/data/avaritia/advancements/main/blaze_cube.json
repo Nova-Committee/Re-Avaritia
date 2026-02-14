@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:main/nether_crafting_table",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:blaze_cube"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.blaze_cube.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:blaze_cube"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.blaze_cube.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

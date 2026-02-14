@@ -26,7 +26,7 @@ import java.util.function.BiFunction;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 9:16
  * Version: 1.0
  */

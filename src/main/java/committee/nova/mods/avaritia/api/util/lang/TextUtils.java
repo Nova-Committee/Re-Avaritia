@@ -7,7 +7,7 @@ import static net.minecraft.ChatFormatting.*;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/21 15:33
  * Version: 1.0
  */

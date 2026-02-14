@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.util.InventoryUtils;
 import committee.nova.mods.avaritia.common.entity.BladeSlashEntity;
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
-import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
@@ -41,6 +40,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2022/3/31 10:50
  * @Description:
  */
@@ -153,13 +153,58 @@ public class ToolUtils {
     }
 
     /**
+     * 身穿无尽头盔
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽头盔
+     */
+    public static boolean isWearingInfinityHelmet(LivingEntity player) {
+        ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
+        return !helmet.isEmpty() && helmet.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
+     * 身穿无尽胸甲
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽胸甲
+     */
+    public static boolean isWearingInfinityChestplate(LivingEntity player) {
+        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
+        return !chestplate.isEmpty() && chestplate.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
+     * 身穿无尽护腿
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽护腿
+     */
+    public static boolean isWearingInfinityPants(LivingEntity player) {
+        ItemStack leggings = player.getItemBySlot(EquipmentSlot.LEGS);
+        return !leggings.isEmpty() && leggings.getItem() instanceof InfinityArmorItem;
+    }
+
+    /**
+     * 身穿无尽靴子
+     *
+     * @param player 玩家
+     * @return 是否身穿无尽靴子
+     */
+    public static boolean isWearingInfinityBoots(LivingEntity player) {
+        ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
+        return !boots.isEmpty() && boots.getItem() instanceof InfinityArmorItem;
+    }
+
+
+    /**
      * 无尽镐And无尽铲破坏
      *
      * @param player   玩家
      * @param startPos 起始坐标
      * @param range    挖掘范围
      */
-    public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range, Set<TagKey<Block>> materials) {
+    public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range) {
         ServerLevel world = player.serverLevel();
 
         // 计算方形范围
@@ -176,9 +221,8 @@ public class ToolUtils {
             BlockPos currentPos = pos.immutable();
             BlockState state = world.getBlockState(currentPos);
 
-            // 仅处理可被工具挖掘的方块
-            if (ToolUtils.canUseTool(state, materials) && state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
-                // 收集掉落物
+            if (state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
+
                 List<ItemStack> blockDrops = Block.getDrops(state, world, currentPos, null);
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
@@ -200,6 +244,45 @@ public class ToolUtils {
         }
 
         // 将所有掉落物合并为物质团
+        ClustersUtils.spawnClusters(world, player, drops);
+    }
+
+    /**
+     * 无尽铲范围挖掘
+     *
+     * @param player   玩家
+     * @param startPos 起始坐标
+     * @param range    挖掘范围
+     */
+    public static void destroyShovelBlocks(ServerPlayer player, BlockPos startPos, int range) {
+        ServerLevel world = player.serverLevel();
+
+        int halfRange = range / 2;
+        BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
+        BlockPos maxPos = startPos.offset(halfRange, halfRange, halfRange);
+
+        Set<ItemStack> drops = Sets.newHashSet();
+
+        for (BlockPos pos : BlockPos.betweenClosed(minPos, maxPos)) {
+            BlockPos currentPos = pos.immutable();
+            BlockState state = world.getBlockState(currentPos);
+
+            if (state.is(BlockTags.MINEABLE_WITH_SHOVEL) && state.getBlock().canHarvestBlock(state, world, currentPos, player)) {
+
+                List<ItemStack> blockDrops = Block.getDrops(state, world, currentPos, null);
+                if (!blockDrops.isEmpty()) {
+                    drops.addAll(blockDrops);
+                } else {
+                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
+                }
+
+                world.destroyBlock(currentPos, false, player);
+                world.playSound(null, currentPos, state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 0.5F, 1.0F);
+            }
+        }
+
         ClustersUtils.spawnClusters(world, player, drops);
     }
 
@@ -472,6 +555,12 @@ public class ToolUtils {
                         return !(entity instanceof ItemEntity);
                     } else return true;
                 })
+                .filter(entity -> {
+                    boolean attack = ModConfig.isSwordAttackProjectile.get();
+                    if (attack == false) {
+                        return !(entity instanceof Projectile);
+                    } else return true;
+                })
                 .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
                 .filter(entity -> {
                     if (hurtAnimal) {
@@ -491,6 +580,8 @@ public class ToolUtils {
                             livingEntity.hurt(src, damage);
                         }
                     } else if (entity instanceof ExperienceOrb || entity instanceof AbstractArrow) {
+                        entity.discard();
+                    }else if(entity instanceof Projectile){
                         entity.discard();
                     } else if (entity instanceof Entity) {
                         entity.hurt(src, damage);
@@ -632,21 +723,30 @@ public class ToolUtils {
      * @param state  方块状态
      */
     public static void destroyTree(Player player, ServerLevel world, BlockPos pos, BlockState state) {
+        int maxBlocks = ModConfig.axeChainCount.get();
         List<BlockPos> connectedLogs = getConnectedLogs(world, pos);
         Set<ItemStack> drops = Sets.newHashSet();
+        int blockCount = 0;
         for (BlockPos logPos : connectedLogs) {
-            List<ItemStack> blockDrops = Block.getDrops(world.getBlockState(logPos), world, logPos,
-                    null);
+            if (blockCount >= maxBlocks) {
+                break;
+            }
+            BlockState logState = world.getBlockState(logPos);
+            List<ItemStack> blockDrops = Block.getDrops(logState, world, logPos, null);
+
             if (!blockDrops.isEmpty()) {
                 drops.addAll(blockDrops);
             } else {
-                ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(world.getBlockState(logPos).getBlock());
+                ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(logState.getBlock());
 
                 Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
-                drops.add(new ItemStack(blockItem));
+                if (blockItem != Items.AIR && blockItem != null) {
+                    drops.add(new ItemStack(blockItem));
+                }
             }
-            world.levelEvent(2001, pos, Block.getId(state));
+            world.levelEvent(2001, logPos, Block.getId(logState));
             destroy(world, player, logPos);
+            blockCount++; // 增加已砍伐数量
         }
         ClustersUtils.spawnClusters(world, player, drops);
     }

@@ -10,7 +10,7 @@ import net.minecraft.world.level.material.MapColor;
 
 /**
  * Name: Avaritia-forge / ResourceBlock
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/8/13 13:20
  * Description:
  */

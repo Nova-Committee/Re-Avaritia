@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 11:09
  * Version: 1.0
  */
@@ -51,7 +51,7 @@ public class ModCraftContainer extends TransientCraftingContainer {
 
     @Override
     public @NotNull ItemStack removeItem(int slot, int amount) {
-        var stack = this.inventory.extractItemSuper(slot, amount, false);
+        var stack = this.inventory.extractItem(slot, amount, false, true);
         this.menu.slotsChanged(this);
         return stack;
     }

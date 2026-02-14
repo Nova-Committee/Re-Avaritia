@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/21 15:13
  * Version: 1.0
  */

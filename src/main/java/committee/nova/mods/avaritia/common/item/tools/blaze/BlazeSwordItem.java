@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.InitEnchantItem;
-import committee.nova.mods.avaritia.common.entity.FireBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 20:00
  * Version: 1.0
  */
@@ -74,19 +74,27 @@ public class BlazeSwordItem extends SwordItem implements ITooltip, ISwitchable, 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level);
-            if (fireBallEntity != null) {
-                fireBallEntity.setOwner(player);
-                fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
-                fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-                level.addFreshEntity(fireBallEntity);
-                player.getCooldowns().addCooldown(heldItem.getItem(), 40);
+            if (player.isShiftKeyDown()) {
+                switchMode(level, player, hand, "fire_ball");
+                return InteractionResultHolder.success(stack);
             }
-
+            if (isActive(stack, "fire_ball")) {
+                FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level);
+                if (fireBallEntity != null) {
+                    fireBallEntity.setOwner(player);
+                    fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
+                    fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+                    level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
+                    level.addFreshEntity(fireBallEntity);
+                    player.getCooldowns().addCooldown(heldItem.getItem(), 40);
+                    return InteractionResultHolder.success(heldItem);
+                }
+            }
         }
-        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
-        return InteractionResultHolder.success(heldItem);
+
+        return super.use(level, player, hand);
     }
 
     @Override

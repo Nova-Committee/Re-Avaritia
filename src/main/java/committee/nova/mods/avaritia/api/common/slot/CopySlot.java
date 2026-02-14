@@ -6,7 +6,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class CopySlot extends SlotItemHandler {
     public int slotIndex;

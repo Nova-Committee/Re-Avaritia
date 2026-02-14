@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/20 18:54
  * Version: 1.0
  */
@@ -25,6 +25,4 @@ public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity> {
     public @NotNull ResourceLocation getTextureLocation(@NotNull HeavenSubArrowEntity entity) {
         return Res.HEAVEN_ARROW;
     }
-
-
 }

@@ -6,7 +6,7 @@ plugins {
 version = mc_version + "-" + mod_version + "-" + mod_version_tag
 group = mod_group_id
 base {
-    archivesName = mod_name
+    archivesName = mod_name + "-" + mod_platform
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -60,6 +60,7 @@ repositories {
         url "https://modmaven.dev/"
         content {
             includeGroup "mezz.jei"
+            includeGroup "mekanism"
         }
     }
 
@@ -112,16 +113,22 @@ dependencies {
 
     modImplementation("top.theillusivec4.curios:curios-forge:${curios_version}")
 
-    modImplementation("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    modCompileOnly("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     modImplementation("dev.latvian.mods:rhino-forge:${rhino_version}")
     modImplementation "dev.architectury:architectury-forge:${architectury_version}"
 
     modImplementation("curse.maven:charm-of-undying-316873:${cou_version}")
     modImplementation("curse.maven:projecte-226410:${projecte_version}")
-    modImplementation("curse.maven:mekanism-268560:${mek_version}")
     modImplementation("curse.maven:applied-energistics-2-223794:${ae2_version}")
     modRuntimeOnly("curse.maven:packagedauto-308380:${packagedauto_version}")
     modRuntimeOnly("curse.maven:packagedavaritia-308383:${packagedavaritia_version}")
+
+    modImplementation("mekanism:Mekanism:${mek_version}")
+    //CoFH Core
+    modRuntimeOnly("curse.maven:cofh-core-69162:${cofh_core_version}")//Thermal Expansion
+    modRuntimeOnly("curse.maven:thermal-expansion-69163:${thermal_expansion_version}")
+    //Thermal Foundation
+    modRuntimeOnly("curse.maven:thermal-foundation-222880:${thermal_foundation_version}")
 
     // compile against the JEI API but do not include it at runtime
     modCompileOnly("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
@@ -173,8 +180,6 @@ dependencies {
         compileOnly topDependency
     }
 
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
 
     compileOnly ("org.projectlombok:lombok:$lombok_version")
     annotationProcessor ("org.projectlombok:lombok:$lombok_version")
@@ -364,7 +369,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = project.group
-            artifactId = project.mod_name
+            artifactId = project.mod_id + "-" + project.mod_platform
             version = project.version
 
             artifact jar
@@ -376,8 +381,8 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-            name 'S3'
-            url = 'https://maven.nova-committee.cn/s3'
+            name 'Releases'
+            url = 'https://maven.nova-committee.cn/releases'
 
             credentials {
                 username System.getenv('MAVEN_USERNAME')

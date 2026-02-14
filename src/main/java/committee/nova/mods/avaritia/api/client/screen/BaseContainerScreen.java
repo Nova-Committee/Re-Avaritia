@@ -17,7 +17,7 @@ import java.text.NumberFormat;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 11:37
  * Version: 1.0
  */
@@ -92,9 +92,6 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
 
     protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
     }
-
-    ;
-
 
     public void dataChanged(@NotNull AbstractContainerMenu pContainerMenu, int pDataSlotIndex, int pValue) {
     }

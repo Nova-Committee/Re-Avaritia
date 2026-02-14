@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.api.client.util.color;
 import lombok.Getter;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @Getter
 public enum ColorMC {

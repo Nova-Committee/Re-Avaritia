@@ -27,7 +27,7 @@ import java.util.Arrays;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/21 14:27
  * @Description:
  */

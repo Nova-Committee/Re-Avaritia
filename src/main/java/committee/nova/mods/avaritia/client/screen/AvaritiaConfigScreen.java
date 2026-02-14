@@ -52,10 +52,6 @@ public class AvaritiaConfigScreen extends Screen {
     private void initConfigEntries() {
         addCategoryHeader("config.avaritia.category.tools");
 
-        addBooleanEntry("is_keep_stone", ModConfig.isKeepStone,
-                Component.translatable("config.avaritia.is_keep_stone.tooltip"),
-                ModConfig.isKeepStone::set, ModConfig.isKeepStone);
-
         addBooleanEntry("is_merge_matter_cluster", ModConfig.isMergeMatterCluster,
                 Component.translatable("config.avaritia.is_merge_matter_cluster.tooltip"),
                 ModConfig.isMergeMatterCluster::set, ModConfig.isMergeMatterCluster);
@@ -71,6 +67,10 @@ public class AvaritiaConfigScreen extends Screen {
         addBooleanEntry("is_sword_attack_item_entity", ModConfig.isSwordAttackItemEntity,
                 Component.translatable("config.avaritia.is_sword_attack_item_entity.tooltip"),
                 ModConfig.isSwordAttackItemEntity::set, ModConfig.isSwordAttackItemEntity);
+
+        addBooleanEntry("is_sword_attack_projectile", ModConfig.isSwordAttackProjectile,
+                Component.translatable("config.avaritia.is_sword_attack_projectile.tooltip"),
+                ModConfig.isSwordAttackProjectile::set, ModConfig.isSwordAttackProjectile);
 
         addBooleanEntry("is_sword_attack_lightning", ModConfig.isSwordAttackLightning,
                 Component.translatable("config.avaritia.is_sword_attack_lightning.tooltip"),
@@ -88,10 +88,6 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.axe_chain_count.tooltip"),
                 ModConfig.axeChainCount::set, ModConfig.axeChainCount);
 
-        addDoubleEntry("food_time", ModConfig.foodTime, 0.1, 5.0,
-                Component.translatable("config.avaritia.food_time.tooltip"),
-                ModConfig.foodTime::set, ModConfig.foodTime);
-
         addIntEntry("pickaxe_break_range", ModConfig.pickAxeBreakRange, 2, 32,
                 Component.translatable("config.avaritia.pickaxe_break_range.tooltip"),
                 ModConfig.pickAxeBreakRange::set, ModConfig.pickAxeBreakRange);
@@ -99,10 +95,6 @@ public class AvaritiaConfigScreen extends Screen {
         addIntEntry("shovel_break_range", ModConfig.shovelBreakRange, 2, 32,
                 Component.translatable("config.avaritia.shovel_break_range.tooltip"),
                 ModConfig.shovelBreakRange::set, ModConfig.shovelBreakRange);
-
-        addIntEntry("neutron_collector_product_tick", ModConfig.neutronCollectorProductTick, 1200, Integer.MAX_VALUE,
-                Component.translatable("config.avaritia.neutron_collector_product_tick.tooltip"),
-                ModConfig.neutronCollectorProductTick::set, ModConfig.neutronCollectorProductTick);
 
         addIntEntry("singularity_time_required", ModConfig.singularityTimeRequired, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.singularity_time_required.tooltip"),
@@ -120,10 +112,6 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.blade_slash_radius.tooltip"),
                 ModConfig.bladeSlashRadius::set, ModConfig.bladeSlashRadius);
 
-        addBooleanEntry("internal_infinity_catalyst_craft", ModConfig.internalInfinityCatalystCraft,
-                Component.translatable("config.avaritia.internal_infinity_catalyst_craft.tooltip"),
-                ModConfig.internalInfinityCatalystCraft::set, ModConfig.internalInfinityCatalystCraft);
-
 
         addCategoryHeader("config.avaritia.category.emc");
 
@@ -131,41 +119,15 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.neutron_pile_emc.tooltip"),
                 ModConfig.neutronPileEmc::set, ModConfig.neutronPileEmc);
 
+        addIntEntry("blaze_cube_emc", ModConfig.blazeCubeEmc, 0, Integer.MAX_VALUE,
+                Component.translatable("config.avaritia.blaze_cube_emc.tooltip"),
+                ModConfig.blazeCubeEmc::set, ModConfig.blazeCubeEmc);
+
         addIntEntry("vanilla_totem_emc", ModConfig.vanillaTotemEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
-        addCategoryHeader("config.avaritia.category.storage");
-
-        addIntEntry("chest_max_item_size", ModConfig.chestMaxItemSize, 2048, Integer.MAX_VALUE,
-                Component.translatable("config.avaritia.chest_max_item_size.tooltip"),
-                ModConfig.chestMaxItemSize::set, ModConfig.chestMaxItemSize);
-
-        addBooleanEntry("use_single_page_mode", ModConfig.useSinglePageMode,
-                Component.translatable("config.avaritia.use_single_page_mode.tooltip"),
-                ModConfig.useSinglePageMode::set, ModConfig.useSinglePageMode);
-
-        addLongEntry("slot_stack_limit", ModConfig.slotStackLimit, 64L, 4294967295L,
-                Component.translatable("config.avaritia.slot_stack_limit.tooltip"),
-                ModConfig.slotStackLimit::set, ModConfig.slotStackLimit);
-
-        addIntEntry("max_page_limit", ModConfig.maxPageLimit, 2, 79536431,
-                Component.translatable("config.avaritia.max_page_limit.tooltip"),
-                ModConfig.maxPageLimit::set, ModConfig.maxPageLimit);
-
-        addIntEntry("reset_max_page", ModConfig.resetMaxPage, 1, 79536431,
-                Component.translatable("config.avaritia.reset_max_page.tooltip"),
-                ModConfig.resetMaxPage::set, ModConfig.resetMaxPage);
-
-        addIntEntry("inventory_rows", ModConfig.inventoryRows, 1, 6,
-                Component.translatable("config.avaritia.inventory_rows.tooltip"),
-                ModConfig.inventoryRows::set, ModConfig.inventoryRows);
-
         addCategoryHeader("config.avaritia.category.channel");
-
-        addIntEntry("max_size_pre_channel", ModConfig.MAX_SIZE_PRE_CHANNEL, 2048, Integer.MAX_VALUE,
-                Component.translatable("config.avaritia.max_size_pre_channel.tooltip"),
-                val -> ModConfig.MAX_SIZE_PRE_CHANNEL.set(val), ModConfig.MAX_SIZE_PRE_CHANNEL);
 
         addIntEntry("max_channels_pre_player", ModConfig.MAX_CHANNELS_PRE_PLAYER, 4, 64,
                 Component.translatable("config.avaritia.max_channels_pre_player.tooltip"),
@@ -201,6 +163,14 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.infinity_elytra_flying_speed.tooltip"),
                 ModConfig.infinityElytraFlyingSpeed::set, ModConfig.infinityElytraFlyingSpeed);
 
+        addDoubleEntry("infinity_elytra_flying_damage_range", ModConfig.infinityElytraFlyingRangeDamage, 0.0, 10000.0,
+                Component.translatable("config.avaritia.infinity_elytra_flying_damage_range.tooltip"),
+                ModConfig.infinityElytraFlyingRangeDamage::set,ModConfig.infinityElytraFlyingRangeDamage);
+
+        addBooleanEntry("infinity_helmet_night_vision", ModConfig.InfinityArmorNightVision,
+                Component.translatable("config.avaritia.infinity_helmet_night_vision.tooltip"),
+                ModConfig.InfinityArmorNightVision::set, ModConfig.InfinityArmorNightVision);
+
         addDoubleEntry("boot_speed_base", ModConfig.bootSpeedBase, 0.01, 1.0,
                 Component.translatable("config.avaritia.boot_speed_base.tooltip"),
                 ModConfig.bootSpeedBase::set, ModConfig.bootSpeedBase);
@@ -229,6 +199,51 @@ public class AvaritiaConfigScreen extends Screen {
                 Component.translatable("config.avaritia.boot_speed_sprinting_multiplier.tooltip"),
                 ModConfig.bootSpeedSprintingMultiplier::set, ModConfig.bootSpeedSprintingMultiplier);
     }
+
+    private void resetToDefaults() {
+        // Tools 配置项
+        ModConfig.isMergeMatterCluster.set(ModConfig.isMergeMatterCluster.getDefault());
+        ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
+        ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
+        ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
+        ModConfig.isSwordAttackProjectile.set(ModConfig.isSwordAttackProjectile.getDefault());
+        ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
+        ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
+        ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
+        ModConfig.pickAxeBreakRange.set(ModConfig.pickAxeBreakRange.getDefault());
+        ModConfig.shovelBreakRange.set(ModConfig.shovelBreakRange.getDefault());
+        ModConfig.singularityTimeRequired.set(ModConfig.singularityTimeRequired.getDefault());
+        ModConfig.growthSoulFarmland.set(ModConfig.growthSoulFarmland.getDefault());
+        ModConfig.bladeSlashDamage.set(ModConfig.bladeSlashDamage.getDefault());
+        ModConfig.bladeSlashRadius.set(ModConfig.bladeSlashRadius.getDefault());
+
+        // EMC 配置项
+        ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
+        ModConfig.blazeCubeEmc.set(ModConfig.blazeCubeEmc.getDefault());
+        ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
+
+        // Channel 配置项
+        ModConfig.MAX_CHANNELS_PRE_PLAYER.set(ModConfig.MAX_CHANNELS_PRE_PLAYER.getDefault());
+        ModConfig.MAX_PUBLIC_CHANNELS.set(ModConfig.MAX_PUBLIC_CHANNELS.getDefault());
+        ModConfig.CHANNEL_FAST_UPDATE_RATE.set(ModConfig.CHANNEL_FAST_UPDATE_RATE.getDefault());
+        ModConfig.CHANNEL_FULL_UPDATE_RATE.set(ModConfig.CHANNEL_FULL_UPDATE_RATE.getDefault());
+
+        // Misc 配置项
+        ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
+        ModConfig.immortalItemEntitySpeed.set(ModConfig.immortalItemEntitySpeed.getDefault());
+        ModConfig.immortalItemEntityRange.set(ModConfig.immortalItemEntityRange.getDefault());
+        ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
+        ModConfig.infinityElytraFlyingRangeDamage.set(ModConfig.infinityElytraFlyingRangeDamage.getDefault());
+        ModConfig.InfinityArmorNightVision.set(ModConfig.InfinityArmorNightVision.getDefault());
+        ModConfig.bootSpeedSwimmingMultiplier.set(ModConfig.bootSpeedSwimmingMultiplier.getDefault());
+        ModConfig.bootSpeedBackwardMultiplier.set(ModConfig.bootSpeedBackwardMultiplier.getDefault());
+        ModConfig.bootSpeedSprintingMultiplier.set(ModConfig.bootSpeedSprintingMultiplier.getDefault());
+        ModConfig.bootSpeedSneakingMultiplier.set(ModConfig.bootSpeedSneakingMultiplier.getDefault());
+        ModConfig.bootSpeedStrafingMultiplier.set(ModConfig.bootSpeedStrafingMultiplier.getDefault());
+        ModConfig.bootSpeedBase.set(ModConfig.bootSpeedBase.getDefault());
+        ModConfig.bootSpeedFlyingMultiplier.set(ModConfig.bootSpeedFlyingMultiplier.getDefault());
+    }
+
 
     private void addBooleanEntry(String titleKey, ForgeConfigSpec.BooleanValue configValue,
                                  Component description, Consumer<Boolean> onValueChange, Supplier<Boolean> valueSupplier) {
@@ -315,59 +330,6 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
 
-    private void resetToDefaults() {
-        // Tools 配置项
-        ModConfig.isKeepStone.set(ModConfig.isKeepStone.getDefault());
-        ModConfig.isMergeMatterCluster.set(ModConfig.isMergeMatterCluster.getDefault());
-        ModConfig.swordRangeDamage.set(ModConfig.swordRangeDamage.getDefault());
-        ModConfig.swordAttackRange.set(ModConfig.swordAttackRange.getDefault());
-        ModConfig.isSwordAttackItemEntity.set(ModConfig.isSwordAttackItemEntity.getDefault());
-        ModConfig.isSwordAttackLightning.set(ModConfig.isSwordAttackLightning.getDefault());
-        ModConfig.isSwordAttackEndless.set(ModConfig.isSwordAttackEndless.getDefault());
-        ModConfig.subArrowDamage.set(ModConfig.subArrowDamage.getDefault());
-        ModConfig.axeChainCount.set(ModConfig.axeChainCount.getDefault());
-        ModConfig.foodTime.set(ModConfig.foodTime.getDefault());
-        ModConfig.pickAxeBreakRange.set(ModConfig.pickAxeBreakRange.getDefault());
-        ModConfig.shovelBreakRange.set(ModConfig.shovelBreakRange.getDefault());
-        ModConfig.neutronCollectorProductTick.set(ModConfig.neutronCollectorProductTick.getDefault());
-        ModConfig.singularityTimeRequired.set(ModConfig.singularityTimeRequired.getDefault());
-        ModConfig.growthSoulFarmland.set(ModConfig.growthSoulFarmland.getDefault());
-        ModConfig.bladeSlashDamage.set(ModConfig.bladeSlashDamage.getDefault());
-        ModConfig.bladeSlashRadius.set(ModConfig.bladeSlashRadius.getDefault());
-        ModConfig.internalInfinityCatalystCraft.set(ModConfig.internalInfinityCatalystCraft.getDefault());
-
-        // EMC 配置项
-        ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
-        ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());
-
-        // Storage 配置项
-        ModConfig.chestMaxItemSize.set(ModConfig.chestMaxItemSize.getDefault());
-        ModConfig.useSinglePageMode.set(ModConfig.useSinglePageMode.getDefault());
-        ModConfig.slotStackLimit.set(ModConfig.slotStackLimit.getDefault());
-        ModConfig.maxPageLimit.set(ModConfig.maxPageLimit.getDefault());
-        ModConfig.resetMaxPage.set(ModConfig.resetMaxPage.getDefault());
-        ModConfig.inventoryRows.set(ModConfig.inventoryRows.getDefault());
-
-        // Channel 配置项
-        ModConfig.MAX_SIZE_PRE_CHANNEL.set(ModConfig.MAX_SIZE_PRE_CHANNEL.getDefault());
-        ModConfig.MAX_CHANNELS_PRE_PLAYER.set(ModConfig.MAX_CHANNELS_PRE_PLAYER.getDefault());
-        ModConfig.MAX_PUBLIC_CHANNELS.set(ModConfig.MAX_PUBLIC_CHANNELS.getDefault());
-        ModConfig.CHANNEL_FAST_UPDATE_RATE.set(ModConfig.CHANNEL_FAST_UPDATE_RATE.getDefault());
-        ModConfig.CHANNEL_FULL_UPDATE_RATE.set(ModConfig.CHANNEL_FULL_UPDATE_RATE.getDefault());
-
-        // Misc 配置项
-        ModConfig.useAdvanceTooltips.set(ModConfig.useAdvanceTooltips.getDefault());
-        ModConfig.immortalItemEntitySpeed.set(ModConfig.immortalItemEntitySpeed.getDefault());
-        ModConfig.immortalItemEntityRange.set(ModConfig.immortalItemEntityRange.getDefault());
-        ModConfig.infinityElytraFlyingSpeed.set(ModConfig.infinityElytraFlyingSpeed.getDefault());
-        ModConfig.bootSpeedSwimmingMultiplier.set(ModConfig.bootSpeedSwimmingMultiplier.getDefault());
-        ModConfig.bootSpeedBackwardMultiplier.set(ModConfig.bootSpeedBackwardMultiplier.getDefault());
-        ModConfig.bootSpeedSprintingMultiplier.set(ModConfig.bootSpeedSprintingMultiplier.getDefault());
-        ModConfig.bootSpeedSneakingMultiplier.set(ModConfig.bootSpeedSneakingMultiplier.getDefault());
-        ModConfig.bootSpeedStrafingMultiplier.set(ModConfig.bootSpeedStrafingMultiplier.getDefault());
-        ModConfig.bootSpeedBase.set(ModConfig.bootSpeedBase.getDefault());
-        ModConfig.bootSpeedFlyingMultiplier.set(ModConfig.bootSpeedFlyingMultiplier.getDefault());
-    }
 
     private void updateWidgetValues() {
         for (ConfigEntry<?> entry : configEntries) {

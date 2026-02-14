@@ -4,7 +4,7 @@ import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public enum CompressorTier implements StringRepresentable {
     DEFAULT("neutron_compressor", 1f, 1f, 1),

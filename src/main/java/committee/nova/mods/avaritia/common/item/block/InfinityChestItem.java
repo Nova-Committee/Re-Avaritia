@@ -11,7 +11,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import java.util.function.Consumer;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestItem extends BlockItem {
     public InfinityChestItem(Block block) {

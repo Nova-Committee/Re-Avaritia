@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class GsonUtils {
     /**

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/25 20:25
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */

@@ -15,7 +15,7 @@ import java.util.Random;
 import static net.minecraft.client.renderer.RenderStateShard.*;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ArcRender {
     public static final RenderType ARC_RENDER_TYPE = new RenderType.CompositeRenderType(

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/25 19:29
  * @Description:
  */

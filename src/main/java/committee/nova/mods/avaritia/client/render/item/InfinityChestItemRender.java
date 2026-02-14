@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.client.render.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -15,13 +14,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestItemRender extends BlockEntityWithoutLevelRenderer {
     public InfinityChestItemRender(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelSet entityModelSet) {

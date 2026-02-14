@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.api.client.screen.component;
 
+import committee.nova.mods.avaritia.Res;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,13 +16,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/22 02:09
  * @Description:
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class SimpleScrollBar extends AbstractWidget {
-
     @Getter
     @Setter
     private boolean scrolling = false;
@@ -109,9 +109,10 @@ public abstract class SimpleScrollBar extends AbstractWidget {
     public void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.beforeRender();
         if (!this.visible) return;
-        guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, scrollBarBackgroundColor);
         double v = getY() + ((getHeight() - scrollTagSize) * scrolledOn);
-        guiGraphics.fill(getX(), (int) Math.floor(v), getX() + width, (int) Math.ceil(v + scrollTagSize), scrollBarTagColor);
+        if (this.isScrolling()) {
+            guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 316, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
+        } else guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 303, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
     }
 
     @Override

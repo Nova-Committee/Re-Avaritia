@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "e1d798",
-    "b1976c"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.nickel",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/nickel"
   },
-  "name": "singularity.avaritia.nickel",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:nickel",
+  "overlayColor": "e1d798",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "b1976c"
 }

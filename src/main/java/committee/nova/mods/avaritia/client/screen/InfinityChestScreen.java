@@ -8,10 +8,10 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
+import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
 import committee.nova.mods.avaritia.core.chest.ClientChestHandler;
 import committee.nova.mods.avaritia.core.chest.ClientChestManager;
-import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.util.SortUtils;
 import committee.nova.mods.avaritia.util.StorageUtils;
@@ -36,71 +36,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
     @Setter
     @Getter
     private int blitOffset;
 
-    private static final ResourceLocation GUI_IMG = Res.BLACK_HOLE_CHANNEL_PANEL;
+    private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
     private final String ownerName;
-    private String lastHoveredObject="";
+    private String lastHoveredItem = "";
     private long lastCount = 0;
     private String lastFormatCountTemp = "";
     private SortButton sortButton;
     private ItemScrollBar scrollBar;
     private EditBox searchBox;
-    private CraftToChannelButton craftToChannelButton;
-    private CraftToInventoryButton craftToInventoryButton;
 
     public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title, null, 218, 256);
+        super(menu, playerInventory, title, null, 302, 274, 550, 550);
         this.ownerName = ClientChestManager.getInstance().getUserName(this.getMenu().owner);
     }
 
     @Override
     protected void subInit() {
         super.subInit();
-        this.leftPos = (this.width - imageWidth + 4) / 2;
-        this.topPos = (this.height - imageHeight) / 2;
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
 
-        this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 15, 118);
+        this.scrollBar = new ItemScrollBar(leftPos + 282, topPos + 16, 12, 160);
         this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 198, this.topPos + 211));
-        this.sortButton = new SortButton(this.leftPos + 198, this.topPos + 243);
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 231, this.topPos + 187));
+        this.sortButton = new SortButton(this.leftPos + 249, this.topPos + 187);
         this.addRenderableWidget(sortButton);
 
-        this.searchBox = new EditBox(this.font, leftPos + 104, topPos + 4, 90, 12, Component.translatable("gui.avaritia.search"));
+        this.searchBox = new EditBox(this.font, leftPos + 187, topPos + 4, 89, 10, Component.translatable("gui.avaritia.search"));
         this.searchBox.setMaxLength(64);
         this.searchBox.setBordered(false);
         this.searchBox.setValue(menu.filter);
         this.addRenderableWidget(searchBox);
-
-        this.craftToChannelButton = new CraftToChannelButton(leftPos + 179, topPos + 146);
-        this.craftToInventoryButton = new CraftToInventoryButton(leftPos + 179, topPos + 159);
-        this.addRenderableWidget(craftToChannelButton);
-        this.addRenderableWidget(craftToInventoryButton);
         menu.chestContainer.refreshContainer(true);
-    }
 
-    public void blit(GuiGraphics pPoseStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        pPoseStack.blit(GUI_IMG, pX, pY, this.blitOffset, (float) pUOffset, (float) pVOffset, pUWidth, pVHeight, 256, 256);
+        // 创建两侧避让区
     }
 
     @Override
     protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        //取消标题渲染
+        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 50, this.inventoryLabelY + 108, 4210752, false);
     }
 
     @Override
     protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        this.blit(pGuiGraphics, this.leftPos, this.topPos, 0, 0, imageWidth, 6);
-        this.blit(pGuiGraphics, this.leftPos, this.topPos, 0, 0, imageWidth, 68);//前三行
-        this.blit(pGuiGraphics, this.leftPos, this.topPos + 68, 0, 17, imageWidth, 51);//再加三行
-        this.blit(pGuiGraphics, this.leftPos, this.topPos + 119, 0, 17, imageWidth, 17);//再加一行
-        this.blit(pGuiGraphics, this.leftPos, this.topPos + 136, 0, 69, imageWidth, 141);//物品栏
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+        pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0,  this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
     }
 
     @Override
@@ -108,10 +98,30 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         this.renderDummyCount(pGuiGraphics);
     }
 
+    @Override
+    public void renderSlot(@NotNull GuiGraphics guiGraphics, Slot slot) {
+        // 如果是InfinityChest的虚拟物品槽，不渲染原版的数量（避免与自定义数量显示冲突）
+        if (slot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
+            // 临时修改数量为1以隐藏原版数量渲染，然后恢复正常
+            ItemStack stack = slot.getItem();
+            int originalCount = stack.getCount();
+            if (stack.getCount() > 1) {
+                stack.setCount(1);
+                super.renderSlot(guiGraphics, slot);
+                stack.setCount(originalCount);
+            } else {
+                super.renderSlot(guiGraphics, slot);
+            }
+            return;
+        }
+        // 其他槽正常渲染
+        super.renderSlot(guiGraphics, slot);
+    }
+
     public void renderDummyCount(GuiGraphics guiGraphics) {
         PoseStack poseStack = guiGraphics.pose();
         for (int i = 0; i < menu.chestContainer.formatCount.size(); i++) {
-            Slot slot = menu.slots.get(i + 51);
+            Slot slot = menu.slots.get(i + InfinityChestMenu.CONTAINER_SLOT_START);
             String count = menu.chestContainer.formatCount.get(i);
             this.setBlitOffset(100);
             RenderSystem.enableDepthTest();
@@ -132,7 +142,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     @ParametersAreNonnullByDefault
     protected void renderTooltip(GuiGraphics pPoseStack, int pX, int pY) {
         if (this.hoveredSlot != null) {
-            if (hoveredSlot.index >= 51) {
+            if (hoveredSlot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
                 if (menu.getCarried().getCount() == 1)
                     renderObjectStorageTooltip(pPoseStack, pX, pY);
                 else
@@ -140,7 +150,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             } else if (!hoveredSlot.getItem().isEmpty() && menu.getCarried().isEmpty())
                 pPoseStack.renderTooltip(font, this.hoveredSlot.getItem(), pX, pY);
         } else {
-            if (isInsideEditBox(pX, pY)) {
+            if (searchBox.isHovered()) {
                 List<Component> list = new ArrayList<>();
                 list.add(Component.translatable("gui.avaritia.search.tip1"));
                 list.add(Component.translatable("gui.avaritia.search.tip2"));
@@ -151,17 +161,17 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     }
 
     private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
-        if ((hoveredSlot.index - 51) >= menu.chestContainer.viewingObject.size()) return;
-        String hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - 51);
-        List<Component> components = Lists.newArrayList();
+        if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) >= menu.chestContainer.viewingObject.size()) return;
+        var hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START);
+        List<Component> components;
         long count;
         components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
-        count = menu.channel.getRealItemAmount(hoveredObject);
+        count = menu.chest.getRealItemAmount(hoveredObject);
 
-        if (!hoveredObject.equals(lastHoveredObject)) {
+        if (!hoveredObject.equals(lastHoveredItem)) {
             String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
             components.add(Component.literal(formatCount));
-            this.lastHoveredObject = hoveredObject;
+            this.lastHoveredItem = hoveredObject;
             this.lastCount = count;
             this.lastFormatCountTemp = formatCount;
         } else if (count == lastCount) {
@@ -187,7 +197,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
                 || carried.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
         if (hasCapability) {
             List<Component> components = Lists.newArrayList();
-            if ((hoveredSlot.index - 51) < menu.chestContainer.viewingObject.size()) {
+            if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) < menu.chestContainer.viewingObject.size()) {
                 components.add(Component.translatable("gui.avaritia.capability.tip1", hoveredSlot.getItem().getHoverName()));
             }
             components.add(Component.translatable("gui.avaritia.capability.tip2"));
@@ -205,13 +215,12 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     @Override
     public void onClose() {
         NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
-        ((ClientChestHandler) menu.channel).removeListener();
+        ((ClientChestHandler) menu.chest).removeListener();
         super.onClose();
     }
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        boolean lshift = InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT);
         if (pButton == 1) {
             //搜索框
             if (searchBox.isMouseOver(pMouseX, pMouseY)) {
@@ -220,20 +229,6 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
                 menu.chestContainer.refreshContainer(true);
                 searchBox.setFocused(true);
                 searchBox.setEditable(true);
-            } else if (craftToChannelButton.isMouseOver(pMouseX, pMouseY)) {
-                if (lshift) minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 6);
-                else minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 7);
-            } else if (craftToInventoryButton.isMouseOver(pMouseX, pMouseY)) {
-                if (lshift) minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 10);
-                else minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 11);
-            }
-        } else {
-            if (craftToChannelButton.isMouseOver(pMouseX, pMouseY)) {
-                if (lshift) minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 9);
-                else minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 8);
-            } else if (craftToInventoryButton.isMouseOver(pMouseX, pMouseY)) {
-                if (lshift) minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 13);
-                else minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 12);
             }
         }
         return super.mouseClicked(pMouseX, pMouseY, pButton);
@@ -294,10 +289,6 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         return pMouseX >= (double) pX && pMouseX < (double) (pX + pWidth) && pMouseY >= (double) pY && pMouseY < (double) (pY + pHeight);
     }
 
-    private boolean isInsideEditBox(double pMouseX, double pMouseY) {
-        return pMouseX >= leftPos + 104 && pMouseX <= leftPos + 194 && pMouseY >= topPos + 4 && pMouseY <= topPos + 16;
-    }
-
     private void toggleLock() {
         if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
             this.menu.locked = !this.menu.locked;
@@ -310,10 +301,10 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private void cycleSort() {
         if (InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT)) {
             menu.reverseSort();
-            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 3);
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
         } else {
             menu.nextSort();
-            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 1);
         }
     }
 
@@ -337,11 +328,11 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         public ItemScrollBar(int x, int y, int weight, int height) {
             super(x, y, weight, height);
             this.setScrollTagSize();
-            this.lastObjectListSize = menu.chestContainer.sortedObject.size();
+            this.lastObjectListSize = menu.chestContainer.sortedItems.size();
         }
 
         public void setScrollTagSize() {
-            double v = (double) this.height * (7.0D / Math.ceil(menu.chestContainer.sortedObject.size() / 11.0D));
+            double v = (double) this.height * (9.0D / Math.ceil(menu.chestContainer.sortedItems.size() / 15.0D));
             this.setScrollTagSize(v);
         }
 
@@ -352,9 +343,9 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
         @Override
         public void beforeRender() {
-            if (menu.chestContainer.sortedObject.size() != lastObjectListSize) {
+            if (menu.chestContainer.sortedItems.size() != lastObjectListSize) {
                 setScrollTagSize();
-                this.lastObjectListSize = menu.chestContainer.sortedObject.size();
+                this.lastObjectListSize = menu.chestContainer.sortedItems.size();
             }
         }
     }
@@ -364,7 +355,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private class ToggleLockButton extends ImageButton {
 
         public ToggleLockButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 219, 43, GUI_IMG, pButton -> toggleLock());
+            super(pX, pY, 17, 18, 303, 36, GUI_IMG, pButton -> toggleLock());
             MutableComponent componentB = Component.translatable("gui.avaritia.owner", "§c" + ownerName);
             MutableComponent componentC = Component.translatable("gui.avaritia.public");
             if (menu.locked) setTooltip(Tooltip.create(componentB));
@@ -374,8 +365,10 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            int uOffset = menu.locked ? 235 : 219;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart, this.width, this.height, 256, 256);
+            int uOffset = menu.locked ? 303 : 320;
+            if (this.isHovered) {
+                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart + 18, this.width, this.height, 550, 550);
+            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart, this.width, this.height, 550, 550);
         }
     }
 
@@ -383,15 +376,18 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private class SortButton extends ImageButton {
 
         public SortButton(int pX, int pY) {
-            super(pX, pY, 16, 16, 219, 75, GUI_IMG, pButton -> cycleSort());
+            super(pX, pY, 17, 18, 303, 0, GUI_IMG, pButton -> cycleSort());
         }
 
         @Override
         @ParametersAreNonnullByDefault
         public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             List<FormattedCharSequence> list = new ArrayList<>();
-            int vOffset = menu.sortType * 16 + this.yTexStart;
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, vOffset, this.width, this.height, 256, 256);
+            int xOffset = menu.sortType * 17 + this.xTexStart;
+            if (this.isHovered) {
+                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, this.yTexStart + 18, this.width, this.height, 550, 550);
+
+            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, this.yTexStart, this.width, this.height, 550, 550);
             list.add(Component.translatable(getSortKey(menu.sortType)).getVisualOrderText());
             if (menu.sortType % 2 == 0)
                 list.add(Component.translatable("gui.avaritia.sort.ascending").getVisualOrderText());
@@ -399,48 +395,6 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
             list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
             list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
-            if (sortButton.isHoveredOrFocused()) setTooltipForNextRenderPass(list);
-        }
-    }
-
-    private class CraftToChannelButton extends ImageButton {
-
-        public CraftToChannelButton(int x, int y) {
-            super(x, y, 16, 9, 219, 0, GUI_IMG, pButton -> {
-            });
-
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            List<FormattedCharSequence> list = new ArrayList<>();
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
-            list.add(Component.translatable("gui.avaritia.craft.channel").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip3").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip4").getVisualOrderText());
-            if (this.isHovered) setTooltipForNextRenderPass(list);
-        }
-    }
-
-    private class CraftToInventoryButton extends ImageButton {
-        public CraftToInventoryButton(int x, int y) {
-            super(x, y, 16, 9, 219, 18, GUI_IMG, pButton -> {
-            });
-        }
-
-        @Override
-        @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            List<FormattedCharSequence> list = new ArrayList<>();
-            pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.width, this.height, 256, 256);
-            list.add(Component.translatable("gui.avaritia.craft.inv").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip1").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip2").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip3").getVisualOrderText());
-            list.add(Component.translatable("gui.avaritia.craft.tip4").getVisualOrderText());
             if (this.isHovered) setTooltipForNextRenderPass(list);
         }
     }

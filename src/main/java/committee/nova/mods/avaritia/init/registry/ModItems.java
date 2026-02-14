@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 11:36
  * Version: 1.0
  */
@@ -34,13 +34,14 @@ public class ModItems {
     //test
     public static RegistryObject<Item> test_sword = item("test_sword", () -> new Item(new Item.Properties()), false);
     //curios
-    public static RegistryObject<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new);
+    public static RegistryObject<Item> neutron_ring = item("neutron_ring", NeutronRingItem::new, false);
     public static RegistryObject<Item> infinity_totem = item("infinity_totem", InfinityTotemItem::new);
-    public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new);
+    public static RegistryObject<Item> infinity_ring = item("infinity_ring", InfinityRingItem::new, false);
     public static RegistryObject<Item> infinity_umbrella = item("infinity_umbrella", InfinityUmbrellaItem::new);
     public static RegistryObject<Item> infinity_clock = item("infinity_clock", InfinityClockItem::new);
     public static RegistryObject<Item> infinity_chest = item("infinity_chest",
             () -> new InfinityChestItem(ModBlocks.infinity_chest.get()));
+    public static RegistryObject<Item> side_config_card = item("side_config_card", SideConfigurationCardItem::new);
     /**
      * Tools
      */
@@ -69,6 +70,7 @@ public class ModItems {
     public static RegistryObject<Item> blaze_pickaxe = item("blaze_pickaxe", BlazePickaxeItem::new);
     public static RegistryObject<Item> blaze_shovel = item("blaze_shovel", BlazeShovelItem::new);
     public static RegistryObject<Item> blaze_axe = item("blaze_axe", BlazeAxeItem::new);
+    public static RegistryObject<Item> blaze_bow= item("blaze_bow", BlazeBowItem::new);
 
     /**
      * Armor

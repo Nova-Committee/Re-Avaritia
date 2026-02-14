@@ -16,7 +16,7 @@ import org.openzen.zencode.java.ZenCodeType;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2024/12/21 8:35
  * Version: 1.0
  */

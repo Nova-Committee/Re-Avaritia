@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/21 15:56
  * @Description:
  */

@@ -19,7 +19,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 19:50
  * Version: 1.0
  */
@@ -69,11 +69,21 @@ public class ItemOverrideHandler {
                     return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
                 }
             });
+            setPropertyOverride(ModItems.blaze_bow.get(), Const.rl("pull"), (itemStack, world, livingEntity, d) -> {
+                if (livingEntity == null) {
+                    return 0.0F;
+                } else {
+                    return CrossbowItem.isCharged(itemStack) ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                }
+            });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
             });
             setPropertyOverride(ModItems.crystal_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
+            setPropertyOverride(ModItems.blaze_bow.get(), Const.rl("pulling"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack && !CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F;
             });
             setPropertyOverride(ModItems.infinity_bow.get(), Const.rl("tracer"), (itemStack, world, livingEntity, d) -> {
                 if (livingEntity == null) {

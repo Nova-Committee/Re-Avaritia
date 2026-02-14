@@ -5,7 +5,7 @@
         "items": [
           {
             "items": [
-              "avaritia:diamond_lattice"
+              "avaritia:infinity_catalyst"
             ]
           }
         ]
@@ -17,16 +17,16 @@
     "announce_to_chat": false,
     "background": "avaritia:textures/block/resource/neutron.png",
     "description": {
-      "translate": "advancements.avaritia.diamond_lattice.desc"
+      "translate": "advancements.avaritia.start.desc"
     },
     "frame": "task",
     "hidden": false,
     "icon": {
-      "item": "avaritia:diamond_lattice"
+      "item": "avaritia:infinity_catalyst"
     },
     "show_toast": false,
     "title": {
-      "translate": "advancements.avaritia.diamond_lattice.title"
+      "translate": "advancements.avaritia.start.title"
     }
   },
   "requirements": [

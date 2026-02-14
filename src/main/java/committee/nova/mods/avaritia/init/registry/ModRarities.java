@@ -5,7 +5,7 @@ import net.minecraft.world.item.Rarity;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/8/5 下午12:46
  * @Description:
  */

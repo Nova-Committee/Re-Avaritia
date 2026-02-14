@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:main/singularity",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:eternal_singularity"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.eternal_singularity.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:eternal_singularity"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.eternal_singularity.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

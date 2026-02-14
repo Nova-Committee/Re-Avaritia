@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Block;
 
 /**
  * @Project: Avaritia-forge
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/1/8 22:43
  * @Description:
  */

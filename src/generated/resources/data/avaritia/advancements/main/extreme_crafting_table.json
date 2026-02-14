@@ -1,5 +1,5 @@
 {
-  "parent": "avaritia:main/neutron_pile",
+  "parent": "avaritia:main/end_crafting_table",
   "criteria": {
     "main": {
       "conditions": {

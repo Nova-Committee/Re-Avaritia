@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/28 20:25
  * @Description:
  */

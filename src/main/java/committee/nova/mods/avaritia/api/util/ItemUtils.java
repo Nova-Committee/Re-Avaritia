@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -26,7 +27,7 @@ import static committee.nova.mods.avaritia.Const.LOGGER;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 14:18
  * Version: 1.0
  */
@@ -301,11 +302,28 @@ public class ItemUtils {
             return Enchantment.byId(compoundtag.getShort("id")) == pEnchantment;
         }).forEach(listtag::remove);
     }
+    @SafeVarargs
+    public static void clearEnchants(ItemStack stack, Enchantment... enchantments) {
+        Map<Enchantment, Integer> currentEnchants = EnchantmentHelper.getEnchantments(stack);
 
-    public static void clearEnchants(ItemStack stack) {
-        if (stack.getOrCreateTag().contains("Enchantments", Tag.TAG_LIST)) {
-            stack.getOrCreateTag().remove("Enchantments");
+        if (enchantments.length == 0) {
+            currentEnchants.clear();
+        } else {
+            boolean modified = false;
+
+            for (Enchantment enchantment : enchantments) {
+                if (currentEnchants.remove(enchantment) != null) {
+                    modified = true;
+                }
+            }
+
+            if (!modified) {
+                return;
+            }
         }
+
+        EnchantmentHelper.setEnchantments(currentEnchants, stack);
     }
 
 }
+

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/3 15:36
  * @Description:
  */

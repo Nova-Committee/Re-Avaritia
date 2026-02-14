@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 15:06
  * Version: 1.0
  */
@@ -46,5 +46,9 @@ public class BaseBlock extends Block {
                 tool ? Properties.of().sound(sound).strength(hardness, resistance).mapColor(color).requiresCorrectToolForDrops()
                         : Properties.of().sound(sound).strength(hardness, resistance).mapColor(color)
         );
+    }
+
+    public BaseBlock(MapColor metal, SoundType sound, int hardness, int resistance, boolean b, Properties properties) {
+        super(properties);
     }
 }

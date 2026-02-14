@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/3 01:03
  * @Description:
  */

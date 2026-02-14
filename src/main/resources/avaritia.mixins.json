@@ -14,7 +14,6 @@
     "ReloadableServerResourcesMixin"
   ],
   "client": [
-    "ClientPacketListenerMixin",
     "ItemRendererMixin",
     "PlayerRendererMixin"
   ],

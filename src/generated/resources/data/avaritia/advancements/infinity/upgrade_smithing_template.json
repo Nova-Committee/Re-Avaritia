@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:infinity/infinity_ingot",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:upgrade_smithing_template"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.upgrade_smithing_template.desc"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:upgrade_smithing_template"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.upgrade_smithing_template.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -8,7 +8,7 @@ import net.minecraftforge.common.util.ForgeSoundType;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/20 17:34
  * Version: 1.0
  */

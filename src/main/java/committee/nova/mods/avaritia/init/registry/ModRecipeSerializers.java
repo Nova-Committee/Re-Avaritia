@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 /**
  * Name: Avaritia-forge / ModRecipeSerializers
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/8 22:27
  * Description:
  */

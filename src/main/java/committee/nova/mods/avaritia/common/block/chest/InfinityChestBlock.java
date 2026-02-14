@@ -3,9 +3,9 @@ package committee.nova.mods.avaritia.common.block.chest;
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import committee.nova.mods.avaritia.util.StorageUtils;
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -16,7 +16,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,10 +28,15 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
@@ -48,7 +52,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -124,7 +128,7 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             if (nbt.contains("owner") && nbt.contains("channelID")) {
                 var owner = nbt.getUUID("owner");
                 var channelID = nbt.getUUID("channelID");
-                var channel = ServerChestManager.getInstance().getChannel(owner, channelID);
+                var channel = ServerChestManager.getInstance().getChest(owner, channelID);
                 int i = 0;
                 int j = 0;
                 for (var item : channel.storageItems.keySet()) {
@@ -150,22 +154,22 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
             if (blockEntity != null) {
                 blockEntity.setOwner(player.getUUID());
                 blockEntity.setChannelId(UUID.randomUUID());
-                ServerChestManager.getInstance().tryAddChannel(player, blockEntity.getChannelID());
+                ServerChestManager.getInstance().tryAddChest(player, blockEntity.getChannelID());
             }
         }
     }
 
     @Override
-    public void playerWillDestroy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Player pPlayer) {
-        if (!pLevel.isClientSide() && pPlayer.isCreative() && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+    public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
+        if (pLevel instanceof ServerLevel serverLevel && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+            var pStack = new ItemStack(ModBlocks.infinity_chest.get().asItem());
+
             if (blockEntity instanceof InfinityChestTile infinityChestTile) {
-                ItemStack stack = new ItemStack(this);
-                infinityChestTile.saveToItem(stack);
-                popResource(pLevel, pPos, stack);
+                infinityChestTile.saveToItem(pStack);
             }
+            popResource(serverLevel, pPos, pStack);
+            state.spawnAfterBreak(serverLevel, pPos, tool, false);
         }
-        super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
 
     @Override

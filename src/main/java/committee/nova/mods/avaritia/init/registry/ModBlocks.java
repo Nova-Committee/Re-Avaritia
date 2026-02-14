@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.common.block.BaseBlock;
 import committee.nova.mods.avaritia.common.block.ResourceBlock;
 import committee.nova.mods.avaritia.common.block.cake.EndlessCakeBlock;
 import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
+import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.common.block.chest.TesseractBlock;
 import committee.nova.mods.avaritia.common.block.collector.NeutronCollectorBlock;
 import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlock;
@@ -15,7 +16,6 @@ import committee.nova.mods.avaritia.common.block.extreme.ExtremeAnvilBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.block.misc.SoulFarmLandBlock;
 import committee.nova.mods.avaritia.common.item.resources.RefinedCoalItem;
-import committee.nova.mods.avaritia.common.block.chest.InfinityChestBlock;
 import committee.nova.mods.avaritia.init.registry.enums.ModCraftTier;
 import committee.nova.mods.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.world.item.BlockItem;
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 6:47
  * Version: 1.0
  */
@@ -81,10 +81,10 @@ public class ModBlocks {
             new Item.Properties().rarity(ModRarities.UNCOMMON), RefinedCoalItem.BURN_TIME * 9);
 
     //MACHINE
-    public static RegistryObject<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK), ModRarities.COMMON);
-    public static RegistryObject<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER), ModRarities.UNCOMMON);
-    public static RegistryObject<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END), ModRarities.RARE);
-    public static RegistryObject<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME), ModRarities.EPIC);
+    public static RegistryObject<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.COMMON);
+    public static RegistryObject<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.UNCOMMON);
+    public static RegistryObject<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END, BlockBehaviour.Properties.of().lightLevel(state -> 15)),ModRarities.RARE);
+    public static RegistryObject<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.EPIC);
     public static RegistryObject<Block> neutron_collector = itemBlock("neutron_collector", NeutronCollectorBlock::new, ModRarities.RARE);
     public static RegistryObject<Block> dense_neutron_collector = itemBlock("dense_neutron_collector", NeutronCollectorBlock::new, ModRarities.EPIC);
     public static RegistryObject<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", NeutronCollectorBlock::new, ModRarities.LEGEND);
@@ -163,4 +163,5 @@ public class ModBlocks {
         });
         return reg;
     }
+
 }

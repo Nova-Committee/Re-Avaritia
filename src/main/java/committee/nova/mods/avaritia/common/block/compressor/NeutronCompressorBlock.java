@@ -27,12 +27,12 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 17:57
  * Version: 1.0
  */
 public class NeutronCompressorBlock extends BaseTileEntityBlock {
-    private static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public NeutronCompressorBlock() {
         super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true);

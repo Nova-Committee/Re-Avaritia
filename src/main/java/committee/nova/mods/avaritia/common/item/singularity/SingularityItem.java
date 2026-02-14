@@ -5,7 +5,7 @@ import committee.nova.mods.avaritia.api.iface.IColored;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
@@ -43,7 +43,7 @@ public class SingularityItem extends Item implements IColored {
             return Localizable.of(this.getDescriptionId(stack)).args("NULL").build();
         }
 
-        return Localizable.of(this.getDescriptionId(stack)).args(singularity.getDisplayName()).build();
+        return Localizable.of(this.getDescriptionId(stack)).args(Component.translatable(singularity.getDisplayName())).build();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -52,13 +52,13 @@ public class SingularityItem extends Item implements IColored {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
-            var modid = singularity.getId().getNamespace();
+            var modid = singularity.getRegistryName().getNamespace();
 
             if (!modid.equals(Const.MOD_ID))
                 tooltip.add(ModTooltips.getAddedByTooltip(modid));
 
             if (flag.isAdvanced())
-                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getId()).color(ChatFormatting.DARK_GRAY).build());
+                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getRegistryName()).color(ChatFormatting.DARK_GRAY).build());
         }
     }
 
@@ -68,7 +68,7 @@ public class SingularityItem extends Item implements IColored {
         if (stack.hasTag() && stack.getTag().getBoolean("IsCreativeTab")) {
             // 初始化奇点列表（如果尚未初始化）
             if (enabledSingularities == null) {
-                enabledSingularities = SingularityDataManager.getInstance().getSingularities()
+                enabledSingularities = SingularityReloadListener.INSTANCE.getAllSingularities().values()
                         .stream()
                         .filter(s -> s.isEnabled() && s.getIngredient() != Ingredient.EMPTY)
                         .toList();

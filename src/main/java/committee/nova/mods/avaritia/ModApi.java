@@ -3,8 +3,7 @@ package committee.nova.mods.avaritia;
 import committee.nova.mods.avaritia.common.crafting.recipe.CompressorRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityBuilder;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
@@ -55,11 +54,11 @@ public class ModApi {
         if (ingredient == Ingredient.EMPTY)
             return null;
 
-        var id = singularity.getId();
+        var id = singularity.getRegistryName();
         var recipeId = new ResourceLocation(id.getNamespace(), id.getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
-        int ingredientCount = singularity.getIngredientCount();
-        int timeRequired = singularity.getTimeRequired();
+        int ingredientCount = singularity.getCount();
+        int timeRequired = singularity.getTimeCost();
 
         return new CompressorRecipe(recipeId, ingredient, output, ingredientCount, timeRequired);
     }
@@ -67,23 +66,15 @@ public class ModApi {
     /**
      * 使用构建器注册自定义奇点，通常放在{@link FMLCommonSetupEvent}中
      *
-     * @param modId 模组ID
-     * @param name 奇点名称
+     * @param resourceLocation 模组ID奇点名称
      * @param builder 构建器配置
      * @return 注册的奇点
      */
     @ApiStatus.AvailableSince("1.3.9.3")
-    public static Singularity registerSingularity(@NotNull String modId, @NotNull String name, @NotNull Consumer<SingularityBuilder> builder) {
-        SingularityBuilder singularityBuilder = new SingularityBuilder(modId, name);
-        builder.accept(singularityBuilder);
-
-        Singularity singularity = singularityBuilder.build();
-        // 注册奇点到数据管理器
-        SingularityDataManager manager = SingularityDataManager.getInstance();
-        if (manager.isInitialized()) {
-            // 使用数据管理器的运行时注册方法
-            manager.registerRuntimeSingularity(singularity);
-        }
+    public static Singularity registerSingularity(@NotNull ResourceLocation resourceLocation, @NotNull Consumer<Singularity> builder) {
+        var singularity = new Singularity(resourceLocation);
+        builder.accept(singularity);
+        SingularityReloadListener.INSTANCE.registerSingularity(singularity);
         return singularity;
     }
 }

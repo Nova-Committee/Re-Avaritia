@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/4 00:16
  * @Description: 切换状态接口 - 支持多模式切换
  */
@@ -57,6 +57,11 @@ public interface ISwitchable {
             if (modeTag.contains(mode) && modeTag.getBoolean(mode)) {
                 return i;
             }
+        }
+        // 如果没有找到激活的模式且模式列表不为空，默认激活第一个模式
+        if (!modeList.isEmpty()) {
+            modeTag.putBoolean(modeList.get(0), true);
+            return 0;
         }
         return -1; // 无激活模式
     }

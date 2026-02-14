@@ -1,12 +1,13 @@
 package committee.nova.mods.avaritia.core.chest;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ClientChestHandler extends ChestHandler {
     @Nullable
@@ -22,6 +23,7 @@ public class ClientChestHandler extends ChestHandler {
     public void removeListener() {
         this.container = null;
         storageItems.clear();
+        nbtDataCache.clear();
     }
 
     @Override
@@ -33,6 +35,8 @@ public class ClientChestHandler extends ChestHandler {
     public void update(CompoundTag tag) {
         if (container == null) return;
         CompoundTag items = tag.getCompound("items");
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompound("nbtData") : null;
+
         AtomicBoolean fullUpdate = new AtomicBoolean(false);
         AtomicBoolean needRefreshContainer = new AtomicBoolean(false);
         items.getAllKeys().forEach(itemId -> {
@@ -40,6 +44,7 @@ public class ClientChestHandler extends ChestHandler {
             if (count <= 0L) {
                 if (storageItems.containsKey(itemId)) {
                     storageItems.remove(itemId);
+                    nbtDataCache.remove(itemId);
                     fullUpdate.set(true);
                     needRefreshContainer.set(true);
                 }
@@ -56,14 +61,39 @@ public class ClientChestHandler extends ChestHandler {
                 }
             }
         });
+
+        // 处理NBT数据
+        if (nbtData != null) {
+            nbtData.getAllKeys().forEach(itemId -> {
+                Tag nbtTag = nbtData.get(itemId);
+                if (nbtTag instanceof CompoundTag) {
+                    nbtDataCache.put(itemId, nbtTag);
+                }
+            });
+        }
+
         if (needRefreshContainer.get()) container.refreshContainer(fullUpdate.get());
         if (fullUpdate.get()) {updateItemKeys();}
     }
 
     public void fullUpdate(CompoundTag tag) {
         CompoundTag items = tag.getCompound("items");
+        CompoundTag nbtData = tag.contains("nbtData") ? tag.getCompound("nbtData") : null;
+
         storageItems.clear();
+        nbtDataCache.clear();
+
         items.getAllKeys().forEach(itemId -> storageItems.put(itemId, items.getLong(itemId)));
+
+        if (nbtData != null) {
+            nbtData.getAllKeys().forEach(itemId -> {
+                Tag nbtTag = nbtData.get(itemId);
+                if (nbtTag instanceof CompoundTag) {
+                    nbtDataCache.put(itemId, nbtTag);
+                }
+            });
+        }
+
         updateItemKeys();
         if (container != null) {
             container.refreshContainer(true);

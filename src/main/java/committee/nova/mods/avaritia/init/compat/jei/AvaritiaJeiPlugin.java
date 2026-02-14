@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.compat.jei;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
@@ -8,17 +9,18 @@ import committee.nova.mods.avaritia.client.screen.craft.EndCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.ExtremeCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.NetherCraftScreen;
 import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
-import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.common.menu.CompressorMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeAnvilMenu;
 import committee.nova.mods.avaritia.common.menu.ExtremeSmithingMenu;
+import committee.nova.mods.avaritia.common.menu.NeutronCompressorMenu;
 import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
+import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.init.compat.jei.category.CompressorCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.ExtremeSmithingRecipeCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.EndCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.ExtremeCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.NetherCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.jei.category.tables.SculkCraftingTableCategory;
+import committee.nova.mods.avaritia.init.compat.jei.handler.JeiContainerHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -35,6 +37,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -43,7 +46,7 @@ import java.util.stream.Stream;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 23:09
  * Version: 1.0
  */
@@ -90,6 +93,11 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
             registration.addIngredientInfo(new ItemStack(ModBlocks.neutron_collector.get().asItem()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_collector"));
             registration.addIngredientInfo(new ItemStack(ModItems.neutron_pile.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.neutron_pile"));
+            registration.addIngredientInfo(new ItemStack(ModItems.crystal_pickaxe.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.crystal_pickaxe"));
+            registration.addIngredientInfo(new ItemStack(ModItems.full_matter_cluster.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.full_matter_cluster"));
+            registration.addIngredientInfo(new ItemStack(ModItems.refined_coal.get()), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.refined_coal"));
+            registration.addIngredientInfo(new ItemStack(Items.BEDROCK), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.bedrock"));
+            registration.addIngredientInfo(new ItemStack(Items.END_PORTAL_FRAME), VanillaTypes.ITEM_STACK, Component.translatable("jei.tooltip.avaritia.end_portal_frame"));
         }
     }
 
@@ -106,7 +114,7 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(CompressorMenu.class, ModMenus.compressor.get(), CompressorCategory.RECIPE_TYPE, 1, 1, 2, 36);
+        registration.addRecipeTransferHandler(NeutronCompressorMenu.class, ModMenus.compressor.get(), CompressorCategory.RECIPE_TYPE, 1, 1, 2, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.sculk_crafting_tile_table.get(), SculkCraftingTableCategory.RECIPE_TYPE, 1, 9, 10, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.nether_crafting_tile_table.get(), NetherCraftingTableCategory.RECIPE_TYPE, 1, 25, 26, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.end_crafting_tile_table.get(), EndCraftingTableCategory.RECIPE_TYPE, 1, 49, 50, 36);
@@ -124,13 +132,14 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(ExtremeCraftScreen.class, 174, 90, 22, 12, ExtremeCraftingTableCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeSmithingScreen.class, 86, 40, 22, 12, ExtremeSmithingRecipeCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(ExtremeAnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
+        registration.addGenericGuiContainerHandler(BaseContainerScreen.class, new JeiContainerHandler());
     }
 
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         ModItems.singularity.ifPresent(item -> registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, (stack, context) -> {
             Singularity singularity = SingularityUtils.getSingularity(stack);
-            return singularity != null ? singularity.getId().toString() : "";
+            return singularity != null ? singularity.getRegistryName().toString() : "";
         }));
     }
 }

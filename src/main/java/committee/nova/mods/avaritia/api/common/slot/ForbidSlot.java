@@ -7,7 +7,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class ForbidSlot extends SlotItemHandler {
     public ForbidSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {

@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.api.common.tile;
 
 import committee.nova.mods.avaritia.api.common.wrapper.BaseItemWrapper;
+import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,13 +23,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 13:59
  * Version: 1.0
  */
 public abstract class BaseInventoryTileEntity extends BaseTileEntity {
 
-    private LazyOptional<IItemHandler> capability = LazyOptional.of(this::getInventory);
+    public LazyOptional<IItemHandler> capability = LazyOptional.of(this::getInventory);
     private LockCode lockKey = LockCode.NO_LOCK;
 
 
@@ -46,7 +47,7 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
         }
     }
 
-    public abstract @NotNull BaseItemWrapper getInventory();
+    public abstract @NotNull ItemStackWrapper getInventory();
 
     @Override
     public void load(@NotNull CompoundTag tag) {

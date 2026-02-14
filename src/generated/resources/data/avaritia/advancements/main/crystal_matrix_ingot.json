@@ -1,0 +1,38 @@
+{
+  "parent": "avaritia:main/diamond_lattice",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "avaritia:crystal_matrix_ingot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.avaritia.crystal_matrix_ingot.desc"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "avaritia:crystal_matrix_ingot"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.avaritia.crystal_matrix_ingot.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

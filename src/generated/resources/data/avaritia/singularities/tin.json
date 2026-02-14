@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "a0bebd",
-    "527889"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.tin",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/tin"
   },
-  "name": "singularity.avaritia.tin",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:tin",
+  "overlayColor": "a0bebd",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "527889"
 }

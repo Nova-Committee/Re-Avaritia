@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 /**
  * Name: Avaritia-forge / HaloItemModelLoader
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/9/18 23:45
  * Description:
  */

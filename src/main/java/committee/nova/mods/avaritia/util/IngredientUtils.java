@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/8/1 下午2:39
  * @Description: from mekanism.common.integration.projecte.IngredientHelper
  */

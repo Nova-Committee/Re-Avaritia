@@ -31,7 +31,7 @@ import java.awt.*;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/23 23:50
  * Version: 1.0
  */
@@ -168,7 +168,10 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         Item legsItem = livingEntity.getItemBySlot(EquipmentSlot.LEGS).getItem();
         Item feetItem = livingEntity.getItemBySlot(EquipmentSlot.FEET).getItem();
 
-        long time = mc.level.getGameTime();
+        long time = 0;
+        if (mc.level != null) {
+            time = mc.level.getGameTime();
+        }
 
         double pulse = Math.sin(time / 10.0D) * 0.5D + 0.5D;
         double pulse_mag_sqr = pulse * pulse * pulse * pulse * pulse * pulse;

@@ -5,12 +5,16 @@ import committee.nova.mods.avaritia.api.common.crafting.ICompressorRecipe;
 import committee.nova.mods.avaritia.api.common.crafting.ISpecialRecipe;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -23,25 +27,23 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 17:40
  * Version: 1.0
  */
 public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     private final ResourceLocation recipeId;
-    private final NonNullList<Ingredient> inputs;
+    private final Ingredient input;
     private final ItemStack output;
     private final int inputCount;
-    private final int timeRequire;
+    private final int timeCost;
 
-
-    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeRequire) {
+    public CompressorRecipe(ResourceLocation recipeId, Ingredient input, ItemStack output, int inputCount, int timeCost) {
         this.recipeId = recipeId;
-        this.inputs = NonNullList.of(Ingredient.EMPTY, input);
+        this.input = input;
         this.output = output;
         this.inputCount = inputCount;
-        this.timeRequire = timeRequire;
-
+        this.timeCost = timeCost;
     }
 
     @Override
@@ -60,7 +62,12 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        return this.inputs;
+        return NonNullList.of(Ingredient.EMPTY, this.input);
+    }
+
+    @Override
+    public Ingredient getInput() {
+        return this.input;
     }
 
     @Override
@@ -70,7 +77,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
     @Override
     public int getTimeCost() {
-        return timeRequire;
+        return timeCost;
     }
 
     @Override
@@ -96,8 +103,7 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
     @Override
     public boolean matches(IItemHandler inventory) {
         var input = inventory.getStackInSlot(0);
-
-        return this.inputs.get(0).test(input);
+        return this.input.test(input);
     }
 
     @Override
@@ -132,10 +138,10 @@ public class CompressorRecipe implements ISpecialRecipe, ICompressorRecipe {
 
         @Override
         public void toNetwork(@NotNull FriendlyByteBuf buffer, CompressorRecipe recipe) {
-            recipe.inputs.get(0).toNetwork(buffer);
+            recipe.input.toNetwork(buffer);
             buffer.writeItem(recipe.output);
             buffer.writeInt(recipe.inputCount);
-            buffer.writeInt(recipe.timeRequire);
+            buffer.writeInt(recipe.timeCost);
         }
     }
 }

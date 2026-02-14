@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "f5f18e",
-    "9e8d3e"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.electrum",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/electrum"
   },
-  "name": "singularity.avaritia.electrum",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:electrum",
+  "overlayColor": "f5f18e",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "9e8d3e"
 }

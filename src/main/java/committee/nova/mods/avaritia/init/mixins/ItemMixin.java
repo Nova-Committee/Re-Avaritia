@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @Mixin(Item.class)
 public abstract class ItemMixin implements ITooltip {

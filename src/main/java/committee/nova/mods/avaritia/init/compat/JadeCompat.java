@@ -17,7 +17,7 @@ import snownee.jade.api.config.IPluginConfig;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 23:21
  * Version: 1.0
  */

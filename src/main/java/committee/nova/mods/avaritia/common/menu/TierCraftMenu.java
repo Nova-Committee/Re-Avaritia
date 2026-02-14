@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.menu;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
 import committee.nova.mods.avaritia.common.container.slot.ModCraftResultSlot;
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/2/19 19:42
  * Version: 1.0
  */

@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.init.registry.enums;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/22 01:54
  * @Description:
  */

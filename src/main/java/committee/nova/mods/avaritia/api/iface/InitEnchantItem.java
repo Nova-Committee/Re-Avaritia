@@ -5,7 +5,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/15 14:42
  * @Description: 自带附魔
  */

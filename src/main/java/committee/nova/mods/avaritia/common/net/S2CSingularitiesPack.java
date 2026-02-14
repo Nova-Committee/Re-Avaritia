@@ -1,76 +1,81 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * S2CSingularitiesPacket
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
 public class S2CSingularitiesPack {
 
-    private final Collection<Singularity> cacheSingularities;
+    private final Collection<Singularity> dataSingularities;
+    private final Collection<Singularity> runSingularities;
 
-    public S2CSingularitiesPack(Collection<Singularity> cacheSingularities) {
-        this.cacheSingularities = cacheSingularities;
+    public S2CSingularitiesPack(Collection<Singularity> dataSingularities, Collection<Singularity> runSingularities) {
+        this.dataSingularities = dataSingularities;
+        this.runSingularities = runSingularities;
     }
 
     public S2CSingularitiesPack(FriendlyByteBuf buf) {
-        List<Singularity> cacheSingularities = new ArrayList<>();
+        List<Singularity> dataSingularities = new ArrayList<>();
+        List<Singularity> runSingularities = new ArrayList<>();
 
         int cacheSize = buf.readVarInt();
 
         for (int i = 0; i < cacheSize; i++) {
             var singularity = Singularity.read(buf);
 
-            cacheSingularities.add(singularity);
+            dataSingularities.add(singularity);
         }
 
-        this.cacheSingularities = cacheSingularities;
+        int runSize = buf.readVarInt();
+
+        for (int i = 0; i < runSize; i++) {
+            var singularity = Singularity.read(buf);
+
+            runSingularities.add(singularity);
+        }
+
+        this.dataSingularities = dataSingularities;
+        this.runSingularities = runSingularities;
     }
 
     public void write(FriendlyByteBuf buffer) {
-        writeSingularities(buffer, this.cacheSingularities);
+        writeSingularities(buffer, this.dataSingularities);
+        writeSingularities(buffer, this.runSingularities);
     }
 
     private void writeSingularities(FriendlyByteBuf buffer, Collection<Singularity> singularities) {
         buffer.writeVarInt(singularities.size());
-        singularities.forEach(singularity -> {
-            buffer.writeResourceLocation(singularity.getId());
-            buffer.writeUtf(singularity.getName());
-            buffer.writeVarIntArray(singularity.getColors());
-            buffer.writeBoolean(singularity.getTag() != null);
-            buffer.writeVarInt(singularity.getTimeRequired());
-
-            if (singularity.getTag() != null) {
-                buffer.writeUtf(singularity.getTag());
-            } else {
-                singularity.getIngredient().toNetwork(buffer);
-            }
-
-            buffer.writeVarInt(singularity.getIngredientCount());
-            buffer.writeBoolean(singularity.isEnabled());
-            buffer.writeBoolean(singularity.isRecipeDisabled());
-        });
+        singularities.forEach(singularity -> Singularity.write(buffer, singularity));
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            SingularityDataManager.getInstance().getCachedSingularities().clear();
-            SingularityDataManager.getInstance().getCachedSingularities().putAll(
-                    this.cacheSingularities.stream()
-                    .collect(Collectors.toMap(Singularity::getId, s -> s))
-            );
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                SingularityReloadListener.INSTANCE.getDataSingularities().clear();
+                SingularityReloadListener.INSTANCE.getRunSingularities().clear();
+                SingularityReloadListener.INSTANCE.setDataSingularities(this.dataSingularities.stream()
+                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
+                );
+                SingularityReloadListener.INSTANCE.setRunSingularities(this.runSingularities.stream()
+                        .collect(Collectors.toMap(Singularity::getRegistryName, s -> s))
+                );
+            });
         });
         ctx.get().setPacketHandled(true);
     }

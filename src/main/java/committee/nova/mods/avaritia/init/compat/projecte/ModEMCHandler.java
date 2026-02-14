@@ -11,7 +11,7 @@ import net.minecraft.world.level.ItemLike;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/7/15 下午11:58
  * @Description:
  */
@@ -22,6 +22,8 @@ public class ModEMCHandler {
 
     public static void init() {
         registerEMC(ModItems.neutron_pile.get(), ModConfig.neutronPileEmc.get());
+        registerEMC(ModItems.blaze_cube.get(), ModConfig.blazeCubeEmc.get());
         registerEMC(Items.TOTEM_OF_UNDYING, ModConfig.vanillaTotemEmc.get());
+        registerEMC(ModItems.full_matter_cluster.get(),0);
     }
 }

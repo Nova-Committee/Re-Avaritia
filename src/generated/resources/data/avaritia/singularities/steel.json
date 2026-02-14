@@ -1,8 +1,4 @@
 {
-  "colors": [
-    "565656",
-    "232323"
-  ],
   "conditions": [
     {
       "type": "forge:not",
@@ -12,11 +8,15 @@
       }
     }
   ],
+  "count": 1000,
+  "displayName": "singularity.avaritia.steel",
   "enabled": true,
   "ingredient": {
     "tag": "forge:ingots/steel"
   },
-  "name": "singularity.avaritia.steel",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:steel",
+  "overlayColor": "565656",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "232323"
 }

@@ -2,9 +2,11 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,11 +17,13 @@ import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 15:12
  * Version: 1.0
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
+    private Button configButton;
+
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, Res.NEUTRON_COLLECTOR_TEX);
     }
@@ -27,6 +31,13 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     @Override
     protected void init() {
         super.init();
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+
+        // 添加配置按钮
+        this.configButton = new SideConfigButton(this, x - 20, y);
+
+        this.addRenderableWidget(this.configButton);
     }
 
     @Override

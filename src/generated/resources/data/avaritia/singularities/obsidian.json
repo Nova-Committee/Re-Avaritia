@@ -1,13 +1,14 @@
 {
-  "colors": [
-    "3b2754",
-    "100c1c"
-  ],
+  "conditions": [],
+  "count": 1000,
+  "displayName": "singularity.avaritia.obsidian",
   "enabled": true,
   "ingredient": {
     "item": "minecraft:obsidian"
   },
-  "name": "singularity.avaritia.obsidian",
-  "recipeDisabled": false,
-  "timeRequired": 240
+  "name": "avaritia:obsidian",
+  "overlayColor": "3b2754",
+  "recipeDisabled": true,
+  "timeCost": 240,
+  "underlayColor": "100c1c"
 }

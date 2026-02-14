@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/17 8:39
  * Version: 1.0
  */
@@ -103,19 +103,19 @@ public class CraftingTable implements IRecipeManager<ITierCraftingRecipe> {
     }
 
     @ZenCodeType.Method
-    public static void addEnternal(String name, IIngredient[] inputs) {
-        var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), false);
+    public void addEnternal(String name, IIngredient[] inputs, int count) {
+        var id = CraftTweakerConstants.rl(this.fixRecipeName(name));
+        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), count);
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(INSTANCE, recipe));
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
     }
 
     @ZenCodeType.Method
-    public static void addEnternal(String name, IIngredient[] inputs, boolean custom) {
+    public static void addEnternal(String name, IIngredient[] inputs) {
         var id = CraftTweakerConstants.rl(INSTANCE.fixRecipeName(name));
-        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), custom);
+        var recipe = new EternalSingularityCraftRecipe(id, toIngredientsList(inputs), 1);
 
         recipe.setTransformers((slot, stack) -> inputs[slot].getRemainingItem(new MCItemStack(stack)).getInternal());
 

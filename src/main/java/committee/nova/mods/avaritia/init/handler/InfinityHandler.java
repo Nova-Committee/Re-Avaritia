@@ -56,7 +56,7 @@ import net.minecraftforge.network.PacketDistributor;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 10:46
  * Version: 1.0
  */

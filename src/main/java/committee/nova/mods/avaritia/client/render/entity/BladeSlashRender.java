@@ -20,7 +20,7 @@ import org.joml.Matrix4f;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/16 01:41
  * @Description:
  */
@@ -34,7 +34,6 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
 
     @Override
     public void render(BladeSlashEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLight) {
-
         matrixStackIn.pushPose();
 
         matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90));
@@ -47,13 +46,28 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
         VertexConsumer builder = buffer.getBuffer(AvaritiaRenderTypes.BLADE_SLASH);
 
         packedLight = 0x00F000F0;
-        this.vertex(pose, normal, builder, 1, 0, 1, 1, 0, 0, 1, 0, packedLight);
-        this.vertex(pose, normal, builder, 1, 0, -1, 0, 0, 0, 1, 0, packedLight);
-        this.vertex(pose, normal, builder, -1, 0, -1, 0, 1, 0, 1, 0, packedLight);
-        this.vertex(pose, normal, builder, -1, 0, 1, 1, 1, 0, 1, 0, packedLight);
+
+        int alpha = calculateAlpha(entity);
+
+        this.vertex(pose, normal, builder, 1, 0, 1, 1, 0, 0, 1, 0, packedLight, alpha);
+        this.vertex(pose, normal, builder, 1, 0, -1, 0, 0, 0, 1, 0, packedLight, alpha);
+        this.vertex(pose, normal, builder, -1, 0, -1, 0, 1, 0, 1, 0, packedLight, alpha);
+        this.vertex(pose, normal, builder, -1, 0, 1, 1, 1, 0, 1, 0, packedLight, alpha);
 
         matrixStackIn.popPose();
         super.render(entity, entityYaw, partialTicks, matrixStackIn, buffer, packedLight);
+    }
+
+    private int calculateAlpha(BladeSlashEntity entity) {
+
+        int baseAlpha = 200;
+
+        if (entity.tickCount > entity.duration - 10) {
+            int remainingTicks = entity.duration - entity.tickCount;
+            return Math.max(0, baseAlpha * remainingTicks / 10);
+        }
+
+        return baseAlpha;
     }
 
     @Override
@@ -61,9 +75,14 @@ public class BladeSlashRender extends EntityRenderer<BladeSlashEntity> {
         return Res.BLADE_SLASH;
     }
 
-    public void vertex(Matrix4f pose, Matrix3f normal, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight) {
-
-        builder.vertex(pose, x, y, z).color(255, 255, 255, 200).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, nx, ny, nz).endVertex();
+    public void vertex(Matrix4f pose, Matrix3f normal, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight, int alpha) {
+        builder.vertex(pose, x, y, z)
+                .color(255, 255, 255, alpha)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(packedLight)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex();
     }
 
 }

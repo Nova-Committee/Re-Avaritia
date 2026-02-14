@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/26 00:49
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */

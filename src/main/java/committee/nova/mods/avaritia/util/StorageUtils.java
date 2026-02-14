@@ -1,24 +1,24 @@
 package committee.nova.mods.avaritia.util;
 
-import committee.nova.mods.avaritia.common.wrappers.StorageItem;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.io.ByteArrayOutputStream;
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/21 12:49
  * @Description:
  */
@@ -49,6 +49,9 @@ public class StorageUtils {
     private static final HashMap<Fluid, String> FLUID_ID_MAP = new HashMap<>();
     private static final HashMap<String, Fluid> ID_FLUID_MAP = new HashMap<>();
 
+    public static String getItemId(ItemStack item) {
+        return getItemId(item.getItem());
+    }
 
     public static String getItemId(Item item) {
         if (ITEM_ID_MAP.containsKey(item)) return ITEM_ID_MAP.get(item);
@@ -63,7 +66,7 @@ public class StorageUtils {
     public static Item getItem(String id) {
         if (ID_ITEM_MAP.containsKey(id)) return ID_ITEM_MAP.get(id);
         else {
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(getBaseItemId(id)));
             if (item == null || item.equals(Items.AIR)) return Items.AIR;
             ID_ITEM_MAP.put(id, item);
             ITEM_ID_MAP.put(item, id);
@@ -92,39 +95,57 @@ public class StorageUtils {
         }
     }
 
-
-    public static Int2ObjectMap<StorageItem> newContainers() {
-        Int2ObjectOpenHashMap<StorageItem> containers = new Int2ObjectOpenHashMap<>();
-        containers.defaultReturnValue(StorageItem.EMPTY);
-        return containers;
+    /**
+     * 为NBT物品生成唯一标识符
+     * 格式: itemId#hash (带NBT) 或 itemId (无NBT)
+     */
+    public static String getNbtItemId(ItemStack item) {
+        if (item.isEmpty()) return "minecraft:air";
+        String itemId = getItemId(item.getItem());
+        if (!item.hasTag()) {
+            return itemId;
+        }
+        String nbtHash = hashNbt(item.getTag());
+        return itemId + "#" + nbtHash;
     }
 
-    public static void saveAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
-        ListTag list = new ListTag();
-
-        for (Int2ObjectMap.Entry<StorageItem> storageItemEntry : containers.int2ObjectEntrySet()) {
-            int index = storageItemEntry.getIntKey();
-            StorageItem item = storageItemEntry.getValue();
-            if (!item.isEmpty()) {
-                CompoundTag compound = item.serializeNBT();
-                compound.putInt("Index", index);
-                list.add(compound);
-            }
-        }
-        nbt.put("Items", list);
+    /**
+     * 从NBT物品ID中提取基础物品ID
+     */
+    public static String getBaseItemId(String nbtItemId) {
+        int hashIndex = nbtItemId.indexOf('#');
+        return hashIndex == -1 ? nbtItemId : nbtItemId.substring(0, hashIndex);
     }
 
-    public static void loadAllItems(CompoundTag nbt, Int2ObjectMap<StorageItem> containers) {
-        ListTag list = nbt.getList("Items", Tag.TAG_COMPOUND);
-
-        for (int i = 0; i < list.size(); ++i) {
-            CompoundTag compound = list.getCompound(i);
-            int index = compound.getInt("Index");
-            StorageItem item = StorageItem.read(compound);
-            if (!item.isEmpty()) {
-                containers.put(index, item);
+    /**
+     * 计算NBT标签的哈希值
+     */
+    public static String hashNbt(Tag nbtTag) {
+        if (nbtTag == null) return "";
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (nbtTag instanceof CompoundTag) {
+                NbtIo.writeCompressed((CompoundTag) nbtTag, baos);
+            } else {
+                // 如果不是CompoundTag，创建临时的CompoundTag
+                CompoundTag tempTag = new CompoundTag();
+                tempTag.put("data", nbtTag);
+                NbtIo.writeCompressed(tempTag, baos);
             }
-        }
+            byte[] bytes = baos.toByteArray();
 
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(bytes);
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString().substring(0, 16); // 取前16位作为哈希
+        } catch (Exception e) {
+            return "error";
+        }
     }
 }

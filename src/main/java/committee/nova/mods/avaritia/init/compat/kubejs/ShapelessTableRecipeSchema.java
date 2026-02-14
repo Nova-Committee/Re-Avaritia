@@ -10,7 +10,7 @@ import static dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedRecipeSchema
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/11/9 22:47
  * @Description:
  */

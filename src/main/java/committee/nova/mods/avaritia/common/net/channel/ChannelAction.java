@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.net.channel;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/2/28 12:44
  * @Description:
  */

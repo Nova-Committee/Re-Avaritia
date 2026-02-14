@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/5/21 00:33
  * @Description:
  */
@@ -13,7 +13,9 @@ public class Res {
     public static final ResourceLocation DRAGON_FIREBALL = ResourceLocation.tryParse("textures/entity/enderdragon/dragon_fireball.png");
     public static final ResourceLocation VOID = Const.rl("textures/entity/void.png");
     public static final ResourceLocation VOID_HALO = Const.rl("textures/entity/void_halo.png");
-    public static final ResourceLocation HEAVEN_ARROW = Const.rl("textures/entity/heavenarrow.png");
+    public static final ResourceLocation HEAVEN_ARROW = Const.rl("textures/entity/heaven_arrow.png");
+    public static final ResourceLocation NEUTRON_ARROW = Const.rl( "textures/entity/neutron_arrow.png");
+    public static final ResourceLocation BURNING_ARROW = Const.rl("textures/entity/burning_arrow.png");
     public static final ResourceLocation BLADE_SLASH = Const.rl("textures/entity/blade_slash.png");
     public static final ResourceLocation INFINITY_ELYTRA = Const.rl("textures/entity/infinity_elytra.png");
     public static final ResourceLocation INFINITY_GOLEM = Const.rl("textures/entity/iron_golem.png");
@@ -32,13 +34,14 @@ public class Res {
     public static final ResourceLocation INFINITY_CLOCK_TIME_TEX = Const.rl("textures/gui/machine/infinity_clock_time.png");
     public static final ResourceLocation NEUTRON_COLLECTOR_TEX = Const.rl("textures/gui/machine/neutron_collector.png");
     public static final ResourceLocation NEUTRON_COMPRESSOR_TEX = Const.rl("textures/gui/machine/neutron_compressor.png");
+    public static final ResourceLocation SIDE_CONFIG_TEX = Const.rl("textures/gui/machine/side_config.png");
     public static final ResourceLocation EXTREME_ANVIL_TEX = Const.rl("textures/gui/machine/extreme_anvil_gui.png");
     public static final ResourceLocation GENERIC_243_TEX = Const.rl("textures/gui/chest/generic_243.png");
     public static final ResourceLocation NEUTRON_RING_TEX = Const.rl("textures/gui/chest/neutron_ring.png");
     public static final ResourceLocation EXTREME_SMITHING_TEX = Const.rl("textures/gui/machine/extreme_smithing_table_gui.png");
     public static final ResourceLocation BLACK_HOLE_CHANNEL_PANEL = Const.rl("textures/gui/chest/channel_panel.png");
     public static final ResourceLocation BLACK_HOLE_CHANNEL_SELECT = Const.rl("textures/gui/chest/channel_select.png");
-    public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest.png");
+    public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest1.png");
     public static final ResourceLocation ARC_TEX = Const.rl("textures/effect/line_segment.png");
 
     public static TextureAtlasSprite ARMOR_MASK;

@@ -1,13 +1,11 @@
 package committee.nova.mods.avaritia.common.entity;
 
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityTridentItem;
-import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,7 +21,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -35,11 +32,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class InfinityThrownTrident extends AbstractArrow implements IEntityAdditionalSpawnData {
     private static final EntityDataAccessor<Boolean> CHANNELING = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
@@ -57,7 +52,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
     }
 
     public InfinityThrownTrident(Level world, LivingEntity thrower, ItemStack thrownStackIn) {
-        super(ModEntities.infinity_thrown_trident.get(), thrower, world);
+        super(ModEntities.INFINITY_THROWN_TRIDENT.get(), thrower, world);
         setStackAndLoyalty(thrownStackIn.copy());
         this.entityData.set(SHOCKWAVE, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentShockwave(tridentItem));
         this.entityData.set(CHANNELING, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentChanneling(tridentItem));
@@ -86,7 +81,13 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
         }
         Entity entity = getOwner();
         if (!noReturn && (dealtDamage || isNoPhysics()) && entity != null) {
-            if (isAcceptableReturnOwner() && loyaltyLevel > 0) {
+            if (!isAcceptableReturnOwner() ) {
+                if (!level().isClientSide && pickup == Pickup.ALLOWED) {
+                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+                }
+
+            } else if (loyaltyLevel > 0){
+                this.onClientRemoval();
                 setNoPhysics(true);
                 Vec3 returnVector = entity.getEyePosition().subtract(position());
                 this.setPosRaw(getX(), getY() + returnVector.y * 0.015D * loyaltyLevel, getZ());
@@ -99,11 +100,6 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
                     this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
                 }
                 ++this.returningTicks;
-            } else {
-                if (!level().isClientSide && pickup == Pickup.ALLOWED) {
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
-                }
-                this.onClientRemoval();
             }
         }
         super.tick();
@@ -117,6 +113,17 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
         return false;
     }
 
+
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        Entity thrower = getOwner();
+        var blockPos = result.getBlockPos();
+        ToolUtils.trySummonLightning(level(), 2, blockPos,
+                thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
+    }
+
+
     @NotNull
     @Override
     protected ItemStack getPickupItem() {
@@ -129,6 +136,9 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
         float damage = Float.MAX_VALUE;
         Entity thrower = getOwner();
         DamageSource damagesource = damageSources().trident(this, thrower == null ? this : thrower);
+        var blockPos = result.getEntity().blockPosition();
+        ToolUtils.trySummonLightning(level(), 2, blockPos,
+                thrower instanceof ServerPlayer ? (ServerPlayer) thrower : null);
         this.dealtDamage = true;
         if (hitEntity.hurt(damagesource, damage)) {
             if (hitEntity instanceof LivingEntity livingHit) {

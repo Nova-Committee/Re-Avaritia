@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 15:06
  * Version: 1.0
  */
@@ -42,6 +42,10 @@ public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlo
 
     public BaseTileEntityBlock(SoundType sound, float hardness, float resistance, boolean tool) {
         super(sound, hardness, resistance, tool);
+    }
+
+    public BaseTileEntityBlock(MapColor metal, SoundType sound, int hardness, int resistance, boolean b, Properties properties) {
+        super(metal,sound, hardness, resistance, b, properties);
     }
 
     @SuppressWarnings("unchecked")

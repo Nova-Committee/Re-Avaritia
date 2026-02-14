@@ -17,7 +17,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.searchtree.SearchRegistry;
-import net.minecraft.client.searchtree.SearchTree;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -40,7 +39,7 @@ import static committee.nova.mods.avaritia.Const.GSON;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/25 20:09
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */

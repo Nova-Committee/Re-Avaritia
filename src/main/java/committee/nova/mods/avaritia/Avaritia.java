@@ -2,7 +2,6 @@ package committee.nova.mods.avaritia;
 
 import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.item.misc.InfinityClockItem;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
 import committee.nova.mods.avaritia.init.compat.projecte.ModEMCHandler;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.data.ModDataGen;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 10:10
  * Version: 1.0
  */
@@ -35,6 +34,7 @@ public class Avaritia {
 
     public Avaritia() {
         ModConfig.register();
+        @SuppressWarnings("removal")
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
         bus.addListener(ModDataGen::gatherData);
@@ -47,6 +47,7 @@ public class Avaritia {
         ModCreativeModeTabs.TABS.register(bus);
         ModTileEntities.BLOCK_ENTITIES.register(bus);
         ModMenus.MENUS.register(bus);
+        ModMobEffects.MOB_EFFECTS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModEnchants.ENCHANTMENT.register(bus);
         ModParticles.PARTICLE_TYPE.register(bus);
@@ -57,7 +58,6 @@ public class Avaritia {
 
     public void setup(final FMLCommonSetupEvent event) {
         if (Const.isLoad("projecte")) ModEMCHandler.init();
-        SingularityDataManager.onCommonSetup();
         DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
                 return Util.make(new EndestPearlEntity(level, position.x(), position.y(), position.z()), (entity) -> entity.setItem(stack));

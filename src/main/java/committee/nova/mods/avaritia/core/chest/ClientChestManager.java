@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.UUID;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientChestManager {
@@ -68,20 +68,20 @@ public class ClientChestManager {
         return userName;
     }
 
-    public ClientChestHandler getChannel() {
+    public ClientChestHandler getChest() {
         return channel;
     }
 
-    public ClientChestHandler getChannel(InfinityChestContainer container) {
+    public ClientChestHandler getChest(InfinityChestContainer container) {
         channel.addListener(container);
         return channel;
     }
 
-    public void updateChannel(CompoundTag data) {
+    public void updateChest(CompoundTag data) {
         channel.update(data);
     }
 
-    public void fullUpdateChannel(CompoundTag data) {
+    public void fullUpdateChest(CompoundTag data) {
         channel.fullUpdate(data);
     }
 }

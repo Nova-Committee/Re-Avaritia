@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.infinity;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import committee.nova.mods.avaritia.api.iface.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.IUndamageable;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
@@ -11,10 +12,7 @@ import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -38,11 +36,11 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 16:47
  * Version: 1.0
  */
-public class InfinityHoeItem extends HoeItem implements IUndamageable {
+public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchable {
 
     public InfinityHoeItem() {
         super(ModToolTiers.INFINITY, -50, 0f, (new Properties())
@@ -77,15 +75,10 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            CompoundTag tags = stack.getOrCreateTag();
-            tags.putBoolean("sow", !tags.getBoolean("sow"));
-            player.swing(hand);
-            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) serverPlayer.sendSystemMessage(
-                    Component.translatable(tags.getBoolean("sow") ? "tooltip.avaritia.tool.infinity_hoe.type_2" : "tooltip.avaritia.tool.infinity_hoe.type_1"
-                    ), true);
+            switchMode(world, player, hand, "infinity_hoe_sow");
             return InteractionResultHolder.success(stack);
         }
-        if (!world.isClientSide && world instanceof ServerLevel serverLevel && stack.getOrCreateTag().getBoolean("sow")) {
+        if (!world.isClientSide && world instanceof ServerLevel serverLevel && isActive(stack, "infinity_hoe_sow")) {
             player.swing(hand);
             BlockPos blockPos = player.getOnPos();
             int rang = 7;
@@ -115,7 +108,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
             if (player != null && !world.isClientSide) {
-                if (player.isShiftKeyDown() && stack.getOrCreateTag().getBoolean("sow")) {
+                if (player.isShiftKeyDown() && isActive(stack, "infinity_hoe_sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);
@@ -155,7 +148,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable {
         } else if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof SoulSandBlock || targetBlock.equals(Blocks.SOUL_SOIL))) {
             if (player != null && !world.isClientSide) {
-                if (player.isShiftKeyDown() && stack.getOrCreateTag().getBoolean("sow")) {
+                if (player.isShiftKeyDown() && isActive(stack, "infinity_hoe_sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);

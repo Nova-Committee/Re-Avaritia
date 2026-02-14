@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * Name: Avaritia-forge / ModLootTables
- * Author: cnlimiter
+ * @author cnlimiter
  * CreateTime: 2023/8/24 13:38
  * Description:
  */

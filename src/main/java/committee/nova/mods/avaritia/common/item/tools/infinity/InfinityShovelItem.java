@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 16:33
  * Version: 1.0
  */
@@ -67,8 +67,8 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUnda
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
-        if (stack.getTag() != null && stack.getTag().getBoolean("destroyer")) {
+    public float getDestroySpeed(@NotNull ItemStack stack, @NotNull BlockState state) {
+        if (isActive(stack, "infinity_shovel_destroyer")) {
             return 5.0F;
         }
         return Math.max(super.getDestroySpeed(stack, state), 6.0f);
@@ -94,7 +94,7 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUnda
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
         if (miningEntity instanceof ServerPlayer player && isActive(stack, "infinity_shovel_destroyer")) {
-            ToolUtils.destroyMaterialBlocks(player, pos, ModConfig.pickAxeBreakRange.get(), ToolUtils.materialsAxe);
+            ToolUtils.destroyShovelBlocks(player, pos, ModConfig.shovelBreakRange.get());
         }
         return false;
     }

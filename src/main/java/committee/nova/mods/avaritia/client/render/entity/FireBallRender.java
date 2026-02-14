@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.common.entity.FireBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -18,7 +18,7 @@ import org.joml.Matrix4f;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/8/7 下午8:49
  * @Description:
  */

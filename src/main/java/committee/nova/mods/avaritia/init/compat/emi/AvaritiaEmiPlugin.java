@@ -10,10 +10,7 @@ import committee.nova.mods.avaritia.init.compat.emi.category.tables.EndCraftingT
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.ExtremeCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.NetherCraftingTableCategory;
 import committee.nova.mods.avaritia.init.compat.emi.category.tables.SculkCraftingTableCategory;
-import committee.nova.mods.avaritia.init.compat.emi.handler.EndCraftingRecipeHandler;
-import committee.nova.mods.avaritia.init.compat.emi.handler.ExtremeCraftingRecipeHandler;
-import committee.nova.mods.avaritia.init.compat.emi.handler.NetherCraftingRecipeHandler;
-import committee.nova.mods.avaritia.init.compat.emi.handler.SculkCraftingRecipeHandler;
+import committee.nova.mods.avaritia.init.compat.emi.handler.*;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
@@ -76,6 +73,8 @@ public class AvaritiaEmiPlugin implements EmiPlugin {
         registry.addRecipeHandler(ModMenus.nether_crafting_tile_table.get(), new NetherCraftingRecipeHandler());
         registry.addRecipeHandler(ModMenus.end_crafting_tile_table.get(), new EndCraftingRecipeHandler());
         registry.addRecipeHandler(ModMenus.extreme_crafting_table.get(), new ExtremeCraftingRecipeHandler());
+
+        registry.addGenericExclusionArea(new EMIExclusionZones());
 
     }
 }

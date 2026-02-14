@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2024/12/20 12:52
  * @Description:
  */

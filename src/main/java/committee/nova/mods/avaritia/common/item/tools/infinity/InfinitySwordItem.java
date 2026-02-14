@@ -38,6 +38,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,7 +46,7 @@ import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 19:41
  * Version: 1.0
  */
@@ -93,11 +94,18 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     public boolean hurt(LivingEntity victim, DamageSource pSource, float pAmount) {
-        if (victim.level().isClientSide) {
-            return false;
-        } else if (victim.isDeadOrDying()) {
+        if (victim.level().isClientSide || victim.isDeadOrDying()) {
             return false;
         } else {
+
+            if (victim.isMultipartEntity()) {
+                for (Entity part :victim.getParts()) {
+                    if (part instanceof PartEntity<?> partEntity && partEntity.getParent() == victim) {
+                        part.hurt(pSource, pAmount);
+                    }
+                }
+            }
+
             if (victim.isSleeping() && !victim.level().isClientSide) {
                 victim.stopSleeping();
             }
@@ -237,15 +245,14 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
-        var itemstack = player.getItemInHand(hand);
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             switchMode(level, player, hand, "infinity_sword_kill");
-            return InteractionResultHolder.success(itemstack);
+            return InteractionResultHolder.success(heldItem);
         }
         if (!level.isClientSide) {
-            if (isActive(itemstack, "infinity_sword_kill")) {
+            if (isActive(heldItem, "infinity_sword_kill")) {
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
             } else {
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());

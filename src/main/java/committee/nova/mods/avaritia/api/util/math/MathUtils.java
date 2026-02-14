@@ -6,7 +6,7 @@ import net.minecraft.core.Vec3i;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/5/15 9:32
  * Version: 1.0
  */

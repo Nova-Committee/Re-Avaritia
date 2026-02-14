@@ -1,7 +1,6 @@
 // committee/nova/mods/avaritia/common/entity/AcceleratorDisplayEntity.java
 package committee.nova.mods.avaritia.common.entity;
 
-import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.common.item.misc.InfinityClockItem;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
 import net.minecraft.core.BlockPos;
@@ -40,7 +39,7 @@ public class AcceleratorDisplayEntity extends Entity {
     }
 
     public AcceleratorDisplayEntity(Level level, BlockPos targetPos, int speed, Direction face) {
-        this(ModEntities.acceleratorDisplayEntity.get(), level);
+        this(ModEntities.ACCELERATOR_DISPLAY_ENTITY.get(), level);
         this.targetPos = targetPos;
         this.entityData.set(SPEED_MULTIPLIER, speed);
         this.entityData.set(FACE, face.get3DDataValue()); // 保存面信息

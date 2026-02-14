@@ -4,9 +4,9 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.entity.*;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
 import committee.nova.mods.avaritia.common.entity.*;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
-import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
+import committee.nova.mods.avaritia.common.entity.arrow.*;
+import committee.nova.mods.avaritia.common.entity.ball.BurningBallEntity;
+import committee.nova.mods.avaritia.common.entity.ball.FireBallEntity;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -21,7 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/3/31 14:52
  * Version: 1.0
  */
@@ -57,6 +57,30 @@ public class ModEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(new ResourceLocation(Const.MOD_ID, "heaven_sub_arrow").toString()));
 
+    public static final RegistryObject<EntityType<NeutronArrowEntity>> NEUTRON_ARROW = ENTITIES.register("neutron_arrow",
+            () -> EntityType.Builder.<NeutronArrowEntity>of(NeutronArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(Const.rl("neutron_arrow").toString()));
+
+    public static final RegistryObject<EntityType<ExplosionsArrowEntity>> EXPLOSIONS_ARROW = ENTITIES.register("explosions_arrow",
+            () -> EntityType.Builder.<ExplosionsArrowEntity>of(ExplosionsArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(new ResourceLocation(Const.MOD_ID, "explosions_arrow").toString()));
+
+    public static final RegistryObject<EntityType<BurningArrowEntity>> BURNING_ARROW = ENTITIES.register("burning_arrow",
+            () -> EntityType.Builder.<BurningArrowEntity>of(BurningArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .build(new ResourceLocation(Const.MOD_ID, "burning_arrow").toString()));
+
     public static final RegistryObject<EntityType<TraceArrowEntity>> TRACE_ARROW = ENTITIES.register("trace_arrow",
             () -> EntityType.Builder.<TraceArrowEntity>of(TraceArrowEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
@@ -78,6 +102,12 @@ public class ModEntities {
                     .setTrackingRange(256)
                     .setUpdateInterval(10)
                     .build(new ResourceLocation(Const.MOD_ID, "fire_ball").toString()));
+
+    public static final RegistryObject<EntityType<BurningBallEntity>> BURNING_BALL = ENTITIES.register("burning_ball",
+            () -> EntityType.Builder.of(BurningBallEntity::new, MobCategory.MISC)
+                    .setTrackingRange(256)
+                    .setUpdateInterval(10)
+                    .build(new ResourceLocation(Const.MOD_ID, "burning_ball").toString()));
 
     public static final RegistryObject<EntityType<BladeSlashEntity>> BLADE_SLASH = ENTITIES.register("blade_slash",
             () -> EntityType.Builder.<BladeSlashEntity>of(BladeSlashEntity::new, MobCategory.MISC)
@@ -104,19 +134,19 @@ public class ModEntities {
                     .fireImmune()
                     .build(new ResourceLocation(Const.MOD_ID, "storm_pro").toString()));
 
-    public static final RegistryObject<EntityType<AcceleratorDisplayEntity>> acceleratorDisplayEntity =
+    public static final RegistryObject<EntityType<AcceleratorDisplayEntity>> ACCELERATOR_DISPLAY_ENTITY =
             ENTITIES.register("accelerator_display", () -> EntityType.Builder.<AcceleratorDisplayEntity>of(
                             AcceleratorDisplayEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
                     .build(new ResourceLocation("avaritia", "accelerator_display").toString())
             );
-    public static final RegistryObject<EntityType<TNTProEntity>> tntProEntity =
+    public static final RegistryObject<EntityType<TNTProEntity>> TNT_PRO_ENTITY =
             ENTITIES.register("tnt_pro", () -> EntityType.Builder.<TNTProEntity>of(
                             TNTProEntity::new, MobCategory.MISC)
                     .sized(1f, 1f)
                     .build(new ResourceLocation("avaritia", "tnt_pro").toString())
             );
-    public static final RegistryObject<EntityType<InfinityThrownTrident>> infinity_thrown_trident =
+    public static final RegistryObject<EntityType<InfinityThrownTrident>> INFINITY_THROWN_TRIDENT =
             ENTITIES.register("infinity_thrown_trident", () -> EntityType.Builder.<InfinityThrownTrident>of(
                             InfinityThrownTrident::new, MobCategory.MISC)
                     .sized(1f, 1f)
@@ -129,7 +159,11 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.ENDER_PEARL.get(), ThrownItemRenderer::new);
         EntityRenderers.register(ModEntities.GAPING_VOID.get(), GapingVoidRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_ARROW.get(), HeavenArrowRender::new);
+        EntityRenderers.register(ModEntities.NEUTRON_ARROW.get(),NeutronArrowRender::new);
         EntityRenderers.register(ModEntities.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
+        EntityRenderers.register(ModEntities.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_ARROW.get(), BurningArrowRender::new);
+        EntityRenderers.register(ModEntities.BURNING_BALL.get(), BurningBallRender::new);
         EntityRenderers.register(ModEntities.TRACE_ARROW.get(), TracerArrowRender::new);
         EntityRenderers.register(ModEntities.INFINITY_GOLEM.get(), InfinityGolemRender::new);
         EntityRenderers.register(ModEntities.FIRE_BALL.get(), FireBallRender::new);
@@ -137,9 +171,9 @@ public class ModEntities {
         EntityRenderers.register(ModEntities.SUN_PRO.get(), SunProRender::new);
         EntityRenderers.register(ModEntities.RAIN_PRO.get(), RainProRender::new);
         EntityRenderers.register(ModEntities.STORM_PRO.get(), StormProRender::new);
-        EntityRenderers.register(ModEntities.acceleratorDisplayEntity.get(), AcceleratorDisplayRender::new);
-        EntityRenderers.register(ModEntities.tntProEntity.get(), TNTProEntityRender::new);
-        EntityRenderers.register(ModEntities.infinity_thrown_trident.get(), InfinityThrownTridentRender::new);
+        EntityRenderers.register(ModEntities.ACCELERATOR_DISPLAY_ENTITY.get(), AcceleratorDisplayRender::new);
+        EntityRenderers.register(ModEntities.TNT_PRO_ENTITY.get(), TNTProEntityRender::new);
+        EntityRenderers.register(ModEntities.INFINITY_THROWN_TRIDENT.get(), InfinityThrownTridentRender::new);
     }
 
 }

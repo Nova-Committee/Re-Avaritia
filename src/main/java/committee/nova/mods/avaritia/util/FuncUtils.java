@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import java.util.Map;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class FuncUtils {
     public static void upgradeMachine(Level level, Player player, BlockPos pos, Block to) {

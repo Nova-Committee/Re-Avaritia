@@ -16,7 +16,6 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,7 +27,7 @@ import java.util.List;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/21 15:12
  * Version: 1.0
  */
@@ -63,13 +62,6 @@ public class InfinityArmorItem extends ArmorItem implements IUndamageable {
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         return true;
     }
-
-
-    @Override
-    public @NotNull Rarity getRarity(@NotNull ItemStack stack) {
-        return ModRarities.COSMIC;
-    }
-
 
     @OnlyIn(Dist.CLIENT)
     @Override

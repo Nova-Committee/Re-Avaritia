@@ -1,12 +1,11 @@
 package committee.nova.mods.avaritia.util;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.util.NBTUtils;
+import committee.nova.mods.avaritia.api.util.ResourceUtil;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
-import committee.nova.mods.avaritia.core.singularity.SingularityDataManager;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.nbt.CompoundTag;
@@ -19,94 +18,47 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:39
  * Version: 1.0
  */
 public class SingularityUtils {
-    public static Singularity loadFromJson(ResourceLocation id, JsonObject json, ICondition.IContext context) {
-        if (!CraftingHelper.processConditions(json, "conditions", context)) {
-            Const.LOGGER.info("Skipping loading Singularity {} as its conditions were not met!", id);
-            return null;
-        }
+    public static Singularity loadFromJson(JsonObject json) {
         var name = GsonHelper.getAsString(json, "name");
-        var colors = GsonHelper.getAsJsonArray(json, "colors");
-        int materialCount = Const.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "materialCount", 1000);
-        int overlayColor = Integer.parseInt(colors.get(0).getAsString(), 16);
-        int underlayColor = Integer.parseInt(colors.get(1).getAsString(), 16);
+        var displayName = GsonHelper.getAsString(json, "displayName");
+        int materialCount = Const.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "count", 1000);
+        int overlayColor = Integer.parseInt(GsonHelper.getAsString(json, "overlayColor"), 16);
+        int underlayColor = Integer.parseInt(GsonHelper.getAsString(json, "underlayColor"), 16);
 
-        Singularity singularity;
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
-
         var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
-
-        if (ing == null) {
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, Ingredient.EMPTY, materialCount, time);
-        } else if (ing.has("tag")) {
-            var tag = ing.get("tag").getAsString();
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, tag, materialCount, time);
-        } else {
-            var ingredient = Ingredient.fromJson(json.get("ingredient"));
-            singularity = new Singularity(id, name, new int[]{overlayColor, underlayColor}, ingredient, materialCount, time);
-        }
-
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
         var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
 
-        singularity.setEnabled(enabled);
-        singularity.setRecipeDisabled(recipeDisabled);
-
-        return singularity;
+        return Singularity.create(ResourceUtil.createInstanceWithColon(name), displayName, new int[]{overlayColor, underlayColor},  ing == null ? Ingredient.EMPTY : Ingredient.fromJson(ing))
+                .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeDisabled);
     }
 
     public static JsonObject writeToJson(Singularity singularity) {
         var json = new JsonObject();
 
-        json.addProperty("name", singularity.getName());
-
-        var colors = new JsonArray();
-
-        colors.add(Integer.toString(singularity.getOverlayColor(), 16));
-        colors.add(Integer.toString(singularity.getUnderlayColor(), 16));
-
-        json.add("colors", colors);
-        json.addProperty("timeRequired", singularity.getTimeRequired());
-
-        JsonElement ingredient;
-        if (singularity.getTag() != null) {
-            var obj = new JsonObject();
-            obj.addProperty("tag", singularity.getTag());
-            ingredient = obj;
-
-            var array = new JsonArray();
-            var main = new JsonObject();
-
-            var sub = new JsonObject();
-            main.addProperty("type", "forge:not");
-
-            sub.addProperty("tag", singularity.getTag());
-            sub.addProperty("type", "forge:tag_empty");
-
-            main.add("value", sub);
-            array.add(main);
-            json.add("conditions", array);
-
-        } else {
-            ingredient = singularity.getIngredient().toJson();
-        }
-
-        json.add("ingredient", ingredient);
+        json.addProperty("name", singularity.getRegistryName().toString());
+        json.addProperty("displayName", singularity.getDisplayName());
+        json.addProperty("overlayColor", Integer.toString(singularity.getOverlayColor(), 16));
+        json.addProperty("underlayColor", Integer.toString(singularity.getUnderlayColor(), 16));
+        json.addProperty("count", singularity.getRealCount());
+        json.addProperty("timeCost", singularity.getTimeCost());
+        json.add("ingredient", singularity.getIngredient().toJson());
         json.addProperty("enabled", singularity.isEnabled());
-        json.addProperty("recipeDisabled", singularity.isRecipeDisabled());
-
-
+        json.addProperty("recipeDisabled", singularity.isRecipeEnabled());
+        json.add("conditions", CraftingHelper.serialize(singularity.getConditions().toArray(ICondition[]::new)));
         return json;
     }
 
     public static CompoundTag makeTag(Singularity singularity) {
         var nbt = new CompoundTag();
 
-        nbt.putString("Id", singularity.getId().toString());
+        nbt.putString("Id", singularity.getRegistryName().toString());
 
         return nbt;
     }
@@ -123,11 +75,7 @@ public class SingularityUtils {
     public static Singularity getSingularity(ItemStack stack) {
         var id = NBTUtils.getString(stack, "Id");
         if (!id.isEmpty()) {
-            // 优先使用新的数据管理器
-            var manager = SingularityDataManager.getInstance();
-            if (manager != null && manager.isInitialized()) {
-                return manager.getSingularity(ResourceLocation.tryParse(id));
-            }
+            return SingularityReloadListener.INSTANCE.getSingularity(ResourceUtil.createInstanceWithColon(id));
         }
         return null;
     }

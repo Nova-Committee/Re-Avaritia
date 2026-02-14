@@ -6,7 +6,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 /**
  * @Project: Avaritia
- * @Author: cnlimiter
+ * @author cnlimiter
  * @CreateTime: 2025/3/6 13:53
  * @Description:
  */

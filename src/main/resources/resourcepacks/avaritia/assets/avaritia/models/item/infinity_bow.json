@@ -54,8 +54,8 @@
       "model": "avaritia:item/infinity_bow_tracing_2"
     }
   ],
-  "loader": "avaritia:eternal",
-  "eternal": {
+  "loader": "avaritia:cosmic",
+  "cosmic": {
     "mask": "avaritia:mask/item/infinity_bow/idle_mask"
   }
 }

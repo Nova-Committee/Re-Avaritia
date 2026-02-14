@@ -18,6 +18,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -55,8 +56,7 @@ public class AvaritiaForgeClient {
     private static boolean keepFlying = false;
 
     // region 定义按键绑定
-    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter",
-            InputConstants.KEY_H, CATEGORIES);
+    public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);
     // endregion
@@ -75,7 +75,7 @@ public class AvaritiaForgeClient {
         Level level = mc.level;
         if (player == null || level == null) return;
 
-        if (CONFIG_KEY.consumeClick()) {
+        while (CONFIG_KEY.consumeClick()) {
             mc.setScreen(new AvaritiaConfigScreen(mc.screen));
         }
 
@@ -249,7 +249,7 @@ public class AvaritiaForgeClient {
         float maxIntensity = 0.0f;
 
 
-        for (GapingVoidEntity pearl : level.getEntitiesOfClass(GapingVoidEntity.class, player.getBoundingBox().inflate(maxDistance))) {
+        for (GapingVoidEntity pearl : level.getEntitiesOfClass(GapingVoidEntity.class, player.getBoundingBox().inflate(maxDistance), Entity::isAlive)) {//疑似对非GapingVoidEntity进行操作
             double distance = playerPos.distanceTo(pearl.position());
             if (distance < maxDistance) {
 

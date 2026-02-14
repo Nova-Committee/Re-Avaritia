@@ -6,7 +6,7 @@ import net.minecraftforge.fml.ModList;
 
 /**
  * Description:
- * Author: cnlimiter
+ * @author cnlimiter
  * Date: 2022/4/2 12:45
  * Version: 1.0
  */

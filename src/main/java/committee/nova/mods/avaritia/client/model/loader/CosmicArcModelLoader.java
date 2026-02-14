@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * @author: cnlimiter
+ * @author cnlimiter
  */
 public class CosmicArcModelLoader extends BaseModelLoader<CosmicArcModelLoader.CosmicArcGeometry> {
     public static final CosmicArcModelLoader INSTANCE = new CosmicArcModelLoader();
