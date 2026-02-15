@@ -21,6 +21,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -35,6 +37,7 @@ import static committee.nova.mods.avaritia.client.AvaritiaForgeClient.FILTER_KEY
  * @CreateTime: 2024/12/30 01:06
  * @Description:
  */
+@OnlyIn(Dist.CLIENT)
 public class ItemFilterScreen extends Screen {
     private final KeyEventManager keyManager = new KeyEventManager();
 

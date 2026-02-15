@@ -87,7 +87,7 @@ public class TesseractChannelMenu extends AbstractContainerMenu {
         super.removed(pPlayer);
         if (pPlayer.isLocalPlayer()) ClientChannelManager.getInstance().onScreenClose();
         else {
-            terminal.removeChannelSelector((ServerPlayer) pPlayer);
+            terminal.removeChannelSelector((ServerPlayer) player);
             ServerChannelManager.getInstance().removeChannelSelector((ServerPlayer) player);
         }
     }

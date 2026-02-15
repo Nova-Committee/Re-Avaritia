@@ -9,6 +9,8 @@ import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.ToolUtils;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,9 +25,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
 import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -168,6 +173,38 @@ public class AvaritiaForgeClient {
     }
     // endregion
 
+    //无尽套免疫视觉效果
+    @SubscribeEvent
+    public static void onRenderOverlay(RenderBlockScreenEffectEvent event) {
+        var player = Minecraft.getInstance().player;
+        if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.FIRE) {
+            event.setCanceled(true);
+        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.BLOCK) {
+            event.setCanceled(true);
+        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onFog(ViewportEvent.RenderFog event) {
+        Camera camera = event.getCamera();
+        Entity entity = camera.getEntity();
+
+        if (!(entity instanceof Player player)) return;
+        if (!ToolUtils.isWearingInfinityHelmet(player)) return;
+
+        FogType fogType = camera.getFluidInCamera();
+
+        if (fogType == FogType.LAVA || fogType == FogType.POWDER_SNOW) {
+
+            float farPlane = event.getRenderer().getRenderDistance();
+
+            event.setNearPlaneDistance(-8.0f);
+            event.setFarPlaneDistance(Math.min(96.0f, farPlane));
+            event.setCanceled(true);
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onItemTooltip(final ItemTooltipEvent e) {
