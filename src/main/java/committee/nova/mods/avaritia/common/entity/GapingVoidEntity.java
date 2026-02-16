@@ -32,6 +32,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -42,7 +43,6 @@ import java.util.List;
  * Version: 1.0
  */
 public class GapingVoidEntity extends Entity {
-
     public static final EntityDataAccessor<Integer> AGE_PARAMETER = SynchedEntityData.defineId(GapingVoidEntity.class, EntityDataSerializers.INT);
     public static final int maxLifetime = 186;
     public static final Predicate<Entity> SUCK_PREDICATE = input -> {
@@ -84,7 +84,7 @@ public class GapingVoidEntity extends Entity {
         this.setUser(shooter);
     }
 
-    public static double getVoidScale(double age) {
+    public double getScale(double age) {
         double life = age / (double) maxLifetime;
 
         double curve;
@@ -133,7 +133,7 @@ public class GapingVoidEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -190,13 +190,13 @@ public class GapingVoidEntity extends Entity {
 
         // *slurping noises*
 
-        double size = getVoidScale(age) * 0.5 - 0.2;
+        double size = getScale(age) * 0.5 - 0.2;
         int range = (int) (size * suckRange);
         AABB axisAlignedBB = new AABB(position.offset(-range, -range, -range), position.offset(range, range, range));
 
         List<Entity> sucked = level().getEntitiesOfClass(Entity.class, axisAlignedBB, SUCK_PREDICATE);
 
-        double radius = getVoidScale(age) * 0.5;
+        double radius = getScale(age) * 0.5;
 
         for (Entity suckee : sucked) {
             if (suckee != this) {

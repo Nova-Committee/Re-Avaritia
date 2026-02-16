@@ -18,6 +18,35 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
  * @Description:
  */
 public class AvaritiaRenderTypes {
+    public static final RenderType BLACK_HOLE_RENDER_TYPE = RenderType.create(
+            "black_hole",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            256,
+            false,  // useDynamicLight
+            true,   // translucent
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.BLACK_HOLE_SHADER))
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .createCompositeState(false)
+    );
+
+    public static final RenderType BLACK_HOLE_SOLID = RenderType.create(
+            "black_hole_solid",
+            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
+            VertexFormat.Mode.QUADS,
+            256,
+            false,
+            false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+                    .setCullState(RenderStateShard.CULL)
+                    .createCompositeState(false)
+    );
+
     public static RenderType VOID = RenderType.create(
             Const.rl("void_hemisphere").toString(),
             DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256,

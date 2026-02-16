@@ -39,6 +39,9 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<GapingVoidEntity>> GAPING_VOID = ENTITIES.register("gaping_void",
             () -> EntityType.Builder.<GapingVoidEntity>of(GapingVoidEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F)
+                    .clientTrackingRange(64)
+                    .updateInterval(1)
                     .build(new ResourceLocation(Const.MOD_ID, "gaping_void").toString()));
 
     public static final RegistryObject<EntityType<HeavenArrowEntity>> HEAVEN_ARROW = ENTITIES.register("heaven_arrow",

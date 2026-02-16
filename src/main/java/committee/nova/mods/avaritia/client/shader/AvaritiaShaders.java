@@ -25,6 +25,7 @@ public class AvaritiaShaders {
     public static ShaderInstance HELL_SHADER;
     public static ShaderInstance ETERNAL_SHADER;
     public static ShaderInstance UNSTABLE_SHADER;
+    public static ShaderInstance BLACK_HOLE_SHADER;
 
     public static Uniform cosmicTime;
     public static Uniform cosmicYaw;
@@ -64,6 +65,11 @@ public class AvaritiaShaders {
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         try {
+            event.registerShader(new ShaderInstance(
+                    event.getResourceProvider(),
+                    Const.rl("black_hole"),
+                    DefaultVertexFormat.NEW_ENTITY),
+                    shader -> BLACK_HOLE_SHADER = shader);
             event.registerShader(new ShaderInstance(event.getResourceProvider(), Const.rl("cosmic"), DefaultVertexFormat.BLOCK), shader -> {
                 COSMIC_SHADER = shader;
                 cosmicTime = COSMIC_SHADER.getUniform("time");
