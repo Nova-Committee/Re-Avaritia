@@ -384,7 +384,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
             // 计算可转移的数量
             int maxTransfer = Math.min(stack.getCount(), 64); // 每次最多转移64个
-            int spaceInInput = materialStack.isEmpty() ? 64 : (int) (this.recipe.getInputCount() * this.tier.inputAmplifier - materialCount);
+            int spaceInInput = materialStack.isEmpty() || this.recipe == null ? 64 : (int) (this.recipe.getInputCount() * this.tier.inputAmplifier - materialCount);
 
             int inputCount = inputSlot.isEmpty() ? 64 : inputSlot.getMaxStackSize() - inputSlot.getCount();
 
