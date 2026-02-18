@@ -126,11 +126,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
                         var state = world.getBlockState(pos);
                         var block = state.getBlock();
 
-                        if (!world.isEmptyBlock(pos.above())) {
-                            for (int i = 1; i <= 3; i++) {
-                                harvest(world, pos.above(i));
-                            }
-                        }
 
                         if (world.isEmptyBlock(pos.above()) && (block instanceof GrassBlock || block.equals(Blocks.DIRT) || block.equals(
                                 Blocks.COARSE_DIRT) || block instanceof FarmBlock)) {
@@ -166,12 +161,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
                         var state = world.getBlockState(pos);
                         var block = state.getBlock();
 
-                        if (!world.isEmptyBlock(pos.above())) {
-                            for (int i = 1; i <= 3; i++) {
-                                harvest(world, pos.above(i));
-                            }
-                        }
-
                         if (world.isEmptyBlock(pos.above()) && (block instanceof SoulSandBlock || block.equals(Blocks.SOUL_SOIL))) {
                             world.setBlock(pos, soulFarmState, 11);
                         }
@@ -206,17 +195,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
         }
         return false;
     }
-
-    private void harvest(Level world, BlockPos pos) {
-        var state = world.getBlockState(pos);
-        var block = state.getBlock();
-        if (world.isEmptyBlock(pos) || block instanceof CropBlock || block instanceof StemBlock
-                || block instanceof CocoaBlock || block instanceof SweetBerryBushBlock) {
-            return;
-        }
-        world.destroyBlock(pos, false);
-    }
-
 
 
 }

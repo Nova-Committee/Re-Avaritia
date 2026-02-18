@@ -26,6 +26,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -46,6 +48,7 @@ import static committee.nova.mods.avaritia.Const.GSON;
  * @CreateTime: 2024/12/25 20:09
  * @Description: from <a href="https://github.com/TinyTsuki/SakuraSignIn_MC">...</a>
  */
+@OnlyIn(Dist.CLIENT)
 public class ItemSelectScreen extends Screen {
 
     private static final Logger LOGGER = LogManager.getLogger();
