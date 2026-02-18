@@ -103,8 +103,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
         int rang = 5;
         var minPos = blockpos.offset(-rang, 0, -rang);
         var maxPos = blockpos.offset(rang, 0, rang);
-//        int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(context);
-//        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
             if (player != null && !world.isClientSide) {
@@ -113,12 +112,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
                     for (BlockPos pos : boxMutable) {
                         var state = world.getBlockState(pos);
                         var block = state.getBlock();
-
-                        if (!world.isEmptyBlock(pos.above())) {
-                            for (int i = 1; i <= 3; i++) {
-                                harvest(world, pos.above(i));
-                            }
-                        }
 
                         if (world.isEmptyBlock(pos.above()) && (block instanceof GrassBlock || block.equals(Blocks.DIRT) || block.equals(
                                 Blocks.COARSE_DIRT) || block instanceof FarmBlock)) {
@@ -154,12 +147,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
                         var state = world.getBlockState(pos);
                         var block = state.getBlock();
 
-                        if (!world.isEmptyBlock(pos.above())) {
-                            for (int i = 1; i <= 3; i++) {
-                                harvest(world, pos.above(i));
-                            }
-                        }
-
                         if (world.isEmptyBlock(pos.above()) && (block instanceof SoulSandBlock || block.equals(Blocks.SOUL_SOIL))) {
                             world.setBlock(pos, soulFarmState, 11);
                         }
@@ -194,16 +181,6 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
             if (pos1.getX() == pos.getX() && pos1.getY() == pos.getY() && pos1.getZ() == pos.getZ()) return true;
         }
         return false;
-    }
-
-    private void harvest(Level world, BlockPos pos) {
-        var state = world.getBlockState(pos);
-        var block = state.getBlock();
-        if (world.isEmptyBlock(pos) || block instanceof CropBlock || block instanceof StemBlock
-                || block instanceof CocoaBlock || block instanceof SweetBerryBushBlock) {
-            return;
-        }
-        world.destroyBlock(pos, false);
     }
 
     @Override

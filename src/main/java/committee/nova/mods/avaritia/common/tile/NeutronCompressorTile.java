@@ -125,7 +125,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
                 }
 
                 if (tile.recipe != null && tile.materialCount < tile.recipe.getInputCount() * tile.tier.inputAmplifier) {
-                    if (input.is(tile.materialStack.getItem())) {
+                    if (tile.doesItemMatchMaterialStack(input, tile.materialStack)) {
                         int consumeAmount = input.getCount();
 
                         consumeAmount = Math.min(consumeAmount, Mth.ceil(tile.recipe.getInputCount() * tile.tier.inputAmplifier) - tile.materialCount);
@@ -366,7 +366,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         var inputSlot = this.inventory.getStackInSlot(1);
 
         // 检查当前输入槽是否已满或材料类型不匹配
-        if (!inputSlot.isEmpty() && !(inputSlot.is(materialStack.getItem()))) {
+        if (!inputSlot.isEmpty() && !doesItemMatchMaterialStack(inputSlot, materialStack)) {
             return;
         }
 
@@ -378,7 +378,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
             //if (!canInsertItem(stack)) continue;
 
             // 检查是否与当前材料类型匹配
-            if (!materialStack.isEmpty() && !(stack.is(materialStack.getItem()))) {
+            if (!materialStack.isEmpty() && !doesItemMatchMaterialStack(stack, materialStack)) {
                 continue;
             }
 
@@ -445,17 +445,12 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
 
     public boolean canInsertItem(ItemStack stack) {
         if (this.recipeLocked && this.lockedRecipe != null) {
-            // 锁定状态下，只接受锁定配方的材料
-            var ingredients = this.lockedRecipe.getInput();
-            var items = ingredients.getItems();
-            return items.length > 0 && stack.is(items[0].getItem());
+            return doesItemMatchRecipeIngredient(stack, this.lockedRecipe);
         } else {
             var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COMPRESSOR_RECIPE.get());
             if (!recipes.isEmpty()) {
                 for (var recipe : recipes) {
-                    var ingredients = recipe.getInput();
-                    var items = ingredients.getItems();
-                    if (items.length > 0 && stack.is(items[0].getItem())) {
+                    if (doesItemMatchRecipeIngredient(stack, recipe)) {
                         return true;
                     }
                 }
@@ -463,4 +458,25 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements IT
         }
         return false;
     }
+
+    //检查物品是否匹配配方的Ingredient
+    private boolean doesItemMatchRecipeIngredient(ItemStack stack, ICompressorRecipe recipe) {
+        if (recipe == null) return false;
+        Ingredient ingredient = recipe.getInput();
+        return ingredient.test(stack);
+    }
+
+    //检查物品是否匹配当前材料栈
+    private boolean doesItemMatchMaterialStack(ItemStack stack, ItemStack materialStack) {
+        if (materialStack.isEmpty()) return true;
+
+        // 如果有配方，使用配方的Ingredient进行匹配
+        if (this.recipe != null) {
+            return doesItemMatchRecipeIngredient(stack, this.recipe);
+        }
+
+        // 如果没有配方，回退到简单的物品ID比较
+        return stack.is(materialStack.getItem());
+    }
+
 }
