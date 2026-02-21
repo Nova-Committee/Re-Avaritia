@@ -53,7 +53,7 @@ public record C2SCompressorEjectPacket(BlockPos pos) implements CustomPacketPayl
 
                         if (tile instanceof NeutronCompressorTile compressor) {
                             if (compressor.isRecipeLocked()) {
-                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor.message_1"));
+                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_eject.message_1"));
                                 return;
                             }
                             if (compressor.getMaterialCount() > 0) {
@@ -109,11 +109,11 @@ public record C2SCompressorEjectPacket(BlockPos pos) implements CustomPacketPayl
                                     compressor.clearMaterials();
 
                                     // 发送成功消息
-                                    player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor.message_2"));
+                                    player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_eject.message_2"));
                                 }
                             } else {
                                 // 没有材料可弹出
-                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor.message_3"));
+                                player.sendSystemMessage(Component.translatable("tooltip.avaritia.compressor_eject.message_3"));
                             }
                         }
                     }

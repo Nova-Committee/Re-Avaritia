@@ -574,9 +574,9 @@
   "tooltip.infinity_pickaxe.enchant_2": "Set to Silk Touch",
   "tooltip.infinity": "Infinity",
   "tooltip.infinity.desc": "Attack Damage",
-  "tooltip.avaritia.compressor.message_1": "§c[Neutron Compressor] §unlock the recipe first",
-  "tooltip.avaritia.compressor.message_2": "§a[Neutron Compressor] §fThe material has been ejected and packed into a matter cluster.",
-  "tooltip.avaritia.compressor.message_3": "§c[Neutron Compressor] §fNo materials available to pop out",
+  "tooltip.avaritia.compressor_eject.message_1": "§c[Neutron Compressor] §unlock the recipe first",
+  "tooltip.avaritia.compressor_eject.message_2": "§a[Neutron Compressor] §fThe material has been ejected and packed into a matter cluster.",
+  "tooltip.avaritia.compressor_eject.message_3": "§c[Neutron Compressor] §fNo materials available to pop out",
   "tooltip.avaritia.compressor_lock.message_1": "§a[Neutron Compressor] §fRecipe is locked",
   "tooltip.avaritia.compressor_lock.message_2": "§e[Neutron Compressor] §fRecipe unlocked",
   "tooltip.avaritia.compressor_lock.message_3": "§c[Neutron Compressor] §fPlease add a recipe ingredient first"
