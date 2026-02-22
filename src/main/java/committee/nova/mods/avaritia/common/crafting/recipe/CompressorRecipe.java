@@ -18,8 +18,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 /**
  * Description:
  * Author: cnlimiter
@@ -27,17 +25,16 @@ import java.util.Arrays;
  * Version: 1.0
  */
 public class CompressorRecipe implements ICompressorRecipe {
-    private final NonNullList<Ingredient> inputs;
+    private final Ingredient input;
     private final ItemStack result;
     private final int inputCount;
     private final int timeCost;
 
     public CompressorRecipe(Ingredient input, ItemStack result, int inputCount, int timeCost) {
-        this.inputs = NonNullList.of(Ingredient.EMPTY, input);
+        this.input = input;
         this.result = result;
         this.inputCount = inputCount;
         this.timeCost = timeCost;
-
     }
 
     @Override
@@ -56,7 +53,12 @@ public class CompressorRecipe implements ICompressorRecipe {
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        return this.inputs;
+        return NonNullList.of(Ingredient.EMPTY, this.input);
+    }
+
+    @Override
+    public @NotNull Ingredient getInput() {
+        return this.input;
     }
 
     @Override
@@ -81,9 +83,9 @@ public class CompressorRecipe implements ICompressorRecipe {
     @Override
     public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
         if (inv.size() != 1) return false;
-        var input = inv.getItem(0);
-        if (input.isEmpty()) return false;  // 明确检查空物品
-        return Arrays.stream(this.inputs.getFirst().getItems()).anyMatch(s -> s.is(input.getItem()));
+        var craftInput = inv.getItem(0);
+        if (craftInput.isEmpty()) return false;  // 明确检查空物品
+        return this.input.test(craftInput);
     }
 
     @Override
@@ -95,7 +97,7 @@ public class CompressorRecipe implements ICompressorRecipe {
         public static final MapCodec<CompressorRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         Ingredient.CODEC
-                                .fieldOf("ingredient").forGetter(recipe -> recipe.inputs.getFirst()),
+                                .fieldOf("ingredient").forGetter(recipe -> recipe.input),
                         ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("inputCount", 1000).forGetter(recipe -> recipe.inputCount),
                         Codec.INT.fieldOf("timeCost").forGetter(recipe -> recipe.timeCost)
@@ -124,7 +126,7 @@ public class CompressorRecipe implements ICompressorRecipe {
         }
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
-            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.inputs.getFirst());
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.input);
             ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.inputCount);
             buffer.writeVarInt(recipe.timeCost);

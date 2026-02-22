@@ -42,21 +42,17 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
                 if (level.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
                     if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
                         // 锁定状态下，只接受锁定配方的材料
-                        var ingredients = compressor.getLockedRecipe().getIngredients();
-                        if (!ingredients.isEmpty()) {
-                            var ingredient = ingredients.get(0);
-                            var items = ingredient.getItems();
-                            return items.length > 0 && stack.is(items[0].getItem());
+                        var input = compressor.getLockedRecipe().getInput();
+                        if (!input.isEmpty()) {
+                            return input.test(stack);
                         }
                         return false;
                     }else {
                         var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
                         if (compressorRecipe != null) {
-                            var ingredients = compressorRecipe.getIngredients();
-                            if (!ingredients.isEmpty()) {
-                                var ingredient = ingredients.getFirst();
-                                var items = ingredient.getItems();
-                                return items.length > 0 && stack.is(items[0].getItem());
+                            var input = compressorRecipe.getInput();
+                            if (!input.isEmpty()) {
+                                return input.test(stack);
                             }
                             return false;
                         }
