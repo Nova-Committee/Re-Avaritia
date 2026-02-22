@@ -461,7 +461,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             }
 
             // 配方匹配检查
-            if (!doesItemMatchMaterialStack(stack, materialStack)) {
+            if (!this.materialStack.isEmpty() && !doesItemMatchMaterialStack(stack, materialStack)) {
                 return false;
             }
             if (!canInsertItem(stack)) {
