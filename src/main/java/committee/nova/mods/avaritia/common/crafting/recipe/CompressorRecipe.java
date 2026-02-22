@@ -57,7 +57,7 @@ public class CompressorRecipe implements ICompressorRecipe {
     }
 
     @Override
-    public Ingredient getInput() {
+    public @NotNull Ingredient getInput() {
         return this.input;
     }
 

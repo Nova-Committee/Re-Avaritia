@@ -30,6 +30,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -132,7 +133,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
 
             // 如果有输入且材料不足，尝试消耗材料
             if (!input.isEmpty() && tile.materialCount < requiredAmount) {
-                if (ItemUtils.areStacksSameType(input, tile.materialStack)) {
+                if (tile.doesItemMatchMaterialStack(input, tile.materialStack)) {
                     int consumeAmount = Math.min(
                         input.getCount(),
                         requiredAmount - tile.materialCount
@@ -364,20 +365,20 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     public void extractFromHandler(IItemHandler externalHandler, Direction fromSide) {
         var inputSlot = this.inventory.getStackInSlot(1);
 
-        // 检查当前输入槽是否已满或材料类型不匹配
-        if (!inputSlot.isEmpty() && !ItemUtils.areStacksSameType(inputSlot, materialStack)) {
-            return;
-        }
-
         for (int i = 0; i < externalHandler.getSlots(); i++) {
             ItemStack stack = externalHandler.getStackInSlot(i);
             if (stack.isEmpty()) continue;
+
+            // 先检查当前输入槽是否与待插入物品一致
+            if (!inputSlot.isEmpty() && !ItemUtils.areStacksSameType(stack, inputSlot)) {
+                continue;
+            }
 
             // 检查输入物品是否在配方中
             if (!canInsertItem(stack)) continue;
 
             // 检查是否与当前材料类型匹配
-            if (!materialStack.isEmpty() && !ItemUtils.areStacksSameType(stack, materialStack)) {
+            if (!materialStack.isEmpty() && !doesItemMatchMaterialStack(stack, materialStack)) {
                 continue;
             }
 
@@ -450,25 +451,24 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             return false;
         }
         if (index == 1 && ioHandler.shouldAllowPassiveIO(direction)) { //input
-            if (this.getInventory().getStackInSlot(1).isEmpty()) {
-                return true;
-            }
-
             if (!hasRecipe()) {
                 return false;
             }
 
-            if (!this.materialStack.isEmpty()) {
-                return ItemStack.isSameItemSameComponents(this.getInventory().getStackInSlot(1), this.materialStack);
+            // 配方匹配检查
+            if (!doesItemMatchMaterialStack(stack, materialStack)) {
+                return false;
+            }
+            if (!canInsertItem(stack)) {
+                return false;
             }
 
-            var ingredients = this.getActiveRecipe().getIngredients();
-            if (!ingredients.isEmpty()) {
-                var ingredient = ingredients.getFirst();
-                var items = ingredient.getItems();
-                return items.length > 0 && stack.is(items[0].getItem());
+            var inputSlot = this.getInventory().getStackInSlot(1);
+            if (inputSlot.isEmpty()) {
+                return true;
             }
 
+            return ItemUtils.areStacksSameType(stack, inputSlot);
         }
         return false;
     }
@@ -540,26 +540,26 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
 
     public boolean canInsertItem(ItemStack stack) {
         if (this.recipeLocked && this.lockedRecipe != null) {
-            // 锁定状态下，只接受锁定配方的材料
-            var ingredients = this.lockedRecipe.getIngredients();
-            if (!ingredients.isEmpty()) {
-                var ingredient = ingredients.getFirst();
-                var items = ingredient.getItems();
-                return items.length > 0 && stack.is(items[0].getItem());
-            }
-            return false;
+            return doesItemMatchRecipeIngredient(stack, this.lockedRecipe);
         } else {
             var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
-            if (compressorRecipe != null) {
-                var ingredients = compressorRecipe.getIngredients();
-                if (!ingredients.isEmpty()) {
-                    var ingredient = ingredients.getFirst();
-                    var items = ingredient.getItems();
-                    return items.length > 0 && stack.is(items[0].getItem());
-                }
-                return false;
-            }
-            return false;
+            return doesItemMatchRecipeIngredient(stack, compressorRecipe);
         }
+    }
+
+    private boolean doesItemMatchRecipeIngredient(ItemStack stack, ICompressorRecipe recipe) {
+        if (recipe == null) return false;
+        Ingredient ingredient = recipe.getInput();
+        return ingredient.test(stack);
+    }
+
+    private boolean doesItemMatchMaterialStack(ItemStack stack, ItemStack materialStack) {
+        if (materialStack.isEmpty()) return true;
+
+        if (this.recipe != null) {
+            return doesItemMatchRecipeIngredient(stack, this.recipe);
+        }
+
+        return stack.is(materialStack.getItem());
     }
 }
