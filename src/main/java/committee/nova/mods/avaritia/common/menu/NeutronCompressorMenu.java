@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.api.common.crafting.ShapelessCraftingInput;
 import committee.nova.mods.avaritia.api.common.menu.BaseTileMenu;
+import committee.nova.mods.avaritia.api.common.slot.ItemStackWrapperSlot;
 import committee.nova.mods.avaritia.api.common.slot.OutputSlot;
 import committee.nova.mods.avaritia.api.common.wrapper.ItemStackWrapper;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
@@ -15,7 +16,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
             return true;
         });
         this.addSlot(new OutputSlot(inventory, 0, 120, 35));
-        this.addSlot(new SlotItemHandler(inventory, 1, 39, 35));
+        this.addSlot(new ItemStackWrapperSlot(inventory, 1, 39, 35));
         createInventorySlots(playerInventory);
     }
 
