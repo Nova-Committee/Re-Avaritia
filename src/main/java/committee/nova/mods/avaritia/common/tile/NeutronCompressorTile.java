@@ -451,6 +451,11 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             return false;
         }
         if (index == 1 && ioHandler.shouldAllowPassiveIO(direction)) { //input
+            var inputSlot = this.getInventory().getStackInSlot(1);
+            if (inputSlot.isEmpty()) {
+                return true;
+            }
+
             if (!hasRecipe()) {
                 return false;
             }
@@ -461,11 +466,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
             }
             if (!canInsertItem(stack)) {
                 return false;
-            }
-
-            var inputSlot = this.getInventory().getStackInSlot(1);
-            if (inputSlot.isEmpty()) {
-                return true;
             }
 
             return ItemUtils.areStacksSameType(stack, inputSlot);
