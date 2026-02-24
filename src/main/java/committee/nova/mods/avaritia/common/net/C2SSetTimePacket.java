@@ -36,7 +36,13 @@ public record C2SSetTimePacket(int time) implements CustomPacketPayload {
         public void handle(@NotNull C2SSetTimePacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 if (context.player() instanceof ServerPlayer player)  {
-                    player.getServer().getAllLevels().forEach(level -> level.setDayTime(packet.time));
+                    player.getServer().getAllLevels().forEach(level -> {
+
+                        long currentDayTime = level.getDayTime();
+                        long currentDays = currentDayTime / 24000L;
+                        long newTime = currentDays * 24000L + packet.time;
+                        level.setDayTime(newTime);
+                    });
                 }
 
             });
