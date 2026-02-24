@@ -26,7 +26,12 @@ public class C2SSetTimePacket {
             ServerPlayer player = ctx.get().getSender();
             if (player == null) return;
 
-            player.getServer().getAllLevels().forEach(level -> level.setDayTime(time));
+            player.getServer().getAllLevels().forEach(level -> {
+                long currentTime = level.getDayTime();
+                long currentDay = currentTime / 24000L;
+                long newTime = currentDay * 24000L + time;
+                level.setDayTime(newTime);
+            });
         });
         ctx.get().setPacketHandled(true);
     }
