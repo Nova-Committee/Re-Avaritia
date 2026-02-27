@@ -48,6 +48,9 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import org.apache.logging.log4j.LogManager;  
+import org.apache.logging.log4j.Logger;  
+
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +58,8 @@ import java.util.UUID;
  * @author cnlimiter
  */
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
+    private static final Logger LOGGER = LogManager.getLogger();
+    
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     protected static final VoxelShape AABB = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
@@ -126,6 +131,11 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
         if (pStack.getTag().contains("BlockEntityTag")) {
             CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
             if (nbt.contains("owner") && nbt.contains("channelID")) {
+                ServerChestManager manager = ServerChestManager.getInstance();  
+                if (manager == null) {  
+                    LOGGER.warn("[InfinityChestBlock] ServerChestManager is null in appendHoverText(), skipping tooltip content.");  
+                    return;
+                }
                 var owner = nbt.getUUID("owner");
                 var channelID = nbt.getUUID("channelID");
                 var channel = ServerChestManager.getInstance().getChest(owner, channelID);
