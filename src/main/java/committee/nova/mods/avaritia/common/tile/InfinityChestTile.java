@@ -5,6 +5,7 @@ import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
+import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
@@ -26,6 +27,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import org.apache.logging.log4j.LogManager;  
+import org.apache.logging.log4j.Logger;
+
 import java.util.UUID;
 
 /**
@@ -46,6 +50,8 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     private ServerChestHandler channel = new ServerChestHandler();
     @Getter
     private LazyOptional<?> capability = LazyOptional.of(() -> channel);
+    
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public InfinityChestTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.infinity_chest_tile.get(), pos, state);
@@ -61,6 +67,17 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
         return new InfinityChestMenu(containerId, player, this);
     }
+    
+    @Override  
+    public void handleUpdateTag(CompoundTag tag) {  
+        if (tag.contains("owner")) {  
+            owner = tag.getUUID("owner");  
+            locked = tag.getBoolean("locked");  
+        }  
+        if (tag.contains("filter")) filter = tag.getString("filter");  
+        if (tag.contains("sortType")) sortType = tag.getByte("sortType");  
+        if (tag.contains("channelID")) channelID = tag.getUUID("channelID");  
+    }
 
     @Override
     public void load(@NotNull CompoundTag pTag) {
@@ -71,7 +88,12 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         if (pTag.contains("filter")) filter = pTag.getString("filter");
         if (pTag.contains("sortType")) sortType = pTag.getByte("sortType");
         if (pTag.contains("channelID")) channelID = pTag.getUUID("channelID");
-        channel = ServerChestManager.getInstance().getChest(owner, channelID);
+        ServerChestManager manager = ServerChestManager.getInstance();  
+        if (manager == null) {  
+            LOGGER.warn("[InfinityChestTile] ServerChestManager is null during load(), skipping channel binding. pos={}", getBlockPos());  
+            return;  
+        }  
+        channel = manager.getChest(owner, channelID);  
     }
 
     @Override
