@@ -354,6 +354,50 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 .tier(1)
                 .unlockedBy("has_item", has(ModItems.infinity_catalyst.get())).save(consumer, Const.rl("ancient_debris_eight"));
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.SCULK_SENSOR, 1)
+                .pattern("a a")
+                .define('a', Items.ECHO_SHARD)
+                .unlockedBy("has_item", has(Items.ECHO_SHARD)).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.SCULK_SHRIEKER, 1)
+                .pattern("cac")
+                .pattern(" b ")
+                .define('a', Blocks.SCULK_CATALYST)
+                .define('b', Blocks.SCULK_SENSOR)
+                .define('c', Blocks.BONE_BLOCK)
+                .unlockedBy("has_item", has(Items.SCULK_SENSOR)).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.SCULK_CATALYST, 1)
+                .pattern("b")
+                .pattern("c")
+                .define('b', Blocks.SCULK)
+                .define('c', Blocks.BONE_BLOCK)
+                .unlockedBy("has_item", has(Items.SCULK)).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Blocks.SCULK, 1)
+                .pattern("aa")
+                .pattern("aa")
+                .define('a', Items.ECHO_SHARD)
+                .unlockedBy("has_item", has(Items.ECHO_SHARD)).save(consumer);
+
+        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.TORCHFLOWER_SEEDS, 2, 1)
+                .requires(Items.TORCHFLOWER)
+                .unlockedBy("has_item", has(Items.TORCHFLOWER)).save(consumer);
+
+        ModShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.PITCHER_POD, 2, 1)
+                .requires(Items.PITCHER_PLANT)
+                .unlockedBy("has_item", has(Items.PITCHER_PLANT)).save(consumer);
+
+        ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.SNIFFER_EGG, 1)
+                .pattern("aaa")
+                .pattern("dbd")
+                .pattern("ccc")
+                .define('a', Items.BRICK)
+                .define('b', Items.EGG)
+                .define('c', Items.GRAVEL)
+                .define('d', Items.SAND)
+                .unlockedBy("has_item", has(Items.EGG)).save(consumer);
+
 
         ModShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.end_crafting_table.get(), 2)
                 .pattern("bcccb")

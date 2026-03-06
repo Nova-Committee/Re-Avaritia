@@ -1,0 +1,24 @@
+{
+  "type": "avaritia:shaped_table",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:sculk_catalyst"
+    },
+    "b": {
+      "item": "minecraft:sculk_sensor"
+    },
+    "c": {
+      "item": "minecraft:bone_block"
+    }
+  },
+  "pattern": [
+    "cac",
+    " b "
+  ],
+  "result": {
+    "item": "minecraft:sculk_shrieker"
+  },
+  "show_notification": true,
+  "tier": 1
+}
