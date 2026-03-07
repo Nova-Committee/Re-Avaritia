@@ -2,8 +2,13 @@ package committee.nova.mods.avaritia.client.model.loader;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
+import committee.nova.mods.avaritia.api.client.render.CCModel;
+import committee.nova.mods.avaritia.api.client.render.CCRenderState;
+import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
 import committee.nova.mods.avaritia.client.model.entity.InfinityTridentModel;
@@ -20,22 +25,37 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
-
+//TODO:第一人称位置以及第三人称位置(未调整)
 /**
  * @author cnlimiter
  */
 public class CosmicArcBakeModel extends WrappedItemModel {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CosmicArcBakeModel.class);
     private final List<ResourceLocation> maskSprite;
+    private Map<String, CCModel> tridentObjModel;
 
     public CosmicArcBakeModel(BakedModel wrapped, List<ResourceLocation> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
         this.cosmic = true;
+
+        try {
+            this.tridentObjModel = new OBJParser(Const.rl("models/infinity_trident.obj"))
+                    .swapYZ()
+                    .parse();
+            LOGGER.info("Loaded trident OBJ models for item rendering: {}", tridentObjModel.keySet());
+        } catch (Exception e) {
+            LOGGER.error("Failed to load trident OBJ model, will use default model", e);
+            this.tridentObjModel = Map.of();
+        }
     }
 
     @Override
@@ -51,12 +71,24 @@ public class CosmicArcBakeModel extends WrappedItemModel {
                 this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
             } else {
                 this.cosmic = false;
-                var tridentModel = new InfinityTridentModel();
-                pStack.pushPose();
-                pStack.scale(1.0F, -1.0F, -1.0F);
-                VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
-                tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay);
-                pStack.popPose();
+
+                if (!tridentObjModel.isEmpty()) {
+                    CCRenderState cc = CCRenderState.instance();
+                    cc.reset();
+                    cc.bind(AvaritiaRenderTypes.TRIDENT, source, pStack);
+
+                    for (CCModel model : tridentObjModel.values()) {
+                        model.render(cc);
+                    }
+                } else {
+                    // 如果 OBJ 模型加载失败，回退到原代码生成的模型
+                    var tridentModel = new InfinityTridentModel();
+                    pStack.pushPose();
+                    pStack.scale(1.0F, -1.0F, -1.0F);
+                    VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
+                    tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay);
+                    pStack.popPose();
+                }
             }
         } else {
             this.parentState = TransformUtils.DEFAULT_ITEM;
@@ -106,7 +138,7 @@ public class CosmicArcBakeModel extends WrappedItemModel {
             pStack.popPose();
         }
 
-        // 渲染Cosmic效果
+        // 渲染 Cosmic 效果
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
@@ -120,7 +152,6 @@ public class CosmicArcBakeModel extends WrappedItemModel {
         AvaritiaShaders.cosmicYaw.set(yaw);
         AvaritiaShaders.cosmicPitch.set(pitch);
         AvaritiaShaders.cosmicExternalScale.set(scale);
-        AvaritiaShaders.cosmicOpacity.set(1.0F);
         AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.COSMIC);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();

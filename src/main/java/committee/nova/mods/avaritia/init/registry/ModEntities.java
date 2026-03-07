@@ -141,6 +141,7 @@ public class ModEntities {
             ENTITIES.register("infinity_thrown_trident", () -> EntityType.Builder.<InfinityThrownTrident>of(
                             InfinityThrownTrident::new, MobCategory.MISC)
                     .sized(1f, 1f)
+                    .fireImmune()
                     .build(Const.rl("infinity_thrown_trident").toString())
             );
 

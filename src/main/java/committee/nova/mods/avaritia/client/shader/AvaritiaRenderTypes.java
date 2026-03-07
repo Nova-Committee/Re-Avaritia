@@ -131,4 +131,18 @@ public class AvaritiaRenderTypes {
                     .createCompositeState(true)
     );
 
+    public static RenderType TRIDENT = RenderType.create(
+            Const.rl("infinity_trident").toString(),
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.TRIANGLES,
+            256,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_SHADOW_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(Res.TRIDENT_TEX, false, false))
+                    .setLightmapState(LIGHTMAP)
+                    .setOverlayState(OVERLAY)
+                    .setCullState(NO_CULL)
+                    .setTransparencyState(NO_TRANSPARENCY)
+                    .createCompositeState(true));
+
 }
