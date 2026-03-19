@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
-//TODO:第一人称位置以及第三人称位置(未调整)
+
 /**
  * @author cnlimiter
  */
@@ -73,12 +73,48 @@ public class CosmicArcBakeModel extends WrappedItemModel {
                 this.cosmic = false;
 
                 if (!tridentObjModel.isEmpty()) {
-                    CCRenderState cc = CCRenderState.instance();
-                    cc.reset();
-                    cc.bind(AvaritiaRenderTypes.TRIDENT, source, pStack);
+                    pStack.pushPose();
+                    try {
 
-                    for (CCModel model : tridentObjModel.values()) {
-                        model.render(cc);
+                        switch (transformType) {
+
+                            // 第一人称
+                            case FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> {
+                                pStack.scale(1F, 1F, 1F);
+
+                                pStack.mulPose(Axis.XP.rotationDegrees(90));
+                                pStack.mulPose(Axis.YP.rotationDegrees(180));
+
+                                pStack.translate(0.2D, -0.2D, -1.3D);
+                            }
+
+                            // 第三人称
+                            case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND -> {
+                                pStack.scale(1.0F, 1.0F, 1.0F);
+
+                                pStack.mulPose(Axis.XP.rotationDegrees(90));
+                                pStack.mulPose(Axis.YP.rotationDegrees(180));
+
+                                pStack.translate(0.0D, 0.0D, -1.5D);
+                            }
+
+                            // GUI
+                            default -> {
+                                pStack.scale(1.0F, 1.0F, 1.0F);
+                                pStack.mulPose(Axis.XP.rotationDegrees(90));
+                            }
+                        }
+
+                        CCRenderState cc = CCRenderState.instance();
+                        cc.reset();
+                        cc.bind(AvaritiaRenderTypes.TRIDENT, source, pStack);
+
+                        for (CCModel model : tridentObjModel.values()) {
+                            model.render(cc);
+                        }
+
+                    } finally {
+                        pStack.popPose();
                     }
                 } else {
                     // 如果 OBJ 模型加载失败，回退到原代码生成的模型
@@ -105,18 +141,16 @@ public class CosmicArcBakeModel extends WrappedItemModel {
             pStack.pushPose();
 
             // 定义电弧起点和终点（相对于物品中心）
-            float startX = 0.0f;
-            float startY = -0.5f;
-            float startZ = 0.0f;
-
-            // 电弧终点可以设置在物品上方
-            float endX = 0.0f;
+            float startX = -0.5f;
+            float startY = 0.0f;
+            float startZ = -0.5f;
+            float endX = 0.5f;
             float endY = 0.0f;
-            float endZ = 0.0f;
+            float endZ = 0.5f;
 
             // 设置电弧参数
             long seed = System.currentTimeMillis(); // 使用当前时间作为种子，使电弧随时间变化
-            float thickness = 0.02f; // 电弧粗细
+            float thickness = 0.05f; // 电弧粗细
             int segments = 8; // 电弧分段数
 
             // 可选：添加一些偏移或旋转来增强视觉效果

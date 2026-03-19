@@ -3,6 +3,8 @@ package committee.nova.mods.avaritia.util;
 import com.google.common.collect.Sets;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
+import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -26,14 +28,19 @@ public class ClustersUtils {
         if (world.isClientSide) return;
 
         List<ItemStack> clusters = MatterClusterItem.makeClusters(drops);
-        for (ItemStack cluster : clusters) {
-            Containers.dropItemStack(
-                    world,
-                    player.getX(),
-                    player.getY() + 0.5F,
-                    player.getZ(),
-                    cluster
-            );
+
+        if (ModConfig.isMergeMatterCluster.get()) {
+            mergeClustersToPlayerInventory(player, clusters);
+        } else {
+            for (ItemStack cluster : clusters) {
+                Containers.dropItemStack(
+                        world,
+                        player.getX(),
+                        player.getY() + 0.5F,
+                        player.getZ(),
+                        cluster
+                );
+            }
         }
     }
 
@@ -48,17 +55,21 @@ public class ClustersUtils {
         });
 
         List<ItemStack> clusters = MatterClusterItem.makeClusters(stacks);
-        for (ItemStack cluster : clusters) {
-            Containers.dropItemStack(
-                    world,
-                    player.getX(),
-                    player.getY(),
-                    player.getZ(),
-                    cluster
-            );
+
+        if (ModConfig.isMergeMatterCluster.get()) {
+            mergeClustersToPlayerInventory(player, clusters);
+        } else {
+            for (ItemStack cluster : clusters) {
+                Containers.dropItemStack(
+                        world,
+                        player.getX(),
+                        player.getY(),
+                        player.getZ(),
+                        cluster
+                );
+            }
         }
     }
-
 
     public static void putMapItem(ItemStack drop, Map<ItemStack, Integer> map) {
         ItemStack existed = ItemUtils.mapEquals(drop, map);
@@ -154,5 +165,34 @@ public class ClustersUtils {
         }
 
         return counts;
+    }
+    private static void mergeClustersToPlayerInventory(Player player, List<ItemStack> clusters) {
+        List<ItemStack> remaining = new ArrayList<>(clusters);
+
+        for (ItemStack cluster : remaining) {
+            boolean merged = false;
+
+            for (ItemStack slot : player.getInventory().items) {
+                if (cluster.isEmpty()) break;
+
+                if (slot.is(ModItems.matter_cluster.get())) {
+                    if (MatterClusterItem.mergeClusters(cluster, slot)) {
+                        merged = true;
+                    }
+                }
+            }
+
+            if (!merged && !cluster.isEmpty()) {
+                if (!player.getInventory().add(cluster)) {
+                    Containers.dropItemStack(
+                            player.level(),
+                            player.getX(),
+                            player.getY() + 0.5F,
+                            player.getZ(),
+                            cluster
+                    );
+                }
+            }
+        }
     }
 }

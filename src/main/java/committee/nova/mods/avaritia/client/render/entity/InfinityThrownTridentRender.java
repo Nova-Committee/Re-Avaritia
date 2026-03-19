@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-//TODO:投掷出的位置(未调整)
+
 @OnlyIn(Dist.CLIENT)
 public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTrident> {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfinityThrownTridentRender.class);
@@ -51,10 +51,11 @@ public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTr
 
         float yaw = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot());
         float pitch = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
-//
-//        poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
-//        poseStack.mulPose(Axis.ZP.rotationDegrees(pitch));
 
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(pitch));
+
+        poseStack.mulPose(Axis.XP.rotationDegrees(0));
 
         CCRenderState cc = CCRenderState.instance();
         cc.reset();
