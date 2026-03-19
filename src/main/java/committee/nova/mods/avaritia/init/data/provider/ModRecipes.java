@@ -1237,6 +1237,24 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
                 
                 .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
 
+        ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_mace.get())
+                .pattern("     CC C")
+                .pattern("    CIIC ")
+                .pattern("    CIMIC")
+                .pattern("     CIIC")
+                .pattern("    N CC ")
+                .pattern("   D     ")
+                .pattern("  N      ")
+                .pattern(" N       ")
+                .pattern("C        ")
+                .define('I', ModItems.infinity_nugget.get())
+                .define('C', ModItems.crystal_matrix_ingot.get())
+                .define('D', Items.BREEZE_ROD)
+                .define('M', Items.HEAVY_CORE)
+                .define('N', ModItems.neutron_ingot.get())
+
+                .unlockedBy("has_item", has(ModItems.infinity_ingot.get())).save(consumer);
+
         ModShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.infinity_boots.get())
                 .pattern(" NNN NNN ")
                 .pattern(" NIN NIN ")
