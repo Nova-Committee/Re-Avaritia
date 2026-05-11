@@ -24,10 +24,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EndPortalBlock;
-import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -111,14 +112,14 @@ public class ModBlocks {
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .strength(1000F, 3600000.0F)
                     .isValidSpawn((state, level, pos, value) -> false)), false);
-    public static DeferredBlock<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", ()-> new EndPortalFrameBlock(
+    public static DeferredBlock<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new Block(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .sound(SoundType.GLASS)
                     .lightLevel((blockState) -> 1)
                     .strength(400F, 3600000.0F)), false);
-    public static DeferredBlock<Block> fake_end_portal = itemBlock("fake_end_portal", () -> new EndPortalBlock(
+    public static DeferredBlock<Block> fake_end_portal = itemBlock("fake_end_portal", () -> new Block(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BLACK)
                     .noCollission()
