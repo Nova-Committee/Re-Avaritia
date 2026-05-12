@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.shader;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import committee.nova.mods.avaritia.Const;
@@ -45,10 +46,9 @@ public class AvaritiaRenderTypes {
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                    .setLayeringState(RenderStateShard.NO_LAYERING)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
-
+                    .setLayeringState(RenderUtils.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(true)
     );
 

@@ -1,11 +1,9 @@
 package committee.nova.mods.avaritia.api.utils;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderStateShard.*;
 import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.inventory.InventoryMenu;
-import org.lwjgl.opengl.GL13;
 
 public class RenderUtils {
 
@@ -14,5 +12,18 @@ public class RenderUtils {
                     InventoryMenu.BLOCK_ATLAS,
                     false,
                     false
+            );
+
+    public static final LayeringStateShard POLYGON_OFFSET_LAYERING =
+            new LayeringStateShard(
+                    "polygon_offset_layering",
+                    () -> {
+                        RenderSystem.polygonOffset(-1.0F, -10.0F);
+                        RenderSystem.enablePolygonOffset();
+                    },
+                    () -> {
+                        RenderSystem.polygonOffset(0.0F, 0.0F);
+                        RenderSystem.disablePolygonOffset();
+                    }
             );
 }
