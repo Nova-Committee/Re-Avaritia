@@ -25,9 +25,10 @@ public class ModTags {
     public static final TagKey<Item> ELYTRA_SLOT = ItemTags.create(ResourceLocation.fromNamespaceAndPath("elytraslot", "elytra"));
 
     public static final TagKey<Item> NEUTRON_DUST = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "dust/neutronium"));
+    public static final TagKey<Item> NEUTRON_GEAR = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "gears/neutronium"));
     public static final TagKey<Item> NEUTRON_NUGGET = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "nuggets/neutronium"));
-    public static final TagKey<Item> NEUTRON_INGOT = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "ingot/neutronium"));
-    public static final TagKey<Item> NEUTRON_BLOCK_ITEM = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "block_item/neutronium"));
+    public static final TagKey<Item> NEUTRON_INGOT = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "ingots/neutronium"));
+    public static final TagKey<Item> NEUTRON_BLOCK_ITEM = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/neutronium"));
     public static final TagKey<Block> NEUTRON_BLOCK = BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/neutronium"));
 
     public static final TagKey<Block> EXTREME_ANVIL_UNBREAK = BlockTags.create(Const.rl("extreme_anvil_unbreak"));

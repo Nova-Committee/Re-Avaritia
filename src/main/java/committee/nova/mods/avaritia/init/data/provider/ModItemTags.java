@@ -47,6 +47,7 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.NEUTRON_DUST).add(ModItems.neutron_pile.get());
         tag(ModTags.NEUTRON_NUGGET).add(ModItems.neutron_nugget.get());
         tag(ModTags.NEUTRON_INGOT).add(ModItems.neutron_ingot.get());
+        tag(ModTags.NEUTRON_GEAR).add(ModItems.neutron_gear.get());
         tag(ModTags.NEUTRON_BLOCK_ITEM).add(Item.byBlock(ModBlocks.neutron.get()));
         tag(ItemTags.FREEZE_IMMUNE_WEARABLES).add(ModItems.infinity_helmet.get());
         tag(ItemTags.FREEZE_IMMUNE_WEARABLES).add(ModItems.infinity_chestplate.get());
