@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.client;
 
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.util.ColorUtils;
 import committee.nova.mods.avaritia.api.iface.IColored;
@@ -201,5 +202,15 @@ public class AvaritiaModClient {
     public static int getCurrentRainbowColor() {
         var hue = (System.currentTimeMillis() % 18000) / 18000F;
         return ColorUtils.HSBToRGB(hue, 1, 1);
+    }
+
+    @SubscribeEvent
+    public static void onRenderLevel(RenderLevelStageEvent event) {
+
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            return;
+        }
+
+        CosmicRenderQueue.renderAll();
     }
 }

@@ -38,14 +38,17 @@ public class AvaritiaRenderTypes {
                     .createCompositeState(false));
 
     public static RenderType COSMIC = RenderType.create(
-            Const.rl("cosmic").toString(), DefaultVertexFormat.BLOCK,
+            Const.rl("cosmic").toString(), DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
                     .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setLayeringState(RenderStateShard.NO_LAYERING)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
+
                     .createCompositeState(true)
     );
 
