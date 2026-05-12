@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.model.loader;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -8,9 +9,13 @@ import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import committee.nova.mods.avaritia.api.client.render.CCModel;
 import committee.nova.mods.avaritia.api.client.render.CCRenderState;
+import committee.nova.mods.avaritia.api.client.render.CosmicRenderCall;
+import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
 import committee.nova.mods.avaritia.api.client.render.model.OBJParser;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
+import committee.nova.mods.avaritia.api.iface.transform.CosmicRenderable;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
+import committee.nova.mods.avaritia.client.compat.IrisCompat;
 import committee.nova.mods.avaritia.client.model.entity.InfinityTridentModel;
 import committee.nova.mods.avaritia.client.render.util.ArcRender;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
@@ -37,7 +42,7 @@ import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_
 /**
  * @author cnlimiter
  */
-public class CosmicArcBakeModel extends WrappedItemModel {
+public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRenderable {
     private static final Logger LOGGER = LoggerFactory.getLogger(CosmicArcBakeModel.class);
     private final List<ResourceLocation> maskSprite;
     private Map<String, CCModel> tridentObjModel;
@@ -136,6 +141,30 @@ public class CosmicArcBakeModel extends WrappedItemModel {
             bs.endBatch();
         }
 
+        // Iris 延迟渲染
+        if (IrisCompat.shouldDefer(transformType)) {
+            CosmicRenderQueue.enqueue(
+                    new CosmicRenderCall(
+                            this,
+                            stack,
+                            transformType,
+                            pStack,
+                            packedLight,
+                            packedOverlay,
+                            RenderSystem.getProjectionMatrix(),
+                            RenderSystem.getModelViewMatrix()
+                    )
+            );
+            return;
+        }
+
+        // 非 Iris 直接渲染
+        renderCosmicLayer(stack, transformType, pStack, source, packedLight, packedOverlay);
+    }
+
+    @Override
+    public void renderCosmicLayer(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                                  int packedLight, int packedOverlay) {
         if (transformType != ItemDisplayContext.GUI && transformType != ItemDisplayContext.GROUND) {
             // 保存当前变换矩阵
             pStack.pushPose();

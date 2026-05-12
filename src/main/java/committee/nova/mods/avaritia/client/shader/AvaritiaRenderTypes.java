@@ -102,11 +102,13 @@ public class AvaritiaRenderTypes {
             Const.rl("hell").toString(), DefaultVertexFormat.BLOCK,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.HELL_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
+                    .setLayeringState(RenderUtils.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(true)
     );
 
@@ -114,11 +116,13 @@ public class AvaritiaRenderTypes {
             Const.rl("eternal").toString(), DefaultVertexFormat.BLOCK,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.ETERNAL_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
+                    .setLayeringState(RenderUtils.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(true)
     );
 
@@ -126,11 +130,13 @@ public class AvaritiaRenderTypes {
             Const.rl("unstable").toString(), DefaultVertexFormat.BLOCK,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.UNSTABLE_SHADER))
-                    .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(RenderUtils.COSMIC_TEXTURE_ISOLATED)
+                    .setLayeringState(RenderUtils.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(true)
     );
 

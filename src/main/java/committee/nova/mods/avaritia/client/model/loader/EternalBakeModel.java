@@ -1,12 +1,17 @@
 package committee.nova.mods.avaritia.client.model.loader;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.api.client.model.bakedmodels.WrappedItemModel;
+import committee.nova.mods.avaritia.api.client.render.CosmicRenderCall;
+import committee.nova.mods.avaritia.api.client.render.CosmicRenderQueue;
 import committee.nova.mods.avaritia.api.client.util.TransformUtils;
+import committee.nova.mods.avaritia.api.iface.transform.CosmicRenderable;
 import committee.nova.mods.avaritia.api.iface.transform.IBowTransform;
 import committee.nova.mods.avaritia.api.iface.transform.IToolTransform;
 import committee.nova.mods.avaritia.client.AvaritiaForgeClient;
+import committee.nova.mods.avaritia.client.compat.IrisCompat;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
@@ -26,7 +31,7 @@ import java.util.List;
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 
 
-public class EternalBakeModel extends WrappedItemModel {
+public class EternalBakeModel extends WrappedItemModel implements CosmicRenderable {
     private final List<ResourceLocation> maskSprite;
 
     public EternalBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
@@ -49,6 +54,31 @@ public class EternalBakeModel extends WrappedItemModel {
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch();
         }
+
+        // Iris 延迟渲染
+        if (IrisCompat.shouldDefer(transformType)) {
+            CosmicRenderQueue.enqueue(
+                    new CosmicRenderCall(
+                            this,
+                            stack,
+                            transformType,
+                            pStack,
+                            packedLight,
+                            packedOverlay,
+                            RenderSystem.getProjectionMatrix(),
+                            RenderSystem.getModelViewMatrix()
+                    )
+            );
+            return;
+        }
+
+        // 非 Iris 直接渲染
+        renderCosmicLayer(stack, transformType, pStack, source, packedLight, packedOverlay);
+    }
+
+    @Override
+    public void renderCosmicLayer(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource source,
+                                  int packedLight, int packedOverlay) {
         final Minecraft mc = Minecraft.getInstance();
         float yaw = 0.0f;
         float pitch = 0.0f;
