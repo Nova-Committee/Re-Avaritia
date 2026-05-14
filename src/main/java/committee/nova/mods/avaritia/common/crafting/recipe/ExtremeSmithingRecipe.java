@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.crafting.input.ExtremeSmithingRecipeI
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -68,6 +71,20 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
     }
     public boolean isAdditionIngredient(@NotNull ItemStack pStack) {
         return this.additions.test(pStack);
+    }
+
+    @Override
+    public @NotNull NonNullList<Ingredient> getIngredients() {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+
+        ingredients.add(this.template);
+        ingredients.add(this.base);
+
+        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(0)));
+        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(1)));
+        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(2)));
+
+        return ingredients;
     }
 
     @Override

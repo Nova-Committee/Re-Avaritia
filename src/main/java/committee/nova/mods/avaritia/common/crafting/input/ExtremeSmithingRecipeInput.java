@@ -4,6 +4,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -25,7 +27,15 @@ public record ExtremeSmithingRecipeInput(ItemStack template, ItemStack base, Ite
 
     @Override
     public int size() {
-        return 3;
+        return 5;
+    }
+
+    public List<ItemStack> getAdditions() {
+        return List.of(
+                this.addition1,
+                this.addition2,
+                this.addition3
+        );
     }
 
     @Override
