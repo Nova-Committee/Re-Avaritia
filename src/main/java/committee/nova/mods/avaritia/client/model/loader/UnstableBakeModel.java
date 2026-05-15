@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.ETERNAL_UVS;
 
 
 public class UnstableBakeModel extends WrappedItemModel implements CosmicRenderable {
@@ -103,7 +104,7 @@ public class UnstableBakeModel extends WrappedItemModel implements CosmicRendera
         }
 
         if (AvaritiaShaders.unstableUVs != null) {
-            AvaritiaShaders.unstableUVs.set(COSMIC_UVS);
+            AvaritiaShaders.unstableUVs.set(ETERNAL_UVS);
         }
 
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.UNSTABLE);
@@ -112,5 +113,8 @@ public class UnstableBakeModel extends WrappedItemModel implements CosmicRendera
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        if (source instanceof MultiBufferSource.BufferSource bs) {
+            bs.endBatch(AvaritiaRenderTypes.UNSTABLE);
+        }
     }
 }

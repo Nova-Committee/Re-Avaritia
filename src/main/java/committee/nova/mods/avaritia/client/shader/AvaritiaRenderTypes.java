@@ -99,10 +99,10 @@ public class AvaritiaRenderTypes {
     }
 
     public static RenderType HELL = RenderType.create(
-            Const.rl("hell").toString(), DefaultVertexFormat.BLOCK,
+            Const.rl("hell").toString(), DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.HELL_SHADER))
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)
@@ -113,10 +113,10 @@ public class AvaritiaRenderTypes {
     );
 
     public static RenderType ETERNAL = RenderType.create(
-            Const.rl("eternal").toString(), DefaultVertexFormat.BLOCK,
+            Const.rl("eternal").toString(), DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.ETERNAL_SHADER))
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)
@@ -127,10 +127,10 @@ public class AvaritiaRenderTypes {
     );
 
     public static RenderType UNSTABLE = RenderType.create(
-            Const.rl("unstable").toString(), DefaultVertexFormat.BLOCK,
+            Const.rl("unstable").toString(), DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS, 2097152, true, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.COSMIC_SHADER))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> AvaritiaShaders.UNSTABLE_SHADER))
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setWriteMaskState(RenderStateShard.COLOR_WRITE)

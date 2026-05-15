@@ -107,8 +107,11 @@ public class HellBakeModel extends WrappedItemModel implements CosmicRenderable 
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.HELL);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
-            atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
+            atlasSprite.add(mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        if (source instanceof MultiBufferSource.BufferSource bs) {
+            bs.endBatch(AvaritiaRenderTypes.HELL);
+        }
     }
 }

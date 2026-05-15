@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
+import static committee.nova.mods.avaritia.client.shader.AvaritiaShaders.ETERNAL_UVS;
 
 
 public class EternalBakeModel extends WrappedItemModel implements CosmicRenderable {
@@ -99,11 +100,11 @@ public class EternalBakeModel extends WrappedItemModel implements CosmicRenderab
         if (stack.getItem() == ModItems.matter_cluster.get()) {
             AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
         } else {
-            AvaritiaShaders.eternalOpacity.set(1.5F);
+            AvaritiaShaders.eternalOpacity.set(1.0F);
         }
 
         if (AvaritiaShaders.eternalUVs != null) {
-            AvaritiaShaders.eternalUVs.set(COSMIC_UVS);
+            AvaritiaShaders.eternalUVs.set(ETERNAL_UVS);
         }
 
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.ETERNAL);
@@ -112,5 +113,8 @@ public class EternalBakeModel extends WrappedItemModel implements CosmicRenderab
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        if (source instanceof MultiBufferSource.BufferSource bs) {
+            bs.endBatch(AvaritiaRenderTypes.ETERNAL);
+        }
     }
 }
