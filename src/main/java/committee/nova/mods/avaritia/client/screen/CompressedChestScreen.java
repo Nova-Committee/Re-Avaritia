@@ -16,7 +16,7 @@ public class CompressedChestScreen extends BaseContainerScreen<CompressedChestMe
     public CompressedChestScreen(CompressedChestMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, Res.GENERIC_243_TEX, 500, 275, 500, 275);
         int containerRows = pMenu.getRowCount();
-        this.imageHeight = 114 + containerRows * 18;
+        this.imageHeight = 113 + containerRows * 18;
         this.inventoryLabelX = 170;
         this.inventoryLabelY = this.imageHeight - 95;
     }

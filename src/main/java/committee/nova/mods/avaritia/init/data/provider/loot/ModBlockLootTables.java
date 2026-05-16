@@ -6,6 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         for (var block : ModBlocks.BLOCKS.getEntries()) {
             dropSelf(block.get());
         }
+        this.add(ModBlocks.infinity_chest.get(),block -> BlockLootSubProvider.createShearsOnlyDrop(Items.AIR));
     }
 
     @Override

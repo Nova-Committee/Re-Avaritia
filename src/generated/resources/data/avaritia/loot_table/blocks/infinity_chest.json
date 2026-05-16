@@ -5,13 +5,16 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:survives_explosion"
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
         }
       ],
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "avaritia:infinity_chest"
+          "name": "minecraft:air"
         }
       ],
       "rolls": 1.0
