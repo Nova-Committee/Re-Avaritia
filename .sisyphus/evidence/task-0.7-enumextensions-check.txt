@@ -1,0 +1,97 @@
+================================================================================
+Task 0.7 — enumextensions.json 验证
+================================================================================
+Date: 2026-05-25
+Source: Avaritia-1.21 (MC 1.21.1 + NeoForge 21.1.215)
+Target: Avaritia-26 (MC 26.1.2 + NeoForge 26.1.2)
+================================================================================
+
+[1] SOURCE MOD: enumextensions.json 存在性
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+存在:  YES
+路径:  src/main/resources/META-INF/enumextensions.json
+
+内容 (2 entries):
+  Entry 1:
+    enum:        net/minecraft/world/item/Rarity
+    name:        AVARITIA_LEGEND
+    constructor: (ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V
+    parameters:  { class=ModRarities, field=LEGEND }
+
+  Entry 2:
+    enum:        net/minecraft/world/item/Rarity
+    name:        AVARITIA_COSMIC
+    constructor: (ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V
+    parameters:  { class=ModRarities, field=COSMIC }
+
+对应的 EnumProxy 字段 (ModRarities.java):
+  LEGEND: EnumProxy<Rarity>(Rarity.class, 8888, "avaritia:legend", ChatFormatting.GOLD)
+  COSMIC: EnumProxy<Rarity>(Rarity.class, 9999, "avaritia:cosmic", ChatFormatting.RED)
+
+----------------------------------------------------------------------
+[2] SOURCE MOD: neoforge.mods.toml 引用
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+源模组的 neoforge.mods.toml (模板) 包含:
+  enumExtensions = "META-INF/enumextensions.json"
+
+----------------------------------------------------------------------
+[3] NeoForge 26.1.2 兼容性
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+状态: 支持 (SUPPORTED)
+
+证据来源:
+  1. NeoForge 26.1 Release Blog (neoforged.net)
+     - 未提及废弃 enumextensions，未将此项列为破坏性变更
+
+  2. NeoForge Documentation - Extensible Enums
+     (docs.neoforged.net/docs/advanced/extensibleenums)
+     - 文档仍有效，Rarity 列在目标枚举列表中
+     - 使用方式完全一致: neoforge.mods.toml → enumExtensions → JSON file
+
+  3. DeepWiki - NeoForge Enum Extensions
+     - Rarity 明确标注为实现 IExtensibleEnum 的枚举
+     - 注入接口列表包括: Rarity, DamageEffects, MobCategory, ItemDisplayContext 等
+
+  4. NeoForge Javadoc (26.1.2.41-beta)
+     - public enum Rarity implements IExtensibleEnum
+     - 构造函数依然存在: Rarity(int, String, ChatFormatting) [deprecated]
+     - 新增构造函数: Rarity(int, String, UnaryOperator<Style>)
+
+----------------------------------------------------------------------
+[4] ⚠️ Rarity 构造函数变更警告
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+源模组使用的构造函数:
+  (ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V
+  → 对应 Java: Rarity(int id, String name, ChatFormatting color)
+
+NeoForge 26.1.2 中该构造函数仍然存在但标注 @Deprecated:
+  "NeoForge: Use getStyleModifier()"
+
+推荐的新构造函数:
+  (ILjava/lang/String;Ljava/util/function/UnaryOperator;)V
+  → 对应 Java: Rarity(int id, String name, UnaryOperator<Style> styleModifier)
+
+迁移建议:
+  - 简单移植: 直接沿用旧构造函数可正常工作（仅deprecated）
+  - 最佳实践: 改为新构造函数 + UnaryOperator<Style> 参数
+    例如: style -> style.withColor(ChatFormatting.GOLD).withItalic(true)
+
+----------------------------------------------------------------------
+[5] 目标项目 (Avaritia-26) 当前状态
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  - META-INF/ 目录: 不存在
+  - neoforge.mods.toml: 不存在
+  - enumextensions.json: 不存在
+  - ModRarities.java: 不存在
+  - enumExtensions 引用: 无
+
+→ 需要从源模组完整迁移这三项内容。
+
+================================================================================
+结论
+================================================================================
+[enumextensions] 状态=支持，可用
+替代方案=N/A（原生支持，无需替代方案）
+注意点=Rarity 构造函数签名有变化，旧构造函数仍可用但已废弃；
+       建议改用 UnaryOperator<Style> 构造函数以达到最佳兼容性
+================================================================================

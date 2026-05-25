@@ -1,0 +1,12 @@
+[JEI] 版本=29.6.2.31, Maven=mezz.jei:jei-26.1.2-neoforge:29.6.2.31, 仓库=https://maven.blamejared.com/
+[JEI] 版本=29.6.2.31, Maven(API)=mezz.jei:jei-26.1.2-neoforge-api:29.6.2.31, 仓库=https://maven.blamejared.com/
+[JEI] 证据来源1=Modrinth 版本页 https://modrinth.com/mod/jei/version/Pa2MVYIn
+[JEI] 证据来源2=JEI README / Maven metadata https://raw.githubusercontent.com/mezz/JustEnoughItems/26.1/README.md ; https://maven.blamejared.com/mezz/jei/jei-26.1.2-neoforge/maven-metadata.xml
+
+[Jade] 版本=26.1.1+neoforge, Maven=maven.modrinth:jade:26.1.1+neoforge, 仓库=https://api.modrinth.com/maven
+[Jade] 证据来源1=Modrinth API https://api.modrinth.com/v2/project/jade/version?loaders=%5B%22neoforge%22%5D&game_versions=%5B%2226.1.2%22%5D
+[Jade] 证据来源2=Jade Getting Started 文档 https://jademc.readthedocs.io/en/latest/plugins22/getting-started/ ; Modrinth 版本页 https://modrinth.com/mod/jade/versions
+
+[Curios] 版本=15.0.0-beta.2+26.1.2, Maven=curse.maven:curios-309927:7642217, 仓库=https://www.cursemaven.com/
+[Curios] 证据来源1=CurseForge 项目页 https://www.curseforge.com/minecraft/mc-mods/curios
+[Curios] 证据来源2=Curios changelog https://raw.githubusercontent.com/TheIllusiveC4/Curios/26.x/CHANGELOG.md ; Modrinth/CurseForge 版本列表 https://modrinth.com/mod/curios/versions

@@ -1,0 +1,64 @@
+================================================================================
+Task 0.3: MixinExtras Audit Report
+================================================================================
+Source: Avaritia-1.21 (Re-Avaritia by Nova-Committee)
+Date:   2026-05-25
+================================================================================
+
+MIXINEXTRAS VERSION IN GRADLE.PROPERTIES:
+  mixin_extras_version = 0.4.1
+
+================================================================================
+ALL MIXINS AND MixinExtras USAGE
+================================================================================
+
+Total mixins declared in avaritia.mixins.json: 11
+- Package: committee.nova.mods.avaritia.init.mixins
+- Client ones: ItemRendererMixin, PlayerRendererMixin
+
+----------------------------------------------------------
+# | Mixin Class                    | MixinExtras? | Annotations Used
+---+--------------------------------+--------------+------------------
+1  | EnchantmentHelperMixin        | NO           | (none)
+2  | IItemStackExtensionMixin      | NO           | (none)
+3  | ItemMixin                     | NO           | (none)
+4  | ItemStackMixin                | NO           | (none)
+5  | NetherWartBlockMixin          | NO           | (none)
+6  | PlayerMixin                   | NO           | (none)
+7  | RecipeManagerMixin            | YES          | @Local
+8  | ReloadableServerResourcesMixin| NO           | (none)
+9  | accessor.MappedRegistryAccessor| NO          | (none)
+10 | ItemRendererMixin (client)    | NO           | (none)
+11 | PlayerRendererMixin (client)  | NO           | (none)
+
+================================================================================
+DETAILED FINDINGS
+================================================================================
+
+--- RecipeManagerMixin.java (MixinExtras FOUND) ---
+- Import: com.llamalad7.mixinextras.sugar.Local
+- Uses @Local on 2 parameters in avaritia$apply():
+    @Local ImmutableMultimap.Builder<RecipeType<?>, RecipeHolder<?>> byType
+    @Local ImmutableMap.Builder<ResourceLocation, RecipeHolder<?>> byName
+- These capture local variables from the @Inject target method's bytecode.
+
+All other 10 mixin files contain ZERO MixinExtras imports or annotations.
+
+================================================================================
+CONCLUSION
+================================================================================
+
+VERDICT: NEED (MixinExtras is required)
+
+Only 1 out of 11 mixins depends on MixinExtras:
+  - RecipeManagerMixin (uses @Local from com.llamalad7.mixinextras.sugar.Local)
+
+However, since even ONE mixin uses it, the dependency MUST be retained.
+MixinExtras version 0.4.1 must be present in the build.
+
+AFFECTED MIXINS (need MixinExtras at runtime):
+  - committee.nova.mods.avaritia.init.mixins.RecipeManagerMixin
+
+All other 10 mixins can function without MixinExtras.
+
+================================================================================

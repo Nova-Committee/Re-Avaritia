@@ -1,0 +1,383 @@
+﻿gradlew.bat : Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+所在位置 行:1 字符: 49
++ ... ing=UTF-8"; & "D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Picked up JAVA_....encoding=UTF-8:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
+Reusing configuration cache.
+> Task :createMinecraftArtifacts UP-TO-DATE
+
+> Task :compileJava FAILED
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:36:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE5BE)
+     * 鑽按鍥炬爣鏂囦欢澶硅矾锟?
+               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:40:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE5AD)
+     * 鑷畾涔夎创鍥剧紦锟?
+             ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:71:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE380)
+     * 浠庤祫婧愪腑鍔犺浇绾圭悊骞惰浆鎹负 BufferedImage锟?
+                                 ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:73:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE79A)
+     * @param texture 绾圭悊锟?Identifier
+                        ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:74:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE79A)
+     * @return 绾圭悊瀵瑰簲锟?BufferedImage 锟?null
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:74:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE688)
+     * @return 绾圭悊瀵瑰簲锟?BufferedImage 锟?null
+                                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:82:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE4B8)
+            // 鎵撳紑璧勬簮杈撳叆娴佸苟鍔犺浇锟?BufferedImage
+                         ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:95:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE380)
+     * 浠庤祫婧愪腑鍔犺浇绾圭悊骞惰浆鎹负 NativeImage锟?
+                               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:97:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE79A)
+     * @param texture 绾圭悊锟?Identifier
+                        ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:98:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE79A)
+     * @return 绾圭悊瀵瑰簲锟?NativeImage 锟?null
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:98:
+ 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE688)
+     * @return 绾圭悊瀵瑰簲锟?NativeImage 锟?null
+                                 ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:106
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE4B8)
+            // 鎵撳紑璧勬簮杈撳叆娴佸苟鍔犺浇锟?NativeImage
+                         ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:155
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE599)
+     * 鑾峰彇璐村浘绠＄悊锟?
+             ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:162
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99B)
+     * 鑾峰彇璐村浘锟?
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:176
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鎸囧畾鍛藉悕绌洪棿鐨勪换鎰忚创锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:183
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鎸囧畾鍛藉悕绌洪棿鐨勪换鎰忚创锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:190
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鎸囧畾鍛藉悕绌洪棿鐨勬柟鍧楄创锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:197
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鎸囧畾鍛藉悕绌洪棿鐨勬柟鍧楄创锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:206
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鎸囧畾鍛藉悕绌洪棿鐨勭墿鍝佽创锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:213
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鎸囧畾鍛藉悕绌洪棿鐨勭墿鍝佽创锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:238
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鏂瑰潡鎸囧畾鏂瑰悜鐨勮创锟?
+                 ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:246
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鏂瑰潡鎸囧畾鏂瑰悜鐨勮创锟?
+                 ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:265
+: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * 鑾峰彇鏂瑰潡鐨勭矑瀛愯创锟?
+               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:25: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE5BA)
+     * 鑾峰彇鐜╁褰撳墠浣嶇疆鐨勭幆澧冧寒锟?
+                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:28: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59B)
+     * @return 褰撳墠鐜浜害锛堣寖锟?-15锟?
+                       ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:28: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xEFBC)
+     * @return 褰撳墠鐜浜害锛堣寖锟?-15锟?
+                            ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:38: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE593)
+            // 鑾峰彇涓栫晫鏃堕棿銆佸ぉ姘斿拰缁村害鐨勫奖锟?
+                             ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:45: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE8A1)
+                // 濡傛灉鍦ㄥ湴锟?
+                       ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:48: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE5BA)
+                        // 鐧藉ぉ鍦拌〃锛氭渶楂樹寒锟?
+                                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:52: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xEFBC)
+                        // 鑾峰彇鏈堢浉锟?琛ㄧず婊℃湀锟?琛ㄧず鏂版湀
+                               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:52: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xEFBC)
+                        // 鑾峰彇鏈堢浉锟?琛ㄧず婊℃湀锟?琛ㄧず鏂版湀
+                                     ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:58: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE593)
+                    // 娌℃湁鍏夋簮鏃舵渶榛戯紝鏈夊厜婧愬垯鍙楄窛绂诲奖锟?
+                                       ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:62: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE6BA)
+                // 涓嬬晫浜害杈冩殫锛屼絾閮ㄥ垎鍦版柟鏈夌啍宀╁厜锟?
+                                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:73: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE580)
+        // 鍏朵粬缁村害鎴栬€呮棤娉曞垽鏂殑鎯呭喌锛岃繑鍥炵幆澧冨拰鏂瑰潡鍏夌殑缁煎悎锟?
+                                    ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:80: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xEFBC)
+     * @param moonPhase    鏈堢浉锟?锟?锟?涓烘弧鏈堬紝4涓烘柊鏈堬級
+                             ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:80: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE588)
+     * @param moonPhase    鏈堢浉锟?锟?锟?涓烘弧鏈堬紝4涓烘柊鏈堬級
+                               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:80: 閿欒: 缂栫
+爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xEFBC)
+     * @param moonPhase    鏈堢浉锟?锟?锟?涓烘弧鏈堬紝4涓烘柊鏈堬級
+                                 ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\utils\WorldUtils.java:146: 閿欒: 缂
+栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE380)
+     * @return 濡傛灉浣嶇疆宸插姞杞芥垨缁欏畾鐨勪笘鐣屾槸Iworldreader鐨勮秴绾х被锛屽垯娌℃湁鍔犺浇鐨勬蹇碉拷?
+                                                      ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:124: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59E)
+                    // 濡傛灉 OBJ 妯″瀷鍔犺浇澶辫触锛屽洖閫€鍒板師浠ｇ爜鐢熸垚鐨勬ā锟?
+                                               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:160: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:180: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE58C)
+            long seed = System.currentTimeMillis(); // 浣跨敤褰撳墠鏃堕棿浣滀负绉嶅瓙锛屼娇鐢靛姬闅忔椂闂村彉锟?
+                                                                         ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:182: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE695)
+            int segments = 8; // 鐢靛姬鍒嗘锟?
+                                     ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:184: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE69E)
+            // 鍙€夛細娣诲姞涓€浜涘亸绉绘垨鏃嬭浆鏉ュ寮鸿瑙夋晥锟?
+                                 ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:185: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE5BF)
+//        pStack.translate(0.5, 0.5, 0.5); // 绉诲姩鍒扮墿鍝佷腑锟?
+                                                    ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:7: 閿欒: 闈炴硶瀛楃: '`'
+import com.avaritia.Avaritia;`r`nimport com.avaritia.Res;
+                             ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:7: 閿欒: 闈炴硶瀛楃: '`'
+import com.avaritia.Avaritia;`r`nimport com.avaritia.Res;
+                               ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:7: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.Avaritia;`r`nimport com.avaritia.Res;
+                                        ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:8: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.model.bakedmodels.WrappedItemModel;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:9: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.render.CCModel;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:10: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.render.CCRenderState;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:11: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.render.CosmicRenderCall;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:12: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.render.CosmicRenderQueue;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:13: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.render.model.OBJParser;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:14: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.client.util.TransformUtils;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:15: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.api.iface.transform.CosmicRenderable;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:16: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.client.AvaritiaForgeClient;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:17: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.client.compat.IrisCompat;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:18: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.client.model.entity.InfinityTridentModel;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:19: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.client.render.util.ArcRender;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:20: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.client.shader.AvaritiaRenderTypes;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:21: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.client.shader.AvaritiaShaders;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:22: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import com.avaritia.init.registry.ModItems;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:23: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.client.Minecraft;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:24: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.client.renderer.MultiBufferSource;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:25: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.client.renderer.entity.ItemRenderer;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:26: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:27: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.client.resources.model.BakedModel;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:28: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.resources.Identifier;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:29: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.world.inventory.InventoryMenu;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:30: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.world.item.ItemDisplayContext;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:31: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import net.minecraft.world.item.ItemStack;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:32: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import org.slf4j.Logger;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:33: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import org.slf4j.LoggerFactory;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:35: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import java.util.ArrayList;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:36: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import java.util.List;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:37: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import java.util.Map;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcBakeMode
+l.java:39: 閿欒: 闇€瑕?class銆乮nterface銆乪num 鎴?record
+import static com.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
+^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicArcModelLoa
+der.java:49: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59E)
+            // 鍒涘缓铻嶅悎浜咥rc鍜孋osmic鏁堟灉鐨勬ā锟?
+                                  ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicBakeModel.j
+ava:66: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59E)
+        // 鏅€氭ā锟?
+              ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\CosmicBakeModel.j
+ava:100: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\EternalBakeModel.
+java:76: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\HaloCosmicBakedMo
+del.java:103: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\HaloCosmicModelLo
+ader.java:56: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59E)
+            // 鍒涘缓铻嶅悎浜咹alo鍜孋osmic鏁堟灉鐨勬ā锟?
+                                   ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\HaloEternalBakedM
+odel.java:104: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\HaloEternalModelL
+oader.java:57: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE59E)
+            // 鍒涘缓铻嶅悎浜咹alo鍜孍ternal鏁堟灉鐨勬ā锟?
+                                    ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\HellBakeModel.jav
+a:74: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\client\model\loader\UnstableBakeModel
+.java:76: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE99D)
+        // 锟?Iris 鐩存帴娓叉煋
+           ^
+87 涓敊璇?
+
+[Incubating] Problems report is available at: file:///D:/workspace/minecraft/mods/3Nova/Avaritia/Avaritia-26/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26\src\main\java\com\avaritia\api\client\util\TextureUtils.java:3
+6: 閿欒: 缂栫爜 UTF-8 鐨勪笉鍙槧灏勫瓧绗?(0xE5BE)
+       * 鑽按鍥炬爣鏂囦欢澶硅矾锟?
+                 ^
+  87 涓敊璇?
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+
+BUILD FAILED in 6s
+2 actionable tasks: 1 executed, 1 up-to-date
+Configuration cache entry reused.

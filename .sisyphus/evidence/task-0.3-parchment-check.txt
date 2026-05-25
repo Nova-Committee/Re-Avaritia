@@ -1,0 +1,28 @@
+Task 0.3 — Parchment availability check for MC 1.21.11 / NeoForge 26.1.x
+Verdict: Parchment=GO
+
+Evidence summary:
+- Official Parchment getting-started docs list a 1.21.11 release export entry in the version table.
+- Official Maven metadata exists for `org.parchmentmc.data:parchment-1.21.11`.
+- Maven metadata reports:
+  - latest = `2025.12.21-nightly-SNAPSHOT`
+  - release = `2025.12.20`
+  - versions include `2025.12.20`
+- Shields badge derived from the same metadata shows release `v2025.12.20`.
+
+Recommended ModDevGradle config:
+```properties
+neoForge.parchment.minecraftVersion=1.21.11
+neoForge.parchment.mappingsVersion=2025.12.20
+```
+
+Resolved artifact (default ModDevGradle coordinate):
+`org.parchmentmc.data:parchment-1.21.11:2025.12.20:checked@zip`
+
+Notes:
+- `minecraftVersion` should be `1.21.11` (target baseline from Wave 0.1).
+- This is a GO decision; do not fall back to Mojang mappings for Wave 1 unless a later build/resolve step fails.
+- Sources:
+  - https://parchmentmc.org/docs/getting-started.html
+  - https://maven.parchmentmc.org/org/parchmentmc/data/parchment-1.21.11/maven-metadata.xml
+  - https://img.shields.io/maven-metadata/v?color=forestgreen&label=release&metadataUrl=https%3A%2F%2Fldtteam.jfrog.io%2Fartifactory%2Fparchmentmc-internal%2Forg%2Fparchmentmc%2Fdata%2Fparchment-1.21.11%2Fmaven-metadata.xml

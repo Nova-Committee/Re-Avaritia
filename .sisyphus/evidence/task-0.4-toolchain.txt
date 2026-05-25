@@ -1,0 +1,80 @@
+================================================================================
+Task 0.4: Toolchain Environment Verification
+================================================================================
+Date: 2026-05-25
+Project: D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-26
+Target: NeoForge 26.1.2 (requires JDK >= 21, Gradle >= 8.9)
+================================================================================
+
+[1] JAVA VERSION CHECK
+--------------------------------------------------------------------------------
+Command: java -version 2>&1
+Output:
+  openjdk version "21.0.6" 2025-01-21 LTS
+  OpenJDK Runtime Environment Corretto-21.0.6.7.1 (build 21.0.6+7-LTS)
+  OpenJDK 64-Bit Server VM Corretto-21.0.6.7.1 (build 21.0.6+7-LTS, mixed mode, sharing)
+
+Result: ✅ PASS - Java 21.0.6 >= 21 (Corretto)
+
+Java System Properties:
+  java.version    = 21.0.6
+  java.version.date = 2025-01-21
+  java.home       = C:\Users\1\.jdks\corretto-21.0.6
+
+Java Location (from PATH):
+  C:\Users\1\.jdks\corretto-21.0.6\bin\java.exe
+--------------------------------------------------------------------------------
+
+[2] JAVA_HOME ENVIRONMENT VARIABLE
+--------------------------------------------------------------------------------
+Command: echo $env:JAVA_HOME
+Output:
+  C:\Users\1\.jdks\corretto-17.0.15
+
+Result: ⚠️ WARNING - JAVA_HOME points to JDK 17 (corretto-17.0.15)
+        Runtime Java is JDK 21 (corretto-21.0.6) via PATH.
+        Mismatch should be fixed: JAVA_HOME should be set to C:\Users\1\.jdks\corretto-21.0.6
+        However, the java command in PATH correctly resolves to 21.0.6.
+--------------------------------------------------------------------------------
+
+[3] GRADLE WRAPPER CHECK
+--------------------------------------------------------------------------------
+Gradle wrapper files (gradlew, gradlew.bat, gradle/wrapper/):
+  NOT FOUND
+
+Global Gradle installation:
+  NOT FOUND (gradle command not recognized)
+
+Result: ❌ FAIL - No Gradle wrapper or global Gradle installation detected.
+        Project has not been initialized with Gradle yet.
+        Gradle >= 8.9 is required for NeoForge 26.1.2.
+        The build system needs to be set up before continuing.
+--------------------------------------------------------------------------------
+
+[4] PROJECT BUILD FILES
+--------------------------------------------------------------------------------
+Build files found in project root:
+  (none - no build.gradle, settings.gradle, pom.xml, or build.xml)
+
+Result: ❌ FAIL - No build system configuration detected.
+        Project scaffolding is required before any Wave tasks can proceed.
+--------------------------------------------------------------------------------
+
+================================================================================
+SUMMARY
+================================================================================
+| Check              | Status  | Detail                                 |
+|--------------------|---------|----------------------------------------|
+| Java Version       | ✅ PASS | JDK 21.0.6 (Corretto) >= 21           |
+| JAVA_HOME          | ⚠️ WARN | Points to JDK 17, should be JDK 21    |
+| Gradle Wrapper     | ❌ FAIL | Not present - project not initialized  |
+| Global Gradle      | ❌ FAIL | Not installed                          |
+| Build Files        | ❌ FAIL | No build configuration found           |
+================================================================================
+
+CONCLUSION:
+- Java toolchain is ready (21.0.6 via PATH, though JAVA_HOME needs updating).
+- Gradle/build system is NOT yet initialized. A Gradle wrapper must be created
+  (version >= 8.9) before any Wave tasks can be attempted.
+- This BLOCKS all subsequent development tasks.
+================================================================================

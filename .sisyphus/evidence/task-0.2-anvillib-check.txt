@@ -1,0 +1,35 @@
+Task: 0.2
+
+Modules checked
+- dev.anvilcraft.lib:anvillib-registrum-neoforge-26.1
+- dev.anvilcraft.lib:anvillib-config-neoforge-26.1
+- dev.anvilcraft.lib:anvillib-network-neoforge-26.1
+
+Repositories checked
+- Maven Central: https://repo1.maven.org/maven2/dev/anvilcraft/lib/
+- Backup mirror: https://server.cjsah.net:1002/maven/dev/anvilcraft/lib/
+- Official repository/readme: https://github.com/Anvil-Dev/AnvilLib
+- Official docs/site was attempted but inaccessible via fetch at time of check: https://lib.anvilcraft.dev/
+
+Result table
+| Module | Maven Central metadata | Mirror metadata | Latest version found | POM/package evidence | Status |
+|---|---|---|---|---|---|
+| anvillib-registrum-neoforge-26.1 | Present | Present | 2.0.0+snapshot.424 | POM exists; name/description confirm Registrum module; POM depends on anvillib-util-neoforge-26.1 | GO |
+| anvillib-config-neoforge-26.1 | Present | Present | 2.0.0+snapshot.424 | POM exists; name/description confirm Config module | GO |
+| anvillib-network-neoforge-26.1 | Present | Present | 2.0.0+snapshot.424 | POM exists; name/description confirm Network module | GO |
+
+Decision: GO
+- All three required modules exist in Maven metadata and are usable for the Avaritia migration target.
+- Prefer the explicit 26.1 coordinates with `2.0.0+snapshot.424` as the current verified release candidate.
+
+Fallback plan
+- If later Gradle resolution fails or APIs differ unexpectedly, use:
+  - Registrum -> `DeferredRegister`
+  - Config -> `ModConfigSpec`
+  - Network -> `SimpleChannel`
+- Keep this fallback only as contingency; current artifact verification supports using AnvilLib directly.
+
+Verification notes
+- Metadata on both Maven Central and the backup mirror explicitly lists the artifacts and the same latest/release version.
+- POMs exist for all three modules at `2.0.0+snapshot.424`.
+- README examples mention 1.21.1, but the 26.1 artifact coordinates are present and should be trusted over README prose.

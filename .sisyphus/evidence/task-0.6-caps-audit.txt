@@ -1,0 +1,191 @@
+===============================================================================
+Task 0.6: Capabilities → Attachments Pre-check Audit
+===============================================================================
+Date: 2026-05-25
+Source: Avaritia-1.21 (NeoForge 21.1.215, MC 1.21.1)
+Target: Avaritia-26 (NeoForge 26.1.2, MC 26.1.2)
+Doc Ref: https://docs.neoforged.net/docs/datastorage/attachments/
+===============================================================================
+
+1. KEY FILE: ModCaps.java
+------------------------------------------------------------------------------
+Path: avaritia/init/registry/ModCaps.java
+Content: EMPTY — `public class ModCaps {}` (placeholder, never populated)
+Assessment: Zero migration impact. Can be deleted or left empty.
+
+2. FILES AFFECTED BY CAPABILITIES API
+------------------------------------------------------------------------------
+Total: 12 unique files reference Capabilities-related API.
+Breakdown by capability type:
+
+2.1 RegisterCapabilitiesEvent (4 files)
+------------------------------------------------------------------------------
+  File                                        Lines    Purpose
+  ──────────────────────────────────────────── ─────── ───────────────────────────
+  CapHandler.java                              29-54   Central registration hub
+  InfinityBucketItem.java                      119-121  Registers FluidHandler
+  AvaritiaCuriosPlugin.java                    22-49   Registers Curios capability
+  IItemCapability.java                         12-13   Interface for item caps
+
+  Details:
+  ─ CapHandler.java:
+    - @SubscribeEvent on RegisterCapabilitiesEvent
+    - Iterates all ModItems, calls IItemCapability.attachCapabilities(event)
+    - Registers Capabilities.ItemHandler.BLOCK for compressed_chest_tile (InvWrapper)
+    - Registers Capabilities.ItemHandler.BLOCK for neutron_collector_tile,
+      neutron_compressor_tile (SidedInvWrapper/InvWrapper based on side)
+    → MIGRATION: Replace RegisterCapabilitiesEvent with block entity directly
+      implementing IItemHandler. AttachmentType for any non-standard data.
+
+  ─ InfinityBucketItem.java:
+    - Implements IItemCapability
+    - Registers Capabilities.FluidHandler.ITEM via InfinityBucketWrapper
+    → MIGRATION: Use DataAttachments or refactor bucket to use vanilla fluid
+      component pattern (DataComponents).
+
+  ─ AvaritiaCuriosPlugin.java:
+    - Registers CuriosCapability.ITEM for crystal_shovel
+    - Provides ICurio implementation with tick effects (haste, speed)
+    → MIGRATION: Curios is a third-party API. Check Curios 26.1 compatibility.
+      Curios may still use its own capability system.
+
+  ─ IItemCapability.java:
+    - @FunctionalInterface: void attachCapabilities(RegisterCapabilitiesEvent)
+    - Implemented by InfinityBucketItem
+    → MIGRATION: Remove this interface entirely.
+
+2.2 Capabilities.ItemHandler.BLOCK (2 files)
+------------------------------------------------------------------------------
+  File                                    Call Sites    Lines
+  ─────────────────────────────────────── ──────────── ──────
+  CapHandler.java                         2             38, 49
+  TileIOHandler.java                      3             111, 133, 156
+
+  Details:
+  ─ TileIOHandler.java:
+    - Uses level.getCapability(Capabilities.ItemHandler.BLOCK, ...) to query
+      neighbor block entity item handlers for IO operations (input/output/mixed)
+    - 3 call sites: handleActiveInput(), handleActiveOutput(), handleMixedIO()
+    → MIGRATION: In NeoForge 26.1, block entities that implement IItemHandler
+      are directly accessible. Replace getCapability with direct neighbor BE
+      handler access or AttachmentType-based query.
+
+2.3 Capabilities.ItemHandler.ITEM (2 files)
+------------------------------------------------------------------------------
+  File                                    Call Sites    Lines
+  ─────────────────────────────────────── ──────────── ──────
+  InventoryUtils.java                     5             35, 42, 56, 78, 96
+  NeutronRingMenu.java                    1             42
+
+  Details:
+  ─ InventoryUtils.java:
+    - itemInv.getCapability(Capabilities.ItemHandler.ITEM) for tryInsert,
+      tryFilteredInsert, itemInvHasItem, getFirstSlotWithStack, getLastSlotWithStack
+    - Used with Neutron Ring item inventory
+    → MIGRATION: ItemStack capabilities are replaced by vanilla DataComponents.
+      Neutron Ring already has ModDataComponents.NEUTRON_RING_INVENTORY.
+      Replace getCapability calls with direct DataComponent access.
+
+  ─ NeutronRingMenu.java:
+    - ring.getCapability(Capabilities.ItemHandler.ITEM) to populate container slots
+    → MIGRATION: Read from DataComponent directly via ComponentItemHandler.
+
+2.4 Capabilities.FluidHandler.ITEM (1 file)
+------------------------------------------------------------------------------
+  File                                    Lines
+  ─────────────────────────────────────── ──────
+  InfinityBucketItem.java                 120
+
+  → MIGRATION: Refactor InfinityBucketWrapper to use DataComponent-based fluid
+    storage, similar to vanilla's ItemStack data components.
+
+2.5 level.getCapability() (1 file)
+------------------------------------------------------------------------------
+  File                                    Call Sites
+  ─────────────────────────────────────── ──────────
+  TileIOHandler.java                      3
+
+  → MIGRATION: Replace with direct BlockEntity handler query or AttachmentType.
+    In NeoForge 26.1, block entities implement capabilities directly.
+
+2.6 ItemStack.getCapability() — referenced in Javadoc (1 file)
+------------------------------------------------------------------------------
+  File                                    Lines
+  ─────────────────────────────────────── ──────
+  IModeChanger.java                       10, 12 (Javadoc only)
+
+  → MIGRATION: No code changes needed. Update Javadoc references.
+
+2.7 Curios API compatibility (2 files)
+------------------------------------------------------------------------------
+  File                                    Lines
+  ─────────────────────────────────────── ──────
+  AvaritiaCuriosPlugin.java               11-12, 22
+  CuriosTools.java                        20 (commented-out ICapabilityProvider)
+
+  → MIGRATION: Depends on Curios mod supporting NeoForge 26.1. If Curios still
+    uses RegisterCapabilitiesEvent, may need conditional compilation or shim.
+
+2.8 Commented-out / dead code (2 files)
+------------------------------------------------------------------------------
+  _NeutronRingMenu.java                   All 361 lines (commented out entirely)
+  NeutronRingItem.java                    37-40 (commented-out attachCapabilities)
+  CuriosTools.java                        20-56 (commented-out ICapabilityProvider)
+
+  → MIGRATION: Remove dead commented-out code. Already migrated to new patterns.
+
+3. API CATEGORY SUMMARY
+------------------------------------------------------------------------------
+  API Pattern                     Files  Call Sites  Complexity
+  ─────────────────────────────── ────── ─────────── ──────────
+  RegisterCapabilitiesEvent       4      4           HIGH (API removed)
+  Capabilities.ItemHandler.BLOCK  2      5           HIGH (API removed)
+  Capabilities.ItemHandler.ITEM   2      6           MEDIUM (→DataComponents)
+  Capabilities.FluidHandler.ITEM  1      1           MEDIUM (→DataComponents)
+  level.getCapability()           1      3           HIGH (API removed)
+  CuriosCapability                1      1           UNKNOWN (3rd party)
+  ICapabilityProvider (dead)      1      0           NONE (commented out)
+
+4. MIGRATION COMPLEXITY ASSESSMENT
+------------------------------------------------------------------------------
+  Overall Complexity: HIGH
+
+  Breakdown:
+  ─ CapHandler.java rewrite:                    HIGH effort (central registration hub)
+  ─ TileIOHandler.java capability queries:      MEDIUM effort (3 call sites)
+  ─ InventoryUtils.java getCapability calls:    MEDIUM effort (5 call sites, same pattern)
+  ─ InfinityBucketItem fluid handler:           MEDIUM effort (refactor wrapper)
+  ─ NeutronRingMenu capability access:          LOW effort (→DataComponent)
+  ─ IItemCapability interface removal:          LOW effort (delete interface)
+  ─ AvaritiaCuriosPlugin:                       UNKNOWN (depends on Curios update)
+  ─ Commented-out code cleanup:                 LOW effort (delete)
+
+  Estimated total files to modify: 5-8 (active code)
+  Estimated files to delete: 2-3 (IItemCapability, dead code)
+  Estimated files to inspect/update: 2 (Curios-related)
+
+5. RECOMMENDED MIGRATION STRATEGY
+------------------------------------------------------------------------------
+  Phase 1 - Foundation:
+  1. Delete IItemCapability.java (interface no longer needed)
+  2. Remove RegisterCapabilitiesEvent from CapHandler.java
+  3. Register AttachmentType<ItemHandler> for block entities that need
+     custom inventory behavior
+
+  Phase 2 - Item Capabilities → DataComponents:
+  4. Replace InfinityBucketWrapper with DataComponent-driven fluid handler
+  5. Replace InventoryUtils.getCapability() calls with direct component access
+  6. Update NeutronRingMenu to use ComponentItemHandler directly
+
+  Phase 3 - Block Entity IO:
+  7. Update TileIOHandler to query neighbor BE handlers directly
+     (NeoForge 26.1 exposes IItemHandler on BE that implement it)
+  8. Ensure block entities implement IItemHandler/IFluidHandler directly
+
+  Phase 4 - Curios & Cleanup:
+  9. Check Curios 26.1 compatibility; update AvaritiaCuriosPlugin
+  10. Remove commented-out _NeutronRingMenu.java, old code in CuriosTools/NeutronRingItem
+
+===============================================================================
+END OF AUDIT
+===============================================================================

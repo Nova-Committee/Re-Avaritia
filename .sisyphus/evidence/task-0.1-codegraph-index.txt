@@ -1,0 +1,17 @@
+Task 0.1 — CodeGraph Index Source Mod
+=====================================
+Status: PASS
+Timestamp: 2026-05-25
+
+CodeGraph Status:
+- Files indexed: 525
+- Total nodes: 13,286
+- Total edges: 26,016
+- Database size: 34.28 MB
+- Languages: java (516), javascript (3), yaml (6)
+
+Nodes by Kind: class(525), enum(21), enum_member(136), field(1,739), 
+file(519), function(75), import(6,361), interface(57), method(3,853)
+
+Command: codegraph init -i
+Workdir: D:\workspace\minecraft\mods\3Nova\Avaritia\Avaritia-1.21

@@ -1,0 +1,11 @@
+﻿Task 2.18 ModSearches verification
+
+Commands:
+1. lsp_diagnostics src/main/java/com/avaritia/init/registry/ModSearches.java
+   Result: blocked — local jdtls executable is unavailable (`jdtls` not recognized).
+
+2. ./gradlew compileJava
+   Result: failed due to pre-existing unrelated migration errors in other registry files (e.g. ModDamageTypes/ModDataComponents/ModEnchants/ModEntityTypes missing classes/imports). No ModSearches error was reported in the captured compiler output.
+
+3. javac isolated check for src/main/java/com/avaritia/init/registry/ModSearches.java with Minecraft client + NeoForge + distmarker jars
+   Result: success (no output).
