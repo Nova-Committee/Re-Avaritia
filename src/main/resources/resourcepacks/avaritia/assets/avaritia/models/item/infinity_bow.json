@@ -1,0 +1,61 @@
+{
+  "parent": "minecraft:item/bow",
+  "textures": {
+    "layer0": "avaritia:item/tools/infinity_bow/idle"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "avaritia:track": 1
+      },
+      "model": "avaritia:item/infinity_bow_idle"
+    },
+    {
+      "predicate": {
+        "avaritia:pulling": 1
+      },
+      "model": "avaritia:item/infinity_bow_pulling_0"
+    },
+    {
+      "predicate": {
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.65
+      },
+      "model": "avaritia:item/infinity_bow_pulling_1"
+    },
+    {
+      "predicate": {
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.9
+      },
+      "model": "avaritia:item/infinity_bow_pulling_2"
+    },
+    {
+      "predicate": {
+        "avaritia:tracing": 1,
+        "avaritia:pulling": 1
+      },
+      "model": "avaritia:item/infinity_bow_tracing_0"
+    },
+    {
+      "predicate": {
+        "avaritia:tracing": 1,
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.65
+      },
+      "model": "avaritia:item/infinity_bow_tracing_1"
+    },
+    {
+      "predicate": {
+        "avaritia:tracing": 1,
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.9
+      },
+      "model": "avaritia:item/infinity_bow_tracing_2"
+    }
+  ],
+  "loader": "avaritia:eternal",
+  "eternal": {
+    "mask": "avaritia:mask/item/infinity_bow/idle_mask"
+  }
+}
