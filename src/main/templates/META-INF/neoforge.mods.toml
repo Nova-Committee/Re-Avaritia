@@ -19,6 +19,12 @@ issueTrackerURL = "https://github.com/Avaritia/Avaritia/issues"
         包含 Infinity Pickaxe、Sword of the Cosmos 以及终极 Matter Cluster。
     """
 
+# ── Mixin ─────────────────────────────────────────────────
+# 声明 Mixin 配置文件，供 MDG 自动处理 Mixin AP 与 refmap
+
+[[mixins]]
+config = "${mod_id}.mixins.json"
+
 # ── 必要依赖 ──────────────────────────────────────────────
 
 [[dependencies.${mod_id}]]

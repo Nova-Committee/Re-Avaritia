@@ -11,20 +11,19 @@ import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.api.iface.transform.IToolTransform;
-import com.avaritia.client.AvaritiaForgeClient;
+import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
 import com.avaritia.client.model.loader.base.HaloSetting;
 import com.avaritia.client.model.loader.base.HaloUtils;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaders;
-import com.avaritia.common.item.resources.MatterClusterItem;
 import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -42,7 +41,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
     private final HaloSetting setting;
     private final List<Identifier> maskSprite;
 
-    public HaloCosmicBakedModel(BakedModel wrapped, TextureAtlasSprite sprite, HaloSetting setting, List<Identifier> maskSprite) {
+    public HaloCosmicBakedModel(ItemModel wrapped, TextureAtlasSprite sprite, HaloSetting setting, List<Identifier> maskSprite) {
         super(wrapped);
         this.random = new Random();
         this.haloQuad = HaloUtils.generateHaloQuad(sprite, setting.size(), setting.color());
@@ -64,8 +63,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
 
         // 渲染Halo效果
         if (transformType == ItemDisplayContext.GUI) {
-            Minecraft.getInstance().getItemRenderer()
-                    .renderQuadList(pStack, source.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true)), List.of(this.haloQuad), stack, packedLight, packedOverlay);
+            renderQuadLayer(pStack, source.getBuffer(RenderType.translucent()), List.of(this.haloQuad), packedLight, packedOverlay);
             if (this.setting.pulse()) {
                 pStack.pushPose();
                 double scale = random.nextDouble() * 0.15D + 0.95D;
@@ -111,7 +109,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
         float yaw = 0.0f;
         float pitch = 0.0f;
         float scale = 1f;
-        if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
+        if (AvaritiaClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
         } else {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
@@ -124,7 +122,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
         AvaritiaShaders.cosmicExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.cosmicOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.cosmicOpacity.set(1.0F);
         } else {
             AvaritiaShaders.cosmicOpacity.set(1.0F);
         }
@@ -138,6 +136,6 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
         for (Identifier res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);
     }
 }

@@ -1,6 +1,9 @@
 package com.avaritia.init.registry;
 
 import com.avaritia.Avaritia;
+import com.avaritia.core.singularity.Singularity;
+import com.avaritia.core.singularity.SingularityReloadListener;
+import com.avaritia.util.SingularityUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;

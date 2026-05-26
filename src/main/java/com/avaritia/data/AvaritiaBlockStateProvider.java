@@ -2,68 +2,85 @@ package com.avaritia.data;
 
 import com.avaritia.Avaritia;
 import com.avaritia.init.registry.ModBlocks;
+import com.avaritia.init.registry.ModItems;
+import com.mojang.math.Quadrant;
+import net.minecraft.client.data.models.MultiVariant;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.client.data.models.model.ModelInstance;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
+import net.minecraft.client.renderer.block.dispatch.Variant;
+import net.minecraft.client.renderer.block.dispatch.VariantMutator;
+import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * Avaritia 方块状态与方块模型数据生成器。
+ * Avaritia 方块状态与方块模型数据生成器（26.1.2 原版 API 重写版）。
  * <p>
  * 为所有注册方块生成 blockstate JSON 和 block model JSON，
  * 输出到 {@code src/generated/resources/assets/avaritia/blockstates/} 和
- * {@code models/block/}。支持简单方块（cube_all）、水平朝向方块和特殊方块。
+ * {@code models/block/}。支持简单方块（cube_all）和水平朝向方块。
  */
-public class AvaritiaBlockStateProvider extends BlockStateProvider {
+public class AvaritiaBlockStateProvider implements DataProvider {
+    private final PackOutput.PathProvider blockStatePathProvider;
+    private final PackOutput.PathProvider modelPathProvider;
+    private final PackOutput.PathProvider itemInfoPathProvider;
+    private final Map<Identifier, BlockStateModelDispatcher> generatedBlockStates = new LinkedHashMap<>();
+    private final Map<Identifier, ModelInstance> generatedModels = new LinkedHashMap<>();
+    private final Map<Identifier, ClientItem> generatedClientItems = new LinkedHashMap<>();
 
-    /**
-     * 使用完整参数构造（推荐）。
-     * <p>
-     * 在 {@link AvaritiaData#gatherData} 中通过
-     * {@code event.getExistingFileHelper()} 传入。
-     *
-     * @param output       数据生成输出
-     * @param exFileHelper 已有文件助手
-     */
-    public AvaritiaBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, Avaritia.MOD_ID, exFileHelper);
-    }
-
-    /**
-     * 使用简化参数构造（不执行纹理验证）。
-     *
-     * @param output 数据生成输出
-     */
     public AvaritiaBlockStateProvider(PackOutput output) {
-        this(output, new ExistingFileHelper(
-                List.of(),
-                Set.of(Avaritia.MOD_ID),
-                false,
-                null,
-                null
-        ));
+        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+        this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
+        this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
     }
 
     @Override
+    public CompletableFuture<?> run(CachedOutput output) {
+        registerStatesAndModels();
+        return CompletableFuture.allOf(
+                DataProvider.saveAll(output, BlockStateModelDispatcher.CODEC, this.blockStatePathProvider, this.generatedBlockStates),
+                DataProvider.saveAll(output, ModelInstance::get, this.modelPathProvider::json, this.generatedModels),
+                DataProvider.saveAll(output, ClientItem.CODEC, this.itemInfoPathProvider, this.generatedClientItems)
+        );
+    }
+
+    @Override
+    public String getName() {
+        return "Avaritia BlockStates";
+    }
+
     protected void registerStatesAndModels() {
         // ==================== 简单资源方块 (cube_all) ====================
-        simpleBlockWithItem(ModBlocks.neutron.get(), cubeAll(ModBlocks.neutron.get()));
-        simpleBlockWithItem(ModBlocks.infinity.get(), cubeAll(ModBlocks.infinity.get()));
-        simpleBlockWithItem(ModBlocks.crystal_matrix.get(), cubeAll(ModBlocks.crystal_matrix.get()));
-        simpleBlockWithItem(ModBlocks.blaze_cube_block.get(), cubeAll(ModBlocks.blaze_cube_block.get()));
-        simpleBlockWithItem(ModBlocks.diamond_lattice_block.get(), cubeAll(ModBlocks.diamond_lattice_block.get()));
-        simpleBlockWithItem(ModBlocks.star_fuel_block.get(), cubeAll(ModBlocks.star_fuel_block.get()));
-        simpleBlockWithItem(ModBlocks.refined_coal_block.get(), cubeAll(ModBlocks.refined_coal_block.get()));
+        simpleBlockWithItem(ModBlocks.neutron.get());
+        simpleBlockWithItem(ModBlocks.infinity.get());
+        simpleBlockWithItem(ModBlocks.crystal_matrix.get());
+        simpleBlockWithItem(ModBlocks.blaze_cube_block.get());
+        simpleBlockWithItem(ModBlocks.diamond_lattice_block.get());
+        simpleBlockWithItem(ModBlocks.star_fuel_block.get());
+        simpleBlockWithItem(ModBlocks.refined_coal_block.get());
 
         // ==================== 假方块（无 BlockItem） ====================
-        simpleBlock(ModBlocks.fake_bedrock.get(), cubeAll(ModBlocks.fake_bedrock.get()));
-        simpleBlock(ModBlocks.fake_end_portal_frame.get(), cubeAll(ModBlocks.fake_end_portal_frame.get()));
-        simpleBlock(ModBlocks.fake_end_portal.get(), cubeAll(ModBlocks.fake_end_portal.get()));
+        simpleBlock(ModBlocks.fake_bedrock.get());
+        simpleBlock(ModBlocks.fake_end_portal_frame.get());
+        simpleBlock(ModBlocks.fake_end_portal.get());
 
         // ==================== 合成台（水平朝向） ====================
         horizontalBlockWithItem(ModBlocks.compressed_crafting_table.get());
@@ -90,24 +107,56 @@ public class AvaritiaBlockStateProvider extends BlockStateProvider {
         horizontalBlockWithItem(ModBlocks.extreme_anvil.get());
 
         // ==================== 箱子 ====================
-        simpleBlockWithItem(ModBlocks.compressed_chest.get(), cubeAll(ModBlocks.compressed_chest.get()));
-        simpleBlockWithItem(ModBlocks.infinity_chest.get(), cubeAll(ModBlocks.infinity_chest.get()));
+        simpleBlockWithItem(ModBlocks.compressed_chest.get());
+        simpleBlockWithItem(ModBlocks.infinity_chest.get());
 
         // ==================== 特殊功能方块 ====================
-        simpleBlockWithItem(ModBlocks.soul_farmland.get(), cubeAll(ModBlocks.soul_farmland.get()));
-        simpleBlockWithItem(ModBlocks.endless_cake.get(), cubeAll(ModBlocks.endless_cake.get()));
+        simpleBlockWithItem(ModBlocks.soul_farmland.get());
+        simpleBlockWithItem(ModBlocks.endless_cake.get());
     }
 
-    /**
-     * 为水平朝向方块生成 blockstate（四方向旋转变体）和物品模型。
-     * <p>
-     * 要求方块持有 {@code BlockStateProperties.HORIZONTAL_FACING} 属性。
-     *
-     * @param block 目标方块
-     */
+    private void simpleBlockWithItem(Block block) {
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
+        Identifier model = cubeAllModel(block, id);
+        this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block, new MultiVariant(WeightedList.of(new Variant(model)))).create());
+        blockItem(block, model);
+    }
+
+    private void simpleBlock(Block block) {
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
+        Identifier model = cubeAllModel(block, id);
+        this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block, new MultiVariant(WeightedList.of(new Variant(model)))).create());
+    }
+
     private void horizontalBlockWithItem(Block block) {
-        ModelFile model = cubeAll(block);
-        horizontalBlock(block, model);
-        simpleBlockItem(block, model);
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
+        Identifier model = cubeAllModel(block, id);
+        this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block, new MultiVariant(WeightedList.of(new Variant(model))))
+                .with(PropertyDispatch.modify(BlockStateProperties.HORIZONTAL_FACING)
+                        .select(Direction.NORTH, VariantMutator.Y_ROT.with(Quadrant.ZERO))
+                        .select(Direction.EAST, VariantMutator.Y_ROT.with(Quadrant.P90))
+                        .select(Direction.SOUTH, VariantMutator.Y_ROT.with(Quadrant.P180))
+                        .select(Direction.WEST, VariantMutator.Y_ROT.with(Quadrant.P270))
+                )
+                .create());
+        blockItem(block, model);
+    }
+
+    private Identifier cubeAllModel(Block block, Identifier id) {
+        Identifier modelId = id.withPrefix("block/");
+        ModelTemplates.CUBE_ALL.create(modelId, new TextureMapping().put(TextureSlot.ALL, texture(id, "block")), this.generatedModels::put);
+        return modelId;
+    }
+
+    private void blockItem(Block block, Identifier model) {
+        String path = BuiltInRegistries.BLOCK.getKey(block).getPath();
+        if (ModItems.BLOCK_ITEMS.containsKey(path)) {
+            Identifier itemKey = BuiltInRegistries.ITEM.getKey(block.asItem());
+            this.generatedClientItems.put(itemKey, new ClientItem(ItemModel.plainModel(model), ClientItem.Properties.DEFAULT));
+        }
+    }
+
+    private Material texture(Identifier id, String folder) {
+        return new Material(Identifier.fromNamespaceAndPath(id.getNamespace(), folder + "/" + id.getPath()));
     }
 }

@@ -6,8 +6,6 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.List;
 /**
  * @author cnlimiter
  */
-public abstract class BaseModelLoader<T extends IUnbakedGeometry<T>> implements IGeometryLoader<T> {
+public abstract class BaseModelLoader<T> {
     public JsonObject clear(JsonObject modelContents, String... types) {
         final JsonObject clean = modelContents.deepCopy();
         clean.remove("loader");

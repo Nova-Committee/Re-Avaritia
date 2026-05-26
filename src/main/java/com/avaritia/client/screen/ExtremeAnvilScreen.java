@@ -1,7 +1,8 @@
 package com.avaritia.client.screen;
 
 import com.avaritia.common.menu.ExtremeAnvilMenu;
-import com.avaritia.network.C2SRenamePack;
+import com.avaritia.network.C2SRenamePacket;
+import com.avaritia.network.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;
@@ -11,7 +12,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -69,7 +69,7 @@ public class ExtremeAnvilScreen extends BaseContainerScreen<ExtremeAnvilMenu> {
             }
 
             if (this.menu.setItemName(value)) {
-                PacketDistributor.sendToServer(new C2SRenamePack(value));
+                NetworkHandler.sendToServer(new C2SRenamePacket(value));
             }
         }
     }

@@ -15,16 +15,16 @@ import java.util.function.Supplier;
 public class ModRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, Avaritia.MOD_ID);
 
-    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> INFINITY_CATALYST_CRAFT_SERIALIZER = serializer("infinity_catalyst", InfinityCatalystCraftRecipe.Serializer::new);
-    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> ETERNAL_SINGULARITY_CRAFT_SERIALIZER = serializer("eternal_singularity", EternalSingularityCraftRecipe.Serializer::new);
-    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> SHAPED_CRAFT_SERIALIZER = serializer("shaped_table", ShapedTableCraftingRecipe.Serializer::new);
-    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> SHAPELESS_CRAFT_SERIALIZER = serializer("shapeless_table", ShapelessTableCraftingRecipe.Serializer::new);
-    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> COMPRESSOR_SERIALIZER = serializer("compressor", CompressorRecipe.Serializer::new);
-    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> EXTREME_SMITHING_SERIALIZER = serializer("extreme_smithing", ExtremeSmithingRecipe.Serializer::new);
+    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> INFINITY_CATALYST_CRAFT_SERIALIZER = serializer("infinity_catalyst", () -> InfinityCatalystCraftRecipe.Serializer.SERIALIZER);
+    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> ETERNAL_SINGULARITY_CRAFT_SERIALIZER = serializer("eternal_singularity", () -> EternalSingularityCraftRecipe.Serializer.SERIALIZER);
+    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> SHAPED_CRAFT_SERIALIZER = serializer("shaped_table", () -> ShapedTableCraftingRecipe.Serializer.SERIALIZER);
+    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> SHAPELESS_CRAFT_SERIALIZER = serializer("shapeless_table", () -> ShapelessTableCraftingRecipe.Serializer.SERIALIZER);
+    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> COMPRESSOR_SERIALIZER = serializer("compressor", () -> CompressorRecipe.Serializer.SERIALIZER);
+    public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> EXTREME_SMITHING_SERIALIZER = serializer("extreme_smithing", () -> ExtremeSmithingRecipe.SERIALIZER);
     public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> FULL_MATTER_CLUSTER_SERIALIZER =
-            serializer("full_matter_cluster", FullMatterClusterRecipe.Serializer::new);
+            serializer("full_matter_cluster", () -> FullMatterClusterRecipe.Serializer.SERIALIZER);
     public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> NO_CONSUME_CATALYST_SHAPED_SERIALIZER =
-            serializer("no_consume_catalyst_shaped", NoConsumeCatalystShapedRecipe.Serializer::new);
+            serializer("no_consume_catalyst_shaped", () -> NoConsumeCatalystShapedRecipe.Serializer.SERIALIZER);
 
     public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> serializer(String name, Supplier<RecipeSerializer<?>> serializer) {
         return SERIALIZERS.register(name, serializer);

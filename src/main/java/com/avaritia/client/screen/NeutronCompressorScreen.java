@@ -2,10 +2,10 @@ package com.avaritia.client.screen;
 
 import com.avaritia.common.menu.NeutronCompressorMenu;
 import com.avaritia.common.tile.NeutronCompressorTile;
-import com.avaritia.init.handler.NetworkHandler;
+import com.avaritia.network.NetworkHandler;
 import com.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -34,8 +34,8 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     @Override
     protected void init() {
         super.init();
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+        int x = this.leftPos;
+        int y = this.topPos;
 
         // 添加锁定按钮
         this.lockButton =  new LockButton(x + 40, y + 55);
@@ -83,7 +83,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
             var xTexStart = 177;
             var yTexStart = 47;
@@ -111,7 +111,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
             var xTexStart = 177;
             var yTexStart = 35;
@@ -125,9 +125,9 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     @Override
-    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        int x = this.leftPos;
+        int y = this.topPos;
 
         // 原有的材料提示
         if (pMouseX > x + 63 && pMouseX < x + 79 && pMouseY > y + 35 && pMouseY < y + 51) {
@@ -150,7 +150,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
         stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752, false);
         stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752, false);
@@ -158,9 +158,9 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
 
     @Override
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY) {
+        int x = this.leftPos;
+        int y = this.topPos;
 
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {

@@ -12,14 +12,8 @@ public enum Mods {
     VANILLA("minecraft"),
     AVARITIA(Avaritia.MOD_ID),
     TCON("tconstruct"),
-    DE("draconicevolution"),
-    RS("refinedstorage"),
-    SD("storagedrawers"),
-    EIO("enderio"),
-
     CREATE("create"),
-    MEK("mekanism", Builder::reverseMetalPrefix),
-    MEK_GEN("mekanismgenerators", Builder::reverseMetalPrefix),
+
     TH("thermal"),
     IE("immersiveengineering", Builder::reverseMetalPrefix),
     FD("farmersdelight"),
@@ -50,7 +44,6 @@ public enum Mods {
     SUP("supplementaries"),
     AM("alexsmobs"),
     NEA("neapolitan"),
-    AE2("ae2"),
     MC("minecraft"),
     BB("buzzier_bees"),
     SILENT_GEMS("silentgems"),

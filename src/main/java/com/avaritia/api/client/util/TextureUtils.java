@@ -1,20 +1,17 @@
 package com.avaritia.api.client.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.avaritia.api.client.util.color.Color;
 import com.avaritia.api.client.util.color.ColorARGB;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +23,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.avaritia.Avaritia.LOGGER;
@@ -247,18 +243,7 @@ public class TextureUtils {
      */
     @Deprecated
     public static TextureAtlasSprite[] getIconsForBlock(BlockState state, Direction side) {
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        if (model != null) {
-            List<BakedQuad> quads = model.getQuads(state, side, RandomSource.create(0));
-            if (quads != null && quads.size() > 0) {
-                TextureAtlasSprite[] sprites = new TextureAtlasSprite[quads.size()];
-                for (int i = 0; i < quads.size(); i++) {
-                    sprites[i] = quads.get(i).getSprite();
-                }
-                return sprites;
-            }
-        }
-        return new TextureAtlasSprite[0];
+        return new TextureAtlasSprite[]{getParticleIconForBlock(state)};
     }
 
     /**
@@ -266,8 +251,11 @@ public class TextureUtils {
      */
     @Deprecated
     public static TextureAtlasSprite getParticleIconForBlock(BlockState state) {
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        return model.getParticleIcon();
+        Identifier blockId = Registries.BLOCK.getKey(state.getBlock());
+        if (blockId == null) {
+            return getMissingSprite();
+        }
+        return getBlockTexture(blockId);
     }
 
     /**

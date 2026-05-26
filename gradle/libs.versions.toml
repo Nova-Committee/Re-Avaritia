@@ -3,6 +3,7 @@ minecraft = "26.1.2"
 neoforge = "26.1.2.15-beta"
 moddevgradle = "2.0.141"
 mixinextras = "0.5.4"
+lombok = "1.18.38"
 jei = "29.6.2.31"
 jade = "26.1.1+neoforge"
 curios = "15.0.0-beta.2+26.1.2"
@@ -18,6 +19,7 @@ curios-neoforge = { group = "top.theillusivec4.curios", name = "curios-neoforge"
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
 junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 
 [plugins]
 moddevgradle = { id = "net.neoforged.moddev", version.ref = "moddevgradle" }

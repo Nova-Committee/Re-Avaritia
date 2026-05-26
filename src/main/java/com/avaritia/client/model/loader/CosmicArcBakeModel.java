@@ -14,7 +14,7 @@ import com.avaritia.api.client.render.CosmicRenderQueue;
 import com.avaritia.api.client.render.model.OBJParser;
 import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
-import com.avaritia.client.AvaritiaForgeClient;
+import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
 import com.avaritia.client.model.entity.InfinityTridentModel;
 import com.avaritia.client.render.util.ArcRender;
@@ -23,9 +23,8 @@ import com.avaritia.client.shader.AvaritiaShaders;
 import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -47,7 +46,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
     private final List<Identifier> maskSprite;
     private Map<String, CCModel> tridentObjModel;
 
-    public CosmicArcBakeModel(BakedModel wrapped, List<Identifier> maskSprite) {
+    public CosmicArcBakeModel(ItemModel wrapped, List<Identifier> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
         this.cosmic = true;
@@ -126,7 +125,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
                     var tridentModel = new InfinityTridentModel();
                     pStack.pushPose();
                     pStack.scale(1.0F, -1.0F, -1.0F);
-                    VertexConsumer vertexconsumer1 = ItemRenderer.getFoilBufferDirect(source, tridentModel.renderType(Res.TRIDENT_TEX), false, stack.hasFoil());
+                    VertexConsumer vertexconsumer1 = source.getBuffer(tridentModel.renderType(Res.TRIDENT_TEX));
                     tridentModel.renderToBuffer(pStack, vertexconsumer1, packedLight, packedOverlay);
                     pStack.popPose();
                 }
@@ -206,7 +205,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
         float yaw = 0.0f;
         float pitch = 0.0f;
         float scale = 1f;
-        if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
+        if (AvaritiaClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
             pitch = -(float) (mc.player.getXRot() * 2.0f * Math.PI / 360.0);
@@ -221,6 +220,6 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
         for (Identifier res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);
     }
 }

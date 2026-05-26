@@ -1,6 +1,7 @@
 package com.avaritia.client;
 
 import com.avaritia.Avaritia;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.avaritia.client.model.loader.CosmicArcModelLoader;
 import com.avaritia.client.model.loader.CosmicModelLoader;
 import com.avaritia.client.model.loader.EternalModelLoader;
@@ -40,15 +41,16 @@ import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModMenus;
 import com.avaritia.init.registry.ModParticles;
 import com.avaritia.init.registry.ModTileEntities;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -62,6 +64,11 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
  */
 @EventBusSubscriber(modid = Avaritia.MOD_ID, value = Dist.CLIENT)
 public class AvaritiaClient {
+    public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_R, "key.avaritia.categories");
+
+    public static boolean inventoryRender = false;
+    public static long lastTime = System.currentTimeMillis();
+
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntityTypes.IMMORTAL.get(), ItemEntityRenderer::new);
@@ -84,13 +91,15 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void addEntityLayers(EntityRenderersEvent.AddLayers event) {
         EntityRenderer<?> renderer = event.getRenderer(EntityType.PLAYER);
-        if (renderer instanceof PlayerRenderer playerRenderer && playerRenderer.getModel() instanceof HumanoidModel<?>) {
+        if (renderer instanceof AvatarRenderer<?> playerRenderer && playerRenderer.getModel() instanceof HumanoidModel<?>) {
             playerRenderer.addLayer(new InfinityArmorRender<>(playerRenderer, event.getEntityModels(), false));
         }
 
-        for (PlayerSkin.Model skin : event.getSkins()) {
-            LivingEntityRenderer<?, ?> skinRenderer = event.getSkin(skin);
-            skinRenderer.addLayer(new InfinityArmorRender<>(skinRenderer, event.getEntityModels(), skin == PlayerSkin.Model.SLIM));
+        for (PlayerModelType skin : event.getSkins()) {
+            LivingEntityRenderer<?, ?> skinRenderer = event.getPlayerRenderer(skin);
+            if (skinRenderer != null) {
+                skinRenderer.addLayer(new InfinityArmorRender<>(skinRenderer, event.getEntityModels(), skin == PlayerModelType.SLIM));
+            }
         }
     }
 

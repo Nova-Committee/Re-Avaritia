@@ -4,6 +4,7 @@ import com.avaritia.Avaritia;
 import com.avaritia.client.render.tile.CompressedChestRenderer;
 import com.avaritia.client.render.tile.InfinityChestBlockRender;
 import com.avaritia.common.tile.CompressedChestTile;
+import com.avaritia.common.tile.InfinitatoTile;
 import com.avaritia.common.tile.InfinityChestTile;
 import com.avaritia.common.tile.NeutronCollectorTile;
 import com.avaritia.common.tile.NeutronCompressorTile;
@@ -70,4 +71,11 @@ public class ModTileEntities {
                     ModBlocks.extreme_crafting_table.get()
             });
     public static DeferredHolder<BlockEntityType<?>, BlockEntityType<CompressedChestTile>> compressed_chest_tile = blockEntity("compressed_chest_tile", CompressedChestTile::new, () -> new Block[]{ModBlocks.compressed_chest.get()});
+
+    // TODO: Register with ModBlocks.infinitato once the block is defined
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InfinitatoTile>> infinitato_tile = blockEntity(
+            "infinitato_tile",
+            InfinitatoTile::new,
+            () -> new Block[]{}
+    );
 }

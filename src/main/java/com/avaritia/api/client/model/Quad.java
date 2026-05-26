@@ -25,8 +25,8 @@ import com.avaritia.api.utils.math.InterpHelper;
 import com.avaritia.api.utils.math.MathUtils;
 import com.avaritia.api.utils.vec.Cuboid6;
 import com.avaritia.api.utils.vec.Vector3;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 

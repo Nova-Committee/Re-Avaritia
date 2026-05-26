@@ -1,27 +1,24 @@
 package com.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.avaritia.common.tile.InfinitatoTile;
 import com.avaritia.init.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
@@ -33,30 +30,48 @@ import java.util.Objects;
  * Date: 2022/5/22 18:56
  * Version: 1.0
  */
-public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile> {
+public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile, InfinitatoTileRender.State> {
 
-
-    private final BlockRenderDispatcher blockRenderDispatcher;
 
     public InfinitatoTileRender(BlockEntityRendererProvider.Context ctx) {
-        this.blockRenderDispatcher = ctx.getBlockRenderDispatcher();
     }
 
 
     @Override
-    public void render(@Nonnull InfinitatoTile potato, float partialTicks, PoseStack ms, @Nonnull MultiBufferSource buffers, int light, int overlay) {
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(@Nonnull InfinitatoTile potato, State state, float partialTicks, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(potato, state, partialTicks, cameraPos, breakProgress);
         if (!Objects.requireNonNull(potato.getLevel()).isLoaded(potato.getBlockPos())
-                || potato.getLevel().getBlockState(potato.getBlockPos()).getBlock() != ModBlocks.infinitato.get())
+                || potato.getLevel().getBlockState(potato.getBlockPos()).getBlock() != ModBlocks.infinitato.get()) {
+            state.shouldRender = false;
             return;
+        }
+        state.shouldRender = true;
+        state.name = potato.name;
+        state.potatoFacing = potato.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        state.jump = InfinitatoTile.jumpTicks > 0 ? InfinitatoTile.jumpTicks - partialTicks : InfinitatoTile.jumpTicks;
+        HitResult pos = Minecraft.getInstance().hitResult;
+        state.showName = Minecraft.renderNames()
+                && !state.name.toLowerCase(Locale.ROOT).trim().isEmpty()
+                && pos != null && pos.getType() == HitResult.Type.BLOCK
+                && potato.getBlockPos().equals(((BlockHitResult) pos).getBlockPos());
+    }
+
+    @Override
+    public void submit(State state, PoseStack ms, @Nonnull SubmitNodeCollector output, CameraRenderState cameraState) {
+        if (!state.shouldRender) return;
 
         ms.pushPose();
 
-        String name = potato.name.toLowerCase(Locale.ROOT).trim();
-        RenderType layer = Sheets.translucentCullBlockSheet();
+        String name = state.name.toLowerCase(Locale.ROOT).trim();
         //BakedModel model = getModel(name);
 
         ms.translate(0.5F, 0F, 0.5F);
-        Direction potatoFacing = potato.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        Direction potatoFacing = state.potatoFacing;
         float rotY = 0;
         switch (potatoFacing) {
             default:
@@ -74,10 +89,7 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
         }
         ms.mulPose(Axis.YN.rotationDegrees(rotY));
 
-        float jump = InfinitatoTile.jumpTicks;
-        if (jump > 0) {
-            jump -= partialTicks;
-        }
+        float jump = state.jump;
 
         float up = (float) Math.abs(Math.sin(jump / 10 * Math.PI)) * 0.2F;
         float rotZ = (float) Math.sin(jump / 10 * Math.PI) * 2;
@@ -90,7 +102,6 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
         if (render) {
             ms.pushPose();
             ms.translate(-0.5F, 0, -0.5F);
-            VertexConsumer buffer = ItemRenderer.getFoilBuffer(buffers, layer, true, false);
 
             //renderModel(ms, buffer, light, overlay, model);
             ms.popPose();
@@ -106,54 +117,42 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile>
         ms.mulPose(Axis.ZP.rotationDegrees(-rotZ));
         ms.mulPose(Axis.YN.rotationDegrees(-rotY));
 
-        renderName(potato, name, ms, buffers, light);
+        renderName(state, name, ms, output, state.lightCoords);
         ms.popPose();
     }
 
-    private void renderName(InfinitatoTile potato, String name, PoseStack ms, MultiBufferSource buffers, int light) {
+    private void renderName(State state, String name, PoseStack ms, SubmitNodeCollector output, int light) {
         Minecraft mc = Minecraft.getInstance();
-        HitResult pos = mc.hitResult;
-        if (Minecraft.renderNames()
-                && !name.isEmpty() && pos != null && pos.getType() == HitResult.Type.BLOCK
-                && potato.getBlockPos().equals(((BlockHitResult) pos).getBlockPos())) {
+        if (state.showName) {
             ms.pushPose();
             ms.translate(0F, -0.6F, 0F);
-            ms.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
+            ms.mulPose(mc.getEntityRenderDispatcher().camera.rotation());
             float f1 = 0.016666668F * 1.6F;
             ms.scale(-f1, -f1, f1);
-            int halfWidth = mc.font.width(potato.name) / 2;
+            int halfWidth = mc.font.width(state.name) / 2;
 
             float opacity = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
             int opacityRGB = (int) (opacity * 255.0F) << 24;
-            mc.font.drawInBatch(potato.name, -halfWidth, 0, 0x20FFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.SEE_THROUGH, opacityRGB, light);
-            mc.font.drawInBatch(potato.name, -halfWidth, 0, 0xFFFFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.NORMAL, 0, light);
+            output.submitText(ms, -halfWidth, 0, FormattedCharSequence.forward(state.name, Style.EMPTY), false, Font.DisplayMode.SEE_THROUGH, 0x20FFFFFF, opacityRGB, light, 0);
+            output.submitText(ms, -halfWidth, 0, FormattedCharSequence.forward(state.name, Style.EMPTY), false, Font.DisplayMode.NORMAL, 0xFFFFFFFF, 0, light, 0);
             if (name.equals("pahimar") || name.equals("soaryn")) {
                 ms.translate(0F, 14F, 0F);
                 String str = name.equals("pahimar") ? "[WIP]" : "(soon)";
                 halfWidth = mc.font.width(str) / 2;
 
-                mc.font.drawInBatch(str, -halfWidth, 0, 0x20FFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.SEE_THROUGH, opacityRGB, light);
-                mc.font.drawInBatch(str, -halfWidth, 0, 0xFFFFFFFF, false, ms.last().pose(), buffers, Font.DisplayMode.SEE_THROUGH, 0, light);
+                output.submitText(ms, -halfWidth, 0, FormattedCharSequence.forward(str, Style.EMPTY), false, Font.DisplayMode.SEE_THROUGH, 0x20FFFFFF, opacityRGB, light, 0);
+                output.submitText(ms, -halfWidth, 0, FormattedCharSequence.forward(str, Style.EMPTY), false, Font.DisplayMode.SEE_THROUGH, 0xFFFFFFFF, 0, light, 0);
             }
 
             ms.popPose();
         }
     }
 
-    private void renderModel(PoseStack ms, MultiBufferSource buffers, int light, int overlay, BakedModel model) {
-        renderModel(ms, buffers.getBuffer(Sheets.translucentCullBlockSheet()), light, overlay, model);
-    }
-
-    private void renderModel(PoseStack ms, VertexConsumer buffer, int light, int overlay, BakedModel model) {
-        blockRenderDispatcher.getModelRenderer().renderModel(ms.last(), buffer, null, model, 1, 1, 1, light, overlay);
-    }
-
-    private void renderItem(PoseStack ms, MultiBufferSource buffers, int light, int overlay, ItemStack stack) {
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.HEAD,
-                light, overlay, ms, buffers, null, 0);
-    }
-
-    private void renderBlock(PoseStack ms, MultiBufferSource buffers, int light, int overlay, Block block) {
-        blockRenderDispatcher.renderSingleBlock(block.defaultBlockState(), ms, buffers, light, overlay);
+    public static class State extends BlockEntityRenderState {
+        public boolean shouldRender;
+        public String name = "";
+        public Direction potatoFacing = Direction.SOUTH;
+        public float jump;
+        public boolean showName;
     }
 }

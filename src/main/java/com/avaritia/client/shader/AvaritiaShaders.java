@@ -1,11 +1,11 @@
 package com.avaritia.client.shader;
 
-import com.mojang.blaze3d.shaders.AbstractUniform;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.avaritia.Avaritia;
-import net.minecraft.client.renderer.ShaderInstance;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 /**
  * Name: Avaritia-forge / AvaritiaShaders
@@ -20,101 +20,80 @@ public class AvaritiaShaders {
     public static final float[] ETERNAL_UVS = new float[40];
     public static TextureAtlasSprite[] ETERNAL_SPRITES = new TextureAtlasSprite[10];
 
-    public static ShaderInstance COSMIC_SHADER;
-    public static ShaderInstance COSMIC_ARMOR_SHADER;
-    public static ShaderInstance HELL_SHADER;
-    public static ShaderInstance ETERNAL_SHADER;
-    public static ShaderInstance UNSTABLE_SHADER;
+    public static RenderPipeline COSMIC_SHADER;
+    public static RenderPipeline COSMIC_ARMOR_SHADER;
+    public static RenderPipeline HELL_SHADER;
+    public static RenderPipeline ETERNAL_SHADER;
+    public static RenderPipeline UNSTABLE_SHADER;
 
-    public static AbstractUniform cosmicTime;
-    public static AbstractUniform cosmicYaw;
-    public static AbstractUniform cosmicPitch;
-    public static AbstractUniform cosmicExternalScale;
-    public static AbstractUniform cosmicOpacity;
-    public static AbstractUniform cosmicUVs;
+    public static ShaderUniform cosmicTime = new ShaderUniform();
+    public static ShaderUniform cosmicYaw = new ShaderUniform();
+    public static ShaderUniform cosmicPitch = new ShaderUniform();
+    public static ShaderUniform cosmicExternalScale = new ShaderUniform();
+    public static ShaderUniform cosmicOpacity = new ShaderUniform();
+    public static ShaderUniform cosmicUVs = new ShaderUniform();
 
-    public static AbstractUniform cosmicArmorTime;
-    public static AbstractUniform cosmicArmorYaw;
-    public static AbstractUniform cosmicArmorPitch;
-    public static AbstractUniform cosmicArmorExternalScale;
-    public static AbstractUniform cosmicArmorOpacity;
-    public static AbstractUniform cosmicArmorUVs;
+    public static ShaderUniform cosmicArmorTime = new ShaderUniform();
+    public static ShaderUniform cosmicArmorYaw = new ShaderUniform();
+    public static ShaderUniform cosmicArmorPitch = new ShaderUniform();
+    public static ShaderUniform cosmicArmorExternalScale = new ShaderUniform();
+    public static ShaderUniform cosmicArmorOpacity = new ShaderUniform();
+    public static ShaderUniform cosmicArmorUVs = new ShaderUniform();
 
-    public static AbstractUniform hellTime;
-    public static AbstractUniform hellYaw;
-    public static AbstractUniform hellPitch;
-    public static AbstractUniform hellExternalScale;
-    public static AbstractUniform hellOpacity;
-    public static AbstractUniform hellUVs;
+    public static ShaderUniform hellTime = new ShaderUniform();
+    public static ShaderUniform hellYaw = new ShaderUniform();
+    public static ShaderUniform hellPitch = new ShaderUniform();
+    public static ShaderUniform hellExternalScale = new ShaderUniform();
+    public static ShaderUniform hellOpacity = new ShaderUniform();
+    public static ShaderUniform hellUVs = new ShaderUniform();
 
-    public static AbstractUniform eternalTime;
-    public static AbstractUniform eternalYaw;
-    public static AbstractUniform eternalPitch;
-    public static AbstractUniform eternalExternalScale;
-    public static AbstractUniform eternalOpacity;
-    public static AbstractUniform eternalUVs;
+    public static ShaderUniform eternalTime = new ShaderUniform();
+    public static ShaderUniform eternalYaw = new ShaderUniform();
+    public static ShaderUniform eternalPitch = new ShaderUniform();
+    public static ShaderUniform eternalExternalScale = new ShaderUniform();
+    public static ShaderUniform eternalOpacity = new ShaderUniform();
+    public static ShaderUniform eternalUVs = new ShaderUniform();
 
-    public static AbstractUniform unstableTime;
-    public static AbstractUniform unstableYaw;
-    public static AbstractUniform unstablePitch;
-    public static AbstractUniform unstableExternalScale;
-    public static AbstractUniform unstableOpacity;
-    public static AbstractUniform unstableUVs;
+    public static ShaderUniform unstableTime = new ShaderUniform();
+    public static ShaderUniform unstableYaw = new ShaderUniform();
+    public static ShaderUniform unstablePitch = new ShaderUniform();
+    public static ShaderUniform unstableExternalScale = new ShaderUniform();
+    public static ShaderUniform unstableOpacity = new ShaderUniform();
+    public static ShaderUniform unstableUVs = new ShaderUniform();
 
-    public static void onRegisterShaders(RegisterShadersEvent event) {
-        try {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), Avaritia.rl("cosmic"), DefaultVertexFormat.BLOCK), shader -> {
-                COSMIC_SHADER = shader;
-                cosmicTime = COSMIC_SHADER.safeGetUniform("time");
-                cosmicYaw = COSMIC_SHADER.safeGetUniform("yaw");
-                cosmicPitch = COSMIC_SHADER.safeGetUniform("pitch");
-                cosmicExternalScale = COSMIC_SHADER.safeGetUniform("externalScale");
-                cosmicOpacity = COSMIC_SHADER.safeGetUniform("opacity");
-                cosmicUVs = COSMIC_SHADER.safeGetUniform("cosmicuvs");
-                COSMIC_SHADER.apply();
-            });
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), Avaritia.rl("cosmic"), DefaultVertexFormat.NEW_ENTITY), shader -> {
-                COSMIC_ARMOR_SHADER = shader;
-                cosmicArmorTime = COSMIC_ARMOR_SHADER.safeGetUniform("time");
-                cosmicArmorYaw = COSMIC_ARMOR_SHADER.safeGetUniform("yaw");
-                cosmicArmorPitch = COSMIC_ARMOR_SHADER.safeGetUniform("pitch");
-                cosmicArmorExternalScale = COSMIC_ARMOR_SHADER.safeGetUniform("externalScale");
-                cosmicArmorOpacity = COSMIC_ARMOR_SHADER.safeGetUniform("opacity");
-                cosmicArmorUVs = COSMIC_ARMOR_SHADER.safeGetUniform("cosmicuvs");
-                COSMIC_ARMOR_SHADER.apply();
-            });
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), Avaritia.rl("hell"), DefaultVertexFormat.BLOCK), shader -> {
-                HELL_SHADER = shader;
-                hellTime = HELL_SHADER.safeGetUniform("time");
-                hellYaw = HELL_SHADER.safeGetUniform("yaw");
-                hellPitch = HELL_SHADER.safeGetUniform("pitch");
-                hellExternalScale = HELL_SHADER.safeGetUniform("externalScale");
-                hellOpacity = HELL_SHADER.safeGetUniform("opacity");
-                hellUVs = HELL_SHADER.safeGetUniform("cosmicuvs");
-                HELL_SHADER.apply();
-            });
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), Avaritia.rl("eternal"), DefaultVertexFormat.BLOCK), shader -> {
-                ETERNAL_SHADER = shader;
-                eternalTime = ETERNAL_SHADER.safeGetUniform("time");
-                eternalYaw = ETERNAL_SHADER.safeGetUniform("yaw");
-                eternalPitch = ETERNAL_SHADER.safeGetUniform("pitch");
-                eternalExternalScale = ETERNAL_SHADER.safeGetUniform("externalScale");
-                eternalOpacity = ETERNAL_SHADER.safeGetUniform("opacity");
-                eternalUVs = ETERNAL_SHADER.safeGetUniform("cosmicuvs");
-                ETERNAL_SHADER.apply();
-            });
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), Avaritia.rl("unstable"), DefaultVertexFormat.BLOCK), shader -> {
-                UNSTABLE_SHADER = shader;
-                unstableTime = UNSTABLE_SHADER.safeGetUniform("time");
-                unstableYaw = UNSTABLE_SHADER.safeGetUniform("yaw");
-                unstablePitch = UNSTABLE_SHADER.safeGetUniform("pitch");
-                unstableExternalScale = UNSTABLE_SHADER.safeGetUniform("externalScale");
-                unstableOpacity = UNSTABLE_SHADER.safeGetUniform("opacity");
-                unstableUVs = UNSTABLE_SHADER.safeGetUniform("cosmicuvs");
-                UNSTABLE_SHADER.apply();
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static void onRegisterShaders(RegisterRenderPipelinesEvent event) {
+        COSMIC_SHADER = registerPipeline(event, "cosmic", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
+        COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS);
+        HELL_SHADER = registerPipeline(event, "hell", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
+        ETERNAL_SHADER = registerPipeline(event, "eternal", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
+        UNSTABLE_SHADER = registerPipeline(event, "unstable", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
+    }
+
+    private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, VertexFormat.Mode mode) {
+        RenderPipeline pipeline = RenderPipeline.builder()
+                .withLocation(Avaritia.rl(name))
+                .withVertexShader(Avaritia.rl(name))
+                .withFragmentShader(Avaritia.rl(name))
+                .withSampler("Sampler0")
+                .withSampler("Sampler2")
+                .withVertexFormat(vertexFormat, mode)
+                .build();
+        event.registerPipeline(pipeline);
+        return pipeline;
+    }
+
+    /**
+     * 兼容旧版 {@code AbstractUniform#set(...)} 调用的占位句柄。
+     * <p>MC 26.1.2 已移除旧 ShaderInstance/AbstractUniform 管线，真实上传需要后续接入 UBO/管线修改器。</p>
+     */
+    public static class ShaderUniform {
+        public void set(float value) {
+        }
+
+        public void set(long value) {
+        }
+
+        public void set(float[] values) {
         }
     }
 }

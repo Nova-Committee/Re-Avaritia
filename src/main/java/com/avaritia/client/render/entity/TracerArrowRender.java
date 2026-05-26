@@ -4,6 +4,7 @@ import com.avaritia.Avaritia;
 import com.avaritia.common.entity.arrow.TraceArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity> {
+public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity, ArrowRenderState> {
     private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.of(Avaritia.MOD_ID, "textures/entity/heaven_arrow.png");
 
     public TracerArrowRender(EntityRendererProvider.Context context) {
@@ -24,7 +25,12 @@ public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity> {
     }
 
     @Override
-    public @NotNull Identifier getTextureLocation(@NotNull TraceArrowEntity entity) {
+    protected @NotNull Identifier getTextureLocation(@NotNull ArrowRenderState state) {
         return HEAVEN_ARROW_TEXTURE;
+    }
+
+    @Override
+    public @NotNull ArrowRenderState createRenderState() {
+        return new ArrowRenderState();
     }
 }

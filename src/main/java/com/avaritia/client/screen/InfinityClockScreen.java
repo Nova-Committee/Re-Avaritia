@@ -2,6 +2,7 @@ package com.avaritia.client.screen;
 
 import com.avaritia.common.menu.InfinityClockMenu;
 import com.avaritia.network.C2SSetTimePacket;
+import com.avaritia.network.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -11,7 +12,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> {
@@ -60,7 +60,7 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
             try {
                 int time = Integer.parseInt(timeInput.getValue());
                 // 发送网络包到服务端
-                PacketDistributor.sendToServer(new C2SSetTimePacket(time));
+                NetworkHandler.sendToServer(new C2SSetTimePacket(time));
                 return true;
             } catch (NumberFormatException ignored) {
                 // 输入不是有效数字，忽略
@@ -99,7 +99,7 @@ public class InfinityClockScreen extends BaseContainerScreen<InfinityClockMenu> 
         @Override
         public void onClick(MouseButtonEvent event, boolean doubleClick) {
             // 发送网络包到服务端
-            PacketDistributor.sendToServer(new C2SSetTimePacket(timeValue));
+            NetworkHandler.sendToServer(new C2SSetTimePacket(timeValue));
         }
 
         @Override

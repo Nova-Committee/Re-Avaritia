@@ -21,10 +21,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
@@ -40,8 +36,7 @@ import java.util.concurrent.CompletableFuture;
  * 普通资源物品使用 {@code item/generated}，工具使用 {@code item/handheld}，
  * 方块物品则直接引用对应的方块模型。
  */
-@OnlyIn(Dist.CLIENT)
-public class AvaritiaModelProvider extends ItemModelProvider {
+public class AvaritiaModelProvider implements DataProvider {
     private static final Set<DeferredItem<Item>> HANDHELD_ITEMS = Set.of(
             ModItems.infinity_sword,
             ModItems.infinity_hoe,
@@ -76,25 +71,14 @@ public class AvaritiaModelProvider extends ItemModelProvider {
     private final Map<Identifier, ModelInstance> generatedModels = new LinkedHashMap<>();
 
     /**
-     * 创建 Avaritia 物品与方块模型提供程序。
-     *
-     * @param output             数据生成输出目录
-     * @param existingFileHelper 已存在资源检查器；26.1.2 原版模型管线不再需要该参数，这里保留用于兼容任务要求
-     */
-    public AvaritiaModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
-        super(output, Avaritia.MOD_ID, existingFileHelper);
-        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
-        this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
-        this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
-    }
-
-    /**
-     * 创建 Avaritia 物品与方块模型提供程序。
+     * 创建 Avaritia 物品与方块模型提供程序（26.1.2 原版 API 版）。
      *
      * @param output 数据生成输出目录
      */
     public AvaritiaModelProvider(PackOutput output) {
-        this(output, null);
+        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+        this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+        this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
     }
 
     /**
@@ -113,13 +97,17 @@ public class AvaritiaModelProvider extends ItemModelProvider {
         );
     }
 
+    @Override
+    public String getName() {
+        return "Avaritia Models";
+    }
+
     /**
      * 注册全部已注册物品和方块的模型。
      * <p>
      * 先为所有方块生成方块模型和方块物品模型，再遍历 {@link ModItems#ITEMS}
      * 生成剩余普通物品和工具模型，确保后续新增注册项不会漏掉模型。
      */
-    @Override
     protected void registerModels() {
         ModBlocks.BLOCKS.getEntries().forEach(this::block);
         ModItems.ITEMS.getEntries().forEach(this::item);

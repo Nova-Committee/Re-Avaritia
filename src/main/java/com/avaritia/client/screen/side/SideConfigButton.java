@@ -5,10 +5,11 @@ import com.avaritia.api.client.screen.BaseContainerScreen;
 import com.avaritia.api.common.menu.BaseTileMenu;
 import com.avaritia.api.iface.ITileIO;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class SideConfigButton extends ImageButton {
 
     @Override
     @ParametersAreNonnullByDefault
-    public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         var xTexStart = 156;
         var yTexStart = 0;
         if (this.isHovered) {

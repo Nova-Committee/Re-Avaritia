@@ -1,17 +1,15 @@
 package com.avaritia.client.render.util;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.avaritia.Res;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
-
-import static net.minecraft.client.renderer.RenderStateShard.*;
 
 /**
  * @author cnlimiter
@@ -19,22 +17,9 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 public class ArcRender {
     public static final RenderType ARC_RENDER_TYPE = RenderType.create(
             "arc_render_type",
-            DefaultVertexFormat.POSITION_TEX,
-            VertexFormat.Mode.QUADS,
-            256,
-            false,
-            true,
-            RenderType.CompositeState.builder()
-                    .setTextureState(new TextureStateShard(
-                            Res.ARC_TEX,
-                            false,
-                            false
-                    ))
-                    .setShaderState(POSITION_TEX_SHADER)
-                    .setCullState(NO_CULL)
-                    .setOutputState(ITEM_ENTITY_TARGET)
-                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                    .createCompositeState(false)
+            RenderSetup.builder(RenderPipelines.LIGHTNING)
+                    .withTexture("Sampler0", Res.ARC_TEX)
+                    .createRenderSetup()
     );
 
     private static final float THICKNESS_VARIATION = 0.4f;

@@ -1,19 +1,21 @@
 package com.avaritia.init.registry;
 
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.SimpleTier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.level.block.Block;
 
 /**
- * 注册模组中的所有工具等级（Tier）。
+ * 模组工具材质定义。
  *
- * <p>包含烈焰、水晶、无尽三个自定义等级。</p>
+ * <p>MC 26.1.2 移除了旧版 {@code Tier}/{@code SimpleTier}，工具材质改为
+ * {@link ToolMaterial} 记录。构造参数顺序为：错误挖掘方块标签、耐久、挖掘速度、攻击伤害加成、附魔值、修复物品标签。</p>
  */
 public class ModToolTiers {
-    public static final Tier BLAZE = new SimpleTier(ModTags.NEEDS_BLAZE_TOOL, 7777, 25f, 25f, 77,
-            () -> Ingredient.of(ModItems.blaze_cube.get()));
-    public static final Tier CRYSTAL = new SimpleTier(ModTags.NEEDS_CRYSTAL_TOOL, 8888, 50f, 50f, 888,
-            () -> Ingredient.of(ModItems.crystal_matrix_ingot.get()));
-    public static final Tier INFINITY = new SimpleTier(ModTags.NEEDS_INFINITY_TOOL, 9999, 100f, 100f, 9999,
-            () -> Ingredient.of(ModItems.infinity_ingot.get()));
+    private static final TagKey<Block> NO_INCORRECT_BLOCKS = null;
+    private static final TagKey<Item> NO_REPAIR_ITEMS = null;
+
+    public static final ToolMaterial BLAZE = new ToolMaterial(NO_INCORRECT_BLOCKS, 7777, 25f, 25f, 77, NO_REPAIR_ITEMS);
+    public static final ToolMaterial CRYSTAL = new ToolMaterial(NO_INCORRECT_BLOCKS, 8888, 50f, 50f, 888, NO_REPAIR_ITEMS);
+    public static final ToolMaterial INFINITY = new ToolMaterial(NO_INCORRECT_BLOCKS, 9999, 100f, 100f, 9999, NO_REPAIR_ITEMS);
 }

@@ -4,16 +4,20 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.avaritia.common.entity.AcceleratorDisplayEntity;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayEntity> {
+public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayEntity, AcceleratorDisplayRender.State> {
     private final Font font;
     private static final float SCALE = 0.02f;
 
@@ -23,21 +27,21 @@ public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayE
     }
 
     @Override
-    public void render(AcceleratorDisplayEntity entity, float yaw, float partialTicks,
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector output, CameraRenderState cameraState) {
 
-        String text = "x" + entity.getSpeedMultiplier();
+        String text = "x" + state.speedMultiplier;
         float textWidth = font.width(text) * SCALE / 2;
 
         // 获取点击的面
-        Direction face = entity.getFace();
+        Direction face = state.face;
 
         // 根据面确定文字的位置和旋转
-        drawTextOnFace(poseStack, buffer, text, face, textWidth, packedLight);
+        drawTextOnFace(poseStack, output, text, face, textWidth, state.lightCoords);
+        super.submit(state, poseStack, output, cameraState);
     }
 
-    private void drawTextOnFace(PoseStack poseStack, MultiBufferSource buffer, String text,
-                                Direction face, float textWidth, int light) {
+    private void drawTextOnFace(PoseStack poseStack, SubmitNodeCollector output, String text,
+                                 Direction face, float textWidth, int light) {
         poseStack.pushPose();
 
         // 根据面应用变换，确保文字始终面向玩家
@@ -80,14 +84,30 @@ public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayE
         float x = -font.width(text) / 2.0f;
         float y = -font.lineHeight / 2.0f;
 
-        font.drawInBatch(text, x, y, 0xFFFFFF, false,
-                poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
+        output.submitText(poseStack, x, y, FormattedCharSequence.forward(text, Style.EMPTY), false,
+                Font.DisplayMode.NORMAL, 0xFFFFFF, 0, light, 0);
 
         poseStack.popPose();
     }
 
     @Override
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(AcceleratorDisplayEntity entity, State state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.speedMultiplier = entity.getSpeedMultiplier();
+        state.face = entity.getFace();
+    }
+
     public Identifier getTextureLocation(AcceleratorDisplayEntity entity) {
         return null;
+    }
+
+    public static class State extends EntityRenderState {
+        public int speedMultiplier;
+        public Direction face = Direction.NORTH;
     }
 }

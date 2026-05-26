@@ -1,29 +1,16 @@
 package com.avaritia.api.utils;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.renderer.RenderStateShard.*;
-import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 
 public class RenderUtils {
 
-    public static final TextureStateShard COSMIC_TEXTURE_ISOLATED =
-            new TextureStateShard(
-                    InventoryMenu.BLOCK_ATLAS,
-                    false,
-                    false
-            );
+    public static final Identifier COSMIC_TEXTURE_ISOLATED = InventoryMenu.BLOCK_ATLAS;
 
-    public static final LayeringStateShard POLYGON_OFFSET_LAYERING =
-            new LayeringStateShard(
+    public static final LayeringTransform POLYGON_OFFSET_LAYERING =
+            new LayeringTransform(
                     "polygon_offset_layering",
-                    () -> {
-                        RenderSystem.polygonOffset(-1.0F, -10.0F);
-                        RenderSystem.enablePolygonOffset();
-                    },
-                    () -> {
-                        RenderSystem.polygonOffset(0.0F, 0.0F);
-                        RenderSystem.disablePolygonOffset();
-                    }
+                    matrix -> matrix.translate(0.0F, 0.0F, -0.001F)
             );
 }

@@ -8,20 +8,12 @@ import com.avaritia.api.client.model.IVertexConsumer;
 import com.avaritia.api.client.model.Quad;
 import com.avaritia.api.client.util.color.ColorARGB;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.SimpleBakedModel;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
-import net.neoforged.neoforge.client.RenderTypeGroup;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -61,18 +53,6 @@ public class HaloUtils {
         vx.vec[2] = (float) z;
         vx.uv[0] = (float) u;
         vx.uv[1] = (float) v;
-    }
-
-    public static BakedModel tintLayers(final BakedModel model, final IntList layerColors) {
-        if (layerColors.isEmpty()) {
-            return model;
-        }
-        final Map<Direction, List<BakedQuad>> faceQuads = new HashMap<>();
-        for (final Direction face : Direction.values()) {
-            faceQuads.put(face, transformQuads(model.getQuads(null, face, RandomSource.create()), layerColors));
-        }
-        final List<BakedQuad> unculled = transformQuads(model.getQuads(null, null, RandomSource.create()), layerColors);
-        return new SimpleBakedModel(unculled, faceQuads, model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), ItemOverrides.EMPTY, RenderTypeGroup.EMPTY);
     }
 
     public static List<BakedQuad> transformQuads(final List<BakedQuad> quads, final IntList layerColors) {

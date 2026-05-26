@@ -1,12 +1,24 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "com.avaritia.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "refmap": "avaritia.refmap.json",
-    "mixins": [],
-    "client": [],
-    "injectors": {
-        "defaultRequire": 1
-    }
+  "required": true,
+  "package": "com.avaritia.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "avaritia.refmap.json",
+  "mixins": [
+    "EnchantmentHelperMixin",
+    "IItemStackExtensionMixin",
+    "ItemMixin",
+    "ItemStackMixin",
+    "NetherWartBlockMixin",
+    "PlayerMixin",
+    "RecipeManagerMixin",
+    "accessor.MappedRegistryAccessor"
+  ],
+  "client": [
+    "ItemRendererMixin",
+    "PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
 }

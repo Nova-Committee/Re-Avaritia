@@ -2,7 +2,7 @@ package com.avaritia.client.model.entity;
 
 import com.avaritia.Res;
 import com.avaritia.api.client.util.color.ColorRGBA;
-import com.avaritia.client.AvaritiaForgeClient;
+import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaders;
 import com.avaritia.init.registry.ModItems;
@@ -20,11 +20,11 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
@@ -172,7 +172,7 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         float pitch = 0.0F;
         float scale = 1.0F;
 
-        if (AvaritiaForgeClient.inventoryRender) {
+        if (AvaritiaClient.inventoryRender) {
             scale = 100.0F;
         } else {
             yaw = (float) ((livingEntity.getYRot() * 2.0F) * Math.PI / 360.0D);
@@ -258,7 +258,7 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
             poseStack.pushPose();
 
             ModelPart hat = this.bodyRoot.getChild("hat");
-            float hue = (System.currentTimeMillis() - AvaritiaForgeClient.lastTime) / 2000.0F;
+            float hue = (System.currentTimeMillis() - AvaritiaClient.lastTime) / 2000.0F;
 
             int rgb = Color.HSBtoRGB(hue, 1.0F, 1.0F);
             float r = ((rgb >> 16) & 0xFF) / 255.0F;

@@ -5,7 +5,7 @@ import com.avaritia.api.client.screen.BaseContainerScreen;
 import com.avaritia.client.screen.side.SideConfigButton;
 import com.avaritia.common.menu.NeutronCollectorMenu;
 import com.avaritia.init.registry.ModTooltips;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -25,8 +25,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     @Override
     protected void init() {
         super.init();
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+        int x = this.leftPos;
+        int y = this.topPos;
 
         this.configButton = new SideConfigButton(this, x - 20, y);
 
@@ -34,9 +34,9 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+    protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        int x = this.leftPos;
+        int y = this.topPos;
 
         if (pMouseX > x + 99 && pMouseX < x + 104 && pMouseY > y + 30 && pMouseY < y + 50) {
             List<Component> tooltip = new ArrayList<>();
@@ -52,7 +52,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics stack, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
         stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752, false);
@@ -60,9 +60,9 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     }
 
     @Override
-    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        int i = this.getGuiLeft();
-        int j = this.getGuiTop();
+    protected void renderBgs(GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pX, int pY) {
+        int i = this.leftPos;
+        int j = this.topPos;
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(18);
             pGuiGraphics.blit(Res.NEUTRON_COLLECTOR_TEX, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);

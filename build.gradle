@@ -73,8 +73,8 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
-        data {
-            data()
+        clientData {
+            serverData()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
@@ -108,6 +108,10 @@ dependencies {
 
     // Curios API
     implementation libs.curios.neoforge
+
+    // Lombok
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
 
     // JUnit (test)
     testImplementation platform(libs.junit.bom)
@@ -156,4 +160,9 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.add('-Xlint:-removal')
 }

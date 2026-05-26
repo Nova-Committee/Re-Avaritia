@@ -10,16 +10,15 @@ import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.api.iface.transform.IToolTransform;
-import com.avaritia.client.AvaritiaForgeClient;
+import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaders;
-import com.avaritia.common.item.resources.MatterClusterItem;
 import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -35,7 +34,7 @@ import static com.avaritia.client.shader.AvaritiaShaders.ETERNAL_UVS;
 public class EternalBakeModel extends WrappedItemModel implements CosmicRenderable {
     private final List<Identifier> maskSprite;
 
-    public EternalBakeModel(final BakedModel wrapped, final List<Identifier> maskSprite) {
+    public EternalBakeModel(final ItemModel wrapped, final List<Identifier> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
         this.cosmic = true;
@@ -84,7 +83,7 @@ public class EternalBakeModel extends WrappedItemModel implements CosmicRenderab
         float yaw = 0.0f;
         float pitch = 0.0f;
         float scale = 1f;
-        if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
+        if (AvaritiaClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
         } else {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
@@ -98,7 +97,7 @@ public class EternalBakeModel extends WrappedItemModel implements CosmicRenderab
         AvaritiaShaders.eternalExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.eternalOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.eternalOpacity.set(1.0F);
         } else {
             AvaritiaShaders.eternalOpacity.set(1.0F);
         }
@@ -112,7 +111,7 @@ public class EternalBakeModel extends WrappedItemModel implements CosmicRenderab
         for (Identifier res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch(AvaritiaRenderTypes.ETERNAL);
         }

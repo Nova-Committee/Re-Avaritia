@@ -1,16 +1,55 @@
 package com.avaritia.network;
 
+import com.avaritia.Avaritia;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * S2CSingularitiesPacket
+ * Description:
+ * Author: cnlimiter
+ * Date: 2022/4/2 12:58
+ * Version: 1.0
+ */
 public record C2SSetTimePacket(int time) implements CustomPacketPayload {
-    public static final Type<C2SSetTimePacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath("avaritia", "set_time"));
-    public static final StreamCodec<?, C2SSetTimePacket> STREAM_CODEC = ByteBufCodecs.VAR_INT.map(C2SSetTimePacket::new, C2SSetTimePacket::time);
+    public static final Type<C2SSetTimePacket> TYPE = new Type<>(Identifier.of(Avaritia.MOD_ID, "c2s_set_time"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSetTimePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            C2SSetTimePacket::time,
+            C2SSetTimePacket::new
+    );
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
+
+    public static class Handler implements IPayloadHandler<C2SSetTimePacket> {
+        @Override
+        public void handle(@NotNull C2SSetTimePacket packet, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer player)  {
+                    player.getServer().getAllLevels().forEach(level -> {
+
+                        long currentDayTime = level.getDayTime();
+                        long currentDays = currentDayTime / 24000L;
+                        long newTime = currentDays * 24000L + packet.time;
+                        level.setDayTime(newTime);
+                    });
+                }
+
+            });
+        }
+    }
+
+
+
 }

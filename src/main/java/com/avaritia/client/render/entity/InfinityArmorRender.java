@@ -9,7 +9,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -18,7 +18,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -39,32 +39,32 @@ public class InfinityArmorRender<T extends LivingEntity, M extends EntityModel<T
             return HumanoidModel.ArmPose.EMPTY;
         } else {
             if (livingEntity.getUsedItemHand() == hand && livingEntity.getUseItemRemainingTicks() > 0) {
-                UseAnim useAnim = itemStack.getUseAnimation();
-                if (useAnim == UseAnim.BLOCK) {
+                ItemUseAnimation useAnim = itemStack.getUseAnimation();
+                if (useAnim == ItemUseAnimation.BLOCK) {
                     return HumanoidModel.ArmPose.BLOCK;
                 }
 
-                if (useAnim == UseAnim.BOW) {
+                if (useAnim == ItemUseAnimation.BOW) {
                     return HumanoidModel.ArmPose.BOW_AND_ARROW;
                 }
 
-                if (useAnim == UseAnim.SPEAR) {
+                if (useAnim == ItemUseAnimation.SPEAR) {
                     return HumanoidModel.ArmPose.THROW_SPEAR;
                 }
 
-                if (useAnim == UseAnim.CROSSBOW && hand == livingEntity.getUsedItemHand()) {
+                if (useAnim == ItemUseAnimation.CROSSBOW && hand == livingEntity.getUsedItemHand()) {
                     return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
                 }
 
-                if (useAnim == UseAnim.SPYGLASS) {
+                if (useAnim == ItemUseAnimation.SPYGLASS) {
                     return HumanoidModel.ArmPose.SPYGLASS;
                 }
 
-                if (useAnim == UseAnim.TOOT_HORN) {
+                if (useAnim == ItemUseAnimation.TOOT_HORN) {
                     return HumanoidModel.ArmPose.TOOT_HORN;
                 }
 
-                if (useAnim == UseAnim.BRUSH) {
+                if (useAnim == ItemUseAnimation.BRUSH) {
                     return HumanoidModel.ArmPose.BRUSH;
                 }
             } else if (!livingEntity.swinging && itemStack.getItem() instanceof CrossbowItem && CrossbowItem.isCharged(itemStack)) {

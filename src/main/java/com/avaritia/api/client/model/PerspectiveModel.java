@@ -3,23 +3,12 @@ package com.avaritia.api.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mojang.math.Transformation;
-import com.avaritia.api.client.util.TextureUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @Project: Avaritia
@@ -27,7 +16,7 @@ import java.util.List;
  * @CreateTime: 2024/11/14 22:58
  * @Description:
  */
-public interface PerspectiveModel extends BakedModel {
+public interface PerspectiveModel {
 
     /**
      * The {@link PerspectiveModelState} for this model.
@@ -39,16 +28,7 @@ public interface PerspectiveModel extends BakedModel {
 
     void renderItem(ItemStack stack, ItemDisplayContext ctx, PoseStack mStack, MultiBufferSource source, int packedLight, int packedOverlay);
 
-    //Useless methods for IItemRenderer.
-    //@formatter:off
-    @Override default @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, @NotNull RandomSource rand) { return Collections.emptyList(); }
-    @Override default boolean isCustomRenderer() { return true; }
-    @Override default @NotNull TextureAtlasSprite getParticleIcon() { return TextureUtils.getMissingSprite(); }
-    @Override default@NotNull ItemOverrides getOverrides() { return ItemOverrides.EMPTY; }
-    //@formatter:on
-
-    @Override
-    default @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext context, @NotNull PoseStack pStack, boolean leftFlip) {
+    default @NotNull PerspectiveModel applyTransform(@NotNull ItemDisplayContext context, @NotNull PoseStack pStack, boolean leftFlip) {
         PerspectiveModelState modelState = getModelState();
         if (modelState != null) {
             Transformation transform = getModelState().getTransform(context);
@@ -65,6 +45,6 @@ public interface PerspectiveModel extends BakedModel {
             }
             return this;
         }
-        return BakedModel.super.applyTransform(context, pStack, leftFlip);
+        return this;
     }
 }

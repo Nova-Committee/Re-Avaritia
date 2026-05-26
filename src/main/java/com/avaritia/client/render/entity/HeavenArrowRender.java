@@ -2,16 +2,16 @@ package com.avaritia.client.render.entity;
 
 import com.avaritia.Avaritia;
 import com.avaritia.common.entity.arrow.HeavenArrowEntity;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -28,7 +28,7 @@ import org.joml.Matrix4f;
  * Version: 1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity> {
+public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity, ArrowRenderState> {
     private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.of(Avaritia.MOD_ID, "textures/entity/heaven_arrow.png");
 
     public HeavenArrowRender(EntityRendererProvider.Context context) {
@@ -36,47 +36,48 @@ public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity> {
     }
 
     @Override
-    public @NotNull Identifier getTextureLocation(@NotNull HeavenArrowEntity entity) {
+    protected @NotNull Identifier getTextureLocation(@NotNull ArrowRenderState state) {
         return HEAVEN_ARROW_TEXTURE;
     }
 
     @Override
-    public void render(@NotNull HeavenArrowEntity arrowEntity, float entityYaw, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
+    public void submit(@NotNull ArrowRenderState state, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, @NotNull CameraRenderState cameraState) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, arrowEntity.yRotO, arrowEntity.getYRot()) - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, arrowEntity.xRotO, arrowEntity.getXRot())));
-        float shake = arrowEntity.shakeTime - partialTicks;
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
+        float shake = state.shake;
         if (shake > 0.0F) {
             poseStack.mulPose(Axis.ZP.rotationDegrees(-Mth.sin(shake * 3.0F) * shake));
         }
         poseStack.mulPose(Axis.XP.rotationDegrees(45.0F));
         poseStack.scale(0.05625F, 0.05625F, 0.05625F);
         poseStack.translate(-4.0, 0.0, 0.0);
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.create("avaritia_heaven_arrow", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false,
-                RenderType.CompositeState.builder()
-                        .setShaderState(RenderType.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setTextureState(new RenderStateShard.TextureStateShard(this.getTextureLocation(arrowEntity), false, false))
-                        .setOverlayState(RenderType.OVERLAY)
-                        .createCompositeState(true)));
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f poseMatrix = pose.pose();
-        Matrix3f normalMatrix = pose.normal();
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, -2, 0.0F, 0.3125F, -1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, -2, 0.0F, 0.15625F, 1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, 2, 0.15625F, 0.15625F, 1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLight);
-        this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLight);
-        for (int j = 0; j < 4; ++j) {
-            poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, packedLight);
-            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, packedLight);
-            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, packedLight);
-            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, packedLight);
-        }
+        RenderType renderType = RenderTypes.entityCutout(this.getTextureLocation(state));
+        output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+            Matrix4f poseMatrix = pose.pose();
+            Matrix3f normalMatrix = pose.normal();
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, -2, 0.0F, 0.3125F, -1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, -2, 0.0F, 0.15625F, 1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, 2, 2, 0.15625F, 0.15625F, 1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, state.lightCoords);
+            this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, state.lightCoords);
+            for (int j = 0; j < 4; ++j) {
+                this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, state.lightCoords);
+                this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, state.lightCoords);
+                this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, state.lightCoords);
+                this.drawVertex(poseMatrix, normalMatrix, vertexConsumer, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, state.lightCoords);
+            }
+        });
         poseStack.popPose();
+        super.submit(state, poseStack, output, cameraState);
+    }
+
+    @Override
+    public @NotNull ArrowRenderState createRenderState() {
+        return new ArrowRenderState();
     }
 
     public void drawVertex(Matrix4f poseMatrix, Matrix3f normalMatrix, VertexConsumer vertexConsumer, int offsetX, int offsetY, int offsetZ, float textureX, float textureY, int normalX, int normalY, int normalZ, int packedLight) {

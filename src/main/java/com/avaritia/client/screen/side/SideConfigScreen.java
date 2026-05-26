@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.avaritia.Res;
 import com.avaritia.api.iface.ITileIO;
 import com.avaritia.core.io.SideConfiguration;
-import com.avaritia.init.handler.NetworkHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import com.avaritia.network.NetworkHandler;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
@@ -64,7 +64,7 @@ public class SideConfigScreen extends Screen {
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> setAllSides(SideConfiguration.SideMode.OFF)) {
                     @Override
-                    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    public void renderWidget(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                         int vOffset = 164, textureDifference = 18;
                         int i = vOffset;
                         if (!this.isActive()) {
@@ -84,7 +84,7 @@ public class SideConfigScreen extends Screen {
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> onClose()) {
                     @Override
-                    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    public void renderWidget(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                         int vOffset = 164, textureDifference = 18;
                         int i = vOffset;
                         if (!this.isActive()) {
@@ -151,7 +151,7 @@ public class SideConfigScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.renderTransparentBackground(guiGraphics);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();

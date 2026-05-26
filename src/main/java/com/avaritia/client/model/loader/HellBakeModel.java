@@ -10,16 +10,15 @@ import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.api.iface.transform.IToolTransform;
-import com.avaritia.client.AvaritiaForgeClient;
+import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaders;
-import com.avaritia.common.item.resources.MatterClusterItem;
 import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -33,7 +32,7 @@ import static com.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 public class HellBakeModel extends WrappedItemModel implements CosmicRenderable {
     private final List<Identifier> maskSprite;
 
-    public HellBakeModel(final BakedModel wrapped, final List<Identifier> maskSprite) {
+    public HellBakeModel(final ItemModel wrapped, final List<Identifier> maskSprite) {
         super(wrapped);
         this.maskSprite = maskSprite;
         this.cosmic = true;
@@ -82,7 +81,7 @@ public class HellBakeModel extends WrappedItemModel implements CosmicRenderable 
         float yaw = 0.0f;
         float pitch = 0.0f;
         float scale = 1f;
-        if (AvaritiaForgeClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
+        if (AvaritiaClient.inventoryRender || transformType == ItemDisplayContext.GUI) {
             scale = 100.0F;
         } else {
             yaw = (float) (mc.player.getYRot() * 2.0f * Math.PI / 360.0);
@@ -95,7 +94,7 @@ public class HellBakeModel extends WrappedItemModel implements CosmicRenderable 
         AvaritiaShaders.hellExternalScale.set(scale);
 
         if (stack.getItem() == ModItems.matter_cluster.get()) {
-            AvaritiaShaders.hellOpacity.set(MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY);
+            AvaritiaShaders.hellOpacity.set(1.0F);
         } else {
             AvaritiaShaders.hellOpacity.set(1.0F);
         }
@@ -109,7 +108,7 @@ public class HellBakeModel extends WrappedItemModel implements CosmicRenderable 
         for (Identifier res : maskSprite) {
             atlasSprite.add(mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
-        mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+        renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);
         if (source instanceof MultiBufferSource.BufferSource bs) {
             bs.endBatch(AvaritiaRenderTypes.HELL);
         }

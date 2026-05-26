@@ -6,18 +6,8 @@ import com.google.gson.JsonParseException;
 import com.avaritia.client.model.loader.base.BaseGeometry;
 import com.avaritia.client.model.loader.base.BaseModelLoader;
 import com.avaritia.client.model.loader.base.HaloSetting;
-import com.avaritia.client.model.loader.base.HaloUtils;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelState;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Function;
 
 /**
  * Name: Avaritia-forge / HaloItemModelLoader
@@ -46,15 +36,8 @@ public class HaloModelLoader extends BaseModelLoader<HaloModelLoader.HaloItemMod
             this.setting = setting;
         }
 
-        @Override
-        public @NotNull BakedModel bake(final @NotNull IGeometryBakingContext owner, final @NotNull ModelBaker bakery,
-                                        final @NotNull Function<Material, TextureAtlasSprite> spriteGetter,
-                                        final @NotNull ModelState modelTransform, final @NotNull ItemOverrides overrides) {
-            final BakedModel bakedBaseModel = this.baseModel.bake(bakery, this.baseModel, spriteGetter, modelTransform, false);
-            Material particleLocation = this.baseModel.getMaterial(this.setting.texture());
-            TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
-            return new HaloBakedModel(HaloUtils.tintLayers(bakedBaseModel, this.setting.layerColors()), particle,
-                    this.setting);
+        public @NotNull Object bake() {
+            return this;
         }
     }
 }
