@@ -20,6 +20,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 import org.apache.logging.log4j.LogManager;  
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,16 +36,17 @@ public class ServerChestManager {
     
     private static volatile ServerChestManager instance;
 
+    @Nullable
     public static ServerChestManager getInstance() {
         if (instance == null) {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server == null) {  
-                LOGGER.warn("[ServerChestManager] getInstance() called but no server is running (client-side?). Returning null.");  
-                return null;  
+            if (server == null) {
+                LOGGER.warn("[ServerChestManager] getInstance() called but no server is running (client-side?). Returning null.");
+                return null;
             }
             synchronized (ServerChestManager.class) {
                 if (instance == null) {
-                    instance = new ServerChestManager(ServerLifecycleHooks.getCurrentServer());
+                    instance = new ServerChestManager(server);
                 }
             }
         }

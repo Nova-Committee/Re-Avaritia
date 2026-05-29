@@ -131,14 +131,14 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
         if (pStack.getTag().contains("BlockEntityTag")) {
             CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
             if (nbt.contains("owner") && nbt.contains("channelID")) {
-                ServerChestManager manager = ServerChestManager.getInstance();  
-                if (manager == null) {  
+                ServerChestManager manager = ServerChestManager.getInstance();
+                if (manager == null) {
                     LOGGER.warn("[InfinityChestBlock] ServerChestManager is null in appendHoverText(), skipping tooltip content.");  
                     return;
                 }
                 var owner = nbt.getUUID("owner");
                 var channelID = nbt.getUUID("channelID");
-                var channel = ServerChestManager.getInstance().getChest(owner, channelID);
+                var channel = manager.getChest(owner, channelID);
                 int i = 0;
                 int j = 0;
                 for (var item : channel.storageItems.keySet()) {
