@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 
 /**
@@ -38,9 +39,10 @@ public class InfinityUpgradeItem extends ResourceItem {
     }
 
     @Override
-    public boolean isValidRepairItem(@NotNull ItemStack pStack, @NotNull ItemStack pRepairCandidate) {
-        return pRepairCandidate.is(ModItems.star_fuel.get());
+    public boolean isCombineRepairable(@NonNull ItemStack stack) {
+        return stack.is(ModItems.star_fuel.get());
     }
+
 
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext pContext) {

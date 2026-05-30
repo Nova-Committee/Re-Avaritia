@@ -17,16 +17,20 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -43,7 +47,7 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .sword(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed())
+                        .sword(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed())
         );
     }
 
@@ -66,30 +70,30 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 
     @Override
     public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
         ItemStack stack = player.getItemInHand(hand);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (player.isCrouching()) {
                 switchMode(level, player, hand, "fire_ball");
                 return InteractionResult.SUCCESS;
             }
             if (isActive(stack, "fire_ball")) {
-                FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level);
+                FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level, EntitySpawnReason.EVENT);
                 if (fireBallEntity != null) {
                     fireBallEntity.setOwner(player);
                     fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                     fireBallEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-                    level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
+                    level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
                     level.addFreshEntity(fireBallEntity);
-                    player.getCooldowns().addCooldown(heldItem.getItem(), 40);
+                    player.getCooldowns().addCooldown(heldItem, 40);
                     return InteractionResult.SUCCESS;
                 }
             }

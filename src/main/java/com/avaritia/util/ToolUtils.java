@@ -104,7 +104,7 @@ public class ToolUtils {
      * Common
      ***/
     public static boolean canUseTool(BlockState state, Set<TagKey<Block>> keySets) {
-        return state.getTags().collect(Collectors.toSet()).retainAll(keySets);
+        return state.tags().collect(Collectors.toSet()).retainAll(keySets);
     }
 
     /**
@@ -203,7 +203,7 @@ public class ToolUtils {
      * @param range    挖掘范围
      */
     public static void destroyMaterialBlocks(ServerPlayer player, BlockPos startPos, int range) {
-        ServerLevel world = player.serverLevel();
+        ServerLevel world = player.level();
 
         int halfRange = range / 2;
         BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
@@ -221,8 +221,8 @@ public class ToolUtils {
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
-                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    var blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
                     if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
@@ -243,7 +243,7 @@ public class ToolUtils {
      * @param range    挖掘范围
      */
     public static void destroyShovelBlocks(ServerPlayer player, BlockPos startPos, int range) {
-        ServerLevel world = player.serverLevel();
+        ServerLevel world = player.level();
 
         int halfRange = range / 2;
         BlockPos minPos = startPos.offset(-halfRange, -halfRange, -halfRange);
@@ -261,8 +261,8 @@ public class ToolUtils {
                 if (!blockDrops.isEmpty()) {
                     drops.addAll(blockDrops);
                 } else {
-                    ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                    Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                    var blockKey = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
                     if (blockItem != Items.AIR && blockItem != null) drops.add(new ItemStack(blockItem));
                 }
 
@@ -298,9 +298,8 @@ public class ToolUtils {
         if (!blockDrops.isEmpty()) {
             drops.addAll(blockDrops);
         } else {
-            ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(block);
-
-            Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+            var blockKey = BuiltInRegistries.BLOCK.getKey(block);
+            Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
             drops.add(new ItemStack(blockItem));
         }
 
@@ -378,7 +377,7 @@ public class ToolUtils {
             return;
         }
         float f = (float) arrow.getDeltaMovement().length();
-        int i = Mth.ceil(Mth.clamp((double) f * arrow.getBaseDamage(), 0.0D, 2.147483647E9D));
+        int i = Mth.ceil(Mth.clamp((double) f * arrow.baseDamage, 0.0D, 2.147483647E9D));
         Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();
         if (arrow.getPierceLevel() > 0) {
             if (arrow.piercingIgnoreEntityIds == null) {
@@ -429,7 +428,7 @@ public class ToolUtils {
 
                 arrow.doPostHurtEffects(livingentity);
                 if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer serverPlayer && !arrow.isSilent()) {
-                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.PLAY_ARROW_HIT_SOUND, 0.0F));
                 }
 
                 if (!entity.isAlive() && arrow.piercedAndKilledEntities != null) {
@@ -438,9 +437,9 @@ public class ToolUtils {
 
                 if (!arrow.level().isClientSide && owner instanceof ServerPlayer serverPlayer) {
                     if (arrow.piercedAndKilledEntities != null && arrow.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, arrow.piercedAndKilledEntities);
+                        CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayer, arrow.piercedAndKilledEntities);
                     } else if (!entity.isAlive() && arrow.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, List.of(entity));
+                        CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayer, List.of(entity));
                     }
                 }
             }
@@ -500,15 +499,15 @@ public class ToolUtils {
      * @param world  世界
      */
     public static void pearlAttack(Player player, ItemStack stack, Level world) {
-        if (!world.isClientSide) {
-            EndestPearlEntity pearl = ModEntities.ENDER_PEARL.get().create(player.level());
+        if (!world.isClientSide()) {
+            EndestPearlEntity pearl = ModEntities.ENDER_PEARL.get().create(player.level(), EntitySpawnReason.EVENT);
             if (pearl != null) {
                 pearl.setItem(stack);
                 pearl.setShooter(player);
                 pearl.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                 pearl.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                 world.addFreshEntity(pearl);
-                player.getCooldowns().addCooldown(stack.getItem(), 30);
+                player.getCooldowns().addCooldown(stack, 30);
             }
         }
         world.playSound(player, player.getOnPos(), SoundEvents.ENDER_PEARL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
@@ -547,7 +546,7 @@ public class ToolUtils {
                     if (hurtAnimal) {
                         return true;
                     } else {
-                        return entity instanceof Enemy && !entity.getType().is(ModTags.NEUTRAL_CREATURES);
+                        return entity instanceof Enemy && !entity.is(ModTags.NEUTRAL_CREATURES);
                     }
                 })
 
@@ -586,9 +585,9 @@ public class ToolUtils {
         if (level instanceof ServerLevel serverLevel){
             boolean hasAction = false;
             for (int i = 0; i < bolts; i++) {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel, EntitySpawnReason.EVENT);
                 if (lightning != null) {
-                    lightning.moveTo(Vec3.atBottomCenterOf(hitPos));
+                    lightning.moveOrInterpolateTo(Vec3.atBottomCenterOf(hitPos));
                     lightning.setCause(thrower);
                     serverLevel.addFreshEntity(lightning);
                 }
@@ -720,8 +719,8 @@ public class ToolUtils {
             if (!blockDrops.isEmpty()) {
                 drops.addAll(blockDrops);
             } else {
-                ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(logState.getBlock());
-                Item blockItem = BuiltInRegistries.ITEM.get(blockKey);
+                var blockKey = BuiltInRegistries.BLOCK.getKey(logState.getBlock());
+                Item blockItem = BuiltInRegistries.ITEM.getValue(blockKey);
                 if (blockItem != Items.AIR && blockItem != null) {
                     drops.add(new ItemStack(blockItem));
                 }

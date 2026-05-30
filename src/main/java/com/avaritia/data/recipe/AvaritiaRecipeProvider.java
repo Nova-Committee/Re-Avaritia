@@ -373,7 +373,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private static ResourceKey<Recipe<?>> key(String name) {
-        return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, name));
+        return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, name));
     }
 
     private static Criterion<InventoryChangeTrigger.TriggerInstance> has(ItemLike item) {

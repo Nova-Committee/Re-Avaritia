@@ -24,8 +24,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class CompressorCategory implements IRecipeCategory<RecipeHolder<ICompressorRecipe>> {
-    public static final IRecipeHolderType<ICompressorRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Avaritia.MOD_ID, "compressor"));
-    private static final Identifier TEXTURE = Identifier.of(Avaritia.MOD_ID, "textures/gui/jei/compressor.png");
+    public static final IRecipeHolderType<ICompressorRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Const.MOD_ID, "compressor"));
+    private static final Identifier TEXTURE = Identifier.of(Const.MOD_ID, "textures/gui/jei/compressor.png");
     private final IDrawable icon;
     private final IDrawable background;
 

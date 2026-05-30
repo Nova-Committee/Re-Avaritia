@@ -37,12 +37,9 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -52,8 +49,10 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -68,10 +67,10 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .sword(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed())
+                        .sword(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.speed())
                         .attributes(ItemAttributeModifiers.builder()
-                                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, ModToolTiers.INFINITY.getAttackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                                .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, ModToolTiers.INFINITY.getSpeed(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, ModToolTiers.INFINITY.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                                .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, ModToolTiers.INFINITY.speed(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                                 .build()
                                 .withModifierAdded(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(Identifier.withDefaultNamespace("attack_range_modifier"), 5.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND))
         );
@@ -84,31 +83,30 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
 
     @Override
     public boolean onLeftClickEntity(@NotNull ItemStack stack, Player player, @NotNull Entity entity) {
-        var level = player.level();
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
-        if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
+        if (player.level() instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
             var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
             if (victim instanceof EnderDragon dragon ) {
-                dragon.hurt(dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.getAttackDamageBonus());
+                dragon.hurt(serverLevel, dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.attackDamageBonus());
             } else if (victim instanceof Player pvp) {
                 if (ToolUtils.isInfinite(pvp)) {
                     // 玩家身着无尽甲则只造成爆炸伤害
                     serverLevel.explode(player, pvp.getBlockX(), pvp.getBlockY(), pvp.getBlockZ(), 25.0F, Level.ExplosionInteraction.MOB);
                     return true;//直接返回
                 } else {
-                    this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.getAttackDamageBonus());
+                    this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.attackDamageBonus());
                 }
 
             } else {
-                this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.getAttackDamageBonus());
+                this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.attackDamageBonus());
             }
 
             if (!victim.isDeadOrDying() && endlessDamage) {
                 victim.setHealth(0);
                 //set health to 0�?
                 this.die(victim, damageSource);//修正设置死亡
-                player.killedEntity(serverLevel, victim);
+                player.killedEntity(serverLevel, victim, damageSource);
                 //add to stats
                 //player.getCombatTracker().recordDamage(damageSource, victim.getHealth());
                 //record damage
@@ -118,7 +116,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
     }
 
     public boolean hurt(LivingEntity victim, DamageSource pSource, float pAmount) {
-        if (victim.level().isClientSide || victim.isDeadOrDying()) {
+        if (victim.level().isClientSide() || victim.isDeadOrDying()) {
             return false;
         } else {
             if (victim.isMultipartEntity()) {
@@ -128,7 +126,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
                     }
                 }
             }
-            if (victim.isSleeping() && !victim.level().isClientSide) {
+            if (victim.isSleeping() && !victim.level().isClientSide()) {
                 victim.stopSleeping();
             }
 
@@ -155,16 +153,14 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
                 }
 
                 if (entity1 instanceof Player player1) {
-                    victim.lastHurtByPlayerTime = 100;
-                    victim.setLastHurtByPlayer(player1);
+                    victim.setLastHurtByPlayer(player1, 100);
                 } else if (entity1 instanceof net.minecraft.world.entity.TamableAnimal tamableEntity) {
                     if (tamableEntity.isTame()) {
-                        victim.lastHurtByPlayerTime = 100;
                         LivingEntity livingentity2 = tamableEntity.getOwner();
                         if (livingentity2 instanceof Player player2) {
-                            victim.setLastHurtByPlayer(player2);
+                            victim.setLastHurtByPlayer(player2, 100);
                         } else {
-                            victim.setLastHurtByPlayer(null);
+                            victim.setLastHurtByPlayer((Player) null, 100);
                         }
                     }
                 }
@@ -218,15 +214,15 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
         if (!victim.isRemoved() && !victim.dead) {
             Entity entity = pDamageSource.getEntity();
             LivingEntity livingentity = victim.getKillCredit();
-            if (victim.deathScore >= 0 && livingentity != null) {
-                livingentity.awardKillScore(victim, victim.deathScore, pDamageSource);
+            if (livingentity != null) {
+                livingentity.awardKillScore(victim, pDamageSource);
             }
 
             if (victim.isSleeping()) {
                 victim.stopSleeping();
             }
 
-            if (!victim.level().isClientSide && victim.hasCustomName()) {
+            if (!victim.level().isClientSide() && victim.hasCustomName()) {
                 Const.LOGGER.info("Named entity {} died: {}", this, victim.getCombatTracker().getDeathMessage().getString());
             }
 
@@ -234,7 +230,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
             victim.getCombatTracker().recheckStatus();
             Level level = victim.level();
             if (level instanceof ServerLevel serverlevel) {
-                if (entity == null || entity.killedEntity(serverlevel, victim)) {
+                if (entity == null || entity.killedEntity(serverlevel, victim, pDamageSource)) {
                     victim.gameEvent(GameEvent.ENTITY_DIE);
                     victim.dropAllDeathLoot(serverlevel, pDamageSource);
                     this.createWitherRose(victim, livingentity);
@@ -248,7 +244,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
     }
 
     protected void createWitherRose(LivingEntity victim, @Nullable LivingEntity pEntitySource) {
-        if (!victim.level().isClientSide) {
+        if (!victim.level().isClientSide()) {
             boolean flag = false;
             if (pEntitySource instanceof WitherBoss) {
                 BlockPos blockpos = victim.blockPosition();
@@ -275,13 +271,13 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
             switchMode(level, player, hand, "infinity_sword_kill");
             return InteractionResult.SUCCESS;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (isActive(heldItem, "infinity_sword_kill")) {
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), true, ModConfig.isSwordAttackLightning.get());
             } else {
                 ToolUtils.aoeAttack(player, ModConfig.swordAttackRange.get(), ModConfig.swordRangeDamage.get(), false, ModConfig.isSwordAttackLightning.get());
             }
-            player.getCooldowns().addCooldown(heldItem.getItem(), 20);
+            player.getCooldowns().addCooldown(heldItem, 20);
         }
         level.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         return InteractionResult.SUCCESS;
@@ -298,8 +294,9 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
         return false;
     }
 
+
     @Override
-    public int getEnchantmentValue(@NotNull ItemStack stack) {
+    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -329,11 +326,11 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
 
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
         if (isActive(stack, "infinity_sword_kill")) {
-            tooltipComponents.add(Component.translatable("tooltip.avaritia.sword_kill_mode.active").withStyle(net.minecraft.ChatFormatting.RED));
+            tooltipComponents.accept(Component.translatable("tooltip.avaritia.sword_kill_mode.active").withStyle(net.minecraft.ChatFormatting.RED));
         }
     }
 }

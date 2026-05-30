@@ -28,7 +28,7 @@ public interface ISwitchable {
      */
     static boolean isMode(ItemStack stack, String funcName) {
         CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
-        return modeTag.contains(funcName) && modeTag.getBoolean(funcName);
+        return modeTag.contains(funcName) && modeTag.getBoolean(funcName).orElse(false);
     }
 
     /**
@@ -48,7 +48,7 @@ public interface ISwitchable {
         CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
         for (int i = 0; i < modeList.size(); i++) {
             String mode = modeList.get(i);
-            if (modeTag.contains(mode) && modeTag.getBoolean(mode)) {
+            if (modeTag.contains(mode) && modeTag.getBoolean(mode).orElse(false)) {
                 return i;
             }
         }
@@ -76,7 +76,7 @@ public interface ISwitchable {
                         customData.update(
                                 tag -> {
                                     CompoundTag modeTag  = new CompoundTag();
-                                    modeTag = tag.contains("mode") ? tag.getCompound("mode") : modeTag;
+                                    modeTag = tag.getCompound("mode").orElse(modeTag);
 
                                     // 先关闭所有模式
                                     for (String mode : modeList) {
@@ -106,7 +106,7 @@ public interface ISwitchable {
 
         setMode(stack, modeList, nextIndex);
 
-        if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
+        if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             String nextMode = modeList.get(nextIndex);
             Component modeTooltip = Component.translatable("tooltip.avaritia.tool." + nextMode);
             serverPlayer.sendSystemMessage(
@@ -134,7 +134,7 @@ public interface ISwitchable {
         // 激活指定模式
         modeTag.putBoolean(modeName, true);
 
-        if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
+        if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             Component modeTooltip = Component.translatable("tooltip.avaritia.tool." + modeName);
             serverPlayer.sendSystemMessage(
                     ModTooltips.ACTIVE.args(modeTooltip).build(),
@@ -155,15 +155,16 @@ public interface ISwitchable {
                         customData.update(
                                 tag -> {
                                     CompoundTag modeTag  = new CompoundTag();
-                                    modeTag = tag.contains("mode") ? tag.getCompound("mode") : modeTag;
+                                    modeTag = tag.getCompound("mode").orElse(modeTag);
 
                                     Component funcTooltip = Component.translatable("tooltip.avaritia.tool." + funcName);
+                                    boolean active = !modeTag.getBoolean(funcName).orElse(false);
 
-                                    modeTag.putBoolean(funcName, !modeTag.getBoolean(funcName));
+                                    modeTag.putBoolean(funcName, active);
 
-                                    if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
+                                    if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
                                         serverPlayer.sendSystemMessage(
-                                                modeTag.getBoolean(funcName)
+                                                active
                                                         ? ModTooltips.ACTIVE.args(funcTooltip).build()
                                                         : ModTooltips.INACTIVE.args(funcTooltip).build(),
                                                 true

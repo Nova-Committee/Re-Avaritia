@@ -1,4 +1,4 @@
-package com.avaritia.network.chest;
+package com.avaritia.common.net.chest;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

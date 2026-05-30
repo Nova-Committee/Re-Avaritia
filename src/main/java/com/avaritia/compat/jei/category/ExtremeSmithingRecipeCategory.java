@@ -26,8 +26,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHolder<ExtremeSmithingRecipe>> {
-    public static final IRecipeHolderType<ExtremeSmithingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Avaritia.MOD_ID, "extreme_smithing"));
-    private static final Identifier TEXTURE = Identifier.of(Avaritia.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png");
+    public static final IRecipeHolderType<ExtremeSmithingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Const.MOD_ID, "extreme_smithing"));
+    private static final Identifier TEXTURE = Identifier.of(Const.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png");
     private final IDrawable icon;
     private final IDrawable background;
 

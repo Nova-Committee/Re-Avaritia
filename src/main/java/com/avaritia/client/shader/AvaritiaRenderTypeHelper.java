@@ -63,7 +63,7 @@ public class AvaritiaRenderTypeHelper {
     }
 
     public static RenderType itemTranslucent() {
-        return RenderTypes.itemTranslucent(Avaritia.rl("item/halo"));
+        return RenderTypes.itemTranslucent(Const.rl("item/halo"));
     }
 
     public static @NotNull BakedQuad withFallbackMaterial(@NotNull BakedQuad quad) {

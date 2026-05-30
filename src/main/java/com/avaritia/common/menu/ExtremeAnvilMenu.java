@@ -36,15 +36,16 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
     }
 
     public ExtremeAnvilMenu(int pContainerId, Inventory pPlayerInventory, ContainerLevelAccess pAccess) {
-        super(ModMenus.extreme_anvil.get(), pContainerId, pPlayerInventory, pAccess);
+        super(ModMenus.extreme_anvil.get(), pContainerId, pPlayerInventory, pAccess, createInputSlotDefinitions());
     }
 
-    @Override
-    protected @NotNull ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
+
+    private static ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
         return ItemCombinerMenuSlotDefinition.create()
-                .withSlot(0, 27, 47, (itemStack) -> true)
-                .withSlot(1, 76, 47, (itemStack) -> true)
-                .withResultSlot(2, 134, 47).build();
+                .withSlot(0, 27, 47, itemStack -> true)
+                .withSlot(1, 76, 47, itemStack -> true)
+                .withResultSlot(2, 134, 47)
+                .build();
     }
 
     @Override
@@ -54,7 +55,7 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
 
     @Override
     protected boolean mayPickup(Player pPlayer, boolean pHasStack) {
-        return pPlayer.getAbilities().instabuild;
+        return pPlayer.hasInfiniteMaterials();
     }
 
     @Override
@@ -75,56 +76,56 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
 
     @Override
     public void createResult() {
-        ItemStack itemstack = this.inputSlots.getItem(0);
-        int i = 0;
+        ItemStack input = this.inputSlots.getItem(0);
+        int price = 0;
         int k = 0;
-        if(!itemstack.isEmpty() && EnchantmentHelper.canStoreEnchantments(itemstack)){
-            ItemStack itemstack1 = itemstack.copy();
-            ItemStack itemstack2 = this.inputSlots.getItem(1);
-            ItemEnchantments.Mutable itemenchantments$mutable = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(itemstack1));
+        if(!input.isEmpty() && EnchantmentHelper.canStoreEnchantments(input)){
+            ItemStack result = input.copy();
+            ItemStack addition = this.inputSlots.getItem(1);
+            ItemEnchantments.Mutable itemenchantments$mutable = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(result));
             this.repairItemCountCost = 0;
             boolean flag = false;
 
-            if (!itemstack2.isEmpty()) {
-                flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
-                if (itemstack1.isDamageableItem() && itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
-                    int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
-                    if (l2 <= 0) {
+            if (!addition.isEmpty()) {
+                flag = addition.has(DataComponents.STORED_ENCHANTMENTS);
+                if (result.isDamageableItem() && input.isValidRepairItem(addition)) {
+                    int repairAmount = Math.min(result.getDamageValue(), result.getMaxDamage() / 4);
+                    if (repairAmount <= 0) {
                         this.resultSlots.setItem(0, ItemStack.EMPTY);
                         return;
                     }
 
-                    int i3;
-                    for(i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
-                        int j3 = itemstack1.getDamageValue() - l2;
-                        itemstack1.setDamageValue(j3);
-                        ++i;
-                        l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
+                    int count;
+                    for(count = 0; repairAmount > 0 && count < addition.getCount(); ++count) {
+                        int j3 = result.getDamageValue() - repairAmount;
+                        result.setDamageValue(j3);
+                        price++;
+                        repairAmount = Math.min(result.getDamageValue(), result.getMaxDamage() / 4);
                     }
-                    this.repairItemCountCost = i3;
+                    this.repairItemCountCost = count;
                 } else {
-                    if (!flag && (!itemstack1.is(itemstack2.getItem()) || !itemstack1.isDamageableItem())) {
+                    if (!flag && (!result.is(addition.getItem()) || !result.isDamageableItem())) {
                         this.resultSlots.setItem(0, ItemStack.EMPTY);
                         return;
                     }
 
-                    if (itemstack1.isDamageableItem() && !flag) {
-                        int l = itemstack.getMaxDamage() - itemstack.getDamageValue();
-                        int i1 = itemstack2.getMaxDamage() - itemstack2.getDamageValue();
-                        int j1 = i1 + itemstack1.getMaxDamage() * 12 / 100;
+                    if (result.isDamageableItem() && !flag) {
+                        int l = input.getMaxDamage() - input.getDamageValue();
+                        int i1 = addition.getMaxDamage() - addition.getDamageValue();
+                        int j1 = i1 + result.getMaxDamage() * 12 / 100;
                         int k1 = l + j1;
-                        int l1 = itemstack1.getMaxDamage() - k1;
+                        int l1 = result.getMaxDamage() - k1;
                         if (l1 < 0) {
                             l1 = 0;
                         }
 
-                        if (l1 < itemstack1.getDamageValue()) {
-                            itemstack1.setDamageValue(l1);
-                            i += 2;
+                        if (l1 < result.getDamageValue()) {
+                            result.setDamageValue(l1);
+                            price += 2;
                         }
                     }
 
-                    ItemEnchantments itemenchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemstack2);
+                    ItemEnchantments itemenchantments = EnchantmentHelper.getEnchantmentsForCrafting(addition);
                     boolean flag2 = false;
                     boolean flag3 = false;
                     for(Object2IntMap.Entry<Holder<Enchantment>> entry : itemenchantments.entrySet()) {
@@ -133,43 +134,41 @@ public class ExtremeAnvilMenu extends ItemCombinerMenu {
                         int j2 = entry.getIntValue();
                         j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
                         itemenchantments$mutable.set(holder, j2);
-                        i += j2;
+                        price += j2;
                     }
 
                 }
             }
 
             if (this.itemName != null && !StringUtil.isBlank(this.itemName)) {
-                if (!this.itemName.equals(itemstack.getHoverName().getString())) {
+                if (!this.itemName.equals(input.getHoverName().getString())) {
                     k = 1;
-                    i += k;
-                    itemstack1.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
+                    price += k;
+                    result.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
                 }
-            } else if (itemstack.has(DataComponents.CUSTOM_NAME)) {
+            } else if (input.has(DataComponents.CUSTOM_NAME)) {
                 k = 1;
-                i += k;
-                itemstack1.remove(DataComponents.CUSTOM_NAME);
+                price += k;
+                result.remove(DataComponents.CUSTOM_NAME);
             }
 
-            if (flag && !itemstack1.isBookEnchantable(itemstack2)) {
-                itemstack1 = ItemStack.EMPTY;
+            if (price <= 0) {
+                result = ItemStack.EMPTY;
             }
 
-            if (i <= 0) {
-                itemstack1 = ItemStack.EMPTY;
+            if (!result.isEmpty()) {
+                EnchantmentHelper.setEnchantments(result, itemenchantments$mutable.toImmutable());
             }
 
-            if (!itemstack1.isEmpty()) {
-                EnchantmentHelper.setEnchantments(itemstack1, itemenchantments$mutable.toImmutable());
-            }
-
-            this.resultSlots.setItem(0, itemstack1);
+            this.resultSlots.setItem(0, result);
             this.broadcastChanges();
         }
         else {
             this.resultSlots.setItem(0, ItemStack.EMPTY);
         }
-
+        ItemStack leftInput = this.inputSlots.getItem(0);
+        ItemStack rightInput = this.inputSlots.getItem(1);
+        //net.neoforged.neoforge.common.CommonHooks.onAnvilUpdate(this, leftInput, rightInput, resultSlots, itemName, this.player);
     }
 
     public boolean setItemName(String pItemName) {

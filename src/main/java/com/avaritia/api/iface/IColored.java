@@ -1,15 +1,20 @@
 package com.avaritia.api.iface;
 
-import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.color.item.ItemColor;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * 物品/方块染色接口�? */
+ * 物品/方块染色接口
+ */
 public interface IColored {
     default int getColor(int index) {
         return -1;
@@ -19,24 +24,43 @@ public interface IColored {
         return this.getColor(index);
     }
 
-    class ItemBlockColors implements ItemColor {
+    class ItemBlockColors implements ItemTintSource {
+        public static final MapCodec<ItemBlockColors> CODEC = MapCodec.unit(ItemBlockColors::new);
+
         @Override
-        public int getColor(ItemStack stack, int index) {
-            return ((IColored) Block.byItem(stack.getItem())).getColor(stack, index);
+        public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
+            return ((IColored) Block.byItem(stack.getItem())).getColor(stack, 0);
+        }
+
+        @Override
+        public MapCodec<? extends ItemTintSource> type() {
+            return CODEC;
         }
     }
 
-    class ItemColors implements ItemColor {
+    class ItemColors implements ItemTintSource {
+        public static final MapCodec<ItemColors> CODEC = MapCodec.unit(ItemColors::new);
+
         @Override
-        public int getColor(ItemStack stack, int index) {
-            return ((IColored) stack.getItem()).getColor(stack, index);
+        public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
+            return ((IColored) stack.getItem()).getColor(stack, 0);
+        }
+
+        @Override
+        public MapCodec<? extends ItemTintSource> type() {
+            return CODEC;
         }
     }
 
-    class BlockColors implements BlockColor {
+    class BlockColors implements BlockTintSource {
         @Override
-        public int getColor(BlockState state, BlockAndTintGetter level, BlockPos pos, int index) {
-            return ((IColored) state.getBlock()).getColor(index);
+        public int color(BlockState state) {
+            return ((IColored) state.getBlock()).getColor(0);
+        }
+
+        @Override
+        public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+            return ((IColored) state.getBlock()).getColor(0);
         }
     }
 }

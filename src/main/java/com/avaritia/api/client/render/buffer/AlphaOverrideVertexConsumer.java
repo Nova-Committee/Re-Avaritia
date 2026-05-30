@@ -23,4 +23,15 @@ public class AlphaOverrideVertexConsumer extends DelegatingVertexConsumer {
     public @NotNull VertexConsumer setColor(int red, int green, int blue, int alpha) {
         return super.setColor(red, green, blue, this.alpha);
     }
+
+    @Override
+    public @NotNull VertexConsumer setColor(int color) {
+        return super.setColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, this.alpha);
+    }
+
+    @Override
+    public @NotNull VertexConsumer setLineWidth(float width) {
+        delegate.setLineWidth(width);
+        return this;
+    }
 }

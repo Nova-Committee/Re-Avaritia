@@ -21,26 +21,27 @@ public interface IInfinityClockSwitchable extends ISwitchable {
                         customData.update(
                                 tag -> {
                                     CompoundTag modeTag  = new CompoundTag();
-                                    modeTag = tag.contains("mode") ? tag.getCompound("mode") : modeTag;
+                                    modeTag = tag.getCompound("mode").orElse(modeTag);
 
                                     Component message = Component.empty();
+                                    boolean active = modeTag.getBoolean(funcName).orElse(false);
 
                                     switch (funcName) {
                                         case "infinity_clock_up":
-                                            message = modeTag.getBoolean(funcName) ?
+                                            message = active ?
                                                     Component.translatable("tooltip.avaritia.tool.infinity_clock.overclock_enabled") :
                                                     Component.translatable("tooltip.avaritia.tool.infinity_clock.overclock_disabled");
                                             break;
                                         default:
                                             Component funcTooltip = Component.translatable("tooltip.avaritia.tool." + funcName);
-                                            message = modeTag.getBoolean(funcName) ?
+                                            message = active ?
                                                     ModTooltips.ACTIVE.args(funcTooltip).build() :
                                                     ModTooltips.INACTIVE.args(funcTooltip).build();
                                             break;
                                     }
 
-                                    modeTag.putBoolean(funcName, !modeTag.getBoolean(funcName));
-                                    if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+                                    modeTag.putBoolean(funcName, !active);
+                                    if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer)
                                         serverPlayer.sendSystemMessage(message, true);
                                     tag.put("mode", modeTag);
                                 }

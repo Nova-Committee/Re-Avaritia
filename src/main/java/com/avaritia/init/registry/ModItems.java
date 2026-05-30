@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * 因此所有工厂方法都必须使用注册回调传入的 {@link Identifier} 创建属性。</p>
  */
 public class ModItems {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Avaritia.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Const.MOD_ID);
     public static final Map<String, Function<Identifier, ? extends BlockItem>> BLOCK_ITEMS = new LinkedHashMap<>();
 
     // curios
@@ -66,12 +66,12 @@ public class ModItems {
     public static final DeferredItem<Item> crystal_bow = item("crystal_bow", id -> new CrystalBowItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
 
     // blaze
-    public static final DeferredItem<Item> blaze_sword = item("blaze_sword", id -> new BlazeSwordItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
-    public static final DeferredItem<Item> blaze_hoe = item("blaze_hoe", id -> new BlazeHoeItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
-    public static final DeferredItem<Item> blaze_pickaxe = item("blaze_pickaxe", id -> new BlazePickaxeItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
-    public static final DeferredItem<Item> blaze_shovel = item("blaze_shovel", id -> new BlazeShovelItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
-    public static final DeferredItem<Item> blaze_axe = item("blaze_axe", id -> new BlazeAxeItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
-    public static final DeferredItem<Item> blaze_bow = item("blaze_bow", id -> new BlazeBowItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
+    public static final DeferredItem<Item> blaze_sword = item("blaze_sword", id -> new BlazeSwordItem());
+    public static final DeferredItem<Item> blaze_hoe = item("blaze_hoe", id -> new BlazeHoeItem());
+    public static final DeferredItem<Item> blaze_pickaxe = item("blaze_pickaxe", id -> new BlazePickaxeItem());
+    public static final DeferredItem<Item> blaze_shovel = item("blaze_shovel", id -> new BlazeShovelItem());
+    public static final DeferredItem<Item> blaze_axe = item("blaze_axe", id -> new BlazeAxeItem());
+    public static final DeferredItem<Item> blaze_bow = item("blaze_bow", id -> new BlazeBowItem());
 
     /** 护甲 */
     public static final DeferredItem<Item> infinity_helmet = item("infinity_helmet", id -> new InfinityArmorItem(ArmorType.HELMET, new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));

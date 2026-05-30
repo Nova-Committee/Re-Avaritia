@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChestTile, InfinityChestBlockRender.State> {
 
     /** Model layer location — 注册层定义将在 AvaritiaModClient 中关联到此常量。 */
-    public static final ModelLayerLocation INFINITY_CHEST = new ModelLayerLocation(Identifier.of(Avaritia.MOD_ID, "infinity_chest"), "main");
+    public static final ModelLayerLocation INFINITY_CHEST = new ModelLayerLocation(Identifier.of(Const.MOD_ID, "infinity_chest"), "main");
 
     private final ModelPart lid;
     private final ModelPart bottom;
@@ -84,7 +84,7 @@ public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChe
         float f1 = state.open;
         f1 = 1.0F - f1;
         f1 = 1.0F - f1 * f1 * f1;
-        SpriteId sprite = new SpriteId(Sheets.CHEST_SHEET, Identifier.of(Avaritia.MOD_ID, "block/chest/infinity_chest"));
+        SpriteId sprite = new SpriteId(Sheets.CHEST_SHEET, Identifier.of(Const.MOD_ID, "block/chest/infinity_chest"));
         this.submit(pPoseStack, output, sprite, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.outlineColor);
         pPoseStack.popPose();
     }

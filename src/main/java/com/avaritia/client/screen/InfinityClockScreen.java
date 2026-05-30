@@ -1,8 +1,8 @@
 package com.avaritia.client.screen;
 
 import com.avaritia.common.menu.InfinityClockMenu;
-import com.avaritia.network.C2SSetTimePacket;
-import com.avaritia.network.NetworkHandler;
+import com.avaritia.common.net.C2SSetTimePacket;
+import com.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;

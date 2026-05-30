@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class InfinityShieldRender {
 
     /** 模型层位置 — 注册层定义将在 AvaritiaModClient 中关联到此常量。 */
-    public static final ModelLayerLocation INFINITY_SHIELD = new ModelLayerLocation(Identifier.of(Avaritia.MOD_ID, "infinity_shield"), "main");
+    public static final ModelLayerLocation INFINITY_SHIELD = new ModelLayerLocation(Identifier.of(Const.MOD_ID, "infinity_shield"), "main");
 
     private final InfinityShieldModel model;
 
@@ -26,7 +26,7 @@ public class InfinityShieldRender {
     public void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay) {
         poseStack.pushPose();
         poseStack.scale(1.0F, -1.0F, -1.0F);
-        VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(Identifier.of(Avaritia.MOD_ID, "textures/item/tools/infinity_shield/layer_0.png")));
+        VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(Identifier.of(Const.MOD_ID, "textures/item/tools/infinity_shield/layer_0.png")));
         this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, packedOverlay);
         poseStack.popPose();
     }

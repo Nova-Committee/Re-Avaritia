@@ -11,12 +11,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 侧面配置�? * 用于读取、存储和传输机器的SideConfiguration设置
@@ -37,18 +39,18 @@ public class SideConfigurationCardItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendHoverText(@NonNull ItemStack stack, Item.@NonNull TooltipContext context, @NonNull TooltipDisplay display, @NonNull Consumer<Component> builder, @NonNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, display, builder, tooltipFlag);
 
         //check saved config置
         if (ItemUtils.hasTag(stack) && ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
-            tooltipComponents.add(Component.translatable("tooltip.avaritia.side_config_card.has_config"));
-            tooltipComponents.add(Component.translatable("tooltip.avaritia.side_config_card.instruction_right_click"));
+            builder.accept(Component.translatable("tooltip.avaritia.side_config_card.has_config"));
+            builder.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_right_click"));
         } else {
-            tooltipComponents.add(Component.translatable("tooltip.avaritia.side_config_card.no_config"));
-            tooltipComponents.add(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_right_click"));
+            builder.accept(Component.translatable("tooltip.avaritia.side_config_card.no_config"));
+            builder.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_right_click"));
         }
-        tooltipComponents.add(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_air"));
+        builder.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_shift_air"));
     }
 
     @Override
@@ -72,21 +74,21 @@ public class SideConfigurationCardItem extends Item {
                     // Shift+右键：读取配置?
                     SideConfiguration config = tileIO.getSideConfiguration();
                     saveConfigToItem(stack, config);
-                    player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.read_success"), true);
+                    player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.read_success"));
                     return InteractionResult.SUCCESS;
                 } else {
                     SideConfiguration config = loadConfigFromItem(stack);
                     tileIO.setSideConfiguration(config);
-                    player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"), true);
+                    player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"));
                     return InteractionResult.SUCCESS;
                 }
             } else {
                 if (ItemUtils.hasTag(stack)) {
                     if (ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
                         ItemUtils.updateTag(stack, tag -> tag.remove("SideConfig"));
-                        player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"), true);
+                        player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"));
                     } else {
-                        player.displayClientMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"), true);
+                        player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"));
                     }
                     return InteractionResult.SUCCESS;
                 }
@@ -109,7 +111,7 @@ public class SideConfigurationCardItem extends Item {
         if (!ItemUtils.hasTag(stack) || !ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
             return new SideConfiguration();
         }
-        return SideConfiguration.fromNBT(ItemUtils.getOrCreateTag(stack).getCompound("SideConfig"));
+        return SideConfiguration.fromNBT(ItemUtils.getOrCreateTag(stack).getCompound("SideConfig").orElseThrow());
     }
 
     @Override

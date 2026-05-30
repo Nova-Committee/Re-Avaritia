@@ -1,12 +1,8 @@
 package com.avaritia.api.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,22 +26,7 @@ public class CosmicRenderQueue {
         MultiBufferSource.BufferSource source =
                 mc.renderBuffers().bufferSource();
 
-        Matrix4f oldProjection =
-                new Matrix4f(RenderSystem.getProjectionMatrix());
-
-        Matrix4f oldModelView =
-                new Matrix4f(RenderSystem.getModelViewMatrix());
-
         for (CosmicRenderCall call : QUEUE) {
-
-            RenderSystem.setProjectionMatrix(
-                    call.projection,
-                    RenderSystem.getVertexSorting()
-            );
-
-            RenderSystem.getModelViewStack().set(call.modelView);
-
-            RenderSystem.applyModelViewMatrix();
 
             PoseStack poseStack = new PoseStack();
 
@@ -63,15 +44,6 @@ public class CosmicRenderQueue {
         }
 
         source.endBatch();
-
-        RenderSystem.setProjectionMatrix(
-                oldProjection,
-                RenderSystem.getVertexSorting()
-        );
-
-        RenderSystem.getModelViewStack().set(oldModelView);
-
-        RenderSystem.applyModelViewMatrix();
 
         QUEUE.clear();
     }

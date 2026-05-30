@@ -441,7 +441,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider.Runner {
         }
 
         private static ResourceKey<Recipe<?>> recipeKey(String name) {
-            return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, name));
+            return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, name));
         }
 
         private static ItemStack stack(ItemLike item, int count) {

@@ -19,7 +19,7 @@ public enum ModLang {
     private final String key;
 
     ModLang(String type, String path) {
-        this(Util.makeDescriptionId(type, Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, path)));
+        this(Util.makeDescriptionId(type, Identifier.fromNamespaceAndPath(Const.MOD_ID, path)));
     }
 
     ModLang(String key) {

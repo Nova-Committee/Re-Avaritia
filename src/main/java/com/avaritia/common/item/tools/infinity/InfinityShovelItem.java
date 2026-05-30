@@ -32,12 +32,11 @@ import org.jetbrains.annotations.Nullable;
 public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUndamageable {
 
     public InfinityShovelItem() {
-        super(ModToolTiers.INFINITY,
+        super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
                 new Properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
     }
 
@@ -86,7 +85,7 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUnda
         //右键发射发射终望珍珠,冷却20s
         if (isActive(stack, "infinity_shovel_destroyer")) {
             ToolUtils.pearlAttack(player, ModItems.endest_pearl.get().getDefaultInstance(), pLevel);//
-            player.getCooldowns().addCooldown(stack.getItem(), 200);
+            player.getCooldowns().addCooldown(stack, 200);
         }
 
         return super.use(pLevel, player, hand);

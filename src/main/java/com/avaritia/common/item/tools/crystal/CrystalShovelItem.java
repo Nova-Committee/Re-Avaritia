@@ -24,12 +24,11 @@ import java.util.List;
  */
 public class CrystalShovelItem extends ShovelItem implements ITooltip {
     public CrystalShovelItem() {
-        super(ModToolTiers.CRYSTAL,
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
     }
 
@@ -49,7 +48,7 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
         if (!pLevel.isClientSide && pEntity instanceof Player player) {
             if (pIsSelected) {
                 player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.SPEED, -1, 2, false, true));
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2
                         .filter(effects, potion ->
@@ -64,7 +63,7 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
                 }
             } else {
                 player.removeEffect(MobEffects.DIG_SPEED);
-                player.removeEffect(MobEffects.MOVEMENT_SPEED);
+                player.removeEffect(MobEffects.SPEED);
             }
         }
     }

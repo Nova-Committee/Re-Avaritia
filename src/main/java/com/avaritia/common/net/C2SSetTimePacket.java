@@ -1,11 +1,18 @@
 package com.avaritia.common.net;
 
 import com.avaritia.Const;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.clock.ServerClockManager;
+import net.minecraft.world.clock.WorldClock;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
@@ -36,12 +43,15 @@ public record C2SSetTimePacket(int time) implements CustomPacketPayload {
         public void handle(@NotNull C2SSetTimePacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 if (context.player() instanceof ServerPlayer player)  {
-                    player.getServer().getAllLevels().forEach(level -> {
-
-                        long currentDayTime = level.getDayTime();
-                        long currentDays = currentDayTime / 24000L;
-                        long newTime = currentDays * 24000L + packet.time;
-                        level.setDayTime(newTime);
+                    player.level().getServer().getAllLevels().forEach(level -> {
+                        Holder<DimensionType> dimensionType = level.dimensionTypeRegistration();
+                        if ( dimensionType.value().defaultClock().isPresent()) {
+                            Holder<WorldClock> clockHolder = dimensionType.value().defaultClock().get();
+                            ServerClockManager clockManager = level.getServer().clockManager();
+                            clockManager.addTicks(clockHolder, packet.time);
+                        } else {
+                            player.sendOverlayMessage(Component.translatableEscape("commands.time.no_default_clock", dimensionType.getRegisteredName()));
+                        }
                     });
                 }
 

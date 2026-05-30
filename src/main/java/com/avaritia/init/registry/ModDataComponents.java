@@ -23,7 +23,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * @Description:
  */
 public class ModDataComponents {
-    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Avaritia.MOD_ID);
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Const.MOD_ID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ClusterContainerContents>> CLUSTER_CONTAINER = DATA_COMPONENTS.register("cluster_container", () -> DataComponentType.<ClusterContainerContents>builder().persistent(ClusterContainerContents.CODEC).networkSynchronized(ClusterContainerContents.STREAM_CODEC).cacheEncoding().build());
 

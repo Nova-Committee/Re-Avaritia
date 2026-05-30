@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * Version: 1.0
  */
 public class ModMenus {
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Avaritia.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Const.MOD_ID);
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(RegisterMenuScreensEvent event) {

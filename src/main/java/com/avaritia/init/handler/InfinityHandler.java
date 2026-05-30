@@ -7,7 +7,7 @@ import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.common.item.resources.MatterClusterItem;
 import com.avaritia.common.item.tools.InfinityArmorItem;
 import com.avaritia.common.item.tools.infinity.InfinitySwordItem;
-import com.avaritia.common.net.S2CTotemPack;
+import com.avaritia.common.net.S2CTotemPacket;
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.*;
 import com.avaritia.util.ToolUtils;
@@ -19,11 +19,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
@@ -227,7 +225,7 @@ public class InfinityHandler {
             } else {
                 ItemStack totem = ToolUtils.getPlayerTotemItem(player);
                 if (!totem.isEmpty()) {
-                    PacketDistributor.sendToPlayer(player, new S2CTotemPack(totem, player.getId()));
+                    PacketDistributor.sendToPlayer(player, new S2CTotemPacket(totem, player.getId()));
 
                     player.removeAllEffects();
                     if (totem.getDamageValue() % 10 == 0) { //姣忓綋涓?0鐨勫€嶆暟

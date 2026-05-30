@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ModCreativeModeTabs {
 
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Avaritia.MOD_ID);
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Const.MOD_ID);
 
     /** 所有应出现在主标签页中的物品。由 {@link ModItems} 在注册时填充。 */
     public static final List<DeferredItem<?>> ACCEPT_ITEM = new ArrayList<>();

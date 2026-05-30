@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.ChestBlock;
@@ -33,6 +33,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ import java.util.List;
  * @Description:
  */
 public class CompressedChestBlock extends ChestBlock {
-    public static final ResourceLocation CONTENTS = ResourceLocation.withDefaultNamespace("contents");
+    public static final Identifier CONTENTS = Identifier.withDefaultNamespace("contents");
     private static final Component UNKNOWN_CONTENTS = Component.translatable("container.shulkerBox.unknownContents");
 
     public CompressedChestBlock() {
@@ -89,7 +90,7 @@ public class CompressedChestBlock extends ChestBlock {
 
     @Override
     public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
-        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof CompressedChestTile chestTile && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
+        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof CompressedChestTile chestTile && ((ServerLevel) pLevel).getGameRules().get(GameRules.BLOCK_DROPS)) {
             var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
             pStack.applyComponents(chestTile.collectComponents());
             popResource(serverLevel, pPos, pStack);
@@ -121,8 +122,8 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state) {
-        ItemStack itemstack = super.getCloneItemStack(level, pos, state);
+    public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state, boolean includeData, @NonNull Player player) {
+        ItemStack itemstack = super.getCloneItemStack(level, pos, state, includeData, player);
         level.getBlockEntity(pos, ModTileEntities.compressed_chest_tile.get()).ifPresent(chestTile -> chestTile.saveToItem(itemstack, level.registryAccess()));
         return itemstack;
     }

@@ -12,18 +12,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -31,16 +32,17 @@ import java.util.List;
  * Date: 2022/4/21 15:12
  * Version: 1.0
  */
-public class InfinityArmorItem extends ArmorItem implements IUndamageable {
-    public InfinityArmorItem(Type pSlot) {
-        super(
-                ModArmorMaterial.infinity_armor,
-                pSlot,
-                new Properties()
-                        .rarity(ModRarities.COSMIC.getValue())
-                        .fireResistant()
-                        .stacksTo(1)
+public class InfinityArmorItem extends Item implements IUndamageable {
+    private final ArmorType armorType;
+
+    public InfinityArmorItem(ArmorType pSlot, Item.Properties properties) {
+        super(properties
+                .humanoidArmor(ModArmorMaterial.infinity_armor, pSlot)
+                .rarity(ModRarities.COSMIC.getValue())
+                .fireResistant()
+                .stacksTo(1)
         );
+        this.armorType = pSlot;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class InfinityArmorItem extends ArmorItem implements IUndamageable {
     }
 
     @Override
-    public boolean isEnderMask(@NotNull ItemStack stack, @NotNull Player player, @NotNull EnderMan enderMan) {
+    public boolean isGazeDisguise(@NotNull ItemStack stack, @NotNull Player player, @NotNull LivingEntity target) {
         return true;
     }
 
@@ -65,25 +67,24 @@ public class InfinityArmorItem extends ArmorItem implements IUndamageable {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag isAdvanced) {
-        if (type.getSlot() == EquipmentSlot.HEAD) {
-            tooltipComponents.add(Component.literal(""));
-            tooltipComponents.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("effect.minecraft.night_vision")));
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, @NotNull TooltipDisplay display, @NotNull Consumer<Component> adder, @NotNull TooltipFlag isAdvanced) {
+        if (armorType.getSlot() == EquipmentSlot.HEAD) {
+            adder.accept(Component.literal(""));
+            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("effect.minecraft.night_vision")));
         }
-        if (type.getSlot() == EquipmentSlot.CHEST) {
-            tooltipComponents.add(Component.literal(""));
-            tooltipComponents.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.flying_speed")));
+        if (armorType.getSlot() == EquipmentSlot.CHEST) {
+            adder.accept(Component.literal(""));
+            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.flying_speed")));
         }
-        if (type.getSlot() == EquipmentSlot.LEGS) {
-            tooltipComponents.add(Component.literal(""));
-            tooltipComponents.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.walking_speed")));
+        if (armorType.getSlot() == EquipmentSlot.LEGS) {
+            adder.accept(Component.literal(""));
+            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.walking_speed")));
         }
-        if (type.getSlot() == EquipmentSlot.FEET) {
-            tooltipComponents.add(Component.literal(""));
-            tooltipComponents.add(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.movement_speed")));
+        if (armorType.getSlot() == EquipmentSlot.FEET) {
+            adder.accept(Component.literal(""));
+            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.movement_speed")));
         }
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, display, adder, isAdvanced);
     }
 
     @Override

@@ -5,76 +5,110 @@ import com.avaritia.common.net.*;
 import com.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
- * Description:
- * Author: cnlimiter
- * Date: 2022/4/2 13:07
- * Version: 1.0
+ * Avaritia 主网络通道注册入口。
+ * <p>
+ * 使用 NeoForge 26.1.2 原生 {@link RegisterPayloadHandlersEvent} + {@link PayloadRegistrar}
+ * 替代已移除的旧版 SimpleChannel API。所有 PLAY 阶段自定义 payload 在此统一注册。
+ * <p>
+ * 共注册 <b>13</b> 个网络包：
+ * <ul>
+ *   <li>4 个 S2C（服务端→客户端）：SideConfigSync, Totem, NameCache, Singularities</li>
+ *   <li>8 个 C2S（客户端→服务端）：CompressorEject, CompressorLock, SetTime, SideConfig,
+ *       ElytraSpeedUp, ItemFilter, Rename, OpenRing</li>
+ *   <li>1 个双向：NbtData</li>
+ * </ul>
+ * <p>
+ * 压缩箱子包编解码枚举 {@code com.avaritia.network.chest.ChannelState} 和
+ * {@code com.avaritia.network.chest.ChannelAction} 作为独立 {@link net.minecraft.network.codec.StreamCodec}
+ * 提供方存在，供 chest 相关 payload 组合使用。
  */
 @EventBusSubscriber(modid = Const.MOD_ID)
-public class NetworkHandler {
-    @SubscribeEvent
-    public static void init(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("1.1");
+public final class NetworkHandler {
+    /** 主网络通道名：avaritia:main。 */
+    public static final Identifier CHANNEL_NAME = Const.rl( "main");
+    /** NeoForge payload 协议版本。 */
+    public static final String PROTOCOL_VERSION = "1";
 
-        registrar.playToClient(S2CSingularitiesPack.TYPE, S2CSingularitiesPack.STREAM_CODEC,
-                new S2CSingularitiesPack.Handler());
-        registrar.playToClient(S2CTotemPack.TYPE, S2CTotemPack.STREAM_CODEC,
-                new S2CTotemPack.Handler());
+    private NetworkHandler() {
+    }
+
+    /**
+     * 注册 PLAY 阶段所有迁移后的自定义网络包。
+     * <p>
+     * <b>已注册的 chest 子包编解码枚举（非 payload，无需在此注册）：</b>
+     * <ul>
+     *   <li>{@code com.avaritia.network.chest.ChannelState} — 压缩箱频道状态枚举</li>
+     *   <li>{@code com.avaritia.network.chest.ChannelAction} — 压缩箱频道操作枚举</li>
+     * </ul>
+     */
+    @SubscribeEvent
+    public static void registerPayloads(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
+
+        // === 服务端 → 客户端 (S2C) ===
         registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,
                 new S2CSideConfigSyncPacket.Handler());
-        registrar.playToClient(S2CNameCachePack.TYPE, S2CNameCachePack.STREAM_CODEC,
-                new S2CNameCachePack.Handler());
+        registrar.playToClient(S2CTotemPacket.TYPE, S2CTotemPacket.STREAM_CODEC,
+                new S2CTotemPacket.Handler());
+        registrar.playToClient(S2CNameCachePacket.TYPE, S2CNameCachePacket.STREAM_CODEC,
+                new S2CNameCachePacket.Handler());
+        registrar.playToClient(S2CSingularitiesPacket.TYPE, S2CSingularitiesPacket.STREAM_CODEC,
+                new S2CSingularitiesPacket.Handler());
 
+        // === 客户端 → 服务端 (C2S) ===
+        registrar.playToServer(C2SCompressorEjectPacket.TYPE, C2SCompressorEjectPacket.STREAM_CODEC,
+                new C2SCompressorEjectPacket.Handler());
+        registrar.playToServer(C2SCompressorLockPacket.TYPE, C2SCompressorLockPacket.STREAM_CODEC,
+                new C2SCompressorLockPacket.Handler());
         registrar.playToServer(C2SSetTimePacket.TYPE, C2SSetTimePacket.STREAM_CODEC,
                 new C2SSetTimePacket.Handler());
         registrar.playToServer(C2SSideConfigPacket.TYPE, C2SSideConfigPacket.STREAM_CODEC,
                 new C2SSideConfigPacket.Handler());
-        registrar.playToServer(C2SCompressorLockPacket.TYPE, C2SCompressorLockPacket.STREAM_CODEC,
-                new C2SCompressorLockPacket.Handler());
-        registrar.playToServer(C2SCompressorEjectPacket.TYPE, C2SCompressorEjectPacket.STREAM_CODEC,
-                new C2SCompressorEjectPacket.Handler());
-        registrar.playToServer(C2SRenamePack.TYPE, C2SRenamePack.STREAM_CODEC,
-                new C2SRenamePack.Handler());
-        registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
-                new C2SOpenRingPack.Handler());
+        registrar.playToServer(C2SElytraSpeedUpPacket.TYPE, C2SElytraSpeedUpPacket.STREAM_CODEC,
+                new C2SElytraSpeedUpPacket.Handler());
+        registrar.playToServer(C2SItemFilterPacket.TYPE, C2SItemFilterPacket.STREAM_CODEC,
+                new C2SItemFilterPacket.Handler());
+        registrar.playToServer(C2SRenamePacket.TYPE, C2SRenamePacket.STREAM_CODEC,
+                new C2SRenamePacket.Handler());
+        registrar.playToServer(C2SOpenRingPacket.TYPE, C2SOpenRingPacket.STREAM_CODEC,
+                new C2SOpenRingPacket.Handler());
 
-        registrar.playBidirectional(NbtDataPack.TYPE, NbtDataPack.STREAM_CODEC, new NbtDataPack.Handler());
-        //CHANNEL.registerMessage(itemSuper++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
-        //CHANNEL.registerMessage(itemSuper++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(itemSuper++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(itemSuper++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-//        CHANNEL.registerMessage(itemSuper++, S2CChannelListPack.class, S2CChannelListPack::write, S2CChannelListPack::new, S2CChannelListPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-//        CHANNEL.registerMessage(itemSuper++, S2CChannelStatePack.class, S2CChannelStatePack::write, S2CChannelStatePack::new, S2CChannelStatePack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-//        CHANNEL.registerMessage(itemSuper++, C2SFilterChannelPack.class, C2SFilterChannelPack::write, C2SFilterChannelPack::new, C2SFilterChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(itemSuper++, C2SSetChannelPack.class, C2SSetChannelPack::write, C2SSetChannelPack::new, C2SSetChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(itemSuper++, C2SAddChannelPack.class, C2SAddChannelPack::write, C2SAddChannelPack::new, C2SAddChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-//        CHANNEL.registerMessage(itemSuper++, C2SRenameChannelPack.class, C2SRenameChannelPack::write, C2SRenameChannelPack::new, C2SRenameChannelPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        // === 双向 ===
+        registrar.playBidirectional(NbtDataPacket.TYPE, NbtDataPacket.STREAM_CODEC,
+                new NbtDataPacket.Handler(), new NbtDataPacket.Handler());
     }
 
-
     public static void sendNbtDataToServer(CompoundTag tag) {
-        PacketDistributor.sendToServer(new NbtDataPack(tag));
+        sendToServer(new NbtDataPacket(tag));
     }
 
     public static void sendCompressorLockPacket(BlockPos pos, boolean locked) {
-        PacketDistributor.sendToServer(new C2SCompressorLockPacket(pos, locked));
+        sendToServer(new C2SCompressorLockPacket(pos, locked));
     }
 
     public static void sendCompressorEjectPacket(BlockPos pos) {
-        PacketDistributor.sendToServer(new C2SCompressorEjectPacket(pos));
+        sendToServer(new C2SCompressorEjectPacket(pos));
     }
 
     public static void sendSideConfigUpdate(BlockPos blockPos, SideConfiguration sideConfig) {
-        PacketDistributor.sendToServer(new C2SSideConfigPacket(blockPos, sideConfig));
+        sendToServer(new C2SSideConfigPacket(blockPos, sideConfig));
     }
 
     public static void sendSideConfigSync(BlockPos pos, SideConfiguration sideConfig) {
         PacketDistributor.sendToAllPlayers(new S2CSideConfigSyncPacket(pos, sideConfig));
+    }
+
+    public static void sendToServer(CustomPacketPayload payload) {
+        ClientPacketDistributor.sendToServer(payload);
     }
 }

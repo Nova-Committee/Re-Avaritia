@@ -13,6 +13,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -147,9 +148,9 @@ public class TransformUtils {
     }
 
     public static Transformation create(ItemTransform transform) {
-        if (ItemTransform.NO_TRANSFORM.equals(transform)) return Transformation.identity();
+        if (ItemTransform.NO_TRANSFORM.equals(transform)) return Transformation.IDENTITY;
 
-        return create(transform.translation, transform.rotation, transform.scale);
+        return create(transform.translation(), transform.rotation(), transform.scale());
     }
 
     /**
@@ -180,13 +181,17 @@ public class TransformUtils {
         return new PerspectiveModelState(map.build());
     }
 
+    public static Transformation create(Vector3fc transform, Vector3fc rotation, Vector3fc scale) {
+        return create(new Vector3f(transform), new Vector3f(rotation), new Vector3f(scale));
+    }
+
     /**
      * Applies standard lefty flip to a {@link PoseStack}.
      *
      * @param pStack The {@link PoseStack} to apply to.
      */
     public static void applyLeftyFlip(PoseStack pStack) {
-        if (!pStack.clear()) {
+        if (!pStack.isEmpty()) {
             Matrix4f tMat = pStack.last().pose();
             Matrix3f nMat = pStack.last().normal();
 

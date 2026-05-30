@@ -63,21 +63,11 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     }
 
     public boolean getCurrentChanneling(ItemStack stack) {
-        return ItemUtils.getOrCreateTag(stack).getBoolean(CHANNELING_NBT);
+        return ItemUtils.getOrCreateTag(stack).getBoolean(CHANNELING_NBT).orElseThrow();
     }
 
     public boolean getCurrentShockwave(ItemStack stack) {
-        return ItemUtils.getOrCreateTag(stack).getBoolean(SHOCKWAVE_NBT);
-    }
-
-    @Override
-    public boolean isEnchantable(@NotNull ItemStack stack) {
-        return false;
-    }
-
-    @Override
-    public boolean isBookEnchantable(@NotNull ItemStack stack, @NotNull ItemStack book) {
-        return false;
+        return ItemUtils.getOrCreateTag(stack).getBoolean(SHOCKWAVE_NBT).orElseThrow();
     }
 
     @Override
@@ -96,7 +86,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
+    public boolean releaseUsing(@NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity, int timeLeft) {
         if (livingEntity instanceof Player player) {
             int i = this.getUseDuration(itemStack, player) - timeLeft;
             int currentMode = ISwitchable.getCurrentMode(itemStack, FUNC_MODES);
@@ -126,14 +116,15 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                                 .orElse(SoundEvents.TRIDENT_THROW);
                         level.playSound(null, player, holder.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
-
                 }
+                return true;
             }
         }
+        return false;
     }
 
     private void shootTrident(@NotNull ItemStack itemStack, @NotNull Level level, Player player, boolean noReturn) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack, null);
             throwntrident.setLoyaltyLevel(noReturn ? 0 : 2);
             throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);

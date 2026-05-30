@@ -71,9 +71,9 @@ public class AvaritiaShaders {
 
     private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, VertexFormat.Mode mode) {
         RenderPipeline pipeline = RenderPipeline.builder()
-                .withLocation(Avaritia.rl(name))
-                .withVertexShader(Avaritia.rl(name))
-                .withFragmentShader(Avaritia.rl(name))
+                .withLocation(Const.rl(name))
+                .withVertexShader(Const.rl(name))
+                .withFragmentShader(Const.rl(name))
                 .withSampler("Sampler0")
                 .withSampler("Sampler2")
                 .withVertexFormat(vertexFormat, mode)

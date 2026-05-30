@@ -1,9 +1,0 @@
--proc:none
--encoding
-UTF-8
--classpath
-C:\\Users\\1\\.gradle\\caches\\ng_execute\\a26137c40e40998e7d44cfa597c4534dcf1be26118f4d80e8e68d58ae19f3bf0\\output;C:\\Users\\1\\.gradle\\caches\\modules-2\\files-2.1\\net.neoforged\\neoforge\\26.1.2.15-beta\\c32eb84a33654f78f3de05ad975c0dee8e7a02f8\\neoforge-26.1.2.15-beta-universal.jar
-src\\main\\java\\com\\avaritia\\Avaritia.java
-src\\main\\java\\com\\avaritia\\init\\registry\\ModSearches.java
--d
-C:\\Users\\1\\AppData\\Local\\Temp\\opencode\\modsearches-check

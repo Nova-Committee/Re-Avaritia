@@ -15,8 +15,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class InfinityChestMenu extends AbstractContainerMenu {
 
@@ -85,10 +87,11 @@ public class InfinityChestMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ClickAction clickAction, Player player) {
+    public void clicked(int slotId, int button, @NonNull ContainerInput containerInput, Player player) {
         if (this.quickcraftStatus != 0) {
             this.resetQuickCraft();
         }
+        ClickAction clickAction = button == 0 ? ClickAction.PRIMARY : ClickAction.SECONDARY;
 
         if (slotId == -999) {
             if (!this.getCarried().isEmpty()) {
@@ -100,7 +103,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                 }
             }
         } else if (slotId < 0) {
-            super.clicked(slotId, button, clickAction, player);
+            super.clicked(slotId, button, containerInput, player);
         } else {
             Slot slot = this.slots.get(slotId);
             ItemStack slotStack = slot.getItem();

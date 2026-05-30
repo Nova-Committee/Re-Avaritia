@@ -4,7 +4,6 @@ import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.InitEnchantItem;
-import com.avaritia.api.utils.ItemUtils;
 import com.avaritia.init.registry.ModDataComponents;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModToolTiers;
@@ -12,7 +11,6 @@ import com.avaritia.init.registry.modes.ToolMode;
 import com.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -21,14 +19,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -45,7 +44,7 @@ public class BlazePickaxeItem extends Item implements ITooltip, ISwitchable, Ini
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .pickaxe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed())
+                        .pickaxe(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed())
         );
 
         this.fire_aspect = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
@@ -70,11 +69,12 @@ public class BlazePickaxeItem extends Item implements ITooltip, ISwitchable, Ini
         return true;
     }
 
+
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.fire_aspect.appendHoverText(context, tooltipComponents);
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 
     @Override

@@ -15,7 +15,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
  * 注册所有数据提供程序（Provider），自动生成语言文件、模型、配方、战利品表、
  * 标签和方块状态等资源文件。
  */
-@EventBusSubscriber(modid = Avaritia.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Const.MOD_ID)
 public class AvaritiaData {
 
     /**

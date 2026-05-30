@@ -118,7 +118,7 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
             cc.reset();
             cc.bind(new TransformingVertexConsumer(vertexConsumer, pose), AvaritiaRenderTypes.VOID.format());
             cc.baseColour = rgba;
-            new OBJParser(Identifier.of(Avaritia.MOD_ID, "models/hemisphere.obj")).parse().get("model").render(cc);
+            new OBJParser(Identifier.of(Const.MOD_ID, "models/hemisphere.obj")).parse().get("model").render(cc);
         });
 
         stack.popPose();

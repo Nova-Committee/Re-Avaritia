@@ -104,7 +104,7 @@ public class Vector3 implements Copyable<Vector3> {
     }
 
     public static Vector3 fromNBT(CompoundTag tag) {
-        return new Vector3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
+        return new Vector3(tag.getDouble("x").orElse(0.0D), tag.getDouble("y").orElse(0.0D), tag.getDouble("z").orElse(0.0D));
     }
 
     public Vec3 vec3() {

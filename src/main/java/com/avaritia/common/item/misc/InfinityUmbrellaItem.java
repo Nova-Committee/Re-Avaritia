@@ -47,12 +47,12 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     }
 
     private int getRandomDuration(Level level) {
-        return MIN_DURATION + level.random.nextInt(MAX_DURATION - MIN_DURATION + 1);
+        return MIN_DURATION + level.getRandom().nextInt(MAX_DURATION - MIN_DURATION + 1);
     }
 
     private void onUse(Level level, Player player, ItemStack stack, @NotNull InteractionHand hand) {
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             float pitch = player.getXRot();
 
             int currentMode = ISwitchable.getCurrentMode(stack, MODES);

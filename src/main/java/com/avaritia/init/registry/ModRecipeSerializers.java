@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * 注册模组中的所有配方序列化器。
  */
 public class ModRecipeSerializers {
-    public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, Avaritia.MOD_ID);
+    public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, Const.MOD_ID);
 
     public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> INFINITY_CATALYST_CRAFT_SERIALIZER = serializer("infinity_catalyst", () -> InfinityCatalystCraftRecipe.Serializer.SERIALIZER);
     public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> ETERNAL_SINGULARITY_CRAFT_SERIALIZER = serializer("eternal_singularity", () -> EternalSingularityCraftRecipe.Serializer.SERIALIZER);

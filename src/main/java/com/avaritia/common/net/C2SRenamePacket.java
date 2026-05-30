@@ -20,12 +20,12 @@ import org.jetbrains.annotations.NotNull;
  * @description
  * @date 2024/3/28 14:02
  */
-public record C2SRenamePack(String name) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<C2SRenamePack> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_rename"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, C2SRenamePack> STREAM_CODEC = StreamCodec.composite(
+public record C2SRenamePacket(String name) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<C2SRenamePacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_rename"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SRenamePacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
-            C2SRenamePack::name,
-            C2SRenamePack::new
+            C2SRenamePacket::name,
+            C2SRenamePacket::new
     );
 
     @Override
@@ -33,9 +33,9 @@ public record C2SRenamePack(String name) implements CustomPacketPayload {
         return TYPE;
     }
 
-    public static class Handler implements IPayloadHandler<C2SRenamePack> {
+    public static class Handler implements IPayloadHandler<C2SRenamePacket> {
         @Override
-        public void handle(@NotNull C2SRenamePack packet, IPayloadContext context) {
+        public void handle(@NotNull C2SRenamePacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 var player = context.player();
                 if (player instanceof ServerPlayer serverPlayer){

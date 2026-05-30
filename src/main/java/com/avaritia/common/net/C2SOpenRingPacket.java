@@ -1,6 +1,6 @@
-package com.avaritia.network;
+package com.avaritia.common.net;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.api.utils.InventoryUtils;
 import com.avaritia.common.menu.NeutronRingMenu;
 import com.avaritia.init.registry.ModItems;
@@ -8,7 +8,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -24,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * @date 2024/3/28 14:02
  */
 public record C2SOpenRingPacket() implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<C2SOpenRingPacket> TYPE = new CustomPacketPayload.Type<>(Identifier.of(Avaritia.MOD_ID, "c2s_open_ring"));
+    public static final CustomPacketPayload.Type<C2SOpenRingPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_open_ring"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SOpenRingPacket> STREAM_CODEC = StreamCodec.unit(new C2SOpenRingPacket());
 
     @Override

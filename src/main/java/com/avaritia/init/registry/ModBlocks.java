@@ -43,7 +43,7 @@ import java.util.function.Supplier;
  * 注册模组中的所有方块。
  */
 public class ModBlocks {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Avaritia.MOD_ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Const.MOD_ID);
 
     // CRAFTING
     public static final DeferredBlock<Block> compressed_crafting_table = itemBlock("compressed_crafting_table", CompressedCraftTableBlock::new, ModRarities.UNCOMMON);

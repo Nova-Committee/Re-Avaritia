@@ -13,9 +13,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -90,14 +92,14 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             return FluidStack.EMPTY;
         }
 
-        if (!nbt.contains(FLUID_ID_KEY, Tag.TAG_STRING)) {
+        if (!nbt.contains(FLUID_ID_KEY)) {
             return FluidStack.EMPTY;
         }
 
-        Identifier fluidName = Identifier.parse(nbt.getString(FLUID_ID_KEY));
-        Fluid fluid = BuiltInRegistries.FLUID.get(fluidName);
+        Identifier fluidName = Identifier.parse(nbt.getString(FLUID_ID_KEY).get());
+        Fluid fluid = BuiltInRegistries.FLUID.getValue(fluidName);
 
-        int amount = nbt.getInt(FLUID_AMOUNT_KEY);
+        int amount = nbt.getInt(FLUID_AMOUNT_KEY).get();
         return new FluidStack(fluid, amount);
     }
 
@@ -117,7 +119,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
 
     @Override
     public void attachCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new InfinityBucketWrapper(stack), this);
+        event.registerItem(Capabilities.Fluid.ITEM, (stack, context) -> new InfinityBucketWrapper(stack), this);
     }
 
     @Override
@@ -133,14 +135,14 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (pLevel.isClientSide && pEntity instanceof Player player && player.getInventory().getSelected() == pStack) {
+    public void inventoryTick(@NotNull ItemStack pStack, @NotNull ServerLevel pLevel, @NotNull Entity pEntity,  EquipmentSlot slot) {
+        super.inventoryTick(pStack, pLevel, pEntity, slot);
+        if (pLevel.isClientSide() && pEntity instanceof Player player && player.getInventory().getSelectedItem() == pStack) {
             FluidStack firstContained = getFluids(pStack).stream().findFirst().orElse(FluidStack.EMPTY);
             NumberFormat formater = DecimalFormat.getInstance();
             String displayName = firstContained.getHoverName().getString();
             String amount = formater.format(firstContained.getAmount());
-            player.displayClientMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message", displayName, amount), true);
+            player.sendOverlayMessage(Component.translatable("tooltip.avaritia.infinity_bucket.message", displayName, amount));
         }
     }
 

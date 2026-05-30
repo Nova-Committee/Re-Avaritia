@@ -38,7 +38,7 @@ public class AvaritiaTagProvider implements DataProvider {
      */
     public AvaritiaTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
         this.itemTags = new IntrinsicHolderTagsProvider<>(output, Registries.ITEM, lookup,
-                item -> item.builtInRegistryHolder().key(), Avaritia.MOD_ID) {
+                item -> item.builtInRegistryHolder().key(), Const.MOD_ID) {
             @Override
             protected void addTags(HolderLookup.Provider provider) {
                 // ========== 物品标签 ==========
@@ -111,7 +111,7 @@ public class AvaritiaTagProvider implements DataProvider {
         };
 
         this.blockTags = new IntrinsicHolderTagsProvider<>(output, Registries.BLOCK, lookup,
-                block -> block.builtInRegistryHolder().key(), Avaritia.MOD_ID) {
+                block -> block.builtInRegistryHolder().key(), Const.MOD_ID) {
             @Override
             protected void addTags(HolderLookup.Provider provider) {
                 // ========== 方块标签 ==========

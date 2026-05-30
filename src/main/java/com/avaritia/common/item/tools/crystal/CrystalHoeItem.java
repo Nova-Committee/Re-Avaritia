@@ -31,12 +31,11 @@ import org.jetbrains.annotations.NotNull;
 public class CrystalHoeItem extends HoeItem implements ITooltip {
 
     public CrystalHoeItem() {
-        super(ModToolTiers.CRYSTAL,
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
     }
 
@@ -64,7 +63,7 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
 
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
-            if (player != null && !world.isClientSide) {
+            if (player != null && !world.isClientSide()) {
                 var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                 for (BlockPos pos : boxMutable) {
                     var block = world.getBlockState(pos).getBlock();
@@ -75,14 +74,14 @@ public class CrystalHoeItem extends HoeItem implements ITooltip {
                 }
             }
             world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            return InteractionResult.SUCCESS;
         }
 
         // Handle bonemeal functionality
         var targetState = world.getBlockState(blockpos);
         if (world instanceof ServerLevel serverLevel && targetBlock instanceof BonemealableBlock growable) {
             if (growable.isValidBonemealTarget(serverLevel, blockpos, targetState) && CommonHooks.canCropGrow(serverLevel, blockpos, targetState, true)) {
-                growable.performBonemeal(serverLevel, world.random, blockpos, targetState);
+                growable.performBonemeal(serverLevel, world.getRandom(), blockpos, targetState);
                 serverLevel.levelEvent(2005, blockpos, 0);
                 CommonHooks.fireCropGrowPost(serverLevel, blockpos, targetState);
                 return InteractionResult.CONSUME;

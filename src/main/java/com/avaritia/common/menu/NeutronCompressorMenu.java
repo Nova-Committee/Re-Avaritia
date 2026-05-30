@@ -10,6 +10,7 @@ import com.avaritia.init.registry.ModMenus;
 import com.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
@@ -37,9 +38,9 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
         this.progressData = data;
         this.addDataSlots(progressData);
         inventory.setCanInsert((integer, stack) -> {
-            if (integer == 1) {
+            if (integer == 1 && level instanceof ServerLevel serverLevel) {
                 // 获取压缩器实例检查锁定状态
-                if (level.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
+                if (serverLevel.getBlockEntity(pos) instanceof NeutronCompressorTile compressor) {
                     if (compressor.isRecipeLocked() && compressor.getLockedRecipe() != null) {
                         // 锁定状态下，只接受锁定配方的材料
                         var input = compressor.getLockedRecipe().getInput();
@@ -48,7 +49,7 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
                         }
                         return false;
                     }else {
-                        var compressorRecipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
+                        var compressorRecipe = serverLevel.recipeAccess().getRecipeFor(ModRecipeTypes.COMPRESSOR_RECIPE.get(), new ShapelessCraftingInput(List.of(stack)), level).map(RecipeHolder::value).orElse(null);
                         if (compressorRecipe != null) {
                             var input = compressorRecipe.getInput();
                             if (!input.isEmpty()) {

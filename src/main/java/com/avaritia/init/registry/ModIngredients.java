@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * <p>包含 NBT 匹配与堆栈匹配两种自定义材料。</p>
  */
 public class ModIngredients {
-    public static final DeferredRegister<IngredientType<?>> INGREDIENT = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, Avaritia.MOD_ID);
+    public static final DeferredRegister<IngredientType<?>> INGREDIENT = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, Const.MOD_ID);
     public static Supplier<IngredientType<ItemIngredient>> NBT_ITEM = INGREDIENT.register("nbt_item", () -> new IngredientType<>(ItemIngredient.MAP_CODEC, ItemIngredient.STREAM_CODEC));
     public static Supplier<IngredientType<StackIngredient>> STACK_ITEM = INGREDIENT.register("stack", () -> new IngredientType<>(StackIngredient.MAP_CODEC, StackIngredient.STREAM_CODEC));
 }

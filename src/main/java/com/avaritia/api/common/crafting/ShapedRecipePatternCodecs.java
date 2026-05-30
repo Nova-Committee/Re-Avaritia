@@ -49,7 +49,7 @@ public final class ShapedRecipePatternCodecs {
                 return " ".equals(symbol) ? DataResult.error(() -> "Invalid key entry: ' ' is a reserved symbol.") : DataResult.success(symbol.charAt(0));
             }
         }, String::valueOf);
-        DATA_MAP_CODEC = RecordCodecBuilder.mapCodec((builder) -> builder.group(ExtraCodecs.strictUnboundedMap(SYMBOL_CODEC, Ingredient.CODEC_NONEMPTY).fieldOf("key").forGetter(ShapedRecipePattern.Data::key), PATTERN_CODEC.fieldOf("pattern").forGetter(ShapedRecipePattern.Data::pattern)).apply(builder, ShapedRecipePattern.Data::new));
+        DATA_MAP_CODEC = RecordCodecBuilder.mapCodec((builder) -> builder.group(ExtraCodecs.strictUnboundedMap(SYMBOL_CODEC, Ingredient.CODEC).fieldOf("key").forGetter(ShapedRecipePattern.Data::key), PATTERN_CODEC.fieldOf("pattern").forGetter(ShapedRecipePattern.Data::pattern)).apply(builder, ShapedRecipePattern.Data::new));
         MAP_CODEC = DATA_MAP_CODEC.flatXmap(ShapedRecipePattern::unpack, (pattern) -> pattern.data.map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Cannot encode unpacked recipe")));
     }
 }

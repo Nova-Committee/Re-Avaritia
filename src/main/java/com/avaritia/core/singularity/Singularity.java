@@ -46,7 +46,7 @@ public class Singularity {
     private int overlayColor = 0x3B2754;
     private int underlayColor = 0x3B2754;
     private int count = 1000;
-    private int timeCost = FMLLoader.isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
+    private int timeCost = FMLLoader.getCurrent().isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
     private Ingredient ingredient = Ingredient.EMPTY;
     private boolean enabled = true;
     private boolean recipeEnabled = true;
@@ -175,7 +175,7 @@ public class Singularity {
     }
 
     public static Singularity read(RegistryFriendlyByteBuf buffer) {
-        var id = buffer.readResourceLocation();
+        var id = buffer.readIdentifier();
         var displayName = buffer.readUtf();
         int overlayColor = buffer.readInt();
         int underlayColor = buffer.readInt();
@@ -191,7 +191,7 @@ public class Singularity {
     }
 
     public static void write(RegistryFriendlyByteBuf buffer, Singularity singularity) {
-        buffer.writeResourceLocation(singularity.registryName);
+        buffer.writeIdentifier(singularity.registryName);
         buffer.writeUtf(singularity.displayName);
         buffer.writeInt(singularity.overlayColor);
         buffer.writeInt(singularity.underlayColor);
@@ -216,7 +216,7 @@ public class Singularity {
         try {
             return net.neoforged.fml.ModList.get().isLoaded("projecte");
         } catch (Throwable ignored) {
-            Avaritia.LOGGER.debug("ProjectE load state is unavailable while resolving singularity count.");
+            Const.LOGGER.debug("ProjectE load state is unavailable while resolving singularity count.");
             return false;
         }
     }

@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * 注册模组中的所有方块实体类型。
  */
 public class ModTileEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Avaritia.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Const.MOD_ID);
 
     public static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> blockEntity(String name, BlockEntityType.BlockEntitySupplier<T> tile, Supplier<Block[]> blocks) {
         return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(tile, blocks.get()));

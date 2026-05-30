@@ -4,6 +4,7 @@ import com.avaritia.api.client.model.PerspectiveModelState;
 import com.avaritia.client.model.loader.base.AvaritiaCustomItemModel;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.Lightmap;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -33,7 +34,6 @@ import java.util.Map;
 public abstract class WrappedItemModel extends AvaritiaCustomItemModel {
 
     public static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-    public static final FaceBakery FACE_BAKERY = new FaceBakery();
     protected final ItemModel wrapped;
     protected PerspectiveModelState parentState = PerspectiveModelState.IDENTITY;
     protected boolean cosmic = false;
@@ -49,8 +49,8 @@ public abstract class WrappedItemModel extends AvaritiaCustomItemModel {
         for (final TextureAtlasSprite sprite : sprites) {
             final List<CuboidModelElement> unbaked = ITEM_MODEL_GENERATOR.processFrames(sprites.indexOf(sprite), "layer" + sprites.indexOf(sprite), sprite.contents());
             for (final CuboidModelElement element : unbaked) {
-                for (final Map.Entry<Direction, CuboidFace> entry : element.faces.entrySet()) {
-                    quads.add(FACE_BAKERY.bakeQuad(element.from, element.to, entry.getValue(), sprite, entry.getKey(), new PerspectiveModelState(ImmutableMap.of()), element.rotation, element.shade));
+                for (final Map.Entry<Direction, CuboidFace> entry : element.faces().entrySet()) {
+                    quads.add(FaceBakery.bakeQuad(element.from(), element.to(), entry.getValue(), sprite, entry.getKey(), new PerspectiveModelState(ImmutableMap.of()), element.rotation(), element.shade()));
                 }
             }
         }
@@ -91,8 +91,11 @@ public abstract class WrappedItemModel extends AvaritiaCustomItemModel {
 
     protected static void renderQuadLayer(PoseStack poseStack, VertexConsumer consumer, List<BakedQuad> quads, int packedLight, int packedOverlay) {
         PoseStack.Pose pose = poseStack.last();
+        var instance = new QuadInstance();
+        instance.getLightCoords(packedLight);
+        instance.setOverlayCoords(packedOverlay);
         for (BakedQuad quad : quads) {
-            consumer.putBulkData(pose, quad, 1.0F, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay, true);
+            consumer.putBakedQuad(pose, quad, instance);
         }
     }
 }

@@ -52,7 +52,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
         this.cosmic = true;
 
         try {
-            this.tridentObjModel = new OBJParser(Avaritia.rl("models/infinity_trident.obj"))
+            this.tridentObjModel = new OBJParser(Const.rl("models/infinity_trident.obj"))
                     .swapYZ()
                     .parse();
             LOGGER.info("Loaded trident OBJ models for item rendering: {}", tridentObjModel.keySet());

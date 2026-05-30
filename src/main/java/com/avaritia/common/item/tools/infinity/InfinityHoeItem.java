@@ -10,6 +10,7 @@ import com.avaritia.init.registry.ModToolTiers;
 import com.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,14 +19,17 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Description:
@@ -36,12 +40,11 @@ import org.jetbrains.annotations.Nullable;
 public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchable {
 
     public InfinityHoeItem() {
-        super(ModToolTiers.INFINITY,
+        super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
                 new Properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
 
     }
@@ -62,7 +65,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
     }
 
     @Override
-    public int getEnchantmentValue(@NotNull ItemStack stack) {
+    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -96,7 +99,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
             int height = 2;
             ToolUtils.rangeHarvest(serverLevel, player, stack, blockPos, rang, height);
             ToolUtils.rangeBonemealable(serverLevel, blockPos, rang, height,3);
-            player.getCooldowns().addCooldown(stack.getItem(), 10);
+            player.getCooldowns().addCooldown(stack, 10);
             serverLevel.playSound(player, player.getOnPos(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 5.0f);
         }
         return InteractionResult.PASS;
@@ -118,7 +121,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
 //        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof GrassBlock || targetBlock.equals(Blocks.DIRT) || targetBlock.equals(Blocks.COARSE_DIRT))) {
-            if (player != null && !world.isClientSide) {
+            if (player != null && !world.isClientSide()) {
                 if (player.isCrouching() && isActive(stack, "infinity_hoe_sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
@@ -150,12 +153,12 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
                 } else {
                     world.setBlock(blockpos, blockstate, 11); //till unsneaked
                     world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    return world.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+                    return world.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
                 }
             }
         } else if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above()) &&
                 (targetBlock instanceof SoulSandBlock || targetBlock.equals(Blocks.SOUL_SOIL))) {
-            if (player != null && !world.isClientSide) {
+            if (player != null && !world.isClientSide()) {
                 if (player.isShiftKeyDown() && isActive(stack, "infinity_hoe_sow")) {
                     var boxMutable = BlockPos.betweenClosed(minPos, maxPos);
                     for (BlockPos pos : boxMutable) {
@@ -185,7 +188,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
                 } else {
                     world.setBlock(blockpos, soulFarmState, 11); //soul till unsneaked
                     world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    return world.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+                    return world.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
                 }
             }
         }

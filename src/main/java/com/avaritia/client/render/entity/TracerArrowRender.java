@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @OnlyIn(Dist.CLIENT)
 public class TracerArrowRender extends ArrowRenderer<TraceArrowEntity, ArrowRenderState> {
-    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.of(Avaritia.MOD_ID, "textures/entity/heaven_arrow.png");
+    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.of(Const.MOD_ID, "textures/entity/heaven_arrow.png");
 
     public TracerArrowRender(EntityRendererProvider.Context context) {
         super(context);

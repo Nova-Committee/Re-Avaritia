@@ -8,6 +8,7 @@ import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModToolTiers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,13 +21,16 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ItemAbilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import static com.avaritia.util.ToolUtils.canHarvest;
 import static com.avaritia.util.ToolUtils.destroyTree;
@@ -40,12 +44,11 @@ import static com.avaritia.util.ToolUtils.destroyTree;
 public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageable {
 
     public InfinityAxeItem() {
-        super(ModToolTiers.INFINITY,
+        super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
                 new Properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed()))
         );
 
     }
@@ -77,7 +80,7 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
     }
 
     @Override
-    public int getEnchantmentValue(ItemStack stack) {
+    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -106,7 +109,6 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
             if (!level.isClientSide()) {
                 if (livingEntity.isUsingItem() && livingEntity.getUseItem().canPerformAction(ItemAbilities.SHIELD_BLOCK)) {
                     ItemStack shieldStack = livingEntity.getUseItem();
-                    ShieldItem shieldItem = (ShieldItem) shieldStack.getItem();
                     boolean isInfinityShield = shieldStack.is(ModItems.infinity_shield.get());
 
                     if (level instanceof ServerLevel serverLevel) {
@@ -134,7 +136,7 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
                     } else {
                         shieldStack.setDamageValue(shieldStack.getMaxDamage() - 1);
                     }
-                    livingEntity.getCooldowns().addCooldown(shieldItem, 1200);
+                    livingEntity.getCooldowns().addCooldown(shieldStack, 1200);
                 }
             }
         }

@@ -37,4 +37,16 @@ public class TransformingVertexConsumer extends DelegatingVertexConsumer {
         transform.applyN(storage);
         return delegate.setNormal((float) storage.x, (float) storage.y, (float) storage.z);
     }
+
+    @Override
+    public @NotNull VertexConsumer setColor(int color) {
+        delegate.setColor(color);
+        return this;
+    }
+
+    @Override
+    public @NotNull VertexConsumer setLineWidth(float width) {
+        delegate.setLineWidth(width);
+        return this;
+    }
 }

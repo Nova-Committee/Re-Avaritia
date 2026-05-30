@@ -1,10 +1,10 @@
 package com.avaritia.client.screen.side;
 
+import com.avaritia.init.handler.NetworkHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.avaritia.Res;
 import com.avaritia.api.iface.ITileIO;
 import com.avaritia.core.io.SideConfiguration;
-import com.avaritia.network.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;

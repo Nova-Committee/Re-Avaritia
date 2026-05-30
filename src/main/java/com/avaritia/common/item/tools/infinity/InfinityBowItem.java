@@ -24,18 +24,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.ItemUseAnimation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
 import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
@@ -81,13 +80,8 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public boolean isEnchantable(@NotNull ItemStack pStack) {
-        return true;
-    }
-
-    @Override
-    public int getEnchantmentValue(@NotNull ItemStack stack) {
-        return 99;
+    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
+       return 99;
     }//附魔系数
 
     @Override
@@ -117,9 +111,10 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 
     @Override
@@ -136,13 +131,13 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
-        if (!level.isClientSide) {
+    public boolean releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
+        if (!level.isClientSide()) {
             if (entity instanceof Player player) {
                 int drawTime = this.getUseDuration(stack, player) - timeLeft;
                 drawTime = onArrowLoose(stack, level, player, drawTime, true);
                 if (drawTime < 0) {
-                    return;
+                    return false;
                 }
 
                 float VELOCITY_MULTIPLIER = 1.2F;
@@ -162,12 +157,14 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
                 if (draw == 1.0F) {
                     arrowEntity.setCritArrow(true);//蓄力满必暴击
                 }
-                arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
+                arrowEntity.setBaseDamage(arrowEntity.baseDamage * (double) DAMAGE_MULTIPLIER);
                 addEnchant(stack, level, player, arrowEntity, powerForTime);
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
                 player.awardStat(Stats.ITEM_USED.get(this));
+                return true;
             }
         }
+        return false;
     }
 
     private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
@@ -180,7 +177,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
 
         int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
         if (j > 0) {
-            arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() + (double) j * 0.5D + 0.5D);
+            arrowEntity.setBaseDamage(arrowEntity.baseDamage + (double) j * 0.5D + 0.5D);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
             arrowEntity.setRemainingFireTicks(100);

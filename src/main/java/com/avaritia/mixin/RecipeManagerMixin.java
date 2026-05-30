@@ -51,7 +51,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener {
             @Local(argsOnly = true) RecipeMap recipeMap
     ) {
         RecipeManager manager = (RecipeManager) (Object) this;
-        Avaritia.LOGGER.info("Avaritia: Loading recipes...");
+        Const.LOGGER.info("Avaritia: Loading recipes...");
         Stopwatch stopwatch = Stopwatch.createStarted();
         List<RecipeHolder<?>> recipes = new ArrayList<>(recipeMap.values());
         int vanillaRecipeCount = recipes.size();
@@ -59,7 +59,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener {
         try {
             this.avaritia$postRegisterRecipesEvent(manager, recipes);
         } catch (Exception e) {
-            Avaritia.LOGGER.error("Avaritia: An error occurred while firing RecipeManagerLoadingEvent", e);
+            Const.LOGGER.error("Avaritia: An error occurred while firing RecipeManagerLoadingEvent", e);
         }
 
         int generatedRecipeCount = recipes.size() - vanillaRecipeCount;
@@ -69,7 +69,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener {
             ci.cancel();
         }
 
-        Avaritia.LOGGER.info(
+        Const.LOGGER.info(
                 "Avaritia: Registered {} recipes in {} ms",
                 generatedRecipeCount,
                 stopwatch.stop().elapsed(TimeUnit.MILLISECONDS)
@@ -84,14 +84,14 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener {
         } catch (ClassNotFoundException e) {
             // TODO: 迁移 com.avaritia.api.init.event.RegisterRecipesEvent 后，运行时生成配方事件会自动恢复派发。
             if (!avaritia$warnedMissingRegisterRecipesEvent) {
-                Avaritia.LOGGER.warn("Avaritia: RegisterRecipesEvent has not been migrated yet; runtime generated recipes are skipped.");
+                Const.LOGGER.warn("Avaritia: RegisterRecipesEvent has not been migrated yet; runtime generated recipes are skipped.");
                 avaritia$warnedMissingRegisterRecipesEvent = true;
             }
             return;
         }
 
         if (!Event.class.isAssignableFrom(eventClass)) {
-            Avaritia.LOGGER.warn("Avaritia: {} is not a NeoForge event; runtime generated recipes are skipped.", AVARITIA_REGISTER_RECIPES_EVENT);
+            Const.LOGGER.warn("Avaritia: {} is not a NeoForge event; runtime generated recipes are skipped.", AVARITIA_REGISTER_RECIPES_EVENT);
             return;
         }
 

@@ -32,7 +32,7 @@ public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTr
 
     public InfinityThrownTridentRender(EntityRendererProvider.Context context) {
         super(context);
-        this.tridentModel = new OBJParser(Identifier.of(Avaritia.MOD_ID, "models/infinity_trident.obj"))
+        this.tridentModel = new OBJParser(Identifier.of(Const.MOD_ID, "models/infinity_trident.obj"))
                 .swapYZ()
                 .ignoreMtl()
                 .parse();

@@ -14,18 +14,22 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
 import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
@@ -48,8 +52,9 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
 
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
+                                @NotNull TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 
     @Override
@@ -84,15 +89,15 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
             float draw = getPowerForTime(drawTime);//蓄力时间
             float powerForTime = draw * VELOCITY_MULTIPLIER;
             if (powerForTime >= 0.1D) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     if (isActive(stack, "blaze_bow_burning")) {//灼烧模式
-                        var burningBall = ModEntities.BURNING_BALL.get().create(level);
+                        var burningBall = ModEntities.BURNING_BALL.get().create(level, EntitySpawnReason.EVENT);
                         if (burningBall != null) {
                             burningBall.setOwner(player);
                             burningBall.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                             burningBall.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.5F);
                             level.addFreshEntity(burningBall);
-                            player.getCooldowns().addCooldown(stack.getItem(), 20);
+                            player.getCooldowns().addCooldown(stack, 20);
                         }
                     } else {
                         var abstractarrow = this.customArrow(new BurningArrowEntity(player), Items.ARROW.getDefaultInstance(),  stack);
@@ -101,7 +106,7 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
                         if (draw == 1.0F) {
                             abstractarrow.setCritArrow(true);//蓄力满必暴击
                         }
-                        abstractarrow.setBaseDamage(abstractarrow.getBaseDamage() * (double) DAMAGE_MULTIPLIER);
+                        abstractarrow.setBaseDamage(abstractarrow.baseDamage * (double) DAMAGE_MULTIPLIER);
 
                         addEnchant(stack, level, player, abstractarrow, powerForTime);
                         level.addFreshEntity(abstractarrow);

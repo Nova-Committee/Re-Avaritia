@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.avaritia.Avaritia.LOGGER;
+import static com.avaritia.Const.LOGGER;
 
 public class TextureUtils {
     /**
@@ -158,7 +158,7 @@ public class TextureUtils {
      * 获取贴图集
      */
     public static TextureAtlas getTextureMap() {
-        return Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS);
     }
 
     /**
@@ -251,7 +251,7 @@ public class TextureUtils {
      */
     @Deprecated
     public static TextureAtlasSprite getParticleIconForBlock(BlockState state) {
-        Identifier blockId = Registries.BLOCK.getKey(state.getBlock());
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         if (blockId == null) {
             return getMissingSprite();
         }
@@ -263,7 +263,7 @@ public class TextureUtils {
      */
     public static Identifier getEffectTexture(MobEffectInstance mobEffectInstance) {
         Identifier effectIcon;
-        Identifier registryName = Registries.MOB_EFFECT.getKey(mobEffectInstance.getEffect().value());
+        Identifier registryName = BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.getEffect().value());
         if (registryName != null) {
             effectIcon = Identifier.tryBuild(registryName.getNamespace(), DEFAULT_EFFECT_DIR + registryName.getPath() + ".png");
         } else {

@@ -20,12 +20,12 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2025/2/23 01:45
  * @Description:
  */
-public record NbtDataPack(CompoundTag tag) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<NbtDataPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("sync_nbt"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, NbtDataPack> STREAM_CODEC = StreamCodec.composite(
+public record NbtDataPacket(CompoundTag tag) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<NbtDataPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("sync_nbt"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, NbtDataPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG,
-            NbtDataPack::tag,
-            NbtDataPack::new
+            NbtDataPacket::tag,
+            NbtDataPacket::new
     );
 
     @Override
@@ -33,9 +33,9 @@ public record NbtDataPack(CompoundTag tag) implements CustomPacketPayload {
         return TYPE;
     }
 
-    public static class Handler implements IPayloadHandler<NbtDataPack> {
+    public static class Handler implements IPayloadHandler<NbtDataPacket> {
         @Override
-        public void handle(@NotNull NbtDataPack packet, @NotNull IPayloadContext context) {
+        public void handle(@NotNull NbtDataPacket packet, @NotNull IPayloadContext context) {
             if(context.flow() == PacketFlow.CLIENTBOUND) {
                 context.enqueueWork(() -> {
                     Player sender = context.player();

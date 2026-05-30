@@ -1,8 +1,9 @@
 package com.avaritia.client.screen;
 
+import com.avaritia.client.screen.side.SideConfigButton;
 import com.avaritia.common.menu.NeutronCompressorMenu;
 import com.avaritia.common.tile.NeutronCompressorTile;
-import com.avaritia.network.NetworkHandler;
+import com.avaritia.init.handler.NetworkHandler;
 import com.avaritia.init.registry.ModTooltips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

@@ -9,6 +9,7 @@ import com.avaritia.init.registry.ModRecipeTypes;
 import com.avaritia.init.registry.enums.ModCraftTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -104,15 +105,16 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     @Override
     public void slotsChanged(@NotNull Container matrix) {
         var inventory = this.craftContainer.asCraftInput();
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world);
 
-        if (recipe.isPresent()) {
-            var result = recipe.get().value().assemble(inventory, this.world.registryAccess());
-            this.result.setItem(0, result);
-        } else {
-            this.result.setItem(0, ItemStack.EMPTY);
+        if (this.world instanceof ServerLevel serverLevel){
+            var recipe = serverLevel.recipeAccess().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world);
+            if (recipe.isPresent()) {
+                var result = recipe.get().value().assemble(inventory);
+                this.result.setItem(0, result);
+            } else {
+                this.result.setItem(0, ItemStack.EMPTY);
+            }
         }
-
         super.slotsChanged(matrix);
     }
 

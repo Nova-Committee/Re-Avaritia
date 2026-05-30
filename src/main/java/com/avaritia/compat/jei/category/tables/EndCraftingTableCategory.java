@@ -29,8 +29,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class EndCraftingTableCategory implements IRecipeCategory<RecipeHolder<ITierCraftingRecipe>> {
-    public static final IRecipeHolderType<ITierCraftingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Avaritia.MOD_ID, "end_craft"));
-    private static final Identifier TEXTURE = Identifier.of(Avaritia.MOD_ID, "textures/gui/jei/tables/end_jei.png");
+    public static final IRecipeHolderType<ITierCraftingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Const.MOD_ID, "end_craft"));
+    private static final Identifier TEXTURE = Identifier.of(Const.MOD_ID, "textures/gui/jei/tables/end_jei.png");
     private final IDrawable background;
     private final IDrawable icon;
 

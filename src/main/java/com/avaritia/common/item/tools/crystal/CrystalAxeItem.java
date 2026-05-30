@@ -25,12 +25,11 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
     private final String name;
 
     public CrystalAxeItem(String name) {
-        super(ModToolTiers.CRYSTAL,
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.getSpeed()))
         );
         this.name = name;
     }
@@ -46,10 +45,10 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
     }
 
     @Override
-    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+    public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         boolean isJumpAttack = this.isJumpAttack(attacker);
 
-        if (!target.level().isClientSide) {
+        if (!target.level().isClientSide()) {
             if (isJumpAttack) {
 
                 DamageSource voidDamage = target.level().damageSources().fellOutOfWorld();
@@ -59,12 +58,12 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
                 Vec3 pos = target.position();
                 target.level().addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
                         pos.x, pos.y + target.getBbHeight() / 2, pos.z,
-                        (target.level().random.nextDouble() - 0.5) * 2.0,
-                        (target.level().random.nextDouble() - 0.5) * 2.0,
-                        (target.level().random.nextDouble() - 0.5) * 2.0);
+                        (target.level().getRandom().nextDouble() - 0.5) * 2.0,
+                        (target.level().getRandom().nextDouble() - 0.5) * 2.0,
+                        (target.level().getRandom().nextDouble() - 0.5) * 2.0);
             }
         }
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
     private boolean isJumpAttack(LivingEntity attacker) {
@@ -73,7 +72,7 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
     @Override
     public boolean onLeftClickEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity entity) {
         if (entity instanceof ServerPlayer serverPlayer && !serverPlayer.level().isClientSide()) {
-            serverPlayer.getCooldowns().addCooldown(serverPlayer.getUseItem().getItem(), 1200);
+            serverPlayer.getCooldowns().addCooldown(serverPlayer.getUseItem(), 1200);
             serverPlayer.stopUsingItem();
             if (serverPlayer.getOffhandItem().getItem() instanceof ShieldItem) {
                 serverPlayer.getOffhandItem().setDamageValue(serverPlayer.getOffhandItem().getDamageValue() / 2);

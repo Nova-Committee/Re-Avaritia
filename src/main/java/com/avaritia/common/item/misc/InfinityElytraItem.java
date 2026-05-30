@@ -29,7 +29,7 @@ public class InfinityElytraItem extends Item {
 
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
-        if (!entity.level().isClientSide && entity.isFallFlying()) {
+        if (!entity.level().isClientSide() && entity.isFallFlying()) {
             double range = 3.0;
             AABB boundingBox = new AABB(
                     entity.getX() - range,
@@ -78,6 +78,7 @@ public class InfinityElytraItem extends Item {
             );
         }
     }
+
 
     @Override
     public boolean canElytraFly(@NotNull ItemStack stack, @NotNull LivingEntity entity) {

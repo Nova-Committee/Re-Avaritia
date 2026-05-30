@@ -1,8 +1,8 @@
 package com.avaritia.client.screen;
 
 import com.avaritia.common.menu.ExtremeAnvilMenu;
-import com.avaritia.network.C2SRenamePacket;
-import com.avaritia.network.NetworkHandler;
+import com.avaritia.common.net.C2SRenamePacket;
+import com.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;

@@ -152,13 +152,13 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
     }
 
     protected SpriteId getMaterial(T blockEntity, ChestType chestType) {
-        return new SpriteId(Sheets.CHEST_SHEET, Avaritia.rl("block/chest/compressed_chest"));
+        return new SpriteId(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
     }
 
     public static class State extends BlockEntityRenderState {
         public ChestType chestType = ChestType.SINGLE;
         public float open;
         public Direction facing = Direction.SOUTH;
-        public SpriteId material = new SpriteId(Sheets.CHEST_SHEET, Avaritia.rl("block/chest/compressed_chest"));
+        public SpriteId material = new SpriteId(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
     }
 }

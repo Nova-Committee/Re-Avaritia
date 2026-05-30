@@ -43,10 +43,10 @@ public class SingularityItem extends Item implements IColored {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity == null) {
-            return Localizable.of(this.getDescriptionId(stack)).args("NULL").build();
+            return Localizable.of(this.getDescriptionId()).args("NULL").build();
         }
 
-        return Localizable.of(this.getDescriptionId(stack)).args(Component.translatable(singularity.getDisplayName())).build();
+        return Localizable.of(this.getDescriptionId()).args(Component.translatable(singularity.getDisplayName())).build();
     }
 
     @Override

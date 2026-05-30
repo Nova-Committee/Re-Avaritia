@@ -1,32 +1,66 @@
 package com.avaritia;
 
+import com.avaritia.config.AvaritiaConfig;
 import com.avaritia.core.singularity.SingularityReloadListener;
+import com.avaritia.init.config.ModConfig;
+import com.avaritia.init.registry.*;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.resources.Identifier;
 
 /**
- * Avaritia — 无尽物品模组。
+ * Avaritia — 无尽模组。
  * <p>
  * 主模组类，使用 NeoForge {@link Mod} 注解注册。
  */
-@Mod(Avaritia.MOD_ID)
+@Mod(Const.MOD_ID)
 public class Avaritia {
-
-    public static final String MOD_ID = "avaritia";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
-    public static Identifier rl(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
-    }
+    public static IEventBus MOD_EVENT_BUS;
 
     @SuppressWarnings("unused")
-    public Avaritia(ModContainer modContainer) {
+    public Avaritia(IEventBus modEventBus, ModContainer modContainer) {
+        MOD_EVENT_BUS = modEventBus;
         // 注册模组配置
-        com.avaritia.config.AvaritiaConfig.register(modContainer);
-        SingularityReloadListener.registerEventHandler();
+        ModConfig.register(modContainer);
+
+        ModDataComponents.DATA_COMPONENTS.register(modEventBus);
+        ModArmorMaterial.ARMOR_MATERIALS.register(modEventBus);
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModCreativeModeTabs.TABS.register(modEventBus);
+        ModTileEntities.BLOCK_ENTITIES.register(modEventBus);
+        ModSounds.SOUNDS.register(modEventBus);
+        ModMenus.MENUS.register(modEventBus);
+        ModMobEffects.MOB_EFFECTS.register(modEventBus);
+        ModEntityTypes.ENTITY_TYPES.register(modEventBus);
+        ModParticles.PARTICLE_TYPES.register(modEventBus);
+        ModRecipeTypes.RECIPES.register(modEventBus);
+        ModRecipeSerializers.SERIALIZERS.register(modEventBus);
+        ModIngredients.INGREDIENT.register(modEventBus);
+
+        SingularityReloadListener.registerEventHandler();//todo 放入单独文件
+
+        modEventBus.addListener(this::constructMod);
+        modEventBus.addListener(this::setup);
+    }
+
+    private void constructMod(final FMLConstructModEvent event)
+    {
+        if(ModList.get().isLoaded("curios")) {
+            //MOD_EVENT_BUS.addListener(AvaritiaCuriosPlugin::registerCapabilities);
+        }
+    }
+
+    public void setup(final FMLCommonSetupEvent event) {
+//        if (Const.isLoad("projecte")) ModEMCHandler.init();
+        DispenserBlock.registerProjectileBehavior(ModItems.endest_pearl.get());
     }
 }

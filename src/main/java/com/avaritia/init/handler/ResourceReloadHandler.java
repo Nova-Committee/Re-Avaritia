@@ -3,7 +3,7 @@ package com.avaritia.init.handler;
 import com.avaritia.Const;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 
 /**
  * Description:
@@ -14,6 +14,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 @EventBusSubscriber(modid = Const.MOD_ID)
 public class ResourceReloadHandler {
     @SubscribeEvent
-    public static void onAddReloadListeners(AddReloadListenerEvent event) {
+    public static void onAddReloadListeners(AddClientReloadListenersEvent event) {
+        // 在此注册客户端重载监听器
     }
 }

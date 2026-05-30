@@ -1,6 +1,7 @@
 package com.avaritia.core.singularity;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -32,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SingularityReloadListener extends SimpleJsonResourceReloadListener<JsonElement> {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Codec<JsonElement> JSON_CODEC = ExtraCodecs.JSON;
-    private static final Identifier RELOAD_LISTENER_ID = Identifier.of(Avaritia.MOD_ID, "singularities");
+    private static final Identifier RELOAD_LISTENER_ID = Identifier.fromNamespaceAndPath(Const.MOD_ID, "singularities");
 
     public static SingularityReloadListener INSTANCE = new SingularityReloadListener();
 
@@ -76,9 +77,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
                 decoded.ifPresentOrElse(r -> {
                     var singularity = r.carrier();
                     dataSingularities.put(identifier, singularity);
-                }, () -> Avaritia.LOGGER.debug("Singularity: Skipping loading singularity {} as its conditions were not met", identifier));
+                }, () -> Const.LOGGER.debug("Singularity: Skipping loading singularity {} as its conditions were not met", identifier));
             } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
-                Avaritia.LOGGER.error("Singularity: Parsing error loading singularity {}", identifier, jsonparseexception);
+                Const.LOGGER.error("Singularity: Parsing error loading singularity {}", identifier, jsonparseexception);
             }
         }
 
@@ -157,9 +158,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
         if (singularity != null && singularity.getRegistryName() != null) {
             var oldSingularity = this.runSingularities.put(singularity.getRegistryName(), singularity);
             if (oldSingularity == null) {
-                Avaritia.LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getRegistryName());
+                Const.LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getRegistryName());
             } else {
-                Avaritia.LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
+                Const.LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
             }
             NeoForge.EVENT_BUS.post(new SingularityEvent.Add(runSingularities, singularity));
         }
@@ -201,9 +202,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
         try {
             Class.forName(className).getMethod("invalidate").invoke(null);
         } catch (ClassNotFoundException ignored) {
-            Avaritia.LOGGER.debug("Singularity: recipe cache class {} has not been migrated yet; skipping invalidation.", className);
+            Const.LOGGER.debug("Singularity: recipe cache class {} has not been migrated yet; skipping invalidation.", className);
         } catch (ReflectiveOperationException exception) {
-            Avaritia.LOGGER.error("Singularity: failed to invalidate recipe cache {}", className, exception);
+            Const.LOGGER.error("Singularity: failed to invalidate recipe cache {}", className, exception);
         }
     }
 

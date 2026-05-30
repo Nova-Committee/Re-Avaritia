@@ -49,7 +49,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     public @NotNull InteractionResult use(Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (level.isClientSide) return InteractionResult.PASS;
+        if (level.isClientSide()) return InteractionResult.PASS;
 
         boolean upMode = isActive(stack, "infinity_clock_up");
 
@@ -63,7 +63,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                     (customData) ->
                             customData.update(
                                     tag -> {
-                                        int current  = tag.contains("SpeedMultiplier") ? tag.getInt("SpeedMultiplier") : 1;
+                                        int current  = tag.contains("SpeedMultiplier") ? tag.getInt("SpeedMultiplier").get() : 1;
                                         int next;
 
                                         switch (current) {
@@ -74,7 +74,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
                                             case 256 -> next = 512;
                                             default -> next = 1;
                                         }
-                                        player.displayClientMessage(Component.literal(next + "x"), true);
+                                        player.sendOverlayMessage(Component.literal(next + "x"));
                                         tag.putInt("SpeedMultiplier", next);
                                     }
                             )
@@ -104,13 +104,13 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
             return InteractionResult.CONSUME;
         }
 
-        if (level.isClientSide) return InteractionResult.SUCCESS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
                 (customData) ->
                         customData.update(
                                 tag -> {
-                                    int multiplier  = tag.contains("SpeedMultiplier") ? tag.getInt("SpeedMultiplier") : 1;
+                                    int multiplier  = tag.contains("SpeedMultiplier") ? tag.getInt("SpeedMultiplier").get() : 1;
 
                                     if (multiplier == 1) {
                                         removeAcceleration(level, pos);
@@ -167,7 +167,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
 
     public static AcceleratedBlocksSavedData getSavedData(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-                new SavedData.Factory<>(AcceleratedBlocksSavedData::new, AcceleratedBlocksSavedData::new),
+                new SavedData(AcceleratedBlocksSavedData::new, AcceleratedBlocksSavedData::new),
                 AcceleratedBlocksSavedData.NAME
         );
     }

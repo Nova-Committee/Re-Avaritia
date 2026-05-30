@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @Project: Avaritia
@@ -26,11 +27,11 @@ public class InitEnchantment {
         this.level = level;
     }
 
-    public void appendHoverText(Item.TooltipContext context, List<Component> tooltipComponents) {
+    public void appendHoverText(Item.TooltipContext context, Consumer<Component> tooltipComponents) {
         HolderLookup.Provider registries = context.registries();
         if (registries != null) {
             HolderLookup.RegistryLookup<Enchantment> registrylookup = registries.lookupOrThrow(Registries.ENCHANTMENT);
-            registrylookup.get(this.enchantment).ifPresent((holder) -> tooltipComponents.add(ModTooltips.INIT_ENCHANT.args(Enchantment.getFullname(holder, this.level)).build()));
+            registrylookup.get(this.enchantment).ifPresent((holder) -> tooltipComponents.accept(ModTooltips.INIT_ENCHANT.args(Enchantment.getFullname(holder, this.level)).build()));
         }
     }
 

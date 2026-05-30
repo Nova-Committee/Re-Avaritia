@@ -1,6 +1,7 @@
 package com.avaritia.client;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.avaritia.client.model.loader.CosmicArcModelLoader;
 import com.avaritia.client.model.loader.CosmicModelLoader;
@@ -62,7 +63,7 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 /**
  * Avaritia 客户端事件总线订阅类，集中注册实体渲染器、方块实体渲染器、界面、模型加载器和粒子提供器。
  */
-@EventBusSubscriber(modid = Avaritia.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class AvaritiaClient {
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_R, "key.avaritia.categories");
 
@@ -139,6 +140,6 @@ public class AvaritiaClient {
     }
 
     private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(Const.MOD_ID, path);
     }
 }

@@ -18,6 +18,6 @@ public final class ScreenTextures {
     public static final Identifier INFINITY_CLOCK_TIME = texture("textures/gui/machine/infinity_clock_time.png");
 
     private static Identifier texture(String path) {
-        return Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(Const.MOD_ID, path);
     }
 }

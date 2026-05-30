@@ -2,21 +2,18 @@ package com.avaritia.common.item.misc;
 
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.InitEnchantItem;
-import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.registry.ModEnchants;
-import com.avaritia.init.registry.ModEntities;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import static com.avaritia.init.registry.ModArmorMaterial.infinity_horse_armor;
 
@@ -30,19 +27,19 @@ public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
                         .stacksTo(1)
                         .rarity(ModRarities.RARE)
                         .fireResistant()
-                        .setNoRepair());
+                        .setNoCombineRepair());
     }
 
     @Override
-    public boolean isEnchantable(@NotNull ItemStack pStack) {
+    public boolean supportsEnchantment(@NonNull ItemStack stack, @NonNull Holder<Enchantment> enchantment) {
         return true;
     }
 
-
     @Override
-    public int getEnchantmentValue(@NotNull ItemStack stack) {
+    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
         return 10;
     }
+
 
     @Override
     public boolean isFoil(@NotNull ItemStack pStack) {
@@ -63,10 +60,10 @@ public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
 
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NonNull Consumer<Component> builder,
                                 @NotNull TooltipFlag isAdvanced) {
-        this.FROST_WALKER.appendHoverText(context, tooltipComponents);
-        this.ALL_DAMAGE_PROTECTION.appendHoverText(context, tooltipComponents);
-        this.FALL_PROTECTION.appendHoverText(context, tooltipComponents);
+        this.FROST_WALKER.appendHoverText(context, builder);
+        this.ALL_DAMAGE_PROTECTION.appendHoverText(context, builder);
+        this.FALL_PROTECTION.appendHoverText(context, builder);
     }
 }

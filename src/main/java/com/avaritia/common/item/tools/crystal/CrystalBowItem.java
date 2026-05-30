@@ -46,7 +46,7 @@ public class CrystalBowItem extends BowItem implements ISwitchable, IBowTransfor
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pEntityLiving, int pTimeLeft) {
+    public boolean releaseUsing(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pEntityLiving, int pTimeLeft) {
         if (pEntityLiving instanceof Player player) {
             InteractionHand hand = pEntityLiving.getUsedItemHand();
             ItemStack stack = player.getItemInHand(hand);
@@ -56,12 +56,12 @@ public class CrystalBowItem extends BowItem implements ISwitchable, IBowTransfor
 
             chargeTime = EventHooks.onArrowLoose(pStack, pLevel, player, chargeTime, true);
             if (chargeTime < 0) {
-                return;
+                return isBladeSlashActive;
             }
 
             float power = getPowerForTime(chargeTime);
             if (power >= 0.1) {
-                if (!pLevel.isClientSide) {
+                if (!pLevel.isClientSide()) {
                     if (isBladeSlashActive) {
                         BladeSlashEntity bladeSlash = new BladeSlashEntity(pLevel, player);
 
@@ -111,20 +111,20 @@ public class CrystalBowItem extends BowItem implements ISwitchable, IBowTransfor
 
                     pStack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 }
-
-
-
                 player.awardStat(Stats.ITEM_USED.get(this));
+                return true;
             }
         }
+        return false;
     }
 
+
     @Override
-    public void onCraftedBy(@NotNull ItemStack stack, @NotNull Level level, @NotNull Player player) {
-        stack.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+    public void onCraftedBy(@NotNull ItemStack stack, @NotNull Player player) {
+        stack.enchant(player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.INFINITY),1);
-        stack.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+        stack.enchant(player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.MULTISHOT),1);
-        super.onCraftedBy(stack, level, player);
+        super.onCraftedBy(stack, player);
     }
 }

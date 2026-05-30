@@ -3,6 +3,7 @@ package com.avaritia.api.client.screen;
 import com.avaritia.api.iface.IDataReceiver;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -16,9 +17,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public abstract class BaseContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements ContainerListener, IDataReceiver {
-    protected Identifier bgTexture;
-    protected int bgImgWidth;
-    protected int bgImgHeight;
+    protected final Identifier bgTexture;
+    protected final int bgImgWidth;
+    protected final int bgImgHeight;
 
     public BaseContainerScreen(T container, Inventory inventory, Component title) {
         this(container, inventory, title, null);
@@ -33,9 +34,7 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     public BaseContainerScreen(T container, Inventory inventory, Component title, Identifier bgTexture, int bgWidth, int bgHeight, int bgImgWidth, int bgImgHeight) {
-        super(container, inventory, title);
-        this.imageWidth = bgWidth;
-        this.imageHeight = bgHeight;
+        super(container, inventory, title, bgWidth, bgHeight);
         this.bgTexture = bgTexture;
         this.bgImgWidth = bgImgWidth;
         this.bgImgHeight = bgImgHeight;
@@ -67,19 +66,18 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     @Override
-    public void render(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractContents(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractContents(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderFg(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
     protected void renderFg(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphicsExtractor pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
-        if (this.bgTexture != null) pGuiGraphics.blit(this.bgTexture, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+    public void extractBackground(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        if (this.bgTexture != null) pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
         this.renderBgs(pGuiGraphics, pPartialTick, this.leftPos, this.topPos);
     }
 

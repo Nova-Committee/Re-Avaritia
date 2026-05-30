@@ -161,13 +161,13 @@ public class ItemStackWrapper extends ItemStackHandler {
     }
 
     public void deserializeNBTLegacy(HolderLookup.@NotNull Provider lookup, CompoundTag nbt) {
-        int size = nbt.contains("Size", 3) ? nbt.getInt("Size") : this.stacks.size();
+        int size = nbt.getInt("Size").orElse(this.stacks.size());
         this.setSize(Math.max(size, this.stacks.size()));
-        ListTag items = nbt.getList("Items", 10);
+        ListTag items = nbt.getList("Items").orElseGet(ListTag::new);
 
         for(int i = 0; i < items.size(); ++i) {
-            CompoundTag item = items.getCompound(i);
-            int slot = item.getInt("Slot");
+            CompoundTag item = items.getCompound(i).orElseGet(CompoundTag::new);
+            int slot = item.getInt("Slot").orElse(-1);
             if (slot >= 0 && slot < this.stacks.size()) {
                 ItemStack.CODEC.parse(lookup.createSerializationContext(NbtOps.INSTANCE), item).resultOrPartial((error) -> Const.LOGGER.error("Tried to load invalid item: '{}'", error)).ifPresent((stack) -> this.stacks.set(slot, stack));
             }

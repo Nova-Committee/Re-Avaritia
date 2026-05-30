@@ -1,6 +1,5 @@
 package com.avaritia.common.item.tools.infinity;
 
-import com.google.common.collect.Multimap;
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.iface.item.InitEnchantItem;
@@ -14,11 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -27,13 +22,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnchantItem{
 
@@ -50,10 +48,7 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-
-        boolean result = super.hurtEnemy(stack, target, attacker);
-
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker instanceof ServerPlayer serverPlayer && canSmashAttack(serverPlayer)) {
             ServerLevel serverLevel = (ServerLevel) attacker.level();
 
@@ -76,8 +71,7 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
                     0.1
             );
         }
-
-        return result;
+        super.hurtEnemy(stack, target, attacker);
     }
 
     public static @NotNull ItemAttributeModifiers createAttributes() {
@@ -101,7 +95,7 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
         ItemStack itemStack = player.getItemInHand(hand);
 
         for (int i = 0; i < 3; i++) {
-            WindCharge windProjectile = EntityType.WIND_CHARGE.create(level);
+            WindCharge windProjectile = EntityType.WIND_CHARGE.create(level, EntitySpawnReason.EVENT);
             if (windProjectile != null) {
                 Vec3 lookVec = player.getLookAngle();
                 windProjectile.setPos(player.getX(), player.getEyeY(), player.getZ());
@@ -109,7 +103,7 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
                 level.addFreshEntity(windProjectile);
             }
         }
-        player.getCooldowns().addCooldown(itemStack.getItem(), 20);
+        player.getCooldowns().addCooldown(itemStack, 20);
         return InteractionResult.SUCCESS;
     }
 
@@ -143,10 +137,10 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.WIND_BURST.appendHoverText(context, tooltipComponents);
         this.BREACH.appendHoverText(context, tooltipComponents);
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 }

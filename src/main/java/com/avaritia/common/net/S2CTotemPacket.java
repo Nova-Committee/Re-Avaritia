@@ -23,14 +23,14 @@ import org.jetbrains.annotations.NotNull;
  * @description
  * @date 2024/3/28 14:02
  */
-public record S2CTotemPack(ItemStack stack, int entityId) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<S2CTotemPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, S2CTotemPack> STREAM_CODEC = StreamCodec.composite(
+public record S2CTotemPacket(ItemStack stack, int entityId) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<S2CTotemPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CTotemPacket> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
-            S2CTotemPack::stack,
+            S2CTotemPacket::stack,
             ByteBufCodecs.INT,
-            S2CTotemPack::entityId,
-            S2CTotemPack::new
+            S2CTotemPacket::entityId,
+            S2CTotemPacket::new
     );
 
     @Override
@@ -38,9 +38,9 @@ public record S2CTotemPack(ItemStack stack, int entityId) implements CustomPacke
         return TYPE;
     }
 
-    public static class Handler implements IPayloadHandler<S2CTotemPack> {
+    public static class Handler implements IPayloadHandler<S2CTotemPacket> {
         @Override
-        public void handle(@NotNull S2CTotemPack packet, IPayloadContext context) {
+        public void handle(@NotNull S2CTotemPacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 Minecraft instance = Minecraft.getInstance();
                 ClientLevel world = instance.level;

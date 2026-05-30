@@ -19,10 +19,10 @@ import org.jetbrains.annotations.Nullable;
  * 注册模组中的所有伤害类型。
  */
 public class ModDamageTypes {
-    public static final DeferredRegister<DamageType> DAMAGE_TYPES = DeferredRegister.create(Registries.DAMAGE_TYPE, Avaritia.MOD_ID);
+    public static final DeferredRegister<DamageType> DAMAGE_TYPES = DeferredRegister.create(Registries.DAMAGE_TYPE, Const.MOD_ID);
 
     public static final ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE,
-            Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, "infinity"));
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity"));
 
     static {
         DAMAGE_TYPES.register("infinity", () -> new DamageType("infinity", DamageScaling.ALWAYS, 0.1f));

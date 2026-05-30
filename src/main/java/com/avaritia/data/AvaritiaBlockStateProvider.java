@@ -133,10 +133,10 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         Identifier model = cubeAllModel(block, id);
         this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block, new MultiVariant(WeightedList.of(new Variant(model))))
                 .with(PropertyDispatch.modify(BlockStateProperties.HORIZONTAL_FACING)
-                        .select(Direction.NORTH, VariantMutator.Y_ROT.with(Quadrant.ZERO))
-                        .select(Direction.EAST, VariantMutator.Y_ROT.with(Quadrant.P90))
-                        .select(Direction.SOUTH, VariantMutator.Y_ROT.with(Quadrant.P180))
-                        .select(Direction.WEST, VariantMutator.Y_ROT.with(Quadrant.P270))
+                        .select(Direction.NORTH, VariantMutator.Y_ROT.withValue(Quadrant.R0))
+                        .select(Direction.EAST, VariantMutator.Y_ROT.withValue(Quadrant.R90))
+                        .select(Direction.SOUTH, VariantMutator.Y_ROT.withValue(Quadrant.R180))
+                        .select(Direction.WEST, VariantMutator.Y_ROT.withValue(Quadrant.R270))
                 )
                 .create());
         blockItem(block, model);

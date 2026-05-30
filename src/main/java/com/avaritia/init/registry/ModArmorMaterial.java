@@ -23,9 +23,9 @@ import java.util.EnumMap;
  */
 public class ModArmorMaterial {
     public static final TagKey<Item> REPAIRS_INFINITY_ARMOR = TagKey.create(Registries.ITEM,
-            Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, "repairs_infinity_armor"));
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "repairs_infinity_armor"));
     public static final ResourceKey<EquipmentAsset> INFINITY_ARMOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID,
-            Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, "infinity_armor"));
+            Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_armor"));
 
     public static final ArmorMaterial infinity_armor = new ArmorMaterial(1, Util.make(new EnumMap<>(ArmorType.class), map -> {
         map.put(ArmorType.BOOTS, 10);

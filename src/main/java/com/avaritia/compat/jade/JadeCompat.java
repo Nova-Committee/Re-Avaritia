@@ -61,7 +61,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Avaritia.MOD_ID, "neutron_collector");
+            return Identifier.of(Const.MOD_ID, "neutron_collector");
         }
     }
 
@@ -84,7 +84,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Avaritia.MOD_ID, "compressor");
+            return Identifier.of(Const.MOD_ID, "compressor");
         }
     }
 
@@ -112,7 +112,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Avaritia.MOD_ID, "crafting_table");
+            return Identifier.of(Const.MOD_ID, "crafting_table");
         }
     }
 
@@ -136,7 +136,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Avaritia.MOD_ID, "extreme_smithing");
+            return Identifier.of(Const.MOD_ID, "extreme_smithing");
         }
     }
 

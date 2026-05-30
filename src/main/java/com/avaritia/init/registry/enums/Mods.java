@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  */
 public enum Mods {
     VANILLA("minecraft"),
-    AVARITIA(Avaritia.MOD_ID),
+    AVARITIA(Const.MOD_ID),
     TCON("tconstruct"),
     CREATE("create"),
 

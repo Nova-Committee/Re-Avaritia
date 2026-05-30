@@ -6,11 +6,15 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +36,8 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
 
     public static boolean canUnlock(Player pPlayer, LockCode pCode, Component pDisplayName) {
         if (!pPlayer.isSpectator() && !pCode.unlocksWith(pPlayer.getMainHandItem())) {
-            pPlayer.displayClientMessage(Component.translatable("container.isLocked", pDisplayName), true);
-            pPlayer.playNotifySound(SoundEvents.CHEST_LOCKED, SoundSource.BLOCKS, 1.0F, 1.0F);
+            pPlayer.sendOverlayMessage(Component.translatable("container.isLocked", pDisplayName));
+            pPlayer.playSound(SoundEvents.CHEST_LOCKED, 1.0F, 1.0F);
             return false;
         } else {
             return true;
@@ -43,17 +47,27 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
     public abstract @NotNull ItemStackWrapper getInventory();
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(tag, registries);
-        this.lockKey = LockCode.fromTag(tag);
-        this.getInventory().deserializeNBT(registries, tag);
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.lockKey = LockCode.fromTag(input);
+        this.getInventory().deserialize(input);
     }
 
     @Override
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        this.lockKey.addToTag(output);
+        this.getInventory().serialize(output);
+    }
+
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+        this.loadAdditional(TagValueInput.create(ProblemReporter.DISCARDING, registries, tag));
+    }
+
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(tag, registries);
-        this.lockKey.addToTag(tag);
-        tag.merge(this.getInventory().serializeNBT(registries));
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+        this.saveAdditional(output);
+        tag.merge(output.buildResult());
     }
 
     public boolean canOpen(Player pPlayer) {

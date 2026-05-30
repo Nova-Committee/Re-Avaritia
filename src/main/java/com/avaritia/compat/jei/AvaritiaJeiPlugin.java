@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 
 @JeiPlugin
 public class AvaritiaJeiPlugin implements IModPlugin {
-    public static final Identifier UID = Identifier.of(Avaritia.MOD_ID, "jei_plugin");
+    public static final Identifier UID = Identifier.of(Const.MOD_ID, "jei_plugin");
 
     @Override
     public @NotNull Identifier getPluginUid() {

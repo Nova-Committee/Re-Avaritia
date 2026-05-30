@@ -22,14 +22,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -41,13 +44,12 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeAxeItem() {
-        super(ModToolTiers.BLAZE,
+        super(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed(),
                 new Properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .attributes(createAttributes(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.getSpeed()))
         );
     }
 
@@ -70,15 +72,15 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 
     @Override
     public @NotNull InteractionResult use(@NotNull Level world, Player player, @NotNull InteractionHand hand) {
-        if (player.isCrouching() && !world.isClientSide) {
+        if (player.isCrouching() && !world.isClientSide()) {
             switchMode(world, player, hand, "smelt");
             return InteractionResult.SUCCESS;
         }
@@ -87,7 +89,7 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (!level.isClientSide && isActive(stack, "smelt") && miningEntity instanceof Player player) {
+        if (!level.isClientSide() && isActive(stack, "smelt") && miningEntity instanceof Player player) {
             ToolUtils.melting(state, level, pos, player, stack);
             if (state.is(BlockTags.LOGS)) {
                 level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(ModItems.refined_coal.get())));

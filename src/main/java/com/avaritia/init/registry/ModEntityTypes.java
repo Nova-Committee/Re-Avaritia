@@ -1,6 +1,7 @@
 package com.avaritia.init.registry;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.common.entity.*;
 import com.avaritia.common.entity.arrow.*;
 import com.avaritia.common.entity.ball.*;
@@ -23,7 +24,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * 注册模组中的所有实体类型。
  */
 public class ModEntityTypes {
-    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Avaritia.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Const.MOD_ID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<ImmortalItemEntity>> IMMORTAL = ENTITY_TYPES.register("immortal",
             () -> EntityType.Builder.of(ImmortalItemEntity::new, MobCategory.MISC).sized(0.25f, 0.25f)
@@ -164,6 +165,6 @@ public class ModEntityTypes {
     }
 
     private static ResourceKey<EntityType<?>> key(String name) {
-        return ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Avaritia.MOD_ID, name));
+        return ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, name));
     }
 }

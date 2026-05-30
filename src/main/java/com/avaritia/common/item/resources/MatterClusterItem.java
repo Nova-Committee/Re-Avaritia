@@ -190,7 +190,7 @@ public class MatterClusterItem extends Item {
 
         ItemStack stack = player.getItemInHand(hand);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             ItemUtils.dropInventory(level, player.blockPosition(),
                     readClusterInventory(stack));
         }

@@ -1,6 +1,6 @@
-package com.avaritia.network;
+package com.avaritia.common.net;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.api.iface.IFilterItem;
 import com.avaritia.init.registry.ModDataComponents;
 import net.minecraft.core.component.DataComponents;
@@ -10,7 +10,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record C2SItemFilterPacket(ItemStack stack, int action) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<C2SItemFilterPacket> TYPE = new CustomPacketPayload.Type<>(Identifier.of(Avaritia.MOD_ID, "c2s_item_filter"));
+    public static final CustomPacketPayload.Type<C2SItemFilterPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SItemFilterPacket> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
             C2SItemFilterPacket::stack,
@@ -61,7 +60,7 @@ public record C2SItemFilterPacket(ItemStack stack, int action) implements Custom
                                 }
                             }
                             case 2 -> {
-                                tag.getAllKeys().forEach(tag::remove);
+                                tag.keySet().forEach(tag::remove);
                             }
                         }
 

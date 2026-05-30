@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static com.avaritia.Avaritia.LOGGER;
+import static com.avaritia.Const.LOGGER;
 
 /**
  * Description:
@@ -99,7 +99,7 @@ public class ItemUtils {
     public static CompoundTag getOrCreateChildTag(ItemStack stack, String childTagName) {
         CompoundTag root = getOrCreateTag(stack);
         CompoundTag childTag;
-        if (!root.contains(childTagName, CompoundTag.TAG_COMPOUND)) {
+        if (!root.contains(childTagName)) {
             childTag = new CompoundTag();
             root.put(childTagName, childTag);
         } else {

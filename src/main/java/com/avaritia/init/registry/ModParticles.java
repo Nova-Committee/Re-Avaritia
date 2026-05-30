@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * Avaritia 粒子类型注册表。
  */
 public class ModParticles {
-    public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, Avaritia.MOD_ID);
+    public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, Const.MOD_ID);
 
     public static final Supplier<SimpleParticleType> CHARGE = PARTICLE_TYPES.register("charge", () -> new SimpleParticleType(false));
 

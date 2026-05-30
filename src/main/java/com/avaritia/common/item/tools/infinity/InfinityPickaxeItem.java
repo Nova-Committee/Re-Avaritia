@@ -1,7 +1,6 @@
 package com.avaritia.common.item.tools.infinity;
 
 import com.avaritia.api.common.enchant.InitEnchantment;
-import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.iface.item.InitEnchantItem;
@@ -24,8 +23,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -33,8 +34,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -53,7 +56,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()
-                        .pickaxe(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.getSpeed())
+                        .pickaxe(ModToolTiers.INFINITY, 0, ModToolTiers.INFINITY.speed())
         );
     }
 
@@ -84,7 +87,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
     }
 
     @Override
-    public int getEnchantmentValue(@NotNull ItemStack stack) {
+    public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
         return 0;
     }
 
@@ -107,11 +110,11 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
             return InteractionResult.SUCCESS;
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(SILK_TOUCH, stack) > 0) {
-            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+            if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer)
                 serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_1"), true);
             ItemUtils.clearEnchants(stack, SILK_TOUCH);
         }else {
-            if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+            if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer)
                 serverPlayer.sendSystemMessage(Component.translatable("tooltip.infinity_pickaxe.enchant_2"), true);
             stack.enchant(SILK_TOUCH, 1);
         }
@@ -119,7 +122,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
     }
 
     @Override
-    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity victim, @NotNull LivingEntity player) {
+    public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity victim, @NotNull LivingEntity player) {
         if (isActive(stack, "infinity_pickaxe_hammer")) {
             if (!(victim instanceof Player)) {
                 int i = 10;
@@ -127,7 +130,6 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
 
             }
         }
-        return true;
     }
 
 
@@ -149,9 +151,9 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents,
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
         this.initEnchantment.appendHoverText(context, tooltipComponents);
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, context, display, tooltipComponents, isAdvanced);
     }
 }

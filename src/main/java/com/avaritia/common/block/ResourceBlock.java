@@ -3,11 +3,12 @@ package com.avaritia.common.block;
 import com.avaritia.api.common.block.BaseBlock;
 import com.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Name: Avaritia-forge / ResourceBlock
@@ -28,7 +29,7 @@ public class ResourceBlock extends BaseBlock {
     }
 
     @Override
-    public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
+    public float getEnchantPowerBonus(@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos) {
         return this.type.enchantPower;
     }
 }

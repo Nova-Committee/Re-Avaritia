@@ -24,7 +24,7 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
      * @param locale 语言区域代码，例如 {@code en_us}
      */
     public AvaritiaLanguageProvider(PackOutput output, String locale) {
-        super(output, Avaritia.MOD_ID, locale);
+        super(output, Const.MOD_ID, locale);
     }
 
     /**

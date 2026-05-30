@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
  * Date: 2022/4/2 12:58
  * Version: 1.0
  */
-public record S2CSingularitiesPack(Collection<Singularity> dataSingularities, Collection<Singularity> runSingularities) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<S2CSingularitiesPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_singularities"));
+public record S2CSingularitiesPacket(Collection<Singularity> dataSingularities, Collection<Singularity> runSingularities) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<S2CSingularitiesPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_singularities"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, S2CSingularitiesPack> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CSingularitiesPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.collection(ArrayList::new, Singularity.STREAM_CODEC),
-            S2CSingularitiesPack::dataSingularities,
+            S2CSingularitiesPacket::dataSingularities,
             ByteBufCodecs.collection(ArrayList::new, Singularity.STREAM_CODEC),
-            S2CSingularitiesPack::runSingularities,
-            S2CSingularitiesPack::new
+            S2CSingularitiesPacket::runSingularities,
+            S2CSingularitiesPacket::new
     );
 
     @Override
@@ -38,9 +38,9 @@ public record S2CSingularitiesPack(Collection<Singularity> dataSingularities, Co
         return TYPE;
     }
 
-    public static class Handler implements IPayloadHandler<S2CSingularitiesPack> {
+    public static class Handler implements IPayloadHandler<S2CSingularitiesPacket> {
         @Override
-        public void handle(@NotNull S2CSingularitiesPack packet, IPayloadContext context) {
+        public void handle(@NotNull S2CSingularitiesPacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 SingularityReloadListener.INSTANCE.getDataSingularities().clear();
                 SingularityReloadListener.INSTANCE.getRunSingularities().clear();
