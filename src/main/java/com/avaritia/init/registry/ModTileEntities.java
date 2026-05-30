@@ -1,6 +1,7 @@
 package com.avaritia.init.registry;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.client.render.tile.CompressedChestRenderer;
 import com.avaritia.client.render.tile.InfinityChestBlockRender;
 import com.avaritia.common.tile.CompressedChestTile;

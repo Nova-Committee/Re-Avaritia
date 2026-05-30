@@ -1,5 +1,6 @@
 package com.avaritia.util;
 
+import com.avaritia.init.registry.ModEntityTypes;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.avaritia.api.utils.InventoryUtils;
@@ -10,7 +11,6 @@ import com.avaritia.common.entity.arrow.TraceArrowEntity;
 import com.avaritia.common.item.tools.InfinityArmorItem;
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.ModDamageTypes;
-import com.avaritia.init.registry.ModEntities;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModTags;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -410,15 +410,15 @@ public class ToolUtils {
 
         if (entity instanceof Player player) {
             if (player.isUsingItem() && player.getUseItem().getItem() instanceof ShieldItem) {
-                player.getCooldowns().addCooldown(player.getUseItem().getItem(), 100);
+                player.getCooldowns().addCooldown(player.getUseItem(), 100);
                 arrow.level().broadcastEntityEvent(player, (byte) 30);
                 player.stopUsingItem();
             }
         }
 
-        if (entity.hurt(damagesource, (float) i)) {
+        if (entity.hurtServer(, damagesource, (float) i)) {
             if (entity instanceof LivingEntity livingentity) {
-                if (!arrow.level().isClientSide && arrow.getPierceLevel() <= 0) {
+                if (!arrow.level().isClientSide() && arrow.getPierceLevel() <= 0) {
                     livingentity.setArrowCount(livingentity.getArrowCount() + 1);
                 }
 
@@ -457,7 +457,7 @@ public class ToolUtils {
             arrow.setYRot(arrow.getYRot() + 180.0F);
             arrow.setPos(entity.position());
             arrow.yRotO += 180.0F;
-            if (!arrow.level().isClientSide && arrow.getDeltaMovement().lengthSqr() < 1.0E-7D) {
+            if (!arrow.level().isClientSide() && arrow.getDeltaMovement().lengthSqr() < 1.0E-7D) {
                 if (arrow.pickup == AbstractArrow.Pickup.ALLOWED) {
                     arrow.spawnAtLocation(arrow.getPickupItem(), 0.1F);
                 }
@@ -500,7 +500,7 @@ public class ToolUtils {
      */
     public static void pearlAttack(Player player, ItemStack stack, Level world) {
         if (!world.isClientSide()) {
-            EndestPearlEntity pearl = ModEntities.ENDER_PEARL.get().create(player.level(), EntitySpawnReason.EVENT);
+            EndestPearlEntity pearl = ModEntityTypes.ENDER_PEARL.get().create(player.level(), EntitySpawnReason.EVENT);
             if (pearl != null) {
                 pearl.setItem(stack);
                 pearl.setShooter(player);
@@ -510,7 +510,7 @@ public class ToolUtils {
                 player.getCooldowns().addCooldown(stack, 30);
             }
         }
-        world.playSound(player, player.getOnPos(), SoundEvents.ENDER_PEARL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        world.playSound(player, player.getOnPos(), SoundEvents.ENDER_PEARL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 
 
@@ -524,7 +524,7 @@ public class ToolUtils {
      * @param lightOn    使用闪电
      */
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = ModDamageTypes.causeRandomDamage(player);
@@ -668,7 +668,7 @@ public class ToolUtils {
 
             ) {
                 for (int i = 0; i < cost; i++) {
-                    bonemealableBlock.performBonemeal(serverLevel, serverLevel.random, pos, state);
+                    bonemealableBlock.performBonemeal(serverLevel, serverLevel.getRandom(), pos, state);
                     serverLevel.levelEvent(2005, pos, 0);
                 }
             }
@@ -787,15 +787,15 @@ public class ToolUtils {
      * @param player 玩家
      * @param tool   使用的工具
      */
-    public static void melting(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool) {
+    public static void melting(BlockState state, ServerLevel world, BlockPos pos, Player player, ItemStack tool) {
         if (!state.getBlock().canHarvestBlock(state, world, pos, player) || state.getBlock() instanceof CropBlock) return;
-        List<ItemStack> drops = Block.getDrops(state, (ServerLevel) world, pos, null);
+        List<ItemStack> drops = Block.getDrops(state, world, pos, null);
         Holder<Enchantment> fortune =
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                         .getOrThrow(Enchantments.FORTUNE);
         int unLuck = EnchantmentHelper.getTagEnchantmentLevel(fortune, tool);
         //霉运影响
-        boolean flag = unLuck > 0 && world.random.nextDouble() < unLuck * 0.2; //霉运判断结果 true触发
+        boolean flag = unLuck > 0 && world.getRandom().nextDouble() < unLuck * 0.2; //霉运判断结果 true触发
         if (drops.isEmpty() || flag) return;
         drops.forEach(itemStack -> {
             ItemStack dropStack = getMeltingItem(player, world, itemStack, tool);
@@ -814,8 +814,8 @@ public class ToolUtils {
      * @param tool      使用工具
      * @return 烧炼产物
      */
-    public static ItemStack getMeltingItem(Player player, Level world, ItemStack itemStack, ItemStack tool) {
-        ItemStack dropStack = world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
+    public static ItemStack getMeltingItem(Player player, ServerLevel world, ItemStack itemStack, ItemStack tool) {
+        ItemStack dropStack = world.recipeAccess().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
                 .map(smeltingRecipe -> smeltingRecipe.value().getResultItem(world.registryAccess())).filter(e -> !e.isEmpty())
                 .map(e -> e.copyWithCount(tool.getCount() * e.getCount()))
                 .orElse(itemStack);
@@ -844,13 +844,10 @@ public class ToolUtils {
      * @param player 玩家
      * @param pos    坐标
      */
-    public static void meltingAchieve(Level world, Player player, BlockPos pos) {
-        if (!world.isClientSide) {
-            ServerLevel serverWorld = (ServerLevel) world;
-            for (int i = 0; i < 10; i++) {
-                serverWorld.addParticle(ParticleTypes.FLAME, pos.getX() + world.random.nextDouble(), pos.getY() + 1d,
-                        pos.getZ() + world.random.nextDouble(), 1, 0, 0);
-            }
+    public static void meltingAchieve(ServerLevel world, Player player, BlockPos pos) {
+        for (int i = 0; i < 10; i++) {
+            world.addParticle(ParticleTypes.FLAME, pos.getX() + world.getRandom().nextDouble(), pos.getY() + 1d,
+                    pos.getZ() + world.getRandom().nextDouble(), 1, 0, 0);
         }
         world.playSound(player, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); //设置此坐标为空气

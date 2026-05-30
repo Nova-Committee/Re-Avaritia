@@ -38,16 +38,14 @@ public class CrystalPickaxeItem extends Item implements ITooltip, InitEnchantIte
 
 private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 3);
 
-private final String name;
 
-    public CrystalPickaxeItem(String name) {
+    public CrystalPickaxeItem() {
         super(new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
                         .pickaxe(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.speed())
         );
-        this.name = name;
     }
 
     @Override

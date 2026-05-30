@@ -99,7 +99,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
         }
 
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
 
             java.util.List<Entity> list = this.level().getEntities(this, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) ->
                     !(entity instanceof TNTProEntity) && entity.isPickable()
@@ -118,7 +118,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
             this.explodeAndRemove();
         } else {
             this.updateFluidInteraction();
-            if (this.level().isClientSide) {
+            if (this.level().isClientSide()) {
                 this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5D, this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
@@ -131,7 +131,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     protected void explodeAndRemove() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.explode();
             this.discard();
         }

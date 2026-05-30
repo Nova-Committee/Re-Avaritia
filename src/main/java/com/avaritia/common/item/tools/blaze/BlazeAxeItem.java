@@ -13,6 +13,7 @@ import com.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -89,8 +90,8 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (!level.isClientSide() && isActive(stack, "smelt") && miningEntity instanceof Player player) {
-            ToolUtils.melting(state, level, pos, player, stack);
+        if (!level.isClientSide() && level instanceof ServerLevel serverLevel && isActive(stack, "smelt") && miningEntity instanceof Player player) {
+            ToolUtils.melting(state, serverLevel, pos, player, stack);
             if (state.is(BlockTags.LOGS)) {
                 level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(ModItems.refined_coal.get())));
                 level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());

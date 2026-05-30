@@ -1,6 +1,6 @@
 package com.avaritia.init.registry;
 
-import com.avaritia.util.lang.Tooltip;
+import com.avaritia.api.utils.lang.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 

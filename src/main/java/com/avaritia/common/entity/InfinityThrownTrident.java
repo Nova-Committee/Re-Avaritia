@@ -88,7 +88,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
                 setNoPhysics(true);
                 Vec3 returnVector = entity.getEyePosition().subtract(position());
                 this.setPosRaw(getX(), getY() + returnVector.y * 0.015D * loyaltyLevel, getZ());
-                if (level().isClientSide) {
+                if (level().isClientSide()) {
                     yOld = getY();
                 }
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.95D)
@@ -241,7 +241,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
     }
 
     @Override
-    public ItemStack getPickedResult(@NotNull HitResult target) {
+    public ItemStack getPickResult() {
         return tridentItem.copy();
     }
 
@@ -258,9 +258,9 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         }
         boolean hasAction = false;
         for (int i = 0; i < bolts; i++) {
-            LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+            LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel, EntitySpawnReason.EVENT);
             if (lightning != null) {
-                lightning.moveTo(Vec3.atBottomCenterOf(hitPos));
+                lightning.moveOrInterpolateTo(Vec3.atBottomCenterOf(hitPos));
                 lightning.setCause(thrower);
                 serverLevel.addFreshEntity(lightning);
                 hasAction = true;

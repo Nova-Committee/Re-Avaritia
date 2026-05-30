@@ -6,7 +6,7 @@ import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.InitEnchantItem;
 import com.avaritia.common.entity.ball.FireBallEntity;
 import com.avaritia.init.registry.ModDataComponents;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModToolTiers;
 import com.avaritia.init.registry.modes.ToolMode;
@@ -86,7 +86,7 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
                 return InteractionResult.SUCCESS;
             }
             if (isActive(stack, "fire_ball")) {
-                FireBallEntity fireBallEntity = ModEntities.FIRE_BALL.get().create(level, EntitySpawnReason.EVENT);
+                FireBallEntity fireBallEntity = ModEntityTypes.FIRE_BALL.get().create(level, EntitySpawnReason.EVENT);
                 if (fireBallEntity != null) {
                     fireBallEntity.setOwner(player);
                     fireBallEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());

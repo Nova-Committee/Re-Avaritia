@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
-    public CrystalSwordItem(String name) {
+    public CrystalSwordItem() {
         super(new Properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)

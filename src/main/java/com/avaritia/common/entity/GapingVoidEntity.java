@@ -69,7 +69,7 @@ public class GapingVoidEntity extends Entity {
 
     public GapingVoidEntity(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
-        noCulling = true;
+        noPhysics = true;
         if (level() instanceof ServerLevel) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) level(), AVARITIA_FAKE_PLAYER);
         }
@@ -140,7 +140,7 @@ public class GapingVoidEntity extends Entity {
         BlockPos position = this.getOnPos();
         int age = getAge();
 
-        if (age >= maxLifetime && !level().isClientSide) {
+        if (age >= maxLifetime && !level().isClientSide()) {
             level().explode(this, posX, posY, posZ, 6.0f, Level.ExplosionInteraction.BLOCK);
             int range = 4;
             AABB axisAlignedBB = new AABB(new Vec3(posX - range, posY - range, posZ - range), new Vec3(posX + range, posY + range, posZ + range));
@@ -167,7 +167,7 @@ public class GapingVoidEntity extends Entity {
             setAge(age + 1);
         }
 
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             return;
         }
         if (fakePlayer == null) {

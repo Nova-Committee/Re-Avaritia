@@ -41,7 +41,7 @@ public class FireBallEntity extends ThrowableProjectile {
     @Override
     protected void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             Entity owner = this.getOwner();
             if (owner instanceof ServerPlayer player) {
                 BlockPos pos = result.getBlockPos();
@@ -71,7 +71,7 @@ public class FireBallEntity extends ThrowableProjectile {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             Entity owner = this.getOwner();
             if (owner instanceof Player) {
                 Entity ent = result.getEntity();

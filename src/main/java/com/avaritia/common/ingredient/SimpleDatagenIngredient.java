@@ -7,12 +7,14 @@ import com.avaritia.init.registry.enums.Mods;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -60,11 +62,11 @@ public class SimpleDatagenIngredient implements ICustomIngredient {
 
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return stack.getItemHolder().getKey().location().equals(mod.asResource(id));
+        return stack.typeHolder().getKey().identifier().equals(mod.asResource(id));
     }
 
     @Override
-    public @NotNull Stream<ItemStack> getItems() {
+    public @NonNull Stream<Holder<Item>> items() {
         return Stream.empty();
     }
 

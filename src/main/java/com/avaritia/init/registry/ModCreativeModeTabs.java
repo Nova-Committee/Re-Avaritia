@@ -1,6 +1,7 @@
 package com.avaritia.init.registry;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.core.singularity.Singularity;
 import com.avaritia.core.singularity.SingularityReloadListener;
 import com.avaritia.util.SingularityUtils;

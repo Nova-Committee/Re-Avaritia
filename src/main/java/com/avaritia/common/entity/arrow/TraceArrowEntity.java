@@ -105,10 +105,10 @@ public class TraceArrowEntity extends Arrow {
 
     private void superTick() {
         if (!this.leftOwner) {
-            this.leftOwner = this.checkLeftOwner();
+            this.checkLeftOwner();
         }
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.setSharedFlag(6, this.isCurrentlyGlowing());
         }
 
@@ -133,7 +133,7 @@ public class TraceArrowEntity extends Arrow {
 
                 for (AABB axisalignedbb : voxelshape.toAabbs()) {
                     if (axisalignedbb.move(blockpos).contains(vector3d3)) {
-                        this.inGround = true;
+                        this.setOnGround(true);
                         break;
                     }
                 }
@@ -148,10 +148,10 @@ public class TraceArrowEntity extends Arrow {
             this.clearFire();
         }
 
-        if (this.inGround && !flag) {
+        if (this.onGround() && !flag) {
             if (this.lastState != blockstate && this.shouldFall()) {
                 this.startFalling();
-            } else if (!this.level().isClientSide) {
+            } else if (!this.level().isClientSide()) {
                 this.tickDespawn();
             }
 
@@ -275,7 +275,7 @@ public class TraceArrowEntity extends Arrow {
 
         if (damageEntity(entity, damageSource, (float) damage)) {
             if (entity instanceof LivingEntity livingEntity) {
-                if (!this.level().isClientSide && this.getPierceLevel() <= 0) {
+                if (!this.level().isClientSide() && this.getPierceLevel() <= 0) {
                     livingEntity.setArrowCount(livingEntity.getArrowCount() + 1);
                 }
 
@@ -285,11 +285,11 @@ public class TraceArrowEntity extends Arrow {
 
                 this.doPostHurtEffects(livingEntity);
                 if (livingEntity != owner && livingEntity instanceof Player && owner instanceof ServerPlayer serverPlayer && !this.isSilent()) {
-                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.PLAY_ARROW_HIT_SOUND, 0.0F));
                 }
 
-                if (!this.level().isClientSide && owner instanceof ServerPlayer serverPlayer) {
-                    CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, List.of(entity), this.getWeaponItem());
+                if (!this.level().isClientSide() && owner instanceof ServerPlayer serverPlayer) {
+                    CriteriaTriggers.KILLED_BY_ARROW.trigger(serverPlayer, List.of(entity), this.getWeaponItem());
                 }
             }
 
@@ -306,7 +306,7 @@ public class TraceArrowEntity extends Arrow {
             this.setYRot(this.getYRot() + 180.0F);
             this.setPos(entity.position());
             this.yRotO += 180.0F;
-            if (!this.level().isClientSide && this.getDeltaMovement().lengthSqr() < 1.0E-7D) {
+            if (!this.level().isClientSide() && this.getDeltaMovement().lengthSqr() < 1.0E-7D) {
                 if (this.pickup == AbstractArrow.Pickup.ALLOWED) {
                     if (this.level() instanceof ServerLevel serverLevel) {
                         this.spawnAtLocation(serverLevel, this.getPickupItem(), 0.1F);
@@ -403,14 +403,14 @@ public class TraceArrowEntity extends Arrow {
                 this.seekOrigin = this.position();
             }
 
-            if (!this.level().isClientSide) {
+            if (this.level() instanceof ServerLevel serverLevel) {
                 TargetingConditions conditions = TargetingConditions.forCombat()
-                        .selector((living) -> {
+                        .selector((living, level) -> {
                             // 排除玩家实体
                             return !(living instanceof Player) &&
                                     living.hasLineOfSight(this);
                         });
-                this.homingTarget = this.level().getNearestEntity(LivingEntity.class, conditions, owner instanceof LivingEntity ? (LivingEntity) owner : null, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
+                this.homingTarget = serverLevel.getNearestEntity(LivingEntity.class, conditions, owner instanceof LivingEntity ? (LivingEntity) owner : null, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
                 if (this.homingTarget != null) {
                     Vec3 targetPos = this.homingTarget.getEyePosition();
                     double x = targetPos.x - this.getX();

@@ -60,7 +60,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
 
         damageEntity(entity, this.damageSources().thrown(this, getOwner()), 0.0F);
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             GapingVoidEntity ent;
             if (shooter != null) {
                 ent = new GapingVoidEntity(level(), shooter);
@@ -72,7 +72,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             if (shooter != null) {
                 ent.setUser(shooter);
             }
-            ent.moveTo(entity.getX() + offset.x * 0.25, entity.getY() + offset.y * 0.25, entity.getZ() + offset.z * 0.25, entity.getYRot(), 0.0F);
+            ent.moveOrInterpolateTo(new Vec3(entity.getX() + offset.x * 0.25, entity.getY() + offset.y * 0.25, entity.getZ() + offset.z * 0.25), entity.getYRot(), 0.0F);
             level().addFreshEntity(ent);
 
             remove(RemovalReason.KILLED);
@@ -84,7 +84,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
         super.onHitBlock(result);
         BlockPos pos = result.getBlockPos();
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
 
             GapingVoidEntity ent;
             if (shooter != null) {
@@ -97,7 +97,7 @@ public class EndestPearlEntity extends ThrowableItemProjectile {
             if (shooter != null) {
                 ent.setUser(shooter);
             }
-            ent.moveTo(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25, getYRot(), 0.0F);
+            ent.moveOrInterpolateTo(new Vec3(pos.getX() + offset.x * 0.25, pos.getY() + offset.y * 0.25, pos.getZ() + offset.z * 0.25), getYRot(), 0.0F);
             level().addFreshEntity(ent);
 
             remove(RemovalReason.KILLED);

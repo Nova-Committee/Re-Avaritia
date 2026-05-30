@@ -9,7 +9,7 @@ import com.avaritia.api.iface.transform.IToolTransform;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.ModDamageTypes;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModToolTiers;
 import com.avaritia.util.ToolUtils;
@@ -313,7 +313,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
     @Nullable
     @Override
     public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override

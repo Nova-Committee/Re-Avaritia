@@ -8,7 +8,7 @@ import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.common.entity.arrow.HeavenArrowEntity;
 import com.avaritia.common.entity.arrow.TraceArrowEntity;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -97,7 +97,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     @Nullable
     @Override
     public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override

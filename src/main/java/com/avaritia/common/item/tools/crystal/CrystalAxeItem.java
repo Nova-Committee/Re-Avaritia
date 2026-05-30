@@ -22,16 +22,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CrystalAxeItem extends AxeItem implements ITooltip {
 
-    private final String name;
-
-    public CrystalAxeItem(String name) {
+    public CrystalAxeItem() {
         super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
                 new Properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
         );
-        this.name = name;
     }
 
     @Override

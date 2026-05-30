@@ -26,7 +26,7 @@ public class SunProEntity extends ThrowableItemProjectile {
     protected void onHit(@NotNull HitResult result) {
         super.onHit(result);
 
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (result instanceof BlockHitResult blockHit) {
                 BlockPos pos = blockHit.getBlockPos().relative(blockHit.getDirection());
                 this.level().setBlock(pos, Blocks.LAVA.defaultBlockState(), 3);

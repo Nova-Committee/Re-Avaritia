@@ -4,7 +4,7 @@ import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.utils.lang.TextUtils;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.registry.ModArmorMaterial;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -95,7 +95,7 @@ public class InfinityArmorItem extends Item implements IUndamageable {
     @Nullable
     @Override
     public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
 //    @Override

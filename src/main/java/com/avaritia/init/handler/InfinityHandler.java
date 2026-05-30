@@ -66,7 +66,7 @@ public class InfinityHandler {
         var state = level.getBlockState(pos);
         var player= event.getEntity();
         var face = event.getFace();
-        if (face == null || level.isClientSide || item.isEmpty() || player.isCreative()) {
+        if (face == null || level.isClientSide() || item.isEmpty() || player.isCreative()) {
             return;
         }
 
@@ -165,7 +165,7 @@ public class InfinityHandler {
         if (ModConfig.isMergeMatterCluster.get() && event.getItemEntity().getItem().is(ModItems.matter_cluster.get())) {
             boolean mergedAny = false;
 
-            for (ItemStack slot : player.getInventory().items) {
+            for (ItemStack slot : player.getInventory().getNonEquipmentItems()) {
                 if (stack.isEmpty()) {
                     break;
                 }
@@ -175,7 +175,7 @@ public class InfinityHandler {
             }
 
             if (mergedAny) {
-                player.level().playSound(null, player, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, (player.level().random.nextFloat() - player.level().random.nextFloat()) * 1.4F + 2.0F);
+                player.level().playSound(null, player, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, (player.level().getRandom().nextFloat() - player.level().getRandom().nextFloat()) * 1.4F + 2.0F);
             }
         }
     }
@@ -195,7 +195,7 @@ public class InfinityHandler {
             for (int x = 0; x < event.getToolTip().size(); x++) {
                 if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.attack_damage"))) {
                     var endlessDamage = ModConfig.isSwordAttackEndless.get();
-                    event.getToolTip().set(x, Component.literal(endlessDamage ? TextUtils.makeFabulous(I18n.get("tooltip.infinity")) : String.valueOf(swordItem.getTier().getAttackDamageBonus())).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN)));
+                    event.getToolTip().set(x, Component.literal(endlessDamage ? TextUtils.makeFabulous(I18n.get("tooltip.infinity")) : String.valueOf(swordItem.getTier().attackDamageBonus())).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN)));
                     return;
                 }
             }
@@ -230,15 +230,15 @@ public class InfinityHandler {
                     player.removeAllEffects();
                     if (totem.getDamageValue() % 10 == 0) { //姣忓綋涓?0鐨勫€嶆暟
                         player.setHealth(player.getMaxHealth());
-                        player.addEffect(new MobEffectInstance(MobEffects.JUMP, 800, 1));
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1));
+                        player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 800, 1));
+                        player.addEffect(new MobEffectInstance(MobEffects.SPEED, 800, 1));
                         ToolUtils.aoeAttack(player, 8, 1000.0f, false,false);//瑙﹀彂鏃犲敖鍥捐吘鍚庡闄勮繎閫犳垚浼ゅ
-                        player.displayClientMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
+                        player.sendSystemMessage(Component.translatable("tooltip.avaritia.totem_break"), false);
                     } else {
                         player.setHealth(player.getMaxHealth());
                     }
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2600, 4));
-                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 1));
+                    player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 400, 1));
                     player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 700, 2));
                     player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1100, 0));
                     totem.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
@@ -337,7 +337,7 @@ public class InfinityHandler {
                 if (!level.isClientSide()) {
 
                     ImmortalItemEntity immortalEntity = ImmortalItemEntity.create(
-                            ModEntities.IMMORTAL.get(),
+                            ModEntityTypes.IMMORTAL.get(),
                             level,
                             itemEntity.getX(),
                             itemEntity.getY(),

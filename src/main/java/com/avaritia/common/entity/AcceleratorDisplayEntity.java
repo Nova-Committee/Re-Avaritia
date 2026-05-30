@@ -7,6 +7,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -14,6 +16,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
@@ -93,12 +96,12 @@ public class AcceleratorDisplayEntity extends Entity {
     public void tick() {
         super.tick();
         // 如果方块被移除或不在加速列表中，删除实体
-        if (!level().isClientSide && (targetPos == null || !isTargetStillAccelerated())) {
+        if (!level().isClientSide() && (targetPos == null || !isTargetStillAccelerated())) {
             this.remove(RemovalReason.KILLED);
         }
 
         // 客户端粒子效果
-        if (level().isClientSide && targetPos != null) {
+        if (level().isClientSide() && targetPos != null) {
             renderEffects();
         }
     }

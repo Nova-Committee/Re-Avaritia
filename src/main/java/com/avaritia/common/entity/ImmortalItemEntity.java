@@ -2,6 +2,7 @@ package com.avaritia.common.entity;
 
 import com.avaritia.init.config.ModConfig;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
-        ImmortalItemEntity entity = type.create(level);
+        ImmortalItemEntity entity = type.create(level, EntitySpawnReason.EVENT);
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);

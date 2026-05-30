@@ -1,6 +1,6 @@
 package com.avaritia.init.registry;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.common.block.ResourceBlock;
 import com.avaritia.common.block.cake.EndlessCakeBlock;
 import com.avaritia.common.block.chest.CompressedChestBlock;
@@ -27,6 +27,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -35,6 +36,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -114,7 +116,7 @@ public class ModBlocks {
     public static final DeferredBlock<Block> fake_end_portal = itemBlock("fake_end_portal", () -> new Block(
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BLACK)
-                    .noCollission()
+                    .noCollision()
                     .lightLevel(state -> 15)
                     .strength(400F, 3600000.0F)
                     .pushReaction(PushReaction.BLOCK)), false);
@@ -220,7 +222,7 @@ public class ModBlocks {
     public static DeferredBlock<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
         return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), properties.setId(ResourceKey.create(Registries.ITEM, id))) {
             @Override
-            public int getBurnTime(@NotNull ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+            public int getBurnTime(@NonNull ItemStack itemStack, @Nullable RecipeType<?> recipeType, @NonNull FuelValues fuelValues) {
                 return burnTime;
             }
         });

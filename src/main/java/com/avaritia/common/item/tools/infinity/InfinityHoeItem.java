@@ -4,7 +4,7 @@ import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.registry.ModBlocks;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModToolTiers;
 import com.avaritia.util.ToolUtils;
@@ -82,7 +82,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
     @Nullable
     @Override
     public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override

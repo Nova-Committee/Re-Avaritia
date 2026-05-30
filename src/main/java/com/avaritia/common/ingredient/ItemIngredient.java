@@ -4,13 +4,16 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.init.registry.ModIngredients;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.stream.Stream;
 
@@ -30,12 +33,12 @@ public record ItemIngredient(Identifier item) implements ICustomIngredient {
     public static final StreamCodec<ByteBuf, ItemIngredient> STREAM_CODEC = Identifier.STREAM_CODEC.map(ItemIngredient::new, ItemIngredient::item);
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return stack.is(BuiltInRegistries.ITEM.get(this.item));
+        return stack.is(BuiltInRegistries.ITEM.getValue(this.item));
     }
 
     @Override
-    public @NotNull Stream<ItemStack> getItems() {
-        return Stream.of(BuiltInRegistries.ITEM.containsKey(this.item) ? new ItemStack(BuiltInRegistries.ITEM.get(this.item)) : ItemStack.EMPTY);
+    public @NonNull Stream<Holder<Item>> items() {
+        return Stream.of(BuiltInRegistries.ITEM.containsKey(this.item) ? new ItemStack(BuiltInRegistries.ITEM.getValue(this.item)).typeHolder() : ItemStack.EMPTY.typeHolder());
     }
 
     @Override

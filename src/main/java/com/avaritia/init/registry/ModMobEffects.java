@@ -1,6 +1,7 @@
 package com.avaritia.init.registry;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.common.effects.BurningEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;

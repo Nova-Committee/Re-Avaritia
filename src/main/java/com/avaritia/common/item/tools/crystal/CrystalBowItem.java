@@ -4,7 +4,7 @@ import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.common.entity.BladeSlashEntity;
 import com.avaritia.common.entity.arrow.NeutronArrowEntity;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
@@ -86,7 +86,7 @@ public class CrystalBowItem extends BowItem implements ISwitchable, IBowTransfor
                                 1.0F, 0.8F + (power * 0.4F));
                         pLevel.addFreshEntity(bladeSlash);
                     } else {
-                        NeutronArrowEntity neutronArrow = new NeutronArrowEntity(ModEntities.NEUTRON_ARROW.get(), pLevel);
+                        NeutronArrowEntity neutronArrow = new NeutronArrowEntity(ModEntityTypes.NEUTRON_ARROW.get(), pLevel);
                         neutronArrow.setOwner(player);
                         neutronArrow.setPos(player.getX(), player.getEyeY() - 0.1F, player.getZ());
                         float speed = 3.0F;

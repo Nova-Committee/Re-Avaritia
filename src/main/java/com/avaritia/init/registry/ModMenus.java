@@ -1,6 +1,7 @@
 package com.avaritia.init.registry;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.client.screen.*;
 import com.avaritia.client.screen.craft.EndCraftScreen;
 import com.avaritia.client.screen.craft.ExtremeCraftScreen;

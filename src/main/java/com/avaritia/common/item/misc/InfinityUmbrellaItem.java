@@ -6,7 +6,7 @@ import com.avaritia.common.entity.RainProEntity;
 import com.avaritia.common.entity.StormProEntity;
 import com.avaritia.common.entity.SunProEntity;
 import com.avaritia.common.item.resources.ResourceItem;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -16,10 +16,13 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +65,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
                     //0
                     break;
                 case MODE_SUN:
-                    SunProEntity sunProEntity = ModEntities.SUN_PRO.get().create(level);
+                    SunProEntity sunProEntity = ModEntityTypes.SUN_PRO.get().create(level, EntitySpawnReason.EVENT);
                     if (pitch <= -85.0F) {
                         if (level.getLevelData().isRaining() || !level.getLevelData().isThundering()) {
                             level.getLevelData().setRaining(false);
@@ -77,7 +80,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
 
                     break;
                 case MODE_RAIN:
-                    RainProEntity rainProEntity = ModEntities.RAIN_PRO.get().create(level);
+                    RainProEntity rainProEntity = ModEntityTypes.RAIN_PRO.get().create(level, EntitySpawnReason.EVENT);
                     if (pitch <= -85.0F && level instanceof ServerLevel server) {
                         level.getLevelData().setRaining(true);
                         server.setWeatherParameters(0, duration, true, false);
@@ -91,7 +94,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
 
                     break;
                 case MODE_STORM:
-                    StormProEntity stormProEntity = ModEntities.STORM_PRO.get().create(level);
+                    StormProEntity stormProEntity = ModEntityTypes.STORM_PRO.get().create(level, EntitySpawnReason.EVENT);
                     if (pitch <= -85.0F && level instanceof ServerLevel server) {
                         level.getLevelData().setRaining(true);
                         server.setWeatherParameters(0, duration, true, true);
@@ -122,10 +125,10 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pLevel.isClientSide && pEntity instanceof Player player) {
-            boolean isInEitherHand = pIsSelected || player.getOffhandItem() == pStack;
+    public void inventoryTick(@NotNull ItemStack pStack, @NotNull ServerLevel pLevel, @NotNull Entity pEntity, @Nullable EquipmentSlot slot) {
+        super.inventoryTick(pStack, pLevel, pEntity, slot);
+        if (!pLevel.isClientSide() && pEntity instanceof Player player) {
+            boolean isInEitherHand = slot!=null || player.getOffhandItem() == pStack;
             var effect = new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 0, false, false);
             if (isInEitherHand) {
                 player.addEffect(effect);

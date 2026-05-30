@@ -52,7 +52,7 @@ public class BurningArrowEntity extends Arrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         //super.onHitEntity(result);
         Entity owner = this.getOwner();
-        if (!this.level().isClientSide && owner instanceof ServerPlayer player && result.getEntity() instanceof LivingEntity livingEntity) {
+        if (!this.level().isClientSide() && owner instanceof ServerPlayer player && result.getEntity() instanceof LivingEntity livingEntity) {
             livingEntity.addEffect(new MobEffectInstance((Holder<MobEffect>) ModMobEffects.BURNING, 1200));
         }
     }

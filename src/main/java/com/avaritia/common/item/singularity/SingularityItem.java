@@ -7,7 +7,7 @@ import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.core.singularity.Singularity;
 import com.avaritia.core.singularity.SingularityReloadListener;
 import com.avaritia.init.registry.ModDataComponents;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModTooltips;
 import com.avaritia.util.SingularityUtils;
@@ -17,13 +17,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Description:
@@ -50,17 +53,17 @@ public class SingularityItem extends Item implements IColored {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltip, @NotNull TooltipFlag flag) {
         var singularity = SingularityUtils.getSingularity(stack);
 
         if (singularity != null) {
             var modid = singularity.getRegistryName().getNamespace();
 
             if (!modid.equals(Const.MOD_ID))
-                tooltip.add(ModTooltips.getAddedByTooltip(modid));
+                tooltip.accept(ModTooltips.getAddedByTooltip(modid));
 
             if (flag.isAdvanced())
-                tooltip.add(ModTooltips.SINGULARITY_ID.args(singularity.getRegistryName().toString()).color(ChatFormatting.DARK_GRAY).build());
+                tooltip.accept(ModTooltips.SINGULARITY_ID.args(singularity.getRegistryName().toString()).color(ChatFormatting.DARK_GRAY).build());
         }
     }
 
@@ -72,7 +75,7 @@ public class SingularityItem extends Item implements IColored {
     @Nullable
     @Override
     public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
     }
 
     @Override

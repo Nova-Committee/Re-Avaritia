@@ -1,10 +1,9 @@
 package com.avaritia.common.item.tools.blaze;
 
-import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.common.entity.arrow.BurningArrowEntity;
-import com.avaritia.init.registry.ModEntities;
+import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -28,7 +27,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import static net.neoforged.neoforge.event.EventHooks.onArrowLoose;
@@ -76,12 +74,12 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
     }
 
     @Override
-    public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
+    public boolean releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
         if (entity instanceof Player player) {
             int drawTime = this.getUseDuration(stack, entity) - timeLeft;
             drawTime = onArrowLoose(stack, level, player, drawTime, true);
             if (drawTime < 0) {
-                return;
+                return false;
             }
 
             float VELOCITY_MULTIPLIER = 1.2F;
@@ -91,7 +89,7 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
             if (powerForTime >= 0.1D) {
                 if (!level.isClientSide()) {
                     if (isActive(stack, "blaze_bow_burning")) {//灼烧模式
-                        var burningBall = ModEntities.BURNING_BALL.get().create(level, EntitySpawnReason.EVENT);
+                        var burningBall = ModEntityTypes.BURNING_BALL.get().create(level, EntitySpawnReason.EVENT);
                         if (burningBall != null) {
                             burningBall.setOwner(player);
                             burningBall.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
@@ -115,10 +113,12 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
 
                 level.playSound(null, player.getX(), player.getY(), player.getZ(),
                         isActive(stack, "blaze_bow_burning")? SoundEvents.SNOWBALL_THROW : SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS,
-                        1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
+                        1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
                 player.awardStat(Stats.ITEM_USED.get(this));
+                return true;
             }
         }
+        return false;
     }
 
     private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
@@ -131,7 +131,7 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
 
         int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
         if (j > 0) {
-            arrowEntity.setBaseDamage(arrowEntity.getBaseDamage() + (double) j * 0.5D + 0.5D);
+            arrowEntity.setBaseDamage(arrowEntity.baseDamage + (double) j * 0.5D + 0.5D);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
             arrowEntity.setRemainingFireTicks(100);
