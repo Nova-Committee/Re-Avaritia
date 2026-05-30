@@ -1,6 +1,5 @@
-package com.avaritia.data.recipe;
+package com.avaritia.init.data.provider.recipe;
 
-import com.avaritia.Avaritia;
 import com.avaritia.common.crafting.recipe.CompressorRecipe;
 import com.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import com.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;

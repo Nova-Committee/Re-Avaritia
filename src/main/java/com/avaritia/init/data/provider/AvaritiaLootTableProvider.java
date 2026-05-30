@@ -1,6 +1,5 @@
-package com.avaritia.data;
+package com.avaritia.init.data.provider;
 
-import com.avaritia.Avaritia;
 import com.avaritia.init.registry.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;

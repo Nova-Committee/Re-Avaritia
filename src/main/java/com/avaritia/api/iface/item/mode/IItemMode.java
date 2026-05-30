@@ -34,7 +34,7 @@ public interface IItemMode<MODE extends Enum<MODE> & IModeEnum<MODE>> extends IM
         MODE newMode = mode.next(stack);
         if (mode != newMode) {
             stack.set(getDataComponentType(), newMode);
-            player.displayClientMessage(getModeSwitchEntry().translate(newMode), true);
+            player.sendOverlayMessage(getModeSwitchEntry().translate(newMode));
             return true;
         }
         //If we have no modes, or we are set to the only mode fail
@@ -47,7 +47,7 @@ public interface IItemMode<MODE extends Enum<MODE> & IModeEnum<MODE>> extends IM
         MODE mode = getMode(stack);
         if (mode != newMode) {
             stack.set(getDataComponentType(), newMode);
-            player.displayClientMessage(getModeSwitchEntry().translate(newMode), true);
+            player.sendOverlayMessage(getModeSwitchEntry().translate(newMode));
             return true;
         }
         //If we have no modes, or we are set to the only mode fail

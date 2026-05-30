@@ -1,9 +1,12 @@
 package com.avaritia.init.handler;
 
 import com.avaritia.Const;
+import com.avaritia.core.singularity.SingularityReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+
+import static com.avaritia.core.singularity.SingularityReloadListener.RELOAD_LISTENER_ID;
 
 /**
  * Description:
@@ -15,6 +18,10 @@ import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 public class ResourceReloadHandler {
     @SubscribeEvent
     public static void onAddReloadListeners(AddClientReloadListenersEvent event) {
-        // 在此注册客户端重载监听器
+        /**
+         * NeoForge 26.1.2 禁止通过 mixin 修改 ReloadableServerResources#listeners，必须走此事件注册服务端重载监听器。
+         */
+        event.addListener(RELOAD_LISTENER_ID, SingularityReloadListener.INSTANCE);
+
     }
 }

@@ -37,13 +37,13 @@ public class CapHandler {
         }
 
         event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
+                Capabilities.Item.BLOCK,
                 ModTileEntities.compressed_chest_tile.get(),
                 (be, side) -> new ContainerItemHandler(be)
         );
 
         event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
+                Capabilities.Item.BLOCK,
                 ModTileEntities.INFINITY_CHEST_TILE.get(),
                 (be, side) -> new ContainerItemHandler(be.chest)
         );
@@ -54,7 +54,7 @@ public class CapHandler {
         );
 
         for (var type : sidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (sidedContainer, side) -> {
+            event.registerBlockEntity(Capabilities.Item.BLOCK, type, (sidedContainer, side) -> {
                 return new ContainerItemHandler(sidedContainer, side);
             });
         }

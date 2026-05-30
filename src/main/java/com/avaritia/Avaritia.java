@@ -46,8 +46,6 @@ public class Avaritia {
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModIngredients.INGREDIENT.register(modEventBus);
 
-        SingularityReloadListener.registerEventHandler();//todo 放入单独文件
-
         modEventBus.addListener(this::constructMod);
         modEventBus.addListener(this::setup);
     }

@@ -108,7 +108,7 @@ public class TileIOHandler {
         if (level != null && tileEntity instanceof ITileIO ITileIO) {
             BlockEntity targetTile = level.getBlockEntity(targetPos);
             if (targetTile != null) {
-                var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, targetTile.getBlockState(), targetTile, actualDirection.getOpposite());
+                var cap = level.getCapability(Capabilities.Item.BLOCK, targetPos, targetTile.getBlockState(), targetTile, actualDirection.getOpposite());
                 if (cap != null) ITileIO.extractFromHandler(cap, actualDirection);
             }
         }
@@ -130,7 +130,7 @@ public class TileIOHandler {
         if (level != null && tileEntity instanceof ITileIO ITileIO) {
             BlockEntity targetTile = level.getBlockEntity(targetPos);
             if (targetTile != null) {
-                var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, targetTile.getBlockState(), targetTile, actualDirection.getOpposite());
+                var cap = level.getCapability(Capabilities.Item.BLOCK, targetPos, targetTile.getBlockState(), targetTile, actualDirection.getOpposite());
                 if (cap != null) ITileIO.insertToHandler(cap, actualDirection);
             }
         }

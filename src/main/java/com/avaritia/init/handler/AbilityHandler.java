@@ -64,7 +64,7 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void updateAbilities(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof Player player) {
-            String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
+            String key = player.getGameProfile().name() + ":" + player.level().isClientSide();
 
             boolean hasHelmet = isPlayerWearing(player, HEAD, item -> item instanceof InfinityArmorItem);
             boolean hasChest = isPlayerWearing(player, CHEST, item -> item instanceof InfinityArmorItem);
@@ -205,7 +205,7 @@ public class AbilityHandler {
     @SubscribeEvent
     public static void jumpBoost(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().getName() + ":" + player.level().isClientSide) && player.isSprinting())
+        if (entity instanceof Player player && entitiesWithBoots.contains(player.getGameProfile().name() + ":" + player.level().isClientSide()) && player.isSprinting())
             player.setDeltaMovement(player.getDeltaMovement().add(0F, 0.305F, 0F));
     }
 
@@ -238,7 +238,6 @@ public class AbilityHandler {
         }
     }
 
-    //鏃犲敖濂楀厤鐤瑙夋晥鏋?
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onRenderOverlay(RenderBlockScreenEffectEvent event) {
@@ -251,11 +250,12 @@ public class AbilityHandler {
             event.setCanceled(true);
         }
     }
+
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onFog(ViewportEvent.RenderFog event) {
         Camera camera = event.getCamera();
-        Entity entity = camera.getEntity();
+        Entity entity = camera.entity();
 
         if (!(entity instanceof Player player)) return;
         if (!ToolUtils.isWearingInfinityHelmet(player)) return;
@@ -275,7 +275,7 @@ public class AbilityHandler {
 
 
     private static void stripAbilities(Player player) {
-        String key = player.getGameProfile().getName() + ":" + player.level().isClientSide;
+        String key = player.getGameProfile().name() + ":" + player.level().isClientSide();
         entitiesWithHelmets.remove(key);
         entitiesWithFlight.remove(key);
         entitiesWithLeggings.remove(key);
@@ -283,12 +283,12 @@ public class AbilityHandler {
     }
 
     private static void clearFly(Player player) {
-        entitiesWithFlight.remove(player.getGameProfile().getName() + ":" + player.level().isClientSide);
+        entitiesWithFlight.remove(player.getGameProfile().name() + ":" + player.level().isClientSide());
     }
 
     private static void reapplyFly(Player player) {
         //For when the dimension changes/we need to reapply the flight info values to the client
-        FlightInfo flightInfo = entitiesWithFlight.get(player.getGameProfile().getName() + ":" + player.level().isClientSide);
+        FlightInfo flightInfo = entitiesWithFlight.get(player.getGameProfile().name() + ":" + player.level().isClientSide());
         if (flightInfo != null) {
             if (flightInfo.wasFlyingAllowed || flightInfo.wasFlying) {
                 updateClientServerFlight(player, flightInfo.wasFlyingAllowed, flightInfo.wasFlying);

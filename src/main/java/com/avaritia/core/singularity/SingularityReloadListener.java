@@ -31,9 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * 加载 data/*&#47;singularities 下的奇点定义。
  */
 public class SingularityReloadListener extends SimpleJsonResourceReloadListener<JsonElement> {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Codec<JsonElement> JSON_CODEC = ExtraCodecs.JSON;
-    private static final Identifier RELOAD_LISTENER_ID = Identifier.fromNamespaceAndPath(Const.MOD_ID, "singularities");
+    public static final Identifier RELOAD_LISTENER_ID = Identifier.fromNamespaceAndPath(Const.MOD_ID, "singularities");
 
     public static SingularityReloadListener INSTANCE = new SingularityReloadListener();
 
@@ -48,18 +47,6 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
         super(JSON_CODEC, FileToIdConverter.json("singularities"));
     }
 
-    /**
-     * NeoForge 26.1.2 禁止通过 mixin 修改 ReloadableServerResources#listeners，必须走此事件注册服务端重载监听器。
-     */
-    @SubscribeEvent
-    public static void onAddReloadListeners(AddServerReloadListenersEvent event) {
-        INSTANCE = new SingularityReloadListener();
-        event.addListener(RELOAD_LISTENER_ID, SingularityReloadListener.INSTANCE);
-    }
-
-    public static void registerEventHandler() {
-        NeoForge.EVENT_BUS.register(SingularityReloadListener.class);
-    }
 
     @Override
     protected void apply(@NotNull Map<Identifier, JsonElement> object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {

@@ -1,6 +1,8 @@
 package com.avaritia.init.registry.enums;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
+import com.avaritia.api.utils.text.ILangEntry;
 import net.minecraft.util.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -9,7 +11,7 @@ import net.minecraft.resources.Identifier;
 /**
  * 物品模式相关语言键。
  */
-public enum ModLang {
+public enum ModLang implements ILangEntry {
     CURRENT_MODE("mode", "current"),
     DEFAULT_MODE("mode", "default"),
     ADVANCE_MODE("mode", "advance"),

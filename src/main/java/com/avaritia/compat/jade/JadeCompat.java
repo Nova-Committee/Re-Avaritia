@@ -1,6 +1,7 @@
 package com.avaritia.compat.jade;
 
 import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.common.block.collector.NeutronCollectorBlock;
 import com.avaritia.common.block.compressor.NeutronCompressorBlock;
@@ -61,7 +62,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Const.MOD_ID, "neutron_collector");
+            return Const.rl("neutron_collector");
         }
     }
 
@@ -84,7 +85,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Const.MOD_ID, "compressor");
+            return Const.rl("compressor");
         }
     }
 
@@ -112,7 +113,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Const.MOD_ID, "crafting_table");
+            return Const.rl("crafting_table");
         }
     }
 
@@ -136,7 +137,7 @@ public class JadeCompat implements IWailaPlugin {
 
         @Override
         public Identifier getUid() {
-            return Identifier.of(Const.MOD_ID, "extreme_smithing");
+            return Const.rl("extreme_smithing");
         }
     }
 

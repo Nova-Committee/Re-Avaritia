@@ -60,8 +60,8 @@ public final class NetworkHandler {
                 new S2CSideConfigSyncPacket.Handler());
         registrar.playToClient(S2CTotemPacket.TYPE, S2CTotemPacket.STREAM_CODEC,
                 new S2CTotemPacket.Handler());
-        registrar.playToClient(S2CNameCachePacket.TYPE, S2CNameCachePacket.STREAM_CODEC,
-                new S2CNameCachePacket.Handler());
+//        registrar.playToClient(S2CNameCachePacket.TYPE, S2CNameCachePacket.STREAM_CODEC,
+//                new S2CNameCachePacket.Handler());
         registrar.playToClient(S2CSingularitiesPacket.TYPE, S2CSingularitiesPacket.STREAM_CODEC,
                 new S2CSingularitiesPacket.Handler());
 
