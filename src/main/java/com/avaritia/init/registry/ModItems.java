@@ -111,8 +111,8 @@ public class ModItems {
     public static final DeferredItem<Item> upgrade_smithing_template = item("upgrade_smithing_template", id -> new UpgradeSmithingTemplateItem());
     public static final DeferredItem<Item> infinity_upgrade = item("infinity_upgrade", id -> new InfinityUpgradeItem());
     // food
-    public static final DeferredItem<Item> ultimate_stew = item("ultimate_stew", id -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.ultimate_stew)));
-    public static final DeferredItem<Item> cosmic_meatballs = item("cosmic_meatballs", id -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs)));
+    public static final DeferredItem<Item> ultimate_stew = item("ultimate_stew", id -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.ultimate_stew, ModFoods.ultimate_stew_consumable)));
+    public static final DeferredItem<Item> cosmic_meatballs = item("cosmic_meatballs", id -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs, ModFoods.cosmic_meatballs_consumable)));
     public static final DeferredItem<Item> forge_energy = item("forge_energy", false);
 
     static {

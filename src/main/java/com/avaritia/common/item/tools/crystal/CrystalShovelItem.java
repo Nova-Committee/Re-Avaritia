@@ -8,10 +8,11 @@ import com.avaritia.init.registry.ModToolTiers;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -43,26 +44,26 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pLevel.isClientSide && pEntity instanceof Player player) {
-            if (pIsSelected) {
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
+    public void inventoryTick(@NotNull ItemStack pStack, @NotNull ServerLevel pLevel, @NotNull Entity pEntity, EquipmentSlot pSlot) {
+        super.inventoryTick(pStack, pLevel, pEntity, pSlot);
+        if (pEntity instanceof Player player) {
+            if (pSlot == EquipmentSlot.MAINHAND && player.getMainHandItem() == pStack) {
+                player.addEffect(new MobEffectInstance(MobEffects.HASTE, -1, 2, false, true));
                 player.addEffect(new MobEffectInstance(MobEffects.SPEED, -1, 2, false, true));
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2
                         .filter(effects, potion ->
 
                                 (
-                                        potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN)
-                                                || potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)
+                                        potion.getEffect().equals(MobEffects.SLOWNESS)
+                                                || potion.getEffect().equals(MobEffects.MINING_FATIGUE)
                                 )
                         )
                 ) {
                     player.removeEffect(potion.getEffect());
                 }
             } else {
-                player.removeEffect(MobEffects.DIG_SPEED);
+                player.removeEffect(MobEffects.HASTE);
                 player.removeEffect(MobEffects.SPEED);
             }
         }

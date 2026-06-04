@@ -32,14 +32,14 @@ public class AvaritiaCuriosPlugin {
                     @Override
                     public void curioTick(SlotContext slotContext) {
                         LivingEntity entity = slotContext.entity();
-                        if (entity instanceof Player player && !player.level().isClientSide) {
-                            player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
-                            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+                        if (entity instanceof Player player && !player.level().isClientSide()) {
+                            player.addEffect(new MobEffectInstance(MobEffects.HASTE, -1, 2, false, true));
+                            player.addEffect(new MobEffectInstance(MobEffects.SPEED, -1, 2, false, true));
 
                             List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                             for (MobEffectInstance potion : Collections2.filter(effects, potion ->
-                                    (potion.getEffect().equals(MobEffects.MOVEMENT_SLOWDOWN) ||
-                                            potion.getEffect().equals(MobEffects.DIG_SLOWDOWN)))) {
+                                    (potion.getEffect().equals(MobEffects.SLOWNESS) ||
+                                            potion.getEffect().equals(MobEffects.MINING_FATIGUE)))) {
                                 player.removeEffect(potion.getEffect());
                             }
                         }
