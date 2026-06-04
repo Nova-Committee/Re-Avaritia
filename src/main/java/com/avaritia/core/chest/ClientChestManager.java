@@ -1,4 +1,6 @@
 //package com.avaritia.core.chest;
+
+import com.avaritia.Const;
 //
 //import net.minecraft.nbt.CompoundTag;
 //import net.neoforged.bus.api.SubscribeEvent;

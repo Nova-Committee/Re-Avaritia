@@ -30,7 +30,8 @@ public class NeutronCollectorMenu extends BaseTileMenu<NeutronCollectorTile> {
     public NeutronCollectorMenu(int id, Inventory playerInventory, BlockPos pos, ContainerData data) {
         super(ModMenus.neutron_collector.get(), id, playerInventory, pos);
         this.data = data;
-        this.addSlot(new OutputSlot(getTileEntity().getInventory(), 0, 80, 32));
+        var inventory = getTileEntity().getInventory();
+        this.addSlot(new OutputSlot(inventory, inventory::set, 0, 80, 32));
         this.addDataSlots(data);
         createInventorySlots(playerInventory);
     }

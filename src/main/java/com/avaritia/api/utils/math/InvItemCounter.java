@@ -23,7 +23,10 @@ public class InvItemCounter {
     private final Integer[] noNbtItemIndexArray;
 
     public InvItemCounter(Inventory inventory) {
-        itemList = inventory.items;
+        itemList = NonNullList.withSize(Inventory.INVENTORY_SIZE, ItemStack.EMPTY);
+        for (int i = 0; i < itemList.size(); i++) {
+            itemList.set(i, inventory.getItem(i));
+        }
         for (int i = 9; i < itemList.size(); i++) add(i);
         for (int i = 0; i < 9; i++) add(i);
         nbtItemIndexArray = nbtItemIndex.toArray(new Integer[]{});

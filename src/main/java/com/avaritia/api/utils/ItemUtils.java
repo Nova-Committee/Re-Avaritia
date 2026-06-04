@@ -1,5 +1,7 @@
 package com.avaritia.api.utils;
 
+import com.avaritia.Const;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -73,7 +75,7 @@ public class ItemUtils {
         if (id.contains("{") && id.endsWith("}") && !id.endsWith("{}")) {
             try {
                 String nbtString = id.substring(id.indexOf("{"));
-                CompoundTag nbt = TagParser.parseTag(nbtString);
+                CompoundTag nbt = TagParser.parseCompoundFully(nbtString);
                 //itemStack.get(DataComponents.CUSTOM_DATA).update();
             } catch (Exception e) {
                 if (throwException) throw e;
@@ -103,7 +105,7 @@ public class ItemUtils {
             childTag = new CompoundTag();
             root.put(childTagName, childTag);
         } else {
-            childTag = root.getCompound(childTagName);
+            childTag = root.getCompound(childTagName).orElseGet(CompoundTag::new);
         }
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
         return childTag;
@@ -141,7 +143,7 @@ public class ItemUtils {
             // 如果存在NBT数据，则解析
             if (json.has("nbt")) {
                 try {
-                    CompoundTag nbt = TagParser.parseTag(json.get("nbt").getAsString());
+                    CompoundTag nbt = TagParser.parseCompoundFully(json.get("nbt").getAsString());
                     itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
                 } catch (CommandSyntaxException e) {
                     throw new JsonParseException("Failed to parse NBT data", e);
@@ -281,7 +283,8 @@ public class ItemUtils {
      */
     public static void dropItem(ItemStack stack, Level level, Vector3 dropLocation) {
         ItemEntity item = new ItemEntity(level, dropLocation.x, dropLocation.y, dropLocation.z, stack);
-        item.setDeltaMovement(level.random.nextGaussian() * 0.05, level.random.nextGaussian() * 0.05 + 0.2F, level.random.nextGaussian() * 0.05);
+        var random = level.getRandom();
+        item.setDeltaMovement(random.nextGaussian() * 0.05, random.nextGaussian() * 0.05 + 0.2F, random.nextGaussian() * 0.05);
         level.addFreshEntity(item);
     }
 
@@ -294,9 +297,10 @@ public class ItemUtils {
      * @param velocity The velocity to add.
      */
     public static void dropItem(Level world, BlockPos pos, @Nonnull ItemStack stack, double velocity) {
-        double xVelocity = world.random.nextFloat() * velocity + (1.0D - velocity) * 0.5D;
-        double yVelocity = world.random.nextFloat() * velocity + (1.0D - velocity) * 0.5D;
-        double zVelocity = world.random.nextFloat() * velocity + (1.0D - velocity) * 0.5D;
+        var random = world.getRandom();
+        double xVelocity = random.nextFloat() * velocity + (1.0D - velocity) * 0.5D;
+        double yVelocity = random.nextFloat() * velocity + (1.0D - velocity) * 0.5D;
+        double zVelocity = random.nextFloat() * velocity + (1.0D - velocity) * 0.5D;
         ItemEntity entityItem = new ItemEntity(world, pos.getX() + xVelocity, pos.getY() + yVelocity, pos.getZ() + zVelocity, stack);
         entityItem.setPickUpDelay(10);
         world.addFreshEntity(entityItem);
@@ -351,7 +355,7 @@ public class ItemUtils {
 
             for (Holder<Enchantment> enchantment : enchantments) {
                 if (currentEnchants.getLevel(enchantment) > 0) {
-                    currentEnchants.remove(enchantment);
+                    currentEnchants.set(enchantment, 0);
                     modified = true;
                 }
             }

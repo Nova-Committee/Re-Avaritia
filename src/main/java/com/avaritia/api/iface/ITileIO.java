@@ -2,7 +2,8 @@ package com.avaritia.api.iface;
 
 import com.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * 方块实体IO处理器通用接口
@@ -12,7 +13,6 @@ import net.neoforged.neoforge.items.IItemHandler;
  * Date: 2025/11/02
  * Version: 1.0
  */
-@SuppressWarnings("removal")
 public interface ITileIO {
     /**
      * 获取IO配置
@@ -26,12 +26,12 @@ public interface ITileIO {
     /**
      * 从外部处理器抽取物品
      */
-    void extractFromHandler(IItemHandler externalHandler, Direction fromSide);
+    void extractFromHandler(ResourceHandler<ItemResource> externalHandler, Direction fromSide);
 
     /**
      * 向外部处理器插入物品
      */
-    void insertToHandler(IItemHandler externalHandler, Direction toSide);
+    void insertToHandler(ResourceHandler<ItemResource> externalHandler, Direction toSide);
 
     /**
      * 自定义的面模式切换逻辑

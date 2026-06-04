@@ -3,7 +3,11 @@ package com.avaritia.api.common.inventory;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,18 +16,19 @@ import org.jetbrains.annotations.NotNull;
  * @CreateTime: 2025/5/14 19:14
  * @Description:
  */
-@SuppressWarnings("removal")
 public class RecipeInventory implements Container {
-    private final IItemHandlerModifiable inventory;
+    private final ResourceHandler<ItemResource> inventory;
+    private final IndexModifier<ItemResource> modifier;
     private final int start;
     private final int size;
 
-    public RecipeInventory(IItemHandlerModifiable inventory) {
-        this(inventory, 0, inventory.getSlots());
+    public RecipeInventory(ResourceHandler<ItemResource> inventory, IndexModifier<ItemResource> modifier) {
+        this(inventory, modifier, 0, inventory.size());
     }
 
-    public RecipeInventory(IItemHandlerModifiable inventory, int start, int size) {
+    public RecipeInventory(ResourceHandler<ItemResource> inventory, IndexModifier<ItemResource> modifier, int start, int size) {
         this.inventory = inventory;
+        this.modifier = modifier;
         this.start = start;
         this.size = size;
     }
@@ -33,31 +38,40 @@ public class RecipeInventory implements Container {
     }
 
     public @NotNull ItemStack getItem(int slot) {
-        return this.inventory.getStackInSlot(slot + this.start);
+        return ItemUtil.getStack(this.inventory, slot + this.start);
     }
 
     public @NotNull ItemStack removeItem(int slot, int count) {
-        ItemStack stack = this.inventory.getStackInSlot(slot + this.start);
-        return stack.isEmpty() ? ItemStack.EMPTY : stack.split(count);
+        int index = slot + this.start;
+        ItemResource resource = this.inventory.getResource(index);
+        if (resource.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        try (var tx = Transaction.openRoot()) {
+            int extracted = this.inventory.extract(index, resource, count, tx);
+            tx.commit();
+            return extracted == 0 ? ItemStack.EMPTY : resource.toStack(extracted);
+        }
     }
 
     public void setItem(int slot, @NotNull ItemStack stack) {
-        this.inventory.setStackInSlot(slot + this.start, stack);
+        this.modifier.set(slot + this.start, ItemResource.of(stack), stack.getCount());
     }
 
     public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = this.getItem(slot + this.start);
+        ItemStack stack = this.getItem(slot);
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;
         } else {
-            this.setItem(slot + this.start, ItemStack.EMPTY);
+            this.setItem(slot, ItemStack.EMPTY);
             return stack;
         }
     }
 
     public boolean isEmpty() {
-        for (int i = this.start; i < this.size; ++i) {
-            if (!this.inventory.getStackInSlot(i).isEmpty()) {
+        for (int i = this.start; i < this.start + this.size; ++i) {
+            if (this.inventory.getAmountAsLong(i) > 0) {
                 return false;
             }
         }
@@ -66,18 +80,18 @@ public class RecipeInventory implements Container {
     }
 
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return this.inventory.isItemValid(slot + this.start, stack);
+        return !stack.isEmpty() && this.inventory.isValid(slot + this.start, ItemResource.of(stack));
     }
 
     public void clearContent() {
-        for (int i = this.start; i < this.size; ++i) {
-            this.inventory.setStackInSlot(i, ItemStack.EMPTY);
+        for (int i = this.start; i < this.start + this.size; ++i) {
+            this.modifier.set(i, ItemResource.EMPTY, 0);
         }
 
     }
 
     public int getMaxStackSize() {
-        return 0;
+        return 64;
     }
 
     public void setChanged() {

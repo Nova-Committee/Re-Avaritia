@@ -1,7 +1,5 @@
 package com.avaritia.api.common.wrapper;
 
-
-import com.avaritia.Const;
 import com.avaritia.api.common.crafting.ShapelessCraftingInput;
 import com.avaritia.api.common.inventory.CanExtractFunction;
 import com.avaritia.api.common.inventory.CanInsertFunction;
@@ -10,10 +8,7 @@ import com.avaritia.api.common.inventory.RecipeInventory;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +17,10 @@ import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,13 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * @Project: Avaritia
- * @Author: cnlimiter
- * @CreateTime: 2022/4/2 10:59
- * @Description:
+ * Project item storage backed by NeoForge's transaction-aware ResourceHandler API.
  */
-@SuppressWarnings("removal")
-public class ItemStackWrapper extends ItemStackHandler {
+public class ItemStackWrapper extends ItemStacksResourceHandler implements BaseItemWrapper {
     private final OnContentsChangedFunction onContentsChanged;
     private final Map<Integer, Integer> slotSizeMap;
     private CanInsertFunction canInsert = null;
@@ -52,57 +46,118 @@ public class ItemStackWrapper extends ItemStackHandler {
         this.slotSizeMap = new ConcurrentHashMap<>();
     }
 
-    @Override
+    public void setSize(int size) {
+        this.setStacks(NonNullList.withSize(size, ItemStack.EMPTY));
+    }
+
+    public int getSlots() {
+        return this.size();
+    }
+
+    public @NotNull ItemStack getStackInSlot(int slot) {
+        Objects.checkIndex(slot, this.size());
+        return this.stacks.get(slot);
+    }
+
+    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+        this.set(slot, ItemResource.of(stack), stack.getCount());
+    }
+
     public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         return this.insertItem(slot, stack, simulate, false);
     }
 
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate, boolean container) {
-        return !container && this.outputSlots != null && ArrayUtils.contains(this.outputSlots, slot) ? stack : super.insertItem(slot, stack, simulate);
+    public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate, boolean container) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        if (!container && this.outputSlots != null && ArrayUtils.contains(this.outputSlots, slot)) {
+            return stack;
+        }
+
+        try (var tx = Transaction.openRoot()) {
+            int inserted = this.insert(slot, ItemResource.of(stack), stack.getCount(), tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            int remaining = stack.getCount() - inserted;
+            return remaining == 0 ? ItemStack.EMPTY : stack.copyWithCount(remaining);
+        }
     }
 
-    @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
         return this.extractItem(slot, amount, simulate, false);
     }
 
-    public ItemStack extractItem(int slot, int amount, boolean simulate, boolean container) {
-        if (!container) {
-            if (this.canExtract != null && !this.canExtract.apply(slot)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (this.outputSlots != null && !ArrayUtils.contains(this.outputSlots, slot)) {
-                return ItemStack.EMPTY;
-            }
+    public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate, boolean container) {
+        if (amount <= 0) {
+            return ItemStack.EMPTY;
+        }
+        if (!container && this.canExtract != null && !this.canExtract.apply(slot)) {
+            return ItemStack.EMPTY;
         }
 
-        return super.extractItem(slot, amount, simulate);
+        ItemResource resource = this.getResource(slot);
+        if (resource.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        try (var tx = Transaction.openRoot()) {
+            int extracted = this.extract(slot, resource, amount, tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            return extracted == 0 ? ItemStack.EMPTY : resource.toStack(extracted);
+        }
     }
 
     @Override
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        if (this.outputSlots != null && ArrayUtils.contains(this.outputSlots, index)) {
+            return 0;
+        }
+        return super.insert(index, resource, amount, transaction);
+    }
+
+    @Override
+    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        if (this.canExtract != null && !this.canExtract.apply(index)) {
+            return 0;
+        }
+        return super.extract(index, resource, amount, transaction);
+    }
+
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        if (resource.isEmpty()) {
+            return false;
+        }
+        return this.canInsert == null || this.canInsert.apply(index, resource.toStack());
+    }
+
+    @Override
+    protected int getCapacity(int index, ItemResource resource) {
+        int slotLimit = this.slotSizeMap.getOrDefault(index, this.maxStackSize);
+        return resource.isEmpty() ? slotLimit : Math.min(slotLimit, resource.getMaxStackSize());
+    }
+
     public int getSlotLimit(int slot) {
-        return this.slotSizeMap.containsKey(slot) ? this.slotSizeMap.get(slot) : this.maxStackSize;
+        return this.slotSizeMap.getOrDefault(slot, this.maxStackSize);
     }
 
-    @Override
-    public int getStackLimit(int slot, @NotNull ItemStack stack) {
-        return super.getStackLimit(slot, stack);
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+        return !stack.isEmpty() && this.isValid(slot, ItemResource.of(stack));
     }
+
     public Container toIInventory() {
         return new SimpleContainer(this.stacks.toArray(new ItemStack[0]));
     }
-    @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return this.canInsert == null || this.canInsert.apply(slot, stack);
-    }
 
     @Override
-    protected void onContentsChanged(int slot) {
+    protected void onContentsChanged(int slot, ItemStack previousContents) {
         if (this.onContentsChanged != null) {
             this.onContentsChanged.apply(slot);
         }
-
     }
 
     public @NotNull CompoundTag serializeNBT(HolderLookup.@NotNull Provider lookup) {
@@ -117,67 +172,16 @@ public class ItemStackWrapper extends ItemStackHandler {
 
     @Override
     public void serialize(ValueOutput output) {
-        ValueOutput.TypedOutputList<ItemStackWithSlot> itemList = output.list("Items", ItemStackWithSlot.CODEC);
-
-        for (int i = 0; i < this.stacks.size(); ++i) {
-            ItemStack stack = this.stacks.get(i);
-            if (!stack.isEmpty()) {
-                itemList.add(new ItemStackWithSlot(i, stack));
-            }
-        }
-
-        output.putInt("Size", this.stacks.size());
+        super.serialize(output);
     }
 
     @Override
     public void deserialize(ValueInput input) {
-        this.setSize(Math.max(input.getIntOr("Size", this.stacks.size()), this.stacks.size()));
-        input.listOrEmpty("Items", ItemStackWithSlot.CODEC).forEach(item -> {
-            if (item.isValidInContainer(this.stacks.size())) {
-                this.stacks.set(item.slot(), item.stack());
-            }
-        });
-        this.onLoad();
-    }
-
-    public @NotNull CompoundTag serializeNBTLegacy(HolderLookup.@NotNull Provider lookup) {
-        ListTag items = new ListTag();
-
-        for(int i = 0; i < this.stacks.size(); ++i) {
-            ItemStack stack = (ItemStack)this.stacks.get(i);
-            if (!stack.isEmpty()) {
-                CompoundTag item = new CompoundTag();
-                item.putInt("Slot", i);
-                ItemStack.CODEC.encode(stack, lookup.createSerializationContext(NbtOps.INSTANCE), item)
-                        .resultOrPartial(error -> Const.LOGGER.error("Tried to save invalid item: '{}'", error))
-                        .ifPresent(items::add);
-            }
-        }
-
-        CompoundTag nbt = new CompoundTag();
-        nbt.put("Items", items);
-        nbt.putInt("Size", this.stacks.size());
-        return nbt;
-    }
-
-    public void deserializeNBTLegacy(HolderLookup.@NotNull Provider lookup, CompoundTag nbt) {
-        int size = nbt.getInt("Size").orElse(this.stacks.size());
-        this.setSize(Math.max(size, this.stacks.size()));
-        ListTag items = nbt.getList("Items").orElseGet(ListTag::new);
-
-        for(int i = 0; i < items.size(); ++i) {
-            CompoundTag item = items.getCompound(i).orElseGet(CompoundTag::new);
-            int slot = item.getInt("Slot").orElse(-1);
-            if (slot >= 0 && slot < this.stacks.size()) {
-                ItemStack.CODEC.parse(lookup.createSerializationContext(NbtOps.INSTANCE), item).resultOrPartial((error) -> Const.LOGGER.error("Tried to load invalid item: '{}'", error)).ifPresent((stack) -> this.stacks.set(slot, stack));
-            }
-        }
-
-        this.onLoad();
+        super.deserialize(input);
     }
 
     public NonNullList<ItemStack> getStacks() {
-        return this.stacks;
+        return this.copyToList();
     }
 
     public int[] getOutputSlots() {
@@ -191,9 +195,8 @@ public class ItemStackWrapper extends ItemStackHandler {
     public void addSlotLimit(int slot, int size) {
         if (size > 64 && size % 64 != 0) {
             throw new IllegalArgumentException("Slot limits above 64 must be a multiple of 64");
-        } else {
-            this.slotSizeMap.put(slot, size);
         }
+        this.slotSizeMap.put(slot, size);
     }
 
     public void setCanInsert(CanInsertFunction canInsert) {
@@ -213,7 +216,7 @@ public class ItemStackWrapper extends ItemStackHandler {
     }
 
     public RecipeInventory toRecipeInventory(int start, int size) {
-        return new RecipeInventory(this, start, size);
+        return new RecipeInventory(this, this::set, start, size);
     }
 
     public CraftingInput toCraftingInput(int width, int height) {
@@ -241,7 +244,7 @@ public class ItemStackWrapper extends ItemStackHandler {
         Objects.requireNonNull(newInventory);
         this.slotSizeMap.forEach(newInventory::addSlotLimit);
 
-        for(int i = 0; i < this.getSlots(); ++i) {
+        for (int i = 0; i < this.getSlots(); ++i) {
             ItemStack stack = this.getStackInSlot(i);
             newInventory.setStackInSlot(i, stack.copy());
         }
@@ -250,7 +253,7 @@ public class ItemStackWrapper extends ItemStackHandler {
     }
 
     public static ItemStackWrapper create(int size) {
-        return create(size, (builder) -> {
+        return create(size, builder -> {
         });
     }
 
@@ -263,5 +266,4 @@ public class ItemStackWrapper extends ItemStackHandler {
         builder.accept(handler);
         return handler;
     }
-
 }

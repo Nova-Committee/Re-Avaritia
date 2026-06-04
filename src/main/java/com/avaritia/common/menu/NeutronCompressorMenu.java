@@ -63,8 +63,8 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
             }
             return true;
         });
-        this.addSlot(new OutputSlot(inventory, 0, 120, 35));
-        this.addSlot(new ItemStackWrapperSlot(inventory, 1, 39, 35));
+        this.addSlot(new OutputSlot(inventory, inventory::set, 0, 120, 35));
+        this.addSlot(new ItemStackWrapperSlot(inventory, inventory::set, 1, 39, 35));
         createInventorySlots(playerInventory);
     }
 
