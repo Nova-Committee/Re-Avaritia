@@ -13,8 +13,6 @@ import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minecraft.resources.Identifier;
-
 /**
  * Avaritia — 无尽模组。
  * <p>
@@ -31,7 +29,6 @@ public class Avaritia {
         ModConfig.register(modContainer);
 
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
-        ModArmorMaterial.ARMOR_MATERIALS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModCreativeModeTabs.TABS.register(modEventBus);
