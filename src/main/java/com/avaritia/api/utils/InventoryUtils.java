@@ -7,7 +7,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +27,6 @@ import java.util.function.Predicate;
  * @CreateTime: 2024/8/6 下午1:43
  * @Description:
  */
-@SuppressWarnings("removal")
 public class InventoryUtils {
     /**
      * @param itemInv 有容器的物品
@@ -33,14 +35,14 @@ public class InventoryUtils {
      */
     public static ItemStack tryInsert(ItemStack itemInv, ItemStack stack) {
         AtomicReference<ItemStack> returnStack = new AtomicReference<>(stack.copyWithCount(stack.getCount()));
-        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
-            returnStack.set(ItemHandlerHelper.insertItem(h, stack, false));
+        itemHandler(itemInv).ifPresent(h -> {
+            returnStack.set(ItemUtil.insertItemReturnRemaining(h, stack, false, null));
         });
         return returnStack.get();
     }
 
     public static ItemStack tryFilteredInsert(ItemStack itemInv, ItemStack stack) {
-        if (Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).isPresent() && itemInvHasItem(itemInv, stack)) {
+        if (itemHandler(itemInv).isPresent() && itemInvHasItem(itemInv, stack)) {
             return tryInsert(itemInv, stack);
         }
         return stack;
@@ -54,9 +56,9 @@ public class InventoryUtils {
      */
     private static boolean itemInvHasItem(ItemStack itemInv, ItemStack stack) {
         AtomicBoolean hasItem = new AtomicBoolean(false);
-        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
-            for (int i = 0; i < h.getSlots(); i++) {
-                if (h.getStackInSlot(i).getItem() == stack.getItem()) {
+        itemHandler(itemInv).ifPresent(h -> {
+            for (int i = 0; i < h.size(); i++) {
+                if (!h.getResource(i).isEmpty() && h.getResource(i).getItem() == stack.getItem()) {
                     hasItem.set(true);
                 }
             }
@@ -65,7 +67,14 @@ public class InventoryUtils {
     }
 
     public static ItemStack findFirstItem(Player player, Item consumeFrom) {
-        return player.getInventory().items.stream().filter((s) -> !s.isEmpty() && s.getItem() == consumeFrom).findFirst().orElse(ItemStack.EMPTY);
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < Inventory.INVENTORY_SIZE; slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty() && stack.getItem() == consumeFrom) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     /**
@@ -76,9 +85,9 @@ public class InventoryUtils {
      */
     public static int getFirstSlotWithStack(ItemStack itemInv, ItemStack stack) {
         AtomicInteger slot = new AtomicInteger(-1);
-        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
-            for (int i = 0; i < h.getSlots(); i++) {
-                if (h.getStackInSlot(i).getItem() == stack.getItem()) {
+        itemHandler(itemInv).ifPresent(h -> {
+            for (int i = 0; i < h.size(); i++) {
+                if (!h.getResource(i).isEmpty() && h.getResource(i).getItem() == stack.getItem()) {
                     slot.set(i);
                 }
             }
@@ -94,14 +103,21 @@ public class InventoryUtils {
      */
     private static int getLastSlotWithStack(ItemStack itemInv, ItemStack stack) {
         AtomicInteger slot = new AtomicInteger(-1);
-        Optional.ofNullable(itemInv.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
-            for (int i = h.getSlots() - 1; i >= 0; i--) {
-                if (h.getStackInSlot(i).getItem() == stack.getItem()) {
+        itemHandler(itemInv).ifPresent(h -> {
+            for (int i = h.size() - 1; i >= 0; i--) {
+                if (!h.getResource(i).isEmpty() && h.getResource(i).getItem() == stack.getItem()) {
                     slot.set(i);
                 }
             }
         });
         return slot.get();
+    }
+
+    private static Optional<ResourceHandler<ItemResource>> itemHandler(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(stack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(stack)));
     }
 
     /**

@@ -3,9 +3,12 @@ package com.avaritia.api.utils;
 import com.avaritia.api.common.container.FaceContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import javax.annotation.Nonnull;
 
@@ -17,7 +20,6 @@ import javax.annotation.Nonnull;
  * @description
  * @date 2024/6/11 下午11:47
  */
-@SuppressWarnings("removal")
 public class ContainerUtils {
     /**
      * Static default implementation for IInventory method
@@ -97,10 +99,9 @@ public class ContainerUtils {
      */
     public static void consumeItem(Container inv, int slot) {
         ItemStack stack = inv.getItem(slot);
-        Item item = stack.getItem();
-        if (item.hasCraftingRemainingItem(stack)) {
-            ItemStack container = item.getCraftingRemainingItem(stack);
-            inv.setItem(slot, container);
+        var remainder = stack.getCraftingRemainder();
+        if (remainder != null) {
+            inv.setItem(slot, remainder.create());
         } else {
             inv.removeItem(slot, 1);
         }
@@ -126,34 +127,37 @@ public class ContainerUtils {
         }
     }
 
-    public static boolean canInsertStack(IItemHandler handler, int slot, ItemStack stack) {
-        return handler.insertItem(slot, stack, true) != stack;
-    }
-
-    public static boolean canExtractStack(IItemHandler handler, int slot) {
-        ItemStack stack = handler.getStackInSlot(slot);
-        if (!stack.isEmpty()) {
-            return !handler.extractItem(slot, stack.getMaxStackSize(), true).isEmpty();
+    public static boolean canInsertStack(ResourceHandler<ItemResource> handler, int slot, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
         }
-        return false;
+        try (var tx = Transaction.openRoot()) {
+            return handler.insert(slot, ItemResource.of(stack), stack.getCount(), tx) > 0;
+        }
     }
 
-    public static ItemStack insertItem(IItemHandler handler, ItemStack insert, boolean simulate) {
-        insert = insert.copy();
-        for (int pass = 0; pass < 2; pass++) {
-            for (int slot = 0; slot < handler.getSlots(); slot++) {
-                ItemStack stack = handler.getStackInSlot(slot);
-                if (pass == 0 && stack.isEmpty()) {
-                    continue;
-                }
-                if (insert.isEmpty()) {
-                    return ItemStack.EMPTY;
-                }
-                insert = handler.insertItem(slot, insert, simulate);
+    public static boolean canExtractStack(ResourceHandler<ItemResource> handler, int slot) {
+        ItemResource resource = handler.getResource(slot);
+        if (resource.isEmpty()) {
+            return false;
+        }
+        try (var tx = Transaction.openRoot()) {
+            return handler.extract(slot, resource, resource.getMaxStackSize(), tx) > 0;
+        }
+    }
+
+    public static ItemStack insertItem(ResourceHandler<ItemResource> handler, ItemStack insert, boolean simulate) {
+        if (insert.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        try (var tx = Transaction.openRoot()) {
+            int inserted = ResourceHandlerUtil.insertStacking(handler, ItemResource.of(insert), insert.getCount(), tx);
+            if (!simulate) {
+                tx.commit();
             }
+            int remaining = insert.getCount() - inserted;
+            return remaining == 0 ? ItemStack.EMPTY : insert.copyWithCount(remaining);
         }
-
-        return insert;
     }
 
     public static int fitStackInSlot(FaceContainer inv, int slot, ItemStack stack) {
@@ -220,11 +224,11 @@ public class ContainerUtils {
      * @param insert  If we are checking for insertion or extraction.
      * @return The total number of items of the specified filter type.
      */
-    public static int countMatchingStacks(IItemHandler handler, ItemStack filter, boolean insert) {
+    public static int countMatchingStacks(ResourceHandler<ItemResource> handler, ItemStack filter, boolean insert) {
 
         int c = 0;
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            ItemStack stack = handler.getStackInSlot(slot);
+        for (int slot = 0; slot < handler.size(); slot++) {
+            ItemStack stack = ItemUtil.getStack(handler, slot);
             if (!stack.isEmpty() && ItemUtils.areStacksSameType(filter, stack) && (insert ? canInsertStack(handler, slot, stack) : canExtractStack(handler, slot))) {
                 c += stack.getCount();
             }
@@ -232,17 +236,15 @@ public class ContainerUtils {
         return c;
     }
 
-    public static int getInsertableQuantity(IItemHandler handler, ItemStack stack) {
-        ItemStack copy = ItemUtils.copyStack(stack, Integer.MAX_VALUE);
+    public static int getInsertableQuantity(ResourceHandler<ItemResource> handler, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return 0;
+        }
+        ItemResource resource = ItemResource.of(stack);
         int quantity = 0;
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            if (canInsertStack(handler, slot, copy)) {
-                ItemStack left = handler.insertItem(slot, copy, true);
-                if (left.isEmpty()) {
-                    quantity += copy.getCount();
-                } else {
-                    quantity += copy.getCount() - left.getCount();
-                }
+        for (int slot = 0; slot < handler.size(); slot++) {
+            try (var tx = Transaction.openRoot()) {
+                quantity += handler.insert(slot, resource, Integer.MAX_VALUE, tx);
             }
         }
         return quantity;

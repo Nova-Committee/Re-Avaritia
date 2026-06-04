@@ -2,6 +2,7 @@ package com.avaritia.common.menu;
 
 import com.avaritia.api.common.menu.BaseMenu;
 import com.avaritia.api.common.slot.BlackListSlot;
+import com.avaritia.api.common.slot.ResourceHandlerCopySlot;
 import com.avaritia.api.utils.InventoryUtils;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModMenus;
@@ -11,10 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 /**
  * @Project: Avaritia
@@ -39,15 +38,16 @@ public class NeutronRingMenu extends BaseMenu {
         if (ring.isEmpty()) {
             this.ring = InventoryUtils.findItemInInv(playerInventory.player, stack -> stack.is(ModItems.neutron_ring.get()), stack -> stack);
         }
-        Optional.ofNullable(ring.getCapability(Capabilities.ItemHandler.ITEM)).ifPresent(h -> {
-            for (int j = 0; j < h.getSlots(); j++) {
+        var handler = ring.isEmpty() ? null : ring.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(ring));
+        if (handler != null) {
+            for (int j = 0; j < handler.size(); j++) {
                 int row = j / 9;
                 int col = j % 9;
                 int xPos = 8 + col * 18;
                 int yPos = 18 + row * 18;
-                this.addSlot(new SlotItemHandler(h, j, xPos, yPos));
+                this.addSlot(new ResourceHandlerCopySlot(handler, j, xPos, yPos));
             }
-        });
+        }
         int i, j;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 9; j++) {

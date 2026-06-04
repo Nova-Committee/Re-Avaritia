@@ -38,7 +38,6 @@ public class TextComponentUtils {
             MutableComponent current = null;
             switch (component) {
                 case IHasTextComponent hasTextComponent -> current = hasTextComponent.getTextComponent().copy();
-                case moze_intel.projecte.utils.text.IHasTranslationKey hasTranslationKey -> current = translate(hasTranslationKey.getTranslationKey());
                 case TextColor color -> cachedStyle = cachedStyle.withColor(color);
                 //Just append if a text component is being passed
                 case Component c -> current = c.copy();
@@ -46,7 +45,7 @@ public class TextComponentUtils {
                 case ClickEvent event -> cachedStyle = cachedStyle.withClickEvent(event);
                 case HoverEvent event -> cachedStyle = cachedStyle.withHoverEvent(event);
                 case Block block -> current = block.getName().copy();
-                case Item item -> current = item.getDescription().copy();
+                case Item item -> current = item.getName(new ItemStack(item)).copy();
                 case ItemStack stack -> current = stack.getHoverName().copy();
                 case FluidStack stack -> current = stack.getHoverName().copy();
                 case Fluid fluid -> current = fluid.getFluidType().getDescription().copy();
@@ -117,7 +116,7 @@ public class TextComponentUtils {
             } else if (component instanceof Block block) {
                 current = block.getName().copy();
             } else if (component instanceof Item item) {
-                current = item.getDescription().copy();
+                current = item.getName(new ItemStack(item)).copy();
             } else if (component instanceof ItemStack stack) {
                 current = stack.getHoverName().copy();
             } else if (component instanceof FluidStack stack) {
