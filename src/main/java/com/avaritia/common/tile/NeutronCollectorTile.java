@@ -16,7 +16,6 @@ import com.avaritia.init.registry.ModTileEntities;
 import com.avaritia.init.registry.enums.CollectorTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.WorldlyContainer;
@@ -27,7 +26,11 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,13 +78,13 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
         }
         if (tile.canWork()) {
             var result = tile.inventory.getStackInSlot(0);
-            var stack = tile.tier.production.getItems()[0];
+            var stack = tile.tier.createProductionStack();
             tile.progress++;
             tile.data.set(0, tile.progress);
             if (tile.progress >= tile.tier.production_ticks) {
                 if (result.isEmpty()) {
                     tile.inventory.setStackInSlot(0, stack.copyWithCount(1));
-                } else if (result.is(stack.getItem())) {
+                } else if (ItemStack.isSameItemSameComponents(result, stack)) {
                     if (result.getCount() < 64) {
                         tile.inventory.setStackInSlot(0, ItemUtils.grow(result, 1));
                     }
@@ -97,19 +100,17 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(tag, registries);
-        this.progress = tag.getInt("progress");
-        if (tag.contains("SideConfig")) {
-            this.sideConfig = SideConfiguration.fromNBT(tag.getCompound("SideConfig"));
-        }
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.progress = input.getIntOr("progress", 0);
+        input.read("SideConfig", CompoundTag.CODEC).ifPresent(tag -> this.sideConfig = SideConfiguration.fromNBT(tag));
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.putInt("progress", progress);
-        tag.put("SideConfig", sideConfig.toNBT());
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("progress", progress);
+        output.store("SideConfig", CompoundTag.CODEC, sideConfig.toNBT());
     }
 
     @Override
@@ -146,7 +147,7 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     }
 
     public ItemStack getProduction() {
-        return tier.production.getItems()[0];
+        return tier.createProductionStack();
     }
 
     private void handleActiveOutput() {
@@ -209,28 +210,22 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
     }
 
     @Override
-    public void extractFromHandler(IItemHandler externalHandler, Direction fromSide) {
+    public void extractFromHandler(ResourceHandler<ItemResource> externalHandler, Direction fromSide) {
     }
 
     @Override
-    public void insertToHandler(IItemHandler externalHandler, Direction toSide) {
+    public void insertToHandler(ResourceHandler<ItemResource> externalHandler, Direction toSide) {
         // 检查输出槽是否有物品
         var outputSlot = this.inventory.getStackInSlot(0);
         if (outputSlot.isEmpty()) return;
 
-        ItemStack remaining = outputSlot.copy();
-
-        for (int i = 0; i < externalHandler.getSlots() && !remaining.isEmpty(); i++) {
-            ItemStack insertResult = externalHandler.insertItem(i, remaining, false);
-            int transferred = remaining.getCount() - insertResult.getCount();
-
-            if (transferred > 0) {
-                outputSlot.shrink(transferred);
-                remaining = insertResult;
+        try (var tx = Transaction.openRoot()) {
+            int transferred = externalHandler.insert(ItemResource.of(outputSlot), outputSlot.getCount(), tx);
+            if (transferred <= 0) {
+                return;
             }
-        }
-
-        if (!remaining.equals(outputSlot)) {
+            outputSlot.shrink(transferred);
+            tx.commit();
             this.setChanged();
         }
     }

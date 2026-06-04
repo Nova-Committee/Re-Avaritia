@@ -1,5 +1,7 @@
 package com.avaritia.init.data.provider;
 
+import com.avaritia.Const;
+
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModTags;
@@ -90,6 +92,10 @@ public class AvaritiaTagProvider implements DataProvider {
                 // --- c:gears/neutronium —— 中子素齿轮 ---
                 tag(ModTags.NEUTRON_GEAR).add(
                         ModItems.neutron_gear.get()
+                );
+
+                tag(ModTags.NEUTRON_DUST).add(
+                        ModItems.neutron_pile.get()
                 );
 
                 // --- c:nuggets/neutronium —— 中子素粒 ---
