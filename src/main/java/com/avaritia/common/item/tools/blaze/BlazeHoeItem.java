@@ -13,6 +13,7 @@ import com.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -118,8 +119,8 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
 
     @Override
     public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
-            ToolUtils.melting(state, level, pos, player, stack);
+        if (level instanceof ServerLevel serverLevel && isActive(stack, "smelt") && miningEntity instanceof Player player) {
+            ToolUtils.melting(state, serverLevel, pos, player, stack);
         }
         return super.mineBlock(stack, level, state, pos, miningEntity);
     }

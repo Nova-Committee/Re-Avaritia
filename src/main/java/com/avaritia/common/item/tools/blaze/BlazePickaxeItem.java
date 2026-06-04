@@ -12,6 +12,7 @@ import com.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -89,8 +90,8 @@ public class BlazePickaxeItem extends Item implements ITooltip, ISwitchable, Ini
         @Override
         public boolean mineBlock (@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState
         state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity){
-            if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
-                ToolUtils.melting(state, level, pos, player, stack);
+            if (level instanceof ServerLevel serverLevel && isActive(stack, "smelt") && miningEntity instanceof Player player) {
+                ToolUtils.melting(state, serverLevel, pos, player, stack);
             }
             return super.mineBlock(stack, level, state, pos, miningEntity);
         }

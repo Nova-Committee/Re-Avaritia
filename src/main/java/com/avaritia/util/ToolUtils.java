@@ -710,7 +710,7 @@ public class ToolUtils {
      */
     public static ItemStack getMeltingItem(Player player, ServerLevel world, ItemStack itemStack, ItemStack tool) {
         ItemStack dropStack = world.recipeAccess().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
-                .map(smeltingRecipe -> smeltingRecipe.value().getResultItem(world.registryAccess())).filter(e -> !e.isEmpty())
+                .map(smeltingRecipe -> smeltingRecipe.value().assemble(new SingleRecipeInput(itemStack))).filter(e -> !e.isEmpty())
                 .map(e -> e.copyWithCount(tool.getCount() * e.getCount()))
                 .orElse(itemStack);
         Holder<Enchantment> fortuneEnchant =
