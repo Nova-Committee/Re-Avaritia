@@ -1,5 +1,7 @@
 package com.avaritia.client.render.entity;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.Res;
 import com.avaritia.api.client.render.CCRenderState;
@@ -118,7 +120,7 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
             cc.reset();
             cc.bind(new TransformingVertexConsumer(vertexConsumer, pose), AvaritiaRenderTypes.VOID.format());
             cc.baseColour = rgba;
-            new OBJParser(Identifier.of(Const.MOD_ID, "models/hemisphere.obj")).parse().get("model").render(cc);
+            new OBJParser(Identifier.fromNamespaceAndPath(Const.MOD_ID, "models/hemisphere.obj")).parse().get("model").render(cc);
         });
 
         stack.popPose();

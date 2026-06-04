@@ -1,5 +1,7 @@
 package com.avaritia.client.render.entity;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.Res;
 import com.avaritia.api.client.render.CCModel;
@@ -32,7 +34,7 @@ public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTr
 
     public InfinityThrownTridentRender(EntityRendererProvider.Context context) {
         super(context);
-        this.tridentModel = new OBJParser(Identifier.of(Const.MOD_ID, "models/infinity_trident.obj"))
+        this.tridentModel = new OBJParser(Identifier.fromNamespaceAndPath(Const.MOD_ID, "models/infinity_trident.obj"))
                 .swapYZ()
                 .ignoreMtl()
                 .parse();

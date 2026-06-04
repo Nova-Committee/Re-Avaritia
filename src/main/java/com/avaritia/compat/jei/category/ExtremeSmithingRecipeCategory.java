@@ -1,6 +1,6 @@
 package com.avaritia.compat.jei.category;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import com.avaritia.init.registry.ModBlocks;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -13,21 +13,18 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHolder<ExtremeSmithingRecipe>> {
-    public static final IRecipeHolderType<ExtremeSmithingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Const.MOD_ID, "extreme_smithing"));
-    private static final Identifier TEXTURE = Identifier.of(Const.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png");
+    public static final IRecipeHolderType<ExtremeSmithingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "extreme_smithing"));
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/gui/jei/extreme_smithing_jei.png");
     private final IDrawable icon;
     private final IDrawable background;
 
@@ -78,14 +75,12 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHold
         builder.moveRecipeTransferButton(160, 68);
     }
 
-    public static ItemStack getResultItem(Recipe<?> recipe) {
+    public static ItemStack getResultItem(ExtremeSmithingRecipe recipe) {
         Minecraft minecraft = Minecraft.getInstance();
-        ClientLevel level = minecraft.level;
-        if (level == null) {
+        if (minecraft.level == null) {
             throw new NullPointerException("level must not be null.");
         }
-        RegistryAccess registryAccess = level.registryAccess();
-        return recipe.getResultItem(registryAccess);
+        return recipe.getResultItem(minecraft.level.registryAccess());
     }
 
     @Override

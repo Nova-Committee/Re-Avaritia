@@ -1,5 +1,7 @@
 package com.avaritia.client.render.entity;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.common.entity.arrow.HeavenArrowEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -29,7 +31,7 @@ import org.joml.Matrix4f;
  */
 @OnlyIn(Dist.CLIENT)
 public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity, ArrowRenderState> {
-    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.of(Const.MOD_ID, "textures/entity/heaven_arrow.png");
+    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/entity/heaven_arrow.png");
 
     public HeavenArrowRender(EntityRendererProvider.Context context) {
         super(context);

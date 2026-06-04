@@ -1,5 +1,7 @@
 package com.avaritia.client.render.entity;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
@@ -18,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @OnlyIn(Dist.CLIENT)
 public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity, ArrowRenderState> {
-    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.of(Const.MOD_ID, "textures/entity/heaven_arrow.png");
+    private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/entity/heaven_arrow.png");
 
     public HeavenSubArrowRender(EntityRendererProvider.Context context) {
         super(context);

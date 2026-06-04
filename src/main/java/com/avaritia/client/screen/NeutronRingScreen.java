@@ -1,5 +1,7 @@
 package com.avaritia.client.screen;
 
+import com.avaritia.Const;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import com.avaritia.Avaritia;
 import com.avaritia.api.client.screen.BaseContainerScreen;
@@ -11,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import static com.avaritia.client.AvaritiaClient.RING_KEY;
 
 public class NeutronRingScreen extends BaseContainerScreen<NeutronRingMenu> {
-    private static final Identifier BACKGROUND = Identifier.of(Const.MOD_ID, "textures/gui/neutron_ring.png");
+    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/gui/neutron_ring.png");
 
     public NeutronRingScreen(NeutronRingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle, BACKGROUND, 256, 276, 256, 276);

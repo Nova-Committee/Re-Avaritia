@@ -1,6 +1,6 @@
 package com.avaritia.compat.jei.category;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.api.common.crafting.ICompressorRecipe;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModTooltips;
@@ -24,8 +24,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class CompressorCategory implements IRecipeCategory<RecipeHolder<ICompressorRecipe>> {
-    public static final IRecipeHolderType<ICompressorRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Const.MOD_ID, "compressor"));
-    private static final Identifier TEXTURE = Identifier.of(Const.MOD_ID, "textures/gui/jei/compressor.png");
+    public static final IRecipeHolderType<ICompressorRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "compressor"));
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/gui/jei/compressor.png");
     private final IDrawable icon;
     private final IDrawable background;
 

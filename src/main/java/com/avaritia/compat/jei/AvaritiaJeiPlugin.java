@@ -1,6 +1,6 @@
 package com.avaritia.compat.jei;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.api.client.screen.BaseContainerScreen;
 import com.avaritia.client.screen.ExtremeAnvilScreen;
 import com.avaritia.client.screen.ExtremeSmithingScreen;
@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 
 @JeiPlugin
 public class AvaritiaJeiPlugin implements IModPlugin {
-    public static final Identifier UID = Identifier.of(Const.MOD_ID, "jei_plugin");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(Const.MOD_ID, "jei_plugin");
 
     @Override
     public @NotNull Identifier getPluginUid() {

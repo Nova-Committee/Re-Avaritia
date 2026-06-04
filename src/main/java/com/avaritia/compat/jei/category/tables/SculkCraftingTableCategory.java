@@ -1,6 +1,6 @@
 package com.avaritia.compat.jei.category.tables;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.api.common.crafting.ITierCraftingRecipe;
 import com.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import com.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
@@ -29,8 +29,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class SculkCraftingTableCategory implements IRecipeCategory<RecipeHolder<ITierCraftingRecipe>> {
-    public static final IRecipeHolderType<ITierCraftingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.of(Const.MOD_ID, "sculk_craft"));
-    private static final Identifier TEXTURE = Identifier.of(Const.MOD_ID, "textures/gui/jei/tables/sculk_jei.png");
+    public static final IRecipeHolderType<ITierCraftingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "sculk_craft"));
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/gui/jei/tables/sculk_jei.png");
     private final IDrawable background;
     private final IDrawable icon;
 
