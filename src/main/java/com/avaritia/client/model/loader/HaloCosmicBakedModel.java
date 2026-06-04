@@ -1,12 +1,12 @@
 package com.avaritia.client.model.loader;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.avaritia.api.client.model.bakedmodels.WrappedItemModel;
 import com.avaritia.api.client.render.CosmicRenderCall;
 import com.avaritia.api.client.render.CosmicRenderQueue;
 import com.avaritia.api.client.render.buffer.AlphaOverrideVertexConsumer;
+import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.api.iface.transform.IBowTransform;
@@ -21,13 +21,12 @@ import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +62,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
 
         // 渲染Halo效果
         if (transformType == ItemDisplayContext.GUI) {
-            renderQuadLayer(pStack, source.getBuffer(RenderType.translucent()), List.of(this.haloQuad), packedLight, packedOverlay);
+            renderQuadLayer(pStack, source.getBuffer(NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get()), List.of(this.haloQuad), packedLight, packedOverlay);
             if (this.setting.pulse()) {
                 pStack.pushPose();
                 double scale = random.nextDouble() * 0.15D + 0.95D;
@@ -90,9 +89,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
                             transformType,
                             pStack,
                             packedLight,
-                            packedOverlay,
-                            RenderSystem.getProjectionMatrix(),
-                            RenderSystem.getModelViewMatrix()
+                            packedOverlay
                     )
             );
             return;
@@ -134,7 +131,7 @@ public class HaloCosmicBakedModel extends WrappedItemModel implements CosmicRend
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.COSMIC);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (Identifier res : maskSprite) {
-            atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
+            atlasSprite.add(TextureUtils.getTexture(res));
         }
         renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);
     }

@@ -1,6 +1,5 @@
 package com.avaritia.client.model.loader;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.avaritia.api.client.render.CosmicRenderCall;
@@ -9,6 +8,7 @@ import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
 import com.avaritia.api.client.model.bakedmodels.WrappedItemModel;
+import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.api.iface.transform.IToolTransform;
@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
@@ -87,9 +86,7 @@ public class CosmicBakeModel extends WrappedItemModel implements CosmicRenderabl
                             transformType,
                             pStack,
                             packedLight,
-                            packedOverlay,
-                            RenderSystem.getProjectionMatrix(),
-                            RenderSystem.getModelViewMatrix()
+                            packedOverlay
                     )
             );
 
@@ -167,10 +164,7 @@ public class CosmicBakeModel extends WrappedItemModel implements CosmicRenderabl
 
         for (Identifier res : maskSprite) {
 
-            atlasSprite.add(
-                    mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                            .apply(res)
-            );
+            atlasSprite.add(TextureUtils.getTexture(res));
         }
 
         renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);

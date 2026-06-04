@@ -9,11 +9,11 @@ import com.avaritia.client.model.loader.base.HaloSetting;
 import com.avaritia.client.model.loader.base.HaloUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 
 import java.util.List;
 import java.util.Random;
@@ -47,7 +47,7 @@ public class HaloBakedModel extends WrappedItemModel {
         }
         if (itemDisplayContext == ItemDisplayContext.GUI) {
 
-            renderQuadLayer(pPoseStack, bufferSource.getBuffer(RenderType.translucent()), List.of(this.haloQuad), packedLight, packedOverlay);
+            renderQuadLayer(pPoseStack, bufferSource.getBuffer(NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get()), List.of(this.haloQuad), packedLight, packedOverlay);
             if (this.setting.pulse()) {
                 pPoseStack.pushPose();
                 double scale = random.nextDouble() * 0.15D + 0.95D;

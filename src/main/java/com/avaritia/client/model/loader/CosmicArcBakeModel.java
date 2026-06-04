@@ -1,6 +1,7 @@
 package com.avaritia.client.model.loader;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.avaritia.Const;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -13,6 +14,7 @@ import com.avaritia.api.client.render.CosmicRenderCall;
 import com.avaritia.api.client.render.CosmicRenderQueue;
 import com.avaritia.api.client.render.model.OBJParser;
 import com.avaritia.api.client.util.TransformUtils;
+import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
@@ -26,7 +28,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
@@ -149,9 +150,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
                             transformType,
                             pStack,
                             packedLight,
-                            packedOverlay,
-                            RenderSystem.getProjectionMatrix(),
-                            RenderSystem.getModelViewMatrix()
+                            packedOverlay
                     )
             );
             return;
@@ -218,7 +217,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
         final VertexConsumer cons = source.getBuffer(AvaritiaRenderTypes.COSMIC);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (Identifier res : maskSprite) {
-            atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
+            atlasSprite.add(TextureUtils.getTexture(res));
         }
         renderQuadLayer(pStack, cons, bakeItem(atlasSprite), packedLight, packedOverlay);
     }
