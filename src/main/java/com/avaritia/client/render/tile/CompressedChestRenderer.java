@@ -2,7 +2,7 @@ package com.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.blockentity.BrightnessCombiner;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -143,7 +143,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         pPoseStack.popPose();
     }
 
-    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, SpriteId sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, int outlineColor) {
+    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, Material sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, int outlineColor) {
         pLidPart.xRot = -(pLidAngle * ((float) Math.PI / 2F));
         pLockPart.xRot = pLidPart.xRot;
         output.submitModelPart(pLidPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
@@ -151,14 +151,14 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         output.submitModelPart(pBottomPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
     }
 
-    protected SpriteId getMaterial(T blockEntity, ChestType chestType) {
-        return new SpriteId(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
+    protected Material getMaterial(T blockEntity, ChestType chestType) {
+        return new Material(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
     }
 
     public static class State extends BlockEntityRenderState {
         public ChestType chestType = ChestType.SINGLE;
         public float open;
         public Direction facing = Direction.SOUTH;
-        public SpriteId material = new SpriteId(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
+        public Material material = new Material(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
     }
 }

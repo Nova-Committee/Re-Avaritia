@@ -2,7 +2,7 @@ package com.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.avaritia.common.block.chest.InfinityChestBlock;
 import com.avaritia.common.tile.InfinityChestTile;
 import com.avaritia.init.registry.ModBlocks;
@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
@@ -84,12 +84,12 @@ public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChe
         float f1 = state.open;
         f1 = 1.0F - f1;
         f1 = 1.0F - f1 * f1 * f1;
-        SpriteId sprite = new SpriteId(Sheets.CHEST_SHEET, Identifier.of(Const.MOD_ID, "block/chest/infinity_chest"));
+        Material sprite = new Material(Sheets.CHEST_SHEET, Identifier.of(Const.MOD_ID, "block/chest/infinity_chest"));
         this.submit(pPoseStack, output, sprite, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.outlineColor);
         pPoseStack.popPose();
     }
 
-    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, SpriteId sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, int outlineColor) {
+    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, Material sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, int outlineColor) {
         pLidPart.xRot = -(pLidAngle * ((float) Math.PI / 2F));
         pLockPart.xRot = pLidPart.xRot;
         output.submitModelPart(pLidPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
