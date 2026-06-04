@@ -1,11 +1,17 @@
 package com.avaritia.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.avaritia.common.tile.InfinityChestTile;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.avaritia.Const;
+import com.avaritia.api.client.util.TextureUtils;
+import com.avaritia.client.render.tile.InfinityChestBlockRender;
 import com.avaritia.init.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.BlockPos;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -26,9 +32,12 @@ public class InfinityChestItemRender {
             Block block = blockItem.getBlock();
             BlockState blockstate = block.defaultBlockState();
             if (blockstate.is(ModBlocks.infinity_chest.get())) {
-                Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(
-                        new InfinityChestTile(BlockPos.ZERO, ModBlocks.infinity_chest.get().defaultBlockState()),
-                        poseStack, buffer, packedLight, packedOverlay);
+                ModelPart root = Minecraft.getInstance().getEntityModels().bakeLayer(InfinityChestBlockRender.INFINITY_CHEST);
+                TextureAtlasSprite sprite = TextureUtils.getTexture(Const.rl("block/chest/infinity_chest"));
+                VertexConsumer consumer = sprite.wrap(buffer.getBuffer(RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS)));
+                root.getChild("lid").render(poseStack, consumer, packedLight, packedOverlay);
+                root.getChild("lock").render(poseStack, consumer, packedLight, packedOverlay);
+                root.getChild("bottom").render(poseStack, consumer, packedLight, packedOverlay);
             }
         }
     }

@@ -13,6 +13,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.Sheets;
@@ -21,7 +22,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
@@ -36,12 +38,15 @@ public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChe
 
     /** Model layer location — 注册层定义将在 AvaritiaModClient 中关联到此常量。 */
     public static final ModelLayerLocation INFINITY_CHEST = new ModelLayerLocation(Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_chest"), "main");
+    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.BLOCKS_MAPPER.apply(Const.rl("chest/infinity_chest"));
 
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
+    private final SpriteGetter sprites;
 
     public InfinityChestBlockRender(BlockEntityRendererProvider.Context pContext) {
+        this.sprites = pContext.sprites();
         ModelPart modelpart = pContext.bakeLayer(INFINITY_CHEST);
         this.bottom = modelpart.getChild("bottom");
         this.lid = modelpart.getChild("lid");
@@ -84,17 +89,18 @@ public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChe
         float f1 = state.open;
         f1 = 1.0F - f1;
         f1 = 1.0F - f1 * f1 * f1;
-        Material sprite = new Material(Sheets.CHEST_SHEET, Identifier.fromNamespaceAndPath(Const.MOD_ID, "block/chest/infinity_chest"));
-        this.submit(pPoseStack, output, sprite, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.outlineColor);
+        this.submit(pPoseStack, output, INFINITY_CHEST_SPRITE, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.breakProgress);
         pPoseStack.popPose();
     }
 
-    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, Material sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, int outlineColor) {
+    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, SpriteId sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         pLidPart.xRot = -(pLidAngle * ((float) Math.PI / 2F));
         pLockPart.xRot = pLidPart.xRot;
-        output.submitModelPart(pLidPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
-        output.submitModelPart(pLockPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
-        output.submitModelPart(pBottomPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
+        var texture = this.sprites.get(sprite);
+        var renderType = sprite.renderType(RenderTypes::entityCutout);
+        output.submitModelPart(pLidPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
+        output.submitModelPart(pLockPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
+        output.submitModelPart(pBottomPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
     }
 
     public static class State extends BlockEntityRenderState {

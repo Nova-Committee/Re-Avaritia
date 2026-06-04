@@ -10,6 +10,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.Sheets;
@@ -19,7 +20,8 @@ import net.minecraft.client.renderer.blockentity.BrightnessCombiner;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -38,6 +40,8 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T, CompressedChestRenderer.State> {
+    private static final SpriteId COMPRESSED_CHEST_SPRITE = Sheets.BLOCKS_MAPPER.apply(Const.rl("chest/compressed_chest"));
+
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
@@ -47,8 +51,10 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
     private final ModelPart doubleRightLid;
     private final ModelPart doubleRightBottom;
     private final ModelPart doubleRightLock;
+    private final SpriteGetter sprites;
 
     public CompressedChestRenderer(BlockEntityRendererProvider.Context pContext) {
+        this.sprites = pContext.sprites();
         ModelPart modelpart = pContext.bakeLayer(ModelLayers.CHEST);
         this.bottom = modelpart.getChild("bottom");
         this.lid = modelpart.getChild("lid");
@@ -103,7 +109,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         BlockState blockstate = flag ? pBlockEntity.getBlockState() : Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.SOUTH);
         state.chestType = blockstate.hasProperty(ChestBlock.TYPE) ? blockstate.getValue(ChestBlock.TYPE) : ChestType.SINGLE;
         state.facing = blockstate.getValue(ChestBlock.FACING);
-        state.material = getMaterial(pBlockEntity, state.chestType);
+        state.sprite = getSprite(pBlockEntity, state.chestType);
         Block block = blockstate.getBlock();
         if (block instanceof AbstractChestBlock<?> abstractchestblock) {
             DoubleBlockCombiner.NeighborCombineResult<? extends ChestBlockEntity> neighborcombineresult;
@@ -132,33 +138,35 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         f1 = 1.0F - f1 * f1 * f1;
         if (state.chestType != ChestType.SINGLE) {
             if (state.chestType == ChestType.LEFT) {
-                this.submit(pPoseStack, output, state.material, this.doubleLeftLid, this.doubleLeftLock, this.doubleLeftBottom, f1, state.lightCoords, state.outlineColor);
+                this.submit(pPoseStack, output, state.sprite, this.doubleLeftLid, this.doubleLeftLock, this.doubleLeftBottom, f1, state.lightCoords, state.breakProgress);
             } else {
-                this.submit(pPoseStack, output, state.material, this.doubleRightLid, this.doubleRightLock, this.doubleRightBottom, f1, state.lightCoords, state.outlineColor);
+                this.submit(pPoseStack, output, state.sprite, this.doubleRightLid, this.doubleRightLock, this.doubleRightBottom, f1, state.lightCoords, state.breakProgress);
             }
         } else {
-            this.submit(pPoseStack, output, state.material, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.outlineColor);
+            this.submit(pPoseStack, output, state.sprite, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.breakProgress);
         }
 
         pPoseStack.popPose();
     }
 
-    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, Material sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, int outlineColor) {
+    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, SpriteId sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         pLidPart.xRot = -(pLidAngle * ((float) Math.PI / 2F));
         pLockPart.xRot = pLidPart.xRot;
-        output.submitModelPart(pLidPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
-        output.submitModelPart(pLockPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
-        output.submitModelPart(pBottomPart, pPoseStack, sprite.renderType(RenderTypes::entityCutout), pPackedLight, outlineColor, sprite);
+        var texture = this.sprites.get(sprite);
+        var renderType = sprite.renderType(RenderTypes::entityCutout);
+        output.submitModelPart(pLidPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
+        output.submitModelPart(pLockPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
+        output.submitModelPart(pBottomPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
     }
 
-    protected Material getMaterial(T blockEntity, ChestType chestType) {
-        return new Material(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
+    protected SpriteId getSprite(T blockEntity, ChestType chestType) {
+        return COMPRESSED_CHEST_SPRITE;
     }
 
     public static class State extends BlockEntityRenderState {
         public ChestType chestType = ChestType.SINGLE;
         public float open;
         public Direction facing = Direction.SOUTH;
-        public Material material = new Material(Sheets.CHEST_SHEET, Const.rl("block/chest/compressed_chest"));
+        public SpriteId sprite = COMPRESSED_CHEST_SPRITE;
     }
 }
