@@ -3,7 +3,6 @@ package com.avaritia.client.render.tile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.avaritia.common.tile.InfinitatoTile;
-import com.avaritia.init.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -15,6 +14,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -22,7 +22,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Description:
@@ -45,14 +44,16 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile,
     @Override
     public void extractRenderState(@Nonnull InfinitatoTile potato, State state, float partialTicks, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(potato, state, partialTicks, cameraPos, breakProgress);
-        if (!Objects.requireNonNull(potato.getLevel()).isLoaded(potato.getBlockPos())
-                || potato.getLevel().getBlockState(potato.getBlockPos()).getBlock() != ModBlocks.infinitato.get()) {
+        Level level = potato.getLevel();
+        if (level == null || !level.isLoaded(potato.getBlockPos())) {
             state.shouldRender = false;
             return;
         }
         state.shouldRender = true;
-        state.name = potato.name;
-        state.potatoFacing = potato.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        state.name = potato.name == null ? "" : potato.name;
+        state.potatoFacing = potato.getBlockState().hasProperty(BlockStateProperties.HORIZONTAL_FACING)
+                ? potato.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING)
+                : Direction.SOUTH;
         state.jump = InfinitatoTile.jumpTicks > 0 ? InfinitatoTile.jumpTicks - partialTicks : InfinitatoTile.jumpTicks;
         HitResult pos = Minecraft.getInstance().hitResult;
         state.showName = Minecraft.renderNames()
