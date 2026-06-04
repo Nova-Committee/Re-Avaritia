@@ -1,5 +1,7 @@
 package com.avaritia.init.data.provider.recipe;
 
+import com.avaritia.Const;
+
 import com.avaritia.common.crafting.recipe.CompressorRecipe;
 import com.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import com.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
@@ -15,8 +17,6 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -25,8 +25,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
@@ -84,7 +82,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
         storage(output, ModItems.star_fuel.get(), ModBlocks.star_fuel_block.get(), "star_fuel_block", "star_fuel_alternate");
         storage(output, ModItems.refined_coal.get(), ModBlocks.refined_coal_block.get(), "refined_coal_block", "refined_coal");
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
+        this.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
                 .pattern(" n ")
                 .pattern("ncn")
                 .pattern(" n ")
@@ -93,7 +91,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_neutron_ingot", has(ModItems.neutron_ingot.get()))
                 .save(output, key("neutron_gear"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.compressed_chest.get())
+        this.shaped(RecipeCategory.TOOLS, ModBlocks.compressed_chest.get())
                 .pattern("aaa")
                 .pattern("aba")
                 .pattern("aaa")
@@ -102,7 +100,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()))
                 .save(output, key("compressed_chest"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get())
+        this.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get())
                 .pattern("xyx")
                 .pattern("xyx")
                 .define('x', ModItems.diamond_lattice.get())
@@ -110,7 +108,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_diamond_lattice", has(ModItems.diamond_lattice.get()))
                 .save(output, key("crystal_matrix_ingot_normal"));
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.diamond_lattice.get())
+        this.shaped(RecipeCategory.MISC, ModItems.diamond_lattice.get())
                 .pattern("aba")
                 .pattern("bab")
                 .pattern("aba")
@@ -308,14 +306,14 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void storage(RecipeOutput output, ItemLike small, ItemLike large, String packingName, String unpackingName) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, large)
+        this.shaped(RecipeCategory.MISC, large)
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
                 .define('#', small)
                 .unlockedBy("has_" + name(small), has(small))
                 .save(output, key(packingName));
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, small, 9)
+        this.shapeless(RecipeCategory.MISC, small, 9)
                 .requires(large)
                 .unlockedBy("has_" + name(large), has(large))
                 .save(output, key(unpackingName));
@@ -367,7 +365,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 .rewards(AdvancementRewards.Builder.recipe(key))
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .addCriterion(criterionName, criterion);
-        AdvancementHolder advancement = advancementBuilder.build(key.location().withPrefix("recipes/" + category.getFolderName() + "/"));
+        AdvancementHolder advancement = advancementBuilder.build(key.identifier().withPrefix("recipes/" + category.getFolderName() + "/"));
         output.accept(key, recipe, advancement);
     }
 
@@ -375,12 +373,8 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
         return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, name));
     }
 
-    private static Criterion<InventoryChangeTrigger.TriggerInstance> has(ItemLike item) {
-        return RecipeProvider.inventoryTrigger(ItemPredicate.Builder.item().of(item.asItem().builtInRegistryHolder()).build());
-    }
-
     private static String name(ItemLike item) {
-        return item.asItem().builtInRegistryHolder().key().location().getPath();
+        return item.asItem().builtInRegistryHolder().key().identifier().getPath();
     }
 
     private static NonNullList<Ingredient> list(ItemLike... items) {

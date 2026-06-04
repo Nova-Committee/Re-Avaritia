@@ -1,5 +1,8 @@
 package com.avaritia.init.data.provider;
 
+import com.avaritia.Const;
+
+import com.avaritia.common.crafting.input.ExtremeSmithingRecipeInput;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModRecipeSerializers;
@@ -495,7 +498,9 @@ public class AvaritiaRecipeProvider extends RecipeProvider.Runner {
 
         @Override
         default RecipeType<? extends Recipe<T>> getType() {
-            return RecipeType.CRAFTING;
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            RecipeType<? extends Recipe<T>> type = (RecipeType) RecipeType.CRAFTING;
+            return type;
         }
 
         @Override
@@ -541,11 +546,11 @@ public class AvaritiaRecipeProvider extends RecipeProvider.Runner {
         }
     }
 
-    private record ExtremeSmithingDatagenRecipe(Ingredient template, Ingredient base, Ingredient addition, ItemStack result) implements SerializerBackedRecipe<CraftingInput> {
+    private record ExtremeSmithingDatagenRecipe(Ingredient template, Ingredient base, Ingredient addition, ItemStack result) implements SerializerBackedRecipe<ExtremeSmithingRecipeInput> {
         @Override
-        public RecipeSerializer<? extends Recipe<CraftingInput>> getSerializer() {
+        public RecipeSerializer<? extends Recipe<ExtremeSmithingRecipeInput>> getSerializer() {
             @SuppressWarnings("unchecked")
-            RecipeSerializer<? extends Recipe<CraftingInput>> typed = (RecipeSerializer<? extends Recipe<CraftingInput>>) ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.get();
+            RecipeSerializer<? extends Recipe<ExtremeSmithingRecipeInput>> typed = (RecipeSerializer<? extends Recipe<ExtremeSmithingRecipeInput>>) ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.get();
             return typed;
         }
     }
