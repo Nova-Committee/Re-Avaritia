@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.blaze;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
@@ -59,7 +61,7 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
 
     public BlazeShovelItem() {
         super(ModToolTiers.BLAZE,0, ModToolTiers.BLAZE.speed(),
-                new Properties()
+                ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()

@@ -53,12 +53,15 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
+def localRuntimeConfiguration = configurations.maybeCreate("localRuntime")
+
 neoForge {
     version = project.neo_version
 
     runs {
         client {
             client()
+            getAdditionalRuntimeClasspathConfiguration().extendsFrom(localRuntimeConfiguration)
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -89,10 +92,6 @@ neoForge {
             sourceSet(sourceSets.main)
         }
     }
-}
-
-configurations {
-    runtimeClasspath.extendsFrom localRuntime
 }
 
 dependencies {

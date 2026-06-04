@@ -46,7 +46,7 @@ public class BlazeAxeItem extends AxeItem implements ITooltip, ISwitchable, Init
 
     public BlazeAxeItem() {
         super(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed(),
-                new Properties()
+                ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

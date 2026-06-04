@@ -41,7 +41,7 @@ public class CompressedChestBlock extends ChestBlock {
 
     public CompressedChestBlock() {
         super(() -> ModTileEntities.compressed_chest_tile.get(), SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE,
-                Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava());
+                ModBlocks.properties().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava());
     }
 
     @Override

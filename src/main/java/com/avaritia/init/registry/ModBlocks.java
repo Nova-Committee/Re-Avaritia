@@ -46,6 +46,7 @@ import java.util.function.Supplier;
  */
 public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Const.MOD_ID);
+    private static final ThreadLocal<ResourceKey<Block>> CURRENT_BLOCK_KEY = new ThreadLocal<>();
 
     // CRAFTING
     public static final DeferredBlock<Block> compressed_crafting_table = itemBlock("compressed_crafting_table", CompressedCraftTableBlock::new, ModRarities.UNCOMMON);
@@ -60,20 +61,20 @@ public class ModBlocks {
     public static final DeferredBlock<Block> infinity_chest = itemBlock("infinity_chest", InfinityChestBlock::new, new Item.Properties().rarity(ModRarities.LEGEND.getValue()));
     public static final DeferredBlock<Block> soul_farmland = itemBlock("soul_farmland", SoulFarmLandBlock::new, ModRarities.RARE);
     public static final DeferredBlock<Block> diamond_lattice_block = itemBlock("diamond_lattice_block",
-            () -> new Block(BlockBehaviour.Properties.of()
+            () -> new Block(properties()
                     .strength(100F, 100F)
                     .sound(SoundType.GLASS)),
             true,
             new Item.Properties().rarity(ModRarities.UNCOMMON));
     public static final DeferredBlock<Block> star_fuel_block = itemBurnBlock("star_fuel_block",
-            () -> new Block(BlockBehaviour.Properties.of()
+            () -> new Block(properties()
                     .strength(100F, 200F)
                     .sound(SoundType.STONE)),
             true,
             new Item.Properties().rarity(ModRarities.RARE),
             Integer.MAX_VALUE);
     public static final DeferredBlock<Block> refined_coal_block = itemBurnBlock("refined_coal_block",
-            () -> new Block(BlockBehaviour.Properties.of()
+            () -> new Block(properties()
                     .strength(50F, 50F)
                     .sound(SoundType.STONE)),
             true,
@@ -81,10 +82,10 @@ public class ModBlocks {
             RefinedCoalItem.BURN_TIME * 9);
 
     // MACHINE
-    public static final DeferredBlock<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.COMMON);
-    public static final DeferredBlock<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.UNCOMMON);
-    public static final DeferredBlock<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.RARE);
-    public static final DeferredBlock<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME, BlockBehaviour.Properties.of().lightLevel(state -> 15)), ModRarities.EPIC);
+    public static final DeferredBlock<Block> sculk_crafting_table = itemBlock("sculk_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.SCULK, properties().lightLevel(state -> 15)), ModRarities.COMMON);
+    public static final DeferredBlock<Block> nether_crafting_table = itemBlock("nether_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.NETHER, properties().lightLevel(state -> 15)), ModRarities.UNCOMMON);
+    public static final DeferredBlock<Block> end_crafting_table = itemBlock("end_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.END, properties().lightLevel(state -> 15)), ModRarities.RARE);
+    public static final DeferredBlock<Block> extreme_crafting_table = itemBlock("extreme_crafting_table", () -> new TierCraftTableBlock(ModCraftTier.EXTREME, properties().lightLevel(state -> 15)), ModRarities.EPIC);
     public static final DeferredBlock<Block> neutron_collector = itemBlock("neutron_collector", NeutronCollectorBlock::new, ModRarities.RARE);
     public static final DeferredBlock<Block> dense_neutron_collector = itemBlock("dense_neutron_collector", NeutronCollectorBlock::new, ModRarities.EPIC);
     public static final DeferredBlock<Block> denser_neutron_collector = itemBlock("denser_neutron_collector", NeutronCollectorBlock::new, ModRarities.LEGEND.getValue());
@@ -101,20 +102,20 @@ public class ModBlocks {
 
     // MISC / FAKE BLOCKS
     public static final DeferredBlock<Block> fake_bedrock = itemBlock("fake_bedrock", () -> new Block(
-            BlockBehaviour.Properties.of()
+            properties()
                     .mapColor(MapColor.STONE)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .strength(1000F, 3600000.0F)
                     .isValidSpawn((state, level, pos, value) -> false)), false);
     public static final DeferredBlock<Block> fake_end_portal_frame = itemBlock("fake_end_portal_frame", () -> new Block(
-            BlockBehaviour.Properties.of()
+            properties()
                     .mapColor(MapColor.COLOR_GREEN)
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .sound(SoundType.GLASS)
                     .lightLevel(blockState -> 1)
                     .strength(400F, 3600000.0F)), false);
     public static final DeferredBlock<Block> fake_end_portal = itemBlock("fake_end_portal", () -> new Block(
-            BlockBehaviour.Properties.of()
+            properties()
                     .mapColor(MapColor.COLOR_BLACK)
                     .noCollision()
                     .lightLevel(state -> 15)
@@ -129,7 +130,20 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     private static DeferredBlock<Block> baseBlock(String name, Supplier<Block> block) {
-        return BLOCKS.register(name, id -> block.get());
+        return BLOCKS.register(name, id -> {
+            CURRENT_BLOCK_KEY.set(ResourceKey.create(Registries.BLOCK, id));
+            try {
+                return block.get();
+            } finally {
+                CURRENT_BLOCK_KEY.remove();
+            }
+        });
+    }
+
+    public static BlockBehaviour.Properties properties() {
+        BlockBehaviour.Properties properties = BlockBehaviour.Properties.of();
+        ResourceKey<Block> key = CURRENT_BLOCK_KEY.get();
+        return key == null ? properties : properties.setId(key);
     }
 
     /**

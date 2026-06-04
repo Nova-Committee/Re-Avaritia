@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.utils.ItemUtils;
@@ -44,7 +46,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
     private static final String SHOCKWAVE_NBT = "Shockwave";
 
     public InfinityTridentItem() {
-        super((new Properties())
+        super((ModItems.properties())
                 .rarity(ModRarities.COSMIC.getValue())
                 .stacksTo(1)
                 .fireResistant()

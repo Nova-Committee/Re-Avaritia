@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.blaze;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
@@ -40,7 +42,7 @@ public class BlazePickaxeItem extends Item implements ITooltip, ISwitchable, Ini
     private final InitEnchantment fire_aspect;
 
     public BlazePickaxeItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

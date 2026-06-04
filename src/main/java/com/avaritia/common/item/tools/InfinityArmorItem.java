@@ -1,10 +1,13 @@
 package com.avaritia.common.item.tools;
 
+import com.avaritia.Const;
+
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.utils.lang.TextUtils;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.registry.ModArmorMaterial;
 import com.avaritia.init.registry.ModEntityTypes;
+import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -36,7 +39,7 @@ public class InfinityArmorItem extends Item implements IUndamageable {
     private final ArmorType armorType;
 
     public InfinityArmorItem(ArmorType pSlot, Item.Properties properties) {
-        super(properties
+        super(ModItems.applyId(properties)
                 .humanoidArmor(ModArmorMaterial.infinity_armor, pSlot)
                 .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()

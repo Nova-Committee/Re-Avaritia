@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.common.entity.ImmortalItemEntity;
@@ -41,7 +43,7 @@ public class InfinityHoeItem extends HoeItem implements IUndamageable, ISwitchab
 
     public InfinityHoeItem() {
         super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
-                new Properties()
+                ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()

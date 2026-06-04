@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.core.component.DataComponents;
@@ -20,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class InfinityElytraItem extends Item {
     public InfinityElytraItem() {
-        super(new Item.Properties()
+        super(ModItems.properties()
                 .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()
                 .stacksTo(1)

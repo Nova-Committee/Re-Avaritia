@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.transform.IToolTransform;
 import com.avaritia.common.entity.RainProEntity;
@@ -47,7 +49,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     private static final int MAX_DURATION = 20 * 60 * 20;
 
     public InfinityUmbrellaItem() {
-        super(ModRarities.COSMIC.getValue(),false, new Properties().stacksTo(1));
+        super(ModRarities.COSMIC.getValue(),false, ModItems.properties().stacksTo(1));
     }
 
     private int getRandomDuration(Level level) {

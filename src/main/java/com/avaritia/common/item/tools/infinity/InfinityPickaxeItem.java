@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
@@ -52,7 +54,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
     private static final double SMASH_RADIUS = 3.5D;
 
     public InfinityPickaxeItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()

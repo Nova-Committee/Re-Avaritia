@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.crystal;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.InitEnchantItem;
@@ -40,7 +42,7 @@ private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments
 
 
     public CrystalPickaxeItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()

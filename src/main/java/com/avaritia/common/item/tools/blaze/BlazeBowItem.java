@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.blaze;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.common.entity.arrow.BurningArrowEntity;
@@ -37,7 +39,7 @@ import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
  */
 public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform {
     public BlazeBowItem() {
-        super(new Properties()
+        super(ModItems.properties()
                 .stacksTo(1)
                 .rarity(ModRarities.EPIC)
                 .fireResistant());

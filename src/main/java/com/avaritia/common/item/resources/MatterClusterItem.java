@@ -33,7 +33,7 @@ public class MatterClusterItem extends Item {
     public static final int CAPACITY = 64 * 64;
 
     public MatterClusterItem() {
-        super(new Properties()
+        super(ModItems.properties()
                 .rarity(ModRarities.RARE)
                 .stacksTo(1));
     }

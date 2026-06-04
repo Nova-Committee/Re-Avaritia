@@ -1,5 +1,7 @@
 package com.avaritia.common.item.singularity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModRarities;
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EternalSingularityItem extends Item {
     public EternalSingularityItem() {
-        super(new Properties().stacksTo(8).rarity(ModRarities.RARE));
+        super(ModItems.properties().stacksTo(8).rarity(ModRarities.RARE));
     }
 
     @Override

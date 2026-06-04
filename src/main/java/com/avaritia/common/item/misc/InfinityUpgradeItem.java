@@ -27,7 +27,7 @@ import org.jspecify.annotations.NonNull;
 public class InfinityUpgradeItem extends ResourceItem {
     public InfinityUpgradeItem() {
         super(ModRarities.LEGEND.getValue(), true,
-                new Properties()
+                ModItems.properties()
                         .durability(16)
 
                 );

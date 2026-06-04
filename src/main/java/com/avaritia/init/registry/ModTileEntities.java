@@ -20,6 +20,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -29,7 +30,7 @@ public class ModTileEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Const.MOD_ID);
 
     public static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> blockEntity(String name, BlockEntityType.BlockEntitySupplier<T> tile, Supplier<Block[]> blocks) {
-        return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(tile, blocks.get()));
+        return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(tile, Set.of(blocks.get())));
     }
 
     @OnlyIn(Dist.CLIENT)

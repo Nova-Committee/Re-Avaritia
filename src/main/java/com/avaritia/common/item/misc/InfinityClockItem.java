@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.IInfinityClockSwitchable;
 import com.avaritia.common.entity.AcceleratorDisplayEntity;
 import com.avaritia.common.item.resources.ResourceItem;
@@ -31,7 +33,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     public static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
 
     public InfinityClockItem() {
-        super(ModRarities.COSMIC.getValue(), false, new Item.Properties().stacksTo(1));
+        super(ModRarities.COSMIC.getValue(), false, ModItems.properties().stacksTo(1));
     }
 
     @Override

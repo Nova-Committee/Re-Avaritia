@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.blaze;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
@@ -47,7 +49,7 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
 
     public BlazeHoeItem() {
         super(ModToolTiers.BLAZE, 0, ModToolTiers.BLAZE.speed(),
-                new Properties()
+                ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

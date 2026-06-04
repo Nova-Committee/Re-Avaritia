@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.common.item.resources.ResourceItem;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.Item;
@@ -16,7 +18,7 @@ public class InfinityTotemItem extends ResourceItem {
 
 
     public InfinityTotemItem() {
-        super(ModRarities.EPIC, true, new Item.Properties().stacksTo(1).durability(999));
+        super(ModRarities.EPIC, true, ModItems.properties().stacksTo(1).durability(999));
     }
 
     @Override

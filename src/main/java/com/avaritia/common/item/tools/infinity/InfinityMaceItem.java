@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.iface.item.InitEnchantItem;
@@ -39,7 +41,7 @@ public class InfinityMaceItem extends MaceItem implements IUndamageable,InitEnch
     private final InitEnchantment BREACH = new InitEnchantment(Enchantments.BREACH, 10);
 
     public InfinityMaceItem() {
-        super((new Properties())
+        super((ModItems.properties())
                 .rarity(ModRarities.COSMIC.getValue())
                 .stacksTo(1)
                 .fireResistant()

@@ -1,5 +1,7 @@
 package com.avaritia.common.item.singularity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.Const;
 import com.avaritia.api.iface.IColored;
 import com.avaritia.api.utils.lang.Localizable;
@@ -37,7 +39,7 @@ public class SingularityItem extends Item implements IColored {
     public static final AtomicInteger currentSingularityIndex = new AtomicInteger(0);
     public static List<Singularity> enabledSingularities = null;
     public SingularityItem() {
-        super(new Properties().rarity(ModRarities.UNCOMMON));
+        super(ModItems.properties().rarity(ModRarities.UNCOMMON));
     }
 
     @Override

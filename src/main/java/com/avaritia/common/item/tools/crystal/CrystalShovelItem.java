@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.crystal;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.avaritia.api.iface.ITooltip;
@@ -26,7 +28,7 @@ import java.util.List;
 public class CrystalShovelItem extends ShovelItem implements ITooltip {
     public CrystalShovelItem() {
         super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
-                new Properties()
+                ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()

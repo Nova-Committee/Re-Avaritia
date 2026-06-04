@@ -8,6 +8,7 @@ import com.avaritia.common.component.ClusterContainerContents;
 import com.avaritia.common.menu.InfinityChestMenu;
 import com.avaritia.common.tile.InfinityChestTile;
 import com.avaritia.init.registry.ModDataComponents;
+import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -63,7 +64,7 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
     }
 
     public InfinityChestBlock(){
-        this(Properties.of().mapColor(MapColor.GOLD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.GLASS).ignitedByLava());
+        this(ModBlocks.properties().mapColor(MapColor.GOLD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.GLASS).ignitedByLava());
     }
 
     @Override

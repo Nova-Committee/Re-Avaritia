@@ -1,12 +1,14 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.ShieldItem;
 
 public class InfinityShieldItem extends ShieldItem implements IUndamageable {
     public InfinityShieldItem() {
-        super((new Properties())
+        super((ModItems.properties())
                 .rarity(ModRarities.COSMIC.getValue())
                 .stacksTo(1)
                 .fireResistant());

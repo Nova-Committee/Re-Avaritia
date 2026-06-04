@@ -3,6 +3,7 @@ package com.avaritia.common.item.resources;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.init.registry.ModEntityTypes;
+import com.avaritia.init.registry.ModItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,11 +22,11 @@ public class ResourceItem extends Item implements ITooltip {
     private final boolean needsTooltip;
 
     public ResourceItem(Rarity rarity, boolean needsTooltip) {
-        this(rarity, needsTooltip, new Properties().rarity(rarity));
+        this(rarity, needsTooltip, ModItems.properties().rarity(rarity));
     }
 
     public ResourceItem(Rarity rarity, boolean needsTooltip, Properties properties) {
-        super(properties.rarity(rarity));
+        super(ModItems.applyId(properties).rarity(rarity));
         this.needsTooltip = needsTooltip;
     }
 

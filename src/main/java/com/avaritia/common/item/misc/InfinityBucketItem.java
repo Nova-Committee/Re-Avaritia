@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.IItemCapability;
 import com.avaritia.common.item.resources.ResourceItem;
 import com.avaritia.common.wrappers.InfinityBucketWrapper;
@@ -61,7 +63,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
     public static final String FLUID_AMOUNT_KEY = "Amount";
 
     public InfinityBucketItem() {
-        super(ModRarities.LEGEND.getValue(), true, new Properties().stacksTo(1));
+        super(ModRarities.LEGEND.getValue(), true, ModItems.properties().stacksTo(1));
     }
 
     public static List<FluidStack> getFluids(ItemStack stack) {

@@ -33,7 +33,7 @@ public class InfinityShovelItem extends ShovelItem implements ISwitchable, IUnda
 
     public InfinityShovelItem() {
         super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
-                new Properties()
+                ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()

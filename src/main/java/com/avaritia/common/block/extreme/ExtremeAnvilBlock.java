@@ -2,6 +2,7 @@ package com.avaritia.common.block.extreme;
 
 import com.mojang.serialization.MapCodec;
 import com.avaritia.common.menu.ExtremeAnvilMenu;
+import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModTags;
 import com.avaritia.init.registry.enums.ModResourceBlocks;
 import net.minecraft.core.BlockPos;
@@ -60,7 +61,7 @@ public class ExtremeAnvilBlock extends FallingBlock{
     private static final Component CONTAINER_TITLE = Component.translatable("container.repair");
 
     public ExtremeAnvilBlock() {
-        super(BlockBehaviour.Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops()
                 .strength(ModResourceBlocks.NEUTRON.hardness, ModResourceBlocks.NEUTRON.resistance)

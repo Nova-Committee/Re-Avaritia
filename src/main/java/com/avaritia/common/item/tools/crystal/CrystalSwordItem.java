@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.crystal;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.init.registry.ModDataComponents;
@@ -25,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
     public CrystalSwordItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

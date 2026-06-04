@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.common.item.resources.ResourceItem;
 import com.avaritia.init.registry.ModRarities;
 
@@ -11,6 +13,6 @@ import com.avaritia.init.registry.ModRarities;
  */
 public class InfinityRingItem extends ResourceItem {
     public InfinityRingItem() {
-        super(ModRarities.LEGEND.getValue(), true, new Properties().stacksTo(1));
+        super(ModRarities.LEGEND.getValue(), true, ModItems.properties().stacksTo(1));
     }
 }

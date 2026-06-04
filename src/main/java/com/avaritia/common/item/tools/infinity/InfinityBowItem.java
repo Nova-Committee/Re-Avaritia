@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
@@ -48,7 +50,7 @@ import static net.neoforged.neoforge.event.EventHooks.onArrowNock;
 public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchantItem, IUndamageable, IBowTransform {
     private final InitEnchantment initEnchantment;
     public InfinityBowItem() {
-        super(new Properties()
+        super(ModItems.properties()
                 .stacksTo(1)
                 .rarity(ModRarities.COSMIC.getValue())
                 .fireResistant()

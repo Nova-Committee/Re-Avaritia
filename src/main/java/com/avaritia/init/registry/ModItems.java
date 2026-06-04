@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Const.MOD_ID);
     public static final Map<String, Function<Identifier, ? extends BlockItem>> BLOCK_ITEMS = new LinkedHashMap<>();
+    private static final ThreadLocal<ResourceKey<Item>> CURRENT_ITEM_KEY = new ThreadLocal<>();
 
     // curios
     public static final DeferredItem<Item> neutron_ring = item("neutron_ring", id -> new NeutronRingItem(), false);
@@ -106,7 +107,7 @@ public class ModItems {
     public static final DeferredItem<Item> refined_coal = item("refined_coal", id -> new RefinedCoalItem());
     public static final DeferredItem<Item> endest_pearl = item("endest_pearl", id -> new EndestPearlItem());
     public static final DeferredItem<Item> matter_cluster = item("matter_cluster", id -> new MatterClusterItem());
-    public static final DeferredItem<Item> full_matter_cluster = item("full_matter_cluster", id -> new Item(new Item.Properties().stacksTo(1).rarity(ModRarities.RARE)));
+    public static final DeferredItem<Item> full_matter_cluster = item("full_matter_cluster", id -> new Item(properties().stacksTo(1).rarity(ModRarities.RARE)));
     public static final DeferredItem<Item> enhancement_core = item("enhancement_core", id -> new EnhancementCoreItem());
     public static final DeferredItem<Item> upgrade_smithing_template = item("upgrade_smithing_template", id -> new UpgradeSmithingTemplateItem());
     public static final DeferredItem<Item> infinity_upgrade = item("infinity_upgrade", id -> new InfinityUpgradeItem());
@@ -151,7 +152,7 @@ public class ModItems {
      * @return 延迟注册物品引用
      */
     public static DeferredItem<Item> item(String name, boolean exist) {
-        return item(name, id -> new Item(new Item.Properties()), exist);
+        return item(name, id -> new Item(properties()), exist);
     }
 
     /**
@@ -174,10 +175,26 @@ public class ModItems {
      * @return deferred item holder
      */
     public static DeferredItem<Item> item(String name, Function<Identifier, Item> fn, boolean exist) {
-        DeferredItem<Item> regItem = ITEMS.register(name, fn);
+        DeferredItem<Item> regItem = ITEMS.register(name, id -> {
+            CURRENT_ITEM_KEY.set(ResourceKey.create(Registries.ITEM, id));
+            try {
+                return fn.apply(id);
+            } finally {
+                CURRENT_ITEM_KEY.remove();
+            }
+        });
         if (exist) {
             ModCreativeModeTabs.ACCEPT_ITEM.add(regItem);
         }
         return regItem;
+    }
+
+    public static Item.Properties properties() {
+        return applyId(new Item.Properties());
+    }
+
+    public static Item.Properties applyId(Item.Properties properties) {
+        ResourceKey<Item> key = CURRENT_ITEM_KEY.get();
+        return key == null ? properties : properties.setId(key);
     }
 }

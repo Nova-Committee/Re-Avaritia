@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.blaze;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.api.iface.item.ISwitchable;
@@ -42,7 +44,7 @@ public class BlazeSwordItem extends Item implements ITooltip, ISwitchable, InitE
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FIRE_ASPECT, 10);
 
     public BlazeSwordItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .component(ModDataComponents.TOOL_MODE, ToolMode.DEFAULT)
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

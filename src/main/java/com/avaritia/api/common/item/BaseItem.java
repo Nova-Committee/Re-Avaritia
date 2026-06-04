@@ -1,5 +1,6 @@
 package com.avaritia.api.common.item;
 
+import com.avaritia.init.registry.ModItems;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 
@@ -19,11 +20,11 @@ import java.util.function.Function;
 
 public class BaseItem extends Item {
     public BaseItem() {
-        super(new Properties());
+        super(ModItems.properties());
     }
 
     public BaseItem(Function<Properties, Properties> properties) {
-        super(properties.apply(new Properties()));
+        super(properties.apply(ModItems.properties()));
     }
 
     public @NotNull InteractionResult rightClick(@NotNull Level world, Player player, @NotNull InteractionHand hand) {

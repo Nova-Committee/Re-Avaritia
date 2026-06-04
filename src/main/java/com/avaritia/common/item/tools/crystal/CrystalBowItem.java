@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.crystal;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.transform.IBowTransform;
 import com.avaritia.common.entity.BladeSlashEntity;
@@ -25,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CrystalBowItem extends BowItem implements ISwitchable, IBowTransform {
     public CrystalBowItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()

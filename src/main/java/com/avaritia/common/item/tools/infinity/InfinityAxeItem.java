@@ -43,7 +43,7 @@ public class InfinityAxeItem extends AxeItem implements ISwitchable, IUndamageab
 
     public InfinityAxeItem() {
         super(ModToolTiers.INFINITY,0, ModToolTiers.INFINITY.speed(),
-                new Properties()
+                ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()

@@ -1,6 +1,7 @@
 package com.avaritia.common.block.cake;
 
 import com.avaritia.api.common.block.BaseBlock;
+import com.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -38,7 +39,7 @@ public class EndlessCakeBlock extends BaseBlock {
     public static final VoxelShape CAKE_SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 8.0D, 15.0D);
 
     public EndlessCakeBlock() {
-        super(Properties.of().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY));
+        super(ModBlocks.properties().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY));
     }
 
     protected static InteractionResult tryEat(LevelAccessor pLevel, BlockPos pPos, Player pPlayer) {

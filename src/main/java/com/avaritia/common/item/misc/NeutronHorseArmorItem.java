@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.InitEnchantItem;
 import com.avaritia.init.registry.ModEnchants;
@@ -22,7 +24,7 @@ public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
     private final InitEnchantment ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
     private final InitEnchantment FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
     public NeutronHorseArmorItem() {
-        super(new Item.Properties()
+        super(ModItems.properties()
                 .horseArmor(infinity_horse_armor)
                 .stacksTo(1)
                 .rarity(ModRarities.RARE)

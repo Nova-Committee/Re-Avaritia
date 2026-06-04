@@ -1,5 +1,7 @@
 package com.avaritia.common.item.misc;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.ITileIO;
 import com.avaritia.api.utils.ItemUtils;
 import com.avaritia.core.io.SideConfiguration;
@@ -33,7 +35,7 @@ import java.util.function.Consumer;
 public class SideConfigurationCardItem extends Item {
 
     public SideConfigurationCardItem() {
-        super(new Properties()
+        super(ModItems.properties()
                 .stacksTo(1)
                 .rarity(ModRarities.RARE));
     }

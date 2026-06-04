@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.infinity;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.Const;
 import com.avaritia.api.common.enchant.InitEnchantment;
 import com.avaritia.api.iface.item.ISwitchable;
@@ -63,7 +65,7 @@ import java.util.function.Consumer;
 public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitchable, IUndamageable, IToolTransform {
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.LOOTING, 10);
     public InfinitySwordItem() {
-        super(new Properties()
+        super(ModItems.properties()
                         .rarity(ModRarities.COSMIC.getValue())
                         .stacksTo(1)
                         .fireResistant()

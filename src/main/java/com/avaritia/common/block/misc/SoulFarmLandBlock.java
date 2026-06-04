@@ -33,7 +33,7 @@ public class SoulFarmLandBlock extends BaseBlock {
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
     public SoulFarmLandBlock() {
-        super(BlockBehaviour.Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.COLOR_BROWN)
                 .strength(0.6F)
                 .randomTicks()

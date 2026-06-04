@@ -1,5 +1,7 @@
 package com.avaritia.common.item.resources;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.init.registry.ModRarities;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -16,7 +18,7 @@ import org.jspecify.annotations.NonNull;
  */
 public class RefinedCoalItem extends ResourceItem{
     public RefinedCoalItem() {
-        super(ModRarities.UNCOMMON, true, new Properties().stacksTo(32));
+        super(ModRarities.UNCOMMON, true, ModItems.properties().stacksTo(32));
     }
 
     public static final int BURN_TIME = 16000 * 10;

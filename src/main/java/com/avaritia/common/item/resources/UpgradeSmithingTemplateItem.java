@@ -1,5 +1,7 @@
 package com.avaritia.common.item.resources;
 
+import com.avaritia.init.registry.ModItems;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -33,6 +35,6 @@ public class UpgradeSmithingTemplateItem extends SmithingTemplateItem {
                 Component.translatable("item.avaritia.upgrade_smithing_template"),
                 List.of(EMPTY_SLOT_SWORD, EMPTY_SLOT_PICKAXE, EMPTY_SLOT_AXE, EMPTY_SLOT_HOE, EMPTY_SLOT_SHOVEL),
                 List.of(EMPTY_SLOT_BLOCK),
-                new Item.Properties());
+                ModItems.properties());
     }
 }

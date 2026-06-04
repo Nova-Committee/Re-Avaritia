@@ -2,6 +2,7 @@ package com.avaritia.common.block.extreme;
 
 import com.avaritia.api.common.block.BaseBlock;
 import com.avaritia.common.menu.ExtremeSmithingMenu;
+import com.avaritia.init.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
@@ -28,7 +29,7 @@ public class ExtremeSmithingTableBlock extends BaseBlock {
     private static final Component CONTAINER_TITLE = Component.translatable("container.extreme_smithing");
 
     public ExtremeSmithingTableBlock() {
-        super(Properties.of()
+        super(ModBlocks.properties()
                 .mapColor(MapColor.COLOR_RED)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(2.5F)

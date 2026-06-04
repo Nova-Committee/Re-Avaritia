@@ -1,5 +1,7 @@
 package com.avaritia.common.item.tools.crystal;
 
+import com.avaritia.init.registry.ModItems;
+
 import com.avaritia.api.iface.ITooltip;
 import com.avaritia.init.registry.ModRarities;
 import com.avaritia.init.registry.ModToolTiers;
@@ -24,7 +26,7 @@ public class CrystalAxeItem extends AxeItem implements ITooltip {
 
     public CrystalAxeItem() {
         super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
-                new Properties()
+                ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
