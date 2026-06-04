@@ -83,7 +83,7 @@ public class ShockwaveParticle extends SingleQuadParticle {
                 int particles = (int) Mth.clamp(circumference / 5, 5, MAX_PARTICLES);
                 float degreesPerParticle = 360f / particles;
                 for (int i = 0; i < particles; i++) {
-                    float f = degreesPerParticle * i + level.random.nextInt((int) degreesPerParticle);
+                    float f = degreesPerParticle * i + this.random.nextInt((int) degreesPerParticle);
                     float x = Mth.cos(f * Mth.DEG_TO_RAD) * radius;
                     float z = Mth.sin(f * Mth.DEG_TO_RAD) * radius;
                     this.level.addParticle(trailParticle.get(), this.x + x, this.y, this.z + z, 0, .05, 0);

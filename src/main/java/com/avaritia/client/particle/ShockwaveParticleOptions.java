@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Optional;
 
@@ -22,9 +23,9 @@ public class ShockwaveParticleOptions implements ParticleOptions {
     private final Vector3f color;
     protected final String trailParticleRaw;
 
-    public ShockwaveParticleOptions(Vector3f color, float scale, boolean glowing, String trailParticle) {
+    public ShockwaveParticleOptions(Vector3fc color, float scale, boolean glowing, String trailParticle) {
         this.scale = scale;
-        this.color = color;
+        this.color = new Vector3f(color);
         this.fullbright = glowing;
         this.trailParticleRaw = trailParticle;
     }
