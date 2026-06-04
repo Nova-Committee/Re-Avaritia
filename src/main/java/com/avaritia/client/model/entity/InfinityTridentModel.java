@@ -1,22 +1,16 @@
 package com.avaritia.client.model.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class InfinityTridentModel extends Model {
-    private final ModelPart root = createLayer().bakeRoot();
-
+public class InfinityTridentModel extends Model<Object> {
     public InfinityTridentModel() {
-        super(RenderType::entitySolid);
+        super(createLayer().bakeRoot(), RenderTypes::entitySolid);
     }
 
     public static LayerDefinition createLayer() {
@@ -30,8 +24,4 @@ public class InfinityTridentModel extends Model {
         return LayerDefinition.create(meshdefinition, 32, 32);
     }
 
-    @Override
-    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        this.root.render(poseStack, buffer, packedLight, packedOverlay, color);
-    }
 }
