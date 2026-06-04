@@ -1,13 +1,11 @@
 package com.avaritia.common.entity;
 
 import com.avaritia.init.config.ModConfig;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -20,6 +18,7 @@ public class ImmortalItemEntity extends ItemEntity {
         super(type, level);
         this.setPickUpDelay(0);
         this.setUnlimitedLifetime();
+        this.setInvulnerable(true);
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
@@ -85,16 +84,11 @@ public class ImmortalItemEntity extends ItemEntity {
         if (distance < 1.0D) {
             this.setPos(playerPos.x, playerPos.y, playerPos.z);
 
-            if (!this.level().isClientSide) {
+            if (!this.level().isClientSide()) {
                 this.followingPlayer.getInventory().add(this.getItem());
                 this.discard();
             }
         }
-    }
-
-    @Override
-    public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float amount) {
-        return source == this.damageSources().fellOutOfWorld() && super.hurtServer(level, source, amount);
     }
 
     @Override

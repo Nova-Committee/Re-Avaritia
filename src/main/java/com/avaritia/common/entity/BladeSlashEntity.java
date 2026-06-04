@@ -116,9 +116,11 @@ public class BladeSlashEntity extends Projectile {
             discard();
         }
         calculateCollision(this.level());
-        checkInsideBlocks();
         Vec3 velocity = getDeltaMovement();
-        setPos(getX() + velocity.x, getY() + velocity.y, getZ() + velocity.z);
+        Vec3 start = this.position();
+        Vec3 end = start.add(velocity);
+        this.applyEffectsFromBlocks(start, end);
+        setPos(end.x, end.y, end.z);
     }
 
     @Override
