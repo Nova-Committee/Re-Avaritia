@@ -1,5 +1,7 @@
 package com.avaritia.init.registry.enums;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import net.minecraft.resources.Identifier;
 

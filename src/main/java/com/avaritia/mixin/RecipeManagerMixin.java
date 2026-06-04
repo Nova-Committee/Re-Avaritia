@@ -1,5 +1,7 @@
 package com.avaritia.mixin;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.google.common.base.Stopwatch;
 import com.llamalad7.mixinextras.sugar.Local;

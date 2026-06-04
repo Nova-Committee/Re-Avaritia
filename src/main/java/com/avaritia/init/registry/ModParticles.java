@@ -1,5 +1,7 @@
 package com.avaritia.init.registry;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.client.particle.ShockwaveParticleOptions;
 import com.mojang.serialization.MapCodec;

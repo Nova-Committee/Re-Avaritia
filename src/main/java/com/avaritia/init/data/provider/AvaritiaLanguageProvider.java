@@ -1,5 +1,7 @@
 package com.avaritia.init.data.provider;
 
+import com.avaritia.Const;
+
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModItems;
