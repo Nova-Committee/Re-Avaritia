@@ -5,7 +5,6 @@ import com.avaritia.common.tile.NeutronCompressorTile;
 import com.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -67,19 +66,6 @@ public class NeutronCompressorBlock extends BaseTileEntityBlock {
         }
 
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            var tile = level.getBlockEntity(pos);
-
-            if (tile instanceof NeutronCompressorTile compressor) {
-                Containers.dropContents(level, pos, compressor.getInventory().getStacks());
-            }
-        }
-
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override

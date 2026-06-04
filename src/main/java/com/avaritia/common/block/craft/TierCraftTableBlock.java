@@ -8,7 +8,6 @@ import com.avaritia.init.registry.enums.ModCraftTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -44,18 +43,6 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
             }
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            var tile = level.getBlockEntity(pos);
-
-            if (tile instanceof TierCraftTile table) {
-                Containers.dropContents(level, pos, table.getInventory().getStacks());
-            }
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Nullable

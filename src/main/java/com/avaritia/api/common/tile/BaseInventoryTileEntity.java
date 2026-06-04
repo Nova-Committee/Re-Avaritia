@@ -7,10 +7,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.Containers;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
@@ -58,6 +60,15 @@ public abstract class BaseInventoryTileEntity extends BaseTileEntity {
         super.saveAdditional(output);
         this.lockKey.addToTag(output);
         this.getInventory().serialize(output);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        Level level = this.getLevel();
+        if (level != null && !level.isClientSide()) {
+            Containers.dropContents(level, pos, this.getInventory().getStacks());
+        }
+        super.preRemoveSideEffects(pos, state);
     }
 
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {

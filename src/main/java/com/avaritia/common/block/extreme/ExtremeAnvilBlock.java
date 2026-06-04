@@ -75,7 +75,7 @@ public class ExtremeAnvilBlock extends FallingBlock{
 
     @Override
     public void tick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
-        if (!isNoDown(pLevel.getBlockState(pPos.below())) && pPos.getY() >= pLevel.getMinBuildHeight()) {
+        if (!isNoDown(pLevel.getBlockState(pPos.below())) && pPos.getY() >= pLevel.getMinY()) {
             pLevel.destroyBlock(pPos.below(), true);
             FallingBlockEntity fallingblockentity = FallingBlockEntity.fall(pLevel, pPos, pState);
             this.falling(fallingblockentity);
@@ -93,7 +93,7 @@ public class ExtremeAnvilBlock extends FallingBlock{
 
     @Override
     public @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
-        if (pLevel.isClientSide) {
+        if (pLevel.isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             pPlayer.openMenu(pState.getMenuProvider(pLevel, pPos));
@@ -134,9 +134,9 @@ public class ExtremeAnvilBlock extends FallingBlock{
             pLevel.levelEvent(1029, pPos, 0);
         }
 
-        if (!pLevel.isClientSide && pLevel.getGameRules().getBoolean(GameRules.ENTITY_DROPS)) {
+        if (!pLevel.isClientSide() && pLevel instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.ENTITY_DROPS)) {
             ItemStack itemStack = new ItemStack(this);
-            Block.popResource(pLevel, pPos, itemStack);
+            Block.popResource(serverLevel, pPos, itemStack);
         }
     }
 
