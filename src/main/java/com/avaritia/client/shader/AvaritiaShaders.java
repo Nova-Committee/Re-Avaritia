@@ -1,6 +1,6 @@
 package com.avaritia.client.shader;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -63,7 +63,7 @@ public class AvaritiaShaders {
 
     public static void onRegisterShaders(RegisterRenderPipelinesEvent event) {
         COSMIC_SHADER = registerPipeline(event, "cosmic", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
-        COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS);
+        COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
         HELL_SHADER = registerPipeline(event, "hell", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
         ETERNAL_SHADER = registerPipeline(event, "eternal", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
         UNSTABLE_SHADER = registerPipeline(event, "unstable", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
