@@ -1,5 +1,7 @@
 package com.avaritia.core.singularity;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.init.config.ModConfig;
 import com.mojang.serialization.Codec;
@@ -29,7 +31,7 @@ public class Singularity {
                     Codec.INT.optionalFieldOf("underlayColor", 0x3B2754).forGetter(singularity -> singularity.underlayColor),
                     Codec.INT.optionalFieldOf("count", 1000).forGetter(singularity -> singularity.count),
                     Codec.INT.optionalFieldOf("timeCost", 240).forGetter(singularity -> singularity.timeCost),
-                    Ingredient.CODEC.fieldOf("ingredient").forGetter(singularity -> singularity.ingredient),
+                    Ingredient.CODEC.optionalFieldOf("ingredient").forGetter(Singularity::getOptionalIngredient),
                     Codec.BOOL.optionalFieldOf("enabled", true).forGetter(singularity -> singularity.enabled),
                     Codec.BOOL.optionalFieldOf("recipeEnabled", true).forGetter(singularity -> singularity.recipeEnabled)
             ).apply(builder, Singularity::new)
@@ -47,7 +49,7 @@ public class Singularity {
     private int underlayColor = 0x3B2754;
     private int count = 1000;
     private int timeCost = FMLLoader.getCurrent().isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
-    private Ingredient ingredient = Ingredient.EMPTY;
+    private Ingredient ingredient;
     private boolean enabled = true;
     private boolean recipeEnabled = true;
     private List<ICondition> conditions = new CopyOnWriteArrayList<>();
@@ -63,6 +65,11 @@ public class Singularity {
         this.ingredient = ingredient;
         this.enabled = enabled;
         this.recipeEnabled = recipeEnable;
+    }
+
+    public Singularity(Identifier registryName, String displayName, int overlayColor, int underlayColor,
+                       int count, int timeCost, Optional<Ingredient> ingredient, boolean enabled, boolean recipeEnable) {
+        this(registryName, displayName, overlayColor, underlayColor, count, timeCost, ingredient.orElse(null), enabled, recipeEnable);
     }
 
     public Singularity(Identifier registryName) {
@@ -91,6 +98,14 @@ public class Singularity {
 
     public Ingredient getIngredient() {
         return this.ingredient;
+    }
+
+    public Optional<Ingredient> getOptionalIngredient() {
+        return this.hasIngredient() ? Optional.of(this.ingredient) : Optional.empty();
+    }
+
+    public boolean hasIngredient() {
+        return this.ingredient != null && !this.ingredient.isEmpty();
     }
 
     public boolean isEnabled() {
@@ -180,14 +195,14 @@ public class Singularity {
         int overlayColor = buffer.readInt();
         int underlayColor = buffer.readInt();
 
-        var ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+        var ingredient = Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer);
         int timeCost = buffer.readVarInt();
         int count = buffer.readVarInt();
         var enabled = buffer.readBoolean();
         var recipeEnable = buffer.readBoolean();
 
         return new Singularity(id).setDisplayName(displayName).setColors(overlayColor, underlayColor)
-                .setIngredient(ingredient).setCount(count).setTimeCost(timeCost).setEnabled(enabled).setRecipeEnabled(recipeEnable);
+                .setIngredient(ingredient.orElse(null)).setCount(count).setTimeCost(timeCost).setEnabled(enabled).setRecipeEnabled(recipeEnable);
     }
 
     public static void write(RegistryFriendlyByteBuf buffer, Singularity singularity) {
@@ -195,7 +210,7 @@ public class Singularity {
         buffer.writeUtf(singularity.displayName);
         buffer.writeInt(singularity.overlayColor);
         buffer.writeInt(singularity.underlayColor);
-        Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, singularity.ingredient != null ? singularity.ingredient : Ingredient.EMPTY);
+        Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.encode(buffer, singularity.getOptionalIngredient());
         buffer.writeVarInt(singularity.timeCost);
         buffer.writeVarInt(singularity.getCount());
         buffer.writeBoolean(singularity.enabled);

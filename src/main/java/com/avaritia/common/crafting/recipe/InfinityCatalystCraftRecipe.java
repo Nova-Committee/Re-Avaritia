@@ -1,9 +1,10 @@
 package com.avaritia.common.crafting.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.avaritia.Const;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.core.singularity.Singularity;
 import com.avaritia.core.singularity.SingularityReloadListener;
@@ -51,9 +52,9 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                 SingularityReloadListener.INSTANCE.getAllSingularities()
                         .values()
                         .stream()
-                        .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                        .filter(Singularity::hasIngredient)
                         .map(SingularityUtils::getItemForSingularity)
-                        .map(Ingredient::of)
+                        .map(Const::getStackIngredient)
                         .forEach(super.getIngredients()::add);
             } else {
                 super.getIngredients().addAll(originalInputs);
@@ -99,7 +100,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         // 收集所有有效的奇点对象
         List<Singularity> validSingularities = singularities.values()
                 .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                .filter(Singularity::hasIngredient)
                 .toList();
 
         int singularityCount = validSingularities.size();
@@ -189,7 +190,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<InfinityCatalystCraftRecipe> getSerializer() {
         return ModRecipeSerializers.INFINITY_CATALYST_CRAFT_SERIALIZER.get();
     }
 
@@ -197,23 +198,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         public static final MapCodec<InfinityCatalystCraftRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         Codec.STRING.optionalFieldOf("group", "default").forGetter(recipe -> recipe.group),
-                        Ingredient.CODEC_NONEMPTY
-                                .listOf()
+                        RecipeCodecs.ingredientList(81, false, "Combination recipe")
                                 .fieldOf("ingredients")
-                                .flatXmap(
-                                        field -> {
-                                            var max = 81;
-                                            var ingredients = field.toArray(Ingredient[]::new);
-                                            if (ingredients.length == 0) {
-                                                return DataResult.error(() -> "No ingredients for Combination recipe");
-                                            } else {
-                                                return ingredients.length > max
-                                                        ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
-                                                        : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
-                                            }
-                                        },
-                                        DataResult::success
-                                )
                                 .forGetter(recipe -> recipe.originalInputs),
                         Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
                 ).apply(builder, InfinityCatalystCraftRecipe::new)
@@ -226,10 +212,10 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         private static InfinityCatalystCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
 
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             int count = buffer.readInt();
             return new InfinityCatalystCraftRecipe(group, inputs, count);

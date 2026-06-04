@@ -2,22 +2,31 @@ package com.avaritia.common.crafting.recipe;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.common.crafting.input.ExtremeSmithingRecipeInput;
+import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModRecipeSerializers;
 import com.avaritia.init.registry.ModRecipeTypes;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SmithingRecipeDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -48,18 +57,16 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull ExtremeSmithingRecipeInput input, HolderLookup.@NotNull Provider registries) {
+    public @NotNull ItemStack assemble(@NotNull ExtremeSmithingRecipeInput input) {
         ItemStack itemstack = input.base().transmuteCopy(this.result.getItem(), this.result.getCount());
         itemstack.applyComponents(this.result.getComponentsPatch());
         return itemstack;
     }
 
-    @Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
-    @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
         return this.result;
     }
@@ -73,33 +80,71 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
         return this.additions.test(pStack);
     }
 
-    @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> ingredients = NonNullList.create();
 
         ingredients.add(this.template);
         ingredients.add(this.base);
 
-        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(0)));
-        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(1)));
-        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(2)));
+        ingredients.addAll(this.getAdditionIngredients());
 
         return ingredients;
     }
 
+    public List<Ingredient> getAdditionIngredients() {
+        return this.additions.items()
+                .limit(3)
+                .map(holder -> Ingredient.of(HolderSet.direct(holder)))
+                .toList();
+    }
+
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<ExtremeSmithingRecipe> getSerializer() {
         return ModRecipeSerializers.EXTREME_SMITHING_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<ExtremeSmithingRecipe> getType() {
         return ModRecipeTypes.EXTREME_SMITHING_RECIPE.get();
     }
 
     @Override
+    public boolean showNotification() {
+        return true;
+    }
+
+    @Override
+    public @NotNull String group() {
+        return "";
+    }
+
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.create(this.getIngredients());
+    }
+
+    @Override
+    public @NotNull RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.SMITHING;
+    }
+
+    @Override
+    public @NotNull List<RecipeDisplay> display() {
+        if (this.result.isEmpty()) {
+            return List.of();
+        }
+        return List.of(new SmithingRecipeDisplay(
+                this.template.display(),
+                this.base.display(),
+                this.additions.display(),
+                new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.result)),
+                new SlotDisplay.ItemSlotDisplay(ModBlocks.extreme_smithing_table.get().asItem())
+        ));
+    }
+
     public boolean isIncomplete() {
-        return Stream.of(this.template, this.base, this.additions).anyMatch(Ingredient::hasNoItems);
+        return Stream.of(this.template, this.base, this.additions).anyMatch(Ingredient::isEmpty)
+                || this.getAdditionIngredients().size() < 3;
     }
 
     private static final MapCodec<ExtremeSmithingRecipe> CODEC = RecordCodecBuilder.mapCodec(
@@ -107,7 +152,7 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
                             Ingredient.CODEC.fieldOf("template").forGetter(recipe -> recipe.template),
                             Ingredient.CODEC.fieldOf("base").forGetter(recipe -> recipe.base),
                             Ingredient.CODEC.fieldOf("addition").forGetter(recipe -> recipe.additions),
-                            ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
+                            RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result)
                     )
                     .apply(p_340782_, ExtremeSmithingRecipe::new)
     );
@@ -115,7 +160,7 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
             ExtremeSmithingRecipe::toNetwork, ExtremeSmithingRecipe::fromNetwork
     );
 
-    public static final RecipeSerializer<?> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+    public static final RecipeSerializer<ExtremeSmithingRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
     private static ExtremeSmithingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
         Ingredient ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);

@@ -53,7 +53,7 @@ public class ModApi {
     @ApiStatus.AvailableSince("1.3.9.2")
     public static RecipeHolder<CompressorRecipe> addSingularityRecipe(Singularity singularity) {
         var ingredient = singularity.getIngredient();
-        if (ingredient == Ingredient.EMPTY)
+        if (!singularity.hasIngredient())
             return null;
 
         var id = singularity.getRegistryName();

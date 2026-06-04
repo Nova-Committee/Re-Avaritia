@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ICompressorRecipe;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModRecipeSerializers;
 import com.avaritia.init.registry.ModRecipeTypes;
@@ -49,18 +50,18 @@ public class CompressorRecipe implements ICompressorRecipe {
         return true;
     }
 
-    @Override
-    public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider pRegistryAccess) {
-        return this.result;
-    }
-
     public @NotNull ItemStack getResultItem() {
         return this.result;
     }
 
     @Override
+    public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+        return this.result;
+    }
+
+    @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.EMPTY, this.input);
+        return NonNullList.copyOf(List.of(this.input));
     }
 
     @Override
@@ -74,17 +75,17 @@ public class CompressorRecipe implements ICompressorRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<CompressorRecipe> getSerializer() {
         return ModRecipeSerializers.COMPRESSOR_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<ICompressorRecipe> getType() {
         return ModRecipeTypes.COMPRESSOR_RECIPE.get();
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull CraftingInput input, HolderLookup.@NotNull Provider registries) {
+    public @NotNull ItemStack assemble(@NotNull CraftingInput input) {
         return this.result.copy();
     }
     @Override
@@ -120,7 +121,7 @@ public class CompressorRecipe implements ICompressorRecipe {
                 builder.group(
                         Ingredient.CODEC
                                 .fieldOf("ingredient").forGetter(recipe -> recipe.input),
-                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("inputCount", 1000).forGetter(recipe -> recipe.inputCount),
                         Codec.INT.fieldOf("timeCost").forGetter(recipe -> recipe.timeCost)
                 ).apply(builder, CompressorRecipe::new)

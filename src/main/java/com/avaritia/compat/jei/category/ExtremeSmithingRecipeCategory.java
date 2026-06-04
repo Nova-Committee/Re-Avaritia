@@ -16,11 +16,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHolder<ExtremeSmithingRecipe>> {
     public static final IRecipeHolderType<ExtremeSmithingRecipe> RECIPE_TYPE = IRecipeHolderType.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "extreme_smithing"));
@@ -66,11 +63,12 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHold
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull RecipeHolder<ExtremeSmithingRecipe> recipeHolder, @NotNull IFocusGroup focuses) {
         var recipe = recipeHolder.value();
+        var additions = recipe.getAdditionIngredients();
         builder.addSlot(RecipeIngredientRole.INPUT, 27, 23).add(recipe.template);
         builder.addSlot(RecipeIngredientRole.INPUT, 45, 23).add(recipe.base);
-        builder.addSlot(RecipeIngredientRole.INPUT, 45, 5).add(Ingredient.of(Arrays.stream(recipe.additions.getItems()).toList().get(0)));
-        builder.addSlot(RecipeIngredientRole.INPUT, 63, 23).add(Ingredient.of(Arrays.stream(recipe.additions.getItems()).toList().get(1)));
-        builder.addSlot(RecipeIngredientRole.INPUT, 45, 41).add(Ingredient.of(Arrays.stream(recipe.additions.getItems()).toList().get(2)));
+        builder.addSlot(RecipeIngredientRole.INPUT, 45, 5).add(additions.get(0));
+        builder.addSlot(RecipeIngredientRole.INPUT, 63, 23).add(additions.get(1));
+        builder.addSlot(RecipeIngredientRole.INPUT, 45, 41).add(additions.get(2));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 117, 23).add(getResultItem(recipe));
         builder.moveRecipeTransferButton(160, 68);
     }

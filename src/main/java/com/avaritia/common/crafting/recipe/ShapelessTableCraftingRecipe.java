@@ -1,10 +1,10 @@
 package com.avaritia.common.crafting.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ITierCraftingRecipe;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.init.registry.ModRecipeSerializers;
 import com.avaritia.init.registry.ModRecipeTypes;
@@ -15,6 +15,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -57,12 +58,12 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<? extends Recipe<TierInput>> getSerializer() {
         return ModRecipeSerializers.SHAPELESS_CRAFT_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<? extends Recipe<TierInput>> getType() {
         return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
     }
 
@@ -72,7 +73,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull TierInput input, HolderLookup.@NotNull Provider registries) {
+    public @NotNull ItemStack assemble(@NotNull TierInput input) {
         return this.result.copy();
     }
     @Override
@@ -147,25 +148,10 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     public static class Serializer {
         public static final MapCodec<ShapelessTableCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
-                        Ingredient.CODEC_NONEMPTY
-                                .listOf()
+                        RecipeCodecs.ingredientList(81, false, "Combination recipe")
                                 .fieldOf("ingredients")
-                                .flatXmap(
-                                        field -> {
-                                            var max = 81;
-                                            var ingredients = field.toArray(Ingredient[]::new);
-                                            if (ingredients.length == 0) {
-                                                return DataResult.error(() -> "No ingredients for Combination recipe");
-                                            } else {
-                                                return ingredients.length > max
-                                                        ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
-                                                        : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
-                                            }
-                                        },
-                                        DataResult::success
-                                )
                                 .forGetter(recipe -> recipe.inputs),
-                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier)
                 ).apply(builder, ShapelessTableCraftingRecipe::new)
         );
@@ -176,10 +162,10 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
 
         private static ShapelessTableCraftingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
 
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
 
             var result = ItemStack.STREAM_CODEC.decode(buffer);

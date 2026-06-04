@@ -3,6 +3,7 @@ package com.avaritia.common.crafting.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.ShapedRecipePatternCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.init.registry.ModItems;
@@ -34,7 +35,7 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<NoConsumeCatalystShapedRecipe> getSerializer() {
         return ModRecipeSerializers.NO_CONSUME_CATALYST_SHAPED_SERIALIZER.get();
     }
 
@@ -42,7 +43,7 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
         public static final MapCodec<NoConsumeCatalystShapedRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 4).forGetter(recipe -> recipe.tier)
                 ).apply(builder, NoConsumeCatalystShapedRecipe::new)
         );

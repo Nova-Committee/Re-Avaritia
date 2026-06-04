@@ -1,9 +1,9 @@
 package com.avaritia.common.crafting.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.common.item.resources.MatterClusterItem;
 import com.avaritia.init.registry.ModItems;
@@ -54,7 +54,7 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
 
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<FullMatterClusterRecipe> getSerializer() {
         return ModRecipeSerializers.FULL_MATTER_CLUSTER_SERIALIZER.get();
     }
 
@@ -62,23 +62,8 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
         public static final MapCodec<FullMatterClusterRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         Codec.STRING.optionalFieldOf("group", "default").forGetter(recipe -> recipe.group),
-                        Ingredient.CODEC_NONEMPTY
-                                .listOf()
+                        RecipeCodecs.ingredientList(81, false, "Combination recipe")
                                 .fieldOf("ingredients")
-                                .flatXmap(
-                                        field -> {
-                                            var max = 81;
-                                            var ingredients = field.toArray(Ingredient[]::new);
-                                            if (ingredients.length == 0) {
-                                                return DataResult.error(() -> "No ingredients for Combination recipe");
-                                            } else {
-                                                return ingredients.length > max
-                                                        ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
-                                                        : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
-                                            }
-                                        },
-                                        DataResult::success
-                                )
                                 .forGetter(recipe -> recipe.inputs),
                         Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
                 ).apply(builder, FullMatterClusterRecipe::new)
@@ -91,10 +76,10 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
         private static FullMatterClusterRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
 
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
 
             int count = buffer.readInt();

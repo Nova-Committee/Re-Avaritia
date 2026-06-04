@@ -31,7 +31,7 @@ public record StackIngredient(ItemStack item) implements ICustomIngredient {
     public static final StreamCodec<RegistryFriendlyByteBuf, StackIngredient> STREAM_CODEC = ItemStack.STREAM_CODEC.map(StackIngredient::new, StackIngredient::item);
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return ItemStack.isSameItem(stack, this.item);
+        return ItemStack.isSameItemSameComponents(stack, this.item);
     }
 
     @Override

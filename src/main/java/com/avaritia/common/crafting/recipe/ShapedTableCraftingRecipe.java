@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ITierCraftingRecipe;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.ShapedRecipePatternCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.api.utils.java.TriFunction;
@@ -15,12 +16,21 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Description:
@@ -54,7 +64,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull TierInput input, HolderLookup.@NotNull Provider registries) {
+    public @NotNull ItemStack assemble(@NotNull TierInput input) {
         return this.result.copy();
     }
 
@@ -68,22 +78,40 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
     @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
-        return this.pattern.ingredients();
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        this.pattern.ingredients().forEach(ingredient -> ingredient.ifPresent(ingredients::add));
+        return ingredients;
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<? extends Recipe<TierInput>> getSerializer() {
         return ModRecipeSerializers.SHAPED_CRAFT_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<? extends Recipe<TierInput>> getType() {
         return ModRecipeTypes.CRAFTING_TABLE_RECIPE.get();
     }
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
         return width >= this.pattern.width() && height >= this.pattern.height();
+    }
+
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.createFromOptionals(this.pattern.ingredients());
+    }
+
+    @Override
+    public @NotNull List<RecipeDisplay> display() {
+        return List.of(new ShapedCraftingRecipeDisplay(
+                this.pattern.width(),
+                this.pattern.height(),
+                this.pattern.ingredients().stream().map(Ingredient::optionalIngredientToDisplay).toList(),
+                new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.result)),
+                new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+        ));
     }
 
     @Override
@@ -152,7 +180,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                Ingredient ingredient;
+                java.util.Optional<Ingredient> ingredient;
                 if (symmetrical) {
                     ingredient = ingredients.get(width - j - 1 + i * width);
                 } else {
@@ -160,7 +188,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
                 }
 
                 var stack = inventory.getItem(j, i);
-                if (!ingredient.test(stack)) {
+                if (!Ingredient.testOptionalIngredient(ingredient, stack)) {
                     return false;
                 }
             }
@@ -177,7 +205,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
         public static final MapCodec<ShapedTableCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier),
                         Codec.BOOL.optionalFieldOf("compatible", false).forGetter(recipe -> recipe.compatible)
                         ).apply(builder, ShapedTableCraftingRecipe::new)

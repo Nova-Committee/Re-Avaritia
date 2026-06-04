@@ -1,10 +1,12 @@
 package com.avaritia.common.crafting.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.avaritia.Const;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.TierInput;
+import com.avaritia.core.singularity.Singularity;
 import com.avaritia.core.singularity.SingularityReloadListener;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModRecipeSerializers;
@@ -48,7 +50,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
 
         int singularityCount = SingularityReloadListener.INSTANCE.getAllSingularities().values()
                 .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                .filter(Singularity::hasIngredient)
                 .mapToInt(singularity -> 1)
                 .sum();
 
@@ -62,7 +64,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                 boolean matched = false;
                 int index = 0;
                 for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
-                    if (singularity.getIngredient() != Ingredient.EMPTY) {
+                    if (singularity.hasIngredient()) {
                         ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
                         if (ItemStack.isSameItemSameComponents(stack, singularityStack)) {
                             if (!found[index]) {
@@ -96,9 +98,9 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             SingularityReloadListener.INSTANCE.getAllSingularities()
                         .values()
                         .stream()
-                        .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                        .filter(Singularity::hasIngredient)
                         .map(SingularityUtils::getItemForSingularity)
-                        .map(Ingredient::of)
+                        .map(Const::getStackIngredient)
                         .forEach(super.getIngredients()::add);
             if (!originalInputs.isEmpty()) {
                 super.getIngredients().addAll(originalInputs);
@@ -109,27 +111,15 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<EternalSingularityCraftRecipe> getSerializer() {
         return ModRecipeSerializers.ETERNAL_SINGULARITY_CRAFT_SERIALIZER.get();
     }
 
     public static class Serializer {
         public static final MapCodec<EternalSingularityCraftRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
-                        Ingredient.CODEC
-                                .listOf()
+                        RecipeCodecs.ingredientList(81, true, "Combination recipe")
                                 .fieldOf("ingredients")
-                                .flatXmap(
-                                        field -> {
-                                            var max = 81;
-                                            var ingredients = field.toArray(Ingredient[]::new);
-                                            return ingredients.length > max
-                                                    ? DataResult.error(() -> "Too many ingredients for Combination recipe. The maximum is: %s".formatted(max))
-                                                    : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
-
-                                        },
-                                        DataResult::success
-                                )
                                 .forGetter(recipe -> recipe.originalInputs),
                         Codec.INT.optionalFieldOf("count", 1).forGetter(recipe -> recipe.count)
                 ).apply(builder, EternalSingularityCraftRecipe::new)
@@ -141,10 +131,10 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
 
         public static EternalSingularityCraftRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
-            var inputs = NonNullList.withSize(size, Ingredient.EMPTY);
+            var inputs = NonNullList.<Ingredient>createWithCapacity(size);
 
             for (int i = 0; i < size; ++i) {
-                inputs.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
+                inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             int count = buffer.readInt();
             return new EternalSingularityCraftRecipe(inputs, count);

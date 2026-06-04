@@ -18,7 +18,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +86,7 @@ public class SingularityItem extends Item implements IColored {
                 enabledSingularities = SingularityReloadListener.INSTANCE.getAllSingularities()
                         .values()
                         .stream()
-                        .filter(s -> s.isEnabled() && s.getIngredient() != Ingredient.EMPTY)
+                        .filter(s -> s.isEnabled() && s.hasIngredient())
                         .toList();
             }
 
