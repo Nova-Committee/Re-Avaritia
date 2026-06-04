@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -84,17 +85,17 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
             var xTexStart = 177;
             var yTexStart = 47;
             if (this.isHovered) {
-                if (isRecipeLocked()) pPoseStack.blit(resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart + 13 + 1, this.width, this.height, 256, 256);
-                else pPoseStack.blit(resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart, this.width, this.height, 256, 256);
-                setTooltipForNextRenderPass(tips);
+                if (isRecipeLocked()) pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart + 13 + 1, this.width, this.height, 256, 256);
+                else pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart, this.width, this.height, 256, 256);
+                pPoseStack.setTooltipForNextFrame(font, tips, pMouseX, pMouseY);
             } else {
-                if (isRecipeLocked()) pPoseStack.blit(resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart + 13 + 1, this.width, this.height, 256, 256);
-                else pPoseStack.blit(resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
+                if (isRecipeLocked()) pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart + 13 + 1, this.width, this.height, 256, 256);
+                else pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
             }
 
 
@@ -112,15 +113,15 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
 
         @Override
         @ParametersAreNonnullByDefault
-        public void renderWidget(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void extractContents(GuiGraphicsExtractor pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             var resourceLocation = ScreenTextures.NEUTRON_COMPRESSOR;
             var xTexStart = 177;
             var yTexStart = 35;
             if (this.isHovered) {
-                setTooltipForNextRenderPass(tips);
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart, this.width, this.height, 256, 256);
+                pPoseStack.setTooltipForNextFrame(font, tips, pMouseX, pMouseY);
+                pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart + 14 + 1, yTexStart, this.width, this.height, 256, 256);
             } else {
-                pPoseStack.blit(resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
+                pPoseStack.blit(RenderPipelines.GUI_TEXTURED, resourceLocation, this.getX(), this.getY(), xTexStart, yTexStart, this.width, this.height, 256, 256);
             }
         }
     }
@@ -146,15 +147,15 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
                 tooltip.add(text);
             }
 
-            pGuiGraphics.renderComponentTooltip(font, tooltip, pMouseX, pMouseY);
+            pGuiGraphics.setComponentTooltipForNextFrame(font, tooltip, pMouseX, pMouseY);
         }
     }
 
     @Override
     protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
-        stack.drawString(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752, false);
-        stack.drawString(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752, false);
+        stack.text(font, title, (this.imageWidth / 2 - this.font.width(title) / 2), 6, 4210752, false);
+        stack.text(font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752, false);
     }
 
 
@@ -166,12 +167,12 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
         if (this.hasRecipe()) {
             if (this.getMaterialCount() > 0 && this.getMaterialsRequired() > 0) {
                 int i2 = this.getMaterialBarScaled(16);
-                pGuiGraphics.blit(ScreenTextures.NEUTRON_COMPRESSOR, x + 63, y + 35, 176, 18, i2 + 1, 16);
+                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, x + 63, y + 35, 176, 18, i2 + 1, 16, 256, 256);
             }
 
             if (this.getProgress() > 0 && this.getMaterialCount() >= this.getMaterialsRequired()) {
                 int i2 = this.getProgressBarScaled(22);
-                pGuiGraphics.blit(ScreenTextures.NEUTRON_COMPRESSOR, x + 89, y + 35, 176, 0, i2 + 1, 16);
+                pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, ScreenTextures.NEUTRON_COMPRESSOR, x + 89, y + 35, 176, 0, i2 + 1, 16, 256, 256);
             }
         }
     }

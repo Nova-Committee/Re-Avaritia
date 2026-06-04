@@ -11,6 +11,9 @@ import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * 26.1.2-compatible base screen for Avaritia container GUIs.
  */
@@ -32,6 +35,15 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
         this.bgTexture = bgTexture;
         this.bgImgWidth = bgImgWidth;
         this.bgImgHeight = bgImgHeight;
+    }
+
+    protected static String number(Object number) {
+        return NumberFormat.getInstance().format(number);
+    }
+
+    protected static String fraction(Object number) {
+        DecimalFormat df = new DecimalFormat("0.00%");
+        return df.format(number);
     }
 
     protected void subInit() {
@@ -60,15 +72,32 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     protected void extractBgs(GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
+        this.renderBgs(graphics, partialTick, x, y);
+    }
+
+    protected void renderBgs(GuiGraphicsExtractor graphics, float partialTick, int x, int y) {
     }
 
     protected void extractFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderFg(graphics, mouseX, mouseY, partialTick);
+    }
+
+    protected void renderFg(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractContents(graphics, mouseX, mouseY, partialTick);
         this.extractFg(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        this.renderLabels(graphics, mouseX, mouseY);
+    }
+
+    protected void renderLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
     }
 
     @Override

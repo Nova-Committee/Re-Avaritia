@@ -5,6 +5,7 @@ import com.avaritia.core.io.SideConfiguration;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -47,7 +48,7 @@ class SideButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void extractContents(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         int texX;
         int texY = 118;
 
@@ -69,10 +70,10 @@ class SideButton extends ImageButton {
             texY += 23;
         }
 
-        pGuiGraphics.blit(Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), texX, texY, this.width, this.height, 256, 256);
+        pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), texX, texY, this.width, this.height, 256, 256);
 
         if (this.isHovered) {
-            sideConfigScreen.setTooltipForNextRenderPass(tooltip);
+            pGuiGraphics.setTooltipForNextFrame(sideConfigScreen.getMinecraft().font, tooltip, pMouseX, pMouseY);
         }
     }
 }

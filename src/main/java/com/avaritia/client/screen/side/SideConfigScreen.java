@@ -1,7 +1,6 @@
 package com.avaritia.client.screen.side;
 
 import com.avaritia.init.handler.NetworkHandler;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.avaritia.Res;
 import com.avaritia.api.iface.ITileIO;
 import com.avaritia.core.io.SideConfiguration;
@@ -9,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -64,7 +64,7 @@ public class SideConfigScreen extends Screen {
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> setAllSides(SideConfiguration.SideMode.OFF)) {
                     @Override
-                    public void renderWidget(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    public void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                         int vOffset = 164, textureDifference = 18;
                         int i = vOffset;
                         if (!this.isActive()) {
@@ -73,8 +73,7 @@ public class SideConfigScreen extends Screen {
                             i = vOffset + textureDifference;
                         }
 
-                        RenderSystem.enableDepthTest();
-                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 17, i, width, height, 256, 256);
+                        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), 17, i, width, height, 256, 256);
                     }
                 }
 
@@ -84,7 +83,7 @@ public class SideConfigScreen extends Screen {
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> onClose()) {
                     @Override
-                    public void renderWidget(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    public void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
                         int vOffset = 164, textureDifference = 18;
                         int i = vOffset;
                         if (!this.isActive()) {
@@ -93,8 +92,7 @@ public class SideConfigScreen extends Screen {
                             i = vOffset + textureDifference;
                         }
 
-                        RenderSystem.enableDepthTest();
-                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, i, width, height, 256, 256);
+                        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), 0, i, width, height, 256, 256);
                     }
                 }
         );
@@ -151,16 +149,11 @@ public class SideConfigScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderTransparentBackground(guiGraphics);
+    public void extractBackground(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractTransparentBackground(guiGraphics);
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
-        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
-    }
-
-    @Override
-    protected void renderBlurredBackground(float partialTick) {
-        super.renderBlurredBackground(partialTick);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 
     @Override

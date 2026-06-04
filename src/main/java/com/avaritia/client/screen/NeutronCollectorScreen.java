@@ -7,6 +7,7 @@ import com.avaritia.common.menu.NeutronCollectorMenu;
 import com.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -47,7 +48,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
                 tooltip.add(text);
             }
 
-            pGuiGraphics.renderComponentTooltip(font, tooltip, pMouseX, pMouseY);
+            pGuiGraphics.setComponentTooltipForNextFrame(font, tooltip, pMouseX, pMouseY);
         }
     }
 
@@ -55,8 +56,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.drawString(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752, false);
-        stack.drawString(font, this.playerInventoryTitle, 8, 166 - 94, 4210752, false);
+        stack.text(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752, false);
+        stack.text(font, this.playerInventoryTitle, 8, 166 - 94, 4210752, false);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         int j = this.topPos;
         if (this.getProgress() > 0) {
             int i2 = this.getProgressBarScaled(18);
-            pGuiGraphics.blit(Res.NEUTRON_COLLECTOR_TEX, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
+            pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, Res.NEUTRON_COLLECTOR_TEX, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2, 256, 256);
         }
     }
 

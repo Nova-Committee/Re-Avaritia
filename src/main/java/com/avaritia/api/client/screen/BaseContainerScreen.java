@@ -75,6 +75,15 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     @Override
+    protected void extractLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
+        this.renderLabels(pGuiGraphics, pMouseX, pMouseY);
+    }
+
+    protected void renderLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
+        super.extractLabels(pGuiGraphics, pMouseX, pMouseY);
+    }
+
+    @Override
     public void extractBackground(@NotNull GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         super.extractBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         if (this.bgTexture != null) pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
