@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -166,10 +165,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     }
 
     public static AcceleratedBlocksSavedData getSavedData(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(
-                new SavedData(AcceleratedBlocksSavedData::new, AcceleratedBlocksSavedData::new),
-                AcceleratedBlocksSavedData.NAME
-        );
+        return level.getDataStorage().computeIfAbsent(AcceleratedBlocksSavedData.TYPE);
     }
 
     public static void loadAcceleratedBlocksFromSavedData(ServerLevel level) {
@@ -177,8 +173,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
         acceleratedBlocks.clear();
         acceleratedBlocks.putAll(savedData.getAcceleratedBlocks());
 
-        // 为每个加载的加速方块创建显示实体
-                for (Map.Entry<ResourceKey<Level>, Map<BlockPos, Integer>> dimensionEntry : acceleratedBlocks.entrySet()) {
+        for (Map.Entry<ResourceKey<Level>, Map<BlockPos, Integer>> dimensionEntry : acceleratedBlocks.entrySet()) {
             ResourceKey<Level> dimension = dimensionEntry.getKey();
             Map<BlockPos, Integer> blocks = dimensionEntry.getValue();
 
