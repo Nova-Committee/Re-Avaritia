@@ -3,6 +3,7 @@ package com.avaritia.api.client.model;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
@@ -25,7 +26,15 @@ public class ItemQuadBakery {
         return bakeItem(IDENTITY, sprites);
     }
 
+    public static List<BakedQuad> bakeItem(RenderType renderType, TextureAtlasSprite... sprites) {
+        return bakeItem(IDENTITY, renderType, sprites);
+    }
+
     public static List<BakedQuad> bakeItem(ModelState state, TextureAtlasSprite... sprites) {
+        return bakeItem(state, null, sprites);
+    }
+
+    public static List<BakedQuad> bakeItem(ModelState state, RenderType renderType, TextureAtlasSprite... sprites) {
         // LambdaUtils.checkArgument(sprites, "Sprites must not be Null or empty!", ArrayUtils::isNullOrContainsNull);
 
         List<BakedQuad> quads = new LinkedList<>();
@@ -34,7 +43,7 @@ public class ItemQuadBakery {
             BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
                     sprite,
                     ChunkSectionLayer.TRANSLUCENT,
-                    RenderTypes.itemTranslucent(sprite.atlasLocation()),
+                    renderType != null ? renderType : RenderTypes.itemTranslucent(sprite.atlasLocation()),
                     i,
                     true,
                     0

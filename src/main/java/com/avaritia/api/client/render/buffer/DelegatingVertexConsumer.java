@@ -37,6 +37,12 @@ public abstract class DelegatingVertexConsumer implements ISpriteAwareVertexCons
     }
 
     @Override
+    public @NotNull VertexConsumer setColor(int color) {
+        delegate.setColor(color);
+        return this;
+    }
+
+    @Override
     public @NotNull VertexConsumer setUv(float u, float v) {
         delegate.setUv(u, v);
         return this;
@@ -57,6 +63,12 @@ public abstract class DelegatingVertexConsumer implements ISpriteAwareVertexCons
     @Override
     public @NotNull VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
         delegate.setNormal(normalX, normalY, normalZ);
+        return this;
+    }
+
+    @Override
+    public @NotNull VertexConsumer setLineWidth(float width) {
+        delegate.setLineWidth(width);
         return this;
     }
 }

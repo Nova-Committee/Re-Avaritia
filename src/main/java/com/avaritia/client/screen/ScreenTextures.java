@@ -1,5 +1,7 @@
 package com.avaritia.client.screen;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import net.minecraft.resources.Identifier;
 

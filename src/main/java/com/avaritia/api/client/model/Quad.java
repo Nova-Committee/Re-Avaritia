@@ -20,15 +20,20 @@ package com.avaritia.api.client.model;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.avaritia.api.client.util.VertexUtils;
+import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.api.utils.math.InterpHelper;
 import com.avaritia.api.utils.math.MathUtils;
 import com.avaritia.api.utils.vec.Cuboid6;
 import com.avaritia.api.utils.vec.Vector3;
+import net.minecraft.client.model.geom.builders.UVPair;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 /**
  * A simple easy to manipulate quad format. Can be reset and then used on a different format.
@@ -198,7 +203,7 @@ public class Quad implements IVertexProducer, IVertexConsumer {
                 vertex.normal[3] = 0;
             }
         }
-        orientation = Direction.getNearest(normal.x, normal.y, normal.z);
+        orientation = Direction.getApproximateNearest(normal.x, normal.y, normal.z);
     }
 
     /**
@@ -279,22 +284,43 @@ public class Quad implements IVertexProducer, IVertexConsumer {
      * @return The BakedQuad.
      */
     public BakedQuad bake() {
-        int[] packedData = new int[format.format.getVertexSize()];
-        for (int v = 0; v < 4; v++) {
-            for (int e = 0; e < format.elementCount; e++) {
-                VertexUtils.pack(vertices[v].raw[e], packedData, format.format, v, e);
-            }
-        }
-
-        return makeQuad(packedData);
+        return makeQuad();
     }
 
     // Broken out as a stub for mixins to target easier.
-    private BakedQuad makeQuad(int[] packedData) {
+    private BakedQuad makeQuad() {
         if (format.format != DefaultVertexFormat.BLOCK) {
             throw new IllegalStateException("Unable to bake this quad to the specified format. " + format.format);
         }
-        return new BakedQuad(packedData, tintIndex, orientation, sprite, diffuseLighting);
+        TextureAtlasSprite quadSprite = sprite != null ? sprite : TextureUtils.getMissingSprite();
+        BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(
+                quadSprite,
+                ChunkSectionLayer.TRANSLUCENT,
+                RenderTypes.itemTranslucent(quadSprite.atlasLocation()),
+                tintIndex,
+                diffuseLighting,
+                0
+        );
+        return new BakedQuad(
+                position(vertices[0]),
+                position(vertices[1]),
+                position(vertices[2]),
+                position(vertices[3]),
+                uv(vertices[0]),
+                uv(vertices[1]),
+                uv(vertices[2]),
+                uv(vertices[3]),
+                orientation != null ? orientation : Direction.NORTH,
+                materialInfo
+        );
+    }
+
+    private static Vector3fc position(Vertex vertex) {
+        return new Vector3f(vertex.vec[0], vertex.vec[1], vertex.vec[2]);
+    }
+
+    private static long uv(Vertex vertex) {
+        return UVPair.pack(vertex.uv[0], vertex.uv[1]);
     }
 
     /**

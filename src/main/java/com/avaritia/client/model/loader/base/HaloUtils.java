@@ -1,29 +1,21 @@
 package com.avaritia.client.model.loader.base;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.avaritia.api.client.model.CachedFormat;
 import com.avaritia.api.client.model.IVertexConsumer;
 import com.avaritia.api.client.model.Quad;
+import com.avaritia.api.client.util.VertexUtils;
 import com.avaritia.api.client.util.color.ColorARGB;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author cnlimiter
  */
 public class HaloUtils {
-    private static final int[] DEFAULT_MAPPING = generateMapping(DefaultVertexFormat.BLOCK, DefaultVertexFormat.BLOCK);
-    private static final ConcurrentMap<Pair<VertexFormat, VertexFormat>, int[]> formatMaps = new ConcurrentHashMap<>();
-
     public static BakedQuad generateHaloQuad(final TextureAtlasSprite sprite, final int size, final int color) {
         final float[] colors = new ColorARGB(color).getRGBA();
         final double spread = size / 16.0;
@@ -63,97 +55,12 @@ public class HaloUtils {
         return newQuads;
     }
 
-    public static int[] mapFormats(final VertexFormat from, final VertexFormat to) {
-        if (from.equals(DefaultVertexFormat.BLOCK) && to.equals(DefaultVertexFormat.BLOCK)) {
-            return DEFAULT_MAPPING;
-        }
-        return formatMaps.computeIfAbsent(Pair.of(from, to), pair -> generateMapping(pair.getLeft(), pair.getRight()));
-    }
-
-    public static void unpack(final int[] from, final float[] to, final VertexFormat formatFrom, final int v, final int e) {
-        final int length = Math.min(4, to.length);
-        final VertexFormatElement element = formatFrom.getElements().get(e);
-        final int vertexStart = v * formatFrom.getVertexSize() + formatFrom.getOffset(element);
-        final int count = element.count();
-        final VertexFormatElement.Type type = element.type();
-        final VertexFormatElement.Usage usage = element.usage();
-        final int size = type.size();
-        final int mask = (256 << 8 * (size - 1)) - 1;
-        for (int i = 0; i < length; ++i) {
-            if (i < count) {
-                final int pos = vertexStart + size * i;
-                final int index = pos >> 2;
-                final int offset = pos & 0x3;
-                int bits = from[index];
-                bits >>>= offset * 8;
-                if ((pos + size - 1) / 4 != index) {
-                    bits |= from[index + 1] << (4 - offset) * 8;
-                }
-                bits &= mask;
-                if (type == VertexFormatElement.Type.FLOAT) {
-                    to[i] = Float.intBitsToFloat(bits);
-                } else if (type == VertexFormatElement.Type.UBYTE || type == VertexFormatElement.Type.USHORT) {
-                    to[i] = bits / (float) mask;
-                } else if (type == VertexFormatElement.Type.UINT) {
-                    to[i] = (float) (((long) bits & 0xFFFFFFFFL) / 4.294967295E9);
-                } else if (type == VertexFormatElement.Type.BYTE) {
-                    to[i] = (byte) bits / (float) (mask >> 1);
-                } else if (type == VertexFormatElement.Type.SHORT) {
-                    to[i] = (short) bits / (float) (mask >> 1);
-                } else if (type == VertexFormatElement.Type.INT) {
-                    to[i] = (float) (((long) bits & 0xFFFFFFFFL) / 2.147483647E9);
-                }
-            } else {
-                to[i] = ((i == 3 && usage == VertexFormatElement.Usage.POSITION) ? 1.0f : 0.0f);
-            }
-        }
-    }
-
-    private static int[] generateMapping(final VertexFormat from, final VertexFormat to) {
-        final int fromCount = from.getElements().size();
-        final int toCount = to.getElements().size();
-        final int[] eMap = new int[fromCount];
-        for (int e = 0; e < fromCount; ++e) {
-            final VertexFormatElement expected = from.getElements().get(e);
-            int e2;
-            for (e2 = 0; e2 < toCount; ++e2) {
-                final VertexFormatElement current = to.getElements().get(e2);
-                if (expected.usage() == current.usage() && expected.index() == current.index()) {
-                    break;
-                }
-            }
-            eMap[e] = e2;
-        }
-        return eMap;
-    }
-
     public static void putBakedQuad(final IVertexConsumer consumer, final BakedQuad quad) {
-        consumer.setTexture(quad.getSprite());
-        consumer.setQuadOrientation(quad.getDirection());
-        if (quad.isTinted()) {
-            consumer.setQuadTint(quad.getTintIndex());
-        }
-        consumer.setApplyDiffuseLighting(quad.isShade());
-        final float[] data = new float[4];
-        final VertexFormat formatFrom = consumer.getVertexFormat();
-        final VertexFormat formatTo = DefaultVertexFormat.BLOCK;
-        final int countFrom = formatFrom.getElements().size();
-        final int countTo = formatTo.getElements().size();
-        final int[] eMap = mapFormats(formatFrom, formatTo);
-        for (int v = 0; v < 4; ++v) {
-            for (int e = 0; e < countFrom; ++e) {
-                if (eMap[e] != countTo) {
-                    unpack(quad.getVertices(), data, formatTo, v, eMap[e]);
-                    consumer.put(e, data);
-                } else {
-                    consumer.put(e);
-                }
-            }
-        }
+        VertexUtils.putQuad(consumer, quad);
     }
 
     public static BakedQuad transformQuad(final BakedQuad quad, final IntList layerColors) {
-        final int tintIndex = quad.getTintIndex();
+        final int tintIndex = quad.materialInfo().tintIndex();
         if (tintIndex == -1 || tintIndex >= layerColors.size()) {
             return quad;
         }

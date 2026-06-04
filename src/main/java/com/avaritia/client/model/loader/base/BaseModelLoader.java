@@ -1,8 +1,10 @@
 package com.avaritia.client.model.loader.base;
 
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
@@ -14,6 +16,8 @@ import java.util.List;
  * @author cnlimiter
  */
 public abstract class BaseModelLoader<T> {
+    public abstract T read(JsonObject modelContents, JsonDeserializationContext deserializationContext) throws JsonParseException;
+
     public JsonObject clear(JsonObject modelContents, String... types) {
         final JsonObject clean = modelContents.deepCopy();
         clean.remove("loader");

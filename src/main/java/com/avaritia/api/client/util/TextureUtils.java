@@ -1,5 +1,7 @@
 package com.avaritia.api.client.util;
 
+import com.avaritia.Const;
+
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.avaritia.api.client.util.color.Color;

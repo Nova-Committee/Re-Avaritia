@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 /**
  * @Project: Avaritia
@@ -32,12 +31,7 @@ public interface PerspectiveModel {
         PerspectiveModelState modelState = getModelState();
         if (modelState != null) {
             Transformation transform = getModelState().getTransform(context);
-            Vector3f trans = transform.getTranslation();
-            Vector3f scale = transform.getScale();
-            pStack.translate(trans.x(), trans.y(), trans.z());
-            pStack.mulPose(transform.getLeftRotation());
-            pStack.scale(scale.x(), scale.y(), scale.z());
-            pStack.mulPose(transform.getRightRotation());
+            pStack.mulPose(transform.getMatrix());
 
             if (leftFlip) {
                 pStack.mulPose(Axis.YN.rotationDegrees(180.0f));

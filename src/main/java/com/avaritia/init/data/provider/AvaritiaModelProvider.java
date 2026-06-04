@@ -1,7 +1,10 @@
 package com.avaritia.init.data.provider;
 
+import com.avaritia.client.model.loader.base.AvaritiaItemModels;
+import com.avaritia.Const;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModItems;
+import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
@@ -24,6 +27,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -123,7 +127,7 @@ public class AvaritiaModelProvider implements DataProvider {
         this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block.get(), new net.minecraft.client.data.models.MultiVariant(WeightedList.of(new Variant(model)))).create());
 
         if (ModItems.BLOCK_ITEMS.containsKey(id.getPath())) {
-            clientItem(block.get().asItem(), net.minecraft.client.data.models.model.ItemModelUtils.plainModel(model));
+            clientItem(block.get().asItem(), ItemModelUtils.plainModel(model));
         }
     }
 
@@ -153,7 +157,7 @@ public class AvaritiaModelProvider implements DataProvider {
      */
     private void basicItem(Item item, Identifier id) {
         Identifier model = ModelTemplates.FLAT_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
-        clientItem(item, net.minecraft.client.data.models.model.ItemModelUtils.plainModel(model));
+        clientItem(item, clientItemModel(id, model));
     }
 
     /**
@@ -164,7 +168,23 @@ public class AvaritiaModelProvider implements DataProvider {
      */
     private void handheldItem(Item item, Identifier id) {
         Identifier model = ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
-        clientItem(item, net.minecraft.client.data.models.model.ItemModelUtils.plainModel(model));
+        clientItem(item, clientItemModel(id, model));
+    }
+
+    private ItemModel.Unbaked clientItemModel(Identifier id, Identifier model) {
+        return switch (id.getPath()) {
+            case "infinity_sword" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_sword_mask")));
+            case "infinity_helmet" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_helmet_mask")));
+            case "infinity_chestplate" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_chestplate_mask")));
+            case "infinity_pants" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_pants_mask")));
+            case "infinity_boots" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_boots_mask")));
+            case "infinity_trident" -> new AvaritiaItemModels.CosmicArc(model, List.of(mask("infinity_trident_mask")));
+            case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false);
+            case "infinity_ingot", "infinity_nugget", "infinity_catalyst", "infinity_totem", "infinity_ring",
+                 "infinity_bucket", "infinity_elytra", "infinity_upgrade", "enhancement_core", "endest_pearl" ->
+                    new AvaritiaItemModels.Halo(model, halo(), -16777216, 10, true);
+            default -> ItemModelUtils.plainModel(model);
+        };
     }
 
     /**
@@ -195,6 +215,14 @@ public class AvaritiaModelProvider implements DataProvider {
      */
     private TextureMapping layer0(Identifier id) {
         return new TextureMapping().put(TextureSlot.LAYER0, texture(id, "item"));
+    }
+
+    private Identifier mask(String path) {
+        return Identifier.fromNamespaceAndPath(Const.MOD_ID, "mask/item/" + path);
+    }
+
+    private Identifier halo() {
+        return Identifier.fromNamespaceAndPath(Const.MOD_ID, "misc/halo");
     }
 
     /**

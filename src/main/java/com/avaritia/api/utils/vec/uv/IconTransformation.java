@@ -49,8 +49,8 @@ public class IconTransformation extends UVTransformation {
 
         @Override
         public void apply(UV uv) {
-            uv.u = icon.getUOffset((float) uv.u) / 16;
-            uv.v = icon.getVOffset((float) uv.v) / 16;
+            uv.u = ((float) uv.u - icon.getU0()) / (icon.getU1() - icon.getU0()) / 16.0F;
+            uv.v = ((float) uv.v - icon.getV0()) / (icon.getV1() - icon.getV0()) / 16.0F;
         }
 
         @Override

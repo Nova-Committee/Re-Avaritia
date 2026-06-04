@@ -4,8 +4,11 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.avaritia.api.client.model.IVertexConsumer;
+import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Vector3fc;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,27 +29,54 @@ public class VertexUtils {
     }
 
     public static void putQuad(IVertexConsumer consumer, BakedQuad quad) {
-        consumer.setTexture(quad.getSprite());
-        consumer.setQuadOrientation(quad.getDirection());
-        if (quad.isTinted()) {
-            consumer.setQuadTint(quad.getTintIndex());
+        BakedQuad.MaterialInfo materialInfo = quad.materialInfo();
+        consumer.setTexture(materialInfo.sprite());
+        consumer.setQuadOrientation(quad.direction());
+        if (materialInfo.isTinted()) {
+            consumer.setQuadTint(materialInfo.tintIndex());
         }
-        consumer.setApplyDiffuseLighting(quad.isShade());
-        float[] data = new float[4];
+        consumer.setApplyDiffuseLighting(materialInfo.shade());
         VertexFormat formatFrom = consumer.getVertexFormat();
-        VertexFormat formatTo = DefaultVertexFormat.BLOCK;
         int countFrom = formatFrom.getElements().size();
-        int countTo = formatTo.getElements().size();
-        int[] eMap = mapFormats(formatFrom, formatTo);
         for (int v = 0; v < 4; v++) {
             for (int e = 0; e < countFrom; e++) {
-                if (eMap[e] != countTo) {
-                    unpack(quad.getVertices(), data, formatTo, v, eMap[e]);
-                    consumer.put(e, data);
-                } else {
-                    consumer.put(e);
-                }
+                putQuadElement(consumer, quad, v, e);
             }
+        }
+    }
+
+    private static void putQuadElement(IVertexConsumer consumer, BakedQuad quad, int vertex, int elementIndex) {
+        VertexFormatElement element = consumer.getVertexFormat().getElements().get(elementIndex);
+        if (element == VertexFormatElement.POSITION) {
+            Vector3fc position = quad.position(vertex);
+            consumer.put(elementIndex, position.x(), position.y(), position.z(), 1.0F);
+        } else if (element == VertexFormatElement.COLOR) {
+            int color = quad.bakedColors().color(vertex);
+            consumer.put(
+                    elementIndex,
+                    (color >> 16 & 0xFF) / 255.0F,
+                    (color >> 8 & 0xFF) / 255.0F,
+                    (color & 0xFF) / 255.0F,
+                    (color >>> 24) / 255.0F
+            );
+        } else if (element == VertexFormatElement.UV0 || element == VertexFormatElement.UV) {
+            long packedUv = quad.packedUV(vertex);
+            consumer.put(elementIndex, UVPair.unpackU(packedUv), UVPair.unpackV(packedUv));
+        } else if (element == VertexFormatElement.NORMAL) {
+            int normal = quad.bakedNormals().normal(vertex);
+            if (BakedNormals.isUnspecified(normal)) {
+                consumer.put(elementIndex);
+            } else {
+                consumer.put(
+                        elementIndex,
+                        BakedNormals.unpackX(normal),
+                        BakedNormals.unpackY(normal),
+                        BakedNormals.unpackZ(normal),
+                        0.0F
+                );
+            }
+        } else {
+            consumer.put(elementIndex);
         }
     }
 
@@ -56,7 +86,7 @@ public class VertexUtils {
         int vertexStart = v * formatFrom.getVertexSize() + formatFrom.getOffset(element);
         int count = element.count();
         VertexFormatElement.Type type = element.type();
-        VertexFormatElement.Usage usage = element.usage();
+        boolean position = element == VertexFormatElement.POSITION;
         int size = type.size();
         int mask = (256 << (8 * (size - 1))) - 1;
         for (int i = 0; i < length; i++) {
@@ -84,7 +114,7 @@ public class VertexUtils {
                     to[i] = (float) ((double) (bits & 0xFFFFFFFFL) / (0xFFFFFFFFL >> 1));
                 }
             } else {
-                to[i] = (i == 3 && usage == VertexFormatElement.Usage.POSITION) ? 1 : 0;
+                to[i] = (i == 3 && position) ? 1 : 0;
             }
         }
     }
@@ -131,12 +161,18 @@ public class VertexUtils {
             int e2;
             for (e2 = 0; e2 < toCount; e2++) {
                 VertexFormatElement current = to.getElements().get(e2);
-                if (expected.usage() == current.usage() && expected.index() == current.index()) {
+                if (sameElementRole(expected, current) && expected.index() == current.index()) {
                     break;
                 }
             }
             eMap[e] = e2;
         }
         return eMap;
+    }
+
+    private static boolean sameElementRole(VertexFormatElement expected, VertexFormatElement current) {
+        return expected == current
+                || expected == VertexFormatElement.UV && current == VertexFormatElement.UV0
+                || expected == VertexFormatElement.UV0 && current == VertexFormatElement.UV;
     }
 }

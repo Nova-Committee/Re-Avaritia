@@ -1,21 +1,13 @@
 package com.avaritia.client.shader;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.client.resources.model.sprite.Material.Baked;
-import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * 26.1.2 渲染管线兼容工具。
@@ -64,13 +56,5 @@ public class AvaritiaRenderTypeHelper {
 
     public static RenderType itemTranslucent() {
         return RenderTypes.itemTranslucent(Const.rl("item/halo"));
-    }
-
-    public static @NotNull BakedQuad withFallbackMaterial(@NotNull BakedQuad quad) {
-        Baked material = quad.getMaterial();
-        if (material != null) {
-            return quad;
-        }
-        return new Material(quad.sprite().atlasLocation()).bakeForTopLevel(List.of());
     }
 }

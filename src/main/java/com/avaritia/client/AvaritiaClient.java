@@ -1,16 +1,8 @@
 package com.avaritia.client;
 
-import com.avaritia.Avaritia;
 import com.avaritia.Const;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.avaritia.client.model.loader.CosmicArcModelLoader;
-import com.avaritia.client.model.loader.CosmicModelLoader;
-import com.avaritia.client.model.loader.EternalModelLoader;
-import com.avaritia.client.model.loader.HaloCosmicModelLoader;
-import com.avaritia.client.model.loader.HaloEternalModelLoader;
-import com.avaritia.client.model.loader.HaloModelLoader;
-import com.avaritia.client.model.loader.HellModelLoader;
-import com.avaritia.client.model.loader.UnstableModelLoader;
+import com.avaritia.client.model.loader.base.AvaritiaItemModels;
 import com.avaritia.client.particle.ChargeParticle;
 import com.avaritia.client.particle.ShockwaveParticle;
 import com.avaritia.client.render.entity.BurningBallRender;
@@ -30,7 +22,6 @@ import com.avaritia.client.screen.ExtremeAnvilScreen;
 import com.avaritia.client.screen.ExtremeSmithingScreen;
 import com.avaritia.client.screen.InfinityChestScreen;
 import com.avaritia.client.screen.InfinityClockScreen;
-import com.avaritia.client.screen.ItemFilterScreen;
 import com.avaritia.client.screen.NeutronCollectorScreen;
 import com.avaritia.client.screen.NeutronCompressorScreen;
 import com.avaritia.client.screen.NeutronRingScreen;
@@ -42,30 +33,38 @@ import com.avaritia.init.registry.ModEntityTypes;
 import com.avaritia.init.registry.ModMenus;
 import com.avaritia.init.registry.ModParticles;
 import com.avaritia.init.registry.ModTileEntities;
+import net.minecraft.client.entity.ClientAvatarEntity;
+import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 
 /**
  * Avaritia 客户端事件总线订阅类，集中注册实体渲染器、方块实体渲染器、界面、模型加载器和粒子提供器。
  */
 @EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public class AvaritiaClient {
-    public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_R, "key.avaritia.categories");
+    public static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(id("categories"));
+    public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_R, KEY_CATEGORY);
+    public static final ContextKey<Boolean> INFINITY_ARMOR_FLYING = new ContextKey<>(id("infinity_armor_flying"));
 
     public static boolean inventoryRender = false;
     public static long lastTime = System.currentTimeMillis();
@@ -85,23 +84,31 @@ public class AvaritiaClient {
 
         event.registerBlockEntityRenderer(ModTileEntities.INFINITY_CHEST_TILE.get(), InfinityChestBlockRender::new);
         event.registerBlockEntityRenderer(ModTileEntities.infinitato_tile.get(), InfinitatoTileRender::new);
-        event.registerBlockEntityRenderer(ModTileEntities.accelerator_display_tile.get(), AcceleratorDisplayRender::new);
         event.registerBlockEntityRenderer(ModTileEntities.compressed_chest_tile.get(), CompressedChestRenderer::new);
     }
 
     @SubscribeEvent
     public static void addEntityLayers(EntityRenderersEvent.AddLayers event) {
-        EntityRenderer<?> renderer = event.getRenderer(EntityType.PLAYER);
-        if (renderer instanceof AvatarRenderer<?> playerRenderer && playerRenderer.getModel() instanceof HumanoidModel<?>) {
-            playerRenderer.addLayer(new InfinityArmorRender<>(playerRenderer, event.getEntityModels(), false));
-        }
-
         for (PlayerModelType skin : event.getSkins()) {
-            LivingEntityRenderer<?, ?> skinRenderer = event.getPlayerRenderer(skin);
-            if (skinRenderer != null) {
-                skinRenderer.addLayer(new InfinityArmorRender<>(skinRenderer, event.getEntityModels(), skin == PlayerModelType.SLIM));
+            AvatarRenderer<AbstractClientPlayer> playerRenderer = event.getPlayerRenderer(skin);
+            if (playerRenderer != null) {
+                playerRenderer.addLayer(new InfinityArmorRender<>(playerRenderer, event.getEntityModels(), skin == PlayerModelType.SLIM));
+            }
+            AvatarRenderer<ClientMannequin> mannequinRenderer = event.getMannequinRenderer(skin);
+            if (mannequinRenderer != null) {
+                mannequinRenderer.addLayer(new InfinityArmorRender<>(mannequinRenderer, event.getEntityModels(), skin == PlayerModelType.SLIM));
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void registerRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
+        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
+            @Override
+            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
+                renderState.setRenderData(INFINITY_ARMOR_FLYING, avatar instanceof Player player && player.getAbilities().flying);
+            }
+        });
     }
 
     @SubscribeEvent
@@ -117,20 +124,25 @@ public class AvaritiaClient {
         event.register(ModMenus.extreme_anvil.get(), ExtremeAnvilScreen::new);
         event.register(ModMenus.infinity_chest.get(), InfinityChestScreen::new);
         event.register(ModMenus.infinity_clock_menu.get(), InfinityClockScreen::new);
-        event.register(ModMenus.item_filter.get(), ItemFilterScreen::new);
         event.register(ModMenus.GENERIC_9x27.get(), CompressedChestScreen::new);
     }
 
     @SubscribeEvent
-    public static void registerModelLoaders(ModelEvent.RegisterLoaders event) {
-        event.register(id("cosmic"), CosmicModelLoader.INSTANCE);
-        event.register(id("cosmic_arc"), CosmicArcModelLoader.INSTANCE);
-        event.register(id("hell"), HellModelLoader.INSTANCE);
-        event.register(id("eternal"), EternalModelLoader.INSTANCE);
-        event.register(id("unstable"), UnstableModelLoader.INSTANCE);
-        event.register(id("halo"), HaloModelLoader.INSTANCE);
-        event.register(id("halo_cosmic"), HaloCosmicModelLoader.INSTANCE);
-        event.register(id("halo_eternal"), HaloEternalModelLoader.INSTANCE);
+    public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        event.registerCategory(KEY_CATEGORY);
+        event.register(RING_KEY);
+    }
+
+    @SubscribeEvent
+    public static void registerItemModels(RegisterItemModelsEvent event) {
+        event.register(id("cosmic"), AvaritiaItemModels.Cosmic.MAP_CODEC);
+        event.register(id("cosmic_arc"), AvaritiaItemModels.CosmicArc.MAP_CODEC);
+        event.register(id("hell"), AvaritiaItemModels.Hell.MAP_CODEC);
+        event.register(id("eternal"), AvaritiaItemModels.Eternal.MAP_CODEC);
+        event.register(id("unstable"), AvaritiaItemModels.Unstable.MAP_CODEC);
+        event.register(id("halo"), AvaritiaItemModels.Halo.MAP_CODEC);
+        event.register(id("halo_cosmic"), AvaritiaItemModels.HaloCosmic.MAP_CODEC);
+        event.register(id("halo_eternal"), AvaritiaItemModels.HaloEternal.MAP_CODEC);
     }
 
     @SubscribeEvent

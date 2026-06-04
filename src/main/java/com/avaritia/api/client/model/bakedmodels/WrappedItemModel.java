@@ -1,8 +1,8 @@
 package com.avaritia.api.client.model.bakedmodels;
 
+import com.avaritia.api.client.model.ItemQuadBakery;
 import com.avaritia.api.client.model.PerspectiveModelState;
 import com.avaritia.client.model.loader.base.AvaritiaCustomItemModel;
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -12,18 +12,10 @@ import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.cuboid.CuboidFace;
-import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
-import net.minecraft.client.resources.model.cuboid.FaceBakery;
-import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Project: Avaritia
@@ -33,7 +25,6 @@ import java.util.Map;
  */
 public abstract class WrappedItemModel extends AvaritiaCustomItemModel {
 
-    public static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
     protected final ItemModel wrapped;
     protected PerspectiveModelState parentState = PerspectiveModelState.IDENTITY;
     protected boolean cosmic = false;
@@ -45,16 +36,7 @@ public abstract class WrappedItemModel extends AvaritiaCustomItemModel {
 
 
     public static List<BakedQuad> bakeItem(final List<TextureAtlasSprite> sprites) {
-        final LinkedList<BakedQuad> quads = new LinkedList<>();
-        for (final TextureAtlasSprite sprite : sprites) {
-            final List<CuboidModelElement> unbaked = ITEM_MODEL_GENERATOR.processFrames(sprites.indexOf(sprite), "layer" + sprites.indexOf(sprite), sprite.contents());
-            for (final CuboidModelElement element : unbaked) {
-                for (final Map.Entry<Direction, CuboidFace> entry : element.faces().entrySet()) {
-                    quads.add(FaceBakery.bakeQuad(element.from(), element.to(), entry.getValue(), sprite, entry.getKey(), new PerspectiveModelState(ImmutableMap.of()), element.rotation(), element.shade()));
-                }
-            }
-        }
-        return quads;
+        return ItemQuadBakery.bakeItem(sprites.toArray(TextureAtlasSprite[]::new));
     }
 
     @Override

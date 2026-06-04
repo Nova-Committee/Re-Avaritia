@@ -19,6 +19,7 @@ import java.util.Map;
 public class PerspectiveModelState implements ModelState {
 
     public static final PerspectiveModelState IDENTITY = new PerspectiveModelState(ImmutableMap.of());
+    private static final Transformation IDENTITY_TRANSFORM = Transformation.IDENTITY;
 
     private final Map<ItemDisplayContext, Transformation> transforms;
     private final boolean isUvLocked;
@@ -33,10 +34,14 @@ public class PerspectiveModelState implements ModelState {
     }
 
     public Transformation getTransform(ItemDisplayContext context) {
-        return transforms.getOrDefault(context, Transformation.identity());
+        return transforms.getOrDefault(context, IDENTITY_TRANSFORM);
     }
 
     @Override
+    public Transformation transformation() {
+        return getTransform(ItemDisplayContext.NONE);
+    }
+
     public boolean isUvLocked() {
         return isUvLocked;
     }

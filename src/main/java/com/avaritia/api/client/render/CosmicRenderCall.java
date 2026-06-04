@@ -22,18 +22,13 @@ public class CosmicRenderCall {
     public final Matrix4f pose;
     public final Matrix3f normal;
 
-    public final Matrix4f projection;
-    public final Matrix4f modelView;
-
     public CosmicRenderCall(
             CosmicRenderable model,
             ItemStack stack,
             ItemDisplayContext context,
             PoseStack poseStack,
             int light,
-            int overlay,
-            Matrix4f projection,
-            Matrix4f modelView
+            int overlay
     ) {
         this.model = model;
         this.stack = stack;
@@ -46,8 +41,5 @@ public class CosmicRenderCall {
 
         this.pose = new Matrix4f(pose.pose());
         this.normal = new Matrix3f(pose.normal());
-
-        this.projection = new Matrix4f(projection);
-        this.modelView = new Matrix4f(modelView);
     }
 }
