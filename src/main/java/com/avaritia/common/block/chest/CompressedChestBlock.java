@@ -3,20 +3,15 @@ package com.avaritia.common.block.chest;
 import com.avaritia.common.tile.CompressedChestTile;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModTileEntities;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
@@ -35,8 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
-
 /**
  * @Project: Avaritia
  * @Author: cnlimiter
@@ -45,10 +38,10 @@ import java.util.List;
  */
 public class CompressedChestBlock extends ChestBlock {
     public static final Identifier CONTENTS = Identifier.withDefaultNamespace("contents");
-    private static final Component UNKNOWN_CONTENTS = Component.translatable("container.shulkerBox.unknownContents");
 
     public CompressedChestBlock() {
-        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava(), () -> ModTileEntities.compressed_chest_tile.get());
+        super(() -> ModTileEntities.compressed_chest_tile.get(), SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE,
+                Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava());
     }
 
     @Override
@@ -78,19 +71,14 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            if (pState.hasBlockEntity()) pLevel.removeBlockEntity(pPos);
-            if (blockentity instanceof CompressedChestTile) {
-                pLevel.updateNeighbourForOutputSignal(pPos, pState.getBlock());
-            }
-        }
+    protected void affectNeighborsAfterRemoval(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        level.updateNeighbourForOutputSignal(pos, state.getBlock());
     }
 
     @Override
     public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
-        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof CompressedChestTile chestTile && ((ServerLevel) pLevel).getGameRules().get(GameRules.BLOCK_DROPS)) {
+        if (pLevel instanceof ServerLevel serverLevel && blockEntity instanceof CompressedChestTile chestTile && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS)) {
             var pStack = new ItemStack(ModBlocks.compressed_chest.get().asItem());
             pStack.applyComponents(chestTile.collectComponents());
             popResource(serverLevel, pPos, pStack);
@@ -99,32 +87,9 @@ public class CompressedChestBlock extends ChestBlock {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        if (stack.has(DataComponents.CONTAINER_LOOT)) {
-            tooltipComponents.add(UNKNOWN_CONTENTS);
-        }
-
-        int i = 0;
-        int j = 0;
-
-        for (ItemStack itemstack : stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).nonEmptyItems()) {
-            j++;
-            if (i <= 4) {
-                i++;
-                tooltipComponents.add(Component.translatable("container.shulkerBox.itemCount", itemstack.getHoverName(), itemstack.getCount()));
-            }
-        }
-
-        if (j - i > 0) {
-            tooltipComponents.add(Component.translatable("container.shulkerBox.more", j - i).withStyle(ChatFormatting.ITALIC));
-        }
-    }
-
-    @Override
     public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state, boolean includeData, @NonNull Player player) {
         ItemStack itemstack = super.getCloneItemStack(level, pos, state, includeData, player);
-        level.getBlockEntity(pos, ModTileEntities.compressed_chest_tile.get()).ifPresent(chestTile -> chestTile.saveToItem(itemstack, level.registryAccess()));
+        level.getBlockEntity(pos, ModTileEntities.compressed_chest_tile.get()).ifPresent(chestTile -> itemstack.applyComponents(chestTile.collectComponents()));
         return itemstack;
     }
 }

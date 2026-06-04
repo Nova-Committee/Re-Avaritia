@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -56,7 +57,7 @@ public class CompressedChestTile extends ChestBlockEntity {
             }
 
             @Override
-            protected boolean isOwnContainer(@NotNull Player pPlayer) {
+            public boolean isOwnContainer(@NotNull Player pPlayer) {
                 if (pPlayer.containerMenu instanceof CompressedChestMenu chestMenu) {
                     Container container = chestMenu.getContainer();
                     return container == CompressedChestTile.this || container instanceof CompoundContainer && ((CompoundContainer) container).contains(CompressedChestTile.this);
@@ -84,7 +85,7 @@ public class CompressedChestTile extends ChestBlockEntity {
                 d2 += (double) direction.getStepZ() * 0.5;
             }
 
-            pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+            pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.getRandom().nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -104,17 +105,17 @@ public class CompressedChestTile extends ChestBlockEntity {
     }
 
     @Override
-    public void startOpen(@NotNull Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
-            this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
+    public void startOpen(@NotNull ContainerUser containerUser) {
+        if (!this.remove && !containerUser.getLivingEntity().isSpectator()) {
+            this.openersCounter.incrementOpeners(containerUser.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState(), containerUser.getContainerInteractionRange());
         }
 
     }
 
     @Override
-    public void stopOpen(@NotNull Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
-            this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
+    public void stopOpen(@NotNull ContainerUser containerUser) {
+        if (!this.remove && !containerUser.getLivingEntity().isSpectator()) {
+            this.openersCounter.decrementOpeners(containerUser.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
     }
 
