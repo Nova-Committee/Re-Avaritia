@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -33,11 +34,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,6 +46,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -67,12 +69,13 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         if (stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).isEmpty())
             return new ArrayList<>();
 
-        if (!nbt.contains(FLUIDS_NBT, Tag.TAG_LIST))
+        if (!nbt.contains(FLUIDS_NBT))
             return new ArrayList<>();
 
-        return nbt.getList(FLUIDS_NBT, Tag.TAG_COMPOUND).stream()
+        return nbt.getListOrEmpty(FLUIDS_NBT).stream()
                 .filter(tag -> tag.getId() == Tag.TAG_COMPOUND)
                 .map(tag -> loadFluidStackFromNBT((CompoundTag) tag))
+                .filter(fluid -> !fluid.isEmpty())
                 .collect(Collectors.toList());
     }
 
@@ -96,10 +99,16 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             return FluidStack.EMPTY;
         }
 
-        Identifier fluidName = Identifier.parse(nbt.getString(FLUID_ID_KEY).get());
+        Identifier fluidName = Identifier.tryParse(nbt.getStringOr(FLUID_ID_KEY, ""));
+        if (fluidName == null) {
+            return FluidStack.EMPTY;
+        }
         Fluid fluid = BuiltInRegistries.FLUID.getValue(fluidName);
 
-        int amount = nbt.getInt(FLUID_AMOUNT_KEY).get();
+        int amount = nbt.getIntOr(FLUID_AMOUNT_KEY, 0);
+        if (amount <= 0) {
+            return FluidStack.EMPTY;
+        }
         return new FluidStack(fluid, amount);
     }
 
@@ -123,21 +132,21 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable TooltipContext context, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, context, pTooltipComponents, pIsAdvanced);
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable TooltipContext context, @NotNull TooltipDisplay display, @NotNull Consumer<Component> tooltip, @NotNull TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, context, display, tooltip, pIsAdvanced);
         List<FluidStack> fluids = getFluids(pStack);
         NumberFormat formater = DecimalFormat.getInstance();
         for (FluidStack fluid : fluids) {
             MutableComponent component = MutableComponent.create(fluid.getHoverName().getContents());
             component.append(": " + formater.format(fluid.getAmount()) + " mB");
-            pTooltipComponents.add(component);
+            tooltip.accept(component);
         }
     }
 
     @Override
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull ServerLevel pLevel, @NotNull Entity pEntity,  EquipmentSlot slot) {
         super.inventoryTick(pStack, pLevel, pEntity, slot);
-        if (pLevel.isClientSide() && pEntity instanceof Player player && player.getInventory().getSelectedItem() == pStack) {
+        if (pEntity instanceof Player player && player.getInventory().getSelectedItem() == pStack) {
             FluidStack firstContained = getFluids(pStack).stream().findFirst().orElse(FluidStack.EMPTY);
             NumberFormat formater = DecimalFormat.getInstance();
             String displayName = firstContained.getHoverName().getString();
@@ -160,7 +169,9 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             return InteractionResult.SUCCESS;
         }
 
-        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(itemStack).orElse(null);
+        ResourceHandler<FluidResource> fluidHandler = ItemAccess.forStack(itemStack)
+                .oneByOne()
+                .getCapability(Capabilities.Fluid.ITEM);
         if (fluidHandler == null) {
             return InteractionResult.PASS;
         }
@@ -177,21 +188,17 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
                 hitBlock instanceof LiquidBlock ||
                 hitBlock instanceof BucketPickup;
         if (pLevel.mayInteract(pPlayer, hitPos) && canPickUp) {
-            FluidActionResult pickUpResult = FluidUtil.tryPickUpFluid(itemStack, pPlayer, pLevel, hitPos, hitResult.getDirection());
-            if (pickUpResult.isSuccess()) {
+            FluidStack pickedUp = FluidUtil.tryPickupFluid(fluidHandler, pPlayer, pLevel, hitPos, hitResult.getDirection());
+            if (!pickedUp.isEmpty()) {
                 return InteractionResult.SUCCESS;
             }
         }
 
-        BlockPos placePos = hitPos.offset(hitResult.getDirection().getNormal());
+        BlockPos placePos = hitPos.offset(hitResult.getDirection().getUnitVec3i());
         if (pLevel.mayInteract(pPlayer, placePos)) {
-            FluidStack drained = fluidHandler.drain(1000, IFluidHandler.FluidAction.SIMULATE);
-            if (drained.getAmount() == 1000) {
-                FluidActionResult placeResult = FluidUtil.tryPlaceFluid(pPlayer, pLevel, pUsedHand, placePos, itemStack, drained);
-                if (placeResult.isSuccess()) {
-                    fluidHandler.drain(1000, IFluidHandler.FluidAction.EXECUTE);
-                    return InteractionResult.SUCCESS;
-                }
+            FluidStack placed = FluidUtil.tryPlaceFluid(fluidHandler, pPlayer, pLevel, pUsedHand, placePos);
+            if (!placed.isEmpty()) {
+                return InteractionResult.SUCCESS;
             }
         }
 
