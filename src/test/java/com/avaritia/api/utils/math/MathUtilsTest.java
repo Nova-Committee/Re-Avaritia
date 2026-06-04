@@ -61,10 +61,11 @@ class MathUtilsTest {
     @DisplayName("sin² + cos² ≈ 1 恒等式成立")
     void sinSquaredPlusCosSquaredApproximatelyOne() {
         for (double angle = -2 * Math.PI; angle <= 2 * Math.PI; angle += 0.5) {
+            double sampleAngle = angle;
             double s = MathUtils.sin(angle);
             double c = MathUtils.cos(angle);
             assertEquals(1.0, s * s + c * c, 0.01,
-                    () -> "sin^2+cos^2 should be ~1 at angle=" + angle);
+                    () -> "sin^2+cos^2 should be ~1 at angle=" + sampleAngle);
         }
     }
 

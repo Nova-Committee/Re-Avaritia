@@ -19,6 +19,23 @@ sourceSets.main.resources {
 }
 
 repositories {
+    mavenCentral()
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Aliyun Maven Central"
+                url = uri("https://maven.aliyun.com/repository/central")
+            }
+        }
+        filter {
+            includeGroup "org.junit"
+            includeGroup "org.junit.jupiter"
+            includeGroup "org.junit.platform"
+            includeGroup "org.opentest4j"
+        }
+    }
+
     // JEI
     maven {
         name = "Jared's maven"
@@ -116,6 +133,11 @@ dependencies {
     testImplementation platform(libs.junit.bom)
     testImplementation libs.junit.api
     testRuntimeOnly libs.junit.engine
+    testRuntimeOnly libs.junit.platform.launcher
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

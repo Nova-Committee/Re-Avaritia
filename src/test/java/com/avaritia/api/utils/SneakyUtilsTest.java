@@ -99,8 +99,8 @@ class SneakyUtilsTest {
     @Test
     @DisplayName("sneaky(ThrowingRunnable) 将受检异常重新抛为非受检")
     void sneakyThrowingRunnableRethrowsAsUnchecked() {
-        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
-                SneakyUtils.sneaky(() -> {
+        Exception thrown = assertThrows(Exception.class, () ->
+                SneakyUtils.sneaky((SneakyUtils.ThrowingRunnable<Throwable>) () -> {
                     throw new Exception("checked failure");
                 })
         );
@@ -142,14 +142,14 @@ class SneakyUtilsTest {
     @DisplayName("sneak(ThrowingRunnable) 将受检异常 Runnable 包裹为标准 Runnable")
     void sneakThrowingRunnableWrapsToStandardRunnable() {
         AtomicInteger counter = new AtomicInteger();
-        Runnable r = SneakyUtils.sneak(counter::incrementAndGet);
+        Runnable r = SneakyUtils.sneak((SneakyUtils.ThrowingRunnable<Throwable>) counter::incrementAndGet);
         r.run();
         assertEquals(1, counter.get());
 
-        Runnable bomb = SneakyUtils.sneak(() -> {
+        Runnable bomb = SneakyUtils.sneak((SneakyUtils.ThrowingRunnable<Throwable>) () -> {
             throw new Exception("wrapped failure");
         });
-        RuntimeException ex = assertThrows(RuntimeException.class, bomb::run);
+        Exception ex = assertThrows(Exception.class, bomb::run);
         assertEquals("wrapped failure", ex.getMessage());
     }
 
@@ -162,10 +162,10 @@ class SneakyUtilsTest {
 
         assertEquals("infinity", captured.get());
 
-        Consumer<String> bomb = SneakyUtils.sneak((String s) -> {
+        Consumer<String> bomb = SneakyUtils.sneak((SneakyUtils.ThrowingConsumer<String, Throwable>) (String s) -> {
             throw new Exception("consumer failure: " + s);
         });
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> bomb.accept("test"));
+        Exception ex = assertThrows(Exception.class, () -> bomb.accept("test"));
         assertEquals("consumer failure: test", ex.getMessage());
     }
 
@@ -178,8 +178,8 @@ class SneakyUtilsTest {
         Supplier<String> bomb = SneakyUtils.sneak((SneakyUtils.ThrowingSupplier<String, Throwable>) () -> {
             throw new IllegalAccessException("supplier issue");
         });
-        RuntimeException ex = assertThrows(RuntimeException.class, bomb::get);
-        assertTrue(ex instanceof IllegalAccessException);
+        IllegalAccessException ex = assertThrows(IllegalAccessException.class, bomb::get);
+        assertEquals("supplier issue", ex.getMessage());
     }
 
     @Test
@@ -191,7 +191,7 @@ class SneakyUtilsTest {
         Function<String, String> bomb = SneakyUtils.sneak((String s) -> {
             throw new Exception("function failure");
         });
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> bomb.apply("x"));
+        Exception ex = assertThrows(Exception.class, () -> bomb.apply("x"));
         assertEquals("function failure", ex.getMessage());
     }
 
@@ -217,19 +217,19 @@ class SneakyUtilsTest {
     @DisplayName("unsafeCast 允许跨类型引用（编译期擦除）")
     void unsafeCastAllowsCrossTypeReference() {
         Integer num = 42;
-        // This compiles but the returned reference is still the Integer
-        String s = SneakyUtils.unsafeCast(num);
-        assertSame(num, s, "unsafeCast should return the identical object");
-        assertTrue(s instanceof Integer, "the object is still an Integer at runtime");
+        // Generic parameters are erased; the returned reference is still the Integer.
+        Comparable<String> comparable = SneakyUtils.unsafeCast(num);
+        assertSame(num, comparable, "unsafeCast should return the identical object");
+        Object actual = comparable;
+        assertTrue(actual instanceof Integer, "the object is still an Integer at runtime");
     }
 
     @Test
     @DisplayName("throwUnchecked 将任意 Throwable 抛出为未经检查的异常")
     void throwUncheckedThrowsAnyThrowableAsUnchecked() {
-        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+        Exception thrown = assertThrows(Exception.class, () ->
                 SneakyUtils.throwUnchecked(new Exception("original cause"))
         );
-        assertTrue(thrown instanceof Exception);
         assertEquals("original cause", thrown.getMessage());
     }
 
