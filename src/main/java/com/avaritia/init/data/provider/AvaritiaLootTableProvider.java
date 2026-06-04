@@ -1,6 +1,7 @@
 package com.avaritia.init.data.provider;
 
 import com.avaritia.init.registry.ModBlocks;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.PackOutput;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -21,13 +23,13 @@ import java.util.stream.Collectors;
  */
 public class AvaritiaLootTableProvider extends LootTableProvider {
 
-    public AvaritiaLootTableProvider(PackOutput output) {
+    public AvaritiaLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(
-                        new AvaritiaBlockLootSubProvider(),
+                        AvaritiaBlockLootSubProvider::new,
                         LootContextParamSets.BLOCK
                 )
-        ));
+        ), registries);
     }
 
     /**
@@ -38,8 +40,8 @@ public class AvaritiaLootTableProvider extends LootTableProvider {
      */
     private static class AvaritiaBlockLootSubProvider extends BlockLootSubProvider {
 
-        protected AvaritiaBlockLootSubProvider() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        protected AvaritiaBlockLootSubProvider(HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override

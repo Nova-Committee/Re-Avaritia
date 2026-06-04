@@ -50,7 +50,7 @@ public class AvaritiaData {
         generator.addProvider(true, new AvaritiaRecipeProvider.Runner(packOutput, event.getLookupProvider()));
 
         // 4. 方块战利品表提供程序
-        generator.addProvider(true, new AvaritiaLootTableProvider(packOutput));
+        generator.addProvider(true, new AvaritiaLootTableProvider(packOutput, lookupProvider));
 
         // 5. 物品与方块标签提供程序
         generator.addProvider(true, new AvaritiaTagProvider(packOutput, lookupProvider));

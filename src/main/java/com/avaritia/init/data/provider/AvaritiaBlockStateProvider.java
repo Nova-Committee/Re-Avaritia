@@ -7,6 +7,7 @@ import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ModelInstance;
+import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -14,7 +15,6 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import net.minecraft.client.renderer.item.ClientItem;
-import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -151,7 +151,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         String path = BuiltInRegistries.BLOCK.getKey(block).getPath();
         if (ModItems.BLOCK_ITEMS.containsKey(path)) {
             Identifier itemKey = BuiltInRegistries.ITEM.getKey(block.asItem());
-            this.generatedClientItems.put(itemKey, new ClientItem(ItemModel.plainModel(model), ClientItem.Properties.DEFAULT));
+            this.generatedClientItems.put(itemKey, new ClientItem(ItemModelUtils.plainModel(model), ClientItem.Properties.DEFAULT));
         }
     }
 
