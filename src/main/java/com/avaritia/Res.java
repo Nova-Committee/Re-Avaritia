@@ -14,6 +14,8 @@ public class Res {
     public static final Identifier TRIDENT_TEX = Const.rl("textures/entity/infinity_trident_model.png");
     public static final Identifier ARC_TEX = Const.rl("textures/effect/line_segment.png");
     public static final Identifier WING_TEX = Const.rl("textures/models/armor/infinity_armor_wing.png");
+    public static final Identifier WING_GLOW_TEX = Const.rl("textures/models/armor/infinity_armor_wing_glow.png");
+    public static final Identifier EYE_TEX = Const.rl("textures/models/armor/infinity_armor_eyes.png");
     public static final Identifier DRAGON_FIREBALL = Identifier.fromNamespaceAndPath("minecraft", "textures/entity/enderdragon/dragon_fireball.png");
 
     // GUI - Crafting tables

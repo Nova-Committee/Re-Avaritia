@@ -6,11 +6,9 @@ import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaders;
 import com.avaritia.init.registry.ModItems;
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -19,19 +17,16 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.monster.zombie.Zombie;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
+import java.util.function.Function;
 
-public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
+public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidModel<S> {
+    private static final int WHITE = new ColorRGBA(1.0F, 1.0F, 1.0F, 1.0F).pack();
 
     public final ModelPart root = createLayer().bakeRoot();
     public final ModelPart bodyRoot = createBodyLayer(new CubeDeformation(1.0F)).bakeRoot();
@@ -66,20 +61,19 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         return LayerDefinition.create(meshDefinition, 64, 64);
     }
 
-    @Override
-    protected Iterable<ModelPart> bodyParts() {
-        return ImmutableList.of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg);
-    }
-
     public void setScale(ModelPart modelPart, float scale) {
         modelPart.xScale = scale;
         modelPart.yScale = scale;
         modelPart.zScale = scale;
     }
 
+    private static void copyPartPose(ModelPart target, ModelPart source) {
+        target.loadPose(source.storePose());
+    }
+
     @Override
-    public void setupAnim(@NotNull LivingEntity livingEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        super.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+    public void setupAnim(S state) {
+        super.setupAnim(state);
 
         ModelPart leftWing = root.getChild("left_wing");
         leftWing.xRot = this.body.xRot;
@@ -90,40 +84,16 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         rightWing.yRot = this.body.yRot + (float) (-Math.PI * 0.4);
         rightWing.zRot = this.body.zRot;
 
-        if (livingEntity instanceof ArmorStand armorStand) {
-            this.head.y = 1.0F;
-            this.head.xRot = (float) (Math.PI / 180.0) * armorStand.getHeadPose().getX();
-            this.head.yRot = (float) (Math.PI / 180.0) * armorStand.getHeadPose().getY();
-            this.head.zRot = (float) (Math.PI / 180.0) * armorStand.getHeadPose().getZ();
-            this.leftArm.xRot = (float) (Math.PI / 180.0) * armorStand.getLeftArmPose().getX();
-            this.leftArm.yRot = (float) (Math.PI / 180.0) * armorStand.getLeftArmPose().getY();
-            this.leftArm.zRot = (float) (Math.PI / 180.0) * armorStand.getLeftArmPose().getZ();
-            this.rightArm.xRot = (float) (Math.PI / 180.0) * armorStand.getRightArmPose().getX();
-            this.rightArm.yRot = (float) (Math.PI / 180.0) * armorStand.getRightArmPose().getY();
-            this.rightArm.zRot = (float) (Math.PI / 180.0) * armorStand.getRightArmPose().getZ();
-            this.leftLeg.xRot = (float) (Math.PI / 180.0) * armorStand.getLeftLegPose().getX();
-            this.leftLeg.yRot = (float) (Math.PI / 180.0) * armorStand.getLeftLegPose().getY();
-            this.leftLeg.zRot = (float) (Math.PI / 180.0) * armorStand.getLeftLegPose().getZ();
-            this.rightLeg.xRot = (float) (Math.PI / 180.0) * armorStand.getRightLegPose().getX();
-            this.rightLeg.yRot = (float) (Math.PI / 180.0) * armorStand.getRightLegPose().getY();
-            this.rightLeg.zRot = (float) (Math.PI / 180.0) * armorStand.getRightLegPose().getZ();
-            this.hat.copyFrom(this.head);
-        }
-
         ModelPart head = this.bodyRoot.getChild("head");
-        head.copyFrom(this.head);
+        copyPartPose(head, this.head);
         ModelPart hat = this.bodyRoot.getChild("hat");
-        hat.copyFrom(this.hat);
+        copyPartPose(hat, this.hat);
 
         ModelPart body = this.bodyRoot.getChild("body");
-        body.copyFrom(this.body);
-
-        if (livingEntity instanceof Zombie zombie) {
-            AnimationUtils.animateZombieArms(this.leftArm, this.rightArm, zombie.isAggressive(), this.attackTime, ageInTicks);
-        }
+        copyPartPose(body, this.body);
 
         ModelPart leftArm = this.bodyRoot.getChild("left_arm");
-        leftArm.copyFrom(this.leftArm);
+        copyPartPose(leftArm, this.leftArm);
         if (!isSilm) {
             this.setScale(this.leftArm, 1.01F);
         } else {
@@ -133,7 +103,7 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         }
         this.setScale(leftArm, 1.0F);
         ModelPart rightArm = this.bodyRoot.getChild("right_arm");
-        rightArm.copyFrom(this.rightArm);
+        copyPartPose(rightArm, this.rightArm);
         if (!isSilm) {
             this.setScale(this.rightArm, 1.01F);
         } else {
@@ -144,26 +114,26 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         this.setScale(rightArm, 1.0F);
 
         ModelPart leftLeg = this.bodyRoot.getChild("left_leg");
-        leftLeg.copyFrom(this.leftLeg);
+        copyPartPose(leftLeg, this.leftLeg);
         ModelPart rightLeg = this.bodyRoot.getChild("right_leg");
-        rightLeg.copyFrom(this.rightLeg);
+        copyPartPose(rightLeg, this.rightLeg);
         ModelPart leftBoot = this.bodyRoot.getChild("left_boot");
-        leftBoot.copyFrom(this.leftLeg);
+        copyPartPose(leftBoot, this.leftLeg);
         ModelPart rightBoot = this.bodyRoot.getChild("right_boot");
-        rightBoot.copyFrom(this.rightLeg);
+        copyPartPose(rightBoot, this.rightLeg);
     }
 
-    public void render(LivingEntity livingEntity, PoseStack poseStack, MultiBufferSource multiBufferSource, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void render(S state, PoseStack poseStack, SubmitNodeCollector output, RenderType wingRenderType, int packedLight, int packedOverlay) {
         RenderType cosmicArmorRenderType = AvaritiaRenderTypes.COSMIC_ARMOR;
 
         Minecraft mc = Minecraft.getInstance();
 
-        Item headItem = livingEntity.getItemBySlot(EquipmentSlot.HEAD).getItem();
-        Item chestItem = livingEntity.getItemBySlot(EquipmentSlot.CHEST).getItem();
-        Item legsItem = livingEntity.getItemBySlot(EquipmentSlot.LEGS).getItem();
-        Item feetItem = livingEntity.getItemBySlot(EquipmentSlot.FEET).getItem();
+        Item headItem = state.headEquipment.getItem();
+        Item chestItem = state.chestEquipment.getItem();
+        Item legsItem = state.legsEquipment.getItem();
+        Item feetItem = state.feetEquipment.getItem();
 
-        long time = mc.level.getGameTime();
+        long time = mc.level != null ? mc.level.getGameTime() : System.currentTimeMillis() / 50L;
 
         double pulse = Math.sin(time / 10.0D) * 0.5D + 0.5D;
         double pulseMagSqr = pulse * pulse * pulse * pulse * pulse * pulse;
@@ -175,8 +145,8 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         if (AvaritiaClient.inventoryRender) {
             scale = 100.0F;
         } else {
-            yaw = (float) ((livingEntity.getYRot() * 2.0F) * Math.PI / 360.0D);
-            pitch = -((float) ((livingEntity.getXRot() * 2.0F) * Math.PI / 360.0D));
+            yaw = (float) ((state.yRot * 2.0F) * Math.PI / 360.0D);
+            pitch = -((float) ((state.xRot * 2.0F) * Math.PI / 360.0D));
         }
 
         AvaritiaShaders.cosmicArmorTime.set(time % Integer.MAX_VALUE);
@@ -186,30 +156,30 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
         AvaritiaShaders.cosmicArmorOpacity.set(1.25F);
         AvaritiaShaders.cosmicArmorUVs.set(AvaritiaShaders.COSMIC_UVS);
 
-        if (livingEntity instanceof Player player) {
-            if (chestItem == ModItems.infinity_chestplate.get() && player.getAbilities().flying) {
-                poseStack.pushPose();
-                ModelPart leftWing = root.getChild("left_wing");
-                ModelPart rightWing = root.getChild("right_wing");
-                leftWing.render(poseStack, vertexConsumer, packedLight, packedOverlay);
-                rightWing.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        boolean flying = Boolean.TRUE.equals(state.getRenderData(AvaritiaClient.INFINITY_ARMOR_FLYING)) || state.isFallFlying;
+        if (chestItem == ModItems.infinity_chestplate.get() && flying) {
+            poseStack.pushPose();
+            ModelPart leftWing = root.getChild("left_wing");
+            ModelPart rightWing = root.getChild("right_wing");
+            submitPart(poseStack, output, wingRenderType, leftWing, packedLight, packedOverlay, WHITE);
+            submitPart(poseStack, output, wingRenderType, rightWing, packedLight, packedOverlay, WHITE);
 
-                leftWing.render(poseStack, Res.ARMOR_WING_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
-                rightWing.render(poseStack, Res.ARMOR_WING_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, leftWing, Res.ARMOR_WING_MASK::wrap, packedLight, packedOverlay, WHITE);
+            submitPart(poseStack, output, cosmicArmorRenderType, rightWing, Res.ARMOR_WING_MASK::wrap, packedLight, packedOverlay, WHITE);
 
-                leftWing.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.WING_GLOW_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
-                rightWing.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.WING_GLOW_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
-                poseStack.popPose();
-            }
+            int wingGlow = new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack();
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.WING_GLOW_TEX), leftWing, packedLight, packedOverlay, wingGlow);
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.WING_GLOW_TEX), rightWing, packedLight, packedOverlay, wingGlow);
+            poseStack.popPose();
         }
 
         if (headItem == ModItems.infinity_helmet.get()) {
             poseStack.pushPose();
 
             ModelPart head = this.bodyRoot.getChild("head");
-            head.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, head, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
             ModelPart hat = this.bodyRoot.getChild("hat");
-            hat.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, hat, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
 
             poseStack.popPose();
         }
@@ -218,14 +188,15 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
             poseStack.pushPose();
 
             ModelPart body = this.bodyRoot.getChild("body");
-            body.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
-            body.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.EYE_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, body, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
+            int eyeGlow = new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack();
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.EYE_TEX), body, packedLight, packedOverlay, eyeGlow);
             ModelPart leftArm = this.bodyRoot.getChild("left_arm");
-            leftArm.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
-            leftArm.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.EYE_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, leftArm, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.EYE_TEX), leftArm, packedLight, packedOverlay, eyeGlow);
             ModelPart rightArm = this.bodyRoot.getChild("right_arm");
-            rightArm.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
-            rightArm.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.EYE_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, rightArm, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.EYE_TEX), rightArm, packedLight, packedOverlay, eyeGlow);
 
             poseStack.popPose();
         }
@@ -234,11 +205,12 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
             poseStack.pushPose();
 
             ModelPart leftLeg = this.bodyRoot.getChild("left_leg");
-            leftLeg.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
-            leftLeg.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.EYE_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, leftLeg, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
+            int legGlow = new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack();
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.EYE_TEX), leftLeg, packedLight, packedOverlay, legGlow);
             ModelPart rightLeg = this.bodyRoot.getChild("right_leg");
-            rightLeg.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
-            rightLeg.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.WingGlow(Res.EYE_TEX)), packedLight, packedOverlay, new ColorRGBA(0.84F, 1.0F, 0.95F, (float) (pulseMagSqr * 0.5D)).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, rightLeg, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
+            submitPart(poseStack, output, AvaritiaRenderTypes.WingGlow(Res.EYE_TEX), rightLeg, packedLight, packedOverlay, legGlow);
 
             poseStack.popPose();
         }
@@ -247,9 +219,9 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
             poseStack.pushPose();
 
             ModelPart leftBoot = this.bodyRoot.getChild("left_boot");
-            leftBoot.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, leftBoot, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
             ModelPart rightBoot = this.bodyRoot.getChild("right_boot");
-            rightBoot.render(poseStack, Res.ARMOR_MASK.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
+            submitPart(poseStack, output, cosmicArmorRenderType, rightBoot, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
 
             poseStack.popPose();
         }
@@ -265,11 +237,35 @@ public class InfinityArmorModel extends HumanoidModel<LivingEntity> {
             float g = ((rgb >> 8) & 0xFF) / 255.0F;
             float b = (rgb & 0xFF) / 255.0F;
 
-            hat.render(poseStack, multiBufferSource.getBuffer(AvaritiaRenderTypes.Glow(Res.EYE_TEX)), packedLight, packedOverlay, new ColorRGBA(r, g, b, alpha).pack());
+            submitPart(poseStack, output, AvaritiaRenderTypes.Glow(Res.EYE_TEX), hat, packedLight, packedOverlay, new ColorRGBA(r, g, b, 1.0F).pack());
 
-            super.renderToBuffer(poseStack, Res.ARMOR_MASK_INV.wrap(multiBufferSource.getBuffer(cosmicArmorRenderType)), packedLight, packedOverlay, new ColorRGBA(red, green, blue, alpha).pack());
+            submitModel(poseStack, output, cosmicArmorRenderType, Res.ARMOR_MASK_INV::wrap, packedLight, packedOverlay, WHITE);
 
             poseStack.popPose();
         }
+    }
+
+    private void submitModel(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, Function<VertexConsumer, VertexConsumer> wrapper, int packedLight, int packedOverlay, int color) {
+        output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+            PoseStack modelPose = new PoseStack();
+            modelPose.last().set(pose);
+            this.renderToBuffer(modelPose, wrapper.apply(vertexConsumer), packedLight, packedOverlay, color);
+        });
+    }
+
+    private void submitPart(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, ModelPart part, int packedLight, int packedOverlay, int color) {
+        output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+            PoseStack modelPose = new PoseStack();
+            modelPose.last().set(pose);
+            part.render(modelPose, vertexConsumer, packedLight, packedOverlay, color);
+        });
+    }
+
+    private void submitPart(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, ModelPart part, Function<VertexConsumer, VertexConsumer> wrapper, int packedLight, int packedOverlay, int color) {
+        output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+            PoseStack modelPose = new PoseStack();
+            modelPose.last().set(pose);
+            part.render(modelPose, wrapper.apply(vertexConsumer), packedLight, packedOverlay, color);
+        });
     }
 }
