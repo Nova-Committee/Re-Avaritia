@@ -33,7 +33,7 @@ public abstract class ItemMixin implements ITooltip {
         if (this.hasDescTooltip()) {
             tooltipComponents.add(
                     Component.translatable("tooltip."
-                            + ((Item) (Object) this).builtInRegistryHolder().key().location().toString().replace(":", ".")
+                            + ((Item) (Object) this).builtInRegistryHolder().key().identifier().toString().replace(":", ".")
                             + ".desc").withStyle(ChatFormatting.DARK_GRAY,  ChatFormatting.ITALIC)
             );
         }

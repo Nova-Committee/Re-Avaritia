@@ -2,11 +2,14 @@ package com.avaritia;
 
 import com.avaritia.common.crafting.recipe.CompressorRecipe;
 import com.avaritia.common.crafting.recipe.ShapelessTableCraftingRecipe;
+import com.avaritia.common.ingredient.StackIngredient;
 import com.avaritia.core.singularity.Singularity;
 import com.avaritia.core.singularity.SingularityReloadListener;
 import com.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -39,13 +42,14 @@ public class ModApi {
             }
         }
 
-        return new RecipeHolder<>(Const.rl(uuid.toString()), new ShapelessTableCraftingRecipe(getList(arraylist), result, tier));
+        ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> key = ResourceKey.create(Registries.RECIPE, Const.rl(uuid.toString()));
+        return new RecipeHolder<>(key, new ShapelessTableCraftingRecipe(getList(arraylist), result, tier));
     }
 
     private static NonNullList<Ingredient> getList(List<ItemStack> arrayList) {
         NonNullList<Ingredient> ingredients = NonNullList.create();
         for (ItemStack stack : arrayList) {
-            ingredients.add(Ingredient.of(stack));
+            ingredients.add(new StackIngredient(stack).toVanilla());
         }
         return ingredients;
     }
@@ -62,7 +66,7 @@ public class ModApi {
         int ingredientCount = singularity.getCount();
         int timeRequired = singularity.getTimeCost();
 
-        return new RecipeHolder<>(recipeId, new CompressorRecipe(ingredient, output, ingredientCount, timeRequired));
+        return new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), new CompressorRecipe(ingredient, output, ingredientCount, timeRequired));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.avaritia.init.registry;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -29,7 +30,7 @@ public class ModDamageTypes {
     }
 
     public static DamageSource causeRandomDamage(Entity attacker) {
-        return new DamageSourceRandomMessages(attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(INFINITY), attacker);
+        return new DamageSourceRandomMessages(attacker.level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(INFINITY), attacker);
     }
 
     public static class DamageSourceRandomMessages extends DamageSource {

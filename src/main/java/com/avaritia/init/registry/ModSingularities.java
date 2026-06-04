@@ -1,9 +1,13 @@
 package com.avaritia.init.registry;
 
-import com.avaritia.Avaritia;
+import com.avaritia.Const;
+
+import com.avaritia.common.ingredient.TagIngredient;
 import com.avaritia.core.singularity.Singularity;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.conditions.NotCondition;
@@ -33,31 +37,31 @@ public class ModSingularities {
     public static final Singularity NETHERITE = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "netherite"), "singularity.avaritia.netherite", new int[]{0x443a3b, 0x1a1616}, Ingredient.of(Items.NETHERITE_INGOT));
 
     public static final Singularity ALUMINUM = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "aluminum"), "singularity.avaritia.aluminum", new int[]{0xCACCDA, 0x9A9CA6},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/aluminum"))), new NotCondition(new TagEmptyCondition("c:ingots/aluminum")));
+            tagIngredient("ingots/aluminum"), tagPresentCondition("ingots/aluminum"));
     public static final Singularity TIN = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "tin"), "singularity.avaritia.tin", new int[]{0xA0BEBD, 0x527889},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/tin"))), new NotCondition(new TagEmptyCondition("c:ingots/tin")));
+            tagIngredient("ingots/tin"), tagPresentCondition("ingots/tin"));
     public static final Singularity BRONZE = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "bronze"), "singularity.avaritia.bronze", new int[]{0xD99F43, 0xBB6B3B},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/bronze"))), new NotCondition(new TagEmptyCondition("c:ingots/bronze")));
+            tagIngredient("ingots/bronze"), tagPresentCondition("ingots/bronze"));
     public static final Singularity SILVER = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "silver"), "singularity.avaritia.silver", new int[]{0xC0CDD2, 0x5F6E7C},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/silver"))), new NotCondition(new TagEmptyCondition("c:ingots/silver")));
+            tagIngredient("ingots/silver"), tagPresentCondition("ingots/silver"));
     public static final Singularity LEAD = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "lead"), "singularity.avaritia.lead", new int[]{0x6C7D92, 0x323562},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/lead"))), new NotCondition(new TagEmptyCondition("c:ingots/lead")));
+            tagIngredient("ingots/lead"), tagPresentCondition("ingots/lead"));
     public static final Singularity STEEL = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "steel"), "singularity.avaritia.steel", new int[]{0x565656, 0x232323},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/steel"))), new NotCondition(new TagEmptyCondition("c:ingots/steel")));
+            tagIngredient("ingots/steel"), tagPresentCondition("ingots/steel"));
     public static final Singularity NICKEL = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "nickel"), "singularity.avaritia.nickel", new int[]{0xE1D798, 0xB1976C},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/nickel"))), new NotCondition(new TagEmptyCondition("c:ingots/nickel")));
+            tagIngredient("ingots/nickel"), tagPresentCondition("ingots/nickel"));
     public static final Singularity ELECTRUM = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "electrum"), "singularity.avaritia.electrum", new int[]{0xF5F18E, 0x9E8D3E},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/electrum"))), new NotCondition(new TagEmptyCondition("c:ingots/electrum")));
+            tagIngredient("ingots/electrum"), tagPresentCondition("ingots/electrum"));
     public static final Singularity INVAR = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "invar"), "singularity.avaritia.invar", new int[]{0xBCC5BB, 0x5D7877},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/invar"))), new NotCondition(new TagEmptyCondition("c:ingots/invar")));
+            tagIngredient("ingots/invar"), tagPresentCondition("ingots/invar"));
     public static final Singularity PLATINUM = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "platinum"), "singularity.avaritia.platinum", new int[]{0x6FEAEF, 0x57B8BC},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/platinum"))), new NotCondition(new TagEmptyCondition("c:ingots/platinum")));
+            tagIngredient("ingots/platinum"), tagPresentCondition("ingots/platinum"));
     public static final Singularity URANIUM = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "uranium"), "singularity.avaritia.uranium", new int[]{0xd2f9d1, 0xa6c5a4},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/uranium"))), new NotCondition(new TagEmptyCondition("c:ingots/uranium")));
+            tagIngredient("ingots/uranium"), tagPresentCondition("ingots/uranium"));
     public static final Singularity OSMIUM = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "osmium"), "singularity.avaritia.osmium", new int[]{0xe6eef7, 0xc0c4cd},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/osmium"))), new NotCondition(new TagEmptyCondition("c:ingots/osmium")));
+            tagIngredient("ingots/osmium"), tagPresentCondition("ingots/osmium"));
     public static final Singularity REFINED_OBSIDIAN = Singularity.create(Identifier.fromNamespaceAndPath(Const.MOD_ID, "refined_obsidian"), "singularity.avaritia.refined_obsidian", new int[]{0xa9a1b8, 0x8d78b7},
-            Ingredient.of(ItemTags.create(Identifier.parse("c:ingots/refined_obsidian"))), new NotCondition(new TagEmptyCondition("c:ingots/refined_obsidian")));
+            tagIngredient("ingots/refined_obsidian"), tagPresentCondition("ingots/refined_obsidian"));
 
     public static List<Singularity> getDefaults() {
         return List.of(
@@ -90,5 +94,17 @@ public class ModSingularities {
                 OSMIUM,
                 REFINED_OBSIDIAN
         );
+    }
+
+    private static Ingredient tagIngredient(String path) {
+        return new TagIngredient(commonTag(path)).toVanilla();
+    }
+
+    private static NotCondition tagPresentCondition(String path) {
+        return new NotCondition(new TagEmptyCondition<>(commonTag(path)));
+    }
+
+    private static TagKey<Item> commonTag(String path) {
+        return ItemTags.create(Identifier.fromNamespaceAndPath("c", path));
     }
 }

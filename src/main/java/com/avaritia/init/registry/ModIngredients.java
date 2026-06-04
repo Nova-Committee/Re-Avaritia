@@ -1,8 +1,11 @@
 package com.avaritia.init.registry;
 
+import com.avaritia.Const;
+
 import com.avaritia.Avaritia;
 import com.avaritia.common.ingredient.ItemIngredient;
 import com.avaritia.common.ingredient.StackIngredient;
+import com.avaritia.common.ingredient.TagIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -18,4 +21,5 @@ public class ModIngredients {
     public static final DeferredRegister<IngredientType<?>> INGREDIENT = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, Const.MOD_ID);
     public static Supplier<IngredientType<ItemIngredient>> NBT_ITEM = INGREDIENT.register("nbt_item", () -> new IngredientType<>(ItemIngredient.MAP_CODEC, ItemIngredient.STREAM_CODEC));
     public static Supplier<IngredientType<StackIngredient>> STACK_ITEM = INGREDIENT.register("stack", () -> new IngredientType<>(StackIngredient.MAP_CODEC, StackIngredient.STREAM_CODEC));
+    public static Supplier<IngredientType<TagIngredient>> TAG_ITEM = INGREDIENT.register("tag", () -> new IngredientType<>(TagIngredient.MAP_CODEC, TagIngredient.STREAM_CODEC));
 }

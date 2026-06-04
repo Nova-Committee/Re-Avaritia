@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.item.properties.conditional.ConditionalItem
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -53,7 +54,7 @@ public final class ItemOverrideHandler {
         ).apply(instance, ModeFlag::new));
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
             return this.enabled(stack) ? 1.0F : 0.0F;
         }
 
@@ -76,7 +77,7 @@ public final class ItemOverrideHandler {
         public static final MapCodec<UmbrellaMode> MAP_CODEC = MapCodec.unit(new UmbrellaMode());
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
             CompoundTag mode = modeTag(stack);
             for (int i = 0; i < InfinityUmbrellaItem.MODES.size(); i++) {
                 if (mode.getBoolean(InfinityUmbrellaItem.MODES.get(i)).orElse(false)) {
@@ -96,7 +97,7 @@ public final class ItemOverrideHandler {
         public static final MapCodec<MatterClusterFull> MAP_CODEC = MapCodec.unit(new MatterClusterFull());
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
             return this.full(stack) ? 1.0F : 0.0F;
         }
 
@@ -119,7 +120,8 @@ public final class ItemOverrideHandler {
         public static final MapCodec<UsingStack> MAP_CODEC = MapCodec.unit(new UsingStack());
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+            LivingEntity entity = owner == null ? null : owner.asLivingEntity();
             return this.using(stack, entity) ? 1.0F : 0.0F;
         }
 
@@ -142,7 +144,8 @@ public final class ItemOverrideHandler {
         public static final MapCodec<InfinityCrossbowPull> MAP_CODEC = MapCodec.unit(new InfinityCrossbowPull());
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+            LivingEntity entity = owner == null ? null : owner.asLivingEntity();
             if (entity == null || CrossbowItem.isCharged(stack)) {
                 return 0.0F;
             }
@@ -159,7 +162,7 @@ public final class ItemOverrideHandler {
         public static final MapCodec<InfinityCrossbowCharged> MAP_CODEC = MapCodec.unit(new InfinityCrossbowCharged());
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
             return CrossbowItem.isCharged(stack) ? 1.0F : 0.0F;
         }
 

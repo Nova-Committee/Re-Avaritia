@@ -77,7 +77,7 @@ public abstract class NetherWartBlockMixin extends BushBlock implements Bonemeal
 
     @Unique
     protected int avaritia$getBonemealAgeIncrease(Level level) {
-        return Mth.nextInt(level.random, 2, 5) / 3;
+        return Mth.nextInt(level.getRandom(), 2, 5) / 3;
     }
 
     @Unique

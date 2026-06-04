@@ -264,11 +264,10 @@ public class AbilityHandler {
 
         if (fogType == FogType.LAVA || fogType == FogType.POWDER_SNOW) {
 
-            float farPlane = event.getRenderer().getRenderDistance();
+            float farPlane = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0F;
 
             event.setNearPlaneDistance(-8.0f);
             event.setFarPlaneDistance(Math.min(96.0f, farPlane));
-            event.setCanceled(true);
         }
     }
 
