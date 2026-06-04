@@ -13,15 +13,12 @@ import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.ModDamageTypes;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModTags;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +42,6 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -95,11 +91,12 @@ public class ToolUtils {
     public static final Set<TagKey<Block>> materialsShovel = Sets.newHashSet(
             BlockTags.MINEABLE_WITH_SHOVEL
     );
+
+    private static final List<String> projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
+
     /**
      * 列表中生物被弓箭攻击使用无尽伤害
      */
-    private static final List<String> projectileAntiImmuneEntities = Lists.newArrayList("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
-
     /***
      * Common
      ***/
@@ -334,7 +331,6 @@ public class ToolUtils {
             double dz = Math.cos(dangle) * dDist;
 
             HeavenSubArrowEntity subArrow = new HeavenSubArrowEntity(level, shooter, x, y, z);
-            subArrow.piercedAndKilledEntities = piercedAndKilledEntities;
             subArrow.push(dx, -(randy.nextDouble() * 1.85 + 0.15), dz);
             subArrow.setCritArrow(true);//子箭必定暴击
             subArrow.setBaseDamage(ModConfig.subArrowDamage.get());
@@ -369,111 +365,9 @@ public class ToolUtils {
      * @param arrow  弓箭
      */
     public static void infinityTraceArrowDamage(@NotNull EntityHitResult result, TraceArrowEntity arrow) {
-
-        Entity entity = result.getEntity();
-        if (entity instanceof Player) {
-            arrow.seekNextTarget();
-
-            return;
-        }
-        float f = (float) arrow.getDeltaMovement().length();
-        int i = Mth.ceil(Mth.clamp((double) f * arrow.baseDamage, 0.0D, 2.147483647E9D));
-        Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();
-        if (arrow.getPierceLevel() > 0) {
-            if (arrow.piercingIgnoreEntityIds == null) {
-                arrow.piercingIgnoreEntityIds = new IntOpenHashSet(5);
-            }
-
-            if (arrow.piercedAndKilledEntities == null) {
-                arrow.piercedAndKilledEntities = Lists.newArrayListWithCapacity(5);
-            }
-
-            if (arrow.piercingIgnoreEntityIds.size() >= arrow.getPierceLevel() + 1) {
-                arrow.discard();
-                return;
-            }
-
-            arrow.piercingIgnoreEntityIds.add(entity.getId());
-        }
-
-        if (arrow.isCritArrow()) {
-            long j = arrow.getRandom().nextInt(i / 2 + 2);
-            i = (int) Math.min(j + (long) i, 2147483647L);
-        }
-
-        DamageSource damagesource = ToolUtils.getArrowDamageSource(arrow, owner, entity);
-        boolean isEnderman = entity.getType() == EntityType.ENDERMAN;
-        int k = entity.getRemainingFireTicks();
-        if (arrow.isOnFire() && !isEnderman) {
-            entity.setRemainingFireTicks(5);
-        }
-
-        if (entity instanceof Player player) {
-            if (player.isUsingItem() && player.getUseItem().getItem() instanceof ShieldItem) {
-                player.getCooldowns().addCooldown(player.getUseItem(), 100);
-                arrow.level().broadcastEntityEvent(player, (byte) 30);
-                player.stopUsingItem();
-            }
-        }
-
-        if (entity.hurtServer(, damagesource, (float) i)) {
-            if (entity instanceof LivingEntity livingentity) {
-                if (!arrow.level().isClientSide() && arrow.getPierceLevel() <= 0) {
-                    livingentity.setArrowCount(livingentity.getArrowCount() + 1);
-                }
-
-                if (arrow.level() instanceof ServerLevel serverLevel && owner instanceof LivingEntity livingOwner) {
-                    EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, livingentity, damagesource, arrow.getWeaponItem());
-                }
-
-                arrow.doPostHurtEffects(livingentity);
-                if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer serverPlayer && !arrow.isSilent()) {
-                    serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.PLAY_ARROW_HIT_SOUND, 0.0F));
-                }
-
-                if (!entity.isAlive() && arrow.piercedAndKilledEntities != null) {
-                    arrow.piercedAndKilledEntities.add(livingentity);
-                }
-
-                if (!arrow.level().isClientSide && owner instanceof ServerPlayer serverPlayer) {
-                    if (arrow.piercedAndKilledEntities != null && arrow.shotFromCrossbow()) {
-                        CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayer, arrow.piercedAndKilledEntities);
-                    } else if (!entity.isAlive() && arrow.shotFromCrossbow()) {
-                        CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayer, List.of(entity));
-                    }
-                }
-            }
-
-            arrow.playSound(arrow.getHitGroundSoundEvent(), 1.0F, 1.2F / (arrow.getRandom().nextFloat() * 0.2F + 0.9F));
-            if (arrow.getPierceLevel() <= 0) {
-                arrow.setDeltaMovement(entity.getDeltaMovement().scale(0.0D));
-                arrow.setPos(entity.position());
-                arrow.seekNextTarget();
-                arrow.level().playSound(null, arrow.getX(), arrow.getY(), arrow.getZ(), SoundEvents.ARROW_HIT, SoundSource.PLAYERS, 4.0F, 1.0F);
-            }
-        } else {
-            entity.setRemainingFireTicks(k);
-            arrow.setDeltaMovement(arrow.getDeltaMovement().scale(0.0D));
-            arrow.setYRot(arrow.getYRot() + 180.0F);
-            arrow.setPos(entity.position());
-            arrow.yRotO += 180.0F;
-            if (!arrow.level().isClientSide() && arrow.getDeltaMovement().lengthSqr() < 1.0E-7D) {
-                if (arrow.pickup == AbstractArrow.Pickup.ALLOWED) {
-                    arrow.spawnAtLocation(arrow.getPickupItem(), 0.1F);
-                }
-                arrow.seekNextTarget();
-                arrow.level().playSound(null, arrow.getX(), arrow.getY(), arrow.getZ(), SoundEvents.ARROW_HIT, SoundSource.PLAYERS, 4.0F, 1.0F);
-            }
-        }
+        arrow.infinityTraceArrowDamage(result);
     }
 
-    /**
-     * 横扫攻击
-     *
-     * @param level        世界
-     * @param livingEntity 玩家
-     * @param victim       被攻击者
-     */
     public static void sweepAttack(Level level, LivingEntity livingEntity, Entity victim) {
         if (livingEntity instanceof Player player) {
             for (LivingEntity livingentity : level.getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {

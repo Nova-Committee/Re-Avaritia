@@ -104,7 +104,7 @@ public class TraceArrowEntity extends Arrow {
         infinityTraceArrowDamage(pResult);
     }
 
-    private void infinityTraceArrowDamage(@NotNull EntityHitResult result) {
+    public void infinityTraceArrowDamage(@NotNull EntityHitResult result) {
         Entity entity = result.getEntity();
         if (entity instanceof Player) {
             seekNextTarget();

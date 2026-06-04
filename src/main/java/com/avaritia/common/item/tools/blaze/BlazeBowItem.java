@@ -104,9 +104,10 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
                         if (draw == 1.0F) {
                             abstractarrow.setCritArrow(true);//蓄力满必暴击
                         }
-                        abstractarrow.setBaseDamage(abstractarrow.baseDamage * (double) DAMAGE_MULTIPLIER);
+                        double baseDamage = 2.0D * (double) DAMAGE_MULTIPLIER;
+                        abstractarrow.setBaseDamage(baseDamage);
 
-                        addEnchant(stack, level, player, abstractarrow, powerForTime);
+                        addEnchant(stack, level, player, abstractarrow, powerForTime, baseDamage);
                         level.addFreshEntity(abstractarrow);
                     }
                 }
@@ -121,7 +122,7 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
         return false;
     }
 
-    private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
+    private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime, double baseDamage) {
         Holder<Enchantment> POWER =
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                         .getOrThrow(Enchantments.POWER);
@@ -131,7 +132,7 @@ public class BlazeBowItem extends BowItem implements ISwitchable, IBowTransform 
 
         int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
         if (j > 0) {
-            arrowEntity.setBaseDamage(arrowEntity.baseDamage + (double) j * 0.5D + 0.5D);
+            arrowEntity.setBaseDamage(baseDamage + (double) j * 0.5D + 0.5D);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
             arrowEntity.setRemainingFireTicks(100);

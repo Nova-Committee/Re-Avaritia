@@ -157,8 +157,9 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
                 if (draw == 1.0F) {
                     arrowEntity.setCritArrow(true);//蓄力满必暴击
                 }
-                arrowEntity.setBaseDamage(arrowEntity.baseDamage * (double) DAMAGE_MULTIPLIER);
-                addEnchant(stack, level, player, arrowEntity, powerForTime);
+                double baseDamage = 2.0D * (double) DAMAGE_MULTIPLIER;
+                arrowEntity.setBaseDamage(baseDamage);
+                addEnchant(stack, level, player, arrowEntity, powerForTime, baseDamage);
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + powerForTime * 0.5F);
                 player.awardStat(Stats.ITEM_USED.get(this));
                 return true;
@@ -167,7 +168,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
         return false;
     }
 
-    private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime) {
+    private void addEnchant(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity player, AbstractArrow arrowEntity, float powerForTime, double baseDamage) {
         Holder<Enchantment> POWER =
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                         .getOrThrow(Enchantments.POWER);
@@ -177,7 +178,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
 
         int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
         if (j > 0) {
-            arrowEntity.setBaseDamage(arrowEntity.baseDamage + (double) j * 0.5D + 0.5D);
+            arrowEntity.setBaseDamage(baseDamage + (double) j * 0.5D + 0.5D);
         }
         if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
             arrowEntity.setRemainingFireTicks(100);
