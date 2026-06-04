@@ -11,6 +11,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -281,6 +282,11 @@ public class GapingVoidEntity extends Entity {
     @Override
     public boolean shouldRenderAtSqrDistance(double p_19883_) {
         return true;
+    }
+
+    @Override
+    public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float amount) {
+        return false;
     }
 
     private void damageEntity(Entity entity, net.minecraft.world.damagesource.DamageSource source, float amount) {

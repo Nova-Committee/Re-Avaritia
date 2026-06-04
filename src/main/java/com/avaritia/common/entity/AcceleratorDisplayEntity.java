@@ -171,4 +171,9 @@ public class AcceleratorDisplayEntity extends Entity {
         output.putInt("Speed", getSpeedMultiplier());
         output.putInt("Face", getFace().get3DDataValue());
     }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        return false;
+    }
 }
