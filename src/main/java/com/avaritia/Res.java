@@ -11,6 +11,11 @@ public class Res {
     public static final Identifier VOID_HALO = Const.rl("textures/entity/void_halo.png");
     public static final Identifier BLADE_SLASH = Const.rl("textures/entity/blade_slash.png");
     public static final Identifier HEAVEN_ARROW = Const.rl("textures/entity/heaven_arrow.png");
+    public static final Identifier NEUTRON_ARROW = Const.rl("textures/entity/neutron_arrow.png");
+    public static final Identifier BURNING_ARROW = Const.rl("textures/entity/burning_arrow.png");
+    public static final Identifier SUN_PRO_TEX = Const.rl("textures/entity/sun_pro.png");
+    public static final Identifier RAIN_PRO_TEX = Const.rl("textures/entity/rain_pro.png");
+    public static final Identifier STORM_PRO_TEX = Const.rl("textures/entity/storm_pro.png");
     public static final Identifier TRIDENT_TEX = Const.rl("textures/entity/infinity_trident_model.png");
     public static final Identifier ARC_TEX = Const.rl("textures/effect/line_segment.png");
     public static final Identifier WING_TEX = Const.rl("textures/models/armor/infinity_armor_wing.png");

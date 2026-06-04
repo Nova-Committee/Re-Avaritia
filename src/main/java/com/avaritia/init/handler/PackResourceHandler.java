@@ -13,6 +13,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -23,7 +25,12 @@ public class PackResourceHandler {
     @SubscribeEvent
     public static void addPackFinders(final AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            var resourcePath = net.neoforged.fml.ModList.get().getModFileById(Const.MOD_ID).getFile().findResource("resourcepacks/avaritia");
+            var modFile = net.neoforged.fml.ModList.get().getModFileById(Const.MOD_ID).getFile();
+            Path resourcePath = modFile.getContents().getContentRoots().stream()
+                    .map(root -> root.resolve("resourcepacks/avaritia"))
+                    .filter(Files::exists)
+                    .findFirst()
+                    .orElseGet(() -> modFile.getFilePath().resolve("resourcepacks/avaritia"));
             var supplier = new PathPackResources.PathResourcesSupplier(resourcePath);
 
             event.addRepositorySource(packConsumer -> {
