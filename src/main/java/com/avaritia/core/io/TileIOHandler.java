@@ -11,8 +11,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * IO处理器基础实现类
- * 包含所有通用的方向转换和IO处理逻辑
+ * Base IO handler implementation.
+ * Handles shared direction conversion and IO logic.
  */
 public class TileIOHandler {
     private final BlockEntity tileEntity;
@@ -24,15 +24,15 @@ public class TileIOHandler {
 
     protected final Direction getRelativeDirection(Direction relativeSide, Direction blockFacing) {
         return switch (relativeSide) {
-            // 前方 = 方块朝向
+            // Front side follows the block facing.
             case NORTH -> blockFacing;
-            // 后方 = 方块朝向的对面
+            // Back side is opposite the block facing.
             case SOUTH -> blockFacing.getOpposite();
-            // 右侧 = 方块朝向顺时针90度
+            // Right side is clockwise relative to the block facing.
             case EAST -> blockFacing.getCounterClockWise();
-            // 左侧 = 方块朝向逆时针90度
+            // Left side is counter-clockwise relative to the block facing.
             case WEST -> blockFacing.getClockWise();
-            // 上下方向保持不变
+            // Vertical directions remain absolute.
             case UP -> Direction.UP;
             case DOWN -> Direction.DOWN;
             default -> null;
@@ -40,7 +40,6 @@ public class TileIOHandler {
     }
 
     protected final Direction getRelativeDirectionFromAbsolute(Direction absoluteDirection, Direction blockFacing) {
-        // 如果绝对方向与方块朝向相同，则它是前方
         if (absoluteDirection == blockFacing) return Direction.NORTH;
         if (absoluteDirection == blockFacing.getOpposite()) return Direction.SOUTH;
         if (absoluteDirection == blockFacing.getCounterClockWise()) return Direction.EAST;
@@ -51,7 +50,7 @@ public class TileIOHandler {
     }
 
     /**
-     * 获取方块的实际朝向
+     * Gets the block's actual facing direction.
      */
     protected final Direction getBlockFacing() {
         Level level = tileEntity.getLevel();
@@ -66,7 +65,7 @@ public class TileIOHandler {
     }
 
     /**
-     * 处理主动输入输出操作
+     * Handles active input and output.
      */
     public void handleActiveIO() {
         Level level = tileEntity.getLevel();
@@ -84,16 +83,15 @@ public class TileIOHandler {
                     case ACTIVE_INPUT -> handleActiveInput(side);
                     case ACTIVE_OUTPUT -> handleActiveOutput(side);
                     case ACTIVE_MIXIN -> handleMixedIO(side);
-                    // 被动模式不在这里处理
                     case PASSIVE_INPUT, PASSIVE_OUTPUT, PASSIVE_MIXIN -> {
                     }
                 }
             }
-        } else return;
+        }
     }
 
     /**
-     * 处理从指定方向的主动输入
+     * Handles active input from a side.
      */
     protected void handleActiveInput(Direction side) {
         Direction blockFacing = getBlockFacing();
@@ -115,7 +113,7 @@ public class TileIOHandler {
     }
 
     /**
-     * 处理到指定方向的主动输出
+     * Handles active output to a side.
      */
     protected void handleActiveOutput(Direction side) {
         Direction blockFacing = getBlockFacing();
@@ -137,7 +135,7 @@ public class TileIOHandler {
     }
 
     /**
-     * 处理指定方向的混合IO（同时支持输入和输出）
+     * Handles mixed IO for a side.
      */
     protected void handleMixedIO(Direction side) {
         Direction blockFacing = getBlockFacing();
@@ -152,8 +150,7 @@ public class TileIOHandler {
         if (level != null && tileEntity instanceof ITileIO ITileIO) {
             BlockEntity targetTile = level.getBlockEntity(targetPos);
             if (targetTile != null) {
-                // 先尝试输入，再尝试输出
-                var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, targetTile.getBlockState(), targetTile, actualDirection.getOpposite());
+                var cap = level.getCapability(Capabilities.Item.BLOCK, targetPos, targetTile.getBlockState(), targetTile, actualDirection.getOpposite());
                 if (cap != null) {
                     ITileIO.extractFromHandler(cap, actualDirection);
                     ITileIO.insertToHandler(cap, actualDirection);
@@ -170,11 +167,10 @@ public class TileIOHandler {
 
         Direction blockFacing = getBlockFacing();
         if (blockFacing != null && tileEntity instanceof ITileIO tileIO) {
-            // 将绝对方向转换为相对方向进行配置检查
             Direction relativeSide = getRelativeDirectionFromAbsolute(side, blockFacing);
             if (relativeSide != null) {
                 SideConfiguration.SideMode mode = tileIO.getSideConfiguration().getSideMode(relativeSide);
-                return mode != SideConfiguration.SideMode.OFF;//除了关闭状态都能连接
+                return mode != SideConfiguration.SideMode.OFF;
             }
         }
         return false;

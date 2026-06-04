@@ -1,6 +1,5 @@
 package com.avaritia;
 
-import com.avaritia.config.AvaritiaConfig;
 import com.avaritia.core.singularity.SingularityReloadListener;
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.*;
