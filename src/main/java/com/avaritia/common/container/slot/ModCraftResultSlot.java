@@ -1,14 +1,18 @@
 package com.avaritia.common.container.slot;
 
+import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.common.container.ModCraftContainer;
 import com.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
@@ -63,9 +67,7 @@ public class ModCraftResultSlot extends Slot {
         this.checkTakeAchievements(stack);
         var level = player.level();
         var inventory = this.craftContainer.asCraftInput();
-        CommonHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> remaining = level.getRecipeManager().getRemainingItemsFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, level);
-        CommonHooks.setCraftingPlayer(null);
+        NonNullList<ItemStack> remaining = this.getRemainingItems(level, inventory);
 
         for (int k = 0; k < inventory.height(); k++) {
             for (int l = 0; l < inventory.width(); l++) {
@@ -94,10 +96,25 @@ public class ModCraftResultSlot extends Slot {
         this.container.slotsChanged(this.craftContainer);
     }
 
+    private NonNullList<ItemStack> getRemainingItems(Level level, TierInput inventory) {
+        CommonHooks.setCraftingPlayer(player);
+        try {
+            if (level instanceof ServerLevel serverLevel) {
+                return serverLevel.recipeAccess()
+                        .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, level)
+                        .map(holder -> holder.value().getRemainingItems(inventory))
+                        .orElseGet(() -> CraftingRecipe.defaultCraftingReminder(inventory));
+            }
+            return CraftingRecipe.defaultCraftingReminder(inventory);
+        } finally {
+            CommonHooks.setCraftingPlayer(null);
+        }
+    }
+
     @Override
     protected void checkTakeAchievements(@NotNull ItemStack pStack) {
         if (this.removeCount > 0) {
-            pStack.onCraftedBy(this.player.level(), this.player, this.removeCount);
+            pStack.onCraftedBy(this.player, this.removeCount);
             EventHooks.firePlayerCraftingEvent(this.player, pStack, this.craftContainer);
         }
 
