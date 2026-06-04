@@ -2,6 +2,8 @@ package com.avaritia.common.wrappers;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -23,8 +25,13 @@ public class StorageItem{
     }
 
     private StorageItem(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        this.stack = ItemStack.parseOptional(lookupProvider, nbt.getCompound("Stack"));
-        this.count = Integer.toUnsignedLong(nbt.getInt("Count"));
+        Tag stackTag = nbt.get("Stack");
+        this.stack = stackTag == null
+                ? ItemStack.EMPTY
+                : ItemStack.OPTIONAL_CODEC.parse(lookupProvider.createSerializationContext(NbtOps.INSTANCE), stackTag)
+                .result()
+                .orElse(ItemStack.EMPTY);
+        this.count = Integer.toUnsignedLong(nbt.getIntOr("Count", 0));
     }
 
     public static StorageItem create(ItemStack stack, int count) {
@@ -85,7 +92,7 @@ public class StorageItem{
 
     public CompoundTag serializeNBT(HolderLookup.Provider lookupProvider) {
         CompoundTag nbt = new CompoundTag();
-        nbt.put("Stack", this.stack.save(lookupProvider));
+        nbt.put("Stack", ItemStack.OPTIONAL_CODEC.encodeStart(lookupProvider.createSerializationContext(NbtOps.INSTANCE), this.stack).getOrThrow());
         nbt.putInt("Count", (int)this.count);
         return nbt;
     }

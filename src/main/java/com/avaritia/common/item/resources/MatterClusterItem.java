@@ -8,10 +8,11 @@ import com.avaritia.common.component.InfinityContainerContents;
 import com.avaritia.init.registry.ModDataComponents;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModRarities;
+import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,10 +21,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class MatterClusterItem extends Item {
 
@@ -146,17 +149,17 @@ public class MatterClusterItem extends Item {
 
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
         if (!NBTUtils.hasClusterItems(stack)) return;
 
         int total = getClusterSize(stack);
-        tooltip.add(Component.translatable(
+        tooltip.accept(Component.translatable(
                 "tooltip.avaritia.matter_cluster.counter",
                 total, CAPACITY));
 
-        tooltip.add(Component.literal(""));
+        tooltip.accept(Component.literal(""));
 
-        if (Screen.hasShiftDown()) {
+        if (hasShiftDown()) {
             Object2IntMap<Item> counts = new Object2IntOpenHashMap<>();
 
             for (ItemStack item : readClusterInventory(stack).items) {
@@ -166,7 +169,7 @@ public class MatterClusterItem extends Item {
             }
 
             counts.forEach((item, count) ->
-                    tooltip.add(
+                    tooltip.accept(
                             Component.translatable(item.getDescriptionId())
                                     .withStyle(ChatFormatting.WHITE)
                                     .append(Component.literal(" x " + count)
@@ -174,13 +177,19 @@ public class MatterClusterItem extends Item {
                     )
             );
         } else {
-            tooltip.add(Component.translatable(
+            tooltip.accept(Component.translatable(
                             "tooltip.avaritia.matter_cluster.desc")
                     .withStyle(ChatFormatting.DARK_GRAY));
-            tooltip.add(Component.translatable(
+            tooltip.accept(Component.translatable(
                             "tooltip.avaritia.matter_cluster.desc2")
                     .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
         }
+    }
+
+    private static boolean hasShiftDown() {
+        var window = Minecraft.getInstance().getWindow();
+        return InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT);
     }
 
 

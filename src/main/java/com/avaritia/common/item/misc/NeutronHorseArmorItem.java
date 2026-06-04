@@ -22,12 +22,12 @@ public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
     private final InitEnchantment ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
     private final InitEnchantment FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
     public NeutronHorseArmorItem() {
-        super(infinity_horse_armor,
-                new Item.Properties()
-                        .stacksTo(1)
-                        .rarity(ModRarities.RARE)
-                        .fireResistant()
-                        .setNoCombineRepair());
+        super(new Item.Properties()
+                .horseArmor(infinity_horse_armor)
+                .stacksTo(1)
+                .rarity(ModRarities.RARE)
+                .fireResistant()
+                .setNoCombineRepair());
     }
 
     @Override

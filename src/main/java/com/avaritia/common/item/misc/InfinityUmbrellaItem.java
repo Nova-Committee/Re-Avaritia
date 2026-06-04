@@ -21,6 +21,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.WeatherData;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -53,9 +54,18 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
         return MIN_DURATION + level.getRandom().nextInt(MAX_DURATION - MIN_DURATION + 1);
     }
 
+    private static void setWeather(ServerLevel level, int duration, boolean raining, boolean thundering) {
+        WeatherData weatherData = level.getWeatherData();
+        weatherData.setClearWeatherTime(raining ? 0 : duration);
+        weatherData.setRainTime(raining ? duration : 0);
+        weatherData.setThunderTime(thundering ? duration : 0);
+        weatherData.setRaining(raining);
+        weatherData.setThundering(thundering);
+    }
+
     private void onUse(Level level, Player player, ItemStack stack, @NotNull InteractionHand hand) {
 
-        if (!level.isClientSide()) {
+        if (level instanceof ServerLevel server) {
             float pitch = player.getXRot();
 
             int currentMode = ISwitchable.getCurrentMode(stack, MODES);
@@ -67,23 +77,22 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
                 case MODE_SUN:
                     SunProEntity sunProEntity = ModEntityTypes.SUN_PRO.get().create(level, EntitySpawnReason.EVENT);
                     if (pitch <= -85.0F) {
-                        if (level.getLevelData().isRaining() || !level.getLevelData().isThundering()) {
-                            level.getLevelData().setRaining(false);
+                        if (level.isRaining() || server.getWeatherData().isThundering()) {
+                            setWeather(server, duration, false, false);
                         }
                     } else if (sunProEntity != null) {
                         sunProEntity.setOwner(player);
                         sunProEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
                         sunProEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                         level.addFreshEntity(sunProEntity);
-                        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.random.nextFloat() * 0.4F + 0.8F));
+                        level.playSound(player, player.getOnPos(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
                     }
 
                     break;
                 case MODE_RAIN:
                     RainProEntity rainProEntity = ModEntityTypes.RAIN_PRO.get().create(level, EntitySpawnReason.EVENT);
-                    if (pitch <= -85.0F && level instanceof ServerLevel server) {
-                        level.getLevelData().setRaining(true);
-                        server.setWeatherParameters(0, duration, true, false);
+                    if (pitch <= -85.0F) {
+                        setWeather(server, duration, true, false);
                     } else if (rainProEntity != null) {
                         rainProEntity.setOwner(player);
                         rainProEntity.setPos(player.getX(), player.getEyeY() + 0.1, player.getZ());
@@ -95,9 +104,8 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
                     break;
                 case MODE_STORM:
                     StormProEntity stormProEntity = ModEntityTypes.STORM_PRO.get().create(level, EntitySpawnReason.EVENT);
-                    if (pitch <= -85.0F && level instanceof ServerLevel server) {
-                        level.getLevelData().setRaining(true);
-                        server.setWeatherParameters(0, duration, true, true);
+                    if (pitch <= -85.0F) {
+                        setWeather(server, duration, true, true);
 
                     } else if (stormProEntity != null) {
                         stormProEntity.setOwner(player);
