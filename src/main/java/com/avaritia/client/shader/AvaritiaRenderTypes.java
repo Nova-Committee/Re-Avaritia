@@ -21,9 +21,9 @@ public class AvaritiaRenderTypes {
 
     public static RenderType VOID_HALO = AvaritiaRenderTypeHelper.entityTranslucent("void_halo", Res.VOID_HALO);
 
-    public static RenderType COSMIC = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("cosmic", Res.COSMIC_0);
+    public static RenderType COSMIC = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("cosmic", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static final RenderType COSMIC_ARMOR = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("cosmic_armor", Res.COSMIC_ARMOR_0);
+    public static final RenderType COSMIC_ARMOR = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("cosmic_armor", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
     public static final RenderType BLADE_SLASH = AvaritiaRenderTypeHelper.textSeeThrough("blade_slash", Res.BLADE_SLASH);
 
@@ -35,11 +35,11 @@ public class AvaritiaRenderTypes {
         return AvaritiaRenderTypeHelper.lightning("wing_glow", Identifier);
     }
 
-    public static RenderType HELL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("hell", Res.COSMIC_0);
+    public static RenderType HELL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("hell", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static RenderType ETERNAL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("eternal", Res.ETERNAL_0);
+    public static RenderType ETERNAL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("eternal", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
-    public static RenderType UNSTABLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("unstable", Res.UNSTABLE_0);
+    public static RenderType UNSTABLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("unstable", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
     public static RenderType TRIDENT = AvaritiaRenderTypeHelper.entityCutoutNoCull("infinity_trident", Res.TRIDENT_TEX);
 
