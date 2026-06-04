@@ -1,6 +1,5 @@
 package com.avaritia.compat.jade;
 
-import com.avaritia.Avaritia;
 import com.avaritia.Const;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.common.block.collector.NeutronCollectorBlock;
@@ -11,6 +10,7 @@ import com.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
 import com.avaritia.common.tile.NeutronCollectorTile;
 import com.avaritia.common.tile.NeutronCompressorTile;
 import com.avaritia.common.tile.TierCraftTile;
+import com.avaritia.compat.ClientRecipeMaps;
 import com.avaritia.init.registry.ModRecipeTypes;
 import com.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.Minecraft;
@@ -99,9 +99,10 @@ public class JadeCompat implements IWailaPlugin {
                 return;
             }
 
-            var recipe = level.getRecipeManager()
-                    .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(),
+            var recipe = ClientRecipeMaps.get()
+                    .getRecipesFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(),
                             TierInput.of(craftTile.tier.size, craftTile.tier.size, craftTile.getInventory().getStacks(), craftTile.tier.ordinal()), level)
+                    .findFirst()
                     .map(RecipeHolder::value)
                     .orElse(null);
 
@@ -127,9 +128,9 @@ public class JadeCompat implements IWailaPlugin {
                 return;
             }
 
-            var recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get());
+            var recipes = ClientRecipeMaps.get().byType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get());
             if (!recipes.isEmpty()) {
-                ExtremeSmithingRecipe recipe = recipes.getFirst().value();
+                ExtremeSmithingRecipe recipe = recipes.iterator().next().value();
                 var output = recipe.getResultItem(level.registryAccess());
                 tooltip.add(ModTooltips.SMITHING.args(output.getCount(), output.getHoverName()).build());
             }

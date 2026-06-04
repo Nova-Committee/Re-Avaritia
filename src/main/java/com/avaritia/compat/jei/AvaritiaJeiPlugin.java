@@ -9,10 +9,12 @@ import com.avaritia.client.screen.craft.EndCraftScreen;
 import com.avaritia.client.screen.craft.ExtremeCraftScreen;
 import com.avaritia.client.screen.craft.NetherCraftScreen;
 import com.avaritia.client.screen.craft.SculkCraftScreen;
+import com.avaritia.api.common.crafting.ITierCraftingRecipe;
 import com.avaritia.common.menu.ExtremeAnvilMenu;
 import com.avaritia.common.menu.ExtremeSmithingMenu;
 import com.avaritia.common.menu.NeutronCompressorMenu;
 import com.avaritia.common.menu.TierCraftMenu;
+import com.avaritia.compat.ClientRecipeMaps;
 import com.avaritia.compat.jei.category.CompressorCategory;
 import com.avaritia.compat.jei.category.ExtremeSmithingRecipeCategory;
 import com.avaritia.compat.jei.category.tables.EndCraftingTableCategory;
@@ -34,14 +36,15 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,26 +70,25 @@ public class AvaritiaJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) {
+        RecipeMap recipeMap = ClientRecipeMaps.get();
+        if (recipeMap.values().isEmpty()) {
             return;
         }
 
-        var manager = level.getRecipeManager();
-        registration.addRecipes(CompressorCategory.RECIPE_TYPE, manager.byType(ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList());
-        registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, manager.byType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList());
+        registration.addRecipes(CompressorCategory.RECIPE_TYPE, recipeMap.byType(ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList());
+        registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, recipeMap.byType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList());
 
-        var recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
-                manager.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
+        Map<Integer, List<RecipeHolder<ITierCraftingRecipe>>> recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
+                recipeMap.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
                         .stream()
                         .filter(recipe -> recipe.value().hasRequiredTier() ? tier == recipe.value().getTier() : tier >= recipe.value().getTier())
                         .toList()
         ));
 
-        registration.addRecipes(SculkCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(1, new ArrayList<>()));
-        registration.addRecipes(NetherCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(2, new ArrayList<>()));
-        registration.addRecipes(EndCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(3, new ArrayList<>()));
-        registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(4, new ArrayList<>()));
+        registration.addRecipes(SculkCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(1, List.of()));
+        registration.addRecipes(NetherCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(2, List.of()));
+        registration.addRecipes(EndCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(3, List.of()));
+        registration.addRecipes(ExtremeCraftingTableCategory.RECIPE_TYPE, recipes.getOrDefault(4, List.of()));
 
         registration.addIngredientInfo(ModBlocks.neutron_collector.get(), Component.translatable("jei.tooltip.avaritia.neutron_collector"));
         registration.addIngredientInfo(ModItems.neutron_pile.get(), Component.translatable("jei.tooltip.avaritia.neutron_pile"));
