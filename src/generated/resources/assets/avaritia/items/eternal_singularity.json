@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "avaritia:halo_cosmic",
+    "mask": [
+      "avaritia:mask/item/eternal_singularity_mask"
+    ],
+    "model": "avaritia:item/eternal_singularity",
+    "size": 6,
+    "texture": "avaritia:misc/halo"
+  }
+}

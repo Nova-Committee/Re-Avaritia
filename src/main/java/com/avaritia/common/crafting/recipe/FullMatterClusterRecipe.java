@@ -12,6 +12,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -22,7 +23,7 @@ public class FullMatterClusterRecipe extends ShapelessTableCraftingRecipe {
     private final int count;
 
     public FullMatterClusterRecipe(String group, NonNullList<Ingredient> inputs, int count) {
-        super(inputs, new ItemStack(ModItems.full_matter_cluster.get()), 1);
+        super(inputs, new ItemStackTemplate(ModItems.full_matter_cluster.get(), count), 1);
         this.group = group;
         this.count = count;
     }

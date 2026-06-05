@@ -3,8 +3,13 @@ package com.avaritia.init.data;
 import com.avaritia.Const;
 import com.avaritia.init.data.provider.*;
 import com.avaritia.init.data.provider.recipe.AvaritiaRecipeProvider;
+import net.minecraft.DetectedVersion;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.metadata.PackMetadataGenerator;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -39,6 +44,7 @@ public class AvaritiaData {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         var lookupProvider = event.getLookupProvider();
+        var datapackProvider = new AvaritiaRegistriesProvider(packOutput, lookupProvider);
 
         // 1. 语言文件提供程序
         generator.addProvider(true, new AvaritiaLanguageProvider(packOutput, "en_us"));
@@ -57,5 +63,19 @@ public class AvaritiaData {
 
         // 6. 方块状态提供程序
         generator.addProvider(true, new AvaritiaBlockStateProvider(packOutput));
+        generator.addProvider(true, new AvaritiaSpriteSourceProvider(packOutput, lookupProvider));
+        generator.addProvider(true, new AvaritiaSoundDefinitionsProvider(packOutput));
+        generator.addProvider(true, new AvaritiaEquipmentAssetProvider(packOutput));
+        generator.addProvider(true, new AvaritiaEntityTypeTagsProvider(packOutput, lookupProvider));
+        generator.addProvider(true, datapackProvider);
+        generator.addProvider(true, new AvaritiaDamageTypeTagsProvider(packOutput, datapackProvider.getRegistryProvider()));
+        generator.addProvider(true, AvaritiaAdvancementProvider.create(packOutput, lookupProvider));
+        generator.addProvider(true, new AvaritiaSingularityProvider(packOutput, lookupProvider));
+        var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES);
+        PackMetadataGenerator metadataProvider = new PackMetadataGenerator(packOutput).add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
+                Component.literal("Re:Avaritia 26 Generated Resources"),
+                packFormat.minorRange()
+        ));
+        generator.addProvider(true, metadataProvider);
     }
 }

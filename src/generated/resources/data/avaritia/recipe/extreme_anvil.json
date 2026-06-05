@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "avaritia:full_matter_cluster",
+      "avaritia:enhancement_core",
+      "avaritia:neutron"
+    ]
+  },
+  "base": "minecraft:anvil",
+  "result": {
+    "id": "avaritia:extreme_anvil"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

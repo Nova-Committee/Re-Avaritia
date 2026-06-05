@@ -1,6 +1,11 @@
 package com.avaritia.client;
 
 import com.avaritia.Const;
+import com.avaritia.Res;
+import com.avaritia.api.client.render.CosmicRenderQueue;
+import com.avaritia.api.iface.IColored;
+import com.avaritia.api.iface.IFilterItem;
+import com.avaritia.client.model.entity.InfinityShieldModel;
 import com.avaritia.client.model.loader.base.AvaritiaItemModels;
 import com.avaritia.client.particle.ChargeParticle;
 import com.avaritia.client.particle.ShockwaveParticle;
@@ -20,6 +25,7 @@ import com.avaritia.client.render.entity.StormProRender;
 import com.avaritia.client.render.entity.SunProRender;
 import com.avaritia.client.render.entity.TNTProEntityRender;
 import com.avaritia.client.render.entity.TracerArrowRender;
+import com.avaritia.client.render.item.InfinityShieldRender;
 import com.avaritia.client.render.tile.AcceleratorDisplayRender;
 import com.avaritia.client.render.tile.CompressedChestRenderer;
 import com.avaritia.client.render.tile.InfinitatoTileRender;
@@ -38,10 +44,12 @@ import com.avaritia.client.screen.craft.EndCraftScreen;
 import com.avaritia.client.screen.craft.ExtremeCraftScreen;
 import com.avaritia.client.screen.craft.NetherCraftScreen;
 import com.avaritia.client.screen.craft.SculkCraftScreen;
-import com.avaritia.api.iface.IFilterItem;
+import com.avaritia.client.shader.AvaritiaShaders;
+import com.avaritia.common.entity.GapingVoidEntity;
 import com.avaritia.common.net.C2SOpenRingPacket;
 import com.avaritia.init.handler.NetworkHandler;
 import com.avaritia.init.registry.ModEntityTypes;
+import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModMenus;
 import com.avaritia.init.registry.ModParticles;
 import com.avaritia.init.registry.ModTileEntities;
@@ -50,7 +58,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -59,15 +71,26 @@ import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -83,9 +106,22 @@ public class AvaritiaClient {
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, KEY_CATEGORY);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, KEY_CATEGORY);
     public static final ContextKey<Boolean> INFINITY_ARMOR_FLYING = new ContextKey<>(id("infinity_armor_flying"));
+    public static final ModelLayerLocation COMPRESSED_CHEST = new ModelLayerLocation(id("compressed_chest"), "main");
+    public static final ModelLayerLocation COMPRESSED_CHEST_LEFT = new ModelLayerLocation(id("compressed_chest_left"), "main");
+    public static final ModelLayerLocation COMPRESSED_CHEST_RIGHT = new ModelLayerLocation(id("compressed_chest_right"), "main");
 
     public static boolean inventoryRender = false;
     public static long lastTime = System.currentTimeMillis();
+    public static int renderTime = 0;
+    private static float darknessIntensity = 0.0f;
+    private static final IClientItemExtensions INFINITY_ARMOR_EXTENSIONS = new IClientItemExtensions() {
+        @Override
+        public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, Identifier fallback) {
+            return type == EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS
+                    ? Const.rl("textures/models/armor/infinity_armor_layer_2.png")
+                    : Const.rl("textures/models/armor/infinity_armor_layer_1.png");
+        }
+    };
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -114,6 +150,15 @@ public class AvaritiaClient {
     }
 
     @SubscribeEvent
+    public static void registerEntityLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(COMPRESSED_CHEST, CompressedChestRenderer::createSingleBodyLayer);
+        event.registerLayerDefinition(COMPRESSED_CHEST_LEFT, CompressedChestRenderer::createDoubleBodyLeftLayer);
+        event.registerLayerDefinition(COMPRESSED_CHEST_RIGHT, CompressedChestRenderer::createDoubleBodyRightLayer);
+        event.registerLayerDefinition(InfinityChestBlockRender.INFINITY_CHEST, InfinityChestBlockRender::createLayer);
+        event.registerLayerDefinition(InfinityShieldRender.INFINITY_SHIELD, InfinityShieldModel::createLayer);
+    }
+
+    @SubscribeEvent
     public static void addEntityLayers(EntityRenderersEvent.AddLayers event) {
         for (PlayerModelType skin : event.getSkins()) {
             AvatarRenderer<AbstractClientPlayer> playerRenderer = event.getPlayerRenderer(skin);
@@ -135,6 +180,57 @@ public class AvaritiaClient {
                 renderState.setRenderData(INFINITY_ARMOR_FLYING, avatar instanceof Player player && player.getAbilities().flying);
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
+        AvaritiaShaders.onRegisterShaders(event);
+    }
+
+    @SubscribeEvent
+    public static void onTexturesSwitchPost(TextureAtlasStitchedEvent event) {
+        if (!TextureAtlas.LOCATION_BLOCKS.equals(event.getAtlas().location())) {
+            return;
+        }
+
+        for (int i = 0; i < AvaritiaShaders.COSMIC_SPRITES.length; i++) {
+            AvaritiaShaders.COSMIC_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/cosmic/cosmic_" + i));
+            AvaritiaShaders.COSMIC_UVS[i * 4] = AvaritiaShaders.COSMIC_SPRITES[i].getU0();
+            AvaritiaShaders.COSMIC_UVS[i * 4 + 1] = AvaritiaShaders.COSMIC_SPRITES[i].getV0();
+            AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = AvaritiaShaders.COSMIC_SPRITES[i].getU1();
+            AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = AvaritiaShaders.COSMIC_SPRITES[i].getV1();
+        }
+        for (int i = 0; i < AvaritiaShaders.ETERNAL_SPRITES.length; i++) {
+            AvaritiaShaders.ETERNAL_SPRITES[i] = event.getAtlas().getSprite(Const.rl("misc/eternal/eternal_" + i));
+            AvaritiaShaders.ETERNAL_UVS[i * 4] = AvaritiaShaders.ETERNAL_SPRITES[i].getU0();
+            AvaritiaShaders.ETERNAL_UVS[i * 4 + 1] = AvaritiaShaders.ETERNAL_SPRITES[i].getV0();
+            AvaritiaShaders.ETERNAL_UVS[i * 4 + 2] = AvaritiaShaders.ETERNAL_SPRITES[i].getU1();
+            AvaritiaShaders.ETERNAL_UVS[i * 4 + 3] = AvaritiaShaders.ETERNAL_SPRITES[i].getV1();
+        }
+        Res.ARMOR_MASK = event.getAtlas().getSprite(Const.rl("mask/armor/infinity_armor_mask"));
+        Res.ARMOR_MASK_INV = event.getAtlas().getSprite(Const.rl("mask/armor/infinity_armor_mask_inv"));
+        Res.ARMOR_WING_MASK = event.getAtlas().getSprite(Const.rl("mask/armor/infinity_armor_mask_wings"));
+    }
+
+    @SubscribeEvent
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.EXPERIENCE_LEVEL, id("endest_pearl_darkness"), AvaritiaClient::renderDarknessOverlay);
+    }
+
+    @SubscribeEvent
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(INFINITY_ARMOR_EXTENSIONS,
+                ModItems.infinity_helmet.get(),
+                ModItems.infinity_chestplate.get(),
+                ModItems.infinity_pants.get(),
+                ModItems.infinity_boots.get(),
+                ModItems.neutron_horse_armor.get());
+    }
+
+    @SubscribeEvent
+    public static void registerItemTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
+        event.register(id("item_color"), IColored.ItemColors.CODEC);
+        event.register(id("item_block_color"), IColored.ItemBlockColors.CODEC);
     }
 
     @SubscribeEvent
@@ -182,6 +278,13 @@ public class AvaritiaClient {
                 NetworkHandler.sendToServer(new C2SOpenRingPacket());
             }
         }
+
+        if (!minecraft.isPaused()) {
+            ++renderTime;
+        }
+        if (minecraft.player != null && minecraft.level != null) {
+            calculateDarknessIntensity(minecraft.player, minecraft.level);
+        }
     }
 
     @SubscribeEvent
@@ -200,6 +303,40 @@ public class AvaritiaClient {
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.CHARGE.get(), ChargeParticle.Factory::new);
         event.registerSpriteSet(ModParticles.SHOCKWAVE_PARTICLE.get(), ShockwaveParticle.Provider::new);
+    }
+
+    @SubscribeEvent
+    public static void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+        CosmicRenderQueue.renderAll();
+    }
+
+    private static void renderDarknessOverlay(GuiGraphicsExtractor guiGraphics, net.minecraft.client.DeltaTracker deltaTracker) {
+        if (darknessIntensity > 0.01f) {
+            int alpha = Math.min(255, (int) (darknessIntensity * 255));
+            guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), alpha << 24);
+        }
+    }
+
+    private static void calculateDarknessIntensity(Player player, Level level) {
+        Vec3 playerPos = player.position();
+        double maxDistance = 10.0;
+        float maxIntensity = 0.0f;
+
+        for (GapingVoidEntity pearl : level.getEntitiesOfClass(GapingVoidEntity.class, player.getBoundingBox().inflate(maxDistance))) {
+            double distance = playerPos.distanceTo(pearl.position());
+            if (distance < maxDistance) {
+                float intensity = (float) Math.max(0.0, 1.0 - Math.max(0.0, (distance - 4.0) / 6.0));
+                if (intensity > maxIntensity) {
+                    maxIntensity = intensity;
+                }
+            }
+        }
+
+        if (maxIntensity > darknessIntensity) {
+            darknessIntensity = Math.min(maxIntensity, darknessIntensity + 0.05f);
+        } else if (maxIntensity < darknessIntensity) {
+            darknessIntensity = Math.max(maxIntensity, darknessIntensity - 0.05f);
+        }
     }
 
     private static Identifier id(String path) {

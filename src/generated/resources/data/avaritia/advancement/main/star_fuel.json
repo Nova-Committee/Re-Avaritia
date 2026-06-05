@@ -1,0 +1,33 @@
+{
+  "parent": "avaritia:main/refined_coal",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:star_fuel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.star_fuel.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "id": "avaritia:star_fuel"
+    },
+    "title": {
+      "translate": "advancements.avaritia.star_fuel.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

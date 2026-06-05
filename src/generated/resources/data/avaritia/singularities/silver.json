@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/silver"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.silver",
+  "name": "avaritia:silver",
+  "overlayColor": 12635602,
+  "underlayColor": 6254204
+}

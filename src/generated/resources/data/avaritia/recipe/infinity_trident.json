@@ -1,0 +1,26 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "C": "avaritia:crystal_matrix_ingot",
+    "I": "avaritia:infinity_ingot",
+    "N": "avaritia:neutron_ingot",
+    "P": "avaritia:neutron_pile",
+    "X": "avaritia:infinity_catalyst"
+  },
+  "pattern": [
+    "     I  I",
+    "    I  I ",
+    "   CAAI  ",
+    "    AXA I",
+    "    PAAI ",
+    "   N  C  ",
+    "  N      ",
+    " C       ",
+    "A        "
+  ],
+  "result": {
+    "id": "avaritia:infinity_trident"
+  },
+  "tier": 4
+}

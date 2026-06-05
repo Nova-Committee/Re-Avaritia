@@ -13,9 +13,7 @@
     "RecipeManagerMixin",
     "accessor.MappedRegistryAccessor"
   ],
-  "client": [
-    "PlayerRendererMixin"
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   },

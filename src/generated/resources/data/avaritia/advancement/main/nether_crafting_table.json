@@ -1,0 +1,33 @@
+{
+  "parent": "avaritia:main/sculk_crafting_table",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:nether_crafting_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.nether_crafting_table.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "id": "avaritia:nether_crafting_table"
+    },
+    "title": {
+      "translate": "advancements.avaritia.nether_crafting_table.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

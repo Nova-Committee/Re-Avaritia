@@ -1,0 +1,7 @@
+{
+  "model": {
+    "type": "avaritia:halo",
+    "model": "avaritia:item/infinity_totem",
+    "texture": "avaritia:misc/halo"
+  }
+}

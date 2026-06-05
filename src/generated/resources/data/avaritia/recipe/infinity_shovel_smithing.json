@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "avaritia:infinity_ingot",
+      "avaritia:infinity_catalyst",
+      "avaritia:enhancement_core"
+    ]
+  },
+  "base": "minecraft:netherite_shovel",
+  "result": {
+    "id": "avaritia:infinity_shovel"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

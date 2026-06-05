@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:crystal_matrix_ingot",
+    "b": "avaritia:neutron_ingot",
+    "c": "avaritia:neutron_pile",
+    "d": "avaritia:infinity_nugget",
+    "e": "avaritia:infinity_ingot",
+    "f": "avaritia:infinity_catalyst",
+    "g": "minecraft:netherite_upgrade_smithing_template"
+  },
+  "pattern": [
+    "  aba  ",
+    " cdfdc ",
+    "acdecea",
+    "bfegefb",
+    "acdecea",
+    " cdfdc ",
+    "  aba  "
+  ],
+  "result": {
+    "id": "avaritia:infinity_upgrade"
+  },
+  "tier": 4
+}

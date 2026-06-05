@@ -39,20 +39,38 @@ repositories {
         }
     }
 
-    // JEI
-    maven {
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Jared's maven"
+                url = "https://maven.blamejared.com/"
+            }
+        }
+        filter {
+            includeGroup "mezz.jei"
+        }
     }
-    // Jade (via Modrinth Maven)
-    maven {
-        name = "Modrinth Maven"
-        url = "https://api.modrinth.com/maven"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth Maven"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
     }
-    // Curios API
-    maven {
-        name = "Illusive Soulworks maven"
-        url = "https://maven.theillusivec4.top/"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Illusive Soulworks maven"
+                url = "https://maven.theillusivec4.top/"
+            }
+        }
+        filter {
+            includeGroup "top.theillusivec4.curios"
+        }
     }
     exclusiveContent {
         forRepository {
@@ -97,7 +115,7 @@ neoForge {
         }
 
         clientData {
-            serverData()
+            clientData()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 

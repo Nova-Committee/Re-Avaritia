@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "avaritia:neutron",
+      "avaritia:enhancement_core",
+      "avaritia:infinity"
+    ]
+  },
+  "base": "avaritia:compressed_chest",
+  "result": {
+    "id": "avaritia:infinity_chest"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

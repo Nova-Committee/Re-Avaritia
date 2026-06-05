@@ -1,0 +1,24 @@
+{
+  "layers": {
+    "horse_body": [
+      {
+        "texture": "avaritia:infinity_armor"
+      }
+    ],
+    "humanoid": [
+      {
+        "texture": "avaritia:infinity_armor"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "avaritia:infinity_armor"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "avaritia:infinity_armor"
+      }
+    ]
+  }
+}

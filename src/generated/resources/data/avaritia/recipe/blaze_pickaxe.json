@@ -1,0 +1,21 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "minecraft:bone_block",
+    "B": "avaritia:diamond_lattice",
+    "C": "avaritia:blaze_cube"
+  },
+  "pattern": [
+    "CCCCCC ",
+    "   CCA ",
+    "    A C",
+    "   B  C",
+    "  B    ",
+    " B     ",
+    "A      "
+  ],
+  "result": {
+    "id": "avaritia:blaze_pickaxe"
+  },
+  "tier": 2
+}

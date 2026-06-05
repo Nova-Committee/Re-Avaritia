@@ -2,6 +2,7 @@ package com.avaritia.init.registry;
 
 import com.avaritia.Const;
 
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -12,7 +13,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,13 +20,11 @@ import org.jetbrains.annotations.Nullable;
  * 注册模组中的所有伤害类型。
  */
 public class ModDamageTypes {
-    public static final DeferredRegister<DamageType> DAMAGE_TYPES = DeferredRegister.create(Registries.DAMAGE_TYPE, Const.MOD_ID);
-
     public static final ResourceKey<DamageType> INFINITY = ResourceKey.create(Registries.DAMAGE_TYPE,
             Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity"));
 
-    static {
-        DAMAGE_TYPES.register("infinity", () -> new DamageType("infinity", DamageScaling.ALWAYS, 0.1f));
+    public static void bootstrap(BootstrapContext<DamageType> context) {
+        context.register(INFINITY, new DamageType("infinity", DamageScaling.ALWAYS, 0.1f));
     }
 
     public static DamageSource causeRandomDamage(Entity attacker) {

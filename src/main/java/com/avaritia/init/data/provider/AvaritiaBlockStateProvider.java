@@ -82,12 +82,12 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         simpleBlock(ModBlocks.fake_end_portal.get());
 
         // ==================== 合成台（水平朝向） ====================
-        horizontalBlockWithItem(ModBlocks.compressed_crafting_table.get());
-        horizontalBlockWithItem(ModBlocks.double_compressed_crafting_table.get());
-        horizontalBlockWithItem(ModBlocks.sculk_crafting_table.get());
-        horizontalBlockWithItem(ModBlocks.nether_crafting_table.get());
-        horizontalBlockWithItem(ModBlocks.end_crafting_table.get());
-        horizontalBlockWithItem(ModBlocks.extreme_crafting_table.get());
+        simpleBlockWithItem(ModBlocks.compressed_crafting_table.get());
+        simpleBlockWithItem(ModBlocks.double_compressed_crafting_table.get());
+        simpleBlockWithItem(ModBlocks.sculk_crafting_table.get());
+        simpleBlockWithItem(ModBlocks.nether_crafting_table.get());
+        simpleBlockWithItem(ModBlocks.end_crafting_table.get());
+        simpleBlockWithItem(ModBlocks.extreme_crafting_table.get());
 
         // ==================== 中子素收集器（水平朝向） ====================
         horizontalBlockWithItem(ModBlocks.neutron_collector.get());
@@ -102,7 +102,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         horizontalBlockWithItem(ModBlocks.densest_neutron_compressor.get());
 
         // ==================== 特殊朝向方块 ====================
-        horizontalBlockWithItem(ModBlocks.extreme_smithing_table.get());
+        simpleBlockWithItem(ModBlocks.extreme_smithing_table.get());
         horizontalBlockWithItem(ModBlocks.extreme_anvil.get());
 
         // ==================== 箱子 ====================

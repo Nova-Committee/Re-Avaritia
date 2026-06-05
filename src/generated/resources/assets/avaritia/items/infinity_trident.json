@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "avaritia:cosmic_arc",
+    "mask": [
+      "avaritia:mask/item/infinity_trident_mask"
+    ],
+    "model": "avaritia:item/infinity_trident"
+  }
+}

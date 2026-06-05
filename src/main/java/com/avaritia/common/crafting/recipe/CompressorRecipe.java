@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ICompressorRecipe;
-import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModRecipeSerializers;
 import com.avaritia.init.registry.ModRecipeTypes;
@@ -34,11 +33,15 @@ import java.util.List;
  */
 public class CompressorRecipe implements ICompressorRecipe {
     private final Ingredient input;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final int inputCount;
     private final int timeCost;
 
     public CompressorRecipe(Ingredient input, ItemStack result, int inputCount, int timeCost) {
+        this(input, ItemStackTemplate.fromNonEmptyStack(result), inputCount, timeCost);
+    }
+
+    public CompressorRecipe(Ingredient input, ItemStackTemplate result, int inputCount, int timeCost) {
         this.input = input;
         this.result = result;
         this.inputCount = inputCount;
@@ -51,12 +54,12 @@ public class CompressorRecipe implements ICompressorRecipe {
     }
 
     public @NotNull ItemStack getResultItem() {
-        return this.result;
+        return this.result.create();
     }
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result;
+        return this.result.create();
     }
 
     @Override
@@ -86,7 +89,7 @@ public class CompressorRecipe implements ICompressorRecipe {
 
     @Override
     public @NotNull ItemStack assemble(@NotNull CraftingInput input) {
-        return this.result.copy();
+        return this.result.create();
     }
     @Override
     public boolean matches(@NotNull CraftingInput inv, @NotNull Level level) {
@@ -103,13 +106,14 @@ public class CompressorRecipe implements ICompressorRecipe {
 
     @Override
     public @NotNull List<RecipeDisplay> display() {
-        if (this.result.isEmpty()) {
+        ItemStack result = this.result.create();
+        if (result.isEmpty()) {
             return List.of();
         }
         return List.of(new FurnaceRecipeDisplay(
                 this.input.display(),
                 SlotDisplay.Empty.INSTANCE,
-                new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.result)),
+                new SlotDisplay.ItemStackSlotDisplay(this.result),
                 new SlotDisplay.ItemSlotDisplay(ModBlocks.neutron_compressor.get().asItem()),
                 this.timeCost,
                 0.0F
@@ -121,7 +125,7 @@ public class CompressorRecipe implements ICompressorRecipe {
                 builder.group(
                         Ingredient.CODEC
                                 .fieldOf("ingredient").forGetter(recipe -> recipe.input),
-                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
+                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("inputCount", 1000).forGetter(recipe -> recipe.inputCount),
                         Codec.INT.fieldOf("timeCost").forGetter(recipe -> recipe.timeCost)
                 ).apply(builder, CompressorRecipe::new)
@@ -133,7 +137,7 @@ public class CompressorRecipe implements ICompressorRecipe {
 
         private static CompressorRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             var ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            var output = ItemStack.STREAM_CODEC.decode(buffer);
+            var output = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             int inputCount = buffer.readVarInt();
             int timeCost = buffer.readVarInt();
 
@@ -142,7 +146,7 @@ public class CompressorRecipe implements ICompressorRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, CompressorRecipe recipe) {
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.input);
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.inputCount);
             buffer.writeVarInt(recipe.timeCost);
         }

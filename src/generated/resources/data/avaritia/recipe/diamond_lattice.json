@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": "minecraft:diamond",
+    "b": "minecraft:gold_ingot"
+  },
+  "pattern": [
+    "aba",
+    "bab",
+    "aba"
+  ],
+  "result": {
+    "id": "avaritia:diamond_lattice"
+  }
+}

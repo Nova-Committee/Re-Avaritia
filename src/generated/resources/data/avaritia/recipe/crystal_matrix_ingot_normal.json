@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "x": "avaritia:diamond_lattice",
+    "y": "minecraft:nether_star"
+  },
+  "pattern": [
+    "xyx",
+    "xyx"
+  ],
+  "result": {
+    "id": "avaritia:crystal_matrix_ingot"
+  }
+}

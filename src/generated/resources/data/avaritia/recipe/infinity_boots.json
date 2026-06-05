@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "avaritia:infinity_ingot",
+      "avaritia:infinity_catalyst",
+      "avaritia:enhancement_core"
+    ]
+  },
+  "base": "minecraft:netherite_boots",
+  "result": {
+    "id": "avaritia:infinity_boots"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

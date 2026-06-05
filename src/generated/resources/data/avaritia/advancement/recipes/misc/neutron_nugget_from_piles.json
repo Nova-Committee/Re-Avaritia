@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_neutron_pile": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:neutron_pile"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "avaritia:neutron_nugget_from_piles"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_neutron_pile"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "avaritia:neutron_nugget_from_piles"
+    ]
+  }
+}

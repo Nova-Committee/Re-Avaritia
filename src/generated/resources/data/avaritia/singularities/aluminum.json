@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/aluminum"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.aluminum",
+  "name": "avaritia:aluminum",
+  "overlayColor": 13290714,
+  "underlayColor": 10132646
+}

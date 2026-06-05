@@ -25,4 +25,3 @@ classes/
 hs_err_pid*
 replay_pid*
 .cache/
-src/generated/resources/

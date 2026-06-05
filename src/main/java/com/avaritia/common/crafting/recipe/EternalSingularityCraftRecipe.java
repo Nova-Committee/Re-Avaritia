@@ -16,6 +16,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -34,7 +35,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public final NonNullList<Ingredient> originalInputs;
 
     public EternalSingularityCraftRecipe(NonNullList<Ingredient> originalInputs, int count) {
-        super(NonNullList.create(), new ItemStack(ModItems.eternal_singularity.get()), 4);
+        super(NonNullList.create(), new ItemStackTemplate(ModItems.eternal_singularity.get(), count), 4);
         this.count = count;
         this.originalInputs = originalInputs;
     }

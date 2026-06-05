@@ -36,6 +36,7 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Const.MOD_ID);
     public static final Map<String, Function<Identifier, ? extends BlockItem>> BLOCK_ITEMS = new LinkedHashMap<>();
     private static final ThreadLocal<ResourceKey<Item>> CURRENT_ITEM_KEY = new ThreadLocal<>();
+    private static boolean blockItemsRegistered = false;
 
     // curios
     public static final DeferredItem<Item> neutron_ring = item("neutron_ring", id -> new NeutronRingItem(), false);
@@ -116,8 +117,11 @@ public class ModItems {
     public static final DeferredItem<Item> cosmic_meatballs = item("cosmic_meatballs", id -> new BaseItem(pro -> pro.rarity(ModRarities.EPIC).food(ModFoods.cosmic_meatballs, ModFoods.cosmic_meatballs_consumable)));
     public static final DeferredItem<Item> forge_energy = item("forge_energy", false);
 
-    static {
-        // 触发 ModBlocks 类初始化，将方块物品工厂填充到 BLOCK_ITEMS 后统一注册。
+    public static void registerBlockItems() {
+        if (blockItemsRegistered) {
+            return;
+        }
+        blockItemsRegistered = true;
         BLOCK_ITEMS.forEach((name, blockItemFactory) -> ModItems.item(name, blockItemFactory::apply));
     }
 

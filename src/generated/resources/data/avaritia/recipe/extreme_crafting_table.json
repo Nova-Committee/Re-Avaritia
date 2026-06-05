@@ -1,0 +1,29 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:double_compressed_crafting_table",
+    "b": "minecraft:lodestone",
+    "c": "avaritia:diamond_lattice",
+    "d": "avaritia:crystal_matrix_ingot",
+    "e": "avaritia:crystal_matrix",
+    "f": "minecraft:recovery_compass",
+    "g": "minecraft:dragon_egg",
+    "h": "minecraft:beacon",
+    "i": "minecraft:reinforced_deepslate",
+    "j": "minecraft:netherite_block",
+    "k": "minecraft:heart_of_the_sea"
+  },
+  "pattern": [
+    "bccfccb",
+    "cddgddc",
+    "cdihidc",
+    "cdiaidc",
+    "cdjkjdc",
+    "cdddddc",
+    "beeeeeb"
+  ],
+  "result": {
+    "id": "avaritia:extreme_crafting_table"
+  },
+  "tier": 3
+}

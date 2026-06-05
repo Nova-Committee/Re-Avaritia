@@ -27,7 +27,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -76,7 +76,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
         storage(output, ModItems.neutron_pile.get(), ModItems.neutron_nugget.get(), "neutron_nugget_from_piles", "neutron_pile_from_nuggets");
         storage(output, ModItems.neutron_nugget.get(), ModItems.neutron_ingot.get(), "neutron_ingot_from_nuggets", "neutron_nugget_from_ingots");
         storage(output, ModItems.infinity_nugget.get(), ModItems.infinity_ingot.get(), "infinity_ingot_from_nuggets", "infinity_nugget_from_ingots");
-        storage(output, ModItems.crystal_matrix_ingot.get(), ModBlocks.crystal_matrix.get(), "crystal_matrix", "crystal_matrix_ingot_normal");
+        storage(output, ModItems.crystal_matrix_ingot.get(), ModBlocks.crystal_matrix.get(), "crystal_matrix", "crystal_matrix_ingot");
         storage(output, ModItems.blaze_cube.get(), ModBlocks.blaze_cube_block.get(), "blaze_cube_block", "blaze_cube");
         storage(output, ModItems.diamond_lattice.get(), ModBlocks.diamond_lattice_block.get(), "diamond_lattice_block", "diamond_lattice_normal");
         storage(output, ModItems.star_fuel.get(), ModBlocks.star_fuel_block.get(), "star_fuel_block", "star_fuel_alternate");
@@ -267,21 +267,21 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
                 Ingredient.of(Items.ELYTRA),
                 CompoundIngredient.of(Ingredient.of(ModBlocks.crystal_matrix.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.neutron.get())),
-                ModItems.infinity_elytra.get().getDefaultInstance()), RecipeCategory.MISC,
+                template(ModItems.infinity_elytra.get())), RecipeCategory.MISC,
                 "has_upgrade_smithing_template", has(ModItems.upgrade_smithing_template.get()));
 
         save(output, "infinity_chest", new ExtremeSmithingRecipe(
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
                 Ingredient.of(ModBlocks.compressed_chest.get()),
                 CompoundIngredient.of(Ingredient.of(ModBlocks.neutron.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.infinity.get())),
-                ModBlocks.infinity_chest.get().asItem().getDefaultInstance()), RecipeCategory.MISC,
+                template(ModBlocks.infinity_chest.get())), RecipeCategory.MISC,
                 "has_upgrade_smithing_template", has(ModItems.upgrade_smithing_template.get()));
 
         save(output, "extreme_anvil", new ExtremeSmithingRecipe(
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
                 Ingredient.of(Items.ANVIL),
                 CompoundIngredient.of(Ingredient.of(ModItems.full_matter_cluster.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.neutron.get())),
-                ModBlocks.extreme_anvil.get().asItem().getDefaultInstance()), RecipeCategory.MISC,
+                template(ModBlocks.extreme_anvil.get())), RecipeCategory.MISC,
                 "has_upgrade_smithing_template", has(ModItems.upgrade_smithing_template.get()));
     }
 
@@ -299,9 +299,9 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void compressorRecipes(RecipeOutput output) {
-        save(output, "bedrock_from_deepslate", new CompressorRecipe(Ingredient.of(Blocks.DEEPSLATE), new ItemStack(Blocks.BEDROCK), 10000, 240),
+        save(output, "bedrock_from_deepslate", new CompressorRecipe(Ingredient.of(Blocks.DEEPSLATE), template(Blocks.BEDROCK), 10000, 240),
                 RecipeCategory.MISC, "has_deepslate", has(Blocks.DEEPSLATE));
-        save(output, "compressor_matter_cluster", new CompressorRecipe(Ingredient.of(ModItems.neutron_ingot.get()), new ItemStack(ModItems.full_matter_cluster.get()), 4096, 240),
+        save(output, "compressor_matter_cluster", new CompressorRecipe(Ingredient.of(ModItems.neutron_ingot.get()), template(ModItems.full_matter_cluster.get()), 4096, 240),
                 RecipeCategory.MISC, "has_neutron_ingot", has(ModItems.neutron_ingot.get()));
     }
 
@@ -337,25 +337,25 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
                 Ingredient.of(base),
                 CompoundIngredient.of(Ingredient.of(ModItems.infinity_ingot.get()), Ingredient.of(ModItems.infinity_catalyst.get()), Ingredient.of(ModItems.enhancement_core.get())),
-                new ItemStack(result)), RecipeCategory.TOOLS,
+                template(result)), RecipeCategory.TOOLS,
                 "has_upgrade_smithing_template", has(ModItems.upgrade_smithing_template.get()));
     }
 
     private void extremeShaped(RecipeOutput output, RecipeCategory category, ItemLike result, int tier, String[] pattern, RecipeKeyMap keys,
                                String criterionName, Criterion<?> criterion, String name) {
-        ShapedRecipePattern shapedPattern = ShapedRecipePattern.of(keys.ingredients, List.of(pattern));
-        save(output, name, new ShapedTableCraftingRecipe(shapedPattern, new ItemStack(result), tier, false), category, criterionName, criterion);
+        ShapedRecipePattern shapedPattern = ShapedRecipePattern.of(usedIngredients(pattern, keys), normalizedPattern(pattern));
+        save(output, name, new ShapedTableCraftingRecipe(shapedPattern, template(result), tier, false), category, criterionName, criterion);
     }
 
     private void noConsumeExtremeShaped(RecipeOutput output, RecipeCategory category, ItemLike result, int count, int tier, String[] pattern, RecipeKeyMap keys,
                                         String criterionName, Criterion<?> criterion, String name) {
-        ShapedRecipePattern shapedPattern = ShapedRecipePattern.of(keys.ingredients, List.of(pattern));
-        save(output, name, new NoConsumeCatalystShapedRecipe(shapedPattern, new ItemStack(result, count), tier), category, criterionName, criterion);
+        ShapedRecipePattern shapedPattern = ShapedRecipePattern.of(usedIngredients(pattern, keys), normalizedPattern(pattern));
+        save(output, name, new NoConsumeCatalystShapedRecipe(shapedPattern, template(result, count), tier), category, criterionName, criterion);
     }
 
     private void extremeShapeless(RecipeOutput output, RecipeCategory category, ItemLike result, int tier, NonNullList<Ingredient> ingredients,
                                   String criterionName, Criterion<?> criterion, String name) {
-        save(output, name, new ShapelessTableCraftingRecipe(ingredients, new ItemStack(result), tier), category, criterionName, criterion);
+        save(output, name, new ShapelessTableCraftingRecipe(ingredients, template(result), tier), category, criterionName, criterion);
     }
 
     private void save(RecipeOutput output, String name, Recipe<?> recipe, RecipeCategory category, String criterionName, Criterion<?> criterion) {
@@ -375,6 +375,46 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
 
     private static String name(ItemLike item) {
         return item.asItem().builtInRegistryHolder().key().identifier().getPath();
+    }
+
+    private static ItemStackTemplate template(ItemLike item) {
+        return template(item, 1);
+    }
+
+    private static ItemStackTemplate template(ItemLike item, int count) {
+        return new ItemStackTemplate(item.asItem(), count);
+    }
+
+    private static List<String> normalizedPattern(String[] pattern) {
+        int width = 0;
+        for (String row : pattern) {
+            width = Math.max(width, row.length());
+        }
+
+        List<String> rows = new java.util.ArrayList<>(pattern.length);
+        for (String row : pattern) {
+            rows.add(row.length() == width ? row : row + " ".repeat(width - row.length()));
+        }
+        return rows;
+    }
+
+    private static java.util.Map<Character, Ingredient> usedIngredients(String[] pattern, RecipeKeyMap keys) {
+        java.util.Map<Character, Ingredient> ingredients = new LinkedHashMap<>();
+        keys.ingredients.forEach((key, ingredient) -> {
+            if (usesKey(pattern, key)) {
+                ingredients.put(key, ingredient);
+            }
+        });
+        return ingredients;
+    }
+
+    private static boolean usesKey(String[] pattern, char key) {
+        for (String row : pattern) {
+            if (row.indexOf(key) >= 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static NonNullList<Ingredient> list(ItemLike... items) {

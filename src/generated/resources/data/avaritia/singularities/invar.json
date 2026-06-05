@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/invar"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.invar",
+  "name": "avaritia:invar",
+  "overlayColor": 12371387,
+  "underlayColor": 6125687
+}

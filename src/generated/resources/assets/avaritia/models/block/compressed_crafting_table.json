@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "avaritia:block/compressed_crafting_table"
+  }
+}

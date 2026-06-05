@@ -1,0 +1,33 @@
+{
+  "parent": "avaritia:main/blaze_cube",
+  "criteria": {
+    "main": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:blaze_sword"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.avaritia.blaze_sword.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "id": "avaritia:blaze_sword"
+    },
+    "title": {
+      "translate": "advancements.avaritia.blaze_sword.title"
+    }
+  },
+  "requirements": [
+    [
+      "main"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

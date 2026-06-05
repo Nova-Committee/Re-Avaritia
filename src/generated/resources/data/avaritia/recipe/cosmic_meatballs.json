@@ -1,0 +1,21 @@
+{
+  "type": "avaritia:shapeless_table",
+  "ingredients": [
+    "minecraft:porkchop",
+    "minecraft:beef",
+    "minecraft:mutton",
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:tropical_fish",
+    "minecraft:pufferfish",
+    "minecraft:rabbit",
+    "minecraft:chicken",
+    "minecraft:rotten_flesh",
+    "minecraft:spider_eye",
+    "avaritia:neutron_nugget"
+  ],
+  "result": {
+    "id": "avaritia:cosmic_meatballs"
+  },
+  "tier": 4
+}

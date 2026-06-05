@@ -14,6 +14,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -33,15 +34,23 @@ import java.util.function.BiFunction;
 public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
     @Getter
     public final NonNullList<Ingredient> inputs;
-    public final ItemStack result;
+    public final ItemStackTemplate result;
     public final int tier;
     private BiFunction<Integer, ItemStack, ItemStack> transformer;
 
     public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result) {
+        this(inputs, ItemStackTemplate.fromNonEmptyStack(result), 0);
+    }
+
+    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStackTemplate result) {
         this(inputs, result, 0);
     }
 
     public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStack result, int tier) {
+        this(inputs, ItemStackTemplate.fromNonEmptyStack(result), tier);
+    }
+
+    public ShapelessTableCraftingRecipe(NonNullList<Ingredient> inputs, ItemStackTemplate result, int tier) {
         this.inputs = inputs;
         this.result = result;
         this.tier = tier;
@@ -49,7 +58,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result;
+        return this.result.create();
     }
 
     @Override
@@ -74,7 +83,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
 
     @Override
     public @NotNull ItemStack assemble(@NotNull TierInput input) {
-        return this.result.copy();
+        return this.result.create();
     }
     @Override
     public boolean matches(@NotNull TierInput input, @NotNull Level level) {
@@ -151,7 +160,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
                         RecipeCodecs.ingredientList(81, false, "Combination recipe")
                                 .fieldOf("ingredients")
                                 .forGetter(recipe -> recipe.inputs),
-                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
+                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier)
                 ).apply(builder, ShapelessTableCraftingRecipe::new)
         );
@@ -168,7 +177,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
                 inputs.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
 
-            var result = ItemStack.STREAM_CODEC.decode(buffer);
+            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
 
             return new ShapelessTableCraftingRecipe(inputs, result, tier);
@@ -181,7 +190,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
 
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
         }
     }

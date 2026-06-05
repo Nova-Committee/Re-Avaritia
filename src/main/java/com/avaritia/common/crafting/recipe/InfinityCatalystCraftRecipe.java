@@ -16,6 +16,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -33,7 +34,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
     private final NonNullList<Ingredient> originalInputs;
 
     public InfinityCatalystCraftRecipe(String pGroup, NonNullList<Ingredient> inputs, int count) {
-        super(NonNullList.create(), new ItemStack(ModItems.infinity_catalyst.get()), 4);
+        super(NonNullList.create(), new ItemStackTemplate(ModItems.infinity_catalyst.get(), count), 4);
         this.group = pGroup;
         this.count = count;
         this.originalInputs = inputs;

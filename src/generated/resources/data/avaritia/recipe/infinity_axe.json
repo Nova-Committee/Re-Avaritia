@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "C": "avaritia:crystal_matrix_ingot",
+    "I": "avaritia:infinity_ingot",
+    "N": "avaritia:neutron_ingot",
+    "X": "avaritia:infinity_catalyst"
+  },
+  "pattern": [
+    "     III",
+    "    IIII",
+    "   CIIII",
+    "  CAXA I",
+    "   NAA I",
+    "  N    I",
+    " N     I",
+    "N      I",
+    "A       "
+  ],
+  "result": {
+    "id": "avaritia:infinity_axe"
+  },
+  "tier": 4
+}

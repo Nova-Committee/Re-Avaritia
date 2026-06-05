@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ITierCraftingRecipe;
-import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.ShapedRecipePatternCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.api.utils.java.TriFunction;
@@ -41,17 +40,25 @@ import java.util.List;
  */
 public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
     public final ShapedRecipePattern pattern;
-    public final ItemStack result;
+    public final ItemStackTemplate result;
     public final int tier;
     @Getter
     private final boolean compatible;
     private TriFunction<Integer, Integer, ItemStack, ItemStack> transformers;
 
     public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result) {
+        this(pattern, ItemStackTemplate.fromNonEmptyStack(result), 0, false);
+    }
+
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStackTemplate result) {
         this(pattern, result, 0, false);
     }
 
     public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStack result, int tier, boolean compatible) {
+        this(pattern, ItemStackTemplate.fromNonEmptyStack(result), tier, compatible);
+    }
+
+    public ShapedTableCraftingRecipe(ShapedRecipePattern pattern, ItemStackTemplate result, int tier, boolean compatible) {
         this.pattern = pattern;
         this.result = result;
         this.tier = tier;
@@ -60,12 +67,12 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result;
+        return this.result.create();
     }
 
     @Override
     public @NotNull ItemStack assemble(@NotNull TierInput input) {
-        return this.result.copy();
+        return this.result.create();
     }
 
     @Override
@@ -109,7 +116,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
                 this.pattern.width(),
                 this.pattern.height(),
                 this.pattern.ingredients().stream().map(Ingredient::optionalIngredientToDisplay).toList(),
-                new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.result)),
+                new SlotDisplay.ItemStackSlotDisplay(this.result),
                 new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
         ));
     }
@@ -205,7 +212,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
         public static final MapCodec<ShapedTableCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
+                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier),
                         Codec.BOOL.optionalFieldOf("compatible", false).forGetter(recipe -> recipe.compatible)
                         ).apply(builder, ShapedTableCraftingRecipe::new)
@@ -217,7 +224,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
         private static ShapedTableCraftingRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
-            var result = ItemStack.STREAM_CODEC.decode(buffer);
+            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
             var compatible = buffer.readBoolean();
 
@@ -226,7 +233,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, ShapedTableCraftingRecipe recipe) {
             ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
             buffer.writeBoolean(recipe.compatible);
         }

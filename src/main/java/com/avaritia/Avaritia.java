@@ -1,5 +1,6 @@
 package com.avaritia;
 
+import com.avaritia.compat.curios.AvaritiaCuriosPlugin;
 import com.avaritia.core.singularity.SingularityReloadListener;
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.*;
@@ -30,6 +31,7 @@ public class Avaritia {
 
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
+        ModItems.registerBlockItems();
         ModItems.ITEMS.register(modEventBus);
         ModCreativeModeTabs.TABS.register(modEventBus);
         ModTileEntities.BLOCK_ENTITIES.register(modEventBus);
@@ -49,7 +51,7 @@ public class Avaritia {
     private void constructMod(final FMLConstructModEvent event)
     {
         if(ModList.get().isLoaded("curios")) {
-            //MOD_EVENT_BUS.addListener(AvaritiaCuriosPlugin::registerCapabilities);
+            MOD_EVENT_BUS.addListener(AvaritiaCuriosPlugin::registerCapabilities);
         }
     }
 

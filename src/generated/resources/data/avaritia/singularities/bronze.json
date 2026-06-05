@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/bronze"
+      }
+    }
+  ],
+  "displayName": "singularity.avaritia.bronze",
+  "name": "avaritia:bronze",
+  "overlayColor": 14262083,
+  "underlayColor": 12282683
+}

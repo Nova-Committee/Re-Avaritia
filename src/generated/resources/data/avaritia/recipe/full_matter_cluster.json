@@ -1,0 +1,7 @@
+{
+  "type": "avaritia:full_matter_cluster",
+  "group": "matter_cluster",
+  "ingredients": [
+    "avaritia:matter_cluster"
+  ]
+}

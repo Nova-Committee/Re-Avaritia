@@ -3,7 +3,6 @@ package com.avaritia.common.crafting.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.ShapedRecipePatternCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.init.registry.ModItems;
@@ -12,6 +11,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +19,10 @@ import org.jetbrains.annotations.NotNull;
 public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
     public NoConsumeCatalystShapedRecipe(ShapedRecipePattern pattern, ItemStack output, int tier) {
+        super(pattern, output, tier, false);
+    }
+
+    public NoConsumeCatalystShapedRecipe(ShapedRecipePattern pattern, ItemStackTemplate output, int tier) {
         super(pattern, output, tier, false);
     }
 
@@ -43,7 +47,7 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
         public static final MapCodec<NoConsumeCatalystShapedRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                        RecipeCodecs.STRICT_ITEM_STACK.fieldOf("result").forGetter(recipe -> recipe.result),
+                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 4).forGetter(recipe -> recipe.tier)
                 ).apply(builder, NoConsumeCatalystShapedRecipe::new)
         );
@@ -55,14 +59,14 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
         private static NoConsumeCatalystShapedRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
             var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
-            var result = ItemStack.STREAM_CODEC.decode(buffer);
+            var result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             int tier = buffer.readVarInt();
             return new NoConsumeCatalystShapedRecipe(pattern, result, tier);
         }
 
         private static void toNetwork(RegistryFriendlyByteBuf buffer, NoConsumeCatalystShapedRecipe recipe) {
             ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
             buffer.writeVarInt(recipe.tier);
         }
     }

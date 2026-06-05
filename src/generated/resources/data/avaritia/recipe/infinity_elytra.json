@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "avaritia:crystal_matrix",
+      "avaritia:enhancement_core",
+      "avaritia:neutron"
+    ]
+  },
+  "base": "minecraft:elytra",
+  "result": {
+    "id": "avaritia:infinity_elytra"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}
