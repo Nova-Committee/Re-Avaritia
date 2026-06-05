@@ -1,19 +1,15 @@
-#version 150
+#version 330
 
 #define M_PI 3.1415926535897932384626433832795
 
-#moj_import <fog.glsl>
+#moj_import <minecraft:fog.glsl>
+#moj_import <minecraft:dynamictransforms.glsl>
 
 const int cosmiccount = 10;
 const int cosmicoutof = 101;
 const float lightmix = 0.2f;
 
 uniform sampler2D Sampler0;
-
-uniform vec4 ColorModulator;
-uniform float FogStart;
-uniform float FogEnd;
-uniform vec4 FogColor;
 
 uniform float time;
 
@@ -25,7 +21,8 @@ uniform float opacity;
 
 uniform mat2 cosmicuvs[cosmiccount];
 
-in float vertexDistance;
+in float sphericalVertexDistance;
+in float cylindricalVertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
 in vec4 normal;
@@ -181,5 +178,5 @@ void main (void)
 
     col = clamp(col,0.0,1.0);
 
-    fragColor = linear_fog(col * ColorModulator, vertexDistance, FogStart, FogEnd, FogColor);
+    fragColor = apply_fog(col * ColorModulator, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
 }
