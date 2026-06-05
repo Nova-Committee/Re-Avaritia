@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/infinity_ingot"
+    "layer0": "avaritia:item/resource/infinity/infinity_ingot"
   }
 }

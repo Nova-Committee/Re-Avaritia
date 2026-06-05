@@ -146,7 +146,7 @@ public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitc
 
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.FORTUNE)) {
             return 10;
         }

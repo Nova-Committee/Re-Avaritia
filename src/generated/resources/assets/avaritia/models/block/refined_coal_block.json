@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "avaritia:block/refined_coal_block"
+    "all": "avaritia:block/resource/refined_coal_block"
   }
 }

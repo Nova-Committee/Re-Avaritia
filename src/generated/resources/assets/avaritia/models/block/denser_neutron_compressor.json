@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "avaritia:block/denser_neutron_compressor"
+    "down": "avaritia:block/machine/compressor/frame",
+    "east": "avaritia:block/machine/compressor/double_compressor_side_right",
+    "north": "avaritia:block/machine/compressor/double_compressor_front",
+    "particle": "avaritia:block/machine/compressor/double_compressor_front",
+    "south": "avaritia:block/machine/compressor/frame",
+    "up": "avaritia:block/machine/compressor/compressor_top_2",
+    "west": "avaritia:block/machine/compressor/double_compressor_side_left"
   }
 }

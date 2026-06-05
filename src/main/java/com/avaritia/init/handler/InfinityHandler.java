@@ -2,17 +2,12 @@ package com.avaritia.init.handler;
 
 import com.avaritia.Const;
 import com.avaritia.api.iface.item.ISwitchable;
-import com.avaritia.api.utils.lang.TextUtils;
 import com.avaritia.common.entity.ImmortalItemEntity;
 import com.avaritia.common.item.resources.MatterClusterItem;
-import com.avaritia.common.item.tools.InfinityArmorItem;
-import com.avaritia.common.item.tools.infinity.InfinitySwordItem;
 import com.avaritia.common.net.S2CTotemPacket;
 import com.avaritia.init.config.ModConfig;
 import com.avaritia.init.registry.*;
 import com.avaritia.util.ToolUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -33,8 +28,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -185,31 +178,6 @@ public class InfinityHandler {
     public static void expCancel(ItemExpireEvent event) {
         if (event.getEntity() instanceof ImmortalItemEntity itemEntity) {
             itemEntity.setUnlimitedLifetime();
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onTooltip(ItemTooltipEvent event) {
-        if (ModConfig.isSwordAttackEndless.get() && event.getItemStack().getItem() instanceof InfinitySwordItem swordItem) {
-            for (int x = 0; x < event.getToolTip().size(); x++) {
-                if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.attack_damage"))) {
-                    var endlessDamage = ModConfig.isSwordAttackEndless.get();
-                    event.getToolTip().set(x, Component.literal(endlessDamage ? TextUtils.makeFabulous(I18n.get("tooltip.infinity")) : String.valueOf(swordItem.getTier().attackDamageBonus())).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN)));
-                    return;
-                }
-            }
-        } else if (event.getItemStack().getItem() instanceof InfinityArmorItem) {
-            for (int x = 0; x < event.getToolTip().size(); x++) {
-                if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.armor"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
-                    return;
-                } else if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.armor_toughness"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
-                    return;
-                }
-
-            }
         }
     }
 

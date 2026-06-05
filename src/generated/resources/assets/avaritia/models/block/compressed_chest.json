@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "avaritia:block/compressed_chest"
+    "all": "avaritia:block/chest/compressed_chest"
   }
 }

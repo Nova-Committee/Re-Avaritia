@@ -216,6 +216,7 @@
   "config.jade.plugin_avaritia.compressor": "Compressor",
   "config.jade.plugin_avaritia.crafting_table": "Avaritia Crafting",
   "config.jade.plugin_avaritia.extreme_smithing": "Extreme Smithing",
+  "config.jade.plugin_avaritia.neutron_collector": "Neutronium Collector",
   "container.end_crafting_table": "End Crafting Table",
   "container.extreme_crafting_table": "Extreme Crafting Table",
   "container.extreme_smithing": "Extreme Smithing Table",

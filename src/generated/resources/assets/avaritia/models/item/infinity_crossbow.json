@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/infinity_crossbow"
+    "layer0": "avaritia:item/tools/infinity_crossbow/idle"
   }
 }

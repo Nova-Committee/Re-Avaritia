@@ -1,17 +1,13 @@
 package com.avaritia.init.data.provider;
 
-import com.avaritia.client.model.loader.base.AvaritiaItemModels;
 import com.avaritia.Const;
-import com.avaritia.init.registry.ModBlocks;
+import com.avaritia.client.model.loader.base.AvaritiaItemModels;
 import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
-import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.resources.model.sprite.Material;
@@ -20,9 +16,7 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
@@ -32,13 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Avaritia 物品与方块模型提供程序。
- * <p>
- * 负责在数据生成阶段输出 {@code assets/avaritia/models/} 下的模型文件：
- * 普通资源物品使用 {@code item/generated}，工具使用 {@code item/handheld}，
- * 方块物品则直接引用对应的方块模型。
- */
 public class AvaritiaModelProvider implements DataProvider {
     private static final Set<DeferredItem<Item>> HANDHELD_ITEMS = Set.of(
             ModItems.infinity_sword,
@@ -65,36 +52,82 @@ public class AvaritiaModelProvider implements DataProvider {
             ModItems.blaze_axe,
             ModItems.blaze_bow
     );
+    private static final Map<String, String> ITEM_TEXTURES = Map.ofEntries(
+            Map.entry("neutron_ring", "item/misc/neutron_ring"),
+            Map.entry("infinity_totem", "item/misc/infinity_totem"),
+            Map.entry("infinity_ring", "item/misc/infinity_ring"),
+            Map.entry("infinity_umbrella", "item/misc/infinity_umbrella"),
+            Map.entry("infinity_clock", "item/misc/infinity_clock"),
+            Map.entry("side_config_card", "item/misc/side_config_card"),
+            Map.entry("infinity_sword", "item/tools/infinity_sword/layer_0"),
+            Map.entry("infinity_hoe", "item/tools/infinity_hoe/layer_0"),
+            Map.entry("infinity_pickaxe", "item/tools/infinity_pickaxe/layer_0"),
+            Map.entry("infinity_shovel", "item/tools/infinity_shovel/layer_0"),
+            Map.entry("infinity_axe", "item/tools/infinity_axe/layer_0"),
+            Map.entry("infinity_bucket", "item/misc/infinity_bucket"),
+            Map.entry("infinity_bow", "item/tools/infinity_bow/idle"),
+            Map.entry("infinity_crossbow", "item/tools/infinity_crossbow/idle"),
+            Map.entry("infinity_shield", "item/tools/infinity_shield/layer_0"),
+            Map.entry("infinity_trident", "item/tools/infinity_trident/layer_0"),
+            Map.entry("infinity_mace", "item/tools/infinity_mace/layer_0"),
+            Map.entry("crystal_sword", "item/tools/crystal_sword/layer_0"),
+            Map.entry("crystal_hoe", "item/tools/crystal_hoe/layer_0"),
+            Map.entry("crystal_pickaxe", "item/tools/crystal_pickaxe/layer_0"),
+            Map.entry("crystal_shovel", "item/tools/crystal_shovel/layer_0"),
+            Map.entry("crystal_axe", "item/tools/crystal_axe/layer_0"),
+            Map.entry("crystal_bow", "item/tools/crystal_bow/crystal_bow"),
+            Map.entry("blaze_sword", "item/tools/blaze_sword/layer_0"),
+            Map.entry("blaze_hoe", "item/tools/blaze_hoe/layer_0"),
+            Map.entry("blaze_pickaxe", "item/tools/blaze_pickaxe/layer_0"),
+            Map.entry("blaze_shovel", "item/tools/blaze_shovel/layer_0"),
+            Map.entry("blaze_axe", "item/tools/blaze_axe/layer_0"),
+            Map.entry("blaze_bow", "item/tools/blaze_bow/blaze_bow"),
+            Map.entry("infinity_helmet", "item/armor/helmet/layer_0"),
+            Map.entry("infinity_chestplate", "item/armor/chestplate/layer_0"),
+            Map.entry("infinity_pants", "item/armor/legs/layer_0"),
+            Map.entry("infinity_boots", "item/armor/boots/layer_0"),
+            Map.entry("neutron_horse_armor", "item/armor/horse/neutron_horse_armor_item"),
+            Map.entry("infinity_elytra", "item/armor/elytra/infinity_elytra"),
+            Map.entry("blaze_cube", "item/resource/blaze/blaze_cube"),
+            Map.entry("diamond_lattice", "item/resource/crystal/diamond_lattice"),
+            Map.entry("crystal_matrix_ingot", "item/resource/crystal/crystal_matrix_ingot"),
+            Map.entry("neutron_pile", "item/resource/neutron/neutron_pile"),
+            Map.entry("neutron_nugget", "item/resource/neutron/neutron_nugget"),
+            Map.entry("neutron_ingot", "item/resource/neutron/neutron_ingot"),
+            Map.entry("neutron_gear", "item/resource/neutron/neutron_gear"),
+            Map.entry("infinity_nugget", "item/resource/infinity/infinity_nugget"),
+            Map.entry("infinity_catalyst", "item/resource/infinity/infinity_catalyst"),
+            Map.entry("infinity_ingot", "item/resource/infinity/infinity_ingot"),
+            Map.entry("singularity", "item/resource/singularity/singularity"),
+            Map.entry("eternal_singularity", "item/resource/singularity/eternal_singularity"),
+            Map.entry("record_fragment", "item/resource/record_fragment"),
+            Map.entry("star_fuel", "item/resource/fuel/star_fuel"),
+            Map.entry("refined_coal", "item/resource/fuel/refined_coal"),
+            Map.entry("endest_pearl", "item/misc/endest_pearl/layer_0"),
+            Map.entry("matter_cluster", "item/misc/matter_cluster/empty"),
+            Map.entry("full_matter_cluster", "item/misc/matter_cluster/full_matter_cluster"),
+            Map.entry("enhancement_core", "item/misc/enhancement_core"),
+            Map.entry("upgrade_smithing_template", "item/misc/upgrade_smithing_template"),
+            Map.entry("infinity_upgrade", "item/misc/infinity_upgrade"),
+            Map.entry("ultimate_stew", "item/foods/ultimate_stew/layer_0"),
+            Map.entry("cosmic_meatballs", "item/foods/cosmic_meatballs/layer_0"),
+            Map.entry("forge_energy", "item/misc/forge_energy")
+    );
 
-    private final PackOutput.PathProvider blockStatePathProvider;
     private final PackOutput.PathProvider itemInfoPathProvider;
     private final PackOutput.PathProvider modelPathProvider;
-    private final Map<Identifier, BlockStateModelDispatcher> generatedBlockStates = new LinkedHashMap<>();
     private final Map<Identifier, ClientItem> generatedClientItems = new LinkedHashMap<>();
     private final Map<Identifier, ModelInstance> generatedModels = new LinkedHashMap<>();
 
-    /**
-     * 创建 Avaritia 物品与方块模型提供程序（26.1.2 原版 API 版）。
-     *
-     * @param output 数据生成输出目录
-     */
     public AvaritiaModelProvider(PackOutput output) {
-        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
         this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
         this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
     }
 
-    /**
-     * 生成并写出物品模型、方块模型、方块状态和 26.1.2 客户端物品定义。
-     *
-     * @param output 缓存输出
-     * @return 异步写出任务
-     */
     @Override
     public CompletableFuture<?> run(CachedOutput output) {
         registerModels();
         return CompletableFuture.allOf(
-                DataProvider.saveAll(output, BlockStateModelDispatcher.CODEC, this.blockStatePathProvider, this.generatedBlockStates),
                 DataProvider.saveAll(output, ModelInstance::get, this.modelPathProvider::json, this.generatedModels),
                 DataProvider.saveAll(output, ClientItem.CODEC, this.itemInfoPathProvider, this.generatedClientItems)
         );
@@ -102,40 +135,13 @@ public class AvaritiaModelProvider implements DataProvider {
 
     @Override
     public String getName() {
-        return "Avaritia Models";
+        return "Avaritia Item Models";
     }
 
-    /**
-     * 注册全部已注册物品和方块的模型。
-     * <p>
-     * 先为所有方块生成方块模型和方块物品模型，再遍历 {@link ModItems#ITEMS}
-     * 生成剩余普通物品和工具模型，确保后续新增注册项不会漏掉模型。
-     */
     protected void registerModels() {
-        ModBlocks.BLOCKS.getEntries().forEach(this::block);
         ModItems.ITEMS.getEntries().forEach(this::item);
     }
 
-    /**
-     * 为方块生成简单 cube_all 方块模型，并为方块物品绑定对应方块模型。
-     *
-     * @param block 延迟注册方块引用
-     */
-    private void block(DeferredHolder<Block, ? extends Block> block) {
-        Identifier id = block.getId();
-        Identifier model = ModelTemplates.CUBE_ALL.create(id.withPrefix("block/"), new TextureMapping().put(TextureSlot.ALL, texture(id, "block")), this.generatedModels::put);
-        this.generatedBlockStates.put(id, MultiVariantGenerator.dispatch(block.get(), new net.minecraft.client.data.models.MultiVariant(WeightedList.of(new Variant(model)))).create());
-
-        if (ModItems.BLOCK_ITEMS.containsKey(id.getPath())) {
-            clientItem(block.get().asItem(), ItemModelUtils.plainModel(model));
-        }
-    }
-
-    /**
-     * 为普通注册物品生成模型，方块物品已由 {@link #block(DeferredHolder)} 处理。
-     *
-     * @param item 延迟注册物品引用
-     */
     private void item(DeferredHolder<Item, ? extends Item> item) {
         Identifier id = item.getId();
         if (ModItems.BLOCK_ITEMS.containsKey(id.getPath())) {
@@ -149,23 +155,11 @@ public class AvaritiaModelProvider implements DataProvider {
         }
     }
 
-    /**
-     * 为简单物品生成 {@code item/generated} 父模型。
-     *
-     * @param item 物品实例
-     * @param id   物品资源定位符
-     */
     private void basicItem(Item item, Identifier id) {
         Identifier model = ModelTemplates.FLAT_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         clientItem(item, clientItemModel(id, model));
     }
 
-    /**
-     * 为手持工具生成 {@code item/handheld} 父模型。
-     *
-     * @param item 物品实例
-     * @param id   物品资源定位符
-     */
     private void handheldItem(Item item, Identifier id) {
         Identifier model = ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         clientItem(item, clientItemModel(id, model));
@@ -187,34 +181,20 @@ public class AvaritiaModelProvider implements DataProvider {
         };
     }
 
-    /**
-     * 记录 26.1.2 客户端物品定义。
-     *
-     * @param item  物品实例
-     * @param model 未烘焙物品模型
-     */
     private void clientItem(Item item, ItemModel.Unbaked model) {
         this.generatedClientItems.put(BuiltInRegistries.ITEM.getKey(item), new ClientItem(model, ClientItem.Properties.DEFAULT));
     }
 
-    /**
-     * 获取物品模型输出位置。
-     *
-     * @param item 物品实例
-     * @return {@code <namespace>:item/<path>} 模型定位符
-     */
     private Identifier modelLocation(Item item) {
         return BuiltInRegistries.ITEM.getKey(item).withPrefix("item/");
     }
 
-    /**
-     * 创建使用单层物品纹理的贴图映射。
-     *
-     * @param id 物品资源定位符
-     * @return 绑定 {@code layer0} 的贴图映射
-     */
     private TextureMapping layer0(Identifier id) {
-        return new TextureMapping().put(TextureSlot.LAYER0, texture(id, "item"));
+        return new TextureMapping().put(TextureSlot.LAYER0, texture(itemTexture(id)));
+    }
+
+    private Identifier itemTexture(Identifier id) {
+        return Identifier.fromNamespaceAndPath(id.getNamespace(), ITEM_TEXTURES.getOrDefault(id.getPath(), "item/" + id.getPath()));
     }
 
     private Identifier mask(String path) {
@@ -225,14 +205,7 @@ public class AvaritiaModelProvider implements DataProvider {
         return Identifier.fromNamespaceAndPath(Const.MOD_ID, "misc/halo");
     }
 
-    /**
-     * 获取模型纹理路径。
-     *
-     * @param id     注册资源定位符
-     * @param folder 纹理目录，如 {@code item} 或 {@code block}
-     * @return 指向 {@code avaritia:<folder>/<path>} 的纹理定位符
-     */
-    private Material texture(Identifier id, String folder) {
-        return new Material(Identifier.fromNamespaceAndPath(id.getNamespace(), folder + "/" + id.getPath()));
+    private Material texture(Identifier id) {
+        return new Material(id);
     }
 }

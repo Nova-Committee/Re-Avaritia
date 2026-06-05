@@ -17,8 +17,6 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -29,7 +27,6 @@ import org.joml.Matrix4f;
  * Date: 2022/4/20 18:54
  * Version: 1.0
  */
-@OnlyIn(Dist.CLIENT)
 public class HeavenArrowRender extends ArrowRenderer<HeavenArrowEntity, ArrowRenderState> {
     private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/entity/heaven_arrow.png");
 

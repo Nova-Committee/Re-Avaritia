@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/infinity_shovel"
+    "layer0": "avaritia:item/tools/infinity_shovel/layer_0"
   }
 }

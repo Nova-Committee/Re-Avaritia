@@ -1,22 +1,14 @@
 package com.avaritia.init.registry;
 
-import com.avaritia.Avaritia;
 import com.avaritia.Const;
 import com.avaritia.common.entity.*;
 import com.avaritia.common.entity.arrow.*;
 import com.avaritia.common.entity.ball.*;
-import com.avaritia.client.render.entity.*;
-import com.avaritia.client.render.tile.AcceleratorDisplayRender;
-import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.client.renderer.entity.ItemEntityRenderer;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -141,28 +133,6 @@ public class ModEntityTypes {
                     .sized(1f, 1f)
                     .fireImmune()
                     .build(key("infinity_thrown_trident")));
-
-    @OnlyIn(Dist.CLIENT)
-    public static void onClientSetup() {
-        EntityRenderers.register(ModEntityTypes.IMMORTAL.get(), ItemEntityRenderer::new);
-        EntityRenderers.register(ModEntityTypes.ENDER_PEARL.get(), ThrownItemRenderer::new);
-        EntityRenderers.register(ModEntityTypes.GAPING_VOID.get(), GapingVoidRender::new);
-        EntityRenderers.register(ModEntityTypes.HEAVEN_ARROW.get(), HeavenArrowRender::new);
-        EntityRenderers.register(ModEntityTypes.NEUTRON_ARROW.get(), NeutronArrowRender::new);
-        EntityRenderers.register(ModEntityTypes.HEAVEN_SUB_ARROW.get(), HeavenSubArrowRender::new);
-        EntityRenderers.register(ModEntityTypes.EXPLOSIONS_ARROW.get(), ExplosionsArrowRender::new);
-        EntityRenderers.register(ModEntityTypes.BURNING_ARROW.get(), BurningArrowRender::new);
-        EntityRenderers.register(ModEntityTypes.BURNING_BALL.get(), BurningBallRender::new);
-        EntityRenderers.register(ModEntityTypes.TRACE_ARROW.get(), TracerArrowRender::new);
-        EntityRenderers.register(ModEntityTypes.FIRE_BALL.get(), FireBallRender::new);
-        EntityRenderers.register(ModEntityTypes.BLADE_SLASH.get(), BladeSlashRender::new);
-        EntityRenderers.register(ModEntityTypes.SUN_PRO.get(), SunProRender::new);
-        EntityRenderers.register(ModEntityTypes.RAIN_PRO.get(), RainProRender::new);
-        EntityRenderers.register(ModEntityTypes.STORM_PRO.get(), StormProRender::new);
-        EntityRenderers.register(ModEntityTypes.ACCELERATOR_DISPLAY.get(), AcceleratorDisplayRender::new);
-        EntityRenderers.register(ModEntityTypes.TNT_PRO.get(), TNTProEntityRender::new);
-        EntityRenderers.register(ModEntityTypes.INFINITY_THROWN_TRIDENT.get(), InfinityThrownTridentRender::new);
-    }
 
     private static ResourceKey<EntityType<?>> key(String name) {
         return ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Const.MOD_ID, name));

@@ -88,14 +88,14 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
         if (player.level() instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
             var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
-            ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
+            ToolUtils.sweepAttack(serverLevel, player, victim);//妯壂
             if (victim instanceof EnderDragon dragon ) {
                 dragon.hurt(serverLevel, dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.attackDamageBonus());
             } else if (victim instanceof Player pvp) {
                 if (ToolUtils.isInfinite(pvp)) {
-                    // 玩家身着无尽甲则只造成爆炸伤害
+                    // 鐜╁韬潃鏃犲敖鐢插垯鍙€犳垚鐖嗙偢浼ゅ
                     serverLevel.explode(player, pvp.getBlockX(), pvp.getBlockY(), pvp.getBlockZ(), 25.0F, Level.ExplosionInteraction.MOB);
-                    return true;//直接返回
+                    return true;//鐩存帴杩斿洖
                 } else {
                     this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.attackDamageBonus());
                 }
@@ -106,8 +106,8 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
 
             if (!victim.isDeadOrDying() && endlessDamage) {
                 victim.setHealth(0);
-                //set health to 0�?
-                this.die(victim, damageSource);//修正设置死亡
+                //set health to 0锟?
+                this.die(victim, damageSource);//淇璁剧疆姝讳骸
                 player.killedEntity(serverLevel, victim, damageSource);
                 //add to stats
                 //player.getCombatTracker().recordDamage(damageSource, victim.getHealth());
@@ -319,7 +319,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.LOOTING)) {
             return 10;
         }

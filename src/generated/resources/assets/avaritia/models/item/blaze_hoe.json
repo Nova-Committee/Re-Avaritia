@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "avaritia:item/blaze_hoe"
+    "layer0": "avaritia:item/tools/blaze_hoe/layer_0"
   }
 }

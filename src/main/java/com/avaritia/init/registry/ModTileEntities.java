@@ -1,22 +1,16 @@
 package com.avaritia.init.registry;
 
-import com.avaritia.Avaritia;
 import com.avaritia.Const;
-import com.avaritia.client.render.tile.CompressedChestRenderer;
-import com.avaritia.client.render.tile.InfinityChestBlockRender;
 import com.avaritia.common.tile.CompressedChestTile;
 import com.avaritia.common.tile.InfinitatoTile;
 import com.avaritia.common.tile.InfinityChestTile;
 import com.avaritia.common.tile.NeutronCollectorTile;
 import com.avaritia.common.tile.NeutronCompressorTile;
 import com.avaritia.common.tile.TierCraftTile;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -31,12 +25,6 @@ public class ModTileEntities {
 
     public static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> blockEntity(String name, BlockEntityType.BlockEntitySupplier<T> tile, Supplier<Block[]> blocks) {
         return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(tile, Set.of(blocks.get())));
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static void onClientSetup() {
-        BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
-        BlockEntityRenderers.register(INFINITY_CHEST_TILE.get(), InfinityChestBlockRender::new);
     }
 
     public static DeferredHolder<BlockEntityType<?>, BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(

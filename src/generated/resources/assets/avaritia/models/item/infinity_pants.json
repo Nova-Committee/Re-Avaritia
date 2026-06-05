@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/infinity_pants"
+    "layer0": "avaritia:item/armor/legs/layer_0"
   }
 }

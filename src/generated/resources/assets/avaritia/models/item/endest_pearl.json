@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/endest_pearl"
+    "layer0": "avaritia:item/misc/endest_pearl/layer_0"
   }
 }

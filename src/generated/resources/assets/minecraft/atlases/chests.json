@@ -1,9 +1,3 @@
 {
-  "sources": [
-    {
-      "type": "minecraft:directory",
-      "prefix": "block/chest/",
-      "source": "block/chest"
-    }
-  ]
+  "sources": []
 }

@@ -13,10 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class AcceleratorDisplayRender extends EntityRenderer<AcceleratorDisplayEntity, AcceleratorDisplayRender.State> {
     private final Font font;
     private static final float SCALE = 0.02f;

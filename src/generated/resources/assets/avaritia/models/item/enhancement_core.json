@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/enhancement_core"
+    "layer0": "avaritia:item/misc/enhancement_core"
   }
 }

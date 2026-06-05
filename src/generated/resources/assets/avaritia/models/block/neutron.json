@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "avaritia:block/neutron"
+    "all": "avaritia:block/resource/neutron"
   }
 }

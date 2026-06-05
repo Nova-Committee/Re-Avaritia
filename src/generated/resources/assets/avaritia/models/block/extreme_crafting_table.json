@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_top",
   "textures": {
-    "all": "avaritia:block/extreme_crafting_table"
+    "side": "avaritia:block/machine/craft/extreme_side",
+    "top": "avaritia:block/machine/craft/extreme_top"
   }
 }

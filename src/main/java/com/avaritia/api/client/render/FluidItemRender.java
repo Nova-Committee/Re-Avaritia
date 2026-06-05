@@ -14,8 +14,6 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.client.fluid.FluidTintSources;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -27,7 +25,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * @CreateTime: 2025/2/28 13:55
  * @Description:
  */
-@OnlyIn(Dist.CLIENT)
 public final class FluidItemRender {
 
     private final TextureAtlasSprite sprite;

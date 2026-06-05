@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "avaritia:block/extreme_anvil"
+    "all": "avaritia:block/machine/extreme_anvil"
   }
 }

@@ -7,31 +7,19 @@ import com.avaritia.api.utils.PlayerUtils;
 import com.avaritia.common.item.misc.NeutronHorseArmorItem;
 import com.avaritia.common.item.tools.InfinityArmorItem;
 import com.avaritia.init.config.ModConfig;
-import com.avaritia.util.ToolUtils;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -237,41 +225,6 @@ public class AbilityHandler {
             stripAbilities(entity);
         }
     }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onRenderOverlay(RenderBlockScreenEffectEvent event) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.FIRE) {
-            event.setCanceled(true);
-        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.BLOCK) {
-            event.setCanceled(true);
-        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER) {
-            event.setCanceled(true);
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onFog(ViewportEvent.RenderFog event) {
-        Camera camera = event.getCamera();
-        Entity entity = camera.entity();
-
-        if (!(entity instanceof Player player)) return;
-        if (!ToolUtils.isWearingInfinityHelmet(player)) return;
-
-        FogType fogType = camera.getFluidInCamera();
-
-        if (fogType == FogType.LAVA || fogType == FogType.POWDER_SNOW) {
-
-            float farPlane = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0F;
-
-            event.setNearPlaneDistance(-8.0f);
-            event.setFarPlaneDistance(Math.min(96.0f, farPlane));
-        }
-    }
-
-
 
     private static void stripAbilities(Player player) {
         String key = player.getGameProfile().name() + ":" + player.level().isClientSide();

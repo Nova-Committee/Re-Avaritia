@@ -434,6 +434,7 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("jei.tooltip.avaritia.neutron_pile", "With a neutron collector, you can get a pile of neutrons after a while");
         add("jei.tooltip.avaritia.refined_coal", "Use Blaze Bush Axe to chop logs and obtain");
         add("jei.tooltip.shapeless.recipe", "Shapeless Recipe");
+        add("config.jade.plugin_avaritia.neutron_collector", "Neutronium Collector");
         add("config.jade.plugin_avaritia.compressor", "Compressor");
         add("config.jade.plugin_avaritia.crafting_table", "Avaritia Crafting");
         add("config.jade.plugin_avaritia.extreme_smithing", "Extreme Smithing");

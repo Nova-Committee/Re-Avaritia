@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_top",
   "textures": {
-    "all": "avaritia:block/fake_end_portal_frame"
+    "side": "minecraft:block/end_portal_frame_side",
+    "top": "minecraft:block/end_portal_frame_top"
   }
 }

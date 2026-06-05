@@ -14,8 +14,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -122,7 +120,6 @@ public class AcceleratorDisplayEntity extends Entity {
         return false;
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void renderEffects() {
         if (targetPos == null) return;
 

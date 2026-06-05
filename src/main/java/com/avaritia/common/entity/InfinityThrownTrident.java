@@ -22,8 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.*;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import org.jetbrains.annotations.NotNull;
 
@@ -213,12 +211,10 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         return 0.99F + 0.5F;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public boolean isFoil() {
         return false;
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
     public boolean shouldRender(double x, double y, double z) {
         return true;

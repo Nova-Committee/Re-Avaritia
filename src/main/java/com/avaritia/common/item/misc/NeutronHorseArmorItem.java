@@ -49,7 +49,7 @@ public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(ModEnchants.FROST_WALKER)) {
             return 10;
         }else if (enchantmentHolder.is(Enchantments.PROTECTION)) {

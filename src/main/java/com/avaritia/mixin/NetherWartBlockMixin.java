@@ -9,8 +9,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.VegetationBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @date 2024/11/2 20:37
  */
 @Mixin(NetherWartBlock.class)
-public abstract class NetherWartBlockMixin extends BushBlock implements BonemealableBlock {
+public abstract class NetherWartBlockMixin extends VegetationBlock implements BonemealableBlock {
 
     public NetherWartBlockMixin(Properties pProperties) {
         super(pProperties);

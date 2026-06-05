@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/infinity_elytra"
+    "layer0": "avaritia:item/armor/elytra/infinity_elytra"
   }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/upgrade_smithing_template"
+    "layer0": "avaritia:item/misc/upgrade_smithing_template"
   }
 }

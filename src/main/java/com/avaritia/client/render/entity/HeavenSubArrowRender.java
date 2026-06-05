@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.ArrowRenderState;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2022/4/20 18:54
  * Version: 1.0
  */
-@OnlyIn(Dist.CLIENT)
 public class HeavenSubArrowRender extends ArrowRenderer<HeavenSubArrowEntity, ArrowRenderState> {
     private static final Identifier HEAVEN_ARROW_TEXTURE = Identifier.fromNamespaceAndPath(Const.MOD_ID, "textures/entity/heaven_arrow.png");
 

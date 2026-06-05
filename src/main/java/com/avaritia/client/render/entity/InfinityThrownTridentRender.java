@@ -19,15 +19,12 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-@OnlyIn(Dist.CLIENT)
 public class InfinityThrownTridentRender extends EntityRenderer<InfinityThrownTrident, ThrownTridentRenderState> {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfinityThrownTridentRender.class);
     private final Map<String, CCModel> tridentModel;

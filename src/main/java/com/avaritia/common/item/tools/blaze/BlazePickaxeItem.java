@@ -20,6 +20,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -59,7 +60,7 @@ public class BlazePickaxeItem extends Item implements ITooltip, ISwitchable, Ini
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.FIRE_ASPECT)) {
             return 10;
         }

@@ -84,12 +84,12 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     @Override
     public int getEnchantmentLevel(@NonNull ItemInstance stack, @NonNull Holder<Enchantment> enchantment) {
        return 99;
-    }//附魔系数
+    }//闄勯瓟绯绘暟
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return 1200;
-    }//使用时间
+    }//浣跨敤鏃堕棿
 
     @Override
     public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack pStack) {
@@ -108,7 +108,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantment) {
         return this.initEnchantment.getLevel(enchantment);
     }
 
@@ -144,12 +144,12 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
 
                 float VELOCITY_MULTIPLIER = 1.2F;
                 float DAMAGE_MULTIPLIER = 5000.0F;
-                float draw = getPowerForTime(drawTime);//蓄力时间
+                float draw = getPowerForTime(drawTime);//钃勫姏鏃堕棿
                 float powerForTime = draw * VELOCITY_MULTIPLIER;
 
                 AbstractArrow arrowEntity = new HeavenArrowEntity(player);
 
-                if (isActive(stack, "infinity_bow_tracer")) {//追踪模式
+                if (isActive(stack, "infinity_bow_tracer")) {//杩借釜妯″紡
                     if ((double) powerForTime >= 0.1D) {
                         arrowEntity = new TraceArrowEntity(player);
                     }
@@ -157,7 +157,7 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
 
                 arrowEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, powerForTime * 3.0F, 0.01F);
                 if (draw == 1.0F) {
-                    arrowEntity.setCritArrow(true);//蓄力满必暴击
+                    arrowEntity.setCritArrow(true);//钃勫姏婊″繀鏆村嚮
                 }
                 double baseDamage = 2.0D * (double) DAMAGE_MULTIPLIER;
                 arrowEntity.setBaseDamage(baseDamage);
@@ -178,11 +178,11 @@ public class InfinityBowItem extends BowItem implements ISwitchable, InitEnchant
                 player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
                         .getOrThrow(Enchantments.FLAME);
 
-        int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//力量箭矢
+        int j = EnchantmentHelper.getTagEnchantmentLevel(POWER, stack);//鍔涢噺绠煝
         if (j > 0) {
             arrowEntity.setBaseDamage(baseDamage + (double) j * 0.5D + 0.5D);
         }
-        if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//火焰箭矢
+        if (EnchantmentHelper.getTagEnchantmentLevel(FLAMING, stack) > 0) {//鐏劙绠煝
             arrowEntity.setRemainingFireTicks(100);
         }
         stack.hurtAndBreak(1, player, player.getUsedItemHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);

@@ -21,12 +21,9 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 
-@OnlyIn(Dist.CLIENT)
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoidRender.State> {
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);

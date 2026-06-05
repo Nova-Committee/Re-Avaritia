@@ -13,10 +13,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class InfinityArmorRender<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
     private static final RenderType WING_RENDER_TYPE = RenderTypes.armorCutoutNoCull(Res.WING_TEX);
 

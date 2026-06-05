@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/infinity_catalyst"
+    "layer0": "avaritia:item/resource/infinity/infinity_catalyst"
   }
 }

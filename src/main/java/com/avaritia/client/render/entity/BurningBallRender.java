@@ -15,11 +15,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-@OnlyIn(Dist.CLIENT)
 public class BurningBallRender extends EntityRenderer<BurningBallEntity, EntityRenderState> {
     private static final RenderType RENDER_TYPE = RenderTypes.entityCutout(Res.DRAGON_FIREBALL);
 

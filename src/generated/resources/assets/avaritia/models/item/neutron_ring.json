@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/neutron_ring"
+    "layer0": "avaritia:item/misc/neutron_ring"
   }
 }

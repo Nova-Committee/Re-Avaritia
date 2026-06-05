@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.TooltipFlag;
@@ -76,7 +77,7 @@ public class BlazeShovelItem extends ShovelItem implements ITooltip, ISwitchable
     }
 
     @Override
-    public int getInitEnchantLevel(ItemStack stack, Holder<Enchantment> enchantmentHolder) {
+    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(Enchantments.FIRE_ASPECT)) {
             return 10;
         }
