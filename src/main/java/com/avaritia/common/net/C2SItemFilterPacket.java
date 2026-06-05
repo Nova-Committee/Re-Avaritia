@@ -12,6 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record C2SItemFilterPacket(ItemStack stack, int action) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<C2SItemFilterPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
+    public static final CustomPacketPayload.Type<C2SItemFilterPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_item_filter"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SItemFilterPacket> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
             C2SItemFilterPacket::stack,
@@ -46,28 +47,31 @@ public record C2SItemFilterPacket(ItemStack stack, int action) implements Custom
             context.enqueueWork(() -> {
                 var player = context.player();
                 if (player instanceof ServerPlayer serverPlayer) {
-                    if (serverPlayer.getMainHandItem().getItem() instanceof IFilterItem) {
-                        var tag = player.getMainHandItem().getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
-                        switch(packet.action) {
-                            case 0 -> {
-                                if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                    tag.put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
-                                }
-                            }
-                            case 1 -> {
-                                if (tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                    tag.remove(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString());
-                                }
-                            }
-                            case 2 -> {
-                                tag.keySet().forEach(tag::remove);
-                            }
-                        }
-
+                    ItemStack toolStack = serverPlayer.getMainHandItem();
+                    if (toolStack.getItem() instanceof IFilterItem) {
+                        CompoundTag filters = toolStack.getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
+                        toolStack.set(ModDataComponents.TOOL_FILTERS.get(), mutateFilterTag(filters, packet.stack, packet.action));
                     }
                 }
-
             });
         }
+    }
+
+    public static CompoundTag mutateFilterTag(CompoundTag currentFilters, ItemStack filterStack, int action) {
+        CompoundTag filters = currentFilters == null ? new CompoundTag() : currentFilters.copy();
+        if (action == 2) {
+            return new CompoundTag();
+        }
+        if (filterStack == null || filterStack.isEmpty()) {
+            return filters;
+        }
+
+        String key = BuiltInRegistries.ITEM.getKey(filterStack.getItem()).toString();
+        CustomData customData = filterStack.get(DataComponents.CUSTOM_DATA);
+        return ItemFilterTags.mutate(currentFilters, key, customData == null ? null : customData.copyTag(), action);
+    }
+
+    public static CompoundTag mutateFilterTag(CompoundTag currentFilters, String key, CompoundTag customData, int action) {
+        return ItemFilterTags.mutate(currentFilters, key, customData, action);
     }
 }

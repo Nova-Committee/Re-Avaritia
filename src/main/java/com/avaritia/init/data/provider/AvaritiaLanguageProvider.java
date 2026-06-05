@@ -654,6 +654,8 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("gui.avaritia.back", "back");
         add("gui.avaritia.backChannel.tip1", "Back");
         add("gui.avaritia.cancel", "Cancel");
+        add("gui.avaritia.add", "Add");
+        add("gui.avaritia.clear", "Clear");
         add("gui.avaritia.capability.tip1", "§aLMB§r : Input 1 stack %d to carried");
         add("gui.avaritia.capability.tip2", "§aRMB§r : Output 1 stack object from carried");
         add("gui.avaritia.capability.tip3", "§dLSHIFT§r : Full it !");
@@ -684,6 +686,7 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("gui.avaritia.port.west", "West");
         add("gui.avaritia.public", "Public");
         add("gui.avaritia.rate.tip", "Active port working rate; lower is faster");
+        add("gui.avaritia.remove", "Remove");
         add("gui.avaritia.removeChannel.tip1", "Remove: \"%d\"");
         add("gui.avaritia.removeChannel.tip2", "§cChannel must be empty");
         add("gui.avaritia.renameChannel.tip1", "Rename: \"%d\"");
@@ -713,6 +716,12 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("gui.avaritia.view.all", "§aAll");
         add("gui.avaritia.view.fluid", "§aFluids");
         add("gui.avaritia.view.item", "§aItems");
+        add("gui.avaritia.item_filter.count", "Filters: %s");
+        add("gui.avaritia.item_select.all", "All");
+        add("gui.avaritia.item_select.count", "Items: %s");
+        add("gui.avaritia.item_select.inventory", "Inventory");
+        add("title.avaritia.item_filter", "Infinity Tool Filter");
+        add("title.avaritia.item_select", "Select Item");
 
         add("info.avaritia.channel.add_success", "Successfully added channel: %s %s %s");
         add("info.avaritia.channel.load_error", "Load Channel Error!");

@@ -3,6 +3,7 @@ package com.avaritia.common.item.tools.infinity;
 import com.avaritia.init.registry.ModItems;
 
 import com.avaritia.api.common.enchant.InitEnchantment;
+import com.avaritia.api.iface.IFilterItem;
 import com.avaritia.api.iface.item.ISwitchable;
 import com.avaritia.api.iface.item.IUndamageable;
 import com.avaritia.api.iface.item.InitEnchantItem;
@@ -47,7 +48,7 @@ import java.util.function.Consumer;
  * Date: 2022/3/31 10:25
  * Version: 1.0
  */
-public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitchable, IUndamageable {
+public class InfinityPickaxeItem extends Item implements InitEnchantItem, ISwitchable, IUndamageable, IFilterItem {
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.FORTUNE, 10);
 
     private static final float SMASH_FALL_THRESHOLD = 1.5F;

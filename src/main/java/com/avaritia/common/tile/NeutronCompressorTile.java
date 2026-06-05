@@ -90,7 +90,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     }
 
     public static ItemStackWrapper createInventoryHandler(OnContentsChangedFunction onContentsChanged) {
-        return ItemStackWrapper.create(2, builder -> {
+        return ItemStackWrapper.create(2, onContentsChanged, builder -> {
             builder.setOutputSlots(0);
             builder.setCanExtract((slot) -> slot == 1 || slot == 0);
         });
@@ -286,7 +286,7 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     }
 
     public boolean canEjectMaterials() {
-        return this.materialCount > 0 &&
+        return this.materialCount > 0 && this.hasRecipe() &&
                 (this.materialCount < this.getActiveRecipe().getInputCount() * this.tier.inputAmplifier);
     }
 
@@ -387,9 +387,14 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
                 continue;
             }
 
+            ICompressorRecipe activeRecipe = this.getActiveRecipe();
+            if (!materialStack.isEmpty() && activeRecipe == null) {
+                continue;
+            }
+
             // 计算可转移的数量
             int maxTransfer = Math.min(stack.getCount(), 64); // 每次最多转移64个
-            int spaceInInput = materialStack.isEmpty() ? 64 : (int) (this.getActiveRecipe().getInputCount() * this.tier.inputAmplifier - materialCount);
+            int spaceInInput = materialStack.isEmpty() ? 64 : (int) (activeRecipe.getInputCount() * this.tier.inputAmplifier - materialCount);
 
             int inputCount = inputSlot.isEmpty() ? 64 : inputSlot.getMaxStackSize() - inputSlot.getCount();
 

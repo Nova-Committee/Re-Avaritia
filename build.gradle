@@ -18,6 +18,9 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache")
 }
 
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
+
 repositories {
     mavenCentral()
 

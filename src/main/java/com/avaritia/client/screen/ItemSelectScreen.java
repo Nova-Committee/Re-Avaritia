@@ -1,44 +1,50 @@
 package com.avaritia.client.screen;
 
-import com.avaritia.client.AvaritiaClient;
-import com.avaritia.common.net.C2SItemFilterPacket;
-import com.avaritia.init.handler.NetworkHandler;
-import com.avaritia.init.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Locale;
+import java.util.function.Consumer;
 
-public class ItemFilterScreen extends Screen {
+public class ItemSelectScreen extends Screen {
     private static final int COLUMNS = 9;
     private static final int ROWS = 5;
     private static final int SLOT_SIZE = 18;
     private static final int GAP = 3;
-    private static final int PANEL_WIDTH = 218;
-    private static final int PANEL_HEIGHT = 166;
+    private static final int PANEL_WIDTH = 260;
+    private static final int PANEL_HEIGHT = 178;
 
-    private final List<ItemStack> filterItems = new ArrayList<>();
+    private final Screen previousScreen;
+    private final Consumer<ItemStack> onSelected;
+    private final List<ItemStack> results = new ArrayList<>();
+    private ItemStack selectedStack;
+    private EditBox searchBox;
+    private Button modeButton;
+    private Button selectButton;
+    private boolean inventoryMode = false;
+    private String searchText = "";
+    private int selectedIndex = -1;
     private int panelX;
     private int panelY;
     private int gridX;
     private int gridY;
-    private int selectedIndex = -1;
     private int scrollOffset = 0;
     private int scrollbarX;
     private int scrollbarY;
@@ -46,11 +52,12 @@ public class ItemFilterScreen extends Screen {
     private int scrollbarHandleY;
     private int scrollbarHandleHeight;
     private boolean draggingScrollbar = false;
-    private Button removeButton;
-    private Button clearButton;
 
-    public ItemFilterScreen() {
-        super(Component.translatable("title.avaritia.item_filter"));
+    public ItemSelectScreen(Screen previousScreen, Consumer<ItemStack> onSelected, ItemStack defaultItem) {
+        super(Component.translatable("title.avaritia.item_select"));
+        this.previousScreen = previousScreen;
+        this.onSelected = onSelected;
+        this.selectedStack = defaultItem.isEmpty() ? ItemStack.EMPTY : defaultItem.copyWithCount(1);
     }
 
     @Override
@@ -58,23 +65,29 @@ public class ItemFilterScreen extends Screen {
         super.init();
         clearWidgets();
         updateLayout();
-        refreshFilters();
+        refreshResults();
 
-        addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.add"), button ->
-                minecraft.setScreen(new ItemSelectScreen(this, stack -> sendFilterUpdate(stack, 0), Items.DIRT.getDefaultInstance()))
-        ).bounds(panelX + 8, panelY + PANEL_HEIGHT - 28, 64, 20).build());
+        searchBox = new EditBox(font, panelX + 10, panelY + 20, 160, 18, Component.translatable("gui.avaritia.search"));
+        searchBox.setValue(searchText);
+        searchBox.setHint(Component.translatable("gui.avaritia.search"));
+        searchBox.setResponder(value -> {
+            searchText = value;
+            refreshResults();
+        });
+        addRenderableWidget(searchBox);
 
-        removeButton = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.remove"), button -> {
-            ItemStack selected = getSelectedStack();
-            if (!selected.isEmpty()) {
-                sendFilterUpdate(selected, 1);
-            }
-        }).bounds(panelX + 77, panelY + PANEL_HEIGHT - 28, 64, 20).build());
+        modeButton = addRenderableWidget(Button.builder(modeText(), button -> {
+            inventoryMode = !inventoryMode;
+            modeButton.setMessage(modeText());
+            refreshResults();
+        }).bounds(panelX + PANEL_WIDTH - 82, panelY + 19, 72, 20).build());
 
-        clearButton = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.clear"), button ->
-                sendFilterUpdate(ItemStack.EMPTY, 2)
-        ).bounds(panelX + 146, panelY + PANEL_HEIGHT - 28, 64, 20).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.cancel"), button ->
+                minecraft.setScreen(previousScreen)
+        ).bounds(panelX + 52, panelY + PANEL_HEIGHT - 28, 74, 20).build());
 
+        selectButton = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.confirm"), button -> confirmSelection()
+        ).bounds(panelX + 134, panelY + PANEL_HEIGHT - 28, 74, 20).build());
         refreshButtonStates();
     }
 
@@ -92,8 +105,8 @@ public class ItemFilterScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         updateScrollbarMetrics();
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        graphics.centeredText(font, title, width / 2, panelY + 8, 0xFFFFFF);
-        graphics.text(font, Component.translatable("gui.avaritia.item_filter.count", filterItems.size()), panelX + 8, panelY + PANEL_HEIGHT - 48, 0xCFCFCF);
+        graphics.centeredText(font, title, width / 2, panelY + 7, 0xFFFFFF);
+        graphics.text(font, Component.translatable("gui.avaritia.item_select.count", results.size()), panelX + 10, panelY + PANEL_HEIGHT - 48, 0xCFCFCF);
 
         for (int row = 0; row < ROWS; row++) {
             for (int column = 0; column < COLUMNS; column++) {
@@ -103,8 +116,8 @@ public class ItemFilterScreen extends Screen {
                 int color = index == selectedIndex ? 0xFF7CAB7C : isInside(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE) ? 0xFF5E6670 : 0xFF3B3F45;
                 graphics.fill(x, y, x + SLOT_SIZE, y + SLOT_SIZE, color);
                 graphics.outline(x, y, SLOT_SIZE, SLOT_SIZE, 0xFF111111);
-                if (index >= 0 && index < filterItems.size()) {
-                    ItemStack stack = filterItems.get(index);
+                if (index >= 0 && index < results.size()) {
+                    ItemStack stack = results.get(index);
                     graphics.item(stack, x + 1, y + 1);
                     graphics.itemDecorations(font, stack, x + 1, y + 1);
                     if (isInside(mouseX, mouseY, x, y, SLOT_SIZE, SLOT_SIZE)) {
@@ -114,15 +127,22 @@ public class ItemFilterScreen extends Screen {
             }
         }
 
+        int previewX = panelX + PANEL_WIDTH - 33;
+        int previewY = gridY + 28;
+        graphics.fill(previewX - 2, previewY - 2, previewX + 20, previewY + 20, 0xFF3B3F45);
+        graphics.outline(previewX - 2, previewY - 2, 22, 22, 0xFF111111);
+        if (!selectedStack.isEmpty()) {
+            graphics.item(selectedStack, previewX, previewY);
+            graphics.itemDecorations(font, selectedStack, previewX, previewY);
+            if (isInside(mouseX, mouseY, previewX - 2, previewY - 2, 22, 22)) {
+                graphics.setTooltipForNextFrame(font, buildTooltip(selectedStack), selectedStack.getTooltipImage(), selectedStack, mouseX, mouseY);
+            }
+        }
+
         if (maxScrollOffset() > 0) {
             graphics.fill(scrollbarX, scrollbarY, scrollbarX + 5, scrollbarY + scrollbarHeight, 0xAA111111);
             graphics.fill(scrollbarX, scrollbarHandleY, scrollbarX + 5, scrollbarHandleY + scrollbarHandleHeight, 0xFFB6B6B6);
         }
-    }
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
     }
 
     @Override
@@ -144,8 +164,9 @@ public class ItemFilterScreen extends Screen {
             }
 
             int hoveredIndex = getHoveredItemIndex(event.x(), event.y());
-            if (hoveredIndex >= 0 && hoveredIndex < filterItems.size()) {
+            if (hoveredIndex >= 0 && hoveredIndex < results.size()) {
                 selectedIndex = hoveredIndex;
+                selectedStack = results.get(hoveredIndex).copyWithCount(1);
                 refreshButtonStates();
                 return true;
             }
@@ -172,70 +193,106 @@ public class ItemFilterScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (AvaritiaClient.FILTER_KEY.matches(event)) {
-            this.onClose();
+        if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+            minecraft.setScreen(previousScreen);
+            return true;
+        }
+        if ((event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER) && searchBox != null && !searchBox.isFocused()) {
+            confirmSelection();
             return true;
         }
         return super.keyPressed(event);
     }
 
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(previousScreen);
+    }
+
+    private void confirmSelection() {
+        if (!selectedStack.isEmpty()) {
+            onSelected.accept(selectedStack.copyWithCount(1));
+        }
+        minecraft.setScreen(previousScreen);
+    }
+
     private void updateLayout() {
         this.panelX = (this.width - PANEL_WIDTH) / 2;
         this.panelY = (this.height - PANEL_HEIGHT) / 2;
-        this.gridX = panelX + 8;
-        this.gridY = panelY + 28;
+        this.gridX = panelX + 10;
+        this.gridY = panelY + 48;
     }
 
-    private void refreshFilters() {
-        filterItems.clear();
-        ItemStack toolStack = minecraft.player == null ? ItemStack.EMPTY : minecraft.player.getMainHandItem();
-        CompoundTag filters = toolStack.getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
-        filters.keySet().stream().sorted().forEach(key -> stackFromFilterEntry(key, filters.getCompoundOrEmpty(key)).ifPresent(filterItems::add));
-        setScrollOffset(scrollOffset);
-        if (selectedIndex >= filterItems.size()) {
-            selectedIndex = filterItems.isEmpty() ? -1 : filterItems.size() - 1;
+    private void refreshResults() {
+        results.clear();
+        String query = searchText == null ? "" : searchText.trim().toLowerCase(Locale.ROOT);
+        boolean tagSearch = query.startsWith("#");
+        String tagQuery = tagSearch ? query.substring(1) : query;
+        for (ItemStack stack : sourceItems()) {
+            if (matches(stack, query, tagSearch, tagQuery)) {
+                results.add(stack);
+            }
         }
+        setScrollOffset(0);
+        selectedIndex = findSelectedIndex();
         refreshButtonStates();
     }
 
-    private Optional<ItemStack> stackFromFilterEntry(String key, CompoundTag customData) {
-        Identifier id = Identifier.tryParse(key);
-        if (id == null) {
-            return Optional.empty();
+    private List<ItemStack> sourceItems() {
+        if (inventoryMode && minecraft.player != null) {
+            return inventoryItems(minecraft.player.getInventory());
         }
-        Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(Items.AIR);
-        if (item == Items.AIR) {
-            return Optional.empty();
-        }
-        ItemStack stack = new ItemStack(item);
-        if (!customData.isEmpty()) {
-            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(customData));
-        }
-        return Optional.of(stack);
+        return BuiltInRegistries.ITEM.stream()
+                .filter(item -> item != Items.AIR)
+                .map(item -> new ItemStack(item, 1))
+                .sorted(Comparator.comparing(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).toString()))
+                .toList();
     }
 
-    private void sendFilterUpdate(ItemStack stack, int action) {
-        ItemStack filterStack = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
-        NetworkHandler.sendToServer(new C2SItemFilterPacket(filterStack, action));
-        if (minecraft.player != null) {
-            ItemStack toolStack = minecraft.player.getMainHandItem();
-            CompoundTag filters = toolStack.getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
-            toolStack.set(ModDataComponents.TOOL_FILTERS.get(), C2SItemFilterPacket.mutateFilterTag(filters, filterStack, action));
+    private List<ItemStack> inventoryItems(Inventory inventory) {
+        List<ItemStack> stacks = new ArrayList<>();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty()) {
+                stacks.add(stack.copyWithCount(1));
+            }
         }
-        refreshFilters();
+        stacks.sort(Comparator.comparing(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).toString()));
+        return stacks;
     }
 
-    private ItemStack getSelectedStack() {
-        return selectedIndex >= 0 && selectedIndex < filterItems.size() ? filterItems.get(selectedIndex) : ItemStack.EMPTY;
+    private boolean matches(ItemStack stack, String query, boolean tagSearch, String tagQuery) {
+        if (query.isEmpty()) {
+            return true;
+        }
+        if (tagSearch) {
+            return stack.typeHolder().tags().anyMatch(tag -> matchesIdentifier(tag.location(), tagQuery));
+        }
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return id.toString().toLowerCase(Locale.ROOT).contains(query)
+                || stack.getHoverName().getString().toLowerCase(Locale.ROOT).contains(query);
     }
 
-    private void refreshButtonStates() {
-        if (removeButton != null) {
-            removeButton.active = !getSelectedStack().isEmpty();
+    private static boolean matchesIdentifier(Identifier id, String query) {
+        String value = id.toString().toLowerCase(Locale.ROOT);
+        return query.isEmpty() || value.contains(query);
+    }
+
+    private int findSelectedIndex() {
+        if (selectedStack.isEmpty()) {
+            return -1;
         }
-        if (clearButton != null) {
-            clearButton.active = !filterItems.isEmpty();
+        for (int i = 0; i < results.size(); i++) {
+            if (ItemStack.isSameItemSameComponents(selectedStack, results.get(i))) {
+                return i;
+            }
         }
+        return -1;
     }
 
     private List<Component> buildTooltip(ItemStack stack) {
@@ -245,6 +302,16 @@ public class ItemFilterScreen extends Screen {
                 .limit(8)
                 .forEach(tag -> tooltip.add(Component.literal("#" + tag.location()).withStyle(ChatFormatting.DARK_PURPLE)));
         return tooltip;
+    }
+
+    private Component modeText() {
+        return Component.translatable(inventoryMode ? "gui.avaritia.item_select.inventory" : "gui.avaritia.item_select.all");
+    }
+
+    private void refreshButtonStates() {
+        if (selectButton != null) {
+            selectButton.active = !selectedStack.isEmpty();
+        }
     }
 
     private int getHoveredItemIndex(double mouseX, double mouseY) {
@@ -264,7 +331,7 @@ public class ItemFilterScreen extends Screen {
     }
 
     private int maxScrollOffset() {
-        return Math.max(0, (int) Math.ceil((double) filterItems.size() / COLUMNS) - ROWS);
+        return Math.max(0, (int) Math.ceil((double) results.size() / COLUMNS) - ROWS);
     }
 
     private void updateScrollbarMetrics() {
@@ -277,7 +344,7 @@ public class ItemFilterScreen extends Screen {
             scrollbarHandleHeight = scrollbarHeight;
             return;
         }
-        int totalRows = (int) Math.ceil((double) filterItems.size() / COLUMNS);
+        int totalRows = (int) Math.ceil((double) results.size() / COLUMNS);
         scrollbarHandleHeight = Math.max(16, scrollbarHeight * ROWS / totalRows);
         scrollbarHandleY = scrollbarY + (int) ((double) scrollOffset / maxOffset * (scrollbarHeight - scrollbarHandleHeight));
     }

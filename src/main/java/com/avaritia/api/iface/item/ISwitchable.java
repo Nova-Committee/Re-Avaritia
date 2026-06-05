@@ -54,7 +54,12 @@ public interface ISwitchable {
         }
         // 如果没有找到激活的模式且模式列表不为空，默认激活第一个模式
         if (!modeList.isEmpty()) {
-            modeTag.putBoolean(modeList.get(0), true);
+            stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY,
+                    customData -> customData.update(tag -> {
+                        CompoundTag newModeTag = tag.getCompound("mode").orElseGet(CompoundTag::new);
+                        newModeTag.putBoolean(modeList.get(0), true);
+                        tag.put("mode", newModeTag);
+                    }));
             return 0;
         }
         return -1; // 无激活模式
@@ -124,15 +129,7 @@ public interface ISwitchable {
         if (!modeList.contains(modeName)) return;
 
         ItemStack stack = player.getItemInHand(hand);
-        CompoundTag modeTag = ItemUtils.getOrCreateChildTag(stack, "mode");
-
-        // 关闭所有模式
-        for (String mode : modeList) {
-            modeTag.putBoolean(mode, false);
-        }
-
-        // 激活指定模式
-        modeTag.putBoolean(modeName, true);
+        setMode(stack, modeList, modeList.indexOf(modeName));
 
         if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             Component modeTooltip = Component.translatable("tooltip.avaritia.tool." + modeName);
