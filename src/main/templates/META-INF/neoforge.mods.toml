@@ -48,7 +48,7 @@ config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId = "jei"
     type = "optional"
-    versionRange = "[19,)"
+    versionRange = "[29.6.0.29,29.6.0.30)"
     ordering = "NONE"
     side = "CLIENT"
 
