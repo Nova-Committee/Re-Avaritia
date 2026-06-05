@@ -1,0 +1,31 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "minecraft:redstone_block",
+    "B": "avaritia:neutron_ingot",
+    "C": "avaritia:neutron_gear",
+    "X": "avaritia:denser_neutron_compressor",
+    "Y": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "components": {
+        "avaritia:singularity_id": "avaritia:redstone"
+      },
+      "items": "avaritia:singularity"
+    }
+  },
+  "pattern": [
+    "CC     CC",
+    "C  BBB  C",
+    "  AAAAA  ",
+    " BAXXXAB ",
+    " BAXYXAB ",
+    " BAXXXAB ",
+    "  AAAAA  ",
+    "C  BBB  C",
+    "CC     CC"
+  ],
+  "result": {
+    "id": "avaritia:densest_neutron_compressor"
+  },
+  "tier": 4
+}

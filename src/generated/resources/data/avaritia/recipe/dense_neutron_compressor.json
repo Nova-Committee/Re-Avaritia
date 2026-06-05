@@ -1,0 +1,27 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "minecraft:ender_pearl",
+    "B": "minecraft:nether_star",
+    "C": "avaritia:diamond_lattice",
+    "D": "avaritia:neutron_ingot",
+    "E": "minecraft:emerald_block",
+    "F": "avaritia:endest_pearl",
+    "G": "avaritia:neutron_compressor"
+  },
+  "pattern": [
+    "AAC   CAA",
+    "AB     BA",
+    "C DEEED C",
+    "  EGGGE  ",
+    "  EGFGE  ",
+    "  EGGGE  ",
+    "C DEEED C",
+    "AB     BA",
+    "AAC   CAA"
+  ],
+  "result": {
+    "id": "avaritia:dense_neutron_compressor"
+  },
+  "tier": 4
+}

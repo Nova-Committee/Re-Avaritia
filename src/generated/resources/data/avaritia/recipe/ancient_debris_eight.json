@@ -1,0 +1,18 @@
+{
+  "type": "avaritia:no_consume_catalyst_shaped",
+  "key": {
+    "a": "avaritia:infinity_catalyst",
+    "b": "minecraft:netherite_scrap",
+    "c": "minecraft:diamond"
+  },
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
+  "result": {
+    "count": 8,
+    "id": "minecraft:ancient_debris"
+  },
+  "tier": 1
+}

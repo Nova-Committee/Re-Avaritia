@@ -1,0 +1,30 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "B": "avaritia:neutron",
+    "C": "avaritia:crystal_matrix_ingot",
+    "D": "avaritia:neutron_nugget",
+    "E": "minecraft:flint_and_steel",
+    "F": "minecraft:water_bucket",
+    "G": "minecraft:trident",
+    "I": "avaritia:infinity_ingot",
+    "N": "avaritia:neutron_ingot",
+    "X": "avaritia:infinity_nugget"
+  },
+  "pattern": [
+    " IBNND  C",
+    " INENNNA ",
+    " XINNNBN ",
+    "  INNFNND",
+    "   INNNNN",
+    "   NINNGN",
+    "  N  IINB",
+    " B    XII",
+    "ACC      "
+  ],
+  "result": {
+    "id": "avaritia:infinity_umbrella"
+  },
+  "tier": 4
+}

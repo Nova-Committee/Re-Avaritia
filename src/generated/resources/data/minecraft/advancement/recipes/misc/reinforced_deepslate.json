@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sculk_catalyst": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:sculk_catalyst"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:reinforced_deepslate"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sculk_catalyst"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:reinforced_deepslate"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:neutron_ingot",
+    "b": "avaritia:crystal_matrix_ingot",
+    "c": "avaritia:diamond_lattice_block",
+    "d": "avaritia:endest_pearl",
+    "e": "avaritia:infinity_catalyst"
+  },
+  "pattern": [
+    "  aaa  ",
+    " cbbbc ",
+    "ab d ba",
+    "abdedba",
+    "ab d ba",
+    " cbbbc ",
+    "  aaa  "
+  ],
+  "result": {
+    "id": "avaritia:neutron_ring"
+  },
+  "tier": 3
+}

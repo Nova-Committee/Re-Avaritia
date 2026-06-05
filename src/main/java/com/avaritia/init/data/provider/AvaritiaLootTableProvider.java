@@ -47,7 +47,17 @@ public class AvaritiaLootTableProvider extends LootTableProvider {
         @Override
         protected void generate() {
             // 为所有拥有对应物品的方块生成自爆战利品表
-            getKnownBlocks().forEach(this::dropSelf);
+            for (Block block : getKnownBlocks()) {
+                if (block == ModBlocks.infinity_chest.get()) {
+                    this.add(block, noDrop());
+                } else if (block == ModBlocks.fake_bedrock.get()
+                        || block == ModBlocks.fake_end_portal_frame.get()
+                        || block == ModBlocks.fake_end_portal.get()) {
+                    this.add(block, noDrop());
+                } else if (block.asItem() != Items.AIR) {
+                    this.dropSelf(block);
+                }
+            }
         }
 
         @Override
@@ -55,7 +65,6 @@ public class AvaritiaLootTableProvider extends LootTableProvider {
             return ModBlocks.BLOCKS.getEntries().stream()
                     .map(holder -> (Block) holder.get())
                     // 仅包含有对应方块物品的方块（排除无物品的假方块）
-                    .filter(block -> block.asItem() != Items.AIR)
                     .collect(Collectors.toList());
         }
     }

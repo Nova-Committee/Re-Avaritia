@@ -1,0 +1,33 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "E": {
+      "neoforge:ingredient_type": "avaritia:tag",
+      "tag": "c:end_stones"
+    },
+    "N": "avaritia:neutron_ingot",
+    "P": {
+      "neoforge:ingredient_type": "avaritia:tag",
+      "tag": "c:ender_pearls"
+    },
+    "S": {
+      "neoforge:ingredient_type": "avaritia:tag",
+      "tag": "c:nether_stars"
+    }
+  },
+  "pattern": [
+    "   EEE   ",
+    " EEPPPEE ",
+    " EPPPPPE ",
+    "EPPPNPPPE",
+    "EPPNSNPPE",
+    "EPPPNPPPE",
+    " EPPPPPE ",
+    " EEPPPEE ",
+    "   EEE   "
+  ],
+  "result": {
+    "id": "avaritia:endest_pearl"
+  },
+  "tier": 4
+}

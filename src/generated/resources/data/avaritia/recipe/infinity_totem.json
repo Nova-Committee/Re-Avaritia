@@ -1,0 +1,16 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      "minecraft:experience_bottle",
+      "avaritia:enhancement_core",
+      "minecraft:beacon"
+    ]
+  },
+  "base": "minecraft:totem_of_undying",
+  "result": {
+    "id": "avaritia:infinity_totem"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

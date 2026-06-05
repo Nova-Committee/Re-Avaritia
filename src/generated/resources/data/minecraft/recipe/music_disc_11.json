@@ -1,0 +1,15 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:record_fragment"
+  },
+  "pattern": [
+    "a a",
+    " a ",
+    "a a"
+  ],
+  "result": {
+    "id": "minecraft:music_disc_11"
+  },
+  "tier": 1
+}

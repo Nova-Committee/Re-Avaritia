@@ -1,0 +1,19 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "C": "avaritia:crystal_matrix_ingot",
+    "N": "avaritia:neutron_ingot",
+    "X": "avaritia:infinity_catalyst"
+  },
+  "pattern": [
+    "NNNNNNNNN",
+    "NCXXCXXCN",
+    "NXCCXCCXN",
+    "NCXXCXXCN",
+    "NNNNNNNNN"
+  ],
+  "result": {
+    "id": "avaritia:infinity_ingot"
+  },
+  "tier": 4
+}

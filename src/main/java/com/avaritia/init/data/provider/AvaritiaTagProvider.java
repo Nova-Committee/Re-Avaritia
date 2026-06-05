@@ -11,8 +11,11 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -45,6 +48,46 @@ public class AvaritiaTagProvider implements DataProvider {
                 // ========== 物品标签 ==========
 
                 // --- avaritia:singularity —— 奇点物品 ---
+                tag(ItemTags.HOES).add(
+                        ModItems.infinity_hoe.get(),
+                        ModItems.crystal_hoe.get(),
+                        ModItems.blaze_hoe.get()
+                );
+
+                tag(ItemTags.SHOVELS).add(
+                        ModItems.infinity_shovel.get(),
+                        ModItems.crystal_shovel.get(),
+                        ModItems.blaze_shovel.get()
+                );
+
+                tag(ItemTags.SWORDS).add(
+                        ModItems.infinity_sword.get(),
+                        ModItems.crystal_sword.get(),
+                        ModItems.blaze_sword.get()
+                );
+
+                tag(ItemTags.AXES).add(
+                        ModItems.infinity_axe.get(),
+                        ModItems.crystal_axe.get(),
+                        ModItems.blaze_axe.get()
+                );
+
+                tag(ItemTags.PICKAXES).add(
+                        ModItems.infinity_pickaxe.get(),
+                        ModItems.crystal_pickaxe.get(),
+                        ModItems.blaze_pickaxe.get()
+                );
+
+                tag(ItemTags.FREEZE_IMMUNE_WEARABLES).add(
+                        ModItems.infinity_helmet.get(),
+                        ModItems.infinity_chestplate.get(),
+                        ModItems.infinity_pants.get(),
+                        ModItems.infinity_boots.get()
+                );
+
+                tag(ModTags.CURIOS_RING).add(ModItems.neutron_ring.get());
+                tag(ModTags.CURIOS_CHARM).add(ModItems.infinity_totem.get());
+
                 tag(ModTags.SINGULARITY).add(
                         ModItems.singularity.get(),
                         ModItems.eternal_singularity.get()
@@ -122,6 +165,56 @@ public class AvaritiaTagProvider implements DataProvider {
                 // ========== 方块标签 ==========
 
                 // --- c:storage_blocks/neutronium —— 中子素块 ---
+                tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
+                        ModBlocks.compressed_crafting_table.get(),
+                        ModBlocks.double_compressed_crafting_table.get(),
+                        ModBlocks.sculk_crafting_table.get(),
+                        ModBlocks.nether_crafting_table.get(),
+                        ModBlocks.end_crafting_table.get(),
+                        ModBlocks.extreme_crafting_table.get(),
+                        ModBlocks.crystal_matrix.get(),
+                        ModBlocks.infinity.get(),
+                        ModBlocks.neutron.get(),
+                        ModBlocks.neutron_collector.get(),
+                        ModBlocks.dense_neutron_collector.get(),
+                        ModBlocks.denser_neutron_collector.get(),
+                        ModBlocks.densest_neutron_collector.get(),
+                        ModBlocks.neutron_compressor.get(),
+                        ModBlocks.dense_neutron_compressor.get(),
+                        ModBlocks.denser_neutron_compressor.get(),
+                        ModBlocks.densest_neutron_compressor.get(),
+                        ModBlocks.extreme_anvil.get(),
+                        ModBlocks.infinity_chest.get(),
+                        ModBlocks.extreme_smithing_table.get(),
+                        Blocks.BEDROCK,
+                        Blocks.END_PORTAL_FRAME,
+                        Blocks.END_PORTAL,
+                        ModBlocks.fake_bedrock.get(),
+                        ModBlocks.fake_end_portal_frame.get(),
+                        ModBlocks.fake_end_portal.get()
+                );
+
+                tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.compressed_chest.get());
+
+                tag(BlockTags.MINEABLE_WITH_SHOVEL).add(
+                        ModBlocks.endless_cake.get(),
+                        ModBlocks.soul_farmland.get()
+                );
+
+                tag(BlockTags.BEACON_BASE_BLOCKS).add(
+                        ModBlocks.crystal_matrix.get(),
+                        ModBlocks.infinity.get(),
+                        ModBlocks.neutron.get(),
+                        ModBlocks.endless_cake.get()
+                );
+
+                tag(BlockTags.PORTALS).add(
+                        ModBlocks.infinity.get(),
+                        ModBlocks.neutron.get()
+                );
+
+                tag(BlockTags.ANVIL).add(ModBlocks.extreme_anvil.get());
+
                 tag(ModTags.NEUTRON_BLOCK).add(
                         ModBlocks.neutron.get()
                 );
@@ -129,6 +222,17 @@ public class AvaritiaTagProvider implements DataProvider {
                 // --- avaritia:extreme_anvil_unbreak —— 极压砧不可破坏的方块 ---
                 // 这些方块硬度极高，极压砧下落时无法将其破坏
                 tag(ModTags.EXTREME_ANVIL_UNBREAK).add(
+                        ModBlocks.dense_neutron_collector.get(),
+                        ModBlocks.denser_neutron_collector.get(),
+                        ModBlocks.densest_neutron_collector.get(),
+                        ModBlocks.extreme_crafting_table.get(),
+                        ModBlocks.extreme_smithing_table.get(),
+                        ModBlocks.neutron_compressor.get(),
+                        ModBlocks.neutron.get(),
+                        ModBlocks.infinity.get(),
+                        ModBlocks.infinity_chest.get(),
+                        ModBlocks.endless_cake.get(),
+                        ModBlocks.extreme_anvil.get(),
                         ModBlocks.fake_bedrock.get(),
                         ModBlocks.fake_end_portal_frame.get(),
                         ModBlocks.fake_end_portal.get()

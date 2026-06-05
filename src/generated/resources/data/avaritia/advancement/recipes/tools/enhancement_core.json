@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_endest_pearl": {
+      "conditions": {
+        "items": [
+          {
+            "items": "avaritia:endest_pearl"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "avaritia:enhancement_core"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_endest_pearl"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "avaritia:enhancement_core"
+    ]
+  }
+}

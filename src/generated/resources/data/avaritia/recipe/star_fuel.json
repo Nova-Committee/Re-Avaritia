@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:coal_block",
+    "b": "minecraft:magma_block",
+    "c": "minecraft:lava_bucket",
+    "d": "avaritia:eternal_singularity"
+  },
+  "pattern": [
+    "         ",
+    "  aaaaa  ",
+    " abbcbba ",
+    " abaaaba ",
+    " acadaca ",
+    " abaaaba ",
+    " abbcbba ",
+    "  aaaaa  ",
+    "         "
+  ],
+  "result": {
+    "count": 4,
+    "id": "avaritia:star_fuel"
+  },
+  "tier": 4
+}

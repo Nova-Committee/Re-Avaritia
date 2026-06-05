@@ -1,0 +1,15 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:string"
+  },
+  "pattern": [
+    "a a",
+    " a ",
+    "a a"
+  ],
+  "result": {
+    "id": "minecraft:cobweb"
+  },
+  "tier": 1
+}

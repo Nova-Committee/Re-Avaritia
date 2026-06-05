@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "avaritia:infinity"
+  ],
+  "result": {
+    "count": 9,
+    "id": "avaritia:infinity_ingot"
+  }
+}

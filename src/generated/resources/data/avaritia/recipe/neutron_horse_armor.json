@@ -1,0 +1,24 @@
+{
+  "type": "avaritia:extreme_smithing",
+  "addition": {
+    "neoforge:ingredient_type": "neoforge:compound",
+    "children": [
+      {
+        "neoforge:ingredient_type": "neoforge:components",
+        "components": {
+          "minecraft:potion_contents": {
+            "potion": "minecraft:swiftness"
+          }
+        },
+        "items": "minecraft:potion"
+      },
+      "avaritia:enhancement_core",
+      "minecraft:blue_ice"
+    ]
+  },
+  "base": "minecraft:diamond_horse_armor",
+  "result": {
+    "id": "avaritia:neutron_horse_armor"
+  },
+  "template": "avaritia:upgrade_smithing_template"
+}

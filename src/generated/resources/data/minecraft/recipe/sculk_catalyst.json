@@ -1,0 +1,15 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "b": "minecraft:sculk",
+    "c": "minecraft:bone_block"
+  },
+  "pattern": [
+    "b",
+    "c"
+  ],
+  "result": {
+    "id": "minecraft:sculk_catalyst"
+  },
+  "tier": 1
+}

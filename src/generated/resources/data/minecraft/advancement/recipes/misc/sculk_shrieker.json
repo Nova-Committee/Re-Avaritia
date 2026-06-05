@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sculk_sensor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:sculk_sensor"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:sculk_shrieker"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sculk_sensor"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:sculk_shrieker"
+    ]
+  }
+}

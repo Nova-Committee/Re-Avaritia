@@ -1,0 +1,28 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": "avaritia:crystal_matrix",
+    "C": "avaritia:crystal_matrix_ingot",
+    "D": "avaritia:diamond_lattice",
+    "I": "avaritia:infinity_ingot",
+    "M": "avaritia:neutron",
+    "N": "avaritia:neutron_ingot",
+    "S": "minecraft:shield",
+    "X": "avaritia:infinity_catalyst"
+  },
+  "pattern": [
+    " MNNCNNM ",
+    " NCCDCCN ",
+    " NSIIISN ",
+    " NIAAAIN ",
+    " NIAXAIN ",
+    " NIAAAIN ",
+    " NSIIISN ",
+    " NCCDCCN ",
+    " MNNCNNM "
+  ],
+  "result": {
+    "id": "avaritia:infinity_shield"
+  },
+  "tier": 4
+}

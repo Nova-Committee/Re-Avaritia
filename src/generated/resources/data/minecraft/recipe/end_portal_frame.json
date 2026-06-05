@@ -1,0 +1,25 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:end_crystal",
+    "b": "minecraft:end_stone_bricks",
+    "c": "minecraft:end_stone",
+    "d": "minecraft:end_stone_brick_wall",
+    "e": "minecraft:emerald_block",
+    "f": "avaritia:crystal_matrix_ingot",
+    "g": "minecraft:ender_eye",
+    "h": "minecraft:sculk_shrieker"
+  },
+  "pattern": [
+    "     ",
+    "fghgf",
+    "ecace",
+    "dcccd",
+    "bbbbb"
+  ],
+  "result": {
+    "count": 2,
+    "id": "minecraft:end_portal_frame"
+  },
+  "tier": 1
+}

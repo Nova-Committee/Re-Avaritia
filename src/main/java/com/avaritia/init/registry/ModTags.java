@@ -17,6 +17,8 @@ public class ModTags {
     public static final TagKey<Item> SINGULARITY = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Const.MOD_ID, "singularity"));
     public static final TagKey<Item> IMMORTAL_ITEM = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Const.MOD_ID, "endless"));
     public static final TagKey<Item> ELYTRA_SLOT = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("elytraslot", "elytra"));
+    public static final TagKey<Item> CURIOS_RING = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("curios", "ring"));
+    public static final TagKey<Item> CURIOS_CHARM = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("curios", "charm"));
 
     public static final TagKey<Item> NEUTRON_DUST = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "dust/neutronium"));
     public static final TagKey<Item> NEUTRON_GEAR = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "gears/neutronium"));

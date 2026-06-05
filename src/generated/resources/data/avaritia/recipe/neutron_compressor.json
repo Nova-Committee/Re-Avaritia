@@ -1,0 +1,26 @@
+{
+  "type": "avaritia:shaped_table",
+  "key": {
+    "C": "avaritia:crystal_matrix_ingot",
+    "H": "minecraft:hopper",
+    "I": "minecraft:iron_block",
+    "N": "avaritia:neutron_ingot",
+    "O": "avaritia:neutron",
+    "R": "minecraft:redstone_block"
+  },
+  "pattern": [
+    "IIIHHHIII",
+    "C N   N C",
+    "I N   N I",
+    "C N   N C",
+    "RNN O NNR",
+    "C N   N C",
+    "I N   N I",
+    "C N   N C",
+    "IIICICIII"
+  ],
+  "result": {
+    "id": "avaritia:neutron_compressor"
+  },
+  "tier": 4
+}
