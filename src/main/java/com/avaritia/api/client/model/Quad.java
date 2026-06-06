@@ -32,6 +32,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.client.model.quad.BakedColors;
+import net.neoforged.neoforge.client.model.quad.BakedNormals;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -311,8 +313,33 @@ public class Quad implements IVertexProducer, IVertexConsumer {
                 uv(vertices[2]),
                 uv(vertices[3]),
                 orientation != null ? orientation : Direction.NORTH,
-                materialInfo
+                materialInfo,
+                normals(),
+                colors()
         );
+    }
+
+    private BakedNormals normals() {
+        return BakedNormals.of(normal(vertices[0]), normal(vertices[1]), normal(vertices[2]), normal(vertices[3]));
+    }
+
+    private static int normal(Vertex vertex) {
+        return vertex.normal == null ? 0 : BakedNormals.pack(vertex.normal[0], vertex.normal[1], vertex.normal[2]);
+    }
+
+    private BakedColors colors() {
+        return BakedColors.of(color(vertices[0]), color(vertices[1]), color(vertices[2]), color(vertices[3]));
+    }
+
+    private static int color(Vertex vertex) {
+        return component(vertex.color[3]) << 24
+                | component(vertex.color[0]) << 16
+                | component(vertex.color[1]) << 8
+                | component(vertex.color[2]);
+    }
+
+    private static int component(float value) {
+        return Math.round(Math.max(0.0F, Math.min(1.0F, value)) * 255.0F);
     }
 
     private static Vector3fc position(Vertex vertex) {
@@ -510,6 +537,12 @@ public class Quad implements IVertexProducer, IVertexConsumer {
             lightmap = null;
 
             preProcess();
+            if (color != null) {
+                color[0] = 1.0F;
+                color[1] = 1.0F;
+                color[2] = 1.0F;
+                color[3] = 1.0F;
+            }
         }
     }
 }

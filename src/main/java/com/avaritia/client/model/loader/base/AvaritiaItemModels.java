@@ -685,8 +685,8 @@ public final class AvaritiaItemModels {
                 return;
             }
 
+            argument.applyUniforms();
             submitNodeCollector.submitCustomGeometry(poseStack, argument.renderType(), (pose, buffer) -> {
-                argument.applyUniforms();
                 QuadInstance instance = new QuadInstance();
                 instance.setColor(-1);
                 instance.setLightCoords(lightCoords);
