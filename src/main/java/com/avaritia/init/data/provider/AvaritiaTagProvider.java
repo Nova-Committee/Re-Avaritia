@@ -2,6 +2,7 @@ package com.avaritia.init.data.provider;
 
 import com.avaritia.Const;
 
+import com.avaritia.init.registry.ModArmorMaterial;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModItems;
 import com.avaritia.init.registry.ModTags;
@@ -165,6 +166,10 @@ public class AvaritiaTagProvider implements DataProvider {
                 );
 
                 tag(ModTags.REPAIRS_INFINITY_TOOLS).add(
+                        ModItems.infinity_ingot.get()
+                );
+
+                tag(ModArmorMaterial.REPAIRS_INFINITY_ARMOR).add(
                         ModItems.infinity_ingot.get()
                 );
             }
