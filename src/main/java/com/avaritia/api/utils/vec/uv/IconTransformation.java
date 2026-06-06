@@ -1,6 +1,5 @@
 package com.avaritia.api.utils.vec.uv;
 
-import com.avaritia.api.client.render.CCRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public class IconTransformation extends UVTransformation {
@@ -13,12 +12,6 @@ public class IconTransformation extends UVTransformation {
 
     public IconTransformation(IconTransformation other) {
         this(other.icon);
-    }
-
-    @Override
-    public void operate(CCRenderState ccrs) {
-        super.operate(ccrs);
-        ccrs.sprite = icon;
     }
 
     @Override
