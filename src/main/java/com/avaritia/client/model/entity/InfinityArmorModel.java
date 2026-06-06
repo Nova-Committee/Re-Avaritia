@@ -4,6 +4,7 @@ import com.avaritia.Res;
 import com.avaritia.api.client.util.color.ColorRGBA;
 import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
+import com.avaritia.client.shader.AvaritiaShaderUniforms;
 import com.avaritia.client.shader.AvaritiaShaders;
 import com.avaritia.init.registry.ModItems;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -149,12 +150,7 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
             pitch = -((float) ((state.xRot * 2.0F) * Math.PI / 360.0D));
         }
 
-        AvaritiaShaders.cosmicArmorTime.set(time % Integer.MAX_VALUE);
-        AvaritiaShaders.cosmicArmorYaw.set(yaw);
-        AvaritiaShaders.cosmicArmorPitch.set(pitch);
-        AvaritiaShaders.cosmicArmorExternalScale.set(scale);
-        AvaritiaShaders.cosmicArmorOpacity.set(1.25F);
-        AvaritiaShaders.cosmicArmorUVs.set(AvaritiaShaders.COSMIC_UVS);
+        AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC_ARMOR, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.25F, AvaritiaShaders.COSMIC_UVS);
 
         boolean flying = Boolean.TRUE.equals(state.getRenderData(AvaritiaClient.INFINITY_ARMOR_FLYING)) || state.isFallFlying;
         if (chestItem == ModItems.infinity_chestplate.get() && flying) {

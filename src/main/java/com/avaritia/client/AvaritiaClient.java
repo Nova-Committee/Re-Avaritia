@@ -224,8 +224,7 @@ public class AvaritiaClient {
                 ModItems.infinity_helmet.get(),
                 ModItems.infinity_chestplate.get(),
                 ModItems.infinity_pants.get(),
-                ModItems.infinity_boots.get(),
-                ModItems.neutron_horse_armor.get());
+                ModItems.infinity_boots.get());
     }
 
     @SubscribeEvent
