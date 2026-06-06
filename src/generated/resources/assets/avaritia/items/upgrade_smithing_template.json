@@ -1,6 +1,10 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/upgrade_smithing_template"
+    "type": "avaritia:halo",
+    "color": -1711276033,
+    "model": "avaritia:item/upgrade_smithing_template",
+    "pulse": false,
+    "size": 6,
+    "texture": "avaritia:misc/halo_noise"
   }
 }

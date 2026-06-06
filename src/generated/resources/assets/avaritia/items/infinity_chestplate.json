@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
+    "type": "avaritia:cosmic",
+    "mask": [
+      "avaritia:mask/item/infinity_chestplate_mask"
+    ],
     "model": "avaritia:item/infinity_chestplate"
   }
 }

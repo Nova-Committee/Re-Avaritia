@@ -1,6 +1,45 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/infinity_umbrella"
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "avaritia:halo",
+          "model": "avaritia:item/infinity_umbrella_sun",
+          "pulse": false,
+          "size": 6,
+          "texture": "avaritia:misc/halo"
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "avaritia:halo",
+          "model": "avaritia:item/infinity_umbrella_rain",
+          "pulse": false,
+          "size": 6,
+          "texture": "avaritia:misc/halo"
+        },
+        "threshold": 2.0
+      },
+      {
+        "model": {
+          "type": "avaritia:halo",
+          "model": "avaritia:item/infinity_umbrella_storm",
+          "pulse": false,
+          "size": 6,
+          "texture": "avaritia:misc/halo"
+        },
+        "threshold": 3.0
+      }
+    ],
+    "fallback": {
+      "type": "avaritia:halo",
+      "model": "avaritia:item/infinity_umbrella",
+      "pulse": false,
+      "size": 6,
+      "texture": "avaritia:misc/halo"
+    },
+    "property": "avaritia:umbrella_mode"
   }
 }

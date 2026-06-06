@@ -87,6 +87,7 @@ import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -298,6 +299,11 @@ public class AvaritiaClient {
         event.register(id("halo"), AvaritiaItemModels.Halo.MAP_CODEC);
         event.register(id("halo_cosmic"), AvaritiaItemModels.HaloCosmic.MAP_CODEC);
         event.register(id("halo_eternal"), AvaritiaItemModels.HaloEternal.MAP_CODEC);
+    }
+
+    @SubscribeEvent
+    public static void registerSpecialModelRenderers(RegisterSpecialModelRendererEvent event) {
+        event.register(id("infinity_shield"), InfinityShieldRender.Unbaked.MAP_CODEC);
     }
 
     @SubscribeEvent

@@ -2,6 +2,8 @@
   "model": {
     "type": "avaritia:halo",
     "model": "avaritia:item/infinity_upgrade",
+    "pulse": false,
+    "size": 4,
     "texture": "avaritia:misc/halo"
   }
 }

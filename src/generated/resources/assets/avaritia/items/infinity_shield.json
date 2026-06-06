@@ -1,6 +1,20 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/infinity_shield"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:special",
+      "base": "avaritia:item/infinity_shield",
+      "model": {
+        "type": "avaritia:infinity_shield"
+      }
+    },
+    "on_true": {
+      "type": "minecraft:special",
+      "base": "avaritia:item/infinity_shield_blocking",
+      "model": {
+        "type": "avaritia:infinity_shield"
+      }
+    },
+    "property": "minecraft:using_item"
   }
 }

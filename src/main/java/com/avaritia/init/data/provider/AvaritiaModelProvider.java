@@ -1,8 +1,11 @@
 package com.avaritia.init.data.provider;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.avaritia.Const;
 import com.avaritia.api.iface.IColored;
 import com.avaritia.client.model.loader.base.AvaritiaItemModels;
+import com.avaritia.client.render.item.InfinityShieldRender;
 import com.avaritia.client.tint.RainbowTintSource;
 import com.avaritia.init.handler.ItemOverrideHandler;
 import com.avaritia.init.registry.ModItems;
@@ -42,6 +45,7 @@ public class AvaritiaModelProvider implements DataProvider {
             ModItems.infinity_crossbow,
             ModItems.infinity_shield,
             ModItems.infinity_trident,
+            ModItems.infinity_umbrella,
             ModItems.infinity_mace,
             ModItems.crystal_sword,
             ModItems.crystal_hoe,
@@ -173,6 +177,7 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_sword" -> layeredHandheldModel("infinity_sword",
                     "item/tools/infinity_sword/layer_0",
                     "item/tools/infinity_sword/layer_1");
+            case "infinity_shield" -> shieldModel("infinity_shield", false);
             default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
         clientItem(item, clientItemModel(id, model));
@@ -185,15 +190,27 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_crossbow" -> infinityCrossbowModel(model);
             case "infinity_pickaxe" -> modeModel("infinity_pickaxe_hammer", handheldModel("infinity_pickaxe/hammer", "item/tools/infinity_pickaxe/hammer"), model);
             case "infinity_shovel" -> modeModel("infinity_shovel_destroyer", handheldModel("infinity_shovel/destroyer", "item/tools/infinity_shovel/destroyer"), model);
+            case "infinity_shield" -> infinityShieldModel(model);
+            case "infinity_umbrella" -> infinityUmbrellaModel(model);
+            case "infinity_clock" -> infinityClockModel(model);
             case "infinity_trident" -> new AvaritiaItemModels.CosmicArc(model, List.of(mask("infinity_trident_mask")));
+            case "infinity_helmet", "infinity_chestplate", "infinity_pants", "infinity_boots" ->
+                    new AvaritiaItemModels.Cosmic(model, List.of(mask(id.getPath() + "_mask")));
             case "singularity" -> new AvaritiaItemModels.Halo(model, halo(), -16777216, 4, false, singularityTints());
             case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
             case "matter_cluster" -> ItemModelUtils.conditional(new ItemOverrideHandler.MatterClusterFull(),
                     matterClusterFullModel(), new AvaritiaItemModels.Cosmic(model, List.of(mask("matter_cluster_empty_mask"))));
             case "full_matter_cluster" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
-            case "infinity_ingot", "infinity_nugget", "infinity_catalyst", "infinity_totem", "infinity_ring",
-                 "infinity_bucket", "infinity_elytra", "infinity_upgrade", "enhancement_core", "endest_pearl" ->
-                    new AvaritiaItemModels.Halo(model, halo(), -16777216, 10, true);
+            case "infinity_ingot", "infinity_nugget" -> haloModel(model, 10, true);
+            case "infinity_catalyst", "enhancement_core" -> haloModel(model, 8, true);
+            case "infinity_totem", "infinity_ring", "infinity_bucket", "infinity_elytra", "neutron_ring", "star_fuel" ->
+                    haloModel(model, 6, false);
+            case "infinity_upgrade" -> haloModel(model, 4, false);
+            case "endest_pearl" -> haloModel(model, 4, true);
+            case "neutron_pile" -> haloNoiseModel(model, 872415231);
+            case "neutron_nugget" -> haloNoiseModel(model, 1308622847);
+            case "neutron_ingot", "neutron_gear", "neutron_horse_armor", "upgrade_smithing_template" ->
+                    haloNoiseModel(model, -1711276033);
             default -> ItemModelUtils.plainModel(model);
         };
     }
@@ -242,9 +259,48 @@ public class AvaritiaModelProvider implements DataProvider {
         return ItemModelUtils.conditional(new ItemOverrideHandler.InfinityCrossbowCharged(), charged, pulling);
     }
 
+    private ItemModel.Unbaked infinityClockModel(Identifier model) {
+        Identifier upModel = flatModel("infinity_clock_up", "item/misc/infinity_clock_up", false);
+        return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_clock_up"),
+                new AvaritiaItemModels.Halo(upModel, halo(), -16777216, 6, true),
+                ItemModelUtils.plainModel(model));
+    }
+
+    private ItemModel.Unbaked infinityUmbrellaModel(Identifier model) {
+        ItemModel.Unbaked normal = new AvaritiaItemModels.Halo(model, halo(), -16777216, 6, false);
+        ItemModel.Unbaked sun = new AvaritiaItemModels.Halo(
+                handheldModel("infinity_umbrella_sun", "item/misc/infinity_umbrella_sun"),
+                halo(), -16777216, 6, false);
+        ItemModel.Unbaked rain = new AvaritiaItemModels.Halo(
+                handheldModel("infinity_umbrella_rain", "item/misc/infinity_umbrella_rain"),
+                halo(), -16777216, 6, false);
+        ItemModel.Unbaked storm = new AvaritiaItemModels.Halo(
+                handheldModel("infinity_umbrella_storm", "item/misc/infinity_umbrella_storm"),
+                halo(), -16777216, 6, false);
+        return ItemModelUtils.rangeSelect(new ItemOverrideHandler.UmbrellaMode(), normal,
+                ItemModelUtils.override(sun, 1.0F),
+                ItemModelUtils.override(rain, 2.0F),
+                ItemModelUtils.override(storm, 3.0F));
+    }
+
+    private ItemModel.Unbaked infinityShieldModel(Identifier model) {
+        Identifier blockingModel = shieldModel("infinity_shield_blocking", true);
+        return ItemModelUtils.conditional(ItemModelUtils.isUsingItem(),
+                ItemModelUtils.specialModel(blockingModel, new InfinityShieldRender.Unbaked()),
+                ItemModelUtils.specialModel(model, new InfinityShieldRender.Unbaked()));
+    }
+
     private ItemModel.Unbaked matterClusterFullModel() {
         Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
         return new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
+    }
+
+    private ItemModel.Unbaked haloModel(Identifier model, int size, boolean pulse) {
+        return new AvaritiaItemModels.Halo(model, halo(), -16777216, size, pulse);
+    }
+
+    private ItemModel.Unbaked haloNoiseModel(Identifier model, int color) {
+        return new AvaritiaItemModels.Halo(model, haloNoise(), color, 6, false);
     }
 
     private ItemModel.Unbaked modeModel(String modeKey, Identifier activeModel, Identifier fallbackModel) {
@@ -280,6 +336,58 @@ public class AvaritiaModelProvider implements DataProvider {
         return (handheld ? ModelTemplates.FLAT_HANDHELD_ITEM : ModelTemplates.FLAT_ITEM).create(model, textures, this.generatedModels::put);
     }
 
+    private Identifier shieldModel(String modelPath, boolean blocking) {
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        this.generatedModels.put(model, () -> shieldModelJson(blocking));
+        return model;
+    }
+
+    private JsonObject shieldModelJson(boolean blocking) {
+        JsonObject root = new JsonObject();
+        root.addProperty("parent", "minecraft:item/generated");
+        root.addProperty("gui_light", "front");
+
+        JsonObject textures = new JsonObject();
+        textures.addProperty("layer0", "avaritia:item/tools/infinity_shield/layer_0");
+        textures.addProperty("particle", "avaritia:block/resource/infinity");
+        root.add("textures", textures);
+
+        JsonObject display = new JsonObject();
+        if (blocking) {
+            display.add("thirdperson_righthand", transform(new double[]{45, 135, 0}, new double[]{3.51, 11, -2}, new double[]{1, 1, 1}));
+            display.add("thirdperson_lefthand", transform(new double[]{45, 135, 0}, new double[]{13.51, 3, 5}, new double[]{1, 1, 1}));
+            display.add("firstperson_righthand", transform(new double[]{0, 180, -5}, new double[]{-15, 5, -11}, new double[]{1.25, 1.25, 1.25}));
+            display.add("firstperson_lefthand", transform(new double[]{0, 180, -5}, new double[]{5, 5, -11}, new double[]{1.25, 1.25, 1.25}));
+            display.add("gui", transform(new double[]{15, -25, -5}, new double[]{2, 3, 0}, new double[]{0.65, 0.65, 0.65}));
+        } else {
+            display.add("thirdperson_righthand", transform(new double[]{0, 90, 0}, new double[]{10, 6, -4}, new double[]{1, 1, 1}));
+            display.add("thirdperson_lefthand", transform(new double[]{0, 90, 0}, new double[]{10, 6, 12}, new double[]{1, 1, 1}));
+            display.add("firstperson_righthand", transform(new double[]{0, 180, 5}, new double[]{-10, 2, -10}, new double[]{1.25, 1.25, 1.25}));
+            display.add("firstperson_lefthand", transform(new double[]{0, 180, 5}, new double[]{10, 0, -10}, new double[]{1.25, 1.25, 1.25}));
+            display.add("gui", transform(new double[]{15, -25, -5}, new double[]{2, 3, 0}, new double[]{0.65, 0.65, 0.65}));
+            display.add("fixed", transform(new double[]{0, 180, 0}, new double[]{-4.5, 4.5, -5}, new double[]{0.55, 0.55, 0.55}));
+            display.add("ground", transform(new double[]{0, 0, 0}, new double[]{2, 4, 2}, new double[]{0.25, 0.25, 0.25}));
+        }
+        root.add("display", display);
+        return root;
+    }
+
+    private JsonObject transform(double[] rotation, double[] translation, double[] scale) {
+        JsonObject transform = new JsonObject();
+        transform.add("rotation", array(rotation));
+        transform.add("translation", array(translation));
+        transform.add("scale", array(scale));
+        return transform;
+    }
+
+    private JsonArray array(double[] values) {
+        JsonArray array = new JsonArray();
+        for (double value : values) {
+            array.add(value);
+        }
+        return array;
+    }
+
     private void clientItem(Item item, ItemModel.Unbaked model) {
         this.generatedClientItems.put(BuiltInRegistries.ITEM.getKey(item), new ClientItem(model, ClientItem.Properties.DEFAULT));
     }
@@ -311,6 +419,10 @@ public class AvaritiaModelProvider implements DataProvider {
 
     private Identifier halo() {
         return Identifier.fromNamespaceAndPath(Const.MOD_ID, "misc/halo");
+    }
+
+    private Identifier haloNoise() {
+        return Identifier.fromNamespaceAndPath(Const.MOD_ID, "misc/halo_noise");
     }
 
     private List<ItemTintSource> singularityTints() {
