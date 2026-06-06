@@ -69,7 +69,6 @@ public class InfinitatoTileRender implements BlockEntityRenderer<InfinitatoTile,
         ms.pushPose();
 
         String name = state.name.toLowerCase(Locale.ROOT).trim();
-        //BakedModel model = getModel(name);
 
         ms.translate(0.5F, 0F, 0.5F);
         Direction potatoFacing = state.potatoFacing;
