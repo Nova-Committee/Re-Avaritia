@@ -2,12 +2,9 @@ package com.avaritia.client.model.loader.base;
 
 import com.avaritia.Const;
 import com.avaritia.api.client.model.ItemQuadBakery;
-import com.avaritia.api.client.render.CCModel;
-import com.avaritia.api.client.render.CCRenderState;
-import com.avaritia.api.client.render.buffer.TransformingVertexConsumer;
-import com.avaritia.api.client.render.model.OBJParser;
 import com.avaritia.api.utils.RenderUtils;
-import com.avaritia.api.utils.vec.Matrix4;
+import com.avaritia.client.render.mesh.SimpleMesh;
+import com.avaritia.client.render.mesh.SimpleObjMeshLoader;
 import com.avaritia.client.render.util.ArcRender;
 import com.avaritia.client.shader.AvaritiaRenderTypeHelper;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
@@ -315,7 +312,7 @@ public final class AvaritiaItemModels {
         ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
         List<BakedQuad> baseQuads = bakeBaseQuads(baker, textureSlots);
         List<BakedQuad> effectQuads = effect == null ? List.of() : bakeEffectQuads(baker, effect, masks);
-        Map<String, CCModel> tridentModels = cosmicArc ? loadTridentModels() : Map.of();
+        Map<String, SimpleMesh> tridentModels = cosmicArc ? loadTridentModels() : Map.of();
         return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, baseQuads, haloLayer, cosmicArc, tridentModels);
     }
 
@@ -349,12 +346,9 @@ public final class AvaritiaItemModels {
         return new HaloLayer(List.of(HaloUtils.generateHaloQuad(sprite, setting.size(), setting.color())), setting);
     }
 
-    private static Map<String, CCModel> loadTridentModels() {
+    private static Map<String, SimpleMesh> loadTridentModels() {
         try {
-            return new OBJParser(Const.rl("models/infinity_trident.obj"))
-                    .swapYZ()
-                    .ignoreMtl()
-                    .parse();
+            return SimpleObjMeshLoader.load(Const.rl("models/infinity_trident.obj"), true);
         } catch (Exception exception) {
             Const.LOGGER.warn("Failed to load infinity trident item model OBJ; falling back to flat item model.", exception);
             return Map.of();
@@ -372,11 +366,11 @@ public final class AvaritiaItemModels {
         private final Vector3fc[] effectExtents;
         private final Vector3fc[] baseExtents;
         private final boolean cosmicArc;
-        private final Map<String, CCModel> tridentModels;
+        private final Map<String, SimpleMesh> tridentModels;
 
         private LayeredEffectItemModel(ItemModel wrapped, ModelRenderProperties properties, Matrix4fc transformation,
                                        @Nullable Effect effect, List<BakedQuad> effectQuads, List<BakedQuad> baseQuads,
-                                       Optional<HaloLayer> haloLayer, boolean cosmicArc, Map<String, CCModel> tridentModels) {
+                                       Optional<HaloLayer> haloLayer, boolean cosmicArc, Map<String, SimpleMesh> tridentModels) {
             this.wrapped = wrapped;
             this.properties = properties;
             this.transformation = transformation;
@@ -541,7 +535,7 @@ public final class AvaritiaItemModels {
     private record PulseLayerArgument(List<BakedQuad> quads) {
     }
 
-    private record TridentLayerArgument(Map<String, CCModel> models, ItemDisplayContext displayContext) {
+    private record TridentLayerArgument(Map<String, SimpleMesh> models, ItemDisplayContext displayContext) {
     }
 
     private record ArcLayerArgument(long time) {
@@ -618,19 +612,9 @@ public final class AvaritiaItemModels {
             poseStack.pushPose();
             try {
                 transformTrident(argument.displayContext(), poseStack);
-                Matrix4 pose = new Matrix4(poseStack);
-                submitNodeCollector.submitCustomGeometry(poseStack, AvaritiaRenderTypes.TRIDENT, (poseState, vertexConsumer) -> {
-                    CCRenderState cc = CCRenderState.instance();
-                    cc.reset();
-                    cc.bind(new TransformingVertexConsumer(vertexConsumer, pose), AvaritiaRenderTypes.TRIDENT.format());
-                    cc.baseColour = 0xFFFFFFFF;
-                    cc.brightness = lightCoords;
-                    cc.overlay = overlayCoords;
-
-                    for (CCModel model : argument.models().values()) {
-                        model.render(cc);
-                    }
-                });
+                submitNodeCollector.submitCustomGeometry(poseStack, AvaritiaRenderTypes.TRIDENT,
+                        (poseState, vertexConsumer) -> argument.models().values().forEach(model ->
+                                model.render(poseState, vertexConsumer, 0xFFFFFFFF, lightCoords, overlayCoords)));
             } finally {
                 poseStack.popPose();
             }
