@@ -2,6 +2,8 @@ package com.avaritia.core.singularity;
 
 import com.avaritia.Avaritia;
 import com.avaritia.Const;
+import com.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
+import com.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -180,19 +182,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
     }
 
     private void onSingularitiesReloaded(Map<Identifier, Singularity> singularities) {
-        invalidateRecipeCache("com.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe");
-        invalidateRecipeCache("com.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe");
+        InfinityCatalystCraftRecipe.invalidate();
+        EternalSingularityCraftRecipe.invalidate();
         NeoForge.EVENT_BUS.post(new SingularityEvent.Reload(singularities));
-    }
-
-    private static void invalidateRecipeCache(String className) {
-        try {
-            Class.forName(className).getMethod("invalidate").invoke(null);
-        } catch (ClassNotFoundException ignored) {
-            Const.LOGGER.debug("Singularity: recipe cache class {} has not been migrated yet; skipping invalidation.", className);
-        } catch (ReflectiveOperationException exception) {
-            Const.LOGGER.error("Singularity: failed to invalidate recipe cache {}", className, exception);
-        }
     }
 
     @Override
