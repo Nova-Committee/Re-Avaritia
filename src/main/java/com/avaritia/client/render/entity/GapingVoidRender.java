@@ -2,14 +2,11 @@ package com.avaritia.client.render.entity;
 
 import com.avaritia.Const;
 
-import com.avaritia.Avaritia;
 import com.avaritia.Res;
-import com.avaritia.api.client.render.CCRenderState;
-import com.avaritia.api.client.render.buffer.TransformingVertexConsumer;
-import com.avaritia.api.client.render.model.OBJParser;
-import com.avaritia.api.utils.vec.Matrix4;
 import com.avaritia.api.client.util.color.Color;
 import com.avaritia.api.client.util.color.ColorRGBA;
+import com.avaritia.client.render.mesh.SimpleMesh;
+import com.avaritia.client.render.mesh.SimpleObjMeshLoader;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.common.entity.GapingVoidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,12 +16,15 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoidRender.State> {
+    private SimpleMesh hemisphereModel;
+
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -110,18 +110,23 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
         stack.popPose();
 
         stack.scale((float) scale, (float) scale, (float) scale);
-        Matrix4 pose = new Matrix4(stack);
         int rgba = color.rgba();
-        output.submitCustomGeometry(stack, AvaritiaRenderTypes.VOID, (poseState, vertexConsumer) -> {
-            final CCRenderState cc = CCRenderState.instance();
-            cc.reset();
-            cc.bind(new TransformingVertexConsumer(vertexConsumer, pose), AvaritiaRenderTypes.VOID.format());
-            cc.baseColour = rgba;
-            new OBJParser(Identifier.fromNamespaceAndPath(Const.MOD_ID, "models/hemisphere.obj")).parse().get("model").render(cc);
-        });
+        SimpleMesh mesh = this.hemisphereModel();
+        output.submitCustomGeometry(stack, AvaritiaRenderTypes.VOID,
+                (poseState, vertexConsumer) -> mesh.render(poseState, vertexConsumer, rgba, 0, OverlayTexture.NO_OVERLAY));
 
         stack.popPose();
         super.submit(state, stack, output, cameraState);
+    }
+
+    private SimpleMesh hemisphereModel() {
+        if (this.hemisphereModel == null) {
+            this.hemisphereModel = SimpleObjMeshLoader.load(Const.rl("models/hemisphere.obj")).get("model");
+            if (this.hemisphereModel == null) {
+                throw new IllegalStateException("Missing hemisphere OBJ part: model");
+            }
+        }
+        return this.hemisphereModel;
     }
 
     public static class State extends EntityRenderState {
