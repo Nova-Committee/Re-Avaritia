@@ -6,6 +6,11 @@ import com.avaritia.client.shader.AvaritiaRenderTypeHelper;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaderUniforms;
 import com.avaritia.client.shader.AvaritiaShaders;
+import com.avaritia.common.item.resources.MatterClusterItem;
+import com.avaritia.common.item.singularity.SingularityItem;
+import com.avaritia.core.singularity.Singularity;
+import com.avaritia.util.SingularityUtils;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
@@ -13,6 +18,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -33,12 +39,16 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.client.resources.model.sprite.TextureSlots;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
+import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
@@ -58,6 +68,8 @@ public final class AvaritiaItemModels {
     private static final AtomicInteger EFFECT_RENDER_TYPE_SEQUENCE = new AtomicInteger();
     private static final EffectSpecialRenderer EFFECT_RENDERER = new EffectSpecialRenderer();
     private static final HaloSpecialRenderer HALO_RENDERER = new HaloSpecialRenderer();
+    private static final PulseSpecialRenderer PULSE_RENDERER = new PulseSpecialRenderer();
+    private static final int PULSE_ALPHA_COLOR = 0x99FFFFFF;
 
     private AvaritiaItemModels() {
     }
@@ -284,8 +296,9 @@ public final class AvaritiaItemModels {
         TextureSlots textureSlots = resolvedModel.getTopTextureSlots();
         ItemModel wrapped = new CuboidItemModelWrapper.Unbaked(model, Optional.empty(), tints).bake(context, transformation);
         ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
+        List<BakedQuad> baseQuads = bakeBaseQuads(baker, textureSlots);
         List<BakedQuad> effectQuads = effect == null ? List.of() : bakeEffectQuads(baker, effect, masks);
-        return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, haloLayer);
+        return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, baseQuads, haloLayer);
     }
 
     private static List<BakedQuad> bakeEffectQuads(ModelBaker baker, Effect effect, List<Identifier> masks) {
@@ -295,6 +308,21 @@ public final class AvaritiaItemModels {
             sprites.add(materials.get(new Material(mask), DEBUG_NAME).sprite());
         }
         return ItemQuadBakery.bakeItem(effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
+    }
+
+    private static List<BakedQuad> bakeBaseQuads(ModelBaker baker, TextureSlots textureSlots) {
+        MaterialBaker materials = baker.materials();
+        List<TextureAtlasSprite> sprites = new ArrayList<>(2);
+        addLayerSprite(materials, textureSlots, "layer0", sprites);
+        addLayerSprite(materials, textureSlots, "layer1", sprites);
+        return sprites.isEmpty() ? List.of() : ItemQuadBakery.bakeItem(sprites.toArray(TextureAtlasSprite[]::new));
+    }
+
+    private static void addLayerSprite(MaterialBaker materials, TextureSlots textureSlots, String layer, List<TextureAtlasSprite> sprites) {
+        Material material = textureSlots.getMaterial(layer);
+        if (material != null) {
+            sprites.add(materials.get(material, DEBUG_NAME).sprite());
+        }
     }
 
     private static HaloLayer toHaloLayer(ItemModel.BakingContext context, HaloFields halo) {
@@ -309,32 +337,71 @@ public final class AvaritiaItemModels {
         private final Matrix4fc transformation;
         private final @Nullable Effect effect;
         private final List<BakedQuad> effectQuads;
+        private final List<BakedQuad> baseQuads;
         private final Optional<HaloLayer> haloLayer;
         private final Vector3fc[] effectExtents;
+        private final Vector3fc[] baseExtents;
 
         private LayeredEffectItemModel(ItemModel wrapped, ModelRenderProperties properties, Matrix4fc transformation,
-                                       @Nullable Effect effect, List<BakedQuad> effectQuads, Optional<HaloLayer> haloLayer) {
+                                       @Nullable Effect effect, List<BakedQuad> effectQuads, List<BakedQuad> baseQuads, Optional<HaloLayer> haloLayer) {
             this.wrapped = wrapped;
             this.properties = properties;
             this.transformation = transformation;
             this.effect = effect;
             this.effectQuads = effectQuads;
+            this.baseQuads = baseQuads;
             this.haloLayer = haloLayer;
             this.effectExtents = CuboidItemModelWrapper.computeExtents(effectQuads);
+            this.baseExtents = CuboidItemModelWrapper.computeExtents(baseQuads);
         }
 
         @Override
         public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver resolver,
                            ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+            if (displayContext == ItemDisplayContext.GUI && stack.getItem() instanceof SingularityItem && hasShiftDown()) {
+                ItemStack ingredientPreview = singularityIngredientPreview(stack);
+                if (!ingredientPreview.isEmpty()) {
+                    resolver.updateForTopItem(renderState, ingredientPreview, displayContext, level, owner, seed);
+                    return;
+                }
+            }
+
             this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
 
             if (displayContext == ItemDisplayContext.GUI) {
-                this.haloLayer.ifPresent(halo -> appendHaloLayer(renderState, displayContext, halo));
+                this.haloLayer.ifPresent(halo -> {
+                    appendHaloLayer(renderState, displayContext, halo);
+                    if (halo.setting().pulse()) {
+                        appendPulseLayer(renderState, displayContext, level, seed);
+                    }
+                });
             }
 
             if (this.effect != null && !this.effectQuads.isEmpty()) {
-                appendEffectLayer(renderState, displayContext, this.effect.createArgument(this.effectQuads, level, owner, displayContext), this.effectExtents);
+                appendEffectLayer(renderState, displayContext, this.effect.createArgument(this.effectQuads, level, owner, displayContext, stack), this.effectExtents);
             }
+        }
+
+        private ItemStack singularityIngredientPreview(ItemStack stack) {
+            Singularity singularity = SingularityUtils.getSingularity(stack);
+            if (singularity == null || !singularity.hasIngredient()) {
+                return ItemStack.EMPTY;
+            }
+
+            return singularity.getIngredient().items()
+                    .findFirst()
+                    .map(LayeredEffectItemModel::stackFromHolder)
+                    .orElse(ItemStack.EMPTY);
+        }
+
+        private static ItemStack stackFromHolder(Holder<Item> holder) {
+            return new ItemStack(holder);
+        }
+
+        private static boolean hasShiftDown() {
+            var window = Minecraft.getInstance().getWindow();
+            return InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT)
+                    || InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT);
         }
 
         private void appendHaloLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, HaloLayer halo) {
@@ -344,6 +411,29 @@ public final class AvaritiaItemModels {
             layer.setExtents(halo::extents);
             layer.setupSpecialModel(HALO_RENDERER, new HaloLayerArgument(halo.quads()));
             renderState.setAnimated();
+        }
+
+        private void appendPulseLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext,
+                                      @Nullable ClientLevel level, int seed) {
+            if (this.baseQuads.isEmpty()) {
+                return;
+            }
+
+            ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
+            this.properties.applyToLayer(layer, displayContext);
+            layer.setLocalTransform(pulseTransform(level, seed));
+            layer.setExtents(() -> this.baseExtents);
+            layer.setupSpecialModel(PULSE_RENDERER, new PulseLayerArgument(this.baseQuads));
+            renderState.setAnimated();
+        }
+
+        private Matrix4fc pulseTransform(@Nullable ClientLevel level, int seed) {
+            float time = level != null ? level.getGameTime() + seed : seed;
+            float scale = 0.95F + (Mth.sin(time * 0.25F) + 1.0F) * 0.075F;
+            float translation = (1.0F - scale) * 0.5F;
+            return new Matrix4f(this.transformation)
+                    .translate(translation, translation, 0.0F)
+                    .scale(scale, scale, 1.0001F);
         }
 
         private void appendEffectLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext,
@@ -374,6 +464,9 @@ public final class AvaritiaItemModels {
     private record HaloLayerArgument(List<BakedQuad> quads) {
     }
 
+    private record PulseLayerArgument(List<BakedQuad> quads) {
+    }
+
     private static final class HaloSpecialRenderer implements SpecialModelRenderer<HaloLayerArgument> {
         @Override
         public void submit(@Nullable HaloLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
@@ -400,6 +493,36 @@ public final class AvaritiaItemModels {
 
         @Override
         public @Nullable HaloLayerArgument extractArgument(ItemStack stack) {
+            return null;
+        }
+    }
+
+    private static final class PulseSpecialRenderer implements SpecialModelRenderer<PulseLayerArgument> {
+        @Override
+        public void submit(@Nullable PulseLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                           int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
+            if (argument == null || argument.quads().isEmpty()) {
+                return;
+            }
+
+            submitNodeCollector.submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
+                QuadInstance instance = new QuadInstance();
+                instance.setColor(PULSE_ALPHA_COLOR);
+                instance.setLightCoords(lightCoords);
+                instance.setOverlayCoords(overlayCoords);
+
+                for (BakedQuad quad : argument.quads()) {
+                    buffer.putBakedQuad(pose, quad, instance);
+                }
+            });
+        }
+
+        @Override
+        public void getExtents(Consumer<Vector3fc> output) {
+        }
+
+        @Override
+        public @Nullable PulseLayerArgument extractArgument(ItemStack stack) {
             return null;
         }
     }
@@ -451,14 +574,14 @@ public final class AvaritiaItemModels {
         }
 
         private EffectLayerArgument createArgument(List<BakedQuad> quads, @Nullable ClientLevel level, @Nullable ItemOwner owner,
-                                                   ItemDisplayContext displayContext) {
+                                                   ItemDisplayContext displayContext, ItemStack stack) {
             long time = level != null ? level.getGameTime() : 0L;
             LivingEntity entity = owner != null ? owner.asLivingEntity() : null;
             float yaw = entity != null && displayContext != ItemDisplayContext.GUI ? (float) (entity.getYRot() * 2.0F * Math.PI / 360.0F) : 0.0F;
             float pitch = entity != null && displayContext != ItemDisplayContext.GUI ? -(float) (entity.getXRot() * 2.0F * Math.PI / 360.0F) : 0.0F;
             float scale = displayContext == ItemDisplayContext.GUI ? 100.0F : 1.0F;
             return new EffectLayerArgument(quads, this.newRenderType(), this.uniformEffect(), time % Integer.MAX_VALUE,
-                    yaw, pitch, scale, this.opacity(), this.uvs());
+                    yaw, pitch, scale, this.opacity(stack), this.uvs());
         }
 
         private RenderType newRenderType() {
@@ -495,7 +618,10 @@ public final class AvaritiaItemModels {
             };
         }
 
-        private float opacity() {
+        private float opacity(ItemStack stack) {
+            if (stack.getItem() instanceof MatterClusterItem) {
+                return MatterClusterItem.getClusterSize(MatterClusterItem.getClusterItems(stack)) / (float) MatterClusterItem.CAPACITY;
+            }
             return this == UNSTABLE ? 1.5F : 1.0F;
         }
     }
