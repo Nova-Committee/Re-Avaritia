@@ -8,17 +8,16 @@ import com.mojang.math.Axis;
 import com.avaritia.Avaritia;
 import com.avaritia.Res;
 import com.avaritia.api.client.model.bakedmodels.WrappedItemModel;
-import com.avaritia.api.client.render.CCModel;
-import com.avaritia.api.client.render.CCRenderState;
 import com.avaritia.api.client.render.CosmicRenderCall;
 import com.avaritia.api.client.render.CosmicRenderQueue;
-import com.avaritia.api.client.render.model.OBJParser;
 import com.avaritia.api.client.util.TransformUtils;
 import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.api.iface.transform.CosmicRenderable;
 import com.avaritia.client.AvaritiaClient;
 import com.avaritia.client.compat.IrisCompat;
 import com.avaritia.client.model.entity.InfinityTridentModel;
+import com.avaritia.client.render.mesh.SimpleMesh;
+import com.avaritia.client.render.mesh.SimpleObjMeshLoader;
 import com.avaritia.client.render.util.ArcRender;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaders;
@@ -45,7 +44,7 @@ import static com.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRenderable {
     private static final Logger LOGGER = LoggerFactory.getLogger(CosmicArcBakeModel.class);
     private final List<Identifier> maskSprite;
-    private Map<String, CCModel> tridentObjModel;
+    private Map<String, SimpleMesh> tridentObjModel;
 
     public CosmicArcBakeModel(ItemModel wrapped, List<Identifier> maskSprite) {
         super(wrapped);
@@ -53,9 +52,7 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
         this.cosmic = true;
 
         try {
-            this.tridentObjModel = new OBJParser(Const.rl("models/infinity_trident.obj"))
-                    .swapYZ()
-                    .parse();
+            this.tridentObjModel = SimpleObjMeshLoader.load(Const.rl("models/infinity_trident.obj"), true);
             LOGGER.info("Loaded trident OBJ models for item rendering: {}", tridentObjModel.keySet());
         } catch (Exception e) {
             LOGGER.error("Failed to load trident OBJ model, will use default model", e);
@@ -110,12 +107,9 @@ public class CosmicArcBakeModel extends WrappedItemModel implements CosmicRender
                             }
                         }
 
-                        CCRenderState cc = CCRenderState.instance();
-                        cc.reset();
-                        cc.bind(AvaritiaRenderTypes.TRIDENT, source, pStack);
-
-                        for (CCModel model : tridentObjModel.values()) {
-                            model.render(cc);
+                        VertexConsumer vertexConsumer = source.getBuffer(AvaritiaRenderTypes.TRIDENT);
+                        for (SimpleMesh model : tridentObjModel.values()) {
+                            model.render(pStack.last(), vertexConsumer, 0xFFFFFFFF, packedLight, packedOverlay);
                         }
 
                     } finally {
