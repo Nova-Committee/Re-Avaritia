@@ -1,9 +1,14 @@
 package com.avaritia.client.model.loader.base;
 
 import com.avaritia.api.client.model.ItemQuadBakery;
+import com.avaritia.api.utils.RenderUtils;
+import com.avaritia.client.shader.AvaritiaRenderTypeHelper;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaderUniforms;
 import com.avaritia.client.shader.AvaritiaShaders;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,12 +16,14 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
@@ -37,13 +44,18 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static com.avaritia.client.shader.AvaritiaShaders.COSMIC_UVS;
 import static com.avaritia.client.shader.AvaritiaShaders.ETERNAL_UVS;
 
 public final class AvaritiaItemModels {
     private static final ModelDebugName DEBUG_NAME = () -> "AvaritiaItemModels";
+    private static final AtomicInteger EFFECT_RENDER_TYPE_SEQUENCE = new AtomicInteger();
+    private static final EffectSpecialRenderer EFFECT_RENDERER = new EffectSpecialRenderer();
 
     private AvaritiaItemModels() {
     }
@@ -312,15 +324,14 @@ public final class AvaritiaItemModels {
         @Override
         public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver resolver,
                            ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+            this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
+
             if (displayContext == ItemDisplayContext.GUI) {
                 this.haloLayer.ifPresent(halo -> appendLayer(renderState, displayContext, halo.quads(), halo.extents()));
             }
 
-            this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
-
             if (this.effect != null && !this.effectQuads.isEmpty()) {
-                this.effect.updateUniforms(level, owner, displayContext);
-                appendLayer(renderState, displayContext, this.effectQuads, this.effectExtents);
+                appendEffectLayer(renderState, displayContext, this.effect.createArgument(this.effectQuads, level, owner, displayContext), this.effectExtents);
             }
         }
 
@@ -332,11 +343,60 @@ public final class AvaritiaItemModels {
             layer.prepareQuadList().addAll(quads);
             renderState.setAnimated();
         }
+
+        private void appendEffectLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext,
+                                       EffectLayerArgument argument, Vector3fc[] extents) {
+            ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
+            layer.setExtents(() -> extents);
+            layer.setLocalTransform(this.transformation);
+            layer.setupSpecialModel(EFFECT_RENDERER, argument);
+            this.properties.applyToLayer(layer, displayContext);
+            renderState.setAnimated();
+            renderState.appendModelIdentityElement(argument);
+        }
     }
 
     private record HaloLayer(List<BakedQuad> quads, HaloSetting setting, Vector3fc[] extents) {
         private HaloLayer(List<BakedQuad> quads, HaloSetting setting) {
             this(quads, setting, CuboidItemModelWrapper.computeExtents(quads));
+        }
+    }
+
+    private record EffectLayerArgument(List<BakedQuad> quads, RenderType renderType, AvaritiaShaderUniforms.Effect effect,
+                                       float time, float yaw, float pitch, float scale, float opacity, float[] uvs) {
+        private void applyUniforms() {
+            AvaritiaShaderUniforms.set(this.effect, this.time, this.yaw, this.pitch, this.scale, this.opacity, this.uvs);
+        }
+    }
+
+    private static final class EffectSpecialRenderer implements SpecialModelRenderer<EffectLayerArgument> {
+        @Override
+        public void submit(@Nullable EffectLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                           int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
+            if (argument == null || argument.quads().isEmpty()) {
+                return;
+            }
+
+            submitNodeCollector.submitCustomGeometry(poseStack, argument.renderType(), (pose, buffer) -> {
+                argument.applyUniforms();
+                QuadInstance instance = new QuadInstance();
+                instance.setColor(-1);
+                instance.setLightCoords(lightCoords);
+                instance.setOverlayCoords(overlayCoords);
+
+                for (BakedQuad quad : argument.quads()) {
+                    buffer.putBakedQuad(pose, quad, instance);
+                }
+            });
+        }
+
+        @Override
+        public void getExtents(Consumer<Vector3fc> output) {
+        }
+
+        @Override
+        public @Nullable EffectLayerArgument extractArgument(ItemStack stack) {
+            return null;
         }
     }
 
@@ -355,27 +415,53 @@ public final class AvaritiaItemModels {
             };
         }
 
-        private void updateUniforms(@Nullable ClientLevel level, @Nullable ItemOwner owner, ItemDisplayContext displayContext) {
+        private EffectLayerArgument createArgument(List<BakedQuad> quads, @Nullable ClientLevel level, @Nullable ItemOwner owner,
+                                                   ItemDisplayContext displayContext) {
             long time = level != null ? level.getGameTime() : 0L;
             LivingEntity entity = owner != null ? owner.asLivingEntity() : null;
             float yaw = entity != null && displayContext != ItemDisplayContext.GUI ? (float) (entity.getYRot() * 2.0F * Math.PI / 360.0F) : 0.0F;
             float pitch = entity != null && displayContext != ItemDisplayContext.GUI ? -(float) (entity.getXRot() * 2.0F * Math.PI / 360.0F) : 0.0F;
             float scale = displayContext == ItemDisplayContext.GUI ? 100.0F : 1.0F;
+            return new EffectLayerArgument(quads, this.newRenderType(), this.uniformEffect(), time % Integer.MAX_VALUE,
+                    yaw, pitch, scale, this.opacity(), this.uvs());
+        }
 
-            switch (this) {
-                case COSMIC -> {
-                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.0F, COSMIC_UVS);
-                }
-                case HELL -> {
-                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.HELL, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.0F, COSMIC_UVS);
-                }
-                case ETERNAL -> {
-                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.ETERNAL, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.0F, ETERNAL_UVS);
-                }
-                case UNSTABLE -> {
-                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.UNSTABLE, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.5F, ETERNAL_UVS);
-                }
+        private RenderType newRenderType() {
+            RenderPipeline pipeline = this.pipeline();
+            if (pipeline == null) {
+                return this.renderType();
             }
+            String name = "avaritia_" + this.name().toLowerCase(Locale.ROOT) + "_item_" + EFFECT_RENDER_TYPE_SEQUENCE.incrementAndGet();
+            return AvaritiaRenderTypeHelper.textured(name, pipeline, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        }
+
+        private @Nullable RenderPipeline pipeline() {
+            return switch (this) {
+                case COSMIC -> AvaritiaShaders.COSMIC_SHADER;
+                case HELL -> AvaritiaShaders.HELL_SHADER;
+                case ETERNAL -> AvaritiaShaders.ETERNAL_SHADER;
+                case UNSTABLE -> AvaritiaShaders.UNSTABLE_SHADER;
+            };
+        }
+
+        private AvaritiaShaderUniforms.Effect uniformEffect() {
+            return switch (this) {
+                case COSMIC -> AvaritiaShaderUniforms.Effect.COSMIC;
+                case HELL -> AvaritiaShaderUniforms.Effect.HELL;
+                case ETERNAL -> AvaritiaShaderUniforms.Effect.ETERNAL;
+                case UNSTABLE -> AvaritiaShaderUniforms.Effect.UNSTABLE;
+            };
+        }
+
+        private float[] uvs() {
+            return switch (this) {
+                case COSMIC, HELL -> COSMIC_UVS;
+                case ETERNAL, UNSTABLE -> ETERNAL_UVS;
+            };
+        }
+
+        private float opacity() {
+            return this == UNSTABLE ? 1.5F : 1.0F;
         }
     }
 

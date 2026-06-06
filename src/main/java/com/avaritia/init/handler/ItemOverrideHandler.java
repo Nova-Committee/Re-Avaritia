@@ -36,6 +36,7 @@ public final class ItemOverrideHandler {
         event.register(Const.rl("umbrella_mode"), UmbrellaMode.MAP_CODEC);
         event.register(Const.rl("matter_cluster_full"), MatterClusterFull.MAP_CODEC);
         event.register(Const.rl("using_stack"), UsingStack.MAP_CODEC);
+        event.register(Const.rl("bow_pull"), BowPull.MAP_CODEC);
         event.register(Const.rl("infinity_crossbow_pull"), InfinityCrossbowPull.MAP_CODEC);
         event.register(Const.rl("infinity_crossbow_charged"), InfinityCrossbowCharged.MAP_CODEC);
     }
@@ -140,13 +141,31 @@ public final class ItemOverrideHandler {
         }
     }
 
+    public record BowPull() implements RangeSelectItemModelProperty {
+        public static final MapCodec<BowPull> MAP_CODEC = MapCodec.unit(new BowPull());
+
+        @Override
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+            LivingEntity entity = owner == null ? null : owner.asLivingEntity();
+            if (entity == null || !entity.isUsingItem() || entity.getUseItem() != stack) {
+                return 0.0F;
+            }
+            return (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks()) / 20.0F;
+        }
+
+        @Override
+        public MapCodec<BowPull> type() {
+            return MAP_CODEC;
+        }
+    }
+
     public record InfinityCrossbowPull() implements RangeSelectItemModelProperty {
         public static final MapCodec<InfinityCrossbowPull> MAP_CODEC = MapCodec.unit(new InfinityCrossbowPull());
 
         @Override
         public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
             LivingEntity entity = owner == null ? null : owner.asLivingEntity();
-            if (entity == null || CrossbowItem.isCharged(stack)) {
+            if (entity == null || CrossbowItem.isCharged(stack) || !entity.isUsingItem() || entity.getUseItem() != stack) {
                 return 0.0F;
             }
             return (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks()) / 20.0F;

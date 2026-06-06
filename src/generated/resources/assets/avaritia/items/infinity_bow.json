@@ -1,6 +1,93 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/infinity_bow"
+    "type": "minecraft:condition",
+    "key": "infinity_bow_tracer",
+    "on_false": {
+      "type": "minecraft:range_dispatch",
+      "entries": [
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_bow/pull_0_mask"
+            ],
+            "model": "avaritia:item/infinity_bow/pull_0"
+          },
+          "threshold": 0.05
+        },
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_bow/pull_1_mask"
+            ],
+            "model": "avaritia:item/infinity_bow/pull_1"
+          },
+          "threshold": 0.65
+        },
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_bow/pull_2_mask"
+            ],
+            "model": "avaritia:item/infinity_bow/pull_2"
+          },
+          "threshold": 0.9
+        }
+      ],
+      "fallback": {
+        "type": "avaritia:cosmic",
+        "mask": [
+          "avaritia:mask/item/infinity_bow/idle_mask"
+        ],
+        "model": "avaritia:item/infinity_bow/idle"
+      },
+      "property": "avaritia:bow_pull"
+    },
+    "on_true": {
+      "type": "minecraft:range_dispatch",
+      "entries": [
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_bow/pull_0_mask"
+            ],
+            "model": "avaritia:item/infinity_bow/tracer_pull_0"
+          },
+          "threshold": 0.05
+        },
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_bow/pull_1_mask"
+            ],
+            "model": "avaritia:item/infinity_bow/tracer_pull_1"
+          },
+          "threshold": 0.65
+        },
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_bow/pull_2_mask"
+            ],
+            "model": "avaritia:item/infinity_bow/tracer_pull_2"
+          },
+          "threshold": 0.9
+        }
+      ],
+      "fallback": {
+        "type": "avaritia:cosmic",
+        "mask": [
+          "avaritia:mask/item/infinity_bow/idle_mask"
+        ],
+        "model": "avaritia:item/infinity_bow/tracer_idle"
+      },
+      "property": "avaritia:bow_pull"
+    },
+    "property": "avaritia:mode_flag"
   }
 }

@@ -4,6 +4,7 @@ import com.avaritia.Const;
 import com.avaritia.api.iface.IColored;
 import com.avaritia.client.model.loader.base.AvaritiaItemModels;
 import com.avaritia.client.tint.RainbowTintSource;
+import com.avaritia.init.handler.ItemOverrideHandler;
 import com.avaritia.init.registry.ModItems;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.data.models.model.ItemModelUtils;
@@ -175,6 +176,8 @@ public class AvaritiaModelProvider implements DataProvider {
     private ItemModel.Unbaked clientItemModel(Identifier id, Identifier model) {
         return switch (id.getPath()) {
             case "infinity_sword" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_sword_mask")));
+            case "infinity_bow" -> infinityBowModel();
+            case "infinity_crossbow" -> infinityCrossbowModel(model);
             case "infinity_helmet" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_helmet_mask")));
             case "infinity_chestplate" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_chestplate_mask")));
             case "infinity_pants" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_pants_mask")));
@@ -182,11 +185,64 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_trident" -> new AvaritiaItemModels.CosmicArc(model, List.of(mask("infinity_trident_mask")));
             case "singularity" -> new AvaritiaItemModels.Halo(model, halo(), -16777216, 4, false, singularityTints());
             case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
+            case "matter_cluster" -> ItemModelUtils.conditional(new ItemOverrideHandler.MatterClusterFull(),
+                    matterClusterFullModel(), new AvaritiaItemModels.Cosmic(model, List.of(mask("matter_cluster_empty_mask"))));
+            case "full_matter_cluster" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
             case "infinity_ingot", "infinity_nugget", "infinity_catalyst", "infinity_totem", "infinity_ring",
                  "infinity_bucket", "infinity_elytra", "infinity_upgrade", "enhancement_core", "endest_pearl" ->
                     new AvaritiaItemModels.Halo(model, halo(), -16777216, 10, true);
             default -> ItemModelUtils.plainModel(model);
         };
+    }
+
+    private ItemModel.Unbaked infinityBowModel() {
+        ItemModel.Unbaked idle = cosmicHandheld("infinity_bow/idle", "item/tools/infinity_bow/idle", "infinity_bow/idle_mask");
+        ItemModel.Unbaked pull0 = cosmicHandheld("infinity_bow/pull_0", "item/tools/infinity_bow/pull_0", "infinity_bow/pull_0_mask");
+        ItemModel.Unbaked pull1 = cosmicHandheld("infinity_bow/pull_1", "item/tools/infinity_bow/pull_1", "infinity_bow/pull_1_mask");
+        ItemModel.Unbaked pull2 = cosmicHandheld("infinity_bow/pull_2", "item/tools/infinity_bow/pull_2", "infinity_bow/pull_2_mask");
+        ItemModel.Unbaked normal = ItemModelUtils.rangeSelect(new ItemOverrideHandler.BowPull(), idle,
+                ItemModelUtils.override(pull0, 0.05F),
+                ItemModelUtils.override(pull1, 0.65F),
+                ItemModelUtils.override(pull2, 0.9F));
+
+        ItemModel.Unbaked tracerIdle = cosmicHandheld("infinity_bow/tracer_idle", "item/tools/infinity_bow/tracer/idle", "infinity_bow/idle_mask");
+        ItemModel.Unbaked tracerPull0 = cosmicHandheld("infinity_bow/tracer_pull_0", "item/tools/infinity_bow/tracer/pull_0", "infinity_bow/pull_0_mask");
+        ItemModel.Unbaked tracerPull1 = cosmicHandheld("infinity_bow/tracer_pull_1", "item/tools/infinity_bow/tracer/pull_1", "infinity_bow/pull_1_mask");
+        ItemModel.Unbaked tracerPull2 = cosmicHandheld("infinity_bow/tracer_pull_2", "item/tools/infinity_bow/tracer/pull_2", "infinity_bow/pull_2_mask");
+        ItemModel.Unbaked tracer = ItemModelUtils.rangeSelect(new ItemOverrideHandler.BowPull(), tracerIdle,
+                ItemModelUtils.override(tracerPull0, 0.05F),
+                ItemModelUtils.override(tracerPull1, 0.65F),
+                ItemModelUtils.override(tracerPull2, 0.9F));
+
+        return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_bow_tracer"), tracer, normal);
+    }
+
+    private ItemModel.Unbaked infinityCrossbowModel(Identifier idleModel) {
+        ItemModel.Unbaked idle = new AvaritiaItemModels.Cosmic(idleModel, List.of(mask("infinity_crossbow/standby_mask")));
+        ItemModel.Unbaked pull0 = cosmicHandheld("infinity_crossbow/pull_0", "item/tools/infinity_crossbow/pull_0", "infinity_crossbow/pull_0_mask");
+        ItemModel.Unbaked pull1 = cosmicHandheld("infinity_crossbow/pull_1", "item/tools/infinity_crossbow/pull_1", "infinity_crossbow/pull_1_mask");
+        ItemModel.Unbaked pull2 = cosmicHandheld("infinity_crossbow/pull_2", "item/tools/infinity_crossbow/pull_2", "infinity_crossbow/pull_2_mask");
+        ItemModel.Unbaked pulling = ItemModelUtils.rangeSelect(new ItemOverrideHandler.InfinityCrossbowPull(), idle,
+                ItemModelUtils.override(pull0, 0.05F),
+                ItemModelUtils.override(pull1, 0.58F),
+                ItemModelUtils.override(pull2, 1.0F));
+        ItemModel.Unbaked charged = cosmicHandheld("infinity_crossbow/standby", "item/tools/infinity_crossbow/standby", "infinity_crossbow/standby_mask");
+        return ItemModelUtils.conditional(new ItemOverrideHandler.InfinityCrossbowCharged(), charged, pulling);
+    }
+
+    private ItemModel.Unbaked matterClusterFullModel() {
+        Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
+        return new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
+    }
+
+    private ItemModel.Unbaked cosmicHandheld(String modelPath, String texturePath, String maskPath) {
+        return new AvaritiaItemModels.Cosmic(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+    }
+
+    private Identifier flatModel(String modelPath, String texturePath, boolean handheld) {
+        TextureMapping textures = new TextureMapping().put(TextureSlot.LAYER0, texture(Identifier.fromNamespaceAndPath(Const.MOD_ID, texturePath)));
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        return (handheld ? ModelTemplates.FLAT_HANDHELD_ITEM : ModelTemplates.FLAT_ITEM).create(model, textures, this.generatedModels::put);
     }
 
     private void clientItem(Item item, ItemModel.Unbaked model) {

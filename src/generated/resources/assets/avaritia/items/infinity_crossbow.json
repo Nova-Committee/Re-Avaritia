@@ -1,6 +1,56 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/infinity_crossbow"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:range_dispatch",
+      "entries": [
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_crossbow/pull_0_mask"
+            ],
+            "model": "avaritia:item/infinity_crossbow/pull_0"
+          },
+          "threshold": 0.05
+        },
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_crossbow/pull_1_mask"
+            ],
+            "model": "avaritia:item/infinity_crossbow/pull_1"
+          },
+          "threshold": 0.58
+        },
+        {
+          "model": {
+            "type": "avaritia:cosmic",
+            "mask": [
+              "avaritia:mask/item/infinity_crossbow/pull_2_mask"
+            ],
+            "model": "avaritia:item/infinity_crossbow/pull_2"
+          },
+          "threshold": 1.0
+        }
+      ],
+      "fallback": {
+        "type": "avaritia:cosmic",
+        "mask": [
+          "avaritia:mask/item/infinity_crossbow/standby_mask"
+        ],
+        "model": "avaritia:item/infinity_crossbow"
+      },
+      "property": "avaritia:infinity_crossbow_pull"
+    },
+    "on_true": {
+      "type": "avaritia:cosmic",
+      "mask": [
+        "avaritia:mask/item/infinity_crossbow/standby_mask"
+      ],
+      "model": "avaritia:item/infinity_crossbow/standby"
+    },
+    "property": "avaritia:infinity_crossbow_charged"
   }
 }
