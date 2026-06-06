@@ -1,7 +1,14 @@
 package com.avaritia.client.model.loader.base;
 
+import com.avaritia.Const;
 import com.avaritia.api.client.model.ItemQuadBakery;
+import com.avaritia.api.client.render.CCModel;
+import com.avaritia.api.client.render.CCRenderState;
+import com.avaritia.api.client.render.buffer.TransformingVertexConsumer;
+import com.avaritia.api.client.render.model.OBJParser;
 import com.avaritia.api.utils.RenderUtils;
+import com.avaritia.api.utils.vec.Matrix4;
+import com.avaritia.client.render.util.ArcRender;
 import com.avaritia.client.shader.AvaritiaRenderTypeHelper;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
 import com.avaritia.client.shader.AvaritiaShaderUniforms;
@@ -14,6 +21,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
+import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -56,6 +64,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -69,6 +78,8 @@ public final class AvaritiaItemModels {
     private static final EffectSpecialRenderer EFFECT_RENDERER = new EffectSpecialRenderer();
     private static final HaloSpecialRenderer HALO_RENDERER = new HaloSpecialRenderer();
     private static final PulseSpecialRenderer PULSE_RENDERER = new PulseSpecialRenderer();
+    private static final TridentSpecialRenderer TRIDENT_RENDERER = new TridentSpecialRenderer();
+    private static final ArcSpecialRenderer ARC_RENDERER = new ArcSpecialRenderer();
     private static final int PULSE_ALPHA_COLOR = 0x99FFFFFF;
 
     private AvaritiaItemModels() {
@@ -83,7 +94,7 @@ public final class AvaritiaItemModels {
 
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty(), true);
         }
 
         @Override
@@ -291,6 +302,12 @@ public final class AvaritiaItemModels {
 
     private static ItemModel bakeEffect(ItemModel.BakingContext context, Matrix4fc transformation, Identifier model,
                                         List<ItemTintSource> tints, List<Identifier> masks, @Nullable Effect effect, Optional<HaloLayer> haloLayer) {
+        return bakeEffect(context, transformation, model, tints, masks, effect, haloLayer, false);
+    }
+
+    private static ItemModel bakeEffect(ItemModel.BakingContext context, Matrix4fc transformation, Identifier model,
+                                        List<ItemTintSource> tints, List<Identifier> masks, @Nullable Effect effect,
+                                        Optional<HaloLayer> haloLayer, boolean cosmicArc) {
         ModelBaker baker = context.blockModelBaker();
         ResolvedModel resolvedModel = baker.getModel(model);
         TextureSlots textureSlots = resolvedModel.getTopTextureSlots();
@@ -298,7 +315,8 @@ public final class AvaritiaItemModels {
         ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
         List<BakedQuad> baseQuads = bakeBaseQuads(baker, textureSlots);
         List<BakedQuad> effectQuads = effect == null ? List.of() : bakeEffectQuads(baker, effect, masks);
-        return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, baseQuads, haloLayer);
+        Map<String, CCModel> tridentModels = cosmicArc ? loadTridentModels() : Map.of();
+        return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, baseQuads, haloLayer, cosmicArc, tridentModels);
     }
 
     private static List<BakedQuad> bakeEffectQuads(ModelBaker baker, Effect effect, List<Identifier> masks) {
@@ -331,6 +349,18 @@ public final class AvaritiaItemModels {
         return new HaloLayer(List.of(HaloUtils.generateHaloQuad(sprite, setting.size(), setting.color())), setting);
     }
 
+    private static Map<String, CCModel> loadTridentModels() {
+        try {
+            return new OBJParser(Const.rl("models/infinity_trident.obj"))
+                    .swapYZ()
+                    .ignoreMtl()
+                    .parse();
+        } catch (Exception exception) {
+            Const.LOGGER.warn("Failed to load infinity trident item model OBJ; falling back to flat item model.", exception);
+            return Map.of();
+        }
+    }
+
     private static final class LayeredEffectItemModel implements ItemModel {
         private final ItemModel wrapped;
         private final ModelRenderProperties properties;
@@ -341,9 +371,12 @@ public final class AvaritiaItemModels {
         private final Optional<HaloLayer> haloLayer;
         private final Vector3fc[] effectExtents;
         private final Vector3fc[] baseExtents;
+        private final boolean cosmicArc;
+        private final Map<String, CCModel> tridentModels;
 
         private LayeredEffectItemModel(ItemModel wrapped, ModelRenderProperties properties, Matrix4fc transformation,
-                                       @Nullable Effect effect, List<BakedQuad> effectQuads, List<BakedQuad> baseQuads, Optional<HaloLayer> haloLayer) {
+                                       @Nullable Effect effect, List<BakedQuad> effectQuads, List<BakedQuad> baseQuads,
+                                       Optional<HaloLayer> haloLayer, boolean cosmicArc, Map<String, CCModel> tridentModels) {
             this.wrapped = wrapped;
             this.properties = properties;
             this.transformation = transformation;
@@ -353,6 +386,8 @@ public final class AvaritiaItemModels {
             this.haloLayer = haloLayer;
             this.effectExtents = CuboidItemModelWrapper.computeExtents(effectQuads);
             this.baseExtents = CuboidItemModelWrapper.computeExtents(baseQuads);
+            this.cosmicArc = cosmicArc;
+            this.tridentModels = tridentModels;
         }
 
         @Override
@@ -366,7 +401,11 @@ public final class AvaritiaItemModels {
                 }
             }
 
-            this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
+            if (shouldRenderTridentGeometry(displayContext)) {
+                appendTridentLayer(renderState, displayContext);
+            } else {
+                this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
+            }
 
             if (displayContext == ItemDisplayContext.GUI) {
                 this.haloLayer.ifPresent(halo -> {
@@ -379,6 +418,10 @@ public final class AvaritiaItemModels {
 
             if (this.effect != null && !this.effectQuads.isEmpty()) {
                 appendEffectLayer(renderState, displayContext, this.effect.createArgument(this.effectQuads, level, owner, displayContext, stack), this.effectExtents);
+            }
+
+            if (shouldRenderArc(displayContext)) {
+                appendArcLayer(renderState, displayContext, level, seed);
             }
         }
 
@@ -402,6 +445,20 @@ public final class AvaritiaItemModels {
             var window = Minecraft.getInstance().getWindow();
             return InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT)
                     || InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT);
+        }
+
+        private boolean shouldRenderTridentGeometry(ItemDisplayContext displayContext) {
+            return this.cosmicArc
+                    && !this.tridentModels.isEmpty()
+                    && displayContext != ItemDisplayContext.GUI
+                    && displayContext != ItemDisplayContext.GROUND
+                    && displayContext != ItemDisplayContext.FIXED;
+        }
+
+        private boolean shouldRenderArc(ItemDisplayContext displayContext) {
+            return this.cosmicArc
+                    && displayContext != ItemDisplayContext.GUI
+                    && displayContext != ItemDisplayContext.GROUND;
         }
 
         private void appendHaloLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, HaloLayer halo) {
@@ -436,6 +493,23 @@ public final class AvaritiaItemModels {
                     .scale(scale, scale, 1.0001F);
         }
 
+        private void appendTridentLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext) {
+            ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
+            this.properties.applyToLayer(layer, displayContext);
+            layer.setLocalTransform(this.transformation);
+            layer.setupSpecialModel(TRIDENT_RENDERER, new TridentLayerArgument(this.tridentModels, displayContext));
+        }
+
+        private void appendArcLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext,
+                                    @Nullable ClientLevel level, int seed) {
+            ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
+            this.properties.applyToLayer(layer, displayContext);
+            layer.setLocalTransform(this.transformation);
+            long time = (level != null ? level.getGameTime() : 0L) + seed;
+            layer.setupSpecialModel(ARC_RENDERER, new ArcLayerArgument(time));
+            renderState.setAnimated();
+        }
+
         private void appendEffectLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext,
                                        EffectLayerArgument argument, Vector3fc[] extents) {
             ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
@@ -465,6 +539,12 @@ public final class AvaritiaItemModels {
     }
 
     private record PulseLayerArgument(List<BakedQuad> quads) {
+    }
+
+    private record TridentLayerArgument(Map<String, CCModel> models, ItemDisplayContext displayContext) {
+    }
+
+    private record ArcLayerArgument(long time) {
     }
 
     private static final class HaloSpecialRenderer implements SpecialModelRenderer<HaloLayerArgument> {
@@ -523,6 +603,92 @@ public final class AvaritiaItemModels {
 
         @Override
         public @Nullable PulseLayerArgument extractArgument(ItemStack stack) {
+            return null;
+        }
+    }
+
+    private static final class TridentSpecialRenderer implements SpecialModelRenderer<TridentLayerArgument> {
+        @Override
+        public void submit(@Nullable TridentLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                           int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
+            if (argument == null || argument.models().isEmpty()) {
+                return;
+            }
+
+            poseStack.pushPose();
+            try {
+                transformTrident(argument.displayContext(), poseStack);
+                Matrix4 pose = new Matrix4(poseStack);
+                submitNodeCollector.submitCustomGeometry(poseStack, AvaritiaRenderTypes.TRIDENT, (poseState, vertexConsumer) -> {
+                    CCRenderState cc = CCRenderState.instance();
+                    cc.reset();
+                    cc.bind(new TransformingVertexConsumer(vertexConsumer, pose), AvaritiaRenderTypes.TRIDENT.format());
+                    cc.baseColour = 0xFFFFFFFF;
+                    cc.brightness = lightCoords;
+                    cc.overlay = overlayCoords;
+
+                    for (CCModel model : argument.models().values()) {
+                        model.render(cc);
+                    }
+                });
+            } finally {
+                poseStack.popPose();
+            }
+        }
+
+        private static void transformTrident(ItemDisplayContext displayContext, PoseStack poseStack) {
+            switch (displayContext) {
+                case FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND -> {
+                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    poseStack.translate(0.2D, -0.2D, -1.3D);
+                }
+                case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND -> {
+                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    poseStack.translate(0.0D, 0.0D, -1.5D);
+                }
+                default -> poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+            }
+        }
+
+        @Override
+        public void getExtents(Consumer<Vector3fc> output) {
+        }
+
+        @Override
+        public @Nullable TridentLayerArgument extractArgument(ItemStack stack) {
+            return null;
+        }
+    }
+
+    private static final class ArcSpecialRenderer implements SpecialModelRenderer<ArcLayerArgument> {
+        @Override
+        public void submit(@Nullable ArcLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                           int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
+            if (argument == null) {
+                return;
+            }
+
+            poseStack.pushPose();
+            try {
+                poseStack.mulPose(Axis.YP.rotationDegrees((argument.time() * 8L) % 360L));
+                submitNodeCollector.submitCustomGeometry(poseStack, ArcRender.ARC_RENDER_TYPE, (pose, buffer) ->
+                        ArcRender.renderArc(pose, buffer, argument.time(),
+                                -0.5F, 0.0F, -0.5F,
+                                0.5F, 0.0F, 0.5F,
+                                0.05F, 8));
+            } finally {
+                poseStack.popPose();
+            }
+        }
+
+        @Override
+        public void getExtents(Consumer<Vector3fc> output) {
+        }
+
+        @Override
+        public @Nullable ArcLayerArgument extractArgument(ItemStack stack) {
             return null;
         }
     }

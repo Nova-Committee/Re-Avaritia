@@ -1,6 +1,7 @@
 package com.avaritia.client.render.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.avaritia.Res;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -30,7 +31,13 @@ public class ArcRender {
                                  float sx, float sy, float sz, float ex, float ey, float ez,
                                  float thickness, int segments) {
         var vc = mbs.getBuffer(ARC_RENDER_TYPE);
-        var matrix = ps.last().pose();
+        renderArc(ps.last(), vc, seed, sx, sy, sz, ex, ey, ez, thickness, segments);
+    }
+
+    public static void renderArc(PoseStack.Pose pose, VertexConsumer vc, long seed,
+                                 float sx, float sy, float sz, float ex, float ey, float ez,
+                                 float thickness, int segments) {
+        var matrix = pose.pose();
         var rnd = new Random(seed);
 
         var start = new Vec3(sx, sy, sz);
