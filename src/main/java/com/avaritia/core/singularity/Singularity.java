@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -27,8 +28,8 @@ public class Singularity {
             builder.group(
                     Identifier.CODEC.fieldOf("name").forGetter(singularity -> singularity.registryName),
                     Codec.STRING.optionalFieldOf("displayName", "").forGetter(singularity -> singularity.displayName),
-                    Codec.INT.optionalFieldOf("overlayColor", 0x3B2754).forGetter(singularity -> singularity.overlayColor),
-                    Codec.INT.optionalFieldOf("underlayColor", 0x3B2754).forGetter(singularity -> singularity.underlayColor),
+                    Codec.INT.optionalFieldOf("overlayColor", 0x3B2754).forGetter(singularity -> singularity.overlayColor & 0xFFFFFF),
+                    Codec.INT.optionalFieldOf("underlayColor", 0x3B2754).forGetter(singularity -> singularity.underlayColor & 0xFFFFFF),
                     Codec.INT.optionalFieldOf("count", 1000).forGetter(singularity -> singularity.count),
                     Codec.INT.optionalFieldOf("timeCost", 240).forGetter(singularity -> singularity.timeCost),
                     Ingredient.CODEC.optionalFieldOf("ingredient").forGetter(Singularity::getOptionalIngredient),
@@ -45,8 +46,8 @@ public class Singularity {
 
     private final Identifier registryName;
     private String displayName;
-    private int overlayColor = 0x3B2754;
-    private int underlayColor = 0x3B2754;
+    private int overlayColor = ARGB.opaque(0x3B2754);
+    private int underlayColor = ARGB.opaque(0x3B2754);
     private int count = 1000;
     private int timeCost = FMLLoader.getCurrent().isProduction() ? ModConfig.singularityTimeRequired.get() : 240;
     private Ingredient ingredient;
@@ -58,8 +59,8 @@ public class Singularity {
                        int count, int timeCost, Ingredient ingredient, boolean enabled, boolean recipeEnable) {
         this.registryName = registryName;
         this.displayName = displayName;
-        this.overlayColor = overlayColor;
-        this.underlayColor = underlayColor;
+        this.overlayColor = ARGB.opaque(overlayColor);
+        this.underlayColor = ARGB.opaque(underlayColor);
         this.count = count;
         this.timeCost = timeCost;
         this.ingredient = ingredient;
@@ -121,8 +122,8 @@ public class Singularity {
     }
 
     public Singularity setColors(int overlayColor, int underlayColor) {
-        this.overlayColor = overlayColor;
-        this.underlayColor = underlayColor;
+        this.overlayColor = ARGB.opaque(overlayColor);
+        this.underlayColor = ARGB.opaque(underlayColor);
         return this;
     }
 
