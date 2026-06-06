@@ -22,7 +22,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
  * <p>
  * 共注册 <b>13</b> 个网络包：
  * <ul>
- *   <li>4 个 S2C（服务端→客户端）：SideConfigSync, Totem, NameCache, Singularities</li>
+ *   <li>3 个 S2C（服务端→客户端）：SideConfigSync, Totem, Singularities</li>
  *   <li>8 个 C2S（客户端→服务端）：CompressorEject, CompressorLock, SetTime, SideConfig,
  *       ElytraSpeedUp, ItemFilter, Rename, OpenRing</li>
  *   <li>1 个双向：NbtData</li>
@@ -60,8 +60,6 @@ public final class NetworkHandler {
                 new S2CSideConfigSyncPacket.Handler());
         registrar.playToClient(S2CTotemPacket.TYPE, S2CTotemPacket.STREAM_CODEC,
                 new S2CTotemPacket.Handler());
-//        registrar.playToClient(S2CNameCachePacket.TYPE, S2CNameCachePacket.STREAM_CODEC,
-//                new S2CNameCachePacket.Handler());
         registrar.playToClient(S2CSingularitiesPacket.TYPE, S2CSingularitiesPacket.STREAM_CODEC,
                 new S2CSingularitiesPacket.Handler());
 
