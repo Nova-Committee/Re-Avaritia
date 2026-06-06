@@ -261,11 +261,11 @@ public abstract class Color implements Copyable<Color> {
     }
 
     public float[] getRGBA() {
-        return new float[]{r / 255F, g / 255F, b / 255F, a / 255F};
+        return new float[]{(r & 0xFF) / 255F, (g & 0xFF) / 255F, (b & 0xFF) / 255F, (a & 0xFF) / 255F};
     }
 
     public float[] getARGB() {
-        return new float[]{a / 255F, r / 255F, g / 255F, b / 255F};
+        return new float[]{(a & 0xFF) / 255F, (r & 0xFF) / 255F, (g & 0xFF) / 255F, (b & 0xFF) / 255F};
     }
 
     public boolean equals(Color color) {
