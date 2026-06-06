@@ -96,23 +96,23 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         ModelPart leftArm = this.bodyRoot.getChild("left_arm");
         copyPartPose(leftArm, this.leftArm);
         if (!isSilm) {
-            this.setScale(this.leftArm, 1.01F);
+            this.setScale(leftArm, 1.01F);
         } else {
-            this.leftArm.x -= 0.3F;
-            this.leftArm.xScale = 0.8F;
-            this.leftArm.yScale = 1.01F;
+            leftArm.x -= 0.3F;
+            leftArm.xScale = 0.8F;
+            leftArm.yScale = 1.01F;
+            leftArm.zScale = 1.0F;
         }
-        this.setScale(leftArm, 1.0F);
         ModelPart rightArm = this.bodyRoot.getChild("right_arm");
         copyPartPose(rightArm, this.rightArm);
         if (!isSilm) {
-            this.setScale(this.rightArm, 1.01F);
+            this.setScale(rightArm, 1.01F);
         } else {
-            this.rightArm.x += 0.3F;
-            this.rightArm.xScale = 0.8F;
-            this.rightArm.yScale = 1.01F;
+            rightArm.x += 0.3F;
+            rightArm.xScale = 0.8F;
+            rightArm.yScale = 1.01F;
+            rightArm.zScale = 1.0F;
         }
-        this.setScale(rightArm, 1.0F);
 
         ModelPart leftLeg = this.bodyRoot.getChild("left_leg");
         copyPartPose(leftLeg, this.leftLeg);
@@ -235,17 +235,22 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
 
             submitPart(poseStack, output, AvaritiaRenderTypes.Glow(Res.EYE_TEX), hat, packedLight, packedOverlay, new ColorRGBA(r, g, b, 1.0F).pack());
 
-            submitModel(poseStack, output, cosmicArmorRenderType, Res.ARMOR_MASK_INV::wrap, packedLight, packedOverlay, WHITE);
+            submitBodyParts(poseStack, output, cosmicArmorRenderType, Res.ARMOR_MASK_INV::wrap, packedLight, packedOverlay, WHITE);
 
             poseStack.popPose();
         }
     }
 
-    private void submitModel(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, Function<VertexConsumer, VertexConsumer> wrapper, int packedLight, int packedOverlay, int color) {
+    private void submitBodyParts(PoseStack poseStack, SubmitNodeCollector output, RenderType renderType, Function<VertexConsumer, VertexConsumer> wrapper, int packedLight, int packedOverlay, int color) {
         output.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
             PoseStack modelPose = new PoseStack();
             modelPose.last().set(pose);
-            this.renderToBuffer(modelPose, wrapper.apply(vertexConsumer), packedLight, packedOverlay, color);
+            VertexConsumer wrapped = wrapper.apply(vertexConsumer);
+            this.body.render(modelPose, wrapped, packedLight, packedOverlay, color);
+            this.rightArm.render(modelPose, wrapped, packedLight, packedOverlay, color);
+            this.leftArm.render(modelPose, wrapped, packedLight, packedOverlay, color);
+            this.rightLeg.render(modelPose, wrapped, packedLight, packedOverlay, color);
+            this.leftLeg.render(modelPose, wrapped, packedLight, packedOverlay, color);
         });
     }
 
