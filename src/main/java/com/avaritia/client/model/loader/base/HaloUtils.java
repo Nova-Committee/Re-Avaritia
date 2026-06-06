@@ -19,29 +19,6 @@ public class HaloUtils {
     private static final int MIN_CIRCLE_SEGMENTS = 24;
     private static final int MAX_CIRCLE_SEGMENTS = 64;
 
-    public static BakedQuad generateHaloQuad(final TextureAtlasSprite sprite, final int size, final int color) {
-        final float[] colors = new ColorARGB(color).getRGBA();
-        final double spread = size / 16.0;
-        final double min = 0.0 - spread;
-        final double max = 1.0 + spread;
-        final float minU = sprite.getU0();
-        final float maxU = sprite.getU1();
-        final float minV = sprite.getV0();
-        final float maxV = sprite.getV1();
-        final Quad quad = new Quad();
-        quad.reset(CachedFormat.BLOCK);
-        quad.setTexture(sprite);
-        putVertex(quad.vertices[0], max, max, 0.0, maxU, minV);
-        putVertex(quad.vertices[1], min, max, 0.0, minU, minV);
-        putVertex(quad.vertices[2], min, min, 0.0, minU, maxV);
-        putVertex(quad.vertices[3], max, min, 0.0, maxU, maxV);
-        for (int i = 0; i < 4; ++i) {
-            System.arraycopy(colors, 0, quad.vertices[i].color, 0, 4);
-        }
-        quad.calculateOrientation(true);
-        return quad.bake();
-    }
-
     public static List<BakedQuad> generateHaloQuads(final TextureAtlasSprite sprite, final int size, final int color) {
         final float[] colors = new ColorARGB(color).getRGBA();
         final int segments = circleSegments(size);
