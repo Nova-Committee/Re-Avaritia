@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/singularity/singularity"
+    "layer0": "avaritia:item/resource/singularity/singularity",
+    "layer1": "avaritia:item/resource/singularity/singularity_overlay"
   }
 }

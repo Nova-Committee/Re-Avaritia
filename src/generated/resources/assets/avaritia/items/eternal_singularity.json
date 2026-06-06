@@ -6,6 +6,14 @@
     ],
     "model": "avaritia:item/eternal_singularity",
     "size": 6,
-    "texture": "avaritia:misc/halo"
+    "texture": "avaritia:misc/halo",
+    "tints": [
+      {
+        "type": "avaritia:rainbow"
+      },
+      {
+        "type": "avaritia:rainbow"
+      }
+    ]
   }
 }

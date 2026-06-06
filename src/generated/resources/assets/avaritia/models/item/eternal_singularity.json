@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "avaritia:item/resource/singularity/eternal_singularity"
+    "layer0": "avaritia:item/resource/singularity/eternal_singularity",
+    "layer1": "avaritia:item/resource/singularity/eternal_singularity2"
   }
 }

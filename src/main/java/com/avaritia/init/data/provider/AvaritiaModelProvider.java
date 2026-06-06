@@ -1,8 +1,11 @@
 package com.avaritia.init.data.provider;
 
 import com.avaritia.Const;
+import com.avaritia.api.iface.IColored;
 import com.avaritia.client.model.loader.base.AvaritiaItemModels;
+import com.avaritia.client.tint.RainbowTintSource;
 import com.avaritia.init.registry.ModItems;
+import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelTemplates;
@@ -156,7 +159,11 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private void basicItem(Item item, Identifier id) {
-        Identifier model = ModelTemplates.FLAT_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
+        Identifier model = switch (id.getPath()) {
+            case "singularity" -> twoLayerItem(item, id, "singularity_overlay");
+            case "eternal_singularity" -> twoLayerItem(item, id, "eternal_singularity2");
+            default -> ModelTemplates.FLAT_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
+        };
         clientItem(item, clientItemModel(id, model));
     }
 
@@ -173,7 +180,8 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_pants" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_pants_mask")));
             case "infinity_boots" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_boots_mask")));
             case "infinity_trident" -> new AvaritiaItemModels.CosmicArc(model, List.of(mask("infinity_trident_mask")));
-            case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false);
+            case "singularity" -> new AvaritiaItemModels.Halo(model, halo(), -16777216, 4, false, singularityTints());
+            case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
             case "infinity_ingot", "infinity_nugget", "infinity_catalyst", "infinity_totem", "infinity_ring",
                  "infinity_bucket", "infinity_elytra", "infinity_upgrade", "enhancement_core", "endest_pearl" ->
                     new AvaritiaItemModels.Halo(model, halo(), -16777216, 10, true);
@@ -193,8 +201,17 @@ public class AvaritiaModelProvider implements DataProvider {
         return new TextureMapping().put(TextureSlot.LAYER0, texture(itemTexture(id)));
     }
 
+    private Identifier twoLayerItem(Item item, Identifier id, String overlayPath) {
+        TextureMapping textures = layer0(id).put(TextureSlot.LAYER1, texture(itemTexture(id, overlayPath)));
+        return ModelTemplates.TWO_LAYERED_ITEM.create(modelLocation(item), textures, this.generatedModels::put);
+    }
+
     private Identifier itemTexture(Identifier id) {
         return Identifier.fromNamespaceAndPath(id.getNamespace(), ITEM_TEXTURES.getOrDefault(id.getPath(), "item/" + id.getPath()));
+    }
+
+    private Identifier itemTexture(Identifier id, String path) {
+        return Identifier.fromNamespaceAndPath(id.getNamespace(), "item/resource/singularity/" + path);
     }
 
     private Identifier mask(String path) {
@@ -203,6 +220,14 @@ public class AvaritiaModelProvider implements DataProvider {
 
     private Identifier halo() {
         return Identifier.fromNamespaceAndPath(Const.MOD_ID, "misc/halo");
+    }
+
+    private List<ItemTintSource> singularityTints() {
+        return List.of(new IColored.ItemColors(0), new IColored.ItemColors(1));
+    }
+
+    private List<ItemTintSource> rainbowTints() {
+        return List.of(new RainbowTintSource(), new RainbowTintSource());
     }
 
     private Material texture(Identifier id) {

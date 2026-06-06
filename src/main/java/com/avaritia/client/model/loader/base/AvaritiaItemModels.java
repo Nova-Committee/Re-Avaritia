@@ -7,6 +7,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
@@ -45,12 +47,16 @@ public final class AvaritiaItemModels {
     private AvaritiaItemModels() {
     }
 
-    public record Cosmic(Identifier model, List<Identifier> mask) implements ItemModel.Unbaked, EffectFields {
+    public record Cosmic(Identifier model, List<Identifier> mask, List<ItemTintSource> tints) implements ItemModel.Unbaked, EffectFields {
         public static final MapCodec<Cosmic> MAP_CODEC = effectCodec(Cosmic::new);
 
+        public Cosmic(Identifier model, List<Identifier> mask) {
+            this(model, mask, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.COSMIC, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty());
         }
 
         @Override
@@ -64,12 +70,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record CosmicArc(Identifier model, List<Identifier> mask) implements ItemModel.Unbaked, EffectFields {
+    public record CosmicArc(Identifier model, List<Identifier> mask, List<ItemTintSource> tints) implements ItemModel.Unbaked, EffectFields {
         public static final MapCodec<CosmicArc> MAP_CODEC = effectCodec(CosmicArc::new);
 
+        public CosmicArc(Identifier model, List<Identifier> mask) {
+            this(model, mask, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.COSMIC, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty());
         }
 
         @Override
@@ -83,12 +93,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record Hell(Identifier model, List<Identifier> mask) implements ItemModel.Unbaked, EffectFields {
+    public record Hell(Identifier model, List<Identifier> mask, List<ItemTintSource> tints) implements ItemModel.Unbaked, EffectFields {
         public static final MapCodec<Hell> MAP_CODEC = effectCodec(Hell::new);
 
+        public Hell(Identifier model, List<Identifier> mask) {
+            this(model, mask, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.HELL, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.HELL, Optional.empty());
         }
 
         @Override
@@ -102,12 +116,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record Eternal(Identifier model, List<Identifier> mask) implements ItemModel.Unbaked, EffectFields {
+    public record Eternal(Identifier model, List<Identifier> mask, List<ItemTintSource> tints) implements ItemModel.Unbaked, EffectFields {
         public static final MapCodec<Eternal> MAP_CODEC = effectCodec(Eternal::new);
 
+        public Eternal(Identifier model, List<Identifier> mask) {
+            this(model, mask, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.ETERNAL, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.ETERNAL, Optional.empty());
         }
 
         @Override
@@ -121,12 +139,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record Unstable(Identifier model, List<Identifier> mask) implements ItemModel.Unbaked, EffectFields {
+    public record Unstable(Identifier model, List<Identifier> mask, List<ItemTintSource> tints) implements ItemModel.Unbaked, EffectFields {
         public static final MapCodec<Unstable> MAP_CODEC = effectCodec(Unstable::new);
 
+        public Unstable(Identifier model, List<Identifier> mask) {
+            this(model, mask, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.UNSTABLE, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.UNSTABLE, Optional.empty());
         }
 
         @Override
@@ -140,12 +162,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record Halo(Identifier model, Identifier texture, int color, int size, boolean pulse) implements ItemModel.Unbaked, HaloFields {
+    public record Halo(Identifier model, Identifier texture, int color, int size, boolean pulse, List<ItemTintSource> tints) implements ItemModel.Unbaked, HaloFields {
         public static final MapCodec<Halo> MAP_CODEC = haloCodec(Halo::new);
 
+        public Halo(Identifier model, Identifier texture, int color, int size, boolean pulse) {
+            this(model, texture, color, size, pulse, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, List.of(), null, Optional.of(toHaloLayer(context, this)));
+            return bakeEffect(context, transformation, this.model, this.tints, List.of(), null, Optional.of(toHaloLayer(context, this)));
         }
 
         @Override
@@ -159,12 +185,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record HaloCosmic(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse) implements ItemModel.Unbaked, HaloEffectFields {
+    public record HaloCosmic(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse, List<ItemTintSource> tints) implements ItemModel.Unbaked, HaloEffectFields {
         public static final MapCodec<HaloCosmic> MAP_CODEC = haloEffectCodec(HaloCosmic::new);
 
+        public HaloCosmic(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse) {
+            this(model, mask, texture, color, size, pulse, List.of());
+        }
+
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.COSMIC, Optional.of(toHaloLayer(context, this)));
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.of(toHaloLayer(context, this)));
         }
 
         @Override
@@ -178,12 +208,16 @@ public final class AvaritiaItemModels {
         }
     }
 
-    public record HaloEternal(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse) implements ItemModel.Unbaked, HaloEffectFields {
+    public record HaloEternal(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse, List<ItemTintSource> tints) implements ItemModel.Unbaked, HaloEffectFields {
         public static final MapCodec<HaloEternal> MAP_CODEC = haloEffectCodec(HaloEternal::new);
+
+        public HaloEternal(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse) {
+            this(model, mask, texture, color, size, pulse, List.of());
+        }
 
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.mask, Effect.ETERNAL, Optional.of(toHaloLayer(context, this)));
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.ETERNAL, Optional.of(toHaloLayer(context, this)));
         }
 
         @Override
@@ -200,7 +234,8 @@ public final class AvaritiaItemModels {
     private static <T extends ItemModel.Unbaked & EffectFields> MapCodec<T> effectCodec(EffectFactory<T> factory) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Identifier.CODEC.fieldOf("model").forGetter((T model) -> model.model()),
-                Identifier.CODEC.listOf().fieldOf("mask").forGetter((T model) -> model.mask())
+                Identifier.CODEC.listOf().fieldOf("mask").forGetter((T model) -> model.mask()),
+                ItemTintSources.CODEC.listOf().optionalFieldOf("tints", List.of()).forGetter((T model) -> model.tints())
         ).apply(instance, factory::create));
     }
 
@@ -210,7 +245,8 @@ public final class AvaritiaItemModels {
                 Identifier.CODEC.fieldOf("texture").forGetter((T model) -> model.texture()),
                 Codec.INT.optionalFieldOf("color", -16777216).forGetter((T model) -> model.color()),
                 Codec.INT.optionalFieldOf("size", 10).forGetter((T model) -> model.size()),
-                Codec.BOOL.optionalFieldOf("pulse", true).forGetter((T model) -> model.pulse())
+                Codec.BOOL.optionalFieldOf("pulse", true).forGetter((T model) -> model.pulse()),
+                ItemTintSources.CODEC.listOf().optionalFieldOf("tints", List.of()).forGetter((T model) -> model.tints())
         ).apply(instance, factory::create));
     }
 
@@ -221,16 +257,17 @@ public final class AvaritiaItemModels {
                 Identifier.CODEC.fieldOf("texture").forGetter((T model) -> model.texture()),
                 Codec.INT.optionalFieldOf("color", -16777216).forGetter((T model) -> model.color()),
                 Codec.INT.optionalFieldOf("size", 10).forGetter((T model) -> model.size()),
-                Codec.BOOL.optionalFieldOf("pulse", false).forGetter((T model) -> model.pulse())
+                Codec.BOOL.optionalFieldOf("pulse", false).forGetter((T model) -> model.pulse()),
+                ItemTintSources.CODEC.listOf().optionalFieldOf("tints", List.of()).forGetter((T model) -> model.tints())
         ).apply(instance, factory::create));
     }
 
     private static ItemModel bakeEffect(ItemModel.BakingContext context, Matrix4fc transformation, Identifier model,
-                                        List<Identifier> masks, @Nullable Effect effect, Optional<HaloLayer> haloLayer) {
+                                        List<ItemTintSource> tints, List<Identifier> masks, @Nullable Effect effect, Optional<HaloLayer> haloLayer) {
         ModelBaker baker = context.blockModelBaker();
         ResolvedModel resolvedModel = baker.getModel(model);
         TextureSlots textureSlots = resolvedModel.getTopTextureSlots();
-        ItemModel wrapped = new CuboidItemModelWrapper.Unbaked(model, Optional.empty(), List.of()).bake(context, transformation);
+        ItemModel wrapped = new CuboidItemModelWrapper.Unbaked(model, Optional.empty(), tints).bake(context, transformation);
         ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
         List<BakedQuad> effectQuads = effect == null ? List.of() : bakeEffectQuads(baker, effect, masks);
         return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, haloLayer);
@@ -371,21 +408,23 @@ public final class AvaritiaItemModels {
     }
 
     private interface EffectFactory<T> {
-        T create(Identifier model, List<Identifier> mask);
+        T create(Identifier model, List<Identifier> mask, List<ItemTintSource> tints);
     }
 
     private interface HaloFactory<T> {
-        T create(Identifier model, Identifier texture, int color, int size, boolean pulse);
+        T create(Identifier model, Identifier texture, int color, int size, boolean pulse, List<ItemTintSource> tints);
     }
 
     private interface HaloEffectFactory<T> {
-        T create(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse);
+        T create(Identifier model, List<Identifier> mask, Identifier texture, int color, int size, boolean pulse, List<ItemTintSource> tints);
     }
 
     private interface EffectFields {
         Identifier model();
 
         List<Identifier> mask();
+
+        List<ItemTintSource> tints();
     }
 
     private interface HaloFields {
@@ -398,6 +437,8 @@ public final class AvaritiaItemModels {
         int size();
 
         boolean pulse();
+
+        List<ItemTintSource> tints();
     }
 
     private interface HaloEffectFields extends EffectFields, HaloFields {

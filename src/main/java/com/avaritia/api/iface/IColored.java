@@ -1,6 +1,8 @@
 package com.avaritia.api.iface;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -24,12 +26,15 @@ public interface IColored {
         return this.getColor(index);
     }
 
-    class ItemBlockColors implements ItemTintSource {
-        public static final MapCodec<ItemBlockColors> CODEC = MapCodec.unit(ItemBlockColors::new);
+    record ItemBlockColors(int index) implements ItemTintSource {
+        public static final MapCodec<ItemBlockColors> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Codec.INT.optionalFieldOf("index", 0).forGetter(ItemBlockColors::index)
+        ).apply(instance, ItemBlockColors::new));
 
         @Override
         public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
-            return ((IColored) Block.byItem(stack.getItem())).getColor(stack, 0);
+            Block block = Block.byItem(stack.getItem());
+            return block instanceof IColored colored ? colored.getColor(stack, this.index) : -1;
         }
 
         @Override
@@ -38,12 +43,14 @@ public interface IColored {
         }
     }
 
-    class ItemColors implements ItemTintSource {
-        public static final MapCodec<ItemColors> CODEC = MapCodec.unit(ItemColors::new);
+    record ItemColors(int index) implements ItemTintSource {
+        public static final MapCodec<ItemColors> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Codec.INT.optionalFieldOf("index", 0).forGetter(ItemColors::index)
+        ).apply(instance, ItemColors::new));
 
         @Override
         public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
-            return ((IColored) stack.getItem()).getColor(stack, 0);
+            return stack.getItem() instanceof IColored colored ? colored.getColor(stack, this.index) : -1;
         }
 
         @Override

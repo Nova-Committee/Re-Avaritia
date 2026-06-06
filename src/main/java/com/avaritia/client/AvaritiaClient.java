@@ -45,6 +45,7 @@ import com.avaritia.client.screen.craft.ExtremeCraftScreen;
 import com.avaritia.client.screen.craft.NetherCraftScreen;
 import com.avaritia.client.screen.craft.SculkCraftScreen;
 import com.avaritia.client.shader.AvaritiaShaders;
+import com.avaritia.client.tint.RainbowTintSource;
 import com.avaritia.common.entity.GapingVoidEntity;
 import com.avaritia.common.net.C2SOpenRingPacket;
 import com.avaritia.init.handler.NetworkHandler;
@@ -231,6 +232,7 @@ public class AvaritiaClient {
     public static void registerItemTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
         event.register(id("item_color"), IColored.ItemColors.CODEC);
         event.register(id("item_block_color"), IColored.ItemBlockColors.CODEC);
+        event.register(id("rainbow"), RainbowTintSource.CODEC);
     }
 
     @SubscribeEvent
