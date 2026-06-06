@@ -28,7 +28,6 @@ import com.avaritia.client.render.entity.TracerArrowRender;
 import com.avaritia.client.render.item.InfinityShieldRender;
 import com.avaritia.client.render.tile.AcceleratorDisplayRender;
 import com.avaritia.client.render.tile.CompressedChestRenderer;
-import com.avaritia.client.render.tile.InfinitatoTileRender;
 import com.avaritia.client.render.tile.InfinityChestBlockRender;
 import com.avaritia.client.screen.AvaritiaConfigScreen;
 import com.avaritia.client.screen.CompressedChestScreen;
@@ -147,7 +146,6 @@ public class AvaritiaClient {
         event.registerEntityRenderer(ModEntityTypes.INFINITY_THROWN_TRIDENT.get(), InfinityThrownTridentRender::new);
 
         event.registerBlockEntityRenderer(ModTileEntities.INFINITY_CHEST_TILE.get(), InfinityChestBlockRender::new);
-        event.registerBlockEntityRenderer(ModTileEntities.infinitato_tile.get(), InfinitatoTileRender::new);
         event.registerBlockEntityRenderer(ModTileEntities.compressed_chest_tile.get(), CompressedChestRenderer::new);
     }
 
