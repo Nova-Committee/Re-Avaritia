@@ -38,6 +38,7 @@ import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import org.joml.Matrix4fc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
@@ -56,6 +57,7 @@ public final class AvaritiaItemModels {
     private static final ModelDebugName DEBUG_NAME = () -> "AvaritiaItemModels";
     private static final AtomicInteger EFFECT_RENDER_TYPE_SEQUENCE = new AtomicInteger();
     private static final EffectSpecialRenderer EFFECT_RENDERER = new EffectSpecialRenderer();
+    private static final HaloSpecialRenderer HALO_RENDERER = new HaloSpecialRenderer();
 
     private AvaritiaItemModels() {
     }
@@ -327,7 +329,7 @@ public final class AvaritiaItemModels {
             this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
 
             if (displayContext == ItemDisplayContext.GUI) {
-                this.haloLayer.ifPresent(halo -> appendLayer(renderState, displayContext, halo.quads(), halo.extents()));
+                this.haloLayer.ifPresent(halo -> appendHaloLayer(renderState, displayContext, halo));
             }
 
             if (this.effect != null && !this.effectQuads.isEmpty()) {
@@ -335,12 +337,12 @@ public final class AvaritiaItemModels {
             }
         }
 
-        private void appendLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, List<BakedQuad> quads, Vector3fc[] extents) {
+        private void appendHaloLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, HaloLayer halo) {
             ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
             this.properties.applyToLayer(layer, displayContext);
             layer.setLocalTransform(this.transformation);
-            layer.setExtents(() -> extents);
-            layer.prepareQuadList().addAll(quads);
+            layer.setExtents(halo::extents);
+            layer.setupSpecialModel(HALO_RENDERER, new HaloLayerArgument(halo.quads()));
             renderState.setAnimated();
         }
 
@@ -365,7 +367,40 @@ public final class AvaritiaItemModels {
     private record EffectLayerArgument(List<BakedQuad> quads, RenderType renderType, AvaritiaShaderUniforms.Effect effect,
                                        float time, float yaw, float pitch, float scale, float opacity, float[] uvs) {
         private void applyUniforms() {
-            AvaritiaShaderUniforms.set(this.effect, this.time, this.yaw, this.pitch, this.scale, this.opacity, this.uvs);
+            AvaritiaShaderUniforms.set(this.renderType, this.effect, this.time, this.yaw, this.pitch, this.scale, this.opacity, this.uvs);
+        }
+    }
+
+    private record HaloLayerArgument(List<BakedQuad> quads) {
+    }
+
+    private static final class HaloSpecialRenderer implements SpecialModelRenderer<HaloLayerArgument> {
+        @Override
+        public void submit(@Nullable HaloLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                           int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
+            if (argument == null || argument.quads().isEmpty()) {
+                return;
+            }
+
+            submitNodeCollector.submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
+                QuadInstance instance = new QuadInstance();
+                instance.setColor(-1);
+                instance.setLightCoords(lightCoords);
+                instance.setOverlayCoords(overlayCoords);
+
+                for (BakedQuad quad : argument.quads()) {
+                    buffer.putBakedQuad(pose, quad, instance);
+                }
+            });
+        }
+
+        @Override
+        public void getExtents(Consumer<Vector3fc> output) {
+        }
+
+        @Override
+        public @Nullable HaloLayerArgument extractArgument(ItemStack stack) {
+            return null;
         }
     }
 

@@ -4,10 +4,12 @@ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderPass;
 import net.minecraft.client.renderer.DynamicUniformStorage;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.EnumMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 public final class AvaritiaShaderUniforms {
@@ -18,9 +20,11 @@ public final class AvaritiaShaderUniforms {
     private static final int UBO_SIZE = (2 + UV_COUNT) * 16;
 
     private static final Map<Effect, GpuBufferSlice> CURRENT_SLICES = new EnumMap<>(Effect.class);
+    private static final Map<RenderType, GpuBufferSlice> RENDER_TYPE_SLICES = new IdentityHashMap<>();
 
     private static @Nullable DynamicUniformStorage<CosmicUniform> storage;
     private static @Nullable RenderPipeline activePipeline;
+    private static @Nullable RenderType activeRenderType;
 
     private AvaritiaShaderUniforms() {
     }
@@ -29,8 +33,24 @@ public final class AvaritiaShaderUniforms {
         CURRENT_SLICES.put(effect, storage().writeUniform(new CosmicUniform(time, yaw, pitch, externalScale, opacity, copyUvs(uvs))));
     }
 
+    public static void set(RenderType renderType, Effect effect, float time, float yaw, float pitch, float externalScale, float opacity, float[] uvs) {
+        GpuBufferSlice slice = storage().writeUniform(new CosmicUniform(time, yaw, pitch, externalScale, opacity, copyUvs(uvs)));
+        CURRENT_SLICES.put(effect, slice);
+        RENDER_TYPE_SLICES.put(renderType, slice);
+    }
+
     public static void setActivePipeline(RenderPipeline pipeline) {
         activePipeline = pipeline;
+    }
+
+    public static void setActiveRenderType(RenderType renderType) {
+        activeRenderType = renderType;
+    }
+
+    public static void clearActiveRenderType(RenderType renderType) {
+        if (activeRenderType == renderType) {
+            activeRenderType = null;
+        }
     }
 
     public static void bindIfAvaritia(RenderPass renderPass) {
@@ -39,7 +59,10 @@ public final class AvaritiaShaderUniforms {
             return;
         }
 
-        GpuBufferSlice slice = CURRENT_SLICES.get(effect);
+        GpuBufferSlice slice = activeRenderType != null ? RENDER_TYPE_SLICES.get(activeRenderType) : null;
+        if (slice == null) {
+            slice = CURRENT_SLICES.get(effect);
+        }
         if (slice != null) {
             renderPass.setUniform(UNIFORM_NAME, slice);
         }
@@ -47,7 +70,9 @@ public final class AvaritiaShaderUniforms {
 
     public static void endFrame() {
         CURRENT_SLICES.clear();
+        RENDER_TYPE_SLICES.clear();
         activePipeline = null;
+        activeRenderType = null;
         if (storage != null) {
             storage.endFrame();
         }

@@ -15,7 +15,8 @@
   ],
   "client": [
     "client.RenderPassMixin",
-    "client.RenderSystemMixin"
+    "client.RenderSystemMixin",
+    "client.RenderTypeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
