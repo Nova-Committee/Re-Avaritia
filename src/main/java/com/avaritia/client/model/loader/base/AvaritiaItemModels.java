@@ -343,7 +343,7 @@ public final class AvaritiaItemModels {
     private static HaloLayer toHaloLayer(ItemModel.BakingContext context, HaloFields halo) {
         TextureAtlasSprite sprite = context.blockModelBaker().materials().get(new Material(halo.texture()), DEBUG_NAME).sprite();
         HaloSetting setting = new HaloSetting(new IntArrayList(), halo.texture().toString(), halo.color(), halo.size(), halo.pulse());
-        return new HaloLayer(List.of(HaloUtils.generateHaloQuad(sprite, setting.size(), setting.color())), setting);
+        return new HaloLayer(HaloUtils.generateHaloQuads(sprite, setting.size(), setting.color()), setting);
     }
 
     private static Map<String, SimpleMesh> loadTridentModels() {

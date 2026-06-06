@@ -16,6 +16,9 @@ import java.util.List;
  * @author cnlimiter
  */
 public class HaloUtils {
+    private static final int MIN_CIRCLE_SEGMENTS = 24;
+    private static final int MAX_CIRCLE_SEGMENTS = 64;
+
     public static BakedQuad generateHaloQuad(final TextureAtlasSprite sprite, final int size, final int color) {
         final float[] colors = new ColorARGB(color).getRGBA();
         final double spread = size / 16.0;
@@ -37,6 +40,56 @@ public class HaloUtils {
         }
         quad.calculateOrientation(true);
         return quad.bake();
+    }
+
+    public static List<BakedQuad> generateHaloQuads(final TextureAtlasSprite sprite, final int size, final int color) {
+        final float[] colors = new ColorARGB(color).getRGBA();
+        final int segments = circleSegments(size);
+        final double spread = Math.max(0, size) / 16.0;
+        final double radius = 0.5 + spread;
+        final double min = 0.5 - radius;
+        final double diameter = radius * 2.0;
+        final float minU = sprite.getU0();
+        final float maxU = sprite.getU1();
+        final float minV = sprite.getV0();
+        final float maxV = sprite.getV1();
+        final ArrayList<BakedQuad> quads = new ArrayList<>(segments);
+
+        for (int i = 0; i < segments; i++) {
+            final double current = Math.PI * 2.0 * i / segments;
+            final double next = Math.PI * 2.0 * (i + 1) / segments;
+            final double currentX = 0.5 + Math.cos(current) * radius;
+            final double currentY = 0.5 + Math.sin(current) * radius;
+            final double nextX = 0.5 + Math.cos(next) * radius;
+            final double nextY = 0.5 + Math.sin(next) * radius;
+
+            final Quad quad = new Quad();
+            quad.reset(CachedFormat.BLOCK);
+            quad.setTexture(sprite);
+            putHaloVertex(quad.vertices[0], 0.5, 0.5, min, diameter, minU, maxU, minV, maxV);
+            putHaloVertex(quad.vertices[1], currentX, currentY, min, diameter, minU, maxU, minV, maxV);
+            putHaloVertex(quad.vertices[2], nextX, nextY, min, diameter, minU, maxU, minV, maxV);
+            putHaloVertex(quad.vertices[3], 0.5, 0.5, min, diameter, minU, maxU, minV, maxV);
+            for (int v = 0; v < 4; ++v) {
+                System.arraycopy(colors, 0, quad.vertices[v].color, 0, 4);
+            }
+            quad.calculateOrientation(true);
+            quads.add(quad.bake());
+        }
+
+        return quads;
+    }
+
+    private static int circleSegments(final int size) {
+        return Math.max(MIN_CIRCLE_SEGMENTS, Math.min(MAX_CIRCLE_SEGMENTS, Math.max(1, size) * 4));
+    }
+
+    private static void putHaloVertex(final Quad.Vertex vx, final double x, final double y, final double min,
+                                      final double diameter, final float minU, final float maxU,
+                                      final float minV, final float maxV) {
+        final double u = (x - min) / diameter;
+        final double v = (y - min) / diameter;
+        putVertex(vx, x, y, 0.0, minU + u * (maxU - minU), maxV - v * (maxV - minV));
     }
 
     public static void putVertex(final Quad.Vertex vx, final double x, final double y, final double z, final double u, final double v) {
