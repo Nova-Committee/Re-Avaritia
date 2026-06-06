@@ -1,6 +1,34 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/blaze_bow"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "avaritia:item/blaze_bow"
+    },
+    "on_true": {
+      "type": "minecraft:range_dispatch",
+      "entries": [
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/blaze_bow_pulling_1"
+          },
+          "threshold": 0.65
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/blaze_bow_pulling_2"
+          },
+          "threshold": 0.9
+        }
+      ],
+      "fallback": {
+        "type": "minecraft:model",
+        "model": "avaritia:item/blaze_bow_pulling_0"
+      },
+      "property": "avaritia:bow_pull"
+    },
+    "property": "avaritia:using_stack"
   }
 }

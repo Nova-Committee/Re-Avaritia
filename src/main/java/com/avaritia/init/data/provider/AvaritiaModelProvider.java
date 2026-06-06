@@ -178,6 +178,7 @@ public class AvaritiaModelProvider implements DataProvider {
                     "item/tools/infinity_sword/layer_0",
                     "item/tools/infinity_sword/layer_1");
             case "infinity_shield" -> shieldModel("infinity_shield", false);
+            case "blaze_bow", "crystal_bow" -> bowModel(id.getPath(), itemTexture(id).getPath());
             default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
         clientItem(item, clientItemModel(id, model));
@@ -188,6 +189,7 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_sword" -> infinitySwordModel(model);
             case "infinity_bow" -> infinityBowModel();
             case "infinity_crossbow" -> infinityCrossbowModel(model);
+            case "blaze_bow", "crystal_bow" -> simpleBowModel(id.getPath(), model);
             case "infinity_pickaxe" -> modeModel("infinity_pickaxe_hammer", handheldModel("infinity_pickaxe/hammer", "item/tools/infinity_pickaxe/hammer"), model);
             case "infinity_shovel" -> modeModel("infinity_shovel_destroyer", handheldModel("infinity_shovel/destroyer", "item/tools/infinity_shovel/destroyer"), model);
             case "infinity_shield" -> infinityShieldModel(model);
@@ -257,6 +259,16 @@ public class AvaritiaModelProvider implements DataProvider {
                 ItemModelUtils.override(pull2, 1.0F));
         ItemModel.Unbaked charged = cosmicHandheld("infinity_crossbow/standby", "item/tools/infinity_crossbow/standby", "infinity_crossbow/standby_mask");
         return ItemModelUtils.conditional(new ItemOverrideHandler.InfinityCrossbowCharged(), charged, pulling);
+    }
+
+    private ItemModel.Unbaked simpleBowModel(String itemName, Identifier idleModel) {
+        ItemModel.Unbaked pull0 = ItemModelUtils.plainModel(bowModel(itemName + "_pulling_0", "item/tools/" + itemName + "/" + itemName + "_pulling_0"));
+        ItemModel.Unbaked pull1 = ItemModelUtils.plainModel(bowModel(itemName + "_pulling_1", "item/tools/" + itemName + "/" + itemName + "_pulling_1"));
+        ItemModel.Unbaked pull2 = ItemModelUtils.plainModel(bowModel(itemName + "_pulling_2", "item/tools/" + itemName + "/" + itemName + "_pulling_2"));
+        ItemModel.Unbaked pulling = ItemModelUtils.rangeSelect(new ItemOverrideHandler.BowPull(), pull0,
+                ItemModelUtils.override(pull1, 0.65F),
+                ItemModelUtils.override(pull2, 0.9F));
+        return ItemModelUtils.conditional(new ItemOverrideHandler.UsingStack(), pulling, ItemModelUtils.plainModel(idleModel));
     }
 
     private ItemModel.Unbaked infinityClockModel(Identifier model) {
@@ -334,6 +346,12 @@ public class AvaritiaModelProvider implements DataProvider {
         TextureMapping textures = new TextureMapping().put(TextureSlot.LAYER0, texture(Identifier.fromNamespaceAndPath(Const.MOD_ID, texturePath)));
         Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
         return (handheld ? ModelTemplates.FLAT_HANDHELD_ITEM : ModelTemplates.FLAT_ITEM).create(model, textures, this.generatedModels::put);
+    }
+
+    private Identifier bowModel(String modelPath, String texturePath) {
+        TextureMapping textures = new TextureMapping().put(TextureSlot.LAYER0, texture(Identifier.fromNamespaceAndPath(Const.MOD_ID, texturePath)));
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        return ModelTemplates.BOW.create(model, textures, this.generatedModels::put);
     }
 
     private Identifier shieldModel(String modelPath, boolean blocking) {
