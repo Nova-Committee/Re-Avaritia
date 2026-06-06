@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4fc;
 
 import java.util.Random;
 
@@ -26,6 +27,7 @@ public class ArcRender {
     private static final float THICKNESS_VARIATION = 0.4f;
     private static final float MIN_THICKNESS_FACTOR = 0.1f;
     private static final double EPSILON = 1e-6;
+    private static final int ARC_COLOR = 0xFFFFFFFF;
 
     public static void renderArc(PoseStack ps, MultiBufferSource mbs, long seed,
                                  float sx, float sy, float sz, float ex, float ey, float ez,
@@ -98,16 +100,18 @@ public class ArcRender {
             var currentL = currentPos.subtract(side.scale(currentHalfThickness));
             var currentR = currentPos.add(side.scale(currentHalfThickness));
 
-            var u0 = (float) (i - 1) / segments;
-            var u1 = (float) i / segments;
-
-            vc.addVertex(matrix, (float) prevL.x(), (float) prevL.y(), (float) prevL.z()).setUv(u0, 0);
-            vc.addVertex(matrix, (float) prevR.x(), (float) prevR.y(), (float) prevR.z()).setUv(u0, 1);
-            vc.addVertex(matrix, (float) currentR.x(), (float) currentR.y(), (float) currentR.z()).setUv(u1, 1);
-            vc.addVertex(matrix, (float) currentL.x(), (float) currentL.y(), (float) currentL.z()).setUv(u1, 0);
+            vertex(matrix, vc, prevL);
+            vertex(matrix, vc, prevR);
+            vertex(matrix, vc, currentR);
+            vertex(matrix, vc, currentL);
 
             prevL = currentL;
             prevR = currentR;
         }
+    }
+
+    private static void vertex(Matrix4fc matrix, VertexConsumer vc, Vec3 position) {
+        vc.addVertex(matrix, (float) position.x(), (float) position.y(), (float) position.z())
+                .setColor(ARC_COLOR);
     }
 }
