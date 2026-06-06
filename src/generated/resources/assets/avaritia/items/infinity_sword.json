@@ -1,9 +1,21 @@
 {
   "model": {
-    "type": "avaritia:cosmic",
-    "mask": [
-      "avaritia:mask/item/infinity_sword_mask"
-    ],
-    "model": "avaritia:item/infinity_sword"
+    "type": "minecraft:condition",
+    "key": "infinity_sword_kill",
+    "on_false": {
+      "type": "avaritia:cosmic",
+      "mask": [
+        "avaritia:mask/item/infinity_sword_mask"
+      ],
+      "model": "avaritia:item/infinity_sword"
+    },
+    "on_true": {
+      "type": "avaritia:hell",
+      "mask": [
+        "avaritia:mask/item/infinity_sword_mask"
+      ],
+      "model": "avaritia:item/infinity_sword/kill"
+    },
+    "property": "avaritia:mode_flag"
   }
 }

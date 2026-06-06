@@ -169,19 +169,22 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private void handheldItem(Item item, Identifier id) {
-        Identifier model = ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
+        Identifier model = switch (id.getPath()) {
+            case "infinity_sword" -> layeredHandheldModel("infinity_sword",
+                    "item/tools/infinity_sword/layer_0",
+                    "item/tools/infinity_sword/layer_1");
+            default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
+        };
         clientItem(item, clientItemModel(id, model));
     }
 
     private ItemModel.Unbaked clientItemModel(Identifier id, Identifier model) {
         return switch (id.getPath()) {
-            case "infinity_sword" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_sword_mask")));
+            case "infinity_sword" -> infinitySwordModel(model);
             case "infinity_bow" -> infinityBowModel();
             case "infinity_crossbow" -> infinityCrossbowModel(model);
-            case "infinity_helmet" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_helmet_mask")));
-            case "infinity_chestplate" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_chestplate_mask")));
-            case "infinity_pants" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_pants_mask")));
-            case "infinity_boots" -> new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_boots_mask")));
+            case "infinity_pickaxe" -> modeModel("infinity_pickaxe_hammer", handheldModel("infinity_pickaxe/hammer", "item/tools/infinity_pickaxe/hammer"), model);
+            case "infinity_shovel" -> modeModel("infinity_shovel_destroyer", handheldModel("infinity_shovel/destroyer", "item/tools/infinity_shovel/destroyer"), model);
             case "infinity_trident" -> new AvaritiaItemModels.CosmicArc(model, List.of(mask("infinity_trident_mask")));
             case "singularity" -> new AvaritiaItemModels.Halo(model, halo(), -16777216, 4, false, singularityTints());
             case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
@@ -195,6 +198,15 @@ public class AvaritiaModelProvider implements DataProvider {
         };
     }
 
+    private ItemModel.Unbaked infinitySwordModel(Identifier model) {
+        Identifier killModel = layeredHandheldModel("infinity_sword/kill",
+                "item/tools/infinity_sword/layer_0",
+                "item/tools/infinity_sword/layer_1");
+        return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_sword_kill"),
+                new AvaritiaItemModels.Hell(killModel, List.of(mask("infinity_sword_mask"))),
+                new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_sword_mask"))));
+    }
+
     private ItemModel.Unbaked infinityBowModel() {
         ItemModel.Unbaked idle = cosmicHandheld("infinity_bow/idle", "item/tools/infinity_bow/idle", "infinity_bow/idle_mask");
         ItemModel.Unbaked pull0 = cosmicHandheld("infinity_bow/pull_0", "item/tools/infinity_bow/pull_0", "infinity_bow/pull_0_mask");
@@ -205,10 +217,10 @@ public class AvaritiaModelProvider implements DataProvider {
                 ItemModelUtils.override(pull1, 0.65F),
                 ItemModelUtils.override(pull2, 0.9F));
 
-        ItemModel.Unbaked tracerIdle = cosmicHandheld("infinity_bow/tracer_idle", "item/tools/infinity_bow/tracer/idle", "infinity_bow/idle_mask");
-        ItemModel.Unbaked tracerPull0 = cosmicHandheld("infinity_bow/tracer_pull_0", "item/tools/infinity_bow/tracer/pull_0", "infinity_bow/pull_0_mask");
-        ItemModel.Unbaked tracerPull1 = cosmicHandheld("infinity_bow/tracer_pull_1", "item/tools/infinity_bow/tracer/pull_1", "infinity_bow/pull_1_mask");
-        ItemModel.Unbaked tracerPull2 = cosmicHandheld("infinity_bow/tracer_pull_2", "item/tools/infinity_bow/tracer/pull_2", "infinity_bow/pull_2_mask");
+        ItemModel.Unbaked tracerIdle = hellHandheld("infinity_bow/tracer_idle", "item/tools/infinity_bow/tracer/idle", "infinity_bow/idle_mask");
+        ItemModel.Unbaked tracerPull0 = hellHandheld("infinity_bow/tracer_pull_0", "item/tools/infinity_bow/tracer/pull_0", "infinity_bow/pull_0_mask");
+        ItemModel.Unbaked tracerPull1 = hellHandheld("infinity_bow/tracer_pull_1", "item/tools/infinity_bow/tracer/pull_1", "infinity_bow/pull_1_mask");
+        ItemModel.Unbaked tracerPull2 = hellHandheld("infinity_bow/tracer_pull_2", "item/tools/infinity_bow/tracer/pull_2", "infinity_bow/pull_2_mask");
         ItemModel.Unbaked tracer = ItemModelUtils.rangeSelect(new ItemOverrideHandler.BowPull(), tracerIdle,
                 ItemModelUtils.override(tracerPull0, 0.05F),
                 ItemModelUtils.override(tracerPull1, 0.65F),
@@ -235,8 +247,31 @@ public class AvaritiaModelProvider implements DataProvider {
         return new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
     }
 
+    private ItemModel.Unbaked modeModel(String modeKey, Identifier activeModel, Identifier fallbackModel) {
+        return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag(modeKey),
+                ItemModelUtils.plainModel(activeModel),
+                ItemModelUtils.plainModel(fallbackModel));
+    }
+
     private ItemModel.Unbaked cosmicHandheld(String modelPath, String texturePath, String maskPath) {
         return new AvaritiaItemModels.Cosmic(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+    }
+
+    private ItemModel.Unbaked hellHandheld(String modelPath, String texturePath, String maskPath) {
+        return new AvaritiaItemModels.Hell(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+    }
+
+    private Identifier handheldModel(String modelPath, String texturePath) {
+        return flatModel(modelPath, texturePath, true);
+    }
+
+    private Identifier layeredHandheldModel(String modelPath, String layer0, String layer1) {
+        TextureMapping textures = new TextureMapping()
+                .put(TextureSlot.LAYER0, texture(Identifier.fromNamespaceAndPath(Const.MOD_ID, layer0)))
+                .put(TextureSlot.LAYER1, texture(Identifier.fromNamespaceAndPath(Const.MOD_ID, layer1)));
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        return ModelTemplates.createItem("handheld", TextureSlot.LAYER0, TextureSlot.LAYER1)
+                .create(model, textures, this.generatedModels::put);
     }
 
     private Identifier flatModel(String modelPath, String texturePath, boolean handheld) {

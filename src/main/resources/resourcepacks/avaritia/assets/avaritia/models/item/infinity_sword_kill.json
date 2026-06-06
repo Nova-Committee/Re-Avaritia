@@ -3,9 +3,5 @@
   "textures": {
     "layer0": "avaritia:item/tools/infinity_sword/layer_0",
     "layer1": "avaritia:item/tools/infinity_sword/layer_1"
-  },
-  "loader": "avaritia:unstable",
-  "unstable": {
-    "mask": "avaritia:mask/infinity_sword_mask"
   }
 }

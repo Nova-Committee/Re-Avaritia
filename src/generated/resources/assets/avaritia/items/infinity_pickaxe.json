@@ -1,6 +1,15 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "avaritia:item/infinity_pickaxe"
+    "type": "minecraft:condition",
+    "key": "infinity_pickaxe_hammer",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "avaritia:item/infinity_pickaxe"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "avaritia:item/infinity_pickaxe/hammer"
+    },
+    "property": "avaritia:mode_flag"
   }
 }

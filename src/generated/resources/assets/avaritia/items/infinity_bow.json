@@ -50,7 +50,7 @@
       "entries": [
         {
           "model": {
-            "type": "avaritia:cosmic",
+            "type": "avaritia:hell",
             "mask": [
               "avaritia:mask/item/infinity_bow/pull_0_mask"
             ],
@@ -60,7 +60,7 @@
         },
         {
           "model": {
-            "type": "avaritia:cosmic",
+            "type": "avaritia:hell",
             "mask": [
               "avaritia:mask/item/infinity_bow/pull_1_mask"
             ],
@@ -70,7 +70,7 @@
         },
         {
           "model": {
-            "type": "avaritia:cosmic",
+            "type": "avaritia:hell",
             "mask": [
               "avaritia:mask/item/infinity_bow/pull_2_mask"
             ],
@@ -80,7 +80,7 @@
         }
       ],
       "fallback": {
-        "type": "avaritia:cosmic",
+        "type": "avaritia:hell",
         "mask": [
           "avaritia:mask/item/infinity_bow/idle_mask"
         ],
