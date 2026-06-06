@@ -100,18 +100,22 @@ public class ArcRender {
             var currentL = currentPos.subtract(side.scale(currentHalfThickness));
             var currentR = currentPos.add(side.scale(currentHalfThickness));
 
-            vertex(matrix, vc, prevL);
-            vertex(matrix, vc, prevR);
-            vertex(matrix, vc, currentR);
-            vertex(matrix, vc, currentL);
+            var u0 = (float) (i - 1) / segments;
+            var u1 = (float) i / segments;
+
+            vertex(matrix, vc, prevL, u0, 0);
+            vertex(matrix, vc, prevR, u0, 1);
+            vertex(matrix, vc, currentR, u1, 1);
+            vertex(matrix, vc, currentL, u1, 0);
 
             prevL = currentL;
             prevR = currentR;
         }
     }
 
-    private static void vertex(Matrix4fc matrix, VertexConsumer vc, Vec3 position) {
+    private static void vertex(Matrix4fc matrix, VertexConsumer vc, Vec3 position, float u, float v) {
         vc.addVertex(matrix, (float) position.x(), (float) position.y(), (float) position.z())
+                .setUv(u, v)
                 .setColor(ARC_COLOR);
     }
 }
