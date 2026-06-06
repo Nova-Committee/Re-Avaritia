@@ -1,5 +1,6 @@
 package com.avaritia.common.entity;
 
+import com.avaritia.common.item.misc.InfinityClockItem;
 import com.avaritia.init.registry.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -105,19 +106,9 @@ public class AcceleratorDisplayEntity extends Entity {
     }
 
     private boolean isTargetStillAccelerated() {
-        try {
-            Class<?> clockClass = Class.forName("com.avaritia.common.item.misc.InfinityClockItem");
-            Object acceleratedBlocksValue = clockClass.getField("acceleratedBlocks").get(null);
-            if (acceleratedBlocksValue instanceof Map<?, ?> acceleratedBlocks) {
-                Object dimensionBlocks = acceleratedBlocks.get(level().dimension());
-                if (dimensionBlocks instanceof Map<?, ?> blocks) {
-                    return blocks.containsKey(targetPos);
-                }
-            }
-        } catch (ReflectiveOperationException ignored) {
-            return true;
-        }
-        return false;
+        return InfinityClockItem.acceleratedBlocks
+                .getOrDefault(level().dimension(), Map.of())
+                .containsKey(targetPos);
     }
 
     private void renderEffects() {
