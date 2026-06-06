@@ -27,10 +27,17 @@ public class ModTags {
     public static final TagKey<Item> NEUTRON_BLOCK_ITEM = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "storage_blocks/neutronium"));
     public static final TagKey<Block> NEUTRON_BLOCK = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", "storage_blocks/neutronium"));
 
+    public static final TagKey<Item> REPAIRS_BLAZE_TOOLS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Const.MOD_ID, "repairs_blaze_tools"));
+    public static final TagKey<Item> REPAIRS_CRYSTAL_TOOLS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Const.MOD_ID, "repairs_crystal_tools"));
+    public static final TagKey<Item> REPAIRS_INFINITY_TOOLS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Const.MOD_ID, "repairs_infinity_tools"));
+
     public static final TagKey<Block> EXTREME_ANVIL_UNBREAK = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "extreme_anvil_unbreak"));
     public static final TagKey<Block> NEEDS_CRYSTAL_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "needs_crystal_tool"));
     public static final TagKey<Block> NEEDS_BLAZE_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "needs_blaze_tool"));
     public static final TagKey<Block> NEEDS_INFINITY_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "needs_infinity_tool"));
+    public static final TagKey<Block> INCORRECT_FOR_BLAZE_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "incorrect_for_blaze_tool"));
+    public static final TagKey<Block> INCORRECT_FOR_CRYSTAL_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "incorrect_for_crystal_tool"));
+    public static final TagKey<Block> INCORRECT_FOR_INFINITY_TOOL = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Const.MOD_ID, "incorrect_for_infinity_tool"));
 
     public static final TagKey<EntityType<?>> NEUTRAL_CREATURES = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("c", "neutral_creatures"));
 }

@@ -155,6 +155,18 @@ public class AvaritiaTagProvider implements DataProvider {
                 tag(ModTags.NEUTRON_BLOCK_ITEM).add(
                         ModBlocks.neutron.get().asItem()
                 );
+
+                tag(ModTags.REPAIRS_BLAZE_TOOLS).add(
+                        ModItems.blaze_cube.get()
+                );
+
+                tag(ModTags.REPAIRS_CRYSTAL_TOOLS).add(
+                        ModItems.crystal_matrix_ingot.get()
+                );
+
+                tag(ModTags.REPAIRS_INFINITY_TOOLS).add(
+                        ModItems.infinity_ingot.get()
+                );
             }
         };
 
@@ -253,6 +265,15 @@ public class AvaritiaTagProvider implements DataProvider {
                         ModBlocks.neutron.get(),
                         ModBlocks.infinity.get()
                 );
+
+                tag(ModTags.INCORRECT_FOR_BLAZE_TOOL)
+                        .addTag(ModTags.NEEDS_CRYSTAL_TOOL)
+                        .addTag(ModTags.NEEDS_INFINITY_TOOL);
+
+                tag(ModTags.INCORRECT_FOR_CRYSTAL_TOOL)
+                        .addTag(ModTags.NEEDS_INFINITY_TOOL);
+
+                tag(ModTags.INCORRECT_FOR_INFINITY_TOOL);
             }
         };
     }
