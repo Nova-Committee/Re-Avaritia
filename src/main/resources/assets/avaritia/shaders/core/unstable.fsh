@@ -11,15 +11,17 @@ const float lightmix = 0.2f;
 
 uniform sampler2D Sampler0;
 
-uniform float time;
+layout(std140) uniform AvaritiaCosmic {
+    vec4 CosmicParams0;
+    vec4 CosmicParams1;
+    vec4 CosmicUvs[cosmiccount];
+};
 
-uniform float yaw;
-uniform float pitch;
-uniform float externalScale;
-
-uniform float opacity;
-
-uniform mat2 cosmicuvs[cosmiccount];
+#define time CosmicParams0.x
+#define yaw CosmicParams0.y
+#define pitch CosmicParams0.z
+#define externalScale CosmicParams0.w
+#define opacity CosmicParams1.x
 
 in float sphericalVertexDistance;
 in float cylindricalVertexDistance;
@@ -145,10 +147,11 @@ void main (void)
             }
 
             // get the iicon uvs for the tile
-            float umin = cosmicuvs[symbol][0][0];
-            float umax = cosmicuvs[symbol][1][0];
-            float vmin = cosmicuvs[symbol][0][1];
-            float vmax = cosmicuvs[symbol][1][1];
+            vec4 uv = CosmicUvs[symbol];
+            float umin = uv.x;
+            float vmin = uv.y;
+            float umax = uv.z;
+            float vmax = uv.w;
 
             // interpolate based on tile uvs
             cosmictex.x = umin * (1.0-oru) + umax * oru;

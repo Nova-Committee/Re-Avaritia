@@ -13,7 +13,10 @@
     "RecipeManagerMixin",
     "accessor.MappedRegistryAccessor"
   ],
-  "client": [],
+  "client": [
+    "client.RenderPassMixin",
+    "client.RenderSystemMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

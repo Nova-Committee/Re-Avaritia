@@ -1,10 +1,13 @@
 package com.avaritia.client.shader;
 
 import com.avaritia.Const;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
@@ -63,11 +66,12 @@ public class AvaritiaShaders {
     public static ShaderUniform unstableUVs = new ShaderUniform();
 
     public static void onRegisterShaders(RegisterRenderPipelinesEvent event) {
-        COSMIC_SHADER = registerPipeline(event, "cosmic", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
+        COSMIC_SHADER = registerPipeline(event, "cosmic", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
         COSMIC_ARMOR_SHADER = registerPipeline(event, "cosmic_armor", "cosmic", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
-        HELL_SHADER = registerPipeline(event, "hell", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
-        ETERNAL_SHADER = registerPipeline(event, "eternal", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
-        UNSTABLE_SHADER = registerPipeline(event, "unstable", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS);
+        HELL_SHADER = registerPipeline(event, "hell", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        ETERNAL_SHADER = registerPipeline(event, "eternal", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        UNSTABLE_SHADER = registerPipeline(event, "unstable", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        AvaritiaRenderTypes.reloadEffectTypes();
     }
 
     private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, VertexFormat vertexFormat, VertexFormat.Mode mode) {
@@ -76,15 +80,14 @@ public class AvaritiaShaders {
 
     private static RenderPipeline registerPipeline(RegisterRenderPipelinesEvent event, String name, String shaderName, VertexFormat vertexFormat, VertexFormat.Mode mode) {
         var shader = Const.rl("core/" + shaderName);
-        RenderPipeline pipeline = RenderPipeline.builder()
+        RenderPipeline pipeline = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
                 .withLocation(Const.rl(name))
                 .withVertexShader(shader)
                 .withFragmentShader(shader)
-                .withSampler("Sampler0")
                 .withSampler("Sampler2")
-                .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-                .withUniform("Projection", UniformType.UNIFORM_BUFFER)
-                .withUniform("Fog", UniformType.UNIFORM_BUFFER)
+                .withUniform(AvaritiaShaderUniforms.UNIFORM_NAME, UniformType.UNIFORM_BUFFER)
+                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                .withCull(false)
                 .withVertexFormat(vertexFormat, mode)
                 .build();
         event.registerPipeline(pipeline);

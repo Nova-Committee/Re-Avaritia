@@ -2,6 +2,7 @@ package com.avaritia.client.model.loader.base;
 
 import com.avaritia.api.client.model.ItemQuadBakery;
 import com.avaritia.client.shader.AvaritiaRenderTypes;
+import com.avaritia.client.shader.AvaritiaShaderUniforms;
 import com.avaritia.client.shader.AvaritiaShaders;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -340,19 +341,18 @@ public final class AvaritiaItemModels {
     }
 
     private enum Effect {
-        COSMIC(AvaritiaRenderTypes.COSMIC),
-        HELL(AvaritiaRenderTypes.HELL),
-        ETERNAL(AvaritiaRenderTypes.ETERNAL),
-        UNSTABLE(AvaritiaRenderTypes.UNSTABLE);
-
-        private final RenderType renderType;
-
-        Effect(RenderType renderType) {
-            this.renderType = renderType;
-        }
+        COSMIC,
+        HELL,
+        ETERNAL,
+        UNSTABLE;
 
         private RenderType renderType() {
-            return this.renderType;
+            return switch (this) {
+                case COSMIC -> AvaritiaRenderTypes.COSMIC;
+                case HELL -> AvaritiaRenderTypes.HELL;
+                case ETERNAL -> AvaritiaRenderTypes.ETERNAL;
+                case UNSTABLE -> AvaritiaRenderTypes.UNSTABLE;
+            };
         }
 
         private void updateUniforms(@Nullable ClientLevel level, @Nullable ItemOwner owner, ItemDisplayContext displayContext) {
@@ -364,44 +364,16 @@ public final class AvaritiaItemModels {
 
             switch (this) {
                 case COSMIC -> {
-                    AvaritiaShaders.cosmicTime.set(time % Integer.MAX_VALUE);
-                    AvaritiaShaders.cosmicYaw.set(yaw);
-                    AvaritiaShaders.cosmicPitch.set(pitch);
-                    AvaritiaShaders.cosmicExternalScale.set(scale);
-                    AvaritiaShaders.cosmicOpacity.set(1.0F);
-                    if (AvaritiaShaders.cosmicUVs != null) {
-                        AvaritiaShaders.cosmicUVs.set(COSMIC_UVS);
-                    }
+                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.0F, COSMIC_UVS);
                 }
                 case HELL -> {
-                    AvaritiaShaders.hellTime.set(time % Integer.MAX_VALUE);
-                    AvaritiaShaders.hellYaw.set(yaw);
-                    AvaritiaShaders.hellPitch.set(pitch);
-                    AvaritiaShaders.hellExternalScale.set(scale);
-                    AvaritiaShaders.hellOpacity.set(1.0F);
-                    if (AvaritiaShaders.hellUVs != null) {
-                        AvaritiaShaders.hellUVs.set(COSMIC_UVS);
-                    }
+                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.HELL, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.0F, COSMIC_UVS);
                 }
                 case ETERNAL -> {
-                    AvaritiaShaders.eternalTime.set(time % Integer.MAX_VALUE);
-                    AvaritiaShaders.eternalYaw.set(yaw);
-                    AvaritiaShaders.eternalPitch.set(pitch);
-                    AvaritiaShaders.eternalExternalScale.set(scale);
-                    AvaritiaShaders.eternalOpacity.set(1.0F);
-                    if (AvaritiaShaders.eternalUVs != null) {
-                        AvaritiaShaders.eternalUVs.set(ETERNAL_UVS);
-                    }
+                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.ETERNAL, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.0F, ETERNAL_UVS);
                 }
                 case UNSTABLE -> {
-                    AvaritiaShaders.unstableTime.set(time % Integer.MAX_VALUE);
-                    AvaritiaShaders.unstableYaw.set(yaw);
-                    AvaritiaShaders.unstablePitch.set(pitch);
-                    AvaritiaShaders.unstableExternalScale.set(scale);
-                    AvaritiaShaders.unstableOpacity.set(1.5F);
-                    if (AvaritiaShaders.unstableUVs != null) {
-                        AvaritiaShaders.unstableUVs.set(ETERNAL_UVS);
-                    }
+                    AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.UNSTABLE, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.5F, ETERNAL_UVS);
                 }
             }
         }
