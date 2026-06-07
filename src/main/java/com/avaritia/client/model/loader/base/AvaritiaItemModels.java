@@ -323,7 +323,7 @@ public final class AvaritiaItemModels {
         for (Identifier mask : masks) {
             sprites.add(materials.get(new Material(mask), DEBUG_NAME).sprite());
         }
-        return ItemQuadBakery.bakeItem(effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
+        return ItemQuadBakery.bakeGeneratedItem(baker, effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
     }
 
     private static List<BakedQuad> bakeBaseQuads(ModelBaker baker, TextureSlots textureSlots) {
