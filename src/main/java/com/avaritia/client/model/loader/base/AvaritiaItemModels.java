@@ -79,6 +79,7 @@ public final class AvaritiaItemModels {
     private static final TridentSpecialRenderer TRIDENT_RENDERER = new TridentSpecialRenderer();
     private static final ArcSpecialRenderer ARC_RENDERER = new ArcSpecialRenderer();
     private static final int PULSE_ALPHA_COLOR = 0x99FFFFFF;
+    private static final float ITEM_EFFECT_OVERLAY_OPACITY = 0.65F;
 
     private AvaritiaItemModels() {
     }
@@ -768,7 +769,7 @@ public final class AvaritiaItemModels {
             float pitch = entity != null && displayContext != ItemDisplayContext.GUI ? -(float) (entity.getXRot() * 2.0F * Math.PI / 360.0F) : 0.0F;
             float scale = displayContext == ItemDisplayContext.GUI ? 100.0F : 1.0F;
             return new EffectLayerArgument(quads, this.newRenderType(), this.uniformEffect(), time % Integer.MAX_VALUE,
-                    yaw, pitch, scale, this.opacity(stack), this.uvs());
+                    yaw, pitch, scale, this.opacity(stack) * ITEM_EFFECT_OVERLAY_OPACITY, this.uvs());
         }
 
         private RenderType newRenderType() {
