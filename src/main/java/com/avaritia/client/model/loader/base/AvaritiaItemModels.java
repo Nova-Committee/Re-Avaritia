@@ -18,6 +18,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -343,7 +344,7 @@ public final class AvaritiaItemModels {
     private static HaloLayer toHaloLayer(ItemModel.BakingContext context, HaloFields halo) {
         TextureAtlasSprite sprite = context.blockModelBaker().materials().get(new Material(halo.texture()), DEBUG_NAME).sprite();
         HaloSetting setting = new HaloSetting(new IntArrayList(), halo.texture().toString(), halo.color(), halo.size(), halo.pulse());
-        return new HaloLayer(HaloUtils.generateHaloQuads(sprite, setting.size(), setting.color()), setting);
+        return new HaloLayer(sprite, setting);
     }
 
     private static Map<String, SimpleMesh> loadTridentModels() {
@@ -460,7 +461,7 @@ public final class AvaritiaItemModels {
             this.properties.applyToLayer(layer, displayContext);
             layer.setLocalTransform(this.transformation);
             layer.setExtents(halo::extents);
-            layer.setupSpecialModel(HALO_RENDERER, new HaloLayerArgument(halo.quads()));
+            layer.setupSpecialModel(HALO_RENDERER, new HaloLayerArgument(halo.sprite(), halo.setting()));
             renderState.setAnimated();
         }
 
@@ -516,9 +517,10 @@ public final class AvaritiaItemModels {
         }
     }
 
-    private record HaloLayer(List<BakedQuad> quads, HaloSetting setting, Vector3fc[] extents) {
-        private HaloLayer(List<BakedQuad> quads, HaloSetting setting) {
-            this(quads, setting, CuboidItemModelWrapper.computeExtents(quads));
+    private record HaloLayer(TextureAtlasSprite sprite, HaloSetting setting, Vector3fc[] extents) {
+        private HaloLayer(TextureAtlasSprite sprite, HaloSetting setting) {
+            this(sprite, setting, CuboidItemModelWrapper.computeExtents(
+                    HaloUtils.generateHaloQuads(sprite, setting.size(), setting.color())));
         }
     }
 
@@ -529,7 +531,7 @@ public final class AvaritiaItemModels {
         }
     }
 
-    private record HaloLayerArgument(List<BakedQuad> quads) {
+    private record HaloLayerArgument(TextureAtlasSprite sprite, HaloSetting setting) {
     }
 
     private record PulseLayerArgument(List<BakedQuad> quads) {
@@ -545,20 +547,55 @@ public final class AvaritiaItemModels {
         @Override
         public void submit(@Nullable HaloLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
-            if (argument == null || argument.quads().isEmpty()) {
+            if (argument == null) {
                 return;
             }
 
             submitNodeCollector.submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
-                QuadInstance instance = new QuadInstance();
-                instance.setColor(-1);
-                instance.setLightCoords(lightCoords);
-                instance.setOverlayCoords(overlayCoords);
-
-                for (BakedQuad quad : argument.quads()) {
-                    buffer.putBakedQuad(pose, quad, instance);
-                }
+                renderCircularHalo(pose, buffer, argument.sprite(), argument.setting(), lightCoords, overlayCoords);
             });
+        }
+
+        private static void renderCircularHalo(PoseStack.Pose pose, VertexConsumer buffer, TextureAtlasSprite sprite,
+                                               HaloSetting setting, int lightCoords, int overlayCoords) {
+            int segments = HaloUtils.circleSegments(setting.size());
+            double radius = HaloUtils.haloRadius(setting.size());
+            double min = 0.5 - radius;
+            double diameter = radius * 2.0;
+            int color = setting.color();
+            int alpha = color >>> 24 & 255;
+            int red = color >> 16 & 255;
+            int green = color >> 8 & 255;
+            int blue = color & 255;
+
+            for (int i = 0; i < segments; i++) {
+                double current = Math.PI * 2.0 * i / segments;
+                double next = Math.PI * 2.0 * (i + 1) / segments;
+                double currentX = 0.5 + Math.cos(current) * radius;
+                double currentY = 0.5 + Math.sin(current) * radius;
+                double nextX = 0.5 + Math.cos(next) * radius;
+                double nextY = 0.5 + Math.sin(next) * radius;
+
+                putHaloVertex(pose, buffer, sprite, 0.5, 0.5, min, diameter, red, green, blue, alpha, lightCoords, overlayCoords);
+                putHaloVertex(pose, buffer, sprite, currentX, currentY, min, diameter, red, green, blue, alpha, lightCoords, overlayCoords);
+                putHaloVertex(pose, buffer, sprite, nextX, nextY, min, diameter, red, green, blue, alpha, lightCoords, overlayCoords);
+                putHaloVertex(pose, buffer, sprite, 0.5, 0.5, min, diameter, red, green, blue, alpha, lightCoords, overlayCoords);
+            }
+        }
+
+        private static void putHaloVertex(PoseStack.Pose pose, VertexConsumer buffer, TextureAtlasSprite sprite,
+                                          double x, double y, double min, double diameter,
+                                          int red, int green, int blue, int alpha, int lightCoords, int overlayCoords) {
+            double u = (x - min) / diameter;
+            double v = (y - min) / diameter;
+            float atlasU = sprite.getU0() + (float) u * (sprite.getU1() - sprite.getU0());
+            float atlasV = sprite.getV1() - (float) v * (sprite.getV1() - sprite.getV0());
+            buffer.addVertex(pose, (float) x, (float) y, 0.0F)
+                    .setColor(red, green, blue, alpha)
+                    .setUv(atlasU, atlasV)
+                    .setOverlay(overlayCoords)
+                    .setLight(lightCoords)
+                    .setNormal(pose, 0.0F, 0.0F, 1.0F);
         }
 
         @Override

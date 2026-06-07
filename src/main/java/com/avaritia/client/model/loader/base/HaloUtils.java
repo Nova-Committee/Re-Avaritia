@@ -22,8 +22,7 @@ public class HaloUtils {
     public static List<BakedQuad> generateHaloQuads(final TextureAtlasSprite sprite, final int size, final int color) {
         final float[] colors = new ColorARGB(color).getRGBA();
         final int segments = circleSegments(size);
-        final double spread = Math.max(0, size) / 16.0;
-        final double radius = 0.5 + spread;
+        final double radius = haloRadius(size);
         final double min = 0.5 - radius;
         final double diameter = radius * 2.0;
         final float minU = sprite.getU0();
@@ -57,8 +56,12 @@ public class HaloUtils {
         return quads;
     }
 
-    private static int circleSegments(final int size) {
+    static int circleSegments(final int size) {
         return Math.max(MIN_CIRCLE_SEGMENTS, Math.min(MAX_CIRCLE_SEGMENTS, Math.max(1, size) * 4));
+    }
+
+    static double haloRadius(final int size) {
+        return 0.5 + Math.max(0, size) / 16.0;
     }
 
     private static void putHaloVertex(final Quad.Vertex vx, final double x, final double y, final double min,
