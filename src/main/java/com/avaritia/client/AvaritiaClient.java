@@ -25,6 +25,7 @@ import com.avaritia.client.render.entity.StormProRender;
 import com.avaritia.client.render.entity.SunProRender;
 import com.avaritia.client.render.entity.TNTProEntityRender;
 import com.avaritia.client.render.entity.TracerArrowRender;
+import com.avaritia.client.render.item.InfinityChestItemRender;
 import com.avaritia.client.render.item.InfinityShieldRender;
 import com.avaritia.client.render.tile.AcceleratorDisplayRender;
 import com.avaritia.client.render.tile.CompressedChestRenderer;
@@ -302,6 +303,7 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void registerSpecialModelRenderers(RegisterSpecialModelRendererEvent event) {
         event.register(id("infinity_shield"), InfinityShieldRender.Unbaked.MAP_CODEC);
+        event.register(id("infinity_chest"), InfinityChestItemRender.Unbaked.MAP_CODEC);
     }
 
     @SubscribeEvent

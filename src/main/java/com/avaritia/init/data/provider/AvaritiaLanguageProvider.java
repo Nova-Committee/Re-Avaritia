@@ -255,6 +255,9 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("tooltip.avaritia.crafting", "%s: %s x %s");
         add("tooltip.avaritia.smithing", "Smithing: %s x %s");
         add("tooltip.avaritia.compress", "Compress: %s x %s");
+        add("tooltip.avaritia.changed", "Set to %s Mode");
+        add("tooltip.avaritia.eject", "Eject");
+        add("tooltip.avaritia.ejecting", "Ejecting...");
         add("tooltip.avaritia.time_consume", "Time Required: %s");
         add("tooltip.avaritia.progress", "Progress: %s");
         add("tooltip.avaritia.init_enchant", "Always has at least %s");
@@ -305,7 +308,7 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("tooltip.avaritia.sword_kill_mode.active", "Kill all you can see.");
         add("tooltip.avaritia.ticks", "%s Ticks");
         add("tooltip.avaritia.tier", "Tier: %s");
-        add("tooltip.avaritia.totem_break", "The Infinity Totem has been depleted");
+        add("tooltip.avaritia.totem_break", "The Endless Totem has been depleted");
         add("tooltip.avaritia.type", "Type: %s");
         add("tooltip.avaritia.unlimited_input", "Unlimited Input");
 
@@ -361,7 +364,7 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("tooltip.infinity_pickaxe.enchant_2", "Set to Silk Touch");
         add("tooltip.infinity", "Infinity");
         add("tooltip.infinity.desc", "Attack Damage");
-        add("tooltip.avaritia.compressor_eject.message_1", "§c[Neutron Compressor] §fUnlock the recipe first");
+        add("tooltip.avaritia.compressor_eject.message_1", "§c[Neutron Compressor] §unlock the recipe first");
         add("tooltip.avaritia.compressor_eject.message_2", "§a[Neutron Compressor] §fThe material has been ejected and packed into a matter cluster.");
         add("tooltip.avaritia.compressor_eject.message_3", "§c[Neutron Compressor] §fNo materials available to pop out");
         add("tooltip.avaritia.compressor_lock.message_1", "§a[Neutron Compressor] §fRecipe is locked");
@@ -426,14 +429,17 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("jei.category.avaritia.end_crafting_table", "End Craft");
         add("jei.category.avaritia.extreme_crafting_table", "Extreme Craft");
         add("jei.category.avaritia.extreme_smithing_table", "Extreme Smithing");
-        add("jei.tooltip.avaritia.bedrock", "Obtain using Crystal Pickaxe or World Breaker (Infinity Pickaxe)");
+        add("jei.tooltip.avaritia.bedrock", "Obtain using Crystal Pickaxe or World Breaker(Infinity Pickaxe)");
         add("jei.tooltip.avaritia.crystal_pickaxe", "This tool can mine Bedrock");
-        add("jei.tooltip.avaritia.end_portal_frame", "Obtain using Crystal Pickaxe or World Breaker (Infinity Pickaxe)");
+        add("jei.tooltip.avaritia.end_portal_frame", "Obtain using Crystal Pickaxe or World Breaker(Infinity Pickaxe)");
         add("jei.tooltip.avaritia.full_matter_cluster", "Use an internal Matter Cluster with 4096 items to craft");
-        add("jei.tooltip.avaritia.neutron_collector", "Collect Pile of Neutrons");
-        add("jei.tooltip.avaritia.neutron_pile", "With a neutron collector, you can get a pile of neutrons after a while");
+        add("jei.tooltip.avaritia.neutron_collector", "Collect Neutron Pile");
+        add("jei.tooltip.avaritia.neutron_pile", "By neutron collector, you can get a neutron pile after a while");
         add("jei.tooltip.avaritia.refined_coal", "Use Blaze Bush Axe to chop logs and obtain");
+        add("emi.tooltip.avaritia.neutron_collector", "Collect Neutron Pile");
+        add("emi.tooltip.avaritia.neutron_pile", "By neutron collector, you can get a neutron pile after a while");
         add("jei.tooltip.shapeless.recipe", "Shapeless Recipe");
+        add("tooltip.avaritia.jade.collector_output", "Output: %s");
         add("config.jade.plugin_avaritia.neutron_collector", "Neutronium Collector");
         add("config.jade.plugin_avaritia.compressor", "Compressor");
         add("config.jade.plugin_avaritia.crafting_table", "Avaritia Crafting");

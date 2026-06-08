@@ -1,44 +1,64 @@
 package com.avaritia.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.serialization.MapCodec;
 import com.avaritia.Const;
 import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.client.render.tile.InfinityChestBlockRender;
-import com.avaritia.init.registry.ModBlocks;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3fc;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 /**
  * @author cnlimiter
  */
-public class InfinityChestItemRender {
-    public static void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext,
-                                     @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer,
-                                     int packedLight, int packedOverlay) {
-        Item item = stack.getItem();
-        if (item instanceof BlockItem blockItem) {
-            Block block = blockItem.getBlock();
-            BlockState blockstate = block.defaultBlockState();
-            if (blockstate.is(ModBlocks.infinity_chest.get())) {
-                ModelPart root = Minecraft.getInstance().getEntityModels().bakeLayer(InfinityChestBlockRender.INFINITY_CHEST);
-                TextureAtlasSprite sprite = TextureUtils.getTexture(Const.rl("block/chest/infinity_chest"));
-                VertexConsumer consumer = sprite.wrap(buffer.getBuffer(RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS)));
-                root.getChild("lid").render(poseStack, consumer, packedLight, packedOverlay);
-                root.getChild("lock").render(poseStack, consumer, packedLight, packedOverlay);
-                root.getChild("bottom").render(poseStack, consumer, packedLight, packedOverlay);
-            }
+public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
+    private final ModelPart lid;
+    private final ModelPart lock;
+    private final ModelPart bottom;
+
+    public InfinityChestItemRender(EntityModelSet entityModelSet) {
+        ModelPart root = entityModelSet.bakeLayer(InfinityChestBlockRender.INFINITY_CHEST);
+        this.lid = root.getChild("lid");
+        this.lock = root.getChild("lock");
+        this.bottom = root.getChild("bottom");
+    }
+
+    @Override
+    public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
+        this.lid.xRot = 0.0F;
+        this.lock.xRot = 0.0F;
+        TextureAtlasSprite sprite = TextureUtils.getTexture(Const.rl("block/chest/infinity_chest"));
+        var renderType = RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS);
+        output.submitModelPart(this.lid, poseStack, renderType, packedLight, packedOverlay, sprite, outlineColor, null);
+        output.submitModelPart(this.lock, poseStack, renderType, packedLight, packedOverlay, sprite, outlineColor, null);
+        output.submitModelPart(this.bottom, poseStack, renderType, packedLight, packedOverlay, sprite, outlineColor, null);
+    }
+
+    @Override
+    public void getExtents(@NotNull Consumer<Vector3fc> output) {
+    }
+
+    public static record Unbaked() implements SpecialModelRenderer.Unbaked<Void> {
+        public static final MapCodec<InfinityChestItemRender.Unbaked> MAP_CODEC = MapCodec.unit(new InfinityChestItemRender.Unbaked());
+
+        @Override
+        public MapCodec<? extends SpecialModelRenderer.Unbaked<Void>> type() {
+            return MAP_CODEC;
+        }
+
+        @Override
+        public SpecialModelRenderer<Void> bake(SpecialModelRenderer.BakingContext context) {
+            return new InfinityChestItemRender(context.entityModelSet());
         }
     }
 }

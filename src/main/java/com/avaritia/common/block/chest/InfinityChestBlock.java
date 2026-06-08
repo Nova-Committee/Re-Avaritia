@@ -102,7 +102,7 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.INVISIBLE;
     }
 
     @Override

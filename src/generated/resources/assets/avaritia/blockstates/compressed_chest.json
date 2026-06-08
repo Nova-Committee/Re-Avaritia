@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "avaritia:block/compressed_chest"
+      "model": "avaritia:block/chest/compressed_chest"
     }
   }
 }
