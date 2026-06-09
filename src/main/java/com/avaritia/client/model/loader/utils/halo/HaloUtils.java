@@ -1,4 +1,4 @@
-package com.avaritia.client.model.loader.base;
+package com.avaritia.client.model.loader.utils.halo;
 
 import com.avaritia.api.client.model.CachedFormat;
 import com.avaritia.api.client.model.IVertexConsumer;
@@ -13,12 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * halo 几何和颜色处理工具。
+ * <p>
+ * 当前 halo 需要生成圆形扇面 quad，而不是依赖一张方形透明贴图；这样不同大小的 halo 在 GUI/JEI 中不会露出方形边界。
+ *
  * @author cnlimiter
  */
 public class HaloUtils {
     private static final int MIN_CIRCLE_SEGMENTS = 24;
     private static final int MAX_CIRCLE_SEGMENTS = 64;
 
+    /**
+     * 按 halo size 生成近似圆形的 quad 列表，并把颜色直接写入顶点。
+     */
     public static List<BakedQuad> generateHaloQuads(final TextureAtlasSprite sprite, final int size, final int color) {
         final float[] colors = new ColorARGB(color).getRGBA();
         final int segments = circleSegments(size);
@@ -56,11 +63,17 @@ public class HaloUtils {
         return quads;
     }
 
-    static int circleSegments(final int size) {
+    /**
+     * 分段数随 size 增长，但限制上下界，避免小 halo 太粗糙或大 halo 生成过多 quad。
+     */
+    public static int circleSegments(final int size) {
         return Math.max(MIN_CIRCLE_SEGMENTS, Math.min(MAX_CIRCLE_SEGMENTS, Math.max(1, size) * 4));
     }
 
-    static double haloRadius(final int size) {
+    /**
+     * 保留旧行为：直径为 1 + 2 * size / 16。
+     */
+    public static double haloRadius(final int size) {
         return 0.5 + Math.max(0, size) / 16.0;
     }
 

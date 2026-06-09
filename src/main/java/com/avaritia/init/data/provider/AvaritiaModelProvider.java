@@ -1,10 +1,10 @@
 package com.avaritia.init.data.provider;
 
+import com.avaritia.client.model.loader.AvaritiaItemModelLoaders;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.avaritia.Const;
 import com.avaritia.api.iface.IColored;
-import com.avaritia.client.model.loader.base.AvaritiaItemModels;
 import com.avaritia.client.render.item.InfinityShieldRender;
 import com.avaritia.client.tint.RainbowTintSource;
 import com.avaritia.init.handler.ItemOverrideHandler;
@@ -185,6 +185,7 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private ItemModel.Unbaked clientItemModel(Identifier id, Identifier model) {
+        // 这里决定每个物品最终写入 items/*.json 的运行时模型；星空/halo 都走 AvaritiaItemModelLoaders。
         return switch (id.getPath()) {
             case "infinity_sword" -> infinitySwordModel(model);
             case "infinity_bow" -> infinityBowModel();
@@ -195,14 +196,14 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_shield" -> infinityShieldModel(model);
             case "infinity_umbrella" -> infinityUmbrellaModel(model);
             case "infinity_clock" -> infinityClockModel(model);
-            case "infinity_trident" -> new AvaritiaItemModels.CosmicArc(model, List.of(mask("infinity_trident_mask")));
+            case "infinity_trident" -> new AvaritiaItemModelLoaders.CosmicArc(model, List.of(mask("infinity_trident_mask")));
             case "infinity_helmet", "infinity_chestplate", "infinity_pants", "infinity_boots" ->
-                    new AvaritiaItemModels.Cosmic(model, List.of(mask(id.getPath() + "_mask")));
-            case "singularity" -> new AvaritiaItemModels.Halo(model, halo(), -16777216, 4, false, singularityTints());
-            case "eternal_singularity" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
+                    new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask(id.getPath() + "_mask")));
+            case "singularity" -> new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, 4, false, singularityTints());
+            case "eternal_singularity" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
             case "matter_cluster" -> ItemModelUtils.conditional(new ItemOverrideHandler.MatterClusterFull(),
-                    matterClusterFullModel(), new AvaritiaItemModels.Cosmic(model, List.of(mask("matter_cluster_empty_mask"))));
-            case "full_matter_cluster" -> new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
+                    matterClusterFullModel(), new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("matter_cluster_empty_mask"))));
+            case "full_matter_cluster" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
             case "infinity_ingot", "infinity_nugget" -> haloModel(model, 10, true);
             case "infinity_catalyst", "enhancement_core" -> haloModel(model, 8, true);
             case "infinity_totem", "infinity_ring", "infinity_bucket", "infinity_elytra", "neutron_ring", "star_fuel" ->
@@ -222,8 +223,8 @@ public class AvaritiaModelProvider implements DataProvider {
                 "item/tools/infinity_sword/layer_0",
                 "item/tools/infinity_sword/layer_1");
         return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_sword_kill"),
-                new AvaritiaItemModels.Hell(killModel, List.of(mask("infinity_sword_mask"))),
-                new AvaritiaItemModels.Cosmic(model, List.of(mask("infinity_sword_mask"))));
+                new AvaritiaItemModelLoaders.Hell(killModel, List.of(mask("infinity_sword_mask"))),
+                new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("infinity_sword_mask"))));
     }
 
     private ItemModel.Unbaked infinityBowModel() {
@@ -249,7 +250,7 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private ItemModel.Unbaked infinityCrossbowModel(Identifier idleModel) {
-        ItemModel.Unbaked idle = new AvaritiaItemModels.Cosmic(idleModel, List.of(mask("infinity_crossbow/standby_mask")));
+        ItemModel.Unbaked idle = new AvaritiaItemModelLoaders.Cosmic(idleModel, List.of(mask("infinity_crossbow/standby_mask")));
         ItemModel.Unbaked pull0 = cosmicHandheld("infinity_crossbow/pull_0", "item/tools/infinity_crossbow/pull_0", "infinity_crossbow/pull_0_mask");
         ItemModel.Unbaked pull1 = cosmicHandheld("infinity_crossbow/pull_1", "item/tools/infinity_crossbow/pull_1", "infinity_crossbow/pull_1_mask");
         ItemModel.Unbaked pull2 = cosmicHandheld("infinity_crossbow/pull_2", "item/tools/infinity_crossbow/pull_2", "infinity_crossbow/pull_2_mask");
@@ -274,19 +275,19 @@ public class AvaritiaModelProvider implements DataProvider {
     private ItemModel.Unbaked infinityClockModel(Identifier model) {
         Identifier upModel = flatModel("infinity_clock_up", "item/misc/infinity_clock_up", false);
         return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_clock_up"),
-                new AvaritiaItemModels.Halo(upModel, halo(), -16777216, 6, true),
+                new AvaritiaItemModelLoaders.Halo(upModel, halo(), -16777216, 6, true),
                 ItemModelUtils.plainModel(model));
     }
 
     private ItemModel.Unbaked infinityUmbrellaModel(Identifier model) {
-        ItemModel.Unbaked normal = new AvaritiaItemModels.Halo(model, halo(), -16777216, 6, false);
-        ItemModel.Unbaked sun = new AvaritiaItemModels.Halo(
+        ItemModel.Unbaked normal = new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, 6, false);
+        ItemModel.Unbaked sun = new AvaritiaItemModelLoaders.Halo(
                 handheldModel("infinity_umbrella_sun", "item/misc/infinity_umbrella_sun"),
                 halo(), -16777216, 6, false);
-        ItemModel.Unbaked rain = new AvaritiaItemModels.Halo(
+        ItemModel.Unbaked rain = new AvaritiaItemModelLoaders.Halo(
                 handheldModel("infinity_umbrella_rain", "item/misc/infinity_umbrella_rain"),
                 halo(), -16777216, 6, false);
-        ItemModel.Unbaked storm = new AvaritiaItemModels.Halo(
+        ItemModel.Unbaked storm = new AvaritiaItemModelLoaders.Halo(
                 handheldModel("infinity_umbrella_storm", "item/misc/infinity_umbrella_storm"),
                 halo(), -16777216, 6, false);
         return ItemModelUtils.rangeSelect(new ItemOverrideHandler.UmbrellaMode(), normal,
@@ -304,15 +305,15 @@ public class AvaritiaModelProvider implements DataProvider {
 
     private ItemModel.Unbaked matterClusterFullModel() {
         Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
-        return new AvaritiaItemModels.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
+        return new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
     }
 
     private ItemModel.Unbaked haloModel(Identifier model, int size, boolean pulse) {
-        return new AvaritiaItemModels.Halo(model, halo(), -16777216, size, pulse);
+        return new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, size, pulse);
     }
 
     private ItemModel.Unbaked haloNoiseModel(Identifier model, int color) {
-        return new AvaritiaItemModels.Halo(model, haloNoise(), color, 6, false);
+        return new AvaritiaItemModelLoaders.Halo(model, haloNoise(), color, 6, false);
     }
 
     private ItemModel.Unbaked modeModel(String modeKey, Identifier activeModel, Identifier fallbackModel) {
@@ -322,11 +323,11 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private ItemModel.Unbaked cosmicHandheld(String modelPath, String texturePath, String maskPath) {
-        return new AvaritiaItemModels.Cosmic(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+        return new AvaritiaItemModelLoaders.Cosmic(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
     }
 
     private ItemModel.Unbaked hellHandheld(String modelPath, String texturePath, String maskPath) {
-        return new AvaritiaItemModels.Hell(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
+        return new AvaritiaItemModelLoaders.Hell(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
     }
 
     private Identifier handheldModel(String modelPath, String texturePath) {

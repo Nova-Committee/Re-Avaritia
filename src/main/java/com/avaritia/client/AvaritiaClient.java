@@ -6,7 +6,7 @@ import com.avaritia.api.client.render.CosmicRenderQueue;
 import com.avaritia.api.iface.IColored;
 import com.avaritia.api.iface.IFilterItem;
 import com.avaritia.client.model.entity.InfinityShieldModel;
-import com.avaritia.client.model.loader.base.AvaritiaItemModels;
+import com.avaritia.client.model.loader.AvaritiaItemModelLoaders;
 import com.avaritia.client.particle.ChargeParticle;
 import com.avaritia.client.particle.ShockwaveParticle;
 import com.avaritia.client.render.entity.BladeSlashRender;
@@ -290,14 +290,15 @@ public class AvaritiaClient {
 
     @SubscribeEvent
     public static void registerItemModels(RegisterItemModelsEvent event) {
-        event.register(id("cosmic"), AvaritiaItemModels.Cosmic.MAP_CODEC);
-        event.register(id("cosmic_arc"), AvaritiaItemModels.CosmicArc.MAP_CODEC);
-        event.register(id("hell"), AvaritiaItemModels.Hell.MAP_CODEC);
-        event.register(id("eternal"), AvaritiaItemModels.Eternal.MAP_CODEC);
-        event.register(id("unstable"), AvaritiaItemModels.Unstable.MAP_CODEC);
-        event.register(id("halo"), AvaritiaItemModels.Halo.MAP_CODEC);
-        event.register(id("halo_cosmic"), AvaritiaItemModels.HaloCosmic.MAP_CODEC);
-        event.register(id("halo_eternal"), AvaritiaItemModels.HaloEternal.MAP_CODEC);
+        // 这些 id 对应 datagen 输出到 items/*.json 的自定义 item model type。
+        event.register(id("cosmic"), AvaritiaItemModelLoaders.Cosmic.MAP_CODEC);
+        event.register(id("cosmic_arc"), AvaritiaItemModelLoaders.CosmicArc.MAP_CODEC);
+        event.register(id("hell"), AvaritiaItemModelLoaders.Hell.MAP_CODEC);
+        event.register(id("eternal"), AvaritiaItemModelLoaders.Eternal.MAP_CODEC);
+        event.register(id("unstable"), AvaritiaItemModelLoaders.Unstable.MAP_CODEC);
+        event.register(id("halo"), AvaritiaItemModelLoaders.Halo.MAP_CODEC);
+        event.register(id("halo_cosmic"), AvaritiaItemModelLoaders.HaloCosmic.MAP_CODEC);
+        event.register(id("halo_eternal"), AvaritiaItemModelLoaders.HaloEternal.MAP_CODEC);
     }
 
     @SubscribeEvent
