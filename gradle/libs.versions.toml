@@ -1,10 +1,10 @@
 [versions]
 minecraft = "26.1.2"
-neoforge = "26.1.2.15-beta"
+neoforge = "26.1.2.73"
 moddevgradle = "2.0.141"
 mixinextras = "0.5.4"
 lombok = "1.18.38"
-jei = "29.6.0.29"
+jei = "29.6.2.31"
 jade = "26.1.1+neoforge"
 curios = "15.0.0-beta.2+26.1.2"
 junit = "5.11.0"

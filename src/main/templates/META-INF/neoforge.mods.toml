@@ -28,7 +28,7 @@ config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId = "neoforge"
     type = "required"
-    versionRange = "${neo_version}"
+    versionRange = "${neo_version_range}"
     ordering = "NONE"
     side = "BOTH"
 
@@ -44,7 +44,7 @@ config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId = "jei"
     type = "optional"
-    versionRange = "[29.6.0.29,)"
+    versionRange = "[29.6.2.31,)"
     ordering = "NONE"
     side = "CLIENT"
 

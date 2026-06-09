@@ -38,7 +38,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.*;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.world.entity.EquipmentSlot;
@@ -110,7 +110,7 @@ public class InfinityHandler {
 
 
     @SubscribeEvent
-    public static void onPlayerMine(BlockEvent.BreakEvent event) {
+    public static void onPlayerMine(BreakBlockEvent event) {
         if (event.getLevel().isClientSide()) return;
         var level = (ServerLevel) event.getLevel();
         BlockPos pos = event.getPos();
