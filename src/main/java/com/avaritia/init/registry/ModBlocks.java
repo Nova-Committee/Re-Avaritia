@@ -166,7 +166,7 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem) {
-        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
+        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), blockItemProperties(id)));
     }
 
     /**
@@ -178,7 +178,7 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, Rarity rarity) {
-        return itemBlock(name, block, true, b -> id -> new BlockItem(b.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id)).rarity(rarity)));
+        return itemBlock(name, block, true, b -> id -> new BlockItem(b.get(), blockItemProperties(id).rarity(rarity)));
     }
 
     /**
@@ -190,7 +190,7 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, Item.Properties properties) {
-        return itemBlock(name, block, true, b -> id -> new BlockItem(b.get(), properties.setId(ResourceKey.create(Registries.ITEM, id))));
+        return itemBlock(name, block, true, b -> id -> new BlockItem(b.get(), blockItemProperties(id, properties)));
     }
 
     /**
@@ -203,7 +203,7 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     public static DeferredBlock<Block> itemBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties) {
-        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), properties.setId(ResourceKey.create(Registries.ITEM, id))));
+        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), blockItemProperties(id, properties)));
     }
 
     /**
@@ -234,11 +234,23 @@ public class ModBlocks {
      * @return 延迟注册方块引用
      */
     public static DeferredBlock<Block> itemBurnBlock(String name, Supplier<Block> block, boolean hasItem, Item.Properties properties, int burnTime) {
-        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), properties.setId(ResourceKey.create(Registries.ITEM, id))) {
+        return itemBlock(name, block, hasItem, b -> id -> new BlockItem(b.get(), blockItemProperties(id, properties)) {
             @Override
             public int getBurnTime(@NonNull ItemStack itemStack, @Nullable RecipeType<?> recipeType, @NonNull FuelValues fuelValues) {
                 return burnTime;
             }
         });
+    }
+
+    private static Item.Properties blockItemProperties(Identifier id) {
+        return new Item.Properties()
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .useBlockDescriptionPrefix();
+    }
+
+    private static Item.Properties blockItemProperties(Identifier id, Item.Properties properties) {
+        return properties
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .useBlockDescriptionPrefix();
     }
 }

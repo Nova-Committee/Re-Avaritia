@@ -3,16 +3,15 @@ package com.avaritia.client.render.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import com.avaritia.Const;
-import com.avaritia.api.client.util.TextureUtils;
 import com.avaritia.client.render.tile.InfinityChestBlockRender;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.object.chest.ChestModel;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import org.joml.Vector3fc;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,30 +21,26 @@ import java.util.function.Consumer;
  * @author cnlimiter
  */
 public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
-    private final ModelPart lid;
-    private final ModelPart lock;
-    private final ModelPart bottom;
+    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.BLOCKS_MAPPER.apply(Const.rl("chest/infinity_chest"));
 
-    public InfinityChestItemRender(EntityModelSet entityModelSet) {
-        ModelPart root = entityModelSet.bakeLayer(InfinityChestBlockRender.INFINITY_CHEST);
-        this.lid = root.getChild("lid");
-        this.lock = root.getChild("lock");
-        this.bottom = root.getChild("bottom");
+    private final ChestModel model;
+    private final SpriteGetter sprites;
+
+    public InfinityChestItemRender(EntityModelSet entityModelSet, SpriteGetter sprites) {
+        this.model = new ChestModel(entityModelSet.bakeLayer(InfinityChestBlockRender.INFINITY_CHEST));
+        this.sprites = sprites;
     }
 
     @Override
     public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
-        this.lid.xRot = 0.0F;
-        this.lock.xRot = 0.0F;
-        TextureAtlasSprite sprite = TextureUtils.getTexture(Const.rl("block/chest/infinity_chest"));
-        var renderType = RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS);
-        output.submitModelPart(this.lid, poseStack, renderType, packedLight, packedOverlay, sprite, outlineColor, null);
-        output.submitModelPart(this.lock, poseStack, renderType, packedLight, packedOverlay, sprite, outlineColor, null);
-        output.submitModelPart(this.bottom, poseStack, renderType, packedLight, packedOverlay, sprite, outlineColor, null);
+        output.submitModel(this.model, 0.0F, poseStack, packedLight, packedOverlay, -1, INFINITY_CHEST_SPRITE, this.sprites, outlineColor, null);
     }
 
     @Override
     public void getExtents(@NotNull Consumer<Vector3fc> output) {
+        PoseStack poseStack = new PoseStack();
+        this.model.setupAnim(0.0F);
+        this.model.root().getExtentsForGui(poseStack, output);
     }
 
     public static record Unbaked() implements SpecialModelRenderer.Unbaked<Void> {
@@ -58,7 +53,7 @@ public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
 
         @Override
         public SpecialModelRenderer<Void> bake(SpecialModelRenderer.BakingContext context) {
-            return new InfinityChestItemRender(context.entityModelSet());
+            return new InfinityChestItemRender(context.entityModelSet(), context.sprites());
         }
     }
 }

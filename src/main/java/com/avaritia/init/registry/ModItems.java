@@ -145,7 +145,9 @@ public class ModItems {
      * @return 延迟注册物品引用
      */
     public static DeferredItem<Item> blockItem(String name, Supplier<Block> block, Item.Properties properties, boolean exist) {
-        return item(name, id -> new BlockItem(block.get(), properties.setId(ResourceKey.create(Registries.ITEM, id))), exist);
+        return item(name, id -> new BlockItem(block.get(), properties
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .useBlockDescriptionPrefix()), exist);
     }
 
     /**
