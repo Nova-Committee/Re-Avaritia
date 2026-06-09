@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.nickel",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/nickel"
   },
-  "name": "avaritia:nickel",
-  "overlayColor": 14800792,
-  "underlayColor": 11638636
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:nickel"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.steel",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/steel"
   },
-  "name": "avaritia:steel",
-  "overlayColor": 5658198,
-  "underlayColor": 2302755
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:steel"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

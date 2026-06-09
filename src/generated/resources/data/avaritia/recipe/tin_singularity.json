@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.tin",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/tin"
   },
-  "name": "avaritia:tin",
-  "overlayColor": 10534589,
-  "underlayColor": 5404809
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:tin"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

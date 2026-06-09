@@ -24,6 +24,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -46,6 +47,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -655,6 +657,17 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 RecipeCategory.MISC, "has_deepslate", has(Blocks.DEEPSLATE));
         save(output, "compressor_matter_cluster", new CompressorRecipe(Ingredient.of(ModItems.neutron_ingot.get()), template(ModItems.full_matter_cluster.get()), 4096, 240),
                 RecipeCategory.MISC, "has_neutron_ingot", has(ModItems.neutron_ingot.get()));
+        for (Singularity singularity : ModSingularities.getDefaults()) {
+            // 条件标签奇点在 datagen 阶段可能判定为空，但仍需要输出带条件的配方 JSON。
+            if (!singularity.isEnabled() || !singularity.isRecipeEnabled() || singularity.getIngredient() == null) {
+                continue;
+            }
+            saveWithConditions(output, key(singularity.getRegistryName().getPath() + "_singularity"),
+                    new CompressorRecipe(singularity.getIngredient(), singularityTemplate(singularity),
+                            singularity.getCount(), singularity.getTimeCost()),
+                    RecipeCategory.MISC, "has_neutron_compressor", has(ModBlocks.neutron_compressor.get()),
+                    singularity.getConditions().toArray(ICondition[]::new));
+        }
     }
 
     private void storage(RecipeOutput output, ItemLike small, ItemLike large, String packingName, String unpackingName) {
@@ -748,13 +761,18 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void save(RecipeOutput output, ResourceKey<Recipe<?>> key, Recipe<?> recipe, RecipeCategory category, String criterionName, Criterion<?> criterion) {
+        saveWithConditions(output, key, recipe, category, criterionName, criterion);
+    }
+
+    private void saveWithConditions(RecipeOutput output, ResourceKey<Recipe<?>> key, Recipe<?> recipe, RecipeCategory category,
+                                    String criterionName, Criterion<?> criterion, ICondition... conditions) {
         Advancement.Builder advancementBuilder = output.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(key))
                 .rewards(AdvancementRewards.Builder.recipe(key))
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .addCriterion(criterionName, criterion);
         AdvancementHolder advancement = advancementBuilder.build(key.identifier().withPrefix("recipes/" + category.getFolderName() + "/"));
-        output.accept(key, recipe, advancement);
+        output.accept(key, recipe, advancement, conditions);
     }
 
     private static ResourceKey<Recipe<?>> key(String name) {
@@ -775,6 +793,16 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
 
     private static ItemStackTemplate template(ItemLike item, int count) {
         return new ItemStackTemplate(item.asItem(), count);
+    }
+
+    /**
+     * 直接写出带组件的物品模板，避免 datagen 阶段构造真实 ItemStack 时组件尚未绑定。
+     */
+    private static ItemStackTemplate singularityTemplate(Singularity singularity) {
+        DataComponentPatch components = DataComponentPatch.builder()
+                .set(ModDataComponents.SINGULARITY_ID.get(), singularity.getRegistryName())
+                .build();
+        return new ItemStackTemplate(ModItems.singularity.get(), components);
     }
 
     private static List<String> normalizedPattern(String[] pattern) {

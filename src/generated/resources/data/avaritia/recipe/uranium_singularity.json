@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.uranium",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/uranium"
   },
-  "name": "avaritia:uranium",
-  "overlayColor": 13826513,
-  "underlayColor": 10929572
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:uranium"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

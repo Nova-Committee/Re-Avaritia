@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.aluminum",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/aluminum"
   },
-  "name": "avaritia:aluminum",
-  "overlayColor": 13290714,
-  "underlayColor": 10132646
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:aluminum"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.bronze",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/bronze"
   },
-  "name": "avaritia:bronze",
-  "overlayColor": 14262083,
-  "underlayColor": 12282683
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:bronze"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

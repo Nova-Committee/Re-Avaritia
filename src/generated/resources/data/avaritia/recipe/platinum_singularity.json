@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.platinum",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/platinum"
   },
-  "name": "avaritia:platinum",
-  "overlayColor": 7334639,
-  "underlayColor": 5748924
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:platinum"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

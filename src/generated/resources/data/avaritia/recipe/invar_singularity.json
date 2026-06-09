@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.invar",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/invar"
   },
-  "name": "avaritia:invar",
-  "overlayColor": 12371387,
-  "underlayColor": 6125687
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:invar"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:quartz",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:quartz"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

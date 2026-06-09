@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:redstone",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:redstone"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

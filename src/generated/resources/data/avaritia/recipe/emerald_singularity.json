@@ -1,0 +1,11 @@
+{
+  "type": "avaritia:compressor",
+  "ingredient": "minecraft:emerald",
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:emerald"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
+}

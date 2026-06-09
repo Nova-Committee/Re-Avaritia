@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.refined_obsidian",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/refined_obsidian"
   },
-  "name": "avaritia:refined_obsidian",
-  "overlayColor": 11116984,
-  "underlayColor": 9271479
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:refined_obsidian"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

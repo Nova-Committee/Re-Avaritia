@@ -27,7 +27,8 @@ public class InternalRecipeHandler {
 
             var compressorRecipe = ModApi.addSingularityRecipe(singularity);
 
-            if (compressorRecipe != null) {
+            // 默认奇点配方已经由数据包 JSON 加载；这里仅补充第三方运行时新增的奇点配方。
+            if (compressorRecipe != null && !event.hasRecipe(compressorRecipe.id())) {
                 event.addRecipe(compressorRecipe);
                 generatedCount++;
             }

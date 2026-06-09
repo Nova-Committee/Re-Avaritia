@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.electrum",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/electrum"
   },
-  "name": "avaritia:electrum",
-  "overlayColor": 16118158,
-  "underlayColor": 10390846
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:electrum"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }

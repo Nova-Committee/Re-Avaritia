@@ -101,8 +101,11 @@ public class Singularity {
         return this.ingredient;
     }
 
+    /**
+     * 序列化时保留已经声明的输入；标签类 Ingredient 在 datagen 阶段可能暂时没有实际物品。
+     */
     public Optional<Ingredient> getOptionalIngredient() {
-        return this.hasIngredient() ? Optional.of(this.ingredient) : Optional.empty();
+        return this.ingredient != null ? Optional.of(this.ingredient) : Optional.empty();
     }
 
     public boolean hasIngredient() {

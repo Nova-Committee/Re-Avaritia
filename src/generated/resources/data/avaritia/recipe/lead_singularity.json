@@ -8,12 +8,16 @@
       }
     }
   ],
-  "displayName": "singularity.avaritia.lead",
+  "type": "avaritia:compressor",
   "ingredient": {
     "neoforge:ingredient_type": "avaritia:tag",
     "tag": "c:ingots/lead"
   },
-  "name": "avaritia:lead",
-  "overlayColor": 7110034,
-  "underlayColor": 3290466
+  "result": {
+    "components": {
+      "avaritia:singularity_id": "avaritia:lead"
+    },
+    "id": "avaritia:singularity"
+  },
+  "timeCost": 240
 }
