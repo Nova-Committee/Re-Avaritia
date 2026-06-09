@@ -16,6 +16,7 @@ public class SculkCraftScreen extends BaseContainerScreen<TierCraftMenu> {
     protected void renderLabels(GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
+        stack.text(font, title, 8, 6, 4210752, false);
         stack.text(font, this.playerInventoryTitle, 10, 72, 4210752, false);
     }
 }

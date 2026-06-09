@@ -18,6 +18,7 @@ public class EndCraftScreen extends BaseContainerScreen<TierCraftMenu> {
     protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
+        stack.text(font, title, 8, 6, 4210752, false);
         stack.text(font, this.playerInventoryTitle, 22, 148, 4210752, false);
     }
 }

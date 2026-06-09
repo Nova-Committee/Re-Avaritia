@@ -43,5 +43,18 @@ public class AvaritiaZhCnLanguageProvider extends LanguageProvider {
         add(ModBlocks.fake_bedrock.get(), "伪基岩");
         add(ModBlocks.fake_end_portal_frame.get(), "伪末地传送门框架");
         add(ModBlocks.fake_end_portal.get(), "伪末地传送门");
+
+        add("container.sculk_crafting_table", "幽匿工作台");
+        add("container.nether_crafting_table", "炼狱工作台");
+        add("container.end_crafting_table", "终末工作台");
+        add("container.extreme_crafting_table", "终焉工作台");
+        add("container.extreme_smithing", "终焉锻造台");
+        add("container.infinity_chest", "§6数量: %s / %s");
+        add("item.avaritia.infinity_clock", "无尽时钟");
+        add("item.avaritia.neutron_ring", "中子态素戒指");
+        add("screen.avaritia.side_config.title", "输入输出配置");
+        add("title.avaritia.config.title", "Re:Avaritia");
+        add("title.avaritia.item_filter", "无尽工具过滤器");
+        add("title.avaritia.item_select", "选择物品");
     }
 }

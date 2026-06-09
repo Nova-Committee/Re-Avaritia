@@ -28,5 +28,17 @@
   "block.avaritia.refined_coal_block": "精炼煤炭块",
   "block.avaritia.sculk_crafting_table": "幽匿工作台",
   "block.avaritia.soul_farmland": "灵魂耕地",
-  "block.avaritia.star_fuel_block": "恒星燃料块"
+  "block.avaritia.star_fuel_block": "恒星燃料块",
+  "container.end_crafting_table": "终末工作台",
+  "container.extreme_crafting_table": "终焉工作台",
+  "container.extreme_smithing": "终焉锻造台",
+  "container.infinity_chest": "§6数量: %s / %s",
+  "container.nether_crafting_table": "炼狱工作台",
+  "container.sculk_crafting_table": "幽匿工作台",
+  "item.avaritia.infinity_clock": "无尽时钟",
+  "item.avaritia.neutron_ring": "中子态素戒指",
+  "screen.avaritia.side_config.title": "输入输出配置",
+  "title.avaritia.config.title": "Re:Avaritia",
+  "title.avaritia.item_filter": "无尽工具过滤器",
+  "title.avaritia.item_select": "选择物品"
 }

@@ -157,6 +157,12 @@ public class SideConfigScreen extends Screen {
     }
 
     @Override
+    public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, this.guiTop + 7, 4210752);
+    }
+
+    @Override
     public void onClose() {
         this.minecraft.setScreen(parentScreen);
     }
