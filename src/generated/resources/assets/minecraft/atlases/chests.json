@@ -1,3 +1,9 @@
 {
-  "sources": []
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "avaritia:block/chest/infinity_chest",
+      "sprite": "avaritia:entity/chest/infinity_chest"
+    }
+  ]
 }

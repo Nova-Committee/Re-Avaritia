@@ -77,19 +77,7 @@ public class SculkCraftingTableCategory implements IRecipeCategory<RecipeHolder<
         var inputs = recipe.getIngredients();
         var output = recipe.getResultItem(level.registryAccess());
         if (recipe instanceof ShapedTableCraftingRecipe shaped) {
-            int stackIndex = 0;
-            int heightOffset = Math.floorDiv(3 - shaped.getHeight(), 2);
-            int widthOffset = Math.floorDiv(3 - shaped.getWidth(), 2);
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    var slot = builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2);
-                    if (i >= heightOffset && i < heightOffset + shaped.getHeight()
-                            && j >= widthOffset && j < widthOffset + shaped.getWidth()) {
-                        slot.add(inputs.get(stackIndex));
-                        stackIndex++;
-                    }
-                }
-            }
+            TableRecipeLayouts.addShapedInputs(builder, shaped, 3, 2, 2);
             builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 20).add(output);
         } else if (recipe instanceof ShapelessTableCraftingRecipe) {
             shapelessRecipe(builder, inputs);
@@ -105,14 +93,7 @@ public class SculkCraftingTableCategory implements IRecipeCategory<RecipeHolder<
     }
 
     private void shapelessRecipe(@NotNull IRecipeLayoutBuilder builder, NonNullList<Ingredient> inputs) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int index = j + (i * 3);
-                if (index < inputs.size()) {
-                    builder.addSlot(RecipeIngredientRole.INPUT, j * 18 + 2, i * 18 + 2).add(inputs.get(index));
-                }
-            }
-        }
+        TableRecipeLayouts.addShapelessInputs(builder, inputs, 3, 2, 2);
         builder.setShapeless(57, 45);
     }
 

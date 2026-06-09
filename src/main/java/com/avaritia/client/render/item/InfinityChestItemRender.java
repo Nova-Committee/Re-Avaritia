@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * @author cnlimiter
  */
 public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
-    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.BLOCKS_MAPPER.apply(Const.rl("chest/infinity_chest"));
+    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.CHEST_MAPPER.apply(Const.rl("infinity_chest"));
 
     private final ChestModel model;
     private final SpriteGetter sprites;

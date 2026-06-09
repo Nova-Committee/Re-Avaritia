@@ -73,6 +73,8 @@
   "advancements.avaritia.start.title": "Welcome to Re:Avaritia!",
   "advancements.avaritia.upgrade_smithing_template.desc": "Craft Sublimation Template",
   "advancements.avaritia.upgrade_smithing_template.title": "Wandering the Ends of the Earth",
+  "attribute.name.generic.flying_speed": "Flying Speed",
+  "attribute.name.generic.movement_speed": "Movement Speed",
   "attribute.name.generic.walking_speed": "Walking Speed",
   "block.avaritia.blaze_cube_block": "Blaze Cube Block",
   "block.avaritia.compressed_chest": "Compressed Chest",

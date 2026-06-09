@@ -4,20 +4,16 @@
 modLoader = "javafml"
 loaderVersion = "${loader_version_range}"
 license = "${mod_license}"
-issueTrackerURL = "https://github.com/Avaritia/Avaritia/issues"
+issueTrackerURL = "${issue_tracker}"
 
 [[mods]]
     modId = "${mod_id}"
     version = "${mod_version}"
     displayName = "${mod_name}"
-    logoFile = "avaritia.png"
-    credits = "Avaritia Team & 3Nova Community"
-    authors = "3Nova"
-    description = """
-        Avaritia — 为 Minecraft 26.1.2 打造的传奇级物品模组。
-        添加了一系列强力工具、武器、护甲与无尽消耗品，
-        包含 Infinity Pickaxe、Sword of the Cosmos 以及终极 Matter Cluster。
-    """
+    logoFile = "logo.png"
+    credits = "Cnlimiter & Nova Committee"
+    authors = "${mod_authors}"
+    description = '''${mod_description}'''
 
 # ── Mixin ─────────────────────────────────────────────────
 # 声明 Mixin 配置文件，供 MDG 自动处理 Mixin AP 与 refmap
@@ -48,7 +44,7 @@ config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId = "jei"
     type = "optional"
-    versionRange = "[29.6.0.29,29.6.0.30)"
+    versionRange = "[29.6.0.29,)"
     ordering = "NONE"
     side = "CLIENT"
 

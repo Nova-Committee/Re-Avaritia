@@ -72,15 +72,23 @@ public class AvaritiaJeiPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         RecipeMap recipeMap = ClientRecipeMaps.get();
         if (recipeMap.values().isEmpty()) {
+            Const.LOGGER.warn("Avaritia JEI recipes skipped: client recipe map is empty.");
             return;
         }
 
-        registration.addRecipes(CompressorCategory.RECIPE_TYPE, recipeMap.byType(ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList());
-        registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, recipeMap.byType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList());
+        var compressorRecipes = recipeMap.byType(ModRecipeTypes.COMPRESSOR_RECIPE.get()).stream().toList();
+        var extremeSmithingRecipes = recipeMap.byType(ModRecipeTypes.EXTREME_SMITHING_RECIPE.get()).stream().toList();
+        var craftingRecipes = recipeMap.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get()).stream().toList();
+
+        // 客户端配方同步失败时，JEI 分类会存在但没有内容；这里记录数量方便直接从 latest.log 判断问题。
+        Const.LOGGER.info("Avaritia JEI recipes: crafting={}, compressor={}, extreme_smithing={}",
+                craftingRecipes.size(), compressorRecipes.size(), extremeSmithingRecipes.size());
+
+        registration.addRecipes(CompressorCategory.RECIPE_TYPE, compressorRecipes);
+        registration.addRecipes(ExtremeSmithingRecipeCategory.RECIPE_TYPE, extremeSmithingRecipes);
 
         Map<Integer, List<RecipeHolder<ITierCraftingRecipe>>> recipes = Stream.of(1, 2, 3, 4).collect(Collectors.toMap(tier -> tier, tier ->
-                recipeMap.byType(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get())
-                        .stream()
+                craftingRecipes.stream()
                         .filter(recipe -> recipe.value().hasRequiredTier() ? tier == recipe.value().getTier() : tier >= recipe.value().getTier())
                         .toList()
         ));

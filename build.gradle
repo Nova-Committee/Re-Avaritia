@@ -9,8 +9,12 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = mod_version
+version = minecraft_version + "-" + mod_version + "-" + mod_version_tag
 group = mod_group_id
+
+base {
+    archivesName = mod_name + "-" + mod_loader
+}
 
 sourceSets.main.resources {
     srcDir('src/generated/resources')
@@ -83,10 +87,6 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-}
-
-base {
-    archivesName = mod_id
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
@@ -168,6 +168,9 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            issue_tracker          : issue_tracker,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

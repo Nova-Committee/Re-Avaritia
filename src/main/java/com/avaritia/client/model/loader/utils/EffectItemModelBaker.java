@@ -83,7 +83,7 @@ public final class EffectItemModelBaker {
         for (Identifier mask : masks) {
             sprites.add(materials.get(new Material(mask), DEBUG_NAME).sprite());
         }
-        return ItemQuadBakery.bakeGeneratedItem(baker, effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
+        return ItemQuadBakery.bakeItem(effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
     }
 
     /**

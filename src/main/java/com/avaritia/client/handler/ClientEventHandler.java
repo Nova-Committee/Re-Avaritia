@@ -21,6 +21,8 @@ import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
+import java.util.List;
+
 @EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT)
 public final class ClientEventHandler {
     private ClientEventHandler() {
@@ -55,24 +57,39 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
-        if (ModConfig.isSwordAttackEndless.get() && event.getItemStack().getItem() instanceof InfinitySwordItem swordItem) {
-            for (int x = 0; x < event.getToolTip().size(); x++) {
-                if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.attack_damage"))) {
-                    var endlessDamage = ModConfig.isSwordAttackEndless.get();
-                    event.getToolTip().set(x, Component.literal(endlessDamage ? TextUtils.makeFabulous(I18n.get("tooltip.infinity")) : String.valueOf(swordItem.getTier().attackDamageBonus())).append(" ").append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN)));
-                    return;
-                }
-            }
+        if (ModConfig.isSwordAttackEndless.get() && event.getItemStack().getItem() instanceof InfinitySwordItem) {
+            Component infinityDamage = Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))
+                    .append(" ")
+                    .append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN));
+            replaceOrAppendTooltipLine(event.getToolTip(), I18n.get("attribute.name.generic.attack_damage"), infinityDamage);
         } else if (event.getItemStack().getItem() instanceof InfinityArmorItem) {
-            for (int x = 0; x < event.getToolTip().size(); x++) {
-                if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.armor"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
-                    return;
-                } else if (event.getToolTip().get(x).getString().contains(I18n.get("attribute.name.generic.armor_toughness"))) {
-                    event.getToolTip().set(x, Component.literal("+").withStyle(ChatFormatting.BLUE).append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))).append(" ").append(Component.translatable("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
-                    return;
-                }
+            replaceFirstTooltipLine(event.getToolTip(), I18n.get("attribute.name.generic.armor"),
+                    Component.literal("+").withStyle(ChatFormatting.BLUE)
+                            .append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity"))))
+                            .append(" ")
+                            .append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
+            replaceFirstTooltipLine(event.getToolTip(), I18n.get("attribute.name.generic.armor_toughness"),
+                    Component.literal("+").withStyle(ChatFormatting.BLUE)
+                            .append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity"))))
+                            .append(" ")
+                            .append(Component.translatable("tooltip.armor_toughness.desc").withStyle(ChatFormatting.BLUE)));
+        }
+    }
+
+    private static void replaceOrAppendTooltipLine(List<Component> tooltip, String marker, Component replacement) {
+        if (!replaceFirstTooltipLine(tooltip, marker, replacement)) {
+            // 新版属性 tooltip 可能不再生成攻击伤害行，找不到时主动补一行，保证无尽剑仍显示无限伤害。
+            tooltip.add(replacement);
+        }
+    }
+
+    private static boolean replaceFirstTooltipLine(List<Component> tooltip, String marker, Component replacement) {
+        for (int x = 0; x < tooltip.size(); x++) {
+            if (tooltip.get(x).getString().contains(marker)) {
+                tooltip.set(x, replacement);
+                return true;
             }
         }
+        return false;
     }
 }

@@ -56,5 +56,13 @@ public class AvaritiaZhCnLanguageProvider extends LanguageProvider {
         add("title.avaritia.config.title", "Re:Avaritia");
         add("title.avaritia.item_filter", "无尽工具过滤器");
         add("title.avaritia.item_select", "选择物品");
+
+        add("attribute.name.generic.flying_speed", "飞行速度");
+        add("attribute.name.generic.movement_speed", "移动速度");
+        add("attribute.name.generic.walking_speed", "行走速度");
+        add("tooltip.armor.desc", "护甲");
+        add("tooltip.armor_toughness.desc", "盔甲韧性");
+        add("tooltip.infinity", "无尽");
+        add("tooltip.infinity.desc", "攻击伤害");
     }
 }

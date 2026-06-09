@@ -637,6 +637,8 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
      * 添加其他界面、键位和提示文本。
      */
     private void addMiscTexts() {
+        add("attribute.name.generic.flying_speed", "Flying Speed");
+        add("attribute.name.generic.movement_speed", "Movement Speed");
         add("attribute.name.generic.walking_speed", "Walking Speed");
         add("direction.avaritia.down", "down");
         add("direction.avaritia.east", "east");

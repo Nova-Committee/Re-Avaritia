@@ -2,20 +2,16 @@ package com.avaritia.client.render.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.mojang.math.Transformation;
 import com.avaritia.Const;
 import com.avaritia.common.block.chest.InfinityChestBlock;
 import com.avaritia.common.tile.InfinityChestTile;
 import com.avaritia.init.registry.ModBlocks;
+import net.minecraft.client.model.object.chest.ChestModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -26,42 +22,40 @@ import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+
+import java.util.Map;
 
 /**
  * @author cnlimiter
  */
 public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChestTile, InfinityChestBlockRender.State> {
+    private static final Map<Direction, Transformation> TRANSFORMATIONS = Util.makeEnumMap(Direction.class, InfinityChestBlockRender::createModelTransformation);
 
     /** Model layer location — 注册层定义将在 AvaritiaModClient 中关联到此常量。 */
     public static final ModelLayerLocation INFINITY_CHEST = new ModelLayerLocation(Identifier.fromNamespaceAndPath(Const.MOD_ID, "infinity_chest"), "main");
-    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.BLOCKS_MAPPER.apply(Const.rl("chest/infinity_chest"));
+    private static final SpriteId INFINITY_CHEST_SPRITE = Sheets.CHEST_MAPPER.apply(Const.rl("infinity_chest"));
 
-    private final ModelPart lid;
-    private final ModelPart bottom;
-    private final ModelPart lock;
+    private final ChestModel model;
     private final SpriteGetter sprites;
 
     public InfinityChestBlockRender(BlockEntityRendererProvider.Context pContext) {
         this.sprites = pContext.sprites();
-        ModelPart modelpart = pContext.bakeLayer(INFINITY_CHEST);
-        this.bottom = modelpart.getChild("bottom");
-        this.lid = modelpart.getChild("lid");
-        this.lock = modelpart.getChild("lock");
+        this.model = new ChestModel(pContext.bakeLayer(INFINITY_CHEST));
     }
 
     public static LayerDefinition createLayer() {
-        MeshDefinition meshdefinition = new MeshDefinition();
-        PartDefinition partdefinition = meshdefinition.getRoot();
-        partdefinition.addOrReplaceChild("bottom", CubeListBuilder.create().texOffs(0, 19).addBox(1.0F, 0.0F, 1.0F, 14.0F, 10.0F, 14.0F), PartPose.ZERO);
-        partdefinition.addOrReplaceChild("lid", CubeListBuilder.create().texOffs(0, 0).addBox(1.0F, 0.0F, 0.0F, 14.0F, 5.0F, 14.0F), PartPose.offset(0.0F, 9.0F, 1.0F));
-        partdefinition.addOrReplaceChild("lock", CubeListBuilder.create().texOffs(0, 0).addBox(7.0F, -2.0F, 14.0F, 2.0F, 4.0F, 1.0F), PartPose.offset(0.0F, 9.0F, 1.0F));
-        return LayerDefinition.create(meshdefinition, 64, 64);
+        return ChestModel.createSingleBodyLayer();
     }
 
+    private static Transformation createModelTransformation(Direction facing) {
+        return new Transformation(new Matrix4f().rotationAround(Axis.YP.rotationDegrees(-facing.toYRot()), 0.5F, 0.0F, 0.5F));
+    }
 
     @Override
     public State createRenderState() {
@@ -82,25 +76,19 @@ public class InfinityChestBlockRender implements BlockEntityRenderer<InfinityChe
     public void submit(State state, @NotNull PoseStack pPoseStack,
                        @NotNull SubmitNodeCollector output, CameraRenderState cameraState) {
         pPoseStack.pushPose();
-        float f = state.facing.toYRot();
-        pPoseStack.translate(0.5F, 0.5F, 0.5F);
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(-f));
-        pPoseStack.translate(-0.5F, -0.5F, -0.5F);
+        pPoseStack.mulPose(TRANSFORMATIONS.get(state.facing));
         float f1 = state.open;
         f1 = 1.0F - f1;
         f1 = 1.0F - f1 * f1 * f1;
-        this.submit(pPoseStack, output, INFINITY_CHEST_SPRITE, this.lid, this.lock, this.bottom, f1, state.lightCoords, state.breakProgress);
+        // 26.x 的箱子模型通过 ChestModel 统一驱动开合动画和部件提交，不能再拆成三个 ModelPart 手动提交。
+        output.submitModel(this.model, f1, pPoseStack, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, INFINITY_CHEST_SPRITE, this.sprites, 0, state.breakProgress);
         pPoseStack.popPose();
     }
 
-    private void submit(PoseStack pPoseStack, SubmitNodeCollector output, SpriteId sprite, ModelPart pLidPart, ModelPart pLockPart, ModelPart pBottomPart, float pLidAngle, int pPackedLight, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
-        pLidPart.xRot = -(pLidAngle * ((float) Math.PI / 2F));
-        pLockPart.xRot = pLidPart.xRot;
-        var texture = this.sprites.get(sprite);
-        var renderType = sprite.renderType(RenderTypes::entityCutout);
-        output.submitModelPart(pLidPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
-        output.submitModelPart(pLockPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
-        output.submitModelPart(pBottomPart, pPoseStack, renderType, pPackedLight, OverlayTexture.NO_OVERLAY, texture, 0, breakProgress);
+    @Override
+    public net.minecraft.world.phys.AABB getRenderBoundingBox(InfinityChestTile blockEntity) {
+        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
+        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos.offset(-1, 0, -1), pos.offset(1, 1, 1));
     }
 
     public static class State extends BlockEntityRenderState {

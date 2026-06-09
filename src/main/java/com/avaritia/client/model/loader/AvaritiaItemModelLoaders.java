@@ -39,7 +39,7 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
+        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
             return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.empty());
         }
 
@@ -65,7 +65,7 @@ public final class AvaritiaItemModelLoaders {
         }
 
         @Override
-        public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
+        public @NonNull ItemModel bake(ItemModel.@NonNull BakingContext context, @NonNull Matrix4fc transformation) {
             return EffectItemModelBaker.bake(context, transformation, this.model, this.tints, this.mask, ItemEffect.COSMIC, Optional.empty(), true);
         }
 

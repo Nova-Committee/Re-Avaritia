@@ -1,4 +1,7 @@
 {
+  "attribute.name.generic.flying_speed": "飞行速度",
+  "attribute.name.generic.movement_speed": "移动速度",
+  "attribute.name.generic.walking_speed": "行走速度",
   "block.avaritia.blaze_cube_block": "炽骨立方块",
   "block.avaritia.compressed_chest": "压缩箱子",
   "block.avaritia.compressed_crafting_table": "压缩工作台",
@@ -40,5 +43,9 @@
   "screen.avaritia.side_config.title": "输入输出配置",
   "title.avaritia.config.title": "Re:Avaritia",
   "title.avaritia.item_filter": "无尽工具过滤器",
-  "title.avaritia.item_select": "选择物品"
+  "title.avaritia.item_select": "选择物品",
+  "tooltip.armor.desc": "护甲",
+  "tooltip.armor_toughness.desc": "盔甲韧性",
+  "tooltip.infinity": "无尽",
+  "tooltip.infinity.desc": "攻击伤害"
 }
