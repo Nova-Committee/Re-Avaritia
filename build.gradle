@@ -143,6 +143,10 @@ dependencies {
     // Curios API
     implementation libs.curios.neoforge
 
+    // KubeJS integration (compile only, optional at runtime)
+    compileOnly libs.kubejs.neoforge
+    compileOnly libs.rhino
+
     // Lombok
     compileOnly libs.lombok
     annotationProcessor libs.lombok

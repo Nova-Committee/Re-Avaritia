@@ -61,3 +61,17 @@ config = "${mod_id}.mixins.json"
     versionRange = "[9,)"
     ordering = "NONE"
     side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "kubejs"
+    type = "optional"
+    versionRange = "[26.1.2-8.0.1,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "rhino"
+    type = "optional"
+    versionRange = "[2101.2.7-build.85,)"
+    ordering = "NONE"
+    side = "BOTH"
