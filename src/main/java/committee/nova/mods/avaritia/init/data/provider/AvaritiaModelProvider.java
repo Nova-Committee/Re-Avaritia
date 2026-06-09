@@ -44,7 +44,6 @@ public class AvaritiaModelProvider implements DataProvider {
             ModItems.infinity_bow,
             ModItems.infinity_crossbow,
             ModItems.infinity_shield,
-            ModItems.infinity_trident,
             ModItems.infinity_umbrella,
             ModItems.infinity_mace,
             ModItems.crystal_sword,
@@ -74,7 +73,7 @@ public class AvaritiaModelProvider implements DataProvider {
             Map.entry("infinity_axe", "item/tools/infinity_axe/layer_0"),
             Map.entry("infinity_bucket", "item/misc/infinity_bucket"),
             Map.entry("infinity_bow", "item/tools/infinity_bow/idle"),
-            Map.entry("infinity_crossbow", "item/tools/infinity_crossbow/idle"),
+            Map.entry("infinity_crossbow", "item/tools/infinity_crossbow/standby"),
             Map.entry("infinity_shield", "item/tools/infinity_shield/layer_0"),
             Map.entry("infinity_trident", "item/tools/infinity_trident/layer_0"),
             Map.entry("infinity_mace", "item/tools/infinity_mace/layer_0"),
@@ -167,6 +166,7 @@ public class AvaritiaModelProvider implements DataProvider {
         Identifier model = switch (id.getPath()) {
             case "singularity" -> twoLayerItem(item, id, "singularity_overlay");
             case "eternal_singularity" -> twoLayerItem(item, id, "eternal_singularity2");
+            case "infinity_trident" -> tridentModel("infinity_trident", "item/tools/infinity_trident/layer_0");
             default -> ModelTemplates.FLAT_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
         clientItem(item, clientItemModel(id, model));
@@ -177,6 +177,7 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_sword" -> layeredHandheldModel("infinity_sword",
                     "item/tools/infinity_sword/layer_0",
                     "item/tools/infinity_sword/layer_1");
+            case "infinity_crossbow" -> crossbowModel("infinity_crossbow", "item/tools/infinity_crossbow/standby");
             case "infinity_shield" -> shieldModel("infinity_shield", false);
             case "blaze_bow", "crystal_bow" -> bowModel(id.getPath(), itemTexture(id).getPath());
             default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
@@ -251,14 +252,14 @@ public class AvaritiaModelProvider implements DataProvider {
 
     private ItemModel.Unbaked infinityCrossbowModel(Identifier idleModel) {
         ItemModel.Unbaked idle = new AvaritiaItemModelLoaders.Cosmic(idleModel, List.of(mask("infinity_crossbow/standby_mask")));
-        ItemModel.Unbaked pull0 = cosmicHandheld("infinity_crossbow/pull_0", "item/tools/infinity_crossbow/pull_0", "infinity_crossbow/pull_0_mask");
-        ItemModel.Unbaked pull1 = cosmicHandheld("infinity_crossbow/pull_1", "item/tools/infinity_crossbow/pull_1", "infinity_crossbow/pull_1_mask");
-        ItemModel.Unbaked pull2 = cosmicHandheld("infinity_crossbow/pull_2", "item/tools/infinity_crossbow/pull_2", "infinity_crossbow/pull_2_mask");
+        ItemModel.Unbaked pull0 = cosmicCrossbow("infinity_crossbow/pull_0", "item/tools/infinity_crossbow/pull_0", "infinity_crossbow/pull_0_mask");
+        ItemModel.Unbaked pull1 = cosmicCrossbow("infinity_crossbow/pull_1", "item/tools/infinity_crossbow/pull_1", "infinity_crossbow/pull_1_mask");
+        ItemModel.Unbaked pull2 = cosmicCrossbow("infinity_crossbow/pull_2", "item/tools/infinity_crossbow/pull_2", "infinity_crossbow/pull_2_mask");
         ItemModel.Unbaked pulling = ItemModelUtils.rangeSelect(new ItemOverrideHandler.InfinityCrossbowPull(), idle,
                 ItemModelUtils.override(pull0, 0.05F),
                 ItemModelUtils.override(pull1, 0.58F),
                 ItemModelUtils.override(pull2, 1.0F));
-        ItemModel.Unbaked charged = cosmicHandheld("infinity_crossbow/standby", "item/tools/infinity_crossbow/standby", "infinity_crossbow/standby_mask");
+        ItemModel.Unbaked charged = cosmicCrossbow("infinity_crossbow/standby", "item/tools/infinity_crossbow/standby", "infinity_crossbow/standby_mask");
         return ItemModelUtils.conditional(new ItemOverrideHandler.InfinityCrossbowCharged(), charged, pulling);
     }
 
@@ -326,6 +327,10 @@ public class AvaritiaModelProvider implements DataProvider {
         return new AvaritiaItemModelLoaders.Cosmic(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
     }
 
+    private ItemModel.Unbaked cosmicCrossbow(String modelPath, String texturePath, String maskPath) {
+        return new AvaritiaItemModelLoaders.Cosmic(crossbowModel(modelPath, texturePath), List.of(mask(maskPath)));
+    }
+
     private ItemModel.Unbaked hellHandheld(String modelPath, String texturePath, String maskPath) {
         return new AvaritiaItemModelLoaders.Hell(flatModel(modelPath, texturePath, true), List.of(mask(maskPath)));
     }
@@ -353,6 +358,58 @@ public class AvaritiaModelProvider implements DataProvider {
         TextureMapping textures = new TextureMapping().put(TextureSlot.LAYER0, texture(Identifier.fromNamespaceAndPath(Const.MOD_ID, texturePath)));
         Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
         return ModelTemplates.BOW.create(model, textures, this.generatedModels::put);
+    }
+
+    private Identifier crossbowModel(String modelPath, String texturePath) {
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        String parent = "infinity_crossbow".equals(modelPath) ? "minecraft:item/generated" : Const.MOD_ID + ":item/infinity_crossbow";
+        this.generatedModels.put(model, () -> crossbowModelJson(parent, texturePath));
+        return model;
+    }
+
+    private JsonObject crossbowModelJson(String parent, String texturePath) {
+        JsonObject root = new JsonObject();
+        root.addProperty("parent", parent);
+
+        JsonObject textures = new JsonObject();
+        textures.addProperty("layer0", Const.MOD_ID + ":" + texturePath);
+        root.add("textures", textures);
+
+        if ("minecraft:item/generated".equals(parent)) {
+            JsonObject display = new JsonObject();
+            display.add("thirdperson_righthand", transform(new double[]{-90, 0, -60}, new double[]{2, 0.1, -3}, new double[]{0.9, 0.9, 0.9}));
+            display.add("thirdperson_lefthand", transform(new double[]{-90, 0, 30}, new double[]{2, 0.1, -3}, new double[]{0.9, 0.9, 0.9}));
+            display.add("firstperson_righthand", transform(new double[]{-90, 0, -55}, new double[]{1.13, 3.2, 1.13}, new double[]{0.68, 0.68, 0.68}));
+            display.add("firstperson_lefthand", transform(new double[]{-90, 0, 35}, new double[]{1.13, 3.2, 1.13}, new double[]{0.68, 0.68, 0.68}));
+            root.add("display", display);
+        }
+        return root;
+    }
+
+    private Identifier tridentModel(String modelPath, String texturePath) {
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        this.generatedModels.put(model, () -> tridentModelJson(texturePath));
+        return model;
+    }
+
+    private JsonObject tridentModelJson(String texturePath) {
+        JsonObject root = new JsonObject();
+        root.addProperty("parent", "minecraft:item/generated");
+
+        JsonObject textures = new JsonObject();
+        textures.addProperty("layer0", Const.MOD_ID + ":" + texturePath);
+        root.add("textures", textures);
+
+        JsonObject display = new JsonObject();
+        display.add("ground", transform(new double[]{0, 0, 0}, new double[]{4, 4, 2}, new double[]{0.5, 0.5, 0.5}));
+        display.add("fixed", transform(new double[]{0, 180, 0}, new double[]{0, 0, 0}, new double[]{1, 1, 1}));
+        display.add("gui", transform(new double[]{0, 0, 0}, new double[]{0, 0, 0}, new double[]{1, 1, 1}));
+        display.add("thirdperson_righthand", transform(new double[]{0, 60, 0}, new double[]{11, 17, -2}, new double[]{1, 1, 1}));
+        display.add("thirdperson_lefthand", transform(new double[]{0, 60, 0}, new double[]{-11, 17, 4}, new double[]{1, 1, 1}));
+        display.add("firstperson_righthand", transform(new double[]{0, -90, 25}, new double[]{-3, 17, 1}, new double[]{1, 1, 1}));
+        display.add("firstperson_lefthand", transform(new double[]{0, 90, -25}, new double[]{-15, 17, 1}, new double[]{1, 1, 1}));
+        root.add("display", display);
+        return root;
     }
 
     private Identifier shieldModel(String modelPath, boolean blocking) {

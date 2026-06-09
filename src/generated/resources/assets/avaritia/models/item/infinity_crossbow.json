@@ -1,6 +1,76 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "minecraft:item/generated",
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        35.0
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        -55.0
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        30.0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "translation": [
+        2.0,
+        0.1,
+        -3.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        -90.0,
+        0.0,
+        -60.0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "translation": [
+        2.0,
+        0.1,
+        -3.0
+      ]
+    }
+  },
   "textures": {
-    "layer0": "avaritia:item/tools/infinity_crossbow/idle"
+    "layer0": "avaritia:item/tools/infinity_crossbow/standby"
   }
 }

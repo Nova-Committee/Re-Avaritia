@@ -60,6 +60,7 @@ import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -69,9 +70,12 @@ import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -122,6 +126,15 @@ public class AvaritiaClient {
             return type == EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS
                     ? Const.rl("textures/models/armor/infinity_armor_layer_2.png")
                     : Const.rl("textures/models/armor/infinity_armor_layer_1.png");
+        }
+    };
+    private static final IClientItemExtensions INFINITY_CROSSBOW_EXTENSIONS = new IClientItemExtensions() {
+        @Override
+        public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
+            if (entity instanceof Player player && !player.swinging && CrossbowItem.isCharged(stack)) {
+                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
+            return null;
         }
     };
 
@@ -225,6 +238,7 @@ public class AvaritiaClient {
                 ModItems.infinity_chestplate.get(),
                 ModItems.infinity_pants.get(),
                 ModItems.infinity_boots.get());
+        event.registerItem(INFINITY_CROSSBOW_EXTENSIONS, ModItems.infinity_crossbow.get());
     }
 
     @SubscribeEvent

@@ -46,7 +46,6 @@ public class TraceArrowEntity extends Arrow {
     private static final List<String> PROJECTILE_ANTI_IMMUNE_ENTITIES = List.of("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
     private static final EntityDataAccessor<Integer> SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-    private final Entity owner = this.getOwner() == null ? this : this.getOwner();
     private LivingEntity homingTarget;
     private Vec3 seekOrigin;
     private int homingTime;
@@ -263,6 +262,7 @@ public class TraceArrowEntity extends Arrow {
                             return !(living instanceof Player) &&
                                     living.hasLineOfSight(this);
                         });
+                Entity owner = this.traceOwner();
                 this.homingTarget = serverLevel.getNearestEntity(LivingEntity.class, conditions, owner instanceof LivingEntity ? (LivingEntity) owner : null, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
                 if (this.homingTarget != null) {
                     Vec3 targetPos = this.homingTarget.getEyePosition();
@@ -307,16 +307,22 @@ public class TraceArrowEntity extends Arrow {
             if (level1 instanceof ServerLevel level) {
                 ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(ParticleTypes.SMOKE, true, false, this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F, 4.0F, 10);
 
+                Entity owner = this.traceOwner();
                 if (owner instanceof ServerPlayer player) {
                     player.connection.send(packet);
                 }
-                level.explode(this.getOwner() == null ? this : this.getOwner(), this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+                level.explode(owner, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
             }
 
             this.discard();
         } else {
             level1.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F);
         }
+    }
+
+    private Entity traceOwner() {
+        Entity owner = this.getOwner();
+        return owner == null ? this : owner;
     }
 
 }

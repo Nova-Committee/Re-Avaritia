@@ -168,7 +168,8 @@ public final class ItemOverrideHandler {
             if (entity == null || CrossbowItem.isCharged(stack) || !entity.isUsingItem() || entity.getUseItem() != stack) {
                 return 0.0F;
             }
-            return (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks()) / 20.0F;
+            int chargeDuration = CrossbowItem.getChargeDuration(stack, entity);
+            return chargeDuration <= 0 ? 0.0F : (float) (stack.getUseDuration(entity) - entity.getUseItemRemainingTicks()) / (float) chargeDuration;
         }
 
         @Override

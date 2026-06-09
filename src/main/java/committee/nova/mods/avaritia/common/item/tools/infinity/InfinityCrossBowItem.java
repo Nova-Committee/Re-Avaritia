@@ -111,16 +111,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             stack.remove(DataComponents.CHARGED_PROJECTILES);
             return InteractionResult.CONSUME;
         } else {
-            if (!level.isClientSide()) {
-                ItemStack ammo = findAmmo(player);
-
-                if (!ammo.isEmpty()) {
-                    stack.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(ItemStackTemplate.fromNonEmptyStack(ammo)));
-                } else {
-                    stack.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(ItemStackTemplate.fromNonEmptyStack(new ItemStack(Items.ARROW))));
-                }
-
-            }
             player.startUsingItem(hand);
             return InteractionResult.CONSUME;
         }
@@ -130,12 +120,30 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
 
     @Override
     public boolean releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
-        return false;
+        int useTicks = this.getUseDuration(stack, entity) - timeLeft;
+        float charge = (float) useTicks / (float) CrossbowItem.getChargeDuration(stack, entity);
+        if (charge < 1.0F || CrossbowItem.isCharged(stack)) {
+            return false;
+        }
+
+        if (!level.isClientSide() && entity instanceof Player player) {
+            loadInfinityProjectile(stack, player);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.CROSSBOW_LOADING_END.value(), SoundSource.PLAYERS, 1.0F,
+                    1.0F / (level.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
+        }
+        return true;
     }
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
-        return 10;
+        return CrossbowItem.getChargeDuration(stack, entity) + 3;
+    }
+
+    private void loadInfinityProjectile(@NotNull ItemStack crossbow, Player player) {
+        ItemStack ammo = findAmmo(player);
+        ItemStack projectile = ammo.isEmpty() ? new ItemStack(Items.ARROW) : ammo.copyWithCount(1);
+        crossbow.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(ItemStackTemplate.fromNonEmptyStack(projectile)));
     }
 
     private void performShooting(Level level, Player player, InteractionHand hand, ItemStack crossbow, float velocity, float inaccuracy) {

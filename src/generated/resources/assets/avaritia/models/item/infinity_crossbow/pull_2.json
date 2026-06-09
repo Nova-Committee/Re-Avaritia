@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "avaritia:item/infinity_crossbow",
   "textures": {
     "layer0": "avaritia:item/tools/infinity_crossbow/pull_2"
   }

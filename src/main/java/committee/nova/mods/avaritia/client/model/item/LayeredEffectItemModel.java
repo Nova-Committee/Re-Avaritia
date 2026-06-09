@@ -77,10 +77,13 @@ public final class LayeredEffectItemModel implements ItemModel {
             }
         }
 
-        // 必须先提交原始物品模型；后面的星空/halo/弧光都是覆盖层，而不是模型替代品。
-        this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
+        boolean tridentGeometry = shouldRenderTridentGeometry(displayContext);
+        // 三叉戟手持态使用 OBJ 实体层；GUI/地面/展示架仍使用原始 2D 图标。
+        if (!tridentGeometry) {
+            this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
+        }
 
-        if (shouldRenderTridentGeometry(displayContext)) {
+        if (tridentGeometry) {
             appendTridentLayer(renderState, displayContext);
         }
 
@@ -95,7 +98,7 @@ public final class LayeredEffectItemModel implements ItemModel {
         }
 
         // effectQuads 由 mask 烘焙而来，只在 mask 区域绘制动态星空/永恒等效果。
-        if (this.effect != null && !this.effectQuads.isEmpty()) {
+        if (shouldRenderEffectLayer(tridentGeometry)) {
             appendEffectLayer(renderState, displayContext, this.effect.createArgument(this.effectQuads, level, owner, displayContext, stack), this.effectExtents);
         }
 
@@ -138,6 +141,12 @@ public final class LayeredEffectItemModel implements ItemModel {
         return this.cosmicArc
                 && displayContext != ItemDisplayContext.GUI
                 && displayContext != ItemDisplayContext.GROUND;
+    }
+
+    private boolean shouldRenderEffectLayer(boolean tridentGeometry) {
+        return this.effect != null
+                && !this.effectQuads.isEmpty()
+                && !tridentGeometry;
     }
 
     private void appendHaloLayer(ItemStackRenderState renderState, ItemDisplayContext displayContext, HaloLayer halo) {
