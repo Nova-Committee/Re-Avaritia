@@ -3,7 +3,9 @@ package com.avaritia.client.shader;
 import com.avaritia.Const;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -15,6 +17,9 @@ import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
  * Registers Avaritia's custom effect render pipelines.
  */
 public class AvaritiaShaders {
+    private static final DepthStencilState EFFECT_OVERLAY_DEPTH =
+            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
+
     public static final float[] COSMIC_UVS = new float[40];
     public static TextureAtlasSprite[] COSMIC_SPRITES = new TextureAtlasSprite[10];
     public static final float[] ETERNAL_UVS = new float[40];
@@ -48,6 +53,7 @@ public class AvaritiaShaders {
                 .withSampler("Sampler2")
                 .withUniform(AvaritiaShaderUniforms.UNIFORM_NAME, UniformType.UNIFORM_BUFFER)
                 .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                .withDepthStencilState(EFFECT_OVERLAY_DEPTH)
                 .withCull(false)
                 .withVertexFormat(vertexFormat, mode)
                 .build();

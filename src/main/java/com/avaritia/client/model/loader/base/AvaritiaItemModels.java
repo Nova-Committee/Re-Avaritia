@@ -79,6 +79,7 @@ public final class AvaritiaItemModels {
     private static final TridentSpecialRenderer TRIDENT_RENDERER = new TridentSpecialRenderer();
     private static final ArcSpecialRenderer ARC_RENDERER = new ArcSpecialRenderer();
     private static final int PULSE_ALPHA_COLOR = 0x99FFFFFF;
+    private static final int ITEM_EFFECT_OVERLAY_SUBMIT_ORDER = 1;
     private static final float ITEM_EFFECT_OVERLAY_OPACITY = 0.65F;
 
     private AvaritiaItemModels() {
@@ -93,7 +94,7 @@ public final class AvaritiaItemModels {
 
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty(), true);
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty());
         }
 
         @Override
@@ -116,7 +117,7 @@ public final class AvaritiaItemModels {
 
         @Override
         public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty());
+            return bakeEffect(context, transformation, this.model, this.tints, this.mask, Effect.COSMIC, Optional.empty(), true);
         }
 
         @Override
@@ -397,10 +398,10 @@ public final class AvaritiaItemModels {
                 }
             }
 
+            this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
+
             if (shouldRenderTridentGeometry(displayContext)) {
                 appendTridentLayer(renderState, displayContext);
-            } else {
-                this.wrapped.update(renderState, stack, resolver, displayContext, level, owner, seed);
             }
 
             if (displayContext == ItemDisplayContext.GUI) {
@@ -724,16 +725,17 @@ public final class AvaritiaItemModels {
             }
 
             argument.applyUniforms();
-            submitNodeCollector.submitCustomGeometry(poseStack, argument.renderType(), (pose, buffer) -> {
-                QuadInstance instance = new QuadInstance();
-                instance.setColor(-1);
-                instance.setLightCoords(lightCoords);
-                instance.setOverlayCoords(overlayCoords);
+            submitNodeCollector.order(ITEM_EFFECT_OVERLAY_SUBMIT_ORDER)
+                    .submitCustomGeometry(poseStack, argument.renderType(), (pose, buffer) -> {
+                        QuadInstance instance = new QuadInstance();
+                        instance.setColor(-1);
+                        instance.setLightCoords(lightCoords);
+                        instance.setOverlayCoords(overlayCoords);
 
-                for (BakedQuad quad : argument.quads()) {
-                    buffer.putBakedQuad(pose, quad, instance);
-                }
-            });
+                        for (BakedQuad quad : argument.quads()) {
+                            buffer.putBakedQuad(pose, quad, instance);
+                        }
+                    });
         }
 
         @Override
@@ -778,7 +780,7 @@ public final class AvaritiaItemModels {
                 return this.renderType();
             }
             String name = "avaritia_" + this.name().toLowerCase(Locale.ROOT) + "_item_" + EFFECT_RENDER_TYPE_SEQUENCE.incrementAndGet();
-            return AvaritiaRenderTypeHelper.textured(name, pipeline, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+            return AvaritiaRenderTypeHelper.texturedForwardOffset(name, pipeline, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true);
         }
 
         private @Nullable RenderPipeline pipeline() {

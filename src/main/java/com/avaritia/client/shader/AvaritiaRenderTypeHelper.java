@@ -8,12 +8,23 @@ import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 /**
  * 26.1.2 渲染管线兼容工具。
  */
 public class AvaritiaRenderTypeHelper {
     public static RenderType textured(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay, boolean sortOnUpload, boolean viewOffset) {
+        return textured(name, pipeline, texture, lightmap, overlay, sortOnUpload,
+                viewOffset ? LayeringTransform.VIEW_OFFSET_Z_LAYERING : null);
+    }
+
+    public static RenderType texturedForwardOffset(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay, boolean sortOnUpload) {
+        return textured(name, pipeline, texture, lightmap, overlay, sortOnUpload, LayeringTransform.VIEW_OFFSET_Z_LAYERING_FORWARD);
+    }
+
+    private static RenderType textured(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay,
+                                       boolean sortOnUpload, @Nullable LayeringTransform layeringTransform) {
         RenderSetup.RenderSetupBuilder builder = RenderSetup.builder(pipeline).withTexture("Sampler0", texture);
         if (lightmap) {
             builder.useLightmap();
@@ -24,8 +35,8 @@ public class AvaritiaRenderTypeHelper {
         if (sortOnUpload) {
             builder.sortOnUpload();
         }
-        if (viewOffset) {
-            builder.setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING);
+        if (layeringTransform != null) {
+            builder.setLayeringTransform(layeringTransform);
         }
         return RenderType.create(name, builder.createRenderSetup());
     }
