@@ -2,6 +2,7 @@ package com.avaritia.common.crafting.recipe;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.common.crafting.input.ExtremeSmithingRecipeInput;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModRecipeSerializers;
@@ -153,10 +154,10 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
 
     private static final MapCodec<ExtremeSmithingRecipe> CODEC = RecordCodecBuilder.mapCodec(
             p_340782_ -> p_340782_.group(
-                            Ingredient.CODEC.fieldOf("template").forGetter(recipe -> recipe.template),
-                            Ingredient.CODEC.fieldOf("base").forGetter(recipe -> recipe.base),
-                            Ingredient.CODEC.fieldOf("addition").forGetter(recipe -> recipe.additions),
-                            ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
+                            RecipeCodecs.LEGACY_INGREDIENT.fieldOf("template").forGetter(recipe -> recipe.template),
+                            RecipeCodecs.LEGACY_INGREDIENT.fieldOf("base").forGetter(recipe -> recipe.base),
+                            RecipeCodecs.LEGACY_INGREDIENT.fieldOf("addition").forGetter(recipe -> recipe.additions),
+                            RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result)
                     )
                     .apply(p_340782_, ExtremeSmithingRecipe::new)
     );

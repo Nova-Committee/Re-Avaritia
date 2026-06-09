@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ICompressorRecipe;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.init.registry.ModBlocks;
 import com.avaritia.init.registry.ModRecipeSerializers;
 import com.avaritia.init.registry.ModRecipeTypes;
@@ -123,9 +124,9 @@ public class CompressorRecipe implements ICompressorRecipe {
     public static class Serializer {
         public static final MapCodec<CompressorRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
-                        Ingredient.CODEC
+                        RecipeCodecs.LEGACY_INGREDIENT
                                 .fieldOf("ingredient").forGetter(recipe -> recipe.input),
-                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("inputCount", 1000).forGetter(recipe -> recipe.inputCount),
                         Codec.INT.fieldOf("timeCost").forGetter(recipe -> recipe.timeCost)
                 ).apply(builder, CompressorRecipe::new)

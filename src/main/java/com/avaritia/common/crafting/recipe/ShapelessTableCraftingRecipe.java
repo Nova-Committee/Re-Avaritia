@@ -160,7 +160,7 @@ public class ShapelessTableCraftingRecipe implements ITierCraftingRecipe {
                         RecipeCodecs.ingredientList(81, false, "Combination recipe")
                                 .fieldOf("ingredients")
                                 .forGetter(recipe -> recipe.inputs),
-                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier)
                 ).apply(builder, ShapelessTableCraftingRecipe::new)
         );

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.avaritia.api.common.crafting.ITierCraftingRecipe;
+import com.avaritia.api.common.crafting.RecipeCodecs;
 import com.avaritia.api.common.crafting.ShapedRecipePatternCodecs;
 import com.avaritia.api.common.crafting.TierInput;
 import com.avaritia.api.utils.java.TriFunction;
@@ -212,7 +213,7 @@ public class ShapedTableCraftingRecipe implements ITierCraftingRecipe {
         public static final MapCodec<ShapedTableCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
                 builder.group(
                         ShapedRecipePatternCodecs.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                        ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        RecipeCodecs.LEGACY_ITEM_STACK_TEMPLATE.fieldOf("result").forGetter(recipe -> recipe.result),
                         Codec.INT.optionalFieldOf("tier", 0).forGetter(recipe -> recipe.tier),
                         Codec.BOOL.optionalFieldOf("compatible", false).forGetter(recipe -> recipe.compatible)
                         ).apply(builder, ShapedTableCraftingRecipe::new)
