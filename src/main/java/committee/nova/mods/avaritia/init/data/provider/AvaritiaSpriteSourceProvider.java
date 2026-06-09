@@ -22,10 +22,14 @@ public class AvaritiaSpriteSourceProvider extends SpriteSourceProvider {
         atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("misc", "misc/"));
         atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("models", "models/"));
         atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("mask", "mask/"));
-        // ChestModel 遵循原版箱子的专用 chest atlas；源文件仍复用现有 block/chest 贴图。
+        addChestSprite("compressed_chest");
+        addChestSprite("infinity_chest");
+    }
+
+    private void addChestSprite(String name) {
         atlas(AtlasIds.CHESTS).addSource(new SingleFile(
-                Const.rl("block/chest/infinity_chest"),
-                Optional.of(Const.rl("entity/chest/infinity_chest"))
+                Const.rl("block/chest/" + name),
+                Optional.of(Const.rl("entity/chest/" + name))
         ));
     }
 }

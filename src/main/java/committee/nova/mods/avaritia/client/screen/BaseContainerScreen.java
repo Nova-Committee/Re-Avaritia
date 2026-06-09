@@ -18,6 +18,8 @@ import java.text.NumberFormat;
  * 26.1.2-compatible base screen for Avaritia container GUIs.
  */
 public abstract class BaseContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements ContainerListener {
+    protected static final int LABEL_COLOR = 0xFF404040;
+
     protected final Identifier bgTexture;
     protected final int bgImgWidth;
     protected final int bgImgHeight;
@@ -97,7 +99,8 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     protected void renderLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        super.extractLabels(graphics, mouseX, mouseY);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
     }
 
     @Override

@@ -56,8 +56,8 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
     protected void renderLabels(@NotNull GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.text(font, title, (176 / 2 - this.font.width(title) / 2), 6, 4210752, false);
-        stack.text(font, this.playerInventoryTitle, 8, 166 - 94, 4210752, false);
+        stack.text(font, title, (176 / 2 - this.font.width(title) / 2), 6, LABEL_COLOR, false);
+        stack.text(font, this.playerInventoryTitle, 8, 166 - 94, LABEL_COLOR, false);
     }
 
     @Override

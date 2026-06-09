@@ -16,7 +16,7 @@ public class NetherCraftScreen extends BaseContainerScreen<TierCraftMenu> {
     protected void renderLabels(GuiGraphicsExtractor stack, int mouseX, int mouseY) {
         var title = this.getTitle().getString();
 
-        stack.text(font, title, 8, 6, 4210752, false);
-        stack.text(font, this.playerInventoryTitle, 10, 112, 4210752, false);
+        stack.text(font, title, 8, 6, LABEL_COLOR, false);
+        stack.text(font, this.playerInventoryTitle, 10, 112, LABEL_COLOR, false);
     }
 }

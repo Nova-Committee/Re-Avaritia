@@ -17,6 +17,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public abstract class BaseContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements ContainerListener, IDataReceiver {
+    protected static final int LABEL_COLOR = 0xFF404040;
+
     protected final Identifier bgTexture;
     protected final int bgImgWidth;
     protected final int bgImgHeight;
@@ -80,7 +82,8 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
     }
 
     protected void renderLabels(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY) {
-        super.extractLabels(pGuiGraphics, pMouseX, pMouseY);
+        pGuiGraphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
+        pGuiGraphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, LABEL_COLOR, false);
     }
 
     @Override

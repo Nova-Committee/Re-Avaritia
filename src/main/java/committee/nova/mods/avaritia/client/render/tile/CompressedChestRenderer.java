@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.client.render.tile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.block.chest.CompressedChestBlock;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -40,7 +41,7 @@ import org.jetbrains.annotations.NotNull;
  * @Description:
  */
 public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> implements BlockEntityRenderer<T, CompressedChestRenderer.State> {
-    private static final SpriteId COMPRESSED_CHEST_SPRITE = Sheets.BLOCKS_MAPPER.apply(Const.rl("chest/compressed_chest"));
+    private static final SpriteId COMPRESSED_CHEST_SPRITE = Sheets.CHEST_MAPPER.apply(Const.rl("compressed_chest"));
 
     private final ModelPart lid;
     private final ModelPart bottom;
@@ -108,7 +109,7 @@ public class CompressedChestRenderer<T extends BlockEntity & LidBlockEntity> imp
         boolean flag = level != null;
         BlockState blockstate = flag ? pBlockEntity.getBlockState() : Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.SOUTH);
         state.chestType = blockstate.hasProperty(ChestBlock.TYPE) ? blockstate.getValue(ChestBlock.TYPE) : ChestType.SINGLE;
-        state.facing = blockstate.getValue(ChestBlock.FACING);
+        state.facing = blockstate.hasProperty(CompressedChestBlock.FACING) ? blockstate.getValue(CompressedChestBlock.FACING) : Direction.SOUTH;
         state.sprite = getSprite(pBlockEntity, state.chestType);
         Block block = blockstate.getBlock();
         if (block instanceof AbstractChestBlock<?> abstractchestblock) {

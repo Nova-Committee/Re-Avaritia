@@ -229,7 +229,7 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        graphics.centeredText(font, title, width / 2, 20, 0xFFFFFF);
+        graphics.centeredText(font, title, width / 2, 20, 0xFFFFFFFF);
 
         for (int i = 0; i < configEntries.size(); i++) {
             ConfigEntry<?> entry = configEntries.get(i);
@@ -365,7 +365,7 @@ public class AvaritiaConfigScreen extends Screen {
 
         @Override
         void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
-            graphics.text(font, title, x, y + 5, 0xFFFFA0);
+            graphics.text(font, title, x, y + 5, 0xFFFFFFA0);
             graphics.fill(x, y + 20, x + width, y + 22, 0xFFA0A0A0);
         }
 
@@ -393,10 +393,10 @@ public class AvaritiaConfigScreen extends Screen {
 
         @Override
         void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
-            graphics.text(font, title, x, y + 5, 0xFFFFFF);
+            graphics.text(font, title, x, y + 5, 0xFFFFFFFF);
             List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
             for (int i = 0; i < wrappedDesc.size(); i++) {
-                graphics.text(font, wrappedDesc.get(i), x, y + 20 + i * 10, 0xAAAAAA);
+                graphics.text(font, wrappedDesc.get(i), x, y + 20 + i * 10, 0xFFAAAAAA);
             }
         }
 
@@ -453,10 +453,10 @@ public class AvaritiaConfigScreen extends Screen {
 
         @Override
         void extract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, int yPos, int width, int height, Font font) {
-            graphics.text(font, title, x, yPos + 5, 0xFFFFFF);
+            graphics.text(font, title, x, yPos + 5, 0xFFFFFFFF);
             List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
             for (int i = 0; i < wrappedDesc.size(); i++) {
-                graphics.text(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
+                graphics.text(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xFFAAAAAA);
             }
         }
 

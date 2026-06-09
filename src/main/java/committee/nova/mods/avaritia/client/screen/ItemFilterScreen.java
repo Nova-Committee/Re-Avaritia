@@ -92,8 +92,8 @@ public class ItemFilterScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         updateScrollbarMetrics();
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        graphics.centeredText(font, title, width / 2, panelY + 8, 0xFFFFFF);
-        graphics.text(font, Component.translatable("gui.avaritia.item_filter.count", filterItems.size()), panelX + 8, panelY + PANEL_HEIGHT - 48, 0xCFCFCF);
+        graphics.centeredText(font, title, width / 2, panelY + 8, 0xFFFFFFFF);
+        graphics.text(font, Component.translatable("gui.avaritia.item_filter.count", filterItems.size()), panelX + 8, panelY + PANEL_HEIGHT - 48, 0xFFCFCFCF);
 
         for (int row = 0; row < ROWS; row++) {
             for (int column = 0; column < COLUMNS; column++) {

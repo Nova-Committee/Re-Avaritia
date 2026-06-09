@@ -15,6 +15,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMenu> {
+    private static final int LABEL_COLOR = 0xFF404040;
+
     public InfinityChestScreen(InfinityChestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 500, 275);
     }
@@ -27,8 +29,8 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        graphics.text(this.font, this.playerInventoryTitle, 170, this.imageHeight - 94, 4210752, false);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, LABEL_COLOR, false);
+        graphics.text(this.font, this.playerInventoryTitle, 170, this.imageHeight - 94, LABEL_COLOR, false);
     }
 
     @Override
