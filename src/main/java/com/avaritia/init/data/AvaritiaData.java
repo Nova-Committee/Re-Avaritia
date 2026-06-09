@@ -49,6 +49,7 @@ public class AvaritiaData {
         // 1. 语言文件提供程序
         generator.addProvider(true, new AvaritiaLanguageProvider(packOutput, "en_us"));
         generator.addProvider(true, new AvaritiaZhCnLanguageProvider(packOutput));
+        generator.addProvider(true, new AvaritiaZhTwLanguageProvider(packOutput));
 
         // 2. 物品与方块模型提供程序
         generator.addProvider(true, new AvaritiaModelProvider(packOutput));

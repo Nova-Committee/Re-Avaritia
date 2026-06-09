@@ -2,20 +2,12 @@ package com.avaritia.init.handler;
 
 import com.avaritia.Const;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.PackLocationInfo;
-import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
-import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  * @author cnlimiter
@@ -24,24 +16,15 @@ import java.util.Optional;
 public class PackResourceHandler {
     @SubscribeEvent
     public static void addPackFinders(final AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            var modFile = net.neoforged.fml.ModList.get().getModFileById(Const.MOD_ID).getFile();
-            Path resourcePath = modFile.getContents().getContentRoots().stream()
-                    .map(root -> root.resolve("resourcepacks/avaritia"))
-                    .filter(Files::exists)
-                    .findFirst()
-                    .orElseGet(() -> modFile.getFilePath().resolve("resourcepacks/avaritia"));
-            var supplier = new PathPackResources.PathResourcesSupplier(resourcePath);
-
-            event.addRepositorySource(packConsumer -> {
-                final PackLocationInfo packInfo = new PackLocationInfo(
-                        "builtin/avaritia_vanilla",
-                        Component.translatable("title.avaritia.resourcepack"),
-                        PackSource.BUILT_IN,
-                        Optional.of(new KnownPack(Const.MOD_ID, "builtin/avaritia_vanilla", "1.0")));
-                final PackSelectionConfig selectionConfig = new PackSelectionConfig(false, Pack.Position.TOP, false);
-                packConsumer.accept(Pack.readMetaAndCreate(packInfo, supplier, PackType.CLIENT_RESOURCES, selectionConfig));
-            });
-        }
+        // 内置资源包位于 jar 的 resources/ 目录下，必须交给 NeoForge 的 helper 读取 jar 内容。
+        // 直接把 jar 内路径当成普通 Path 会导致打包启动时读取不到 pack.mcmeta，并向仓库提交 null pack。
+        event.addPackFinders(
+                Const.rl("resourcepacks/avaritia"),
+                PackType.CLIENT_RESOURCES,
+                Component.translatable("title.avaritia.resourcepack"),
+                PackSource.BUILT_IN,
+                false,
+                Pack.Position.TOP
+        );
     }
 }
