@@ -1,1 +1,1 @@
-com.avaritia.compat.kubejs.AvaritiaKubeJSPlugin
+committee.nova.mods.avaritia.compat.kubejs.AvaritiaKubeJSPlugin
