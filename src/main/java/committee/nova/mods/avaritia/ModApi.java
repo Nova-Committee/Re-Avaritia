@@ -60,13 +60,11 @@ public class ModApi {
         if (!singularity.hasIngredient())
             return null;
 
-        var id = singularity.getRegistryName();
-        var recipeId = Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_singularity");
         var output = SingularityUtils.getItemForSingularity(singularity);
         int ingredientCount = singularity.getCount();
         int timeRequired = singularity.getTimeCost();
 
-        return new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, recipeId), new CompressorRecipe(ingredient, output, ingredientCount, timeRequired));
+        return new RecipeHolder<>(singularity.getRecipeKey(), new CompressorRecipe(ingredient, output, ingredientCount, timeRequired));
     }
 
     /**

@@ -25,8 +25,8 @@ public class DataPackSyncHandler {
         );
 
         ServerPlayer player = event.getPlayer();
-        var message = new S2CSingularitiesPacket(SingularityReloadListener.INSTANCE.getDataSingularities().values(),
-                SingularityReloadListener.INSTANCE.getRunSingularities().values());
+        // 同步原始奇点来源和脚本覆盖状态，客户端再通过快照得到与服务端一致的有效视图。
+        var message = S2CSingularitiesPacket.from(SingularityReloadListener.INSTANCE);
         if (player != null) {
             PacketDistributor.sendToPlayer(player, message);
         } else {

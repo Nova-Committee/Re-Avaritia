@@ -658,11 +658,11 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
         save(output, "compressor_matter_cluster", new CompressorRecipe(Ingredient.of(ModItems.neutron_ingot.get()), template(ModItems.full_matter_cluster.get()), 4096, 240),
                 RecipeCategory.MISC, "has_neutron_ingot", has(ModItems.neutron_ingot.get()));
         for (Singularity singularity : ModSingularities.getDefaults()) {
-            // 条件标签奇点在 datagen 阶段可能判定为空，但仍需要输出带条件的配方 JSON。
+            // 条件标签类奇点在 datagen 阶段可能暂时没有实际物品，但仍要输出带条件的配方 JSON。
             if (!singularity.isEnabled() || !singularity.isRecipeEnabled() || singularity.getIngredient() == null) {
                 continue;
             }
-            saveWithConditions(output, key(singularity.getRegistryName().getPath() + "_singularity"),
+            saveWithConditions(output, singularity.getRecipeKey(),
                     new CompressorRecipe(singularity.getIngredient(), singularityTemplate(singularity),
                             singularity.getCount(), singularity.getTimeCost()),
                     RecipeCategory.MISC, "has_neutron_compressor", has(ModBlocks.neutron_compressor.get()),

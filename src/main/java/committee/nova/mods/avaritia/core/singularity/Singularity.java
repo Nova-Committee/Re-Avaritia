@@ -2,15 +2,17 @@ package committee.nova.mods.avaritia.core.singularity;
 
 import committee.nova.mods.avaritia.Const;
 
-import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -79,6 +81,25 @@ public class Singularity {
 
     public Identifier getRegistryName() {
         return this.registryName;
+    }
+
+    public Identifier getRecipeId() {
+        return recipeId(this.registryName);
+    }
+
+    public ResourceKey<Recipe<?>> getRecipeKey() {
+        return recipeKey(this.registryName);
+    }
+
+    /**
+     * 默认压缩机配方 ID 始终由奇点 ID 派生，脚本移除和运行时生成必须共用这条规则。
+     */
+    public static Identifier recipeId(Identifier singularityId) {
+        return Identifier.fromNamespaceAndPath(singularityId.getNamespace(), singularityId.getPath() + "_singularity");
+    }
+
+    public static ResourceKey<Recipe<?>> recipeKey(Identifier singularityId) {
+        return ResourceKey.create(Registries.RECIPE, recipeId(singularityId));
     }
 
     public String getDisplayName() {
@@ -168,6 +189,20 @@ public class Singularity {
     public Singularity addCondition(ICondition condition) {
         this.conditions.add(condition);
         return this;
+    }
+
+    /**
+     * 快照会按脚本覆盖生成副本，避免查询奇点列表时修改数据包或脚本注册的原始对象。
+     */
+    public Singularity copy() {
+        Singularity copy = new Singularity(this.registryName, this.displayName, this.overlayColor, this.underlayColor,
+                this.count, this.timeCost, this.ingredient, this.enabled, this.recipeEnabled);
+        copy.setConditions(new CopyOnWriteArrayList<>(this.conditions));
+        return copy;
+    }
+
+    public Singularity copyWithRecipeEnabled(boolean recipeEnabled) {
+        return this.copy().setRecipeEnabled(recipeEnabled);
     }
 
     public static Singularity create(Identifier registryName, String displayName, int[] colors, Ingredient ingredient, ICondition condition) {
