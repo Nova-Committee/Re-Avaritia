@@ -40,6 +40,8 @@ public class AvaritiaRenderTypes {
 
     public static RenderType UNSTABLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("unstable", RenderUtils.COSMIC_TEXTURE_ISOLATED);
 
+    public static RenderType BLACK_HOLE = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("black_hole", Res.VOID);
+
     public static RenderType TRIDENT = AvaritiaRenderTypeHelper.entityCutoutNoCull("infinity_trident", Res.TRIDENT_TEX);
 
     public static void reloadEffectTypes() {
@@ -48,5 +50,6 @@ public class AvaritiaRenderTypes {
         HELL = AvaritiaRenderTypeHelper.textured("hell", AvaritiaShaders.HELL_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
         ETERNAL = AvaritiaRenderTypeHelper.textured("eternal", AvaritiaShaders.ETERNAL_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
         UNSTABLE = AvaritiaRenderTypeHelper.textured("unstable", AvaritiaShaders.UNSTABLE_SHADER, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, true);
+        BLACK_HOLE = AvaritiaRenderTypeHelper.textured("black_hole", AvaritiaShaders.BLACK_HOLE_SHADER, Res.VOID, true, true, true, true);
     }
 }

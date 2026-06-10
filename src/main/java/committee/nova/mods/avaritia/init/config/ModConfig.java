@@ -24,6 +24,7 @@ public class ModConfig {
     public static final ModConfigSpec.DoubleValue growthSoulFarmland;
     public static final ModConfigSpec.IntValue bladeSlashDamage;
     public static final ModConfigSpec.IntValue bladeSlashRadius;
+    public static final ModConfigSpec.IntValue endestPearlAbsorptionLimit;
 
     public static final ModConfigSpec.IntValue neutronPileEmc;
     public static final ModConfigSpec.IntValue blazeCubeEmc;
@@ -64,6 +65,7 @@ public class ModConfig {
         growthSoulFarmland = buildDouble(common, "Growth soul farmland rate", 0.8, 0.0, 1.0, "Growth soul farmland rate");
         bladeSlashDamage = buildInt(common, "BladeSlash Damage", 200, 0, Integer.MAX_VALUE, "Damage of BladeSlash for Crystal Sword");
         bladeSlashRadius = buildInt(common, "BladeSlash Radius", 10, 5, 100, "Radius of BladeSlash for Crystal Sword");
+        endestPearlAbsorptionLimit = buildInt(common, "config.avaritia.endest_pearl_absorption_limit", 256, 16, 4096, "config.avaritia.endest_pearl_absorption_limit.tooltip");
         common.pop();
 
         common.push("emc");

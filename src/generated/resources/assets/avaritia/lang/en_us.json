@@ -149,6 +149,8 @@
   "config.avaritia.channel_full_update_rate.tooltip": "Full update rate for channels",
   "config.avaritia.chest_max_item_size": "Chest Max Item Size",
   "config.avaritia.chest_max_item_size.tooltip": "Define the maximum number of item types that can be stored in an Infinity Chest",
+  "config.avaritia.endest_pearl_absorption_limit": "Endest Pearl Absorption Limit",
+  "config.avaritia.endest_pearl_absorption_limit.tooltip": "Matter units absorbed before the Endest Pearl black hole evaporates",
   "config.avaritia.endless_item_entity_range": "Endless Item Range",
   "config.avaritia.endless_item_entity_range.tooltip": "Tracking endless item range",
   "config.avaritia.endless_item_entity_speed": "Endless Item Speed",

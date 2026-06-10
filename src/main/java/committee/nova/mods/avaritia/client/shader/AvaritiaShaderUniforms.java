@@ -98,7 +98,8 @@ public final class AvaritiaShaderUniforms {
         COSMIC_ARMOR,
         HELL,
         ETERNAL,
-        UNSTABLE;
+        UNSTABLE,
+        BLACK_HOLE;
 
         private static @Nullable Effect fromPipeline(@Nullable RenderPipeline pipeline) {
             if (pipeline == AvaritiaShaders.COSMIC_SHADER) {
@@ -115,6 +116,9 @@ public final class AvaritiaShaderUniforms {
             }
             if (pipeline == AvaritiaShaders.UNSTABLE_SHADER) {
                 return UNSTABLE;
+            }
+            if (pipeline == AvaritiaShaders.BLACK_HOLE_SHADER) {
+                return BLACK_HOLE;
             }
             return null;
         }

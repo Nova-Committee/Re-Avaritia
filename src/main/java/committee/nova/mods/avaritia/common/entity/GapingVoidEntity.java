@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.entity;
 
 import com.google.common.base.Predicate;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModSounds;
@@ -45,7 +46,16 @@ public class GapingVoidEntity extends Entity {
 
     private static final GameProfile AVARITIA_FAKE_PLAYER = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
     public static final EntityDataAccessor<Integer> AGE_PARAMETER = SynchedEntityData.defineId(GapingVoidEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> ABSORBED_MATTER_PARAMETER = SynchedEntityData.defineId(GapingVoidEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> ABSORPTION_LIMIT_PARAMETER = SynchedEntityData.defineId(GapingVoidEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> EVAPORATING_PARAMETER = SynchedEntityData.defineId(GapingVoidEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int maxLifetime = 186;
+    private static final int DEFAULT_ABSORPTION_LIMIT = 256;
+    private static final int EVAPORATION_TICKS = 42;
+    private static final int EVAPORATION_START_AGE = maxLifetime - EVAPORATION_TICKS;
+    private static final int ENTITY_ABSORPTION_UNITS = 12;
+    private static final int BOSS_ABSORPTION_UNITS = 64;
+    private static final int BLOCK_ABSORPTION_UNITS = 1;
     public static final Predicate<Entity> SUCK_PREDICATE = input -> {
         if (input instanceof Player p) {
             return !p.isCreative() || !p.isFallFlying();
@@ -86,15 +96,19 @@ public class GapingVoidEntity extends Entity {
     }
 
     public static double getVoidScale(double age) {
-        double life = age / (double) maxLifetime;
-
         double curve;
-        if (life < collapse) {
-            curve = 0.005 + ease(1 - ((collapse - life) / collapse)) * 0.995;
+        if (age < EVAPORATION_START_AGE) {
+            double growth = Math.max(0.0, Math.min(1.0, age / (double) EVAPORATION_START_AGE));
+            curve = 0.005 + ease(growth) * 0.995;
         } else {
-            curve = ease(1 - ((life - collapse) / (1 - collapse)));
+            double evaporation = Math.max(0.0, Math.min(1.0, (age - EVAPORATION_START_AGE) / (double) EVAPORATION_TICKS));
+            curve = ease(1.0 - evaporation);
         }
         return 10.0 * curve;
+    }
+
+    public static float getEvaporationProgress(double age) {
+        return (float) Math.max(0.0, Math.min(1.0, (age - EVAPORATION_START_AGE) / (double) EVAPORATION_TICKS));
     }
 
     private static double ease(double in) {
@@ -110,18 +124,88 @@ public class GapingVoidEntity extends Entity {
         return this.entityData.get(AGE_PARAMETER);
     }
 
+    public int getAbsorbedMatter() {
+        return this.entityData.get(ABSORBED_MATTER_PARAMETER);
+    }
+
+    public int getAbsorptionLimit() {
+        return Math.max(1, this.entityData.get(ABSORPTION_LIMIT_PARAMETER));
+    }
+
+    public boolean isEvaporating() {
+        return this.entityData.get(EVAPORATING_PARAMETER);
+    }
+
+    public float getAbsorptionProgress() {
+        return (float) Math.min(1.0, getAbsorbedMatter() / (double) getAbsorptionLimit());
+    }
+
     private void setAge(int age) {
         this.entityData.set(AGE_PARAMETER, age);
+    }
+
+    private void setAbsorbedMatter(int amount) {
+        this.entityData.set(ABSORBED_MATTER_PARAMETER, Math.max(0, amount));
+    }
+
+    private void setAbsorptionLimit(int limit) {
+        this.entityData.set(ABSORPTION_LIMIT_PARAMETER, Math.max(1, limit));
+    }
+
+    private void setEvaporating(boolean evaporating) {
+        this.entityData.set(EVAPORATING_PARAMETER, evaporating);
+    }
+
+    private void absorbMatter(int amount) {
+        if (amount <= 0 || level().isClientSide()) {
+            return;
+        }
+
+        int limit = getAbsorptionLimit();
+        int absorbed = Math.min(limit, getAbsorbedMatter() + amount);
+        setAbsorbedMatter(absorbed);
+        if (absorbed >= limit) {
+            startEvaporation();
+        }
+    }
+
+    private int absorptionUnits(Entity entity) {
+        return entity instanceof EnderDragon || entity instanceof WitherBoss ? BOSS_ABSORPTION_UNITS : ENTITY_ABSORPTION_UNITS;
+    }
+
+    private void startEvaporation() {
+        if (!isEvaporating()) {
+            setEvaporating(true);
+        }
+        if (getAge() < EVAPORATION_START_AGE) {
+            setAge(EVAPORATION_START_AGE);
+        }
+    }
+
+    private void syncConfig(ServerLevel level) {
+        int limit = ModConfig.endestPearlAbsorptionLimit.get();
+        if (limit != getAbsorptionLimit()) {
+            setAbsorptionLimit(limit);
+        }
+        if (fakePlayer == null) {
+            fakePlayer = FakePlayerFactory.get(level, AVARITIA_FAKE_PLAYER);
+        }
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         builder.define(AGE_PARAMETER, 0);
+        builder.define(ABSORBED_MATTER_PARAMETER, 0);
+        builder.define(ABSORPTION_LIMIT_PARAMETER, DEFAULT_ABSORPTION_LIMIT);
+        builder.define(EVAPORATING_PARAMETER, false);
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         setAge(input.getIntOr("age", 0));
+        setAbsorbedMatter(input.getIntOr("absorbed_matter", 0));
+        setAbsorptionLimit(input.getIntOr("absorption_limit", DEFAULT_ABSORPTION_LIMIT));
+        setEvaporating(input.getBooleanOr("evaporating", false));
         if (level() instanceof ServerLevel) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) level(), AVARITIA_FAKE_PLAYER);
         }
@@ -130,6 +214,9 @@ public class GapingVoidEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("age", getAge());
+        output.putInt("absorbed_matter", getAbsorbedMatter());
+        output.putInt("absorption_limit", getAbsorptionLimit());
+        output.putBoolean("evaporating", isEvaporating());
 
     }
 
@@ -141,6 +228,10 @@ public class GapingVoidEntity extends Entity {
         BlockPos position = this.getOnPos();
         int age = getAge();
 
+        if (level() instanceof ServerLevel serverLevel) {
+            syncConfig(serverLevel);
+        }
+
         if (age >= maxLifetime && !level().isClientSide()) {
             level().explode(this, posX, posY, posZ, 6.0f, Level.ExplosionInteraction.BLOCK);
             int range = 4;
@@ -150,14 +241,13 @@ public class GapingVoidEntity extends Entity {
                     .filter(entity -> entity != this)
                     .forEach(entity -> {
                         if (entity instanceof EnderDragon dragon && level() instanceof ServerLevel serverLevel) {
-                            dragon.hurt(serverLevel, dragon.head, ModDamageTypes.source(user), 1000.0f);
+                            dragon.hurt(serverLevel, dragon.head, voidDamageSource(), 1000.0f);
                             dragon.setHealth(0);
                         } else if (entity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
-                            damageEntity(wither, ModDamageTypes.source(user), 1000.0f);
+                            damageEntity(wither, voidDamageSource(), 1000.0f);
                         } else {
-                            var damageSource = user != null ? ModDamageTypes.source(user) : this.damageSources().fellOutOfWorld();
-                            damageEntity(entity, damageSource, 1000.0f);
+                            damageEntity(entity, voidDamageSource(), 1000.0f);
                         }
                     });
             remove(RemovalReason.KILLED);
@@ -230,10 +320,12 @@ public class GapingVoidEntity extends Entity {
                 double len = diff.length();
 
                 if (len <= nomrange) {
+                    DamageSource source = this.damageSources().fellOutOfWorld();
                     if (nommee instanceof EnderDragon dragon && level() instanceof ServerLevel serverLevel) {
-                        dragon.hurt(serverLevel, dragon.head, this.damageSources().fellOutOfWorld(), 5.0f);
+                        dragon.hurt(serverLevel, dragon.head, source, 5.0f);
                     }
-                    damageEntity(nommee, this.damageSources().fellOutOfWorld(), 5.0f);
+                    damageEntity(nommee, source, 5.0f);
+                    absorbMatter(absorptionUnits(nommee));
                 }
             }
         }
@@ -265,6 +357,7 @@ public class GapingVoidEntity extends Entity {
                                 if (resist <= 10.0) {
                                     state.getBlock().dropFromExplosion(null);
                                     level().setBlock(blockPos, Blocks.AIR.defaultBlockState(), 2);
+                                    absorbMatter(BLOCK_ABSORPTION_UNITS);
                                 }
                             }
                         }
@@ -287,6 +380,10 @@ public class GapingVoidEntity extends Entity {
     @Override
     public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float amount) {
         return false;
+    }
+
+    private DamageSource voidDamageSource() {
+        return user != null ? ModDamageTypes.source(user) : this.damageSources().fellOutOfWorld();
     }
 
     private void damageEntity(Entity entity, net.minecraft.world.damagesource.DamageSource source, float amount) {

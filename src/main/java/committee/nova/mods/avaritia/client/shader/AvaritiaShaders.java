@@ -30,6 +30,7 @@ public class AvaritiaShaders {
     public static RenderPipeline HELL_SHADER;
     public static RenderPipeline ETERNAL_SHADER;
     public static RenderPipeline UNSTABLE_SHADER;
+    public static RenderPipeline BLACK_HOLE_SHADER;
 
     public static void onRegisterShaders(RegisterRenderPipelinesEvent event) {
         COSMIC_SHADER = registerPipeline(event, "cosmic", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
@@ -37,6 +38,7 @@ public class AvaritiaShaders {
         HELL_SHADER = registerPipeline(event, "hell", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
         ETERNAL_SHADER = registerPipeline(event, "eternal", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
         UNSTABLE_SHADER = registerPipeline(event, "unstable", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
+        BLACK_HOLE_SHADER = registerPipeline(event, "black_hole", DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS);
         AvaritiaRenderTypes.reloadEffectTypes();
     }
 

@@ -55,6 +55,8 @@ public class AvaritiaZhCnLanguageProvider extends LanguageProvider {
         add("title.avaritia.config.title", "Re:Avaritia");
         add("title.avaritia.item_filter", "无尽工具过滤器");
         add("title.avaritia.item_select", "选择物品");
+        add("config.avaritia.endest_pearl_absorption_limit", "终望珍珠吸收上限");
+        add("config.avaritia.endest_pearl_absorption_limit.tooltip", "终望珍珠形成的黑洞在蒸发前可吸收的物质量");
 
         add("attribute.name.generic.flying_speed", "飞行速度");
         add("attribute.name.generic.movement_speed", "移动速度");

@@ -461,6 +461,8 @@ public class AvaritiaLanguageProvider extends LanguageProvider {
         add("config.avaritia.blade_slash_damage.tooltip", "Damage of Blade Slash for Crystal Sword");
         add("config.avaritia.blade_slash_radius", "Blade Slash Radius");
         add("config.avaritia.blade_slash_radius.tooltip", "Radius of Blade Slash for Crystal Sword");
+        add("config.avaritia.endest_pearl_absorption_limit", "Endest Pearl Absorption Limit");
+        add("config.avaritia.endest_pearl_absorption_limit.tooltip", "Matter units absorbed before the Endest Pearl black hole evaporates");
         add("config.avaritia.boot_speed_backward_multiplier", "Boots Backward Multiplier");
         add("config.avaritia.boot_speed_backward_multiplier.tooltip", "Infinity Boots speed multiplier when moving backward");
         add("config.avaritia.boot_speed_base", "Boots Base Speed");

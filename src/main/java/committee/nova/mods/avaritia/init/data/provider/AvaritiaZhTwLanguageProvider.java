@@ -14,6 +14,7 @@ public class AvaritiaZhTwLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         addBlocks();
         addItems();
+        addConfigTexts();
     }
 
     private void addBlocks() {
@@ -109,5 +110,10 @@ public class AvaritiaZhTwLanguageProvider extends LanguageProvider {
         add("item.avaritia.star_fuel", "恆星燃料");
         add("item.avaritia.ultimate_stew", "超級煲");
         add("item.avaritia.upgrade_smithing_template", "羽化模板");
+    }
+
+    private void addConfigTexts() {
+        add("config.avaritia.endest_pearl_absorption_limit", "終望珍珠吸收上限");
+        add("config.avaritia.endest_pearl_absorption_limit.tooltip", "終望珍珠形成的黑洞在蒸發前可吸收的物質量");
     }
 }

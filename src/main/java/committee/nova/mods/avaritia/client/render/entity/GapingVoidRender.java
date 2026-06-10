@@ -1,13 +1,9 @@
 package committee.nova.mods.avaritia.client.render.entity;
 
-import committee.nova.mods.avaritia.Const;
-
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.util.color.Color;
-import committee.nova.mods.avaritia.api.client.util.color.ColorRGBA;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
-import committee.nova.mods.avaritia.client.render.mesh.SimpleObjMeshLoader;
 import committee.nova.mods.avaritia.client.shader.AvaritiaRenderTypes;
+import committee.nova.mods.avaritia.client.shader.AvaritiaShaderUniforms;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -21,19 +17,17 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 
 public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoidRender.State> {
-    private SimpleMesh hemisphereModel;
+    private static final int FULL_BRIGHT = 0x00F000F0;
+    private static final int WHITE_RGBA = 0xFFFFFFFF;
+
+    private SimpleMesh blackHoleModel;
 
     public GapingVoidRender(EntityRendererProvider.Context context) {
         super(context);
-    }
-
-    public static Color getColour(final double age, final double a) {
-        final double l = age / 186.0;
-        double f = Math.max(0.0, (l - 0.95) / 0.050000000000000044);
-        f = Math.max(f, 1.0 - l * 30.0);
-        return new ColorRGBA(f, f, f, a);
     }
 
     @Override
@@ -45,6 +39,9 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
     public void extractRenderState(@NotNull GapingVoidEntity entity, @NotNull State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.voidAge = entity.getAge() + partialTicks;
+        state.absorptionProgress = entity.getAbsorptionProgress();
+        state.evaporationProgress = GapingVoidEntity.getEvaporationProgress(state.voidAge);
+        state.evaporating = entity.isEvaporating();
     }
 
     public @NotNull Identifier getTextureLocation(@NotNull GapingVoidEntity p_114482_) {
@@ -54,83 +51,48 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
     @Override
     public void submit(@NotNull State state, @NotNull PoseStack stack, @NotNull SubmitNodeCollector output, @NotNull CameraRenderState cameraState) {
         final float age = state.voidAge;
-        final Color color = getColour(age, 1.0);
-        final double scale = GapingVoidEntity.getVoidScale(age);
-        double halocoord = 0.58 * scale;
-        final double haloScaleDist = 2.2 * scale;
+        final float scale = (float) (GapingVoidEntity.getVoidScale(age) * 1.35);
         final Vec3 cam = cameraState.pos;
         final double dx = state.x - cam.x();
         final double dy = state.y - cam.y();
         final double dz = state.z - cam.z();
-        final double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        if (len <= haloScaleDist) {
-            final double close = (haloScaleDist - len) / haloScaleDist;
-            halocoord *= 1.0 + close * close * close * close * 1.5;
-        }
+        final float yaw = (float) Math.atan2(dx, dz);
+        final float pitch = (float) Math.atan2(Math.sqrt(dx * dx + dz * dz), dy);
+        final float absorption = Math.max(0.08F, state.absorptionProgress);
+        final float evaporation = Math.max(state.evaporationProgress, state.evaporating ? 0.08F : 0.0F);
 
         stack.pushPose();
+        stack.scale(scale, scale, scale);
+        stack.mulPose(cameraState.orientation);
+        stack.mulPose(Axis.YP.rotationDegrees(180.0F));
 
-        stack.mulPose(Axis.YP.rotationDegrees((float) (Math.atan2(dx, dz) * 57.29577951308232)));
-        stack.mulPose(Axis.XP.rotationDegrees((float) (Math.atan2(Math.sqrt(dx * dx + dz * dz), dy) * 57.29577951308232 + 90.0)));
-
-        stack.pushPose();
-        stack.mulPose(Axis.XP.rotationDegrees(90.0f));
-
-        stack.translate(0, 0, 0);
-
-//        buffer.addVertex(stack.last().pose(), negCoord, 0.0f, negCoord)
-//                .setColor(r, g, b, a)
-//                .setUv(0.0f, 0.0f)
-//                .setOverlay(0)
-//                .setLight(packedLightIn)
-//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
-//
-//        buffer.addVertex(stack.last().pose(), negCoord, 0.0f, posCoord)
-//                .setColor(r, g, b, a)
-//                .setUv(0.0f, 1.0f)
-//                .setOverlay(0)
-//                .setLight(packedLightIn)
-//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
-//
-//        buffer.addVertex(stack.last().pose(), posCoord, 0.0f, posCoord)
-//                .setColor(r, g, b, a)
-//                .setUv(1.0f, 1.0f)
-//                .setOverlay(0)
-//                .setLight(packedLightIn)
-//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
-//
-//        buffer.addVertex(stack.last().pose(), posCoord, 0.0f, negCoord)
-//                .setColor(r, g, b, a)
-//                .setUv(1.0f, 0.0f)
-//                .setOverlay(0)
-//                .setLight(packedLightIn)
-//                .setNormal(stack.last(), 0.0f, 1.0f, 0.0f);
-
-        stack.popPose();
-
-        stack.scale((float) scale, (float) scale, (float) scale);
-        int rgba = color.rgba();
-        SimpleMesh mesh = this.hemisphereModel();
-        output.submitCustomGeometry(stack, AvaritiaRenderTypes.VOID,
-                (poseState, vertexConsumer) -> mesh.render(poseState, vertexConsumer, rgba, 0, OverlayTexture.NO_OVERLAY));
+        AvaritiaShaderUniforms.set(AvaritiaRenderTypes.BLACK_HOLE, AvaritiaShaderUniforms.Effect.BLACK_HOLE,
+                age, yaw, pitch, absorption, evaporation, null);
+        SimpleMesh mesh = this.blackHoleModel();
+        output.submitCustomGeometry(stack, AvaritiaRenderTypes.BLACK_HOLE,
+                (poseState, vertexConsumer) -> mesh.render(poseState, vertexConsumer, WHITE_RGBA, FULL_BRIGHT, OverlayTexture.NO_OVERLAY));
 
         stack.popPose();
         super.submit(state, stack, output, cameraState);
     }
 
-    private SimpleMesh hemisphereModel() {
-        if (this.hemisphereModel == null) {
-            this.hemisphereModel = SimpleObjMeshLoader.load(Const.rl("models/hemisphere.obj")).get("model");
-            if (this.hemisphereModel == null) {
-                throw new IllegalStateException("Missing hemisphere OBJ part: model");
-            }
+    private SimpleMesh blackHoleModel() {
+        if (this.blackHoleModel == null) {
+            this.blackHoleModel = new SimpleMesh(List.of(
+                    new SimpleMesh.Vertex(-1.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 1.0F),
+                    new SimpleMesh.Vertex(1.0F, -1.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F),
+                    new SimpleMesh.Vertex(1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 1.0F),
+                    new SimpleMesh.Vertex(-1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F)
+            ));
         }
-        return this.hemisphereModel;
+        return this.blackHoleModel;
     }
 
     public static class State extends EntityRenderState {
         public float voidAge;
+        public float absorptionProgress;
+        public float evaporationProgress;
+        public boolean evaporating;
     }
 
 }
