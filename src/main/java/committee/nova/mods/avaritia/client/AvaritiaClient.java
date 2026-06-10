@@ -47,6 +47,7 @@ import committee.nova.mods.avaritia.client.screen.craft.SculkCraftScreen;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
+import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.common.net.C2SOpenRingPacket;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
@@ -72,6 +73,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
@@ -119,7 +121,12 @@ public class AvaritiaClient {
     public static boolean inventoryRender = false;
     public static long lastTime = System.currentTimeMillis();
     public static int renderTime = 0;
+    private static final int INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL = 4;
+    private static final int INFINITY_ELYTRA_BOOST_PACKET_INTERVAL = 1;
     private static float darknessIntensity = 0.0f;
+    private static boolean infinityElytraLastFlyingIntent = false;
+    private static boolean infinityElytraLastBoosting = false;
+    private static int infinityElytraPacketCooldown = 0;
     private static final IClientItemExtensions INFINITY_ARMOR_EXTENSIONS = new IClientItemExtensions() {
         @Override
         public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, Identifier fallback) {
@@ -299,6 +306,9 @@ public class AvaritiaClient {
         }
         if (minecraft.player != null && minecraft.level != null) {
             calculateDarknessIntensity(minecraft.player, minecraft.level);
+            handleInfinityElytraControls(minecraft);
+        } else {
+            resetInfinityElytraControls();
         }
     }
 
@@ -359,6 +369,55 @@ public class AvaritiaClient {
         } else if (maxIntensity < darknessIntensity) {
             darknessIntensity = Math.max(maxIntensity, darknessIntensity - 0.05f);
         }
+    }
+
+    private static void handleInfinityElytraControls(Minecraft minecraft) {
+        Player player = minecraft.player;
+        if (player == null || minecraft.level == null || minecraft.screen != null) {
+            resetInfinityElytraControls();
+            return;
+        }
+
+        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+            resetInfinityElytraControls();
+            return;
+        }
+
+        boolean canRequestGlide = !player.onGround()
+                && !player.isPassenger()
+                && !player.isInWater()
+                && !player.getAbilities().flying;
+        boolean wantsLaunch = canRequestGlide
+                && !player.isFallFlying()
+                && minecraft.options.keyJump.isDown();
+        boolean wantsBoost = player.isFallFlying()
+                && minecraft.options.keySprint.isDown()
+                && !minecraft.options.keyShift.isDown();
+
+        syncInfinityElytraControls(wantsLaunch || wantsBoost, wantsBoost);
+    }
+
+    private static void syncInfinityElytraControls(boolean flyingIntent, boolean boosting) {
+        if (!flyingIntent) {
+            resetInfinityElytraControls();
+            return;
+        }
+
+        boolean changed = flyingIntent != infinityElytraLastFlyingIntent || boosting != infinityElytraLastBoosting;
+        if (changed || infinityElytraPacketCooldown <= 0) {
+            NetworkHandler.sendToServer(new C2SElytraSpeedUpPacket(flyingIntent, boosting));
+            infinityElytraLastFlyingIntent = flyingIntent;
+            infinityElytraLastBoosting = boosting;
+            infinityElytraPacketCooldown = boosting ? INFINITY_ELYTRA_BOOST_PACKET_INTERVAL : INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL;
+        } else {
+            infinityElytraPacketCooldown--;
+        }
+    }
+
+    private static void resetInfinityElytraControls() {
+        infinityElytraLastFlyingIntent = false;
+        infinityElytraLastBoosting = false;
+        infinityElytraPacketCooldown = 0;
     }
 
     private static Identifier id(String path) {
