@@ -28,6 +28,7 @@ import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.*;
@@ -44,16 +45,17 @@ import java.util.List;
 
 public class TraceArrowEntity extends Arrow {
     private static final List<String> PROJECTILE_ANTI_IMMUNE_ENTITIES = List.of("minecraft:enderman", "minecraft:wither", "minecraft:ender_dragon", "draconicevolution:guardian_wither");
+    private static final int MAX_JUMP_COUNT = 16;
+    private static final int HOMING_TIMEOUT = 60;
+    private static final double HOMING_RANGE = 64.0D;
     private static final EntityDataAccessor<Integer> SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private LivingEntity homingTarget;
-    private Vec3 seekOrigin;
     private int homingTime;
 
     public TraceArrowEntity(EntityType<? extends Arrow> entityType, Level world) {
         super(entityType, world);
         this.homingTarget = null;
-        this.seekOrigin = null;
         this.homingTime = 0;
     }
 
@@ -92,6 +94,9 @@ public class TraceArrowEntity extends Arrow {
 
     @Override
     public void tick() {
+        if (this.homingTarget == null && canSeekNextTarget()) {
+            trySeekNextTarget();
+        }
         this.updateHoming();
         super.tick();
     }
@@ -205,9 +210,9 @@ public class TraceArrowEntity extends Arrow {
 
     @Override
     protected void onHitBlock(BlockHitResult hitResult) {
-        super.onHitBlock(hitResult);
+        BlockState blockState = this.level().getBlockState(hitResult.getBlockPos());
+        blockState.onProjectileHit(this.level(), blockState, hitResult, this);
         this.seekNextTarget();
-        this.setInGround(false);
         this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ARROW_HIT, SoundSource.PLAYERS, 4.0F, 1.0F);
     }
 
@@ -250,32 +255,9 @@ public class TraceArrowEntity extends Arrow {
     }
 
     public void seekNextTarget() {
-        if (this.getJumpCount() <= 16 && this.isCritArrow()) {
-            if (this.seekOrigin == null) {
-                this.seekOrigin = this.position();
-            }
-
-            if (this.level() instanceof ServerLevel serverLevel) {
-                TargetingConditions conditions = TargetingConditions.forCombat()
-                        .selector((living, level) -> {
-                            // 排除玩家实体
-                            return !(living instanceof Player) &&
-                                    living.hasLineOfSight(this);
-                        });
-                Entity owner = this.traceOwner();
-                this.homingTarget = serverLevel.getNearestEntity(LivingEntity.class, conditions, owner instanceof LivingEntity ? (LivingEntity) owner : null, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
-                if (this.homingTarget != null) {
-                    Vec3 targetPos = this.homingTarget.getEyePosition();
-                    double x = targetPos.x - this.getX();
-                    double y = targetPos.y - this.getY();
-                    double z = targetPos.z - this.getZ();
-                    this.shoot(x, y, z, 3.0F, 0.0F);
-                    this.setJumpCount(this.getJumpCount() + 1);
-                    this.homingTime = 0;
-                } else {
-                    this.destroyArrow();
-                }
-
+        if (canSeekNextTarget()) {
+            if (!trySeekNextTarget()) {
+                this.destroyArrow();
             }
         } else {
             this.destroyArrow();
@@ -284,21 +266,55 @@ public class TraceArrowEntity extends Arrow {
 
     private void updateHoming() {
         if (this.homingTarget != null) {
-            if (this.homingTime++ > 60) {
+            if (this.homingTime++ > HOMING_TIMEOUT) {
                 this.destroyArrow();
             } else if (!this.homingTarget.isDeadOrDying() && !this.homingTarget.isRemoved()) {
-                Vec3 targetPos = this.homingTarget.getEyePosition();
-                if (targetPos.distanceToSqr(this.position()) >= 4.0D) {
-                    double x = targetPos.x - this.getX();
-                    double y = targetPos.y - this.getY();
-                    double z = targetPos.z - this.getZ();
-                    this.shoot(x, y, z, 3.0F, 0.0F);
+                if (this.homingTarget.getEyePosition().distanceToSqr(this.position()) >= 4.0D) {
+                    redirectToTarget(this.homingTarget);
                 }
             } else {
                 this.homingTarget = null;
                 this.seekNextTarget();
             }
         }
+    }
+
+    private boolean canSeekNextTarget() {
+        return this.getJumpCount() <= MAX_JUMP_COUNT && this.isCritArrow() && !this.level().isClientSide();
+    }
+
+    private boolean trySeekNextTarget() {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        Entity owner = this.traceOwner();
+        LivingEntity source = owner instanceof LivingEntity livingOwner ? livingOwner : null;
+        Vec3 origin = this.position();
+        TargetingConditions conditions = TargetingConditions.forCombat()
+                .selector((living, level) -> {
+                    // 追踪箭只连锁非玩家目标，避免误锁发射者或其他玩家。
+                    return living != owner
+                            && !(living instanceof Player)
+                            && living.isAlive()
+                            && !living.isRemoved()
+                            && living.hasLineOfSight(this);
+                });
+
+        this.homingTarget = serverLevel.getNearestEntity(LivingEntity.class, conditions, source, origin.x, origin.y, origin.z, this.getBoundingBox().inflate(HOMING_RANGE));
+        if (this.homingTarget == null) {
+            return false;
+        }
+
+        redirectToTarget(this.homingTarget);
+        this.setJumpCount(this.getJumpCount() + 1);
+        this.homingTime = 0;
+        return true;
+    }
+
+    private void redirectToTarget(LivingEntity target) {
+        Vec3 targetPos = target.getEyePosition();
+        this.shoot(targetPos.x - this.getX(), targetPos.y - this.getY(), targetPos.z - this.getZ(), 3.0F, 0.0F);
     }
 
     private void destroyArrow() {
