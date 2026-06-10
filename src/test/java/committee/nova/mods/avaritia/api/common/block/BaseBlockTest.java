@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BaseBlockTest {
@@ -47,7 +48,8 @@ class BaseBlockTest {
                 contains("common/block/extreme/ExtremeAnvilBlock.java",
                         ".strength(ModResourceBlocks.NEUTRON.hardness, ModResourceBlocks.NEUTRON.resistance)"),
                 contains("common/block/extreme/ExtremeSmithingTableBlock.java",
-                        ".strength(2.5F).sound(SoundType.GLASS).instabreak()"),
+                        ".strength(2.5F).sound(SoundType.GLASS));"),
+                doesNotContain("common/block/extreme/ExtremeSmithingTableBlock.java", ".instabreak()"),
                 contains("common/block/misc/SoulFarmLandBlock.java", ".strength(0.6F)"),
                 contains("common/block/cake/EndlessCakeBlock.java", ".strength(0.5F)"),
                 contains("init/registry/ModBlocks.java",
@@ -65,6 +67,13 @@ class BaseBlockTest {
         return () -> assertTrue(
                 compact(read(relativePath)).contains(compact(expected)),
                 () -> relativePath + " should keep migrated block strength: " + expected
+        );
+    }
+
+    private static Executable doesNotContain(String relativePath, String unexpected) {
+        return () -> assertFalse(
+                compact(read(relativePath)).contains(compact(unexpected)),
+                () -> relativePath + " should not override migrated block strength: " + unexpected
         );
     }
 

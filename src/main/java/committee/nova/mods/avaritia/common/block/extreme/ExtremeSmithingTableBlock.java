@@ -33,8 +33,7 @@ public class ExtremeSmithingTableBlock extends BaseBlock {
                 .mapColor(MapColor.COLOR_RED)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(2.5F)
-                .sound(SoundType.GLASS)
-                .instabreak());
+                .sound(SoundType.GLASS));
     }
 
     @Override
