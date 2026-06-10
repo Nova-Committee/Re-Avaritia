@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_crystal_matrix_ingot": {
+    "has_chest": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:crystal_matrix_ingot"
+            "items": "minecraft:chest"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_crystal_matrix_ingot"
+      "has_chest"
     ]
   ],
   "rewards": {

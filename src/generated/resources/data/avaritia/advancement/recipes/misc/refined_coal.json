@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_refined_coal_block": {
+    "has_neutron_pile": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:refined_coal_block"
+            "items": "avaritia:neutron_pile"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_refined_coal_block"
+      "has_neutron_pile"
     ]
   ],
   "rewards": {

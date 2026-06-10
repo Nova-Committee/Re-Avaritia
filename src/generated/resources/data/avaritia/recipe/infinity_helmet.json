@@ -1,16 +1,23 @@
 {
-  "type": "avaritia:extreme_smithing",
-  "addition": {
-    "neoforge:ingredient_type": "neoforge:compound",
-    "children": [
-      "avaritia:infinity_ingot",
-      "avaritia:infinity_catalyst",
-      "avaritia:enhancement_core"
-    ]
+  "type": "avaritia:shaped_table",
+  "key": {
+    "I": "avaritia:infinity_ingot",
+    "N": "avaritia:neutron_ingot",
+    "X": "avaritia:infinity_catalyst"
   },
-  "base": "minecraft:netherite_helmet",
+  "pattern": [
+    "  NNNNN  ",
+    " NIIIIIN ",
+    " N XIX N ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    " NI I IN ",
+    "         ",
+    "         ",
+    "         "
+  ],
   "result": {
     "id": "avaritia:infinity_helmet"
   },
-  "template": "avaritia:upgrade_smithing_template"
+  "tier": 4
 }

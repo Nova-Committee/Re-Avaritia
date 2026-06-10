@@ -1,16 +1,19 @@
 {
-  "type": "avaritia:extreme_smithing",
-  "addition": {
-    "neoforge:ingredient_type": "neoforge:compound",
-    "children": [
-      "avaritia:infinity_ingot",
-      "avaritia:infinity_catalyst",
-      "avaritia:enhancement_core"
-    ]
+  "type": "avaritia:shaped_table",
+  "key": {
+    "I": "avaritia:infinity_ingot",
+    "N": "avaritia:neutron_ingot"
   },
-  "base": "minecraft:netherite_boots",
+  "pattern": [
+    " NNN NNN ",
+    " NIN NIN ",
+    " NIN NIN ",
+    "NNIN NINN",
+    "NIIN NIIN",
+    "NNNN NNNN"
+  ],
   "result": {
     "id": "avaritia:infinity_boots"
   },
-  "template": "avaritia:upgrade_smithing_template"
+  "tier": 4
 }

@@ -1,16 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "type": "avaritia:shaped_table",
   "key": {
-    "a": "minecraft:diamond",
-    "b": "minecraft:gold_ingot"
+    "x": "minecraft:diamond",
+    "y": "minecraft:netherite_scrap"
   },
   "pattern": [
-    "aba",
-    "bab",
-    "aba"
+    "x x",
+    " y ",
+    "x x"
   ],
   "result": {
     "id": "avaritia:diamond_lattice"
-  }
+  },
+  "tier": 1
 }

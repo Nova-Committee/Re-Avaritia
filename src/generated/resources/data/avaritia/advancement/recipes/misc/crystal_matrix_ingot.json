@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_crystal_matrix": {
+    "has_diamond_lattice": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:crystal_matrix"
+            "items": "avaritia:diamond_lattice"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_crystal_matrix"
+      "has_diamond_lattice"
     ]
   ],
   "rewards": {

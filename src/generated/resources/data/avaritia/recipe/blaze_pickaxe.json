@@ -3,16 +3,16 @@
   "key": {
     "A": "minecraft:bone_block",
     "B": "avaritia:diamond_lattice",
-    "C": "avaritia:blaze_cube"
+    "C": "avaritia:blaze_cube",
+    "D": "minecraft:blaze_powder",
+    "E": "minecraft:soul_soil"
   },
   "pattern": [
-    "CCCCCC ",
-    "   CCA ",
-    "    A C",
-    "   B  C",
-    "  B    ",
-    " B     ",
-    "A      "
+    "DCCCA",
+    " DDAC",
+    "  ADC",
+    " E DC",
+    "B   D"
   ],
   "result": {
     "id": "avaritia:blaze_pickaxe"

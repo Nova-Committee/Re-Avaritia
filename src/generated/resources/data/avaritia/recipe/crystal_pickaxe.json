@@ -3,16 +3,17 @@
   "key": {
     "A": "avaritia:crystal_matrix",
     "B": "avaritia:neutron_ingot",
-    "C": "avaritia:crystal_matrix_ingot"
+    "C": "avaritia:crystal_matrix_ingot",
+    "D": "avaritia:neutron"
   },
   "pattern": [
-    "CCCCCCA",
-    "C CC  C",
-    "C  A   ",
-    "   B   ",
-    "  B    ",
-    " B     ",
-    "A      "
+    "CAAAA D",
+    " CCCC  ",
+    "    CCA",
+    "   B CA",
+    "  B  CA",
+    " B   CA",
+    "A     C"
   ],
   "result": {
     "id": "avaritia:crystal_pickaxe"

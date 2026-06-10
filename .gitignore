@@ -1,6 +1,7 @@
 build/
 .gradle/
 run/
+run-data/
 logs/
 *.log
 out/

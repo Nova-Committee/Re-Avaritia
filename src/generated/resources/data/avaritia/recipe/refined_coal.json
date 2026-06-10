@@ -1,11 +1,18 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    "avaritia:refined_coal_block"
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:coal",
+    "b": "avaritia:neutron_nugget"
+  },
+  "pattern": [
+    "     ",
+    " aaa ",
+    " aba ",
+    " aaa ",
+    "     "
   ],
   "result": {
-    "count": 9,
     "id": "avaritia:refined_coal"
-  }
+  },
+  "tier": 2
 }

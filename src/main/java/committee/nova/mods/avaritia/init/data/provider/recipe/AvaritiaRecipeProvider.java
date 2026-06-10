@@ -88,15 +88,6 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void vanillaRecipes(RecipeOutput output) {
-        storage(output, ModItems.neutron_pile.get(), ModItems.neutron_nugget.get(), "neutron_nugget_from_piles", "neutron_pile_from_nuggets");
-        storage(output, ModItems.neutron_nugget.get(), ModItems.neutron_ingot.get(), "neutron_ingot_from_nuggets", "neutron_nugget_from_ingots");
-        storage(output, ModItems.infinity_nugget.get(), ModItems.infinity_ingot.get(), "infinity_ingot_from_nuggets", "infinity_nugget_from_ingots");
-        storage(output, ModItems.crystal_matrix_ingot.get(), ModBlocks.crystal_matrix.get(), "crystal_matrix", "crystal_matrix_ingot");
-        storage(output, ModItems.blaze_cube.get(), ModBlocks.blaze_cube_block.get(), "blaze_cube_block", "blaze_cube");
-        storage(output, ModItems.diamond_lattice.get(), ModBlocks.diamond_lattice_block.get(), "diamond_lattice_block", "diamond_lattice_normal");
-        storage(output, ModItems.star_fuel.get(), ModBlocks.star_fuel_block.get(), "star_fuel_block", "star_fuel_alternate");
-        storage(output, ModItems.refined_coal.get(), ModBlocks.refined_coal_block.get(), "refined_coal_block", "refined_coal");
-
         this.shaped(RecipeCategory.MISC, ModItems.neutron_gear.get())
                 .pattern(" n ")
                 .pattern("ncn")
@@ -107,43 +98,58 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 .save(output, key("neutron_gear"));
 
         this.shaped(RecipeCategory.TOOLS, ModBlocks.compressed_chest.get())
-                .pattern("aaa")
-                .pattern("aba")
-                .pattern("aaa")
-                .define('a', Blocks.CHEST)
-                .define('b', ModItems.crystal_matrix_ingot.get())
-                .unlockedBy("has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()))
+                .pattern("ccc")
+                .pattern("cgc")
+                .pattern("ccc")
+                .define('c', Blocks.CHEST)
+                .define('g', ModItems.neutron_gear.get())
+                .unlockedBy("has_chest", has(Blocks.CHEST))
                 .save(output, key("compressed_chest"));
 
-        this.shaped(RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get())
-                .pattern("xyx")
-                .pattern("xyx")
-                .define('x', ModItems.diamond_lattice.get())
-                .define('y', Items.NETHER_STAR)
-                .unlockedBy("has_diamond_lattice", has(ModItems.diamond_lattice.get()))
+        this.shaped(RecipeCategory.TOOLS, ModItems.crystal_matrix_ingot.get())
+                .pattern("iai")
+                .pattern("iai")
+                .pattern("iai")
+                .define('i', ModItems.diamond_lattice.get())
+                .define('a', Items.NETHER_STAR)
+                .unlockedBy("has_nether_star", has(Items.NETHER_STAR))
                 .save(output, key("crystal_matrix_ingot_normal"));
 
-        this.shaped(RecipeCategory.MISC, ModItems.diamond_lattice.get())
-                .pattern("aba")
-                .pattern("bab")
-                .pattern("aba")
-                .define('a', Items.DIAMOND)
-                .define('b', Items.GOLD_INGOT)
-                .unlockedBy("has_diamond", has(Items.DIAMOND))
-                .save(output, key("diamond_lattice"));
+        this.shaped(RecipeCategory.TOOLS, ModItems.diamond_lattice.get())
+                .pattern("iii")
+                .pattern("iai")
+                .pattern("iii")
+                .define('i', Items.DIAMOND)
+                .define('a', Items.NETHERITE_SCRAP)
+                .unlockedBy("has_netherite_scrap", has(Items.NETHERITE_SCRAP))
+                .save(output, key("diamond_lattice_normal"));
     }
 
     private void legacyVanillaRecipes(RecipeOutput output) {
-        storage(output, ModItems.neutron_ingot.get(), ModBlocks.neutron.get(), minecraftKey("neutron"), minecraftKey("neutron_ingot_from_neutron_block"));
-        storage(output, ModItems.neutron_pile.get(), ModItems.neutron_nugget.get(), minecraftKey("neutron_pile_from_ingots"), minecraftKey("neutron_pile"));
-        this.shapeless(RecipeCategory.MISC, ModItems.neutron_nugget.get(), 9)
-                .requires(ModItems.neutron_ingot.get())
-                .unlockedBy("has_neutron_ingot", has(ModItems.neutron_ingot.get()))
-                .save(output, minecraftKey("neutron_nugget"));
-        storage(output, ModItems.infinity_ingot.get(), ModBlocks.infinity.get(), minecraftKey("infinity_block_from_infinity_ingot"), minecraftKey("infinity_ingot"));
-        storage(output, ModItems.infinity_nugget.get(), ModItems.infinity_ingot.get(), minecraftKey("infinity_ingot_from_infinity_nugget"), minecraftKey("infinity_nugget"));
-        storage(output, Blocks.CRAFTING_TABLE, ModBlocks.compressed_crafting_table.get(), minecraftKey("compressed_crafting_table"), minecraftKey("crafting_table_from_compressed_crafting_table"));
-        storage(output, ModBlocks.compressed_crafting_table.get(), ModBlocks.double_compressed_crafting_table.get(), minecraftKey("double_compressed_crafting_table"), minecraftKey("compressed_crafting_table_from_double_compressed_crafting_table"));
+        storage(output, RecipeCategory.MISC, ModItems.neutron_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.neutron.get(),
+                minecraftKey("neutron"), null, minecraftKey("neutron_ingot_from_neutron_block"), "neutron_ingot");
+        storage(output, RecipeCategory.MISC, ModItems.neutron_nugget.get(), RecipeCategory.MISC, ModItems.neutron_ingot.get(),
+                minecraftKey("neutron_ingot_from_nuggets"), "neutron_ingot", minecraftKey("neutron_nugget"), null);
+        storage(output, RecipeCategory.MISC, ModItems.neutron_pile.get(), RecipeCategory.MISC, ModItems.neutron_nugget.get(),
+                minecraftKey("neutron_pile_from_ingots"), "neutron_pile", minecraftKey("neutron_pile"), null);
+        storage(output, RecipeCategory.MISC, ModItems.infinity_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.infinity.get(),
+                minecraftKey("infinity_block_from_infinity_ingot"), "infinity_block", minecraftKey("infinity_ingot"), null);
+        storage(output, RecipeCategory.MISC, ModItems.infinity_nugget.get(), RecipeCategory.MISC, ModItems.infinity_ingot.get(),
+                minecraftKey("infinity_ingot_from_infinity_nugget"), "infinity_ingot", minecraftKey("infinity_nugget"), null);
+        storage(output, RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.crystal_matrix.get(),
+                minecraftKey("crystal_matrix"), null, minecraftKey("crystal_matrix_ingot"), null);
+        storage(output, RecipeCategory.MISC, ModItems.blaze_cube.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.blaze_cube_block.get(),
+                minecraftKey("blaze_cube_block"), null, minecraftKey("blaze_cube"), null);
+        storage(output, RecipeCategory.MISC, ModItems.diamond_lattice.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.diamond_lattice_block.get(),
+                minecraftKey("diamond_lattice_block"), null, minecraftKey("diamond_lattice"), null);
+        storage(output, RecipeCategory.MISC, ModItems.star_fuel.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.star_fuel_block.get(),
+                minecraftKey("star_fuel_block"), null, minecraftKey("star_fuel"), null);
+        storage(output, RecipeCategory.MISC, ModItems.refined_coal.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.refined_coal_block.get(),
+                minecraftKey("refined_coal_block"), null, minecraftKey("refined_coal"), null);
+        storage(output, RecipeCategory.MISC, Blocks.CRAFTING_TABLE, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(),
+                minecraftKey("compressed_crafting_table"), null, minecraftKey("crafting_table_from_compressed_crafting_table"), "crafting_table");
+        storage(output, RecipeCategory.BUILDING_BLOCKS, ModBlocks.compressed_crafting_table.get(), RecipeCategory.BUILDING_BLOCKS, ModBlocks.double_compressed_crafting_table.get(),
+                minecraftKey("double_compressed_crafting_table"), null, minecraftKey("compressed_crafting_table_from_double_compressed_crafting_table"), "compressed_crafting_table");
 
         extremeShaped(output, minecraftKey("reinforced_deepslate"), RecipeCategory.MISC, Blocks.REINFORCED_DEEPSLATE, 1,
                 new String[]{"ada", "cbc", "aba"},
@@ -219,7 +225,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 new String[]{"aaa", "dbd", "ccc"},
                 keyMap().put('a', Items.BRICK).put('b', Items.EGG).put('c', Items.GRAVEL).put('d', Items.SAND),
                 "has_egg", has(Items.EGG));
-        extremeShaped(output, minecraftKey("end_portal_frame"), RecipeCategory.MISC, Blocks.END_PORTAL_FRAME, 2, 1,
+        extremeShaped(output, minecraftKey("end_portal_frame"), RecipeCategory.MISC, Blocks.END_PORTAL_FRAME, 2,
                 new String[]{"     ", "fghgf", "ecace", "dcccd", "bbbbb"},
                 keyMap()
                         .put('a', Items.END_CRYSTAL)
@@ -231,7 +237,7 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('g', Items.ENDER_EYE)
                         .put('h', Blocks.SCULK_SHRIEKER),
                 "has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()));
-        extremeShaped(output, minecraftKey("dragon_egg"), RecipeCategory.MISC, Items.DRAGON_EGG, 3, 1,
+        extremeShaped(output, minecraftKey("dragon_egg"), RecipeCategory.MISC, Items.DRAGON_EGG, 3,
                 new String[]{"  ggg  ", " gfefg ", "gfbdbfg", "gecaceg", "gfbcbfg", "ggfefgg", " ggggg "},
                 keyMap()
                         .put('a', Items.EGG)
@@ -264,15 +270,17 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void craftingTableRecipes(RecipeOutput output) {
-        extremeShaped(output, RecipeCategory.MISC, ModBlocks.sculk_crafting_table.get(), 1,
-                new String[]{"aba", "cxc", "ada"},
-                keyMap()
-                        .put('a', Items.ECHO_SHARD)
-                        .put('b', Blocks.SCULK_SHRIEKER)
-                        .put('c', Blocks.SCULK)
-                        .put('d', Blocks.SCULK_CATALYST)
-                        .put('x', ModBlocks.double_compressed_crafting_table.get()),
-                "has_double_compressed_crafting_table", has(ModBlocks.double_compressed_crafting_table.get()), "sculk_crafting_table");
+        this.shaped(RecipeCategory.MISC, ModBlocks.sculk_crafting_table.get())
+                .pattern("aba")
+                .pattern("cxc")
+                .pattern("ada")
+                .define('a', Items.ECHO_SHARD)
+                .define('b', Blocks.SCULK_SHRIEKER)
+                .define('c', Blocks.SCULK)
+                .define('d', Blocks.SCULK_CATALYST)
+                .define('x', ModBlocks.double_compressed_crafting_table.get())
+                .unlockedBy("has_double_compressed_crafting_table", has(ModBlocks.double_compressed_crafting_table.get()))
+                .save(output, key("sculk_crafting_table"));
 
         extremeShaped(output, RecipeCategory.MISC, ModBlocks.nether_crafting_table.get(), 1,
                 new String[]{"cbc", "dad", "efe"},
@@ -317,16 +325,18 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 "has_end_crafting_table", has(ModBlocks.end_crafting_table.get()), "extreme_crafting_table");
 
         extremeShaped(output, RecipeCategory.MISC, ModItems.infinity_upgrade.get(), 4,
-                new String[]{"  aba  ", " cdfdc ", "acdecea", "bfegefb", "acdecea", " cdfdc ", "  aba  "},
+                new String[]{" aaadaaa ", "baeegeea ", "baegggea ", "bdiegeid ", "bdfehefdc", " diegeidc", " aedgdeac", " aeegeeac", " aaadaaa "},
                 keyMap()
-                        .put('a', ModItems.crystal_matrix_ingot.get())
-                        .put('b', ModItems.neutron_ingot.get())
-                        .put('c', ModItems.neutron_pile.get())
-                        .put('d', ModItems.infinity_nugget.get())
-                        .put('e', ModItems.infinity_ingot.get())
+                        .put('a', ModBlocks.neutron.get())
+                        .put('b', ModBlocks.blaze_cube_block.get())
+                        .put('c', ModItems.crystal_matrix_ingot.get())
+                        .put('d', ModItems.neutron_ingot.get())
+                        .put('e', ModItems.neutron_gear.get())
                         .put('f', ModItems.infinity_catalyst.get())
-                        .put('g', Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
-                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_upgrade");
+                        .put('g', ModItems.star_fuel.get())
+                        .put('h', ModItems.eternal_singularity.get())
+                        .put('i', ModItems.neutron_nugget.get()),
+                "has_eternal_singularity", has(ModItems.eternal_singularity.get()), "infinity_upgrade");
 
         noConsumeExtremeShaped(output, RecipeCategory.TOOLS, ModItems.upgrade_smithing_template.get(), 2, 4,
                 new String[]{"         ", " abbbbba ", " bdcccdb ", " bceeecb ", " bcefecb ", " bceeecb ", " bdcccdb ", " abbbbba ", "         "},
@@ -362,30 +372,86 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
 
     private void toolRecipes(RecipeOutput output) {
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.blaze_sword.get(), 2,
-                new String[]{"    CA", "   CCA", "  CCCA", " CCAC ", "CAC  ", " B   ", "A    "},
-                keyMap().put('A', Blocks.BONE_BLOCK).put('B', ModItems.diamond_lattice.get()).put('C', ModItems.blaze_cube.get()),
+                new String[]{"   DC", "A DCD", "ADCD ", " ED  ", "B AA "},
+                keyMap()
+                        .put('A', Blocks.BONE_BLOCK)
+                        .put('B', ModItems.diamond_lattice.get())
+                        .put('C', ModItems.blaze_cube.get())
+                        .put('D', Items.BLAZE_POWDER)
+                        .put('E', Blocks.SOUL_SOIL),
                 "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_sword");
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.blaze_pickaxe.get(), 2,
-                new String[]{"CCCCCC ", "   CCA ", "    A C", "   B  C", "  B    ", " B     ", "A      "},
-                keyMap().put('A', Blocks.BONE_BLOCK).put('B', ModItems.diamond_lattice.get()).put('C', ModItems.blaze_cube.get()),
+                new String[]{"DCCCA", " DDAC", "  ADC", " E DC", "B   D"},
+                keyMap()
+                        .put('A', Blocks.BONE_BLOCK)
+                        .put('B', ModItems.diamond_lattice.get())
+                        .put('C', ModItems.blaze_cube.get())
+                        .put('D', Items.BLAZE_POWDER)
+                        .put('E', Blocks.SOUL_SOIL),
                 "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_pickaxe");
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.crystal_sword.get(), 3,
                 new String[]{"     CA", "    CAC", " C CAC ", " CCAC  ", "CAAC   ", " BACC  ", "A C    "},
                 keyMap().put('A', ModBlocks.crystal_matrix.get()).put('B', ModBlocks.neutron.get()).put('C', ModItems.crystal_matrix_ingot.get()),
                 "has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()), "crystal_sword");
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.crystal_pickaxe.get(), 3,
-                new String[]{"CCCCCCA", "C CC  C", "C  A   ", "   B   ", "  B    ", " B     ", "A      "},
-                keyMap().put('A', ModBlocks.crystal_matrix.get()).put('B', ModItems.neutron_ingot.get()).put('C', ModItems.crystal_matrix_ingot.get()),
+                new String[]{"CAAAA D", " CCCC  ", "    CCA", "   B CA", "  B  CA", " B   CA", "A     C"},
+                keyMap()
+                        .put('A', ModBlocks.crystal_matrix.get())
+                        .put('B', ModItems.neutron_ingot.get())
+                        .put('C', ModItems.crystal_matrix_ingot.get())
+                        .put('D', ModBlocks.neutron.get()),
                 "has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()), "crystal_pickaxe");
 
-        infinityTool(output, ModItems.infinity_axe.get(), "infinity_axe", new String[]{"     III", "    IIII", "   CIIII", "  CAXA I", "   NAA I", "  N    I", " N     I", "N      I", "A       "});
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_axe.get(), 4,
+                new String[]{"    II   ", "   II  B ", "  IIIAA  ", "  IIAXA  ", "  I AAII ", "   N  II ", "  N      ", " N       ", "A        "},
+                keyMap()
+                        .put('I', ModItems.infinity_ingot.get())
+                        .put('N', ModItems.neutron_ingot.get())
+                        .put('X', ModItems.infinity_catalyst.get())
+                        .put('A', ModBlocks.crystal_matrix.get())
+                        .put('B', ModBlocks.neutron.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_axe");
         infinityTool(output, ModItems.infinity_shovel.get(), "infinity_shovel", new String[]{"      III", "     IIII", "    CIIII", "    ACII ", "   AXAC  ", "   NA    ", "  N      ", " N       ", "A        "});
         infinityTool(output, ModItems.infinity_pickaxe.get(), "infinity_pickaxe", new String[]{" IIIIII B", "    IIAA ", "     AXAI", "     AAII", "    N  II", "   N    I", "  N     I", " N      I", "A        "});
         infinityTool(output, ModItems.infinity_hoe.get(), "infinity_hoe", new String[]{" IIIIIIAA", "  IIIIAXA", "      AAI", "     N II", "    N    ", "   N     ", "  N      ", " N       ", "A        "});
         infinityTool(output, ModItems.infinity_sword.get(), "infinity_sword", new String[]{"       II", "      III", "     III ", "  C III  ", "CCAIII   ", " CAXI    ", "  NAAC   ", " N CC    ", "A   C    "});
         infinityTool(output, ModItems.infinity_bow.get(), "infinity_bow", new String[]{"      III", "  AAIINNP", " AXA   C ", " AA   C  ", " I   C   ", " I  C    ", "IN C     ", "INC      ", "IP       "});
         infinityTool(output, ModItems.infinity_crossbow.get(), "infinity_crossbow", new String[]{"   IIIIIP", " AC N  C ", " CXN  C  ", "I NIPC   ", "IN PCN   ", "I  CNIN  ", "I C  NNA ", "IC    AAN", "P      NN"});
-        infinityTool(output, ModItems.infinity_trident.get(), "infinity_trident", new String[]{"     I  I", "    I  I ", "   CAAI  ", "    AXA I", "    PAAI ", "   N  C  ", "  N      ", " C       ", "A        "});
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_trident.get(), 4,
+                new String[]{"     I  I", "    I  I ", "   CAAI  ", "    AXA I", "    PAAI ", "   N  C  ", "  N      ", " C       ", "A        "},
+                keyMap()
+                        .put('I', ModItems.infinity_ingot.get())
+                        .put('C', ModItems.crystal_matrix_ingot.get())
+                        .put('X', ModItems.infinity_catalyst.get())
+                        .put('A', ModBlocks.crystal_matrix.get())
+                        .put('N', ModItems.neutron_ingot.get())
+                        .put('P', Items.HEART_OF_THE_SEA),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_trident");
+
+        infinityArmorRecipes(output);
+    }
+
+    private void infinityArmorRecipes(RecipeOutput output) {
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_boots.get(), 4,
+                new String[]{" NNN NNN ", " NIN NIN ", " NIN NIN ", "NNIN NINN", "NIIN NIIN", "NNNN NNNN"},
+                keyMap().put('I', ModItems.infinity_ingot.get()).put('N', ModItems.neutron_ingot.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_boots");
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_chestplate.get(), 4,
+                new String[]{" NN   NN ", "NNN   NNN", "NNN   NNN", " NIIIIIN ", " NIIXIIN ", " NIIIIIN ", " NIIIIIN ", " NIIIIIN ", "  NNNNN  "},
+                keyMap().put('I', ModItems.infinity_ingot.get()).put('N', ModItems.neutron_ingot.get()).put('X', ModBlocks.crystal_matrix.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_chestplate");
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_helmet.get(), 4,
+                new String[]{"  NNNNN  ", " NIIIIIN ", " N XIX N ", " NIIIIIN ", " NIIIIIN ", " NI I IN ", "         ", "         ", "         "},
+                keyMap().put('I', ModItems.infinity_ingot.get()).put('N', ModItems.neutron_ingot.get()).put('X', ModItems.infinity_catalyst.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_helmet");
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_pants.get(), 4,
+                new String[]{"NNNNNNNNN", "NIIIXIIIN", "NINNXNNIN", "NIN   NIN", "NCN   NCN", "NIN   NIN", "NIN   NIN", "NIN   NIN", "NNN   NNN"},
+                keyMap()
+                        .put('I', ModItems.infinity_ingot.get())
+                        .put('N', ModItems.neutron_ingot.get())
+                        .put('C', ModItems.crystal_matrix_ingot.get())
+                        .put('X', ModItems.infinity_catalyst.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_pants");
     }
 
     private void legacyCoreRecipes(RecipeOutput output) {
@@ -393,6 +459,28 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 new String[]{"cbc", "bab", "cbc"},
                 keyMap().put('a', ModItems.infinity_catalyst.get()).put('b', Items.NETHERITE_SCRAP).put('c', Items.DIAMOND),
                 "has_infinity_catalyst", has(ModItems.infinity_catalyst.get()), "ancient_debris_eight");
+
+        extremeShaped(output, RecipeCategory.MISC, ModItems.crystal_matrix_ingot.get(), 1,
+                new String[]{"xyx", "xyx"},
+                keyMap().put('x', ModItems.diamond_lattice.get()).put('y', Items.NETHER_STAR),
+                "has_diamond_lattice", has(ModItems.diamond_lattice.get()), "crystal_matrix_ingot");
+        extremeShaped(output, RecipeCategory.MISC, ModItems.diamond_lattice.get(), 1,
+                new String[]{"x x", " y ", "x x"},
+                keyMap().put('x', Items.DIAMOND).put('y', Items.NETHERITE_SCRAP),
+                "has_netherite_scrap", has(Items.NETHERITE_SCRAP), "diamond_lattice");
+        extremeShaped(output, RecipeCategory.MISC, ModItems.blaze_cube.get(), 2,
+                new String[]{" bcb ", "byxyb", "cxaxc", "byxyb", " bcb "},
+                keyMap()
+                        .put('x', Items.BLAZE_ROD)
+                        .put('y', Items.BONE)
+                        .put('a', Blocks.ANCIENT_DEBRIS)
+                        .put('b', Items.BLAZE_POWDER)
+                        .put('c', Items.FIRE_CHARGE),
+                "has_blaze_rod", has(Items.BLAZE_ROD), "blaze_cube");
+        extremeShaped(output, RecipeCategory.MISC, ModItems.refined_coal.get(), 2,
+                new String[]{"     ", " aaa ", " aba ", " aaa ", "     "},
+                keyMap().put('a', Items.COAL).put('b', ModItems.neutron_nugget.get()),
+                "has_neutron_pile", has(ModItems.neutron_pile.get()), "refined_coal");
 
         extremeShaped(output, RecipeCategory.MISC, ModItems.neutron_ring.get(), 3,
                 new String[]{"  aaa  ", " cbbbc ", "ab d ba", "abdedba", "ab d ba", " cbbbc ", "  aaa  "},
@@ -462,10 +550,14 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('P', ModItems.neutron_pile.get())
                         .put('A', ModBlocks.crystal_matrix.get()),
                 "has_endest_pearl", has(ModItems.endest_pearl.get()), "enhancement_core");
-        extremeShaped(output, RecipeCategory.MISC, ModItems.star_fuel.get(), 4, 4,
+        extremeShaped(output, RecipeCategory.MISC, ModItems.star_fuel.get(), 4,
                 new String[]{"         ", "  aaaaa  ", " abbcbba ", " abaaaba ", " acadaca ", " abaaaba ", " abbcbba ", "  aaaaa  ", "         "},
                 keyMap().put('a', Blocks.COAL_BLOCK).put('b', Blocks.MAGMA_BLOCK).put('c', Items.LAVA_BUCKET).put('d', ModItems.eternal_singularity.get()),
                 "has_eternal_singularity", has(ModItems.eternal_singularity.get()), "star_fuel");
+        extremeShaped(output, RecipeCategory.MISC, ModItems.star_fuel.get(), 4,
+                new String[]{"         ", "         ", "         ", "   aaa   ", "   aba   ", "   aaa   ", "         ", "         ", "         "},
+                keyMap().put('a', ModBlocks.refined_coal_block.get()).put('b', ModItems.eternal_singularity.get()),
+                "has_eternal_singularity", has(ModItems.eternal_singularity.get()), "star_fuel_alternate");
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_ingot.get(), 1, 4,
                 new String[]{"NNNNNNNNN", "NCXXCXXCN", "NXCCXCCXN", "NCXXCXXCN", "NNNNNNNNN"},
                 keyMap().put('N', ModItems.neutron_ingot.get()).put('C', ModItems.crystal_matrix_ingot.get()).put('X', ModItems.infinity_catalyst.get()),
@@ -494,7 +586,13 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 blazeKeys, "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_shovel");
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.blaze_bow.get(), 2,
                 new String[]{" ABBA", "ACDDC", "BD E ", "BDE  ", "AC   "},
-                blazeKeys, "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_bow");
+                keyMap()
+                        .put('A', Blocks.BONE_BLOCK)
+                        .put('B', ModItems.blaze_cube.get())
+                        .put('C', ModItems.diamond_lattice.get())
+                        .put('D', Items.BLAZE_POWDER)
+                        .put('E', Blocks.SOUL_SOIL),
+                "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_bow");
 
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.crystal_hoe.get(), 3,
                 new String[]{"CAAAAA ", " CCCA A", "     AA", "   B CA", "  B   C", " B     ", "A      "},
@@ -599,7 +697,20 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
 
     private void foodAndMiscRecipes(RecipeOutput output) {
         extremeShapeless(output, RecipeCategory.TOOLS, ModItems.cosmic_meatballs.get(), 4,
-                list(Items.PORKCHOP, Items.BEEF, Items.MUTTON, Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.RABBIT, Items.CHICKEN, Items.ROTTEN_FLESH, Items.SPIDER_EYE, ModItems.neutron_nugget.get()),
+                ingredients(
+                        Ingredient.of(Items.PORKCHOP),
+                        Ingredient.of(Items.BEEF),
+                        Ingredient.of(Items.MUTTON),
+                        Ingredient.of(Items.COD),
+                        Ingredient.of(Items.SALMON),
+                        Ingredient.of(Items.TROPICAL_FISH),
+                        Ingredient.of(Items.PUFFERFISH),
+                        Ingredient.of(Items.RABBIT),
+                        Ingredient.of(Items.CHICKEN),
+                        Ingredient.of(Items.ROTTEN_FLESH),
+                        Ingredient.of(Items.SPIDER_EYE),
+                        tagIngredient("eggs"),
+                        Ingredient.of(ModItems.neutron_nugget.get())),
                 "has_neutron_nugget", has(ModItems.neutron_nugget.get()), "cosmic_meatballs");
         extremeShapeless(output, RecipeCategory.TOOLS, ModItems.ultimate_stew.get(), 4,
                 list(Items.APPLE, Items.GOLDEN_APPLE, Items.MELON_SLICE, Items.GLISTERING_MELON_SLICE, Items.SWEET_BERRIES, Items.CHORUS_FRUIT, Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.POISONOUS_POTATO, Items.BEETROOT, Items.KELP, Items.NETHER_WART, Items.COCOA_BEANS, Items.PITCHER_POD, Items.HONEY_BOTTLE, Items.CACTUS, Items.BAMBOO, Items.SUGAR_CANE, Items.SEA_PICKLE, Items.BROWN_MUSHROOM, Items.RED_MUSHROOM, Items.CRIMSON_FUNGUS, Items.WARPED_FUNGUS, Items.WHEAT, Items.PUMPKIN, ModItems.neutron_nugget.get()),
@@ -607,16 +718,6 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void extremeSmithingRecipes(RecipeOutput output) {
-        extremeSmithing(output, Items.NETHERITE_SWORD, ModItems.infinity_sword.get(), "infinity_sword_smithing");
-        extremeSmithing(output, Items.NETHERITE_PICKAXE, ModItems.infinity_pickaxe.get(), "infinity_pickaxe_smithing");
-        extremeSmithing(output, Items.NETHERITE_AXE, ModItems.infinity_axe.get(), "infinity_axe_smithing");
-        extremeSmithing(output, Items.NETHERITE_SHOVEL, ModItems.infinity_shovel.get(), "infinity_shovel_smithing");
-        extremeSmithing(output, Items.NETHERITE_HOE, ModItems.infinity_hoe.get(), "infinity_hoe_smithing");
-        extremeSmithing(output, Items.NETHERITE_CHESTPLATE, ModItems.infinity_chestplate.get(), "infinity_chestplate");
-        extremeSmithing(output, Items.NETHERITE_LEGGINGS, ModItems.infinity_pants.get(), "infinity_pants");
-        extremeSmithing(output, Items.NETHERITE_BOOTS, ModItems.infinity_boots.get(), "infinity_boots");
-        extremeSmithing(output, Items.NETHERITE_HELMET, ModItems.infinity_helmet.get(), "infinity_helmet");
-
         save(output, "infinity_elytra", new ExtremeSmithingRecipe(
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
                 Ingredient.of(Items.ELYTRA),
@@ -675,17 +776,29 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void storage(RecipeOutput output, ItemLike small, ItemLike large, ResourceKey<Recipe<?>> packingKey, ResourceKey<Recipe<?>> unpackingKey) {
-        this.shaped(RecipeCategory.MISC, large)
+        storage(output, RecipeCategory.MISC, small, RecipeCategory.MISC, large, packingKey, null, unpackingKey, null);
+    }
+
+    private void storage(RecipeOutput output, RecipeCategory smallCategory, ItemLike small, RecipeCategory largeCategory, ItemLike large,
+                         ResourceKey<Recipe<?>> packingKey, String packingGroup, ResourceKey<Recipe<?>> unpackingKey, String unpackingGroup) {
+        var packing = this.shaped(largeCategory, large)
                 .pattern("###")
                 .pattern("###")
                 .pattern("###")
                 .define('#', small)
-                .unlockedBy("has_" + name(small), has(small))
-                .save(output, packingKey);
-        this.shapeless(RecipeCategory.MISC, small, 9)
+                .unlockedBy("has_" + name(small), has(small));
+        if (packingGroup != null) {
+            packing.group(packingGroup);
+        }
+        packing.save(output, packingKey);
+
+        var unpacking = this.shapeless(smallCategory, small, 9)
                 .requires(large)
-                .unlockedBy("has_" + name(large), has(large))
-                .save(output, unpackingKey);
+                .unlockedBy("has_" + name(large), has(large));
+        if (unpackingGroup != null) {
+            unpacking.group(unpackingGroup);
+        }
+        unpacking.save(output, unpackingKey);
     }
 
     private void infinityTool(RecipeOutput output, ItemLike result, String name, String[] pattern) {

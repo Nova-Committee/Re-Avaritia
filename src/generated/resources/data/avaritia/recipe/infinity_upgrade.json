@@ -1,22 +1,26 @@
 {
   "type": "avaritia:shaped_table",
   "key": {
-    "a": "avaritia:crystal_matrix_ingot",
-    "b": "avaritia:neutron_ingot",
-    "c": "avaritia:neutron_pile",
-    "d": "avaritia:infinity_nugget",
-    "e": "avaritia:infinity_ingot",
+    "a": "avaritia:neutron",
+    "b": "avaritia:blaze_cube_block",
+    "c": "avaritia:crystal_matrix_ingot",
+    "d": "avaritia:neutron_ingot",
+    "e": "avaritia:neutron_gear",
     "f": "avaritia:infinity_catalyst",
-    "g": "minecraft:netherite_upgrade_smithing_template"
+    "g": "avaritia:star_fuel",
+    "h": "avaritia:eternal_singularity",
+    "i": "avaritia:neutron_nugget"
   },
   "pattern": [
-    "  aba  ",
-    " cdfdc ",
-    "acdecea",
-    "bfegefb",
-    "acdecea",
-    " cdfdc ",
-    "  aba  "
+    " aaadaaa ",
+    "baeegeea ",
+    "baegggea ",
+    "bdiegeid ",
+    "bdfehefdc",
+    " diegeidc",
+    " aedgdeac",
+    " aeegeeac",
+    " aaadaaa "
   ],
   "result": {
     "id": "avaritia:infinity_upgrade"

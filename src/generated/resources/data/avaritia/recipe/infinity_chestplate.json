@@ -1,16 +1,23 @@
 {
-  "type": "avaritia:extreme_smithing",
-  "addition": {
-    "neoforge:ingredient_type": "neoforge:compound",
-    "children": [
-      "avaritia:infinity_ingot",
-      "avaritia:infinity_catalyst",
-      "avaritia:enhancement_core"
-    ]
+  "type": "avaritia:shaped_table",
+  "key": {
+    "I": "avaritia:infinity_ingot",
+    "N": "avaritia:neutron_ingot",
+    "X": "avaritia:crystal_matrix"
   },
-  "base": "minecraft:netherite_chestplate",
+  "pattern": [
+    " NN   NN ",
+    "NNN   NNN",
+    "NNN   NNN",
+    " NIIIIIN ",
+    " NIIXIIN ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    " NIIIIIN ",
+    "  NNNNN  "
+  ],
   "result": {
     "id": "avaritia:infinity_chestplate"
   },
-  "template": "avaritia:upgrade_smithing_template"
+  "tier": 4
 }

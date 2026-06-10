@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_blaze_cube_block": {
+    "has_blaze_rod": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:blaze_cube_block"
+            "items": "minecraft:blaze_rod"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_blaze_cube_block"
+      "has_blaze_rod"
     ]
   ],
   "rewards": {

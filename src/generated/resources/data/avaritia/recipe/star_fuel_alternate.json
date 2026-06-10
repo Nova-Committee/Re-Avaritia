@@ -1,11 +1,22 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    "avaritia:star_fuel_block"
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "avaritia:refined_coal_block",
+    "b": "avaritia:eternal_singularity"
+  },
+  "pattern": [
+    "         ",
+    "         ",
+    "         ",
+    "   aaa   ",
+    "   aba   ",
+    "   aaa   ",
+    "         ",
+    "         ",
+    "         "
   ],
   "result": {
-    "count": 9,
     "id": "avaritia:star_fuel"
-  }
+  },
+  "tier": 4
 }

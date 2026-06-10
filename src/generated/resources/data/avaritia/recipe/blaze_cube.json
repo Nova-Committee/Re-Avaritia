@@ -1,11 +1,21 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    "avaritia:blaze_cube_block"
+  "type": "avaritia:shaped_table",
+  "key": {
+    "a": "minecraft:ancient_debris",
+    "b": "minecraft:blaze_powder",
+    "c": "minecraft:fire_charge",
+    "x": "minecraft:blaze_rod",
+    "y": "minecraft:bone"
+  },
+  "pattern": [
+    " bcb ",
+    "byxyb",
+    "cxaxc",
+    "byxyb",
+    " bcb "
   ],
   "result": {
-    "count": 9,
     "id": "avaritia:blaze_cube"
-  }
+  },
+  "tier": 2
 }

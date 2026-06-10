@@ -2,8 +2,8 @@
   "type": "avaritia:shaped_table",
   "key": {
     "A": "minecraft:bone_block",
-    "B": "avaritia:diamond_lattice",
-    "C": "avaritia:blaze_cube",
+    "B": "avaritia:blaze_cube",
+    "C": "avaritia:diamond_lattice",
     "D": "minecraft:blaze_powder",
     "E": "minecraft:soul_soil"
   },

@@ -5,7 +5,7 @@
     "C": "avaritia:crystal_matrix_ingot",
     "I": "avaritia:infinity_ingot",
     "N": "avaritia:neutron_ingot",
-    "P": "avaritia:neutron_pile",
+    "P": "minecraft:heart_of_the_sea",
     "X": "avaritia:infinity_catalyst"
   },
   "pattern": [

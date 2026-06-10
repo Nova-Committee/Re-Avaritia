@@ -57,6 +57,7 @@ public class AvaritiaData {
 
         // 3. 合成配方提供程序
         generator.addProvider(true, new AvaritiaRecipeProvider.Runner(packOutput, lookupProvider));
+        generator.addProvider(true, new AvaritiaCompatRecipeProvider(packOutput));
 
         // 4. 方块战利品表提供程序
         generator.addProvider(true, new AvaritiaLootTableProvider(packOutput, lookupProvider));

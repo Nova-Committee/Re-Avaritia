@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "a": "minecraft:chest",
-    "b": "avaritia:crystal_matrix_ingot"
+    "c": "minecraft:chest",
+    "g": "avaritia:neutron_gear"
   },
   "pattern": [
-    "aaa",
-    "aba",
-    "aaa"
+    "ccc",
+    "cgc",
+    "ccc"
   ],
   "result": {
     "id": "avaritia:compressed_chest"

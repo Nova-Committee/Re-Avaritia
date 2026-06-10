@@ -1,6 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "building",
+  "group": "infinity_block",
   "key": {
     "#": "avaritia:infinity_ingot"
   },

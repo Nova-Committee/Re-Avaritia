@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_star_fuel_block": {
+    "has_eternal_singularity": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:star_fuel_block"
+            "items": "avaritia:eternal_singularity"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_star_fuel_block"
+      "has_eternal_singularity"
     ]
   ],
   "rewards": {

@@ -12,6 +12,10 @@
     "minecraft:chicken",
     "minecraft:rotten_flesh",
     "minecraft:spider_eye",
+    {
+      "neoforge:ingredient_type": "avaritia:tag",
+      "tag": "c:eggs"
+    },
     "avaritia:neutron_nugget"
   ],
   "result": {

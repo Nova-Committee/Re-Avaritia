@@ -1,0 +1,44 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "storagedrawers"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "D": {
+      "tag": "storagedrawers:drawers"
+    },
+    "E": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "storagedrawers:emerald_storage_upgrade"
+        }
+      ]
+    },
+    "N": {
+      "item": "avaritia:neutron_nugget"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "    S    ",
+    " NDDDDDN ",
+    " DNDDDND ",
+    " DDNDNDD ",
+    "SDDDEDDDS",
+    " DDNDNDD ",
+    " DNDDDND ",
+    " NDDDDDN ",
+    "    S    "
+  ],
+  "result": {
+    "count": 1,
+    "id": "storagedrawers:creative_storage_upgrade"
+  },
+  "tier": 4
+}

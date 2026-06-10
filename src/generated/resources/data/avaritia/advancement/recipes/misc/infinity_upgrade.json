@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_infinity_ingot": {
+    "has_eternal_singularity": {
       "conditions": {
         "items": [
           {
-            "items": "avaritia:infinity_ingot"
+            "items": "avaritia:eternal_singularity"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_infinity_ingot"
+      "has_eternal_singularity"
     ]
   ],
   "rewards": {

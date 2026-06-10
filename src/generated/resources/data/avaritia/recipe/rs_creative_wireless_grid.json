@@ -1,0 +1,86 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "refinedstorage"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:endest_pearl"
+    },
+    "B": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:range_upgrade"
+        }
+      ]
+    },
+    "C": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:wireless_transmitter"
+        }
+      ]
+    },
+    "D": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:destruction_core"
+        }
+      ]
+    },
+    "E": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:construction_core"
+        }
+      ]
+    },
+    "F": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:wireless_grid"
+        }
+      ]
+    },
+    "G": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:network_receiver"
+        }
+      ]
+    },
+    "H": {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "refinedstorage:storage_housing"
+        }
+      ]
+    }
+  },
+  "pattern": [
+    "HH     HH",
+    "H       H",
+    " BCCCCCB ",
+    " CDDFEEC ",
+    " CGFAFGC ",
+    " CDDFEEC ",
+    " BCCCCCB ",
+    "H       H",
+    "HH     HH"
+  ],
+  "result": {
+    "count": 1,
+    "id": "refinedstorage:creative_wireless_grid"
+  },
+  "tier": 4
+}

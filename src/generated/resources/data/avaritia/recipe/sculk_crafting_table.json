@@ -1,5 +1,6 @@
 {
-  "type": "avaritia:shaped_table",
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "a": "minecraft:echo_shard",
     "b": "minecraft:sculk_shrieker",
@@ -14,6 +15,5 @@
   ],
   "result": {
     "id": "avaritia:sculk_crafting_table"
-  },
-  "tier": 1
+  }
 }

@@ -1,11 +1,15 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    "avaritia:crystal_matrix"
+  "type": "avaritia:shaped_table",
+  "key": {
+    "x": "avaritia:diamond_lattice",
+    "y": "minecraft:nether_star"
+  },
+  "pattern": [
+    "xyx",
+    "xyx"
   ],
   "result": {
-    "count": 9,
     "id": "avaritia:crystal_matrix_ingot"
-  }
+  },
+  "tier": 1
 }
