@@ -2371,7 +2371,17 @@ public class AvaritiaLanguageProvider implements DataProvider {
             }
             """;
             case "ja_jp" -> """
-            {}
+            {
+              "gui.avaritia.add": "追加",
+              "gui.avaritia.clear": "クリア",
+              "gui.avaritia.item_filter.count": "フィルター: %s",
+              "gui.avaritia.item_select.all": "全て",
+              "gui.avaritia.item_select.count": "アイテム: %s",
+              "gui.avaritia.item_select.inventory": "インベントリ",
+              "gui.avaritia.remove": "削除",
+              "title.avaritia.item_filter": "インフィニティツールフィルター",
+              "title.avaritia.item_select": "アイテムを選択"
+            }
             """;
             case "zh_cn" -> """
             {
@@ -2382,6 +2392,13 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "block.avaritia.fake_end_portal_frame": "伪末地传送门框架",
               "config.avaritia.endest_pearl_absorption_limit": "终望珍珠吸收上限",
               "config.avaritia.endest_pearl_absorption_limit.tooltip": "终望珍珠形成的黑洞在蒸发前可吸收的物质量",
+              "gui.avaritia.add": "添加",
+              "gui.avaritia.clear": "清空",
+              "gui.avaritia.item_filter.count": "过滤项：%s",
+              "gui.avaritia.item_select.all": "全部",
+              "gui.avaritia.item_select.count": "物品：%s",
+              "gui.avaritia.item_select.inventory": "物品栏",
+              "gui.avaritia.remove": "移除",
               "item.avaritia.forge_energy": "锻造能量",
               "title.avaritia.item_filter": "无尽工具过滤器",
               "title.avaritia.item_select": "选择物品"
@@ -2394,8 +2411,17 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "block.avaritia.fake_end_portal_frame": "偽終界傳送門框架",
               "config.avaritia.endest_pearl_absorption_limit": "終望珍珠吸收上限",
               "config.avaritia.endest_pearl_absorption_limit.tooltip": "終望珍珠形成的黑洞在蒸發前可吸收的物質量",
+              "gui.avaritia.add": "添加",
+              "gui.avaritia.clear": "清空",
+              "gui.avaritia.item_filter.count": "過濾項：%s",
+              "gui.avaritia.item_select.all": "全部",
+              "gui.avaritia.item_select.count": "物品：%s",
+              "gui.avaritia.item_select.inventory": "物品欄",
+              "gui.avaritia.remove": "移除",
               "item.avaritia.forge_energy": "鍛造能量",
-              "item.avaritia.infinity_mace": "山崩地裂之錘"
+              "item.avaritia.infinity_mace": "山崩地裂之錘",
+              "title.avaritia.item_filter": "無盡工具過濾器",
+              "title.avaritia.item_select": "選擇物品"
             }
             """;
             default -> "{}";
