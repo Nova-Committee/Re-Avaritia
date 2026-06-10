@@ -36,6 +36,7 @@ import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
@@ -221,7 +222,7 @@ public class InfinityHandler {
     public static void onInfiniteHurt(LivingIncomingDamageEvent event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
+            if ((ToolUtils.isInfinite(player) || isUsingInfinityElytra(player)) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 event.setCanceled(true);
             }
         }
@@ -239,7 +240,7 @@ public class InfinityHandler {
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
+            if ((ToolUtils.isInfinite(player) || isUsingInfinityElytra(player)) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 event.setNewDamage(0.0F);
                 player.hurtTime = 0;
                 player.deathTime = 0;
@@ -251,11 +252,29 @@ public class InfinityHandler {
     public static void onLivingHurt(LivingDamageEvent.Post event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
+            if ((ToolUtils.isInfinite(player) || isUsingInfinityElytra(player)) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 player.hurtTime = 0;
                 player.deathTime = 0;
             }
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onInfinityElytraFall(LivingFallEvent event) {
+        if (event.getEntity() instanceof Player player && isWearingInfinityElytra(player)) {
+            event.setDistance(0.0F);
+            event.setDamageMultiplier(0.0F);
+            player.resetFallDistance();
+            event.setCanceled(true);
+        }
+    }
+
+    private static boolean isUsingInfinityElytra(Player player) {
+        return isWearingInfinityElytra(player) && (player.isFallFlying() || !player.onGround());
+    }
+
+    private static boolean isWearingInfinityElytra(Player player) {
+        return player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get());
     }
 
     @SubscribeEvent
