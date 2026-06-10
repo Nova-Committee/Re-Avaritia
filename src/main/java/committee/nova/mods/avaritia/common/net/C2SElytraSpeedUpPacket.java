@@ -14,12 +14,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
 
 public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) implements CustomPacketPayload {
+    private static final double TAKEOFF_UPWARD_SPEED = 0.72D;
+    private static final double TAKEOFF_FORWARD_SPEED = 0.35D;
+    private static final double BOOST_TAKEOFF_FORWARD_SPEED = 0.65D;
+
     public static final CustomPacketPayload.Type<C2SElytraSpeedUpPacket> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_elytra_speed_up"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SElytraSpeedUpPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,
@@ -42,18 +47,71 @@ public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) imp
                 if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) return;
                 if (!packet.customFlying()) return;
 
-                // 复用原版滑翔入口，让地面、乘骑、水中、创造飞行等边界仍由原版校验。
-                if (!player.isFallFlying()) {
-                    player.tryToStartFallFlying();
-                }
+                boolean fallFlying = ensureFallFlying(player, packet.boosting());
 
-                if (packet.boosting() && player.isFallFlying()) {
+                if (packet.boosting() && fallFlying) {
                     applyBoost(player);
                 }
             }).exceptionally(e -> {
                 context.disconnect(Component.literal("Error processing packet: " + e.getMessage()));
                 return null;
             });
+        }
+    }
+
+    private static boolean ensureFallFlying(ServerPlayer player, boolean boosting) {
+        if (player.isFallFlying()) {
+            return true;
+        }
+
+        if (player.tryToStartFallFlying()) {
+            return true;
+        }
+
+        if (canLaunchFromGround(player)) {
+            launchFromGround(player, boosting);
+        }
+
+        return false;
+    }
+
+    private static boolean canLaunchFromGround(ServerPlayer player) {
+        return player.onGround()
+                && !player.isPassenger()
+                && !player.isInWater()
+                && !player.onClimbable()
+                && !player.getAbilities().flying
+                && !player.hasEffect(MobEffects.LEVITATION);
+    }
+
+    private static void launchFromGround(ServerPlayer player, boolean boosting) {
+        Vec3 lookVec = player.getLookAngle();
+        Vec3 horizontalLook = new Vec3(lookVec.x, 0.0D, lookVec.z);
+        double horizontalLengthSqr = horizontalLook.lengthSqr();
+        Vec3 forward = horizontalLengthSqr > 1.0E-7D ? horizontalLook.normalize() : Vec3.ZERO;
+        double forwardSpeed = boosting ? BOOST_TAKEOFF_FORWARD_SPEED : TAKEOFF_FORWARD_SPEED;
+        Vec3 currentVelocity = player.getDeltaMovement();
+
+        player.setDeltaMovement(
+                currentVelocity.x + forward.x * forwardSpeed,
+                Math.max(currentVelocity.y, TAKEOFF_UPWARD_SPEED),
+                currentVelocity.z + forward.z * forwardSpeed
+        );
+        player.resetFallDistance();
+        player.hurtMarked = true;
+
+        if (player.level() instanceof ServerLevel level) {
+            level.sendParticles(
+                    ParticleTypes.CLOUD,
+                    player.getX(),
+                    player.getY() + 0.15D,
+                    player.getZ(),
+                    10,
+                    0.25D,
+                    0.08D,
+                    0.25D,
+                    0.04D
+            );
         }
     }
 

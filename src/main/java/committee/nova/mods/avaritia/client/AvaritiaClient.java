@@ -383,14 +383,14 @@ public class AvaritiaClient {
             return;
         }
 
-        boolean canRequestGlide = !player.onGround()
-                && !player.isPassenger()
+        boolean canRequestGlide = !player.isPassenger()
                 && !player.isInWater()
+                && !player.onClimbable()
                 && !player.getAbilities().flying;
         boolean wantsLaunch = canRequestGlide
                 && !player.isFallFlying()
                 && minecraft.options.keyJump.isDown();
-        boolean wantsBoost = player.isFallFlying()
+        boolean wantsBoost = (player.isFallFlying() || wantsLaunch)
                 && minecraft.options.keySprint.isDown()
                 && !minecraft.options.keyShift.isDown();
 
