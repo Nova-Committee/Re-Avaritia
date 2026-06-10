@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "committee.nova.mods.avaritia.mixin",
+  "plugin": "committee.nova.mods.avaritia.mixin.AvaritiaMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "avaritia.refmap.json",
   "mixins": [
@@ -14,6 +15,7 @@
     "accessor.MappedRegistryAccessor"
   ],
   "client": [
+    "compat.JeiModIdHelperMixin",
     "client.RenderPassMixin",
     "client.RenderSystemMixin",
     "client.RenderTypeMixin"
