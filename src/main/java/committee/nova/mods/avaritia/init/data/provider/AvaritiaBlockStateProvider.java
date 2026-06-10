@@ -193,10 +193,10 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         Identifier top = mod("block/machine/collector/" + textureBase + "_top");
         return cubeModel(id,
                 top,
-                frame,
                 mod("block/machine/collector/" + textureBase + "_front"),
-                mod("block/machine/collector/" + textureBase + "_side_left"),
+                frame,
                 mod("block/machine/collector/" + textureBase + "_side_right"),
+                mod("block/machine/collector/" + textureBase + "_side_left"),
                 top,
                 frame);
     }
@@ -213,10 +213,10 @@ public class AvaritiaBlockStateProvider implements DataProvider {
             Identifier top = mod("block/machine/compressor/compressor_top");
             return cubeModel(id,
                     top,
-                    frame,
                     mod("block/machine/compressor/compressor_front"),
-                    mod("block/machine/compressor/compressor_side_left"),
+                    frame,
                     mod("block/machine/compressor/compressor_side_right"),
+                    mod("block/machine/compressor/compressor_side_left"),
                     top,
                     frame);
         }
@@ -302,6 +302,9 @@ public class AvaritiaBlockStateProvider implements DataProvider {
                 case "endless_cake" -> flatItemModel("endless_cake", mod("item/misc/endless_cake"));
                 case "extreme_anvil" -> jsonModel(mod("item/extreme_anvil"), EXTREME_ANVIL_ITEM_MODEL);
                 case "infinity_chest" -> jsonModel(mod("item/infinity_chest"), INFINITY_CHEST_ITEM_MODEL);
+                case "neutron_collector", "dense_neutron_collector", "denser_neutron_collector", "densest_neutron_collector",
+                     "neutron_compressor", "dense_neutron_compressor", "denser_neutron_compressor", "densest_neutron_compressor" ->
+                        machineBlockItemModel(path, model);
                 default -> model;
             };
             var clientModel = path.equals("infinity_chest")
@@ -315,6 +318,24 @@ public class AvaritiaBlockStateProvider implements DataProvider {
         Identifier modelId = mod("item/" + modelPath);
         ModelTemplates.FLAT_ITEM.create(modelId, new TextureMapping().put(TextureSlot.LAYER0, texture(layer0)), this.generatedModels::put);
         return modelId;
+    }
+
+    private Identifier machineBlockItemModel(String path, Identifier parent) {
+        return jsonModel(mod("item/" + path), """
+                {
+                  "parent": "%s",
+                  "display": {
+                    "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.625, 0.625, 0.625]},
+                    "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25, 0.25, 0.25]},
+                    "head": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+                    "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [0.5, 0.5, 0.5]},
+                    "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.375, 0.375, 0.375]},
+                    "thirdperson_lefthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.375, 0.375, 0.375]},
+                    "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 0, 0], "scale": [0.4, 0.4, 0.4]},
+                    "firstperson_lefthand": {"rotation": [0, 45, 0], "translation": [0, 0, 0], "scale": [0.4, 0.4, 0.4]}
+                  }
+                }
+                """.formatted(parent));
     }
 
     private Identifier jsonModel(Identifier modelId, String json) {

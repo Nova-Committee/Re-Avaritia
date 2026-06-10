@@ -2,11 +2,11 @@
   "parent": "minecraft:block/cube",
   "textures": {
     "down": "avaritia:block/machine/compressor/frame",
-    "east": "avaritia:block/machine/compressor/compressor_side_left",
-    "north": "avaritia:block/machine/compressor/frame",
+    "east": "avaritia:block/machine/compressor/compressor_side_right",
+    "north": "avaritia:block/machine/compressor/compressor_front",
     "particle": "avaritia:block/machine/compressor/compressor_top",
-    "south": "avaritia:block/machine/compressor/compressor_front",
+    "south": "avaritia:block/machine/compressor/frame",
     "up": "avaritia:block/machine/compressor/compressor_top",
-    "west": "avaritia:block/machine/compressor/compressor_side_right"
+    "west": "avaritia:block/machine/compressor/compressor_side_left"
   }
 }

@@ -2,11 +2,11 @@
   "parent": "minecraft:block/cube",
   "textures": {
     "down": "avaritia:block/machine/collector/frame",
-    "east": "avaritia:block/machine/collector/dense_collector_side_left",
-    "north": "avaritia:block/machine/collector/frame",
+    "east": "avaritia:block/machine/collector/dense_collector_side_right",
+    "north": "avaritia:block/machine/collector/dense_collector_front",
     "particle": "avaritia:block/machine/collector/dense_collector_top",
-    "south": "avaritia:block/machine/collector/dense_collector_front",
+    "south": "avaritia:block/machine/collector/frame",
     "up": "avaritia:block/machine/collector/dense_collector_top",
-    "west": "avaritia:block/machine/collector/dense_collector_side_right"
+    "west": "avaritia:block/machine/collector/dense_collector_side_left"
   }
 }
