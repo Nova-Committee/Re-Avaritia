@@ -1,748 +1,2404 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import committee.nova.mods.avaritia.Const;
-
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
-import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
-import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.init.registry.ModMobEffects;
-import committee.nova.mods.avaritia.init.registry.enums.ModLang;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * Avaritia 英文本地化数据生成器。
+ * ??????????
  * <p>
- * 负责通过 datagen 生成 {@code assets/avaritia/lang/en_us.json}，避免手写语言 JSON。
- * </p>
+ * ?????????????? JSON???????????????????
+ * ????????????????????????????????????
  */
-public class AvaritiaLanguageProvider extends LanguageProvider {
+public class AvaritiaLanguageProvider implements DataProvider {
+    private static final String[] LOCALES = {"en_us", "ja_jp", "zh_cn", "zh_tw"};
 
-    /**
-     * 创建语言文件提供器。
-     *
-     * @param output 数据生成输出目录
-     * @param locale 语言区域代码，例如 {@code en_us}
-     */
-    public AvaritiaLanguageProvider(PackOutput output, String locale) {
-        super(output, Const.MOD_ID, locale);
+    private final PackOutput.PathProvider pathProvider;
+
+    public AvaritiaLanguageProvider(PackOutput output) {
+        this.pathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "lang");
     }
 
-    /**
-     * 添加全部英文本地化条目。
-     */
     @Override
-    protected void addTranslations() {
-        addItems();
-        addBlocks();
-        addCreativeTabs();
-        addEntities();
-        addEffectsAndEnchantments();
-        addSingularities();
-        addToolModes();
-        addTooltips();
-        addContainersAndScreens();
-        addButtons();
-        addDeathMessages();
-        addRecipeViewerTexts();
-        addConfigTexts();
-        addAdvancements();
-        addMiscTexts();
+    public @NotNull CompletableFuture<?> run(@NotNull CachedOutput output) {
+        return CompletableFuture.allOf(Arrays.stream(LOCALES)
+                .map(locale -> save(output, locale, buildLanguage(locale)))
+                .toArray(CompletableFuture[]::new));
     }
 
-    /**
-     * 添加物品名称。
-     */
-    private void addItems() {
-        add(ModItems.neutron_ring.get(), "Neutronium Ring");
-        add(ModItems.infinity_totem.get(), "Infinity Totem");
-        add(ModItems.infinity_ring.get(), "Infinity Ring (WIP)");
-        add(ModItems.infinity_umbrella.get(), "Infinity Umbrella");
-        add(ModItems.infinity_clock.get(), "Infinity Clock");
-        add(ModItems.side_config_card.get(), "Side Configuration Card");
-
-        add(ModItems.infinity_sword.get(), "Sword of the Cosmos");
-        add(ModItems.infinity_hoe.get(), "Eternal Fertility");
-        add(ModItems.infinity_pickaxe.get(), "World Breaker");
-        add(ModItems.infinity_shovel.get(), "Planet Eater");
-        add(ModItems.infinity_axe.get(), "Nature's Ruin");
-        add(ModItems.infinity_bucket.get(), "Infinity Bucket");
-        add(ModItems.infinity_bow.get(), "Longbow of the Heavens");
-        add(ModItems.infinity_crossbow.get(), "Crossbow of the Inferno");
-        add(ModItems.infinity_shield.get(), "Shield of the Earth's Core");
-        add(ModItems.infinity_trident.get(), "Trident of the Sea Abyss");
-        add(ModItems.infinity_mace.get(), "Infinity Mace");
-
-        add(ModItems.crystal_sword.get(), "Crystal Sword");
-        add(ModItems.crystal_hoe.get(), "Crystal Hoe");
-        add(ModItems.crystal_pickaxe.get(), "Crystal Pickaxe");
-        add(ModItems.crystal_shovel.get(), "Crystal Shovel");
-        add(ModItems.crystal_axe.get(), "Crystal Axe");
-        add(ModItems.crystal_bow.get(), "Crystal Bow");
-
-        add(ModItems.blaze_sword.get(), "Blaze Skull Sword");
-        add(ModItems.blaze_hoe.get(), "Blaze Soul Hoe");
-        add(ModItems.blaze_pickaxe.get(), "Blaze Lava Pickaxe");
-        add(ModItems.blaze_shovel.get(), "Blaze Fire Shovel");
-        add(ModItems.blaze_axe.get(), "Blaze Bush Axe");
-        add(ModItems.blaze_bow.get(), "Blaze Shining Bow");
-
-        add(ModItems.infinity_helmet.get(), "Infinity Helmet");
-        add(ModItems.infinity_chestplate.get(), "Infinity Chestplate");
-        add(ModItems.infinity_pants.get(), "Infinity Pants");
-        add(ModItems.infinity_boots.get(), "Infinity Boots");
-        add(ModItems.neutron_horse_armor.get(), "Neutronium Horse Armor");
-        add(ModItems.infinity_elytra.get(), "Infinity Elytra");
-
-        add(ModItems.blaze_cube.get(), "Blaze Cube");
-        add(ModItems.diamond_lattice.get(), "Diamond Lattice");
-        add(ModItems.crystal_matrix_ingot.get(), "Crystal Matrix Ingot");
-        add(ModItems.neutron_pile.get(), "Pile of Neutrons");
-        add(ModItems.neutron_nugget.get(), "Neutronium Nugget");
-        add(ModItems.neutron_ingot.get(), "Neutronium Ingot");
-        add(ModItems.neutron_gear.get(), "Neutronium Gear");
-        add(ModItems.infinity_nugget.get(), "Infinity Nugget");
-        add(ModItems.infinity_catalyst.get(), "Infinity Catalyst");
-        add(ModItems.infinity_ingot.get(), "Infinity Ingot");
-        add(ModItems.singularity.get(), "%s Singularity");
-        add(ModItems.eternal_singularity.get(), "Eternal Singularity");
-        add(ModItems.record_fragment.get(), "Record Fragment");
-        add(ModItems.star_fuel.get(), "Star Fuel");
-        add(ModItems.refined_coal.get(), "Refined Coal");
-        add(ModItems.endest_pearl.get(), "Endest Pearl");
-        add(ModItems.matter_cluster.get(), "Matter Cluster");
-        add(ModItems.full_matter_cluster.get(), "Full Matter Cluster");
-        add(ModItems.enhancement_core.get(), "Enhancement Core");
-        add(ModItems.upgrade_smithing_template.get(), "Upgrade Smithing Template");
-        add(ModItems.infinity_upgrade.get(), "Infinity Upgrade");
-        add(ModItems.ultimate_stew.get(), "Ultimate Stew");
-        add(ModItems.cosmic_meatballs.get(), "Cosmic Meatballs");
-        add(ModItems.forge_energy.get(), "Forge Energy");
+    @Override
+    public @NotNull String getName() {
+        return "Avaritia Languages";
     }
 
-    /**
-     * 添加方块名称。
-     */
-    private void addBlocks() {
-        add(ModBlocks.compressed_crafting_table.get(), "Compressed Crafting Table");
-        add(ModBlocks.double_compressed_crafting_table.get(), "Double Compressed Crafting Table");
-        add(ModBlocks.neutron.get(), "Neutronium Block");
-        add(ModBlocks.infinity.get(), "Infinity Block");
-        add(ModBlocks.crystal_matrix.get(), "Crystal Matrix");
-        add(ModBlocks.blaze_cube_block.get(), "Blaze Cube Block");
-        add(ModBlocks.compressed_chest.get(), "Compressed Chest");
-        add(ModBlocks.infinity_chest.get(), "Infinity Chest");
-        add(ModBlocks.soul_farmland.get(), "Soul Farmland");
-        add(ModBlocks.diamond_lattice_block.get(), "Diamond Lattice Block");
-        add(ModBlocks.star_fuel_block.get(), "Star Fuel Block");
-        add(ModBlocks.refined_coal_block.get(), "Refined Coal Block");
-        add(ModBlocks.sculk_crafting_table.get(), "Sculk Crafting Table");
-        add(ModBlocks.nether_crafting_table.get(), "Nether Crafting Table");
-        add(ModBlocks.end_crafting_table.get(), "End Crafting Table");
-        add(ModBlocks.extreme_crafting_table.get(), "Extreme Crafting Table");
-        add(ModBlocks.neutron_collector.get(), "Neutronium Collector");
-        add(ModBlocks.dense_neutron_collector.get(), "Dense Neutronium Collector");
-        add(ModBlocks.denser_neutron_collector.get(), "Denser Neutronium Collector");
-        add(ModBlocks.densest_neutron_collector.get(), "Densest Neutronium Collector");
-        add(ModBlocks.neutron_compressor.get(), "Neutronium Compressor");
-        add(ModBlocks.dense_neutron_compressor.get(), "Dense Neutronium Compressor");
-        add(ModBlocks.denser_neutron_compressor.get(), "Denser Neutronium Compressor");
-        add(ModBlocks.densest_neutron_compressor.get(), "Densest Neutronium Compressor");
-        add(ModBlocks.extreme_smithing_table.get(), "Extreme Smithing Table");
-        add(ModBlocks.extreme_anvil.get(), "Extreme Anvil");
-        add(ModBlocks.endless_cake.get(), "Endless Cake");
-        add(ModBlocks.fake_bedrock.get(), "Fake Bedrock");
-        add(ModBlocks.fake_end_portal_frame.get(), "Fake End Portal Frame");
-        add(ModBlocks.fake_end_portal.get(), "Fake End Portal");
+    private CompletableFuture<?> save(CachedOutput output, String locale, JsonObject language) {
+        return DataProvider.saveStable(output, language, this.pathProvider.json(Identifier.fromNamespaceAndPath(Const.MOD_ID, locale)));
     }
 
-    /**
-     * 添加创造模式物品栏名称。
-     */
-    private void addCreativeTabs() {
-        add("itemGroup.tab.Infinity", "Re:Avaritia");
-        add("itemGroup.tab.Singularity", "Avaritia: Singularity");
+    private static JsonObject buildLanguage(String locale) {
+        JsonObject language = JsonParser.parseString(legacyJson(locale)).getAsJsonObject();
+        JsonObject extras = JsonParser.parseString(extraJson(locale)).getAsJsonObject();
+        for (var entry : extras.entrySet()) {
+            // ??????????????????????????????
+            if (!language.has(entry.getKey())) {
+                language.add(entry.getKey(), entry.getValue());
+            }
+        }
+        return language;
     }
 
-    /**
-     * 添加实体名称。
-     */
-    private void addEntities() {
-        add(ModEntityTypes.IMMORTAL.get(), "Immortal Item");
-        add(ModEntityTypes.ENDER_PEARL.get(), "Endest Pearl");
-        add(ModEntityTypes.GAPING_VOID.get(), "Gaping Void");
-        add(ModEntityTypes.HEAVEN_ARROW.get(), "Heaven Arrow");
-        add(ModEntityTypes.NEUTRON_ARROW.get(), "Neutron Arrow");
-        add(ModEntityTypes.HEAVEN_SUB_ARROW.get(), "Heaven Sub Arrow");
-        add(ModEntityTypes.EXPLOSIONS_ARROW.get(), "Explosive Arrow");
-        add(ModEntityTypes.BURNING_ARROW.get(), "Burning Arrow");
-        add(ModEntityTypes.TRACE_ARROW.get(), "Trace Arrow");
-        add(ModEntityTypes.FIRE_BALL.get(), "Fire Ball");
-        add(ModEntityTypes.BURNING_BALL.get(), "Burning Ball");
-        add(ModEntityTypes.BLADE_SLASH.get(), "Blade Slash");
-        add(ModEntityTypes.SUN_PRO.get(), "Sun Projectile");
-        add(ModEntityTypes.RAIN_PRO.get(), "Rain Projectile");
-        add(ModEntityTypes.STORM_PRO.get(), "Storm Projectile");
-        add(ModEntityTypes.ACCELERATOR_DISPLAY.get(), "Accelerator Display");
-        add(ModEntityTypes.TNT_PRO.get(), "TNT Projectile");
-        add(ModEntityTypes.INFINITY_THROWN_TRIDENT.get(), "Infinity Thrown Trident");
+    private static String legacyJson(String locale) {
+        return switch (locale) {
+            case "en_us" -> """
+            {
+              "advancements.avaritia.start.title": "Welcome to Re:Avaritia!",
+              "advancements.avaritia.start.desc": "",
+              "advancements.avaritia.compressed_crafting_table.desc": "Craft Compressed Crafting Table",
+              "advancements.avaritia.compressed_crafting_table.title": "First Contact",
+              "advancements.avaritia.sculk_crafting_table.desc": "Craft Sculk Crafting Table",
+              "advancements.avaritia.sculk_crafting_table.title": "Sound of Ancient",
+              "advancements.avaritia.diamond_lattice.desc": "Craft diamond lattice",
+              "advancements.avaritia.diamond_lattice.title": "Brilliant New Life",
+              "advancements.avaritia.crystal_matrix_ingot.desc": "Craft Crystal Matrix Ingot",
+              "advancements.avaritia.crystal_matrix_ingot.title": "Crystal Energy Emergence",
+              "advancements.avaritia.crystal_pickaxe.desc": "Craft Crystal Pickaxe",
+              "advancements.avaritia.crystal_pickaxe.title": "Bedrock Breaker",
+              "advancements.avaritia.nether_crafting_table.desc": "Craft Nether Crafting Table",
+              "advancements.avaritia.nether_crafting_table.title": "Realm of Fire",
+              "advancements.avaritia.blaze_cube.desc": "Craft Blaze Cube",
+              "advancements.avaritia.blaze_cube.title": "Scorching Bones",
+              "advancements.avaritia.blaze_sword.desc": "Craft Blaze Skull Sword",
+              "advancements.avaritia.blaze_sword.title": "Skeleton's Nightmare",
+              "advancements.avaritia.blaze_axe.desc": "Craft Blaze Forest-Burning Axe",
+              "advancements.avaritia.blaze_axe.title": "Blaze Annihilates Forest",
+              "advancements.avaritia.refined_coal.desc": "Craft Refined Coal",
+              "advancements.avaritia.refined_coal.title": "High Efficiency Energy",
+              "advancements.avaritia.end_crafting_table.desc": "Craft End Crafting Table",
+              "advancements.avaritia.end_crafting_table.title": "End and Beginning",
+              "advancements.avaritia.neutron_collector.desc": "Craft Neutron Collector",
+              "advancements.avaritia.neutron_collector.title": "Long Wait",
+              "advancements.avaritia.eternal_singularity.desc": "Craft Eternal Singularity",
+              "advancements.avaritia.eternal_singularity.title": "Zero to Whole - Twice",
+              "advancements.avaritia.infinity_umbrella.desc": "Craft Infinity Umbrella",
+              "advancements.avaritia.infinity_umbrella.title": "Zeus",
+              "advancements.avaritia.infinity_clock.desc": "Craft Time Usurpation Clock",
+              "advancements.avaritia.infinity_clock.title": "Chronos",
+              "advancements.avaritia.upgrade_smithing_template.desc": "Craft Sublimation Template",
+              "advancements.avaritia.upgrade_smithing_template.title": "Wandering the Ends of the Earth",
+              "advancements.avaritia.enhancement_core.desc": "Craft Flawless Core",
+              "advancements.avaritia.enhancement_core.title": "Road to Completion",
+              "advancements.avaritia.extreme_smithing_table.desc": "Craft Ultimate Smithing Table",
+              "advancements.avaritia.extreme_smithing_table.title": "Start of Nightmare - Again",
+              "advancements.avaritia.endest_pearl.desc": "Use Endpoint Pearl",
+              "advancements.avaritia.endest_pearl.title": "Small black hole",
+              "advancements.avaritia.extreme_crafting_table.desc": "Craft Extreme Crafting Table",
+              "advancements.avaritia.extreme_crafting_table.title": "The Beginning of a Nightmare",
+              "advancements.avaritia.infinity_armor.desc": "Get all Infinity Armor",
+              "advancements.avaritia.infinity_armor.title": "INFINITY",
+              "advancements.avaritia.infinity_axe.desc": "Craft Infinity Axe",
+              "advancements.avaritia.infinity_axe.title": "Desolate nature!",
+              "advancements.avaritia.infinity_bow.desc": "Craft Infinity Bow",
+              "advancements.avaritia.infinity_bow.title": "Heaven falls",
+              "advancements.avaritia.infinity_catalyst.desc": "Craft Infinity Catalyst",
+              "advancements.avaritia.infinity_catalyst.title": "-Part is whole,whole is Part-",
+              "advancements.avaritia.infinity_food.desc": "Eat!",
+              "advancements.avaritia.infinity_food.title": "Clean and hygienic",
+              "advancements.avaritia.infinity_hoe.desc": "Craft Infinity Hoe",
+              "advancements.avaritia.infinity_hoe.title": "Earth Resurrection!",
+              "advancements.avaritia.infinity_ingot.desc": "Get Infinity Ingot",
+              "advancements.avaritia.infinity_ingot.title": "Sweet are the uses of adversity？",
+              "advancements.avaritia.infinity_pickaxe.desc": "Craft Infinity Pickaxe",
+              "advancements.avaritia.infinity_pickaxe.title": "World falling apart!",
+              "advancements.avaritia.infinity_shovel.desc": "Craft Infinity Shovel",
+              "advancements.avaritia.infinity_shovel.title": "Planet Devour!",
+              "advancements.avaritia.infinity_sword.desc": "Craft Infinity Sword",
+              "advancements.avaritia.infinity_sword.title": "World domination!",
+              "advancements.avaritia.matter_cluster.desc": "Get Matter Cluster",
+              "advancements.avaritia.matter_cluster.title": "Cotton artifact",
+              "advancements.avaritia.neutron_compressor.desc": "Craft Neutronium Compressor",
+              "advancements.avaritia.neutron_compressor.title": "Zero to whole",
+              "advancements.avaritia.neutron_ingot.desc": "Craft Neutron Ingot",
+              "advancements.avaritia.neutron_ingot.title": "Very hard to get",
+              "advancements.avaritia.neutron_pile.desc": "Get neutron dust!",
+              "advancements.avaritia.neutron_pile.title": "Endless hang up",
+              "advancements.avaritia.singularity.desc": "get a singularity",
+              "advancements.avaritia.singularity.title": "Running low on stock",
+              "advancements.avaritia.star_fuel.desc": "Get stellar fuel",
+              "advancements.avaritia.star_fuel.title": "Stellar Energy",
+              "attribute.name.generic.walking_speed": "WALKING SPEED",
+              "block.avaritia.blaze_cube_block": "Blaze Cube Block",
+              "block.avaritia.compressed_chest": "Compressed Chest",
+              "block.avaritia.compressed_crafting_table": "Compressed Crafting Table",
+              "block.avaritia.crystal_matrix": "Crystal Matrix",
+              "block.avaritia.dense_neutron_collector": "Dense Neutronium Collector",
+              "block.avaritia.dense_neutron_compressor": "Dense Neutronium Compressor",
+              "block.avaritia.denser_neutron_collector": "Denser Neutronium Collector",
+              "block.avaritia.denser_neutron_compressor": "Denser Neutronium Compressor",
+              "block.avaritia.densest_neutron_collector": "Densest Neutronium Collector",
+              "block.avaritia.densest_neutron_compressor": "Densest Neutronium Compressor",
+              "block.avaritia.diamond_lattice_block": "Diamond Lattice Block",
+              "block.avaritia.double_compressed_crafting_table": "Double Compressed Crafting Table",
+              "block.avaritia.end_crafting_table": "End Crafting Table",
+              "block.avaritia.endless_cake": "Endless Cake",
+              "block.avaritia.extreme_anvil": "Extreme Anvil",
+              "block.avaritia.extreme_crafting_table": "Extreme Crafting Table",
+              "block.avaritia.extreme_smithing_table": "Extreme Smithing Table",
+              "block.avaritia.infinity": "Infinity Block",
+              "block.avaritia.infinity_chest": "Infinity Chest",
+              "block.avaritia.nether_crafting_table": "Nether Crafting Table",
+              "block.avaritia.neutron": "Neutronium Block",
+              "block.avaritia.neutron_collector": "Neutronium Collector",
+              "block.avaritia.neutron_compressor": "Neutronium Compressor",
+              "block.avaritia.recipe_generator_table": "Recipe Generator:Avaritia Table",
+              "block.avaritia.refined_coal_block": "Refined Coal Block",
+              "block.avaritia.sculk_crafting_table": "Sculk Crafting Table",
+              "block.avaritia.soul_farmland": "Soul Farmland",
+              "block.avaritia.star_fuel_block": "Star Fuel Block",
+              "block.avaritia.tesseract": "Tesseract",
+              "button.avaritia.side_config_button_1": "Configure Input and Output",
+              "button.avaritia.side_config_button_2": "Click to open the six-sided configuration interface",
+              "button.avaritia.lock_button_1": "Recipe Locked",
+              "button.avaritia.lock_button_2": "Click to unlock recipe",
+              "button.avaritia.lock_button_3": "Unlocked Recipe",
+              "button.avaritia.lock_button_4": "Can click lock when there is a recipe",
+              "button.avaritia.eject_button_1": "Pop-up material",
+              "button.avaritia.eject_button_2": "Click to pop up all materials into the inventory",
+              "config.avaritia.axe_chain_count": "Axe Chain Count",
+              "config.avaritia.axe_chain_count.tooltip": "Chain number of endless axe cutting trees",
+              "config.avaritia.blade_slash_damage": "Blade Slash Damage",
+              "config.avaritia.blade_slash_damage.tooltip": "Damage of BladeSlash for Crystal Sword",
+              "config.avaritia.blade_slash_radius": "Blade Slash Radius",
+              "config.avaritia.blade_slash_radius.tooltip": "Radius of BladeSlash for Crystal Sword",
+              "config.avaritia.boot_speed_backward_multiplier": "Boots Backward Multiplier",
+              "config.avaritia.boot_speed_backward_multiplier.tooltip": "Infinity Boots Speed multiplier when moving backward",
+              "config.avaritia.boot_speed_base": "Boots Base Speed",
+              "config.avaritia.boot_speed_base.tooltip": "Infinity Boots Base movement speed for Infinity Boots",
+              "config.avaritia.boot_speed_flying_multiplier": "Boots Flying Multiplier",
+              "config.avaritia.boot_speed_flying_multiplier.tooltip": "Infinity Boots Speed multiplier when flying",
+              "config.avaritia.boot_speed_sneaking_multiplier": "Boots Sneaking Multiplier",
+              "config.avaritia.boot_speed_sneaking_multiplier.tooltip": "Infinity Boots Speed multiplier when sneaking",
+              "config.avaritia.boot_speed_sprinting_multiplier": "Boots Sprinting Multiplier",
+              "config.avaritia.boot_speed_sprinting_multiplier.tooltip": "Infinity Boots Additional speed when sprinting",
+              "config.avaritia.boot_speed_strafing_multiplier": "Boots Strafing Multiplier",
+              "config.avaritia.boot_speed_strafing_multiplier.tooltip": "Infinity Boots Speed multiplier when strafing",
+              "config.avaritia.boot_speed_swimming_multiplier": "Boots Swimming Multiplier",
+              "config.avaritia.boot_speed_swimming_multiplier.tooltip": "Infinity BootsSpeed multiplier when swimming",
+              "config.avaritia.category.channel": "Channel",
+              "config.avaritia.category.emc": "EMC",
+              "config.avaritia.category.misc": "Misc",
+              "config.avaritia.category.storage": "Storge",
+              "config.avaritia.category.tools": "Tools",
+              "config.avaritia.channel_fast_update_rate": "Fast Update Rate",
+              "config.avaritia.channel_fast_update_rate.tooltip": "Fast update rate for channels",
+              "config.avaritia.channel_full_update_rate": "Full Update Rate",
+              "config.avaritia.channel_full_update_rate.tooltip": "Full update rate for channels",
+              "config.avaritia.chest_max_item_size": "Chest Max Item Size",
+              "config.avaritia.chest_max_item_size.tooltip": "Define the maximum number of item types that can be stored in an Infinity Chest",
+              "config.avaritia.endless_item_entity_range": "Endless Item Range",
+              "config.avaritia.endless_item_entity_range.tooltip": "Tracking Endless Item Range",
+              "config.avaritia.endless_item_entity_speed": "Endless Item Speed",
+              "config.avaritia.endless_item_entity_speed.tooltip": "Tracking Endless Item Speed",
+              "config.avaritia.food_time": "Food Time",
+              "config.avaritia.food_time.tooltip": "Food effect time scaling factor",
+              "config.avaritia.growth_soul_farmland": "Growth Soul Farmland Rate",
+              "config.avaritia.growth_soul_farmland.tooltip": "Growth soul farmland rate",
+              "config.avaritia.infinity_elytra_flying_damage_range": "Elytra Flying Damage Range",
+              "config.avaritia.infinity_elytra_flying_damage_range.tooltip": "The Damage Range Of Infinity Elytra Flight Collision",
+              "config.avaritia.infinity_elytra_flying_speed": "Infinity Elytra Flying Speed",
+              "config.avaritia.infinity_elytra_flying_speed.tooltip": "Speed of Infinity Elytra",
+              "config.avaritia.infinity_helmet_night_vision": "Infinity Helmet Night Vision",
+              "config.avaritia.infinity_helmet_night_vision.tooltip": "Does wearing the Infinity Helmet activate night vision",
+              "config.avaritia.internal_infinity_catalyst_craft": "Internal Infinity Catalyst Craft",
+              "config.avaritia.internal_infinity_catalyst_craft.tooltip": "Is Infinity Catalyst Craft use all Singularity",
+              "config.avaritia.inventory_rows": "Inventory Rows",
+              "config.avaritia.inventory_rows.tooltip": "Inventory rows for multi page mode",
+              "config.avaritia.is_keep_stone": "Keep Stone",
+              "config.avaritia.is_keep_stone.tooltip": "Does the super mode of endless tools retain stone and soil",
+              "config.avaritia.is_merge_matter_cluster": "Merge Matter Cluster",
+              "config.avaritia.is_merge_matter_cluster.tooltip": "Whether to merge matter cluster",
+              "config.avaritia.is_sword_attack_endless": "Sword Cause Endless Damage",
+              "config.avaritia.is_sword_attack_endless.tooltip": "Does the right key cause infinity damage",
+              "config.avaritia.is_sword_attack_item_entity": "Sword Damage Item Entity",
+              "config.avaritia.is_sword_attack_item_entity.tooltip": "In kill mode does kill item_entity?",
+              "config.avaritia.is_sword_attack_projectile": "Sword Damage Projectile",
+              "config.avaritia.is_sword_attack_projectile.tooltip": "In kill mode does kill projectile?",
+              "config.avaritia.is_sword_attack_lightning": "Sword Cause Lightning",
+              "config.avaritia.is_sword_attack_lightning.tooltip": "Does the right key spawn lightning with range of attack",
+              "config.avaritia.max_channels_pre_player": "Max Player Channels",
+              "config.avaritia.max_channels_pre_player.tooltip": "Maximum channels per player",
+              "config.avaritia.max_page_limit": "Max Page Limit",
+              "config.avaritia.max_page_limit.tooltip": "Maximum page limit",
+              "config.avaritia.max_public_channels": "Max Public Channels",
+              "config.avaritia.max_public_channels.tooltip": "Maximum public channels",
+              "config.avaritia.max_size_pre_channel": "Channel Size",
+              "config.avaritia.max_size_pre_channel.tooltip": "Maximum size per channel",
+              "config.avaritia.neutron_collector_product_tick": "Neutron Collector Product Tick",
+              "config.avaritia.neutron_collector_product_tick.tooltip": "The product tick of NeutronCollector",
+              "config.avaritia.neutron_horse_speed": "Horse Armor Speed",
+              "config.avaritia.neutron_horse_speed.tooltip": "The speed of Neutronium Horse Armor when worn on the horse",
+              "config.avaritia.pickaxe_break_range": "Pickaxe Break Range",
+              "config.avaritia.pickaxe_break_range.tooltip": "The range of Infinity Pickaxe can break",
+              "config.avaritia.reset_max_page": "Reset Max Page",
+              "config.avaritia.reset_max_page.tooltip": "Recovery options: Reset the max page that is 0",
+              "config.avaritia.shovel_break_range": "Shovel Break Range",
+              "config.avaritia.shovel_break_range.tooltip": "The range of Infinity Shovel can break",
+              "config.avaritia.singularity_time_required": "Singularity Time Required",
+              "config.avaritia.singularity_time_required.tooltip": "Singularity default time required",
+              "config.avaritia.slot_stack_limit": "Slot Stack Limit",
+              "config.avaritia.slot_stack_limit.tooltip": "Stack size limit of slot",
+              "config.avaritia.sub_arrow_damage": "Sub Arrow Damage",
+              "config.avaritia.sub_arrow_damage.tooltip": "Infinity bow scattering light arrow damage",
+              "config.avaritia.sword_attack_range": "Sword Attack Range",
+              "config.avaritia.sword_attack_range.tooltip": "Infinity sword right click attack range",
+              "config.avaritia.sword_range_damage": "Sword Range Damage",
+              "config.avaritia.sword_range_damage.tooltip": "Range damage value of the right key of Infinity sword",
+              "config.avaritia.use_advance_tooltips": "Use Advance Tooltips",
+              "config.avaritia.use_advance_tooltips.tooltip": "For development purposes",
+              "config.avaritia.use_single_page_mode": "Use Single Page Mode",
+              "config.avaritia.use_single_page_mode.tooltip": "Use single page mode",
+              "config.avaritia.blaze_cube_emc": "Blaze Cube EMC",
+              "config.avaritia.blaze_cube_emc.tooltip": "EMC of Blaze Cube",
+              "config.avaritia.neutron_pile_emc": "Neutron Pile EMC",
+              "config.avaritia.neutron_pile_emc.tooltip": "EMC of Neutron Pile",
+              "config.avaritia.vanilla_totem_emc": "Vanilla Totem EMC",
+              "config.avaritia.vanilla_totem_emc.tooltip": "EMC of Totem Of Undying",
+              "config.avaritia.bedrock_emc": "Bedrock EMC",
+              "config.avaritia.bedrock_emc.tooltip": "EMC of Bedrock",
+              "config.jade.plugin_avaritia.compressor": "Compressor",
+              "config.jade.plugin_avaritia.crafting_table": "Avaritia Crafting",
+              "config.jade.plugin_avaritia.extreme_smithing": "Extreme Smithing",
+              "container.end_crafting_table": "End Crafting Table",
+              "container.extreme_crafting_table": "Extreme Crafting Table",
+              "container.nether_crafting_table": "Nether Crafting Table",
+              "container.sculk_crafting_table": "Sculk Crafting Table",
+              "container.extreme_smithing": "Extreme Smithing Table",
+              "container.infinity_chest": "§6Amount: %s / %s",
+              "death.attack.infinity": "%1$s was obliterated by %2$s",
+              "death.attack.infinity.0": "%1$s was sliced to ribbons",
+              "death.attack.infinity.1": "%1$s was sliced to ribbons",
+              "death.attack.infinity.2": "%1$s was excised from existence",
+              "death.attack.infinity.3": "%1$s was overkilled",
+              "death.attack.infinity.4": "%1$s was annihilated",
+              "death.attack.infinity.item": "%1$s was obliterated by %2$s",
+              "death.attack.infinity.player.0": "%1$s was sliced to ribbons by %2$s",
+              "death.attack.infinity.player.1": "%1$s was sliced to ribbons by %2$s",
+              "death.attack.infinity.player.2": "%1$s was excised from existence by %2$s",
+              "death.attack.infinity.player.3": "%1$s was overkilled by %2$s",
+              "death.attack.infinity.player.4": "%1$s was annihilated by %2$s",
+              "direction.avaritia.down": "down",
+              "direction.avaritia.east": "east",
+              "direction.avaritia.north": "north",
+              "direction.avaritia.south": "south",
+              "direction.avaritia.up": "up",
+              "direction.avaritia.west": "west",
+              "effect.avaritia.burning": "Burning",
+              "effect.avaritia.burning.description": "Deals fire damage equal to 5% of maximum health every 20 ticks (1 second). \\n\\nThis debuff forces the creature to lose health and can only be alleviated in water or powder snow.\\n\\nThe health loss effect is similar to wither or poison.",
+              "emi.category.avaritia.compressor": "Neutronium Compressor",
+              "emi.category.avaritia.end_crafting_table": "End Craft",
+              "emi.category.avaritia.extreme_crafting_table": "Extreme Craft",
+              "emi.category.avaritia.extreme_smithing_table": "Extreme Smithing",
+              "emi.category.avaritia.nether_crafting_table": "Nether Craft",
+              "emi.category.avaritia.sculk_crafting_table": "Sculk Craft",
+              "emi.tooltip.avaritia.neutron_collector": "Collect Neutron Pile",
+              "emi.tooltip.avaritia.neutron_pile": "By neutron collector, you can get a neutron pile after a while",
+              "emi.tooltip.shapeless.recipe": "Shapeless Recipe",
+              "gui.avaritia.addChannel.tip1": "Add \\"%d\\"",
+              "gui.avaritia.addChannel.tip2": "§aLClick§r : Add to yours",
+              "gui.avaritia.addChannel.tip3": "§dLSHIFT§r + §aLClick§r : Add to public",
+              "gui.avaritia.addChannel.tip4": "§cConsume a Storage Core!",
+              "gui.avaritia.apply": "Apply",
+              "gui.avaritia.back": "back",
+              "gui.avaritia.backChannel.tip1": "Back",
+              "gui.avaritia.cancel": "Cancel",
+              "gui.avaritia.capability.tip1": "§aLMB§r : Input 1 stack %d to carried",
+              "gui.avaritia.capability.tip2": "§aRMB§r : Output 1 stack object from carried",
+              "gui.avaritia.capability.tip3": "§dLSHIFT§r : Full it !",
+              "gui.avaritia.channel.tip1": "Channel: \\"%d\\"",
+              "gui.avaritia.channel.tip2": "Owner: \\"%d\\"",
+              "gui.avaritia.confirm": "Confirm",
+              "gui.avaritia.craft.channel": "Craft to channel",
+              "gui.avaritia.craft.drop": "Craft and drop",
+              "gui.avaritia.craft.inv": "Craft to inventory",
+              "gui.avaritia.craft.missing": "Missing items (can click)",
+              "gui.avaritia.craft.tip1": "§aLMB§r: Craft 64",
+              "gui.avaritia.craft.tip2": "§aRMB§r: Craft 8",
+              "gui.avaritia.craft.tip3": "§dLSHIFT§r + §aLMB§r: Craft 512",
+              "gui.avaritia.craft.tip4": "§dLSHIFT§r + §aRMB§r: Craft 1",
+              "gui.avaritia.emptyChannel.tip4": "§cThis terminal not select a channel",
+              "gui.avaritia.line": "---------------------",
+              "gui.avaritia.name": "name",
+              "gui.avaritia.noPermission.tip3": "§cYou haven`t permissions",
+              "gui.avaritia.owner": "Owner: %d",
+              "gui.avaritia.port.down": "Down",
+              "gui.avaritia.port.east": "East",
+              "gui.avaritia.port.input": "Input to channel",
+              "gui.avaritia.port.north": "North",
+              "gui.avaritia.port.output": "Output from channel",
+              "gui.avaritia.port.south": "South",
+              "gui.avaritia.port.tip": "Click toggle enable",
+              "gui.avaritia.port.up": "Up",
+              "gui.avaritia.port.west": "West",
+              "gui.avaritia.public": "Public",
+              "gui.avaritia.rate.tip": "ActivePort working rate, low is faster",
+              "gui.avaritia.removeChannel.tip1": "Remove: \\"%d\\"",
+              "gui.avaritia.removeChannel.tip2": "§cChannel must empty",
+              "gui.avaritia.renameChannel.tip1": "Rename: \\"%d\\"",
+              "gui.avaritia.renameChannel.tip2": "To: \\"%d\\"",
+              "gui.avaritia.rule.any_fluid": "Any fluid",
+              "gui.avaritia.rule.any_item": "Any item",
+              "gui.avaritia.rule.fe": "Energy (FE)",
+              "gui.avaritia.rule.fluid": "Fluid: %d",
+              "gui.avaritia.rule.item": "Item: %d",
+              "gui.avaritia.rule.item_tag": "Tag: %d",
+              "gui.avaritia.rule.mod_fluid": "Mod(fluid): %d",
+              "gui.avaritia.rule.mod_item": "Mod(item): %d",
+              "gui.avaritia.rule.tip": "Select with the mouse wheel",
+              "gui.avaritia.save": "Save",
+              "gui.avaritia.search": "search",
+              "gui.avaritia.search.tip1": "Empty prefix search ID and Name",
+              "gui.avaritia.search.tip2": "Prefix \\"§a*§r\\" search ID only",
+              "gui.avaritia.search.tip3": "Prefix \\"§a$§r\\" search Tags",
+              "gui.avaritia.sort.ascending": "Ascending",
+              "gui.avaritia.sort.count": "Sort : §aCount",
+              "gui.avaritia.sort.descending": "Descending",
+              "gui.avaritia.sort.id": "Sort : §aID",
+              "gui.avaritia.sort.mirror_id": "Sort : §aMirror ID",
+              "gui.avaritia.sort.nid": "Sort : §aMOD then ID",
+              "gui.avaritia.sort.tip1": "§aLMB§r : Cycle sort type",
+              "gui.avaritia.sort.tip2": "§dLSHIFT§r + §aLMB§r : Switch ascending",
+              "gui.avaritia.view.all": "§aAll",
+              "gui.avaritia.view.fluid": "§aFluids",
+              "gui.avaritia.view.item": "§aItems",
+              "info.avaritia.channel.add_success": "Success add channel: %s %s %s",
+              "info.avaritia.channel.load_error": "Load Channel Error!",
+              "info.avaritia.channel.load_finish": "Channel load finished!",
+              "info.avaritia.channel.load_success": "Success load channel: %s %s %s",
+              "info.avaritia.channel.save_success": "Success save channel: %s %s %s",
+              "info.avaritia.infinity_chest.add_success": "Success add infinity chest: %s %s %s",
+              "info.avaritia.infinity_chest.load_error": "Load infinity chest Error!",
+              "info.avaritia.infinity_chest.load_finish": "Infinity chest load finished!",
+              "info.avaritia.infinity_chest.load_success": "Success load infinity chest: %s %s %s",
+              "info.avaritia.infinity_chest.save_success": "Success save infinity chest: %s %s %s",
+              "item.avaritia.blaze_axe": "Blaze Bush Axe",
+              "item.avaritia.blaze_bow": "Blaze Shining Bow",
+              "item.avaritia.blaze_cube": "Blaze Cube",
+              "item.avaritia.blaze_hoe": "Blaze Soul Hoe",
+              "item.avaritia.blaze_pickaxe": "Blaze Lava Pickaxe",
+              "item.avaritia.blaze_shovel": "Blaze Fire Shovel",
+              "item.avaritia.blaze_sword": "Blaze Skull Sword",
+              "item.avaritia.cosmic_meatballs": "Cosmic Meatballs",
+              "item.avaritia.crystal_axe": "Crystal Axe",
+              "item.avaritia.crystal_bow": "Crystal Bow",
+              "item.avaritia.crystal_hoe": "Crystal Hoe",
+              "item.avaritia.crystal_matrix_ingot": "Crystal Matrix Ingot",
+              "item.avaritia.crystal_pickaxe": "Crystal Pickaxe",
+              "item.avaritia.crystal_shovel": "Crystal Shovel",
+              "item.avaritia.crystal_sword": "Crystal Sword",
+              "item.avaritia.diamond_lattice": "Diamond Lattice",
+              "item.avaritia.endest_pearl": "Endest Pearl",
+              "item.avaritia.enhancement_core": "Enhancement Core",
+              "item.avaritia.eternal_singularity": "Eternal Singularity",
+              "item.avaritia.full_matter_cluster": "Full Matter Cluster",
+              "item.avaritia.infinity_axe": "Nature's Ruin",
+              "item.avaritia.infinity_boots": "Infinity Boots",
+              "item.avaritia.infinity_bow": "Longbow of the Heavens",
+              "item.avaritia.infinity_bucket": "Infinity Bucket",
+              "item.avaritia.infinity_catalyst": "Infinity Catalyst",
+              "item.avaritia.infinity_chestplate": "Infinity Chestplate",
+              "item.avaritia.infinity_clock": "Infinity Clock",
+              "item.avaritia.infinity_crossbow": "Crossbow of the Inferno",
+              "item.avaritia.infinity_elytra": "Infinity Elytra",
+              "item.avaritia.infinity_helmet": "Infinity Helmet",
+              "item.avaritia.infinity_hoe": "Eternal Fertility",
+              "item.avaritia.infinity_ingot": "Infinity Ingot",
+              "item.avaritia.infinity_nugget": "Infinity Nugget",
+              "item.avaritia.infinity_pants": "Infinity Pants",
+              "item.avaritia.infinity_pickaxe": "World Breaker",
+              "item.avaritia.infinity_ring": "Infinity Ring(WIP)",
+              "item.avaritia.infinity_shield": "Shield of the Earth Core",
+              "item.avaritia.infinity_shovel": "Planet Eater",
+              "item.avaritia.infinity_sword": "Sword of the Cosmos",
+              "item.avaritia.infinity_totem": "Infinity Totem",
+              "item.avaritia.infinity_trident": "Trident of the Sea Abyss",
+              "item.avaritia.infinity_mace": "Infinity Mace",
+              "item.avaritia.infinity_umbrella": "Infinity Umbrella",
+              "item.avaritia.infinity_upgrade": "Infinity Upgrade",
+              "item.avaritia.matter_cluster": "Matter Cluster",
+              "item.avaritia.neutron_gear": "Neutronium Gear",
+              "item.avaritia.neutron_horse_armor": "Neutronium Horse Armor",
+              "item.avaritia.neutron_ingot": "Neutronium Ingot",
+              "item.avaritia.neutron_nugget": "Neutronium Nugget",
+              "item.avaritia.neutron_pile": "Pile of Neutrons",
+              "item.avaritia.neutron_ring": "Neutronium Ring",
+              "item.avaritia.record_fragment": "Record Fragment",
+              "item.avaritia.refined_coal": "Refined Coal",
+              "item.avaritia.side_config_card": "Side Configuration Card",
+              "item.avaritia.singularity": "%s Singularity",
+              "item.avaritia.star_fuel": "Star Fuel",
+              "item.avaritia.ultimate_stew": "Ultimate Stew",
+              "item.avaritia.upgrade_smithing_template": "Upgrade Smithing Template",
+              "itemGroup.tab.Infinity": "Re:Avaritia",
+              "itemGroup.tab.Singularity": "Avaritia:Singularity",
+              "jei.category.avaritia.compressor": "Neutronium Compressor",
+              "jei.category.avaritia.end_crafting_table": "End Craft",
+              "jei.category.avaritia.extreme_crafting_table": "Extreme Craft",
+              "jei.category.avaritia.extreme_smithing_table": "Extreme Smithing",
+              "jei.category.avaritia.nether_crafting_table": "Nether Craft",
+              "jei.category.avaritia.sculk_crafting_table": "Sculk Craft",
+              "jei.tooltip.avaritia.bedrock": "Obtain using Crystal Pickaxe or World Breaker(Infinity Pickaxe)",
+              "jei.tooltip.avaritia.crystal_pickaxe": "This tool can mine Bedrock",
+              "jei.tooltip.avaritia.end_portal_frame": "Obtain using Crystal Pickaxe or World Breaker(Infinity Pickaxe)",
+              "jei.tooltip.avaritia.full_matter_cluster": "Use an internal Matter Cluster with 4096 items to craft",
+              "jei.tooltip.avaritia.neutron_collector": "Collect Neutron Pile",
+              "jei.tooltip.avaritia.neutron_pile": "By neutron collector, you can get a neutron pile after a while",
+              "jei.tooltip.avaritia.refined_coal": "Use Blaze Bush Axe to chop logs and obtain",
+              "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
+              "key.avaritia.categories": "Avaritia KeyBindings",
+              "key.avaritia.config": "Open Avaritia Config",
+              "key.avaritia.filter": "Open filter screen",
+              "key.avaritia.neutron_ring": "Open Neutron Ring",
+              "rarity.cosmic.name": "Cosmic",
+              "rarity.legend.name": "Legend",
+              "screen.avaritia.side_config.title": "IO Config",
+              "singularity.avaritia.aluminum": "Aluminum",
+              "singularity.avaritia.amethyst_shard": "Amethyst Shard",
+              "singularity.avaritia.blue_ice": "Blue Ice",
+              "singularity.avaritia.bronze": "Bronze",
+              "singularity.avaritia.coal": "Coal",
+              "singularity.avaritia.copper": "Copper",
+              "singularity.avaritia.diamond": "Diamond",
+              "singularity.avaritia.electrum": "Electrum",
+              "singularity.avaritia.emerald": "Emerald",
+              "singularity.avaritia.glowstone": "Glowstone",
+              "singularity.avaritia.gold": "Gold",
+              "singularity.avaritia.invar": "Invar",
+              "singularity.avaritia.iron": "Iron",
+              "singularity.avaritia.lapis_lazuli": "Lapis Lazuli",
+              "singularity.avaritia.lead": "Lead",
+              "singularity.avaritia.netherite": "Netherite",
+              "singularity.avaritia.nickel": "Nickel",
+              "singularity.avaritia.obsidian": "Obsidian",
+              "singularity.avaritia.osmium": "Osmium",
+              "singularity.avaritia.platinum": "Platinum",
+              "singularity.avaritia.quartz": "Quartz",
+              "singularity.avaritia.redstone": "Redstone",
+              "singularity.avaritia.refined_obsidian": "Refined Obsidian",
+              "singularity.avaritia.silver": "Silver",
+              "singularity.avaritia.steel": "Steel",
+              "singularity.avaritia.tin": "Tin",
+              "singularity.avaritia.titanium": "Titanium",
+              "singularity.avaritia.uranium": "Uranium",
+              "singularity.avaritia.zinc": "Zinc",
+              "title.avaritia.config.title": "Re：Avaritia",
+              "title.avaritia.resourcepack": "Avaritia Old Resourcepack",
+              "tooltip.armor.desc": "Armor",
+              "tooltip.armor_toughness.desc": "Armor Toughness",
+              "tooltip.avaritia.active": "%s mode active!",
+              "tooltip.avaritia.added_by": "Added By: %s",
+              "tooltip.avaritia.blaze_axe.desc": "Burn the forest, and the wood turns into charcoal.",
+              "tooltip.avaritia.blaze_cube.desc": "Blaze Storm.",
+              "tooltip.avaritia.blaze_hoe.desc": "Power of soul, all things grow.",
+              "tooltip.avaritia.blaze_pickaxe.desc": "Molten mountain hot smelted.",
+              "tooltip.avaritia.blaze_shovel.desc": "Spell born from Nether.",
+              "tooltip.avaritia.blaze_sword.desc": "Beheads skeletons and scorches them black.",
+              "tooltip.avaritia.changed": "Set to %s Mode",
+              "tooltip.avaritia.compress": "Compress: %s x %s",
+              "tooltip.avaritia.crafting": "%s: %s x %s",
+              "tooltip.avaritia.crystal_axe.desc": "Breaks rocks, shatters shields.",
+              "tooltip.avaritia.crystal_hoe.desc": "One swing, life blooms; another, time flows.",
+              "tooltip.avaritia.crystal_matrix_ingot.desc": "This isn't even its final form.",
+              "tooltip.avaritia.crystal_pickaxe.desc": "Luck brings treasures; precision finds gems.",
+              "tooltip.avaritia.crystal_shovel.desc": "Rises like wind, falls to slow.",
+              "tooltip.avaritia.crystal_sword.desc": "Blades cut through, shadows vanquish foes.",
+              "tooltip.avaritia.diamond_lattice.desc": "Dense material...",
+              "tooltip.avaritia.durability": "Durability %s",
+              "tooltip.avaritia.eject": "Eject",
+              "tooltip.avaritia.ejecting": "Ejecting...",
+              "tooltip.avaritia.empty": "Empty",
+              "tooltip.avaritia.endless_cake.desc": "Gluttony?",
+              "tooltip.avaritia.enhancement_core.desc": "The road to completion!",
+              "tooltip.avaritia.inactive": "%s mode inactive!",
+              "tooltip.avaritia.infinity_bucket.desc": "Devour everything...",
+              "tooltip.avaritia.infinity_bucket.message": "Current Fluid: %s | Amount: %smL",
+              "tooltip.avaritia.infinity_catalyst.desc": "One is all and all is one.。",
+              "tooltip.avaritia.infinity_clock.desc": "Control of your time...",
+              "tooltip.avaritia.infinity_ingot.desc": "The fury of the universe in the palm of your hand.",
+              "tooltip.avaritia.infinity_nugget.desc": "Angel's tears...",
+              "tooltip.avaritia.infinity_ring.desc": "...",
+              "tooltip.avaritia.infinity_totem.desc": "Eternal Guardian...",
+              "tooltip.avaritia.infinity_umbrella.desc": "Instant eternity...",
+              "tooltip.avaritia.infinity_upgrade.desc": "Accelerate upgrade!",
+              "tooltip.avaritia.init_enchant": "Always has at least %s",
+              "tooltip.avaritia.items_required": "Items Required:",
+              "tooltip.avaritia.limited_input": "Limited Input",
+              "tooltip.avaritia.matter_cluster.counter": "%s / %s items",
+              "tooltip.avaritia.matter_cluster.desc": "Use to deconstruct.",
+              "tooltip.avaritia.matter_cluster.desc2": "Hold SHIFT for contents.",
+              "tooltip.avaritia.mode": "Mode: %s",
+              "tooltip.avaritia.more": "and %s more...",
+              "tooltip.avaritia.neutron_gear.desc": "The secret of the tech renaissance...",
+              "tooltip.avaritia.neutron_horse_armor.desc": "Full power...",
+              "tooltip.avaritia.neutron_ingot.desc": "The dense heart of a star in convenient ingot form.",
+              "tooltip.avaritia.neutron_nugget.desc": "About 35.6 million metric tons.",
+              "tooltip.avaritia.neutron_pile.desc": "Try not to think about it.",
+              "tooltip.avaritia.num_items": "Need %s Items",
+              "tooltip.avaritia.progress": "Progress: %s",
+              "tooltip.avaritia.record_fragment.desc": "One likes to believe in the freedom of music~",
+              "tooltip.avaritia.refined_coal.desc": "Heat explosion!",
+              "tooltip.avaritia.seconds": "%s Seconds",
+              "tooltip.avaritia.selected": "Selected",
+              "tooltip.avaritia.side.click_to_cycle": "Click To Cycle",
+              "tooltip.avaritia.side.mode.active_input": "Active Input",
+              "tooltip.avaritia.side.mode.active_mixin": "Active Mixin",
+              "tooltip.avaritia.side.mode.active_output": "Active Output",
+              "tooltip.avaritia.side.mode.off": "OFF",
+              "tooltip.avaritia.side.mode.passive_input": "Passive Input",
+              "tooltip.avaritia.side.mode.passive_mixin": "Passive Mixin",
+              "tooltip.avaritia.side.mode.passive_output": "Passive Output",
+              "tooltip.avaritia.side_config_card.already_empty": "Configuration is already empty",
+              "tooltip.avaritia.side_config_card.apply_success": "Configuration applied to machine",
+              "tooltip.avaritia.side_config_card.cleared": "Configuration cleared",
+              "tooltip.avaritia.side_config_card.has_config": "§7Configuration saved",
+              "tooltip.avaritia.side_config_card.instruction_right_click": "§7Right-click on machine to apply",
+              "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+right-click other block to clear",
+              "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+right-click machine to save",
+              "tooltip.avaritia.side_config_card.no_config": "§7Empty configuration",
+              "tooltip.avaritia.side_config_card.no_config_to_apply": "No configuration to apply",
+              "tooltip.avaritia.side_config_card.read_success": "Configuration saved to card",
+              "tooltip.avaritia.singularity_id": "Singularity ID: %s",
+              "tooltip.avaritia.smithing": "Smithing: %s x %s",
+              "tooltip.avaritia.star_fuel.desc": "A fuel for the stars.",
+              "tooltip.avaritia.switch": "Switch to %s",
+              "tooltip.avaritia.sword_kill_mode.active": "Kill all you can see.",
+              "tooltip.avaritia.ticks": "%s Ticks",
+              "tooltip.avaritia.tier": "Tier: %s",
+              "tooltip.avaritia.time_consume": "Time Required: %s",
+              "tooltip.avaritia.tool.fire_ball": "Fire Ball",
+              "tooltip.avaritia.tool.blade_slash": "Blade Slash",
+              "tooltip.avaritia.tool.blaze_bow_burning": "Area Burning",
+              "tooltip.avaritia.tool.blaze_shovel_trans": "Material conversion",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_1": "Set to Fortune III",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_2": "Set to Silk Touch",
+              "tooltip.avaritia.tool.infinity_axe_range": "Range Break",
+              "tooltip.avaritia.tool.infinity_bow_tracer": "Trace Attack",
+              "tooltip.avaritia.tool.infinity_clock.overclock_disabled": "Set to SpeedUp Mode",
+              "tooltip.avaritia.tool.infinity_clock.overclock_enabled": "Set to TimeUp Mode",
+              "tooltip.avaritia.tool.infinity_clock_up": "Speed Up",
+              "tooltip.avaritia.tool.infinity_crossbow_multi": "MultiShoot",
+              "tooltip.avaritia.tool.infinity_hoe_sow": "Range",
+              "tooltip.avaritia.tool.infinity_pickaxe_hammer": "Range Dig",
+              "tooltip.avaritia.tool.infinity_shovel_destroyer": "Range/Endest Pearl Attack",
+              "tooltip.avaritia.tool.infinity_sword_kill": "Slaughter",
+              "tooltip.avaritia.tool.infinity_trident_loyalty": "Loyalty",
+              "tooltip.avaritia.tool.infinity_trident_normal": "Normal",
+              "tooltip.avaritia.tool.infinity_trident_riptide": "Riptide",
+              "tooltip.avaritia.tool.infinity_umbrella_normal": "Base",
+              "tooltip.avaritia.tool.infinity_umbrella_rain": "Rain",
+              "tooltip.avaritia.tool.infinity_umbrella_storm": "Storm",
+              "tooltip.avaritia.tool.infinity_umbrella_sun": "Clear",
+              "tooltip.avaritia.tool.smelt": "Smelt",
+              "tooltip.avaritia.totem_break": "The Endless Totem has been depleted",
+              "tooltip.avaritia.type": "Type: %s",
+              "tooltip.avaritia.unlimited_input": "Unlimited Input",
+              "tooltip.crystal_pickaxe.enchant_1": "Set to Fortune III",
+              "tooltip.crystal_pickaxe.enchant_2": "Set to Silk Touch",
+              "tooltip.infinity_pickaxe.enchant_1": "Set to Fortune X",
+              "tooltip.infinity_pickaxe.enchant_2": "Set to Silk Touch",
+              "tooltip.infinity": "Infinity",
+              "tooltip.infinity.desc": "Attack Damage",
+              "tooltip.avaritia.compressor_eject.message_1": "§c[Neutron Compressor] §unlock the recipe first",
+              "tooltip.avaritia.compressor_eject.message_2": "§a[Neutron Compressor] §fThe material has been ejected and packed into a matter cluster.",
+              "tooltip.avaritia.compressor_eject.message_3": "§c[Neutron Compressor] §fNo materials available to pop out",
+              "tooltip.avaritia.compressor_lock.message_1": "§a[Neutron Compressor] §fRecipe is locked",
+              "tooltip.avaritia.compressor_lock.message_2": "§e[Neutron Compressor] §fRecipe unlocked",
+              "tooltip.avaritia.compressor_lock.message_3": "§c[Neutron Compressor] §fPlease add a recipe ingredient first"
+            }
+            """;
+            case "ja_jp" -> """
+            {
+              "advancements.avaritia.start.title": "Re:Avaritia伝説の始まり",
+              "advancements.avaritia.start.desc": "",
+              "advancements.avaritia.compressed_crafting_table.desc": "圧縮作業台をクラフトする",
+              "advancements.avaritia.compressed_crafting_table.title": "初めての接触",
+              "advancements.avaritia.sculk_crafting_table.desc": "スカルクの作業台をクラフトする",
+              "advancements.avaritia.sculk_crafting_table.title": "古代の音に耳を澄ませて",
+              "advancements.avaritia.diamond_lattice.desc": "ダイヤモンドの格子をクラフトする",
+              "advancements.avaritia.diamond_lattice.title": "輝かしい新生活",
+              "advancements.avaritia.crystal_matrix_ingot.desc": "クリスタルマトリックスインゴットをクラフトする",
+              "advancements.avaritia.crystal_matrix_ingot.title": "結晶エネルギーとの出会い",
+              "advancements.avaritia.crystal_pickaxe.desc": "クリスタルのツルハシをクラフトする",
+              "advancements.avaritia.crystal_pickaxe.title": "岩盤の破壊者",
+              "advancements.avaritia.nether_crafting_table.desc": "ネザーの作業台をクラフトする",
+              "advancements.avaritia.nether_crafting_table.title": "火炎の領域に踏み込んで",
+              "advancements.avaritia.blaze_cube.desc": "ブレイズキューブをクラフトする",
+              "advancements.avaritia.blaze_cube.title": "焼け焦げる骨",
+              "advancements.avaritia.blaze_sword.desc": "ブレイズの頭蓋骨の剣をクラフトする",
+              "advancements.avaritia.blaze_sword.title": "スケルトンの悪夢",
+              "advancements.avaritia.blaze_axe.desc": "ブレイズの手斧をクラフトする",
+              "advancements.avaritia.blaze_axe.title": "ブレイズの森林破壊",
+              "advancements.avaritia.refined_coal.desc": "精炭をクラフトする",
+              "advancements.avaritia.refined_coal.title": "高効率なエネルギー",
+              "advancements.avaritia.end_crafting_table.desc": "エンドの作業台をクラフトする",
+              "advancements.avaritia.end_crafting_table.title": "終焉と起源",
+              "advancements.avaritia.neutron_collector.desc": "ニュートロニウム収集機をクラフトする",
+              "advancements.avaritia.neutron_collector.title": "耐えがたきを耐え、忍びがたきを忍び",
+              "advancements.avaritia.eternal_singularity.desc": "永久のシンギュラリティをクラフトする",
+              "advancements.avaritia.eternal_singularity.title": "零から森羅万象を - 第二",
+              "advancements.avaritia.infinity_umbrella.desc": "インフィニティアンブレラをクラフトする",
+              "advancements.avaritia.infinity_umbrella.title": "ゼウス",
+              "advancements.avaritia.infinity_clock.desc": "インフィニティの時計をクラフトする",
+              "advancements.avaritia.infinity_clock.title": "クロノス",
+              "advancements.avaritia.upgrade_smithing_template.desc": "昇華への鍛冶型をクラフトする",
+              "advancements.avaritia.upgrade_smithing_template.title": "地の果てを彷徨う",
+              "advancements.avaritia.enhancement_core.desc": "完璧な核心をクラフトする",
+              "advancements.avaritia.enhancement_core.title": "完成への道",
+              "advancements.avaritia.extreme_smithing_table.desc": "究極の鍛冶台をクラフトする",
+              "advancements.avaritia.extreme_smithing_table.title": "悪夢の始まり - 幾度も",
+              "advancements.avaritia.endest_pearl.desc": "エンデストパールを使用する",
+              "advancements.avaritia.endest_pearl.title": "小さなブラックホール",
+              "advancements.avaritia.extreme_crafting_table.desc": "至高の作業台をクラフトする",
+              "advancements.avaritia.extreme_crafting_table.title": "悪夢の始まり",
+              "advancements.avaritia.infinity_armor.desc": "全てのインフィニティ防具を手中に収める",
+              "advancements.avaritia.infinity_armor.title": "インフィニティ",
+              "advancements.avaritia.infinity_axe.desc": "インフィニティの斧をクラフトする",
+              "advancements.avaritia.infinity_axe.title": "荒れ果てる自然！",
+              "advancements.avaritia.infinity_bow.desc": "インフィニティの弓をクラフトする",
+              "advancements.avaritia.infinity_bow.title": "天が堕ちる",
+              "advancements.avaritia.infinity_catalyst.desc": "インフィニティカタリストをクラフトする",
+              "advancements.avaritia.infinity_catalyst.title": "一つは全てであり、全ては一つである",
+              "advancements.avaritia.infinity_food.desc": "いただきます！",
+              "advancements.avaritia.infinity_food.title": "清潔で衛生的",
+              "advancements.avaritia.infinity_hoe.desc": "インフィニティのクワをクラフトする",
+              "advancements.avaritia.infinity_hoe.title": "地球の再生！",
+              "advancements.avaritia.infinity_ingot.desc": "無限を宿すインゴットを手中に収める",
+              "advancements.avaritia.infinity_ingot.title": "逆境は甘美なもの？",
+              "advancements.avaritia.infinity_pickaxe.desc": "インフィニティのツルハシをクラフトする",
+              "advancements.avaritia.infinity_pickaxe.title": "世界の崩壊！",
+              "advancements.avaritia.infinity_shovel.desc": "インフィニティのシャベルをクラフトする",
+              "advancements.avaritia.infinity_shovel.title": "惑星を貪り食う！",
+              "advancements.avaritia.infinity_sword.desc": "インフィニティの剣をクラフトする",
+              "advancements.avaritia.infinity_sword.title": "世界の征服！",
+              "advancements.avaritia.matter_cluster.desc": "物質を押し固めた塊を入手する",
+              "advancements.avaritia.matter_cluster.title": "綿製品",
+              "advancements.avaritia.neutron_compressor.desc": "ニュートロニウム圧縮機をクラフトする",
+              "advancements.avaritia.neutron_compressor.title": "零から森羅万象を",
+              "advancements.avaritia.neutron_ingot.desc": "ニュートロンのインゴットを入手する",
+              "advancements.avaritia.neutron_ingot.title": "苦労と汗の結晶",
+              "advancements.avaritia.neutron_pile.desc": "ニュートロンの粉末を入手する",
+              "advancements.avaritia.neutron_pile.title": "終わることのない悩み",
+              "advancements.avaritia.singularity.desc": "シンギュラリティを入手する",
+              "advancements.avaritia.singularity.title": "深刻な在庫不足に陥っている",
+              "advancements.avaritia.star_fuel.desc": "星が輝くための燃料を手に入れる",
+              "advancements.avaritia.star_fuel.title": "恒星エネルギー",
+              "attribute.name.generic.walking_speed": "歩行速度",
+              "block.avaritia.blaze_cube_block": "ブレイズキューブブロック",
+              "block.avaritia.compressed_chest": "圧縮チェスト",
+              "block.avaritia.compressed_crafting_table": "圧縮作業台",
+              "block.avaritia.crystal_matrix": "クリスタルマトリックス",
+              "block.avaritia.dense_neutron_collector": "高密度ニュートロニウム収集機",
+              "block.avaritia.dense_neutron_compressor": "高密度ニュートロニウム圧縮機",
+              "block.avaritia.denser_neutron_collector": "超高密度ニュートロニウム収集機",
+              "block.avaritia.denser_neutron_compressor": "超高密度ニュートロニウム圧縮機",
+              "block.avaritia.densest_neutron_collector": "極高密度ニュートロニウム収集機",
+              "block.avaritia.densest_neutron_compressor": "極高密度ニュートロニウム圧縮機",
+              "block.avaritia.diamond_lattice_block": "ダイヤモンドの格子ブロック",
+              "block.avaritia.double_compressed_crafting_table": "二重圧縮作業台",
+              "block.avaritia.end_crafting_table": "エンドの作業台",
+              "block.avaritia.endless_cake": "無尽蔵のケーキ",
+              "block.avaritia.extreme_anvil": "至高の金床",
+              "block.avaritia.extreme_crafting_table": "至高の作業台",
+              "block.avaritia.extreme_smithing_table": "至高の鍛冶台",
+              "block.avaritia.infinity": "インフィニティブロック",
+              "block.avaritia.infinity_chest": "インフィニティチェスト",
+              "block.avaritia.nether_crafting_table": "ネザーの作業台",
+              "block.avaritia.neutron": "ニュートロニウムブロック",
+              "block.avaritia.neutron_collector": "ニュートロニウム収集機",
+              "block.avaritia.neutron_compressor": "ニュートロニウム圧縮機",
+              "block.avaritia.recipe_generator_table": "レシピ生成機:Avaritia作業台",
+              "block.avaritia.refined_coal_block": "精炭ブロック",
+              "block.avaritia.sculk_crafting_table": "スカルクの作業台",
+              "block.avaritia.soul_farmland": "魂の耕地",
+              "block.avaritia.star_fuel_block": "恒星の燃料ブロック",
+              "block.avaritia.tesseract": "テッセラクト",
+              "button.avaritia.side_config_button_1": "入出力の設定",
+              "button.avaritia.side_config_button_2": "クリックで六面の設定画面を開く",
+              "button.avaritia.lock_button_1": "レシピがロックされている",
+              "button.avaritia.lock_button_2": "クリックでレシピのロックを解除",
+              "button.avaritia.lock_button_3": "レシピはロックされていない",
+              "button.avaritia.lock_button_4": "レシピがある場合にクリックでロックする",
+              "button.avaritia.eject_button_1": "素材の回収",
+              "button.avaritia.eject_button_2": "クリックすると全ての素材がインベントリに返却される",
+              "config.avaritia.axe_chain_count": "斧連鎖数",
+              "config.avaritia.axe_chain_count.tooltip": "インフィニティの斧：連鎖破壊可能数",
+              "config.avaritia.blade_slash_damage": "ブレードスラッシュの攻撃力",
+              "config.avaritia.blade_slash_damage.tooltip": "クリスタルの剣：ブレードスラッシュの攻撃力",
+              "config.avaritia.blade_slash_radius": "ブレードスラッシュの範囲",
+              "config.avaritia.blade_slash_radius.tooltip": "クリスタルの剣：ブレードスラッシュの攻撃範囲",
+              "config.avaritia.boot_speed_backward_multiplier": "ブーツの後退速度倍率",
+              "config.avaritia.boot_speed_backward_multiplier.tooltip": "インフィニティブーツ：後退時の速度倍率",
+              "config.avaritia.boot_speed_base": "ブーツの基礎速度",
+              "config.avaritia.boot_speed_base.tooltip": "インフィニティブーツ：基本移動速度",
+              "config.avaritia.boot_speed_flying_multiplier": "ブーツの飛行速度倍率",
+              "config.avaritia.boot_speed_flying_multiplier.tooltip": "インフィニティブーツ：飛行時の速度倍率",
+              "config.avaritia.boot_speed_sneaking_multiplier": "ブーツのスニーク速度倍率",
+              "config.avaritia.boot_speed_sneaking_multiplier.tooltip": "インフィニティブーツ：スニーク時の速度倍率",
+              "config.avaritia.boot_speed_sprinting_multiplier": "ブーツのダッシュ速度倍率",
+              "config.avaritia.boot_speed_sprinting_multiplier.tooltip": "インフィニティブーツ：ダッシュ時の速度倍率",
+              "config.avaritia.boot_speed_strafing_multiplier": "ブーツの横移動速度倍率",
+              "config.avaritia.boot_speed_strafing_multiplier.tooltip": "インフィニティブーツ：横移動時の速度倍率",
+              "config.avaritia.boot_speed_swimming_multiplier": "ブーツの泳ぎ速度倍率",
+              "config.avaritia.boot_speed_swimming_multiplier.tooltip": "インフィニティブーツ：水泳時の速度倍率",
+              "config.avaritia.category.channel": "チャンネル",
+              "config.avaritia.category.emc": "EMC",
+              "config.avaritia.category.misc": "その他",
+              "config.avaritia.category.storage": "ストレージ",
+              "config.avaritia.category.tools": "道具",
+              "config.avaritia.channel_fast_update_rate": "高速更新レート",
+              "config.avaritia.channel_fast_update_rate.tooltip": "チャンネル：高速更新レート",
+              "config.avaritia.channel_full_update_rate": "完全更新レート",
+              "config.avaritia.channel_full_update_rate.tooltip": "チャンネル：完全更新レート",
+              "config.avaritia.chest_max_item_size": "チェストの最大アイテムサイズ",
+              "config.avaritia.chest_max_item_size.tooltip": "インフィニティチェスト：一スロットに格納できるアイテムの最大数",
+              "config.avaritia.endless_item_entity_range": "インフィニティアイテム範囲",
+              "config.avaritia.endless_item_entity_range.tooltip": "インフィニティアイテム：アイテム範囲を追跡",
+              "config.avaritia.endless_item_entity_speed": "インフィニティアイテム速度",
+              "config.avaritia.endless_item_entity_speed.tooltip": "インフィニティアイテム：アイテム速度を追跡",
+              "config.avaritia.food_time": "食事の効果時間",
+              "config.avaritia.food_time.tooltip": "食べ物：効果時間のスケーリング係数",
+              "config.avaritia.growth_soul_farmland": "魂の耕地の成長レート",
+              "config.avaritia.growth_soul_farmland.tooltip": "魂の耕地：植物の成長レート",
+              "config.avaritia.infinity_elytra_flying_damage_range": "インフィニティエリトラの飛行ダメージ範囲",
+              "config.avaritia.infinity_elytra_flying_damage_range.tooltip": "インフィニティエリトラ：飛行衝突によるダメージの範囲",
+              "config.avaritia.infinity_elytra_flying_speed": "インフィニティエリトラの飛行速度",
+              "config.avaritia.infinity_elytra_flying_speed.tooltip": "インフィニティエリトラ：飛行時の速度",
+              "config.avaritia.infinity_helmet_night_vision": "インフィニティヘルメットの暗視",
+              "config.avaritia.infinity_helmet_night_vision.tooltip": "インフィニティヘルメット：装着時の暗視の有無",
+              "config.avaritia.internal_infinity_catalyst_craft": "インフィニティカタリストのクラフト",
+              "config.avaritia.internal_infinity_catalyst_craft.tooltip": "インフィニティカタリスト：クラフトに全てのシンギュラリティを使用するか",
+              "config.avaritia.inventory_rows": "インベントリ行数",
+              "config.avaritia.inventory_rows.tooltip": "複数ページモードのインベントリ行数",
+              "config.avaritia.is_keep_stone": "石の保持",
+              "config.avaritia.is_keep_stone.tooltip": "インフィニティツール：スーパーモード時に石と土を適切に回収するか",
+              "config.avaritia.is_merge_matter_cluster": "物質集合塊の統合",
+              "config.avaritia.is_merge_matter_cluster.tooltip": "物質集合塊：一つにまとめるか",
+              "config.avaritia.is_sword_attack_endless": "剣の無限のダメージ",
+              "config.avaritia.is_sword_attack_endless.tooltip": "インフィニティの剣：右クリック時に無限のダメージを与えるか",
+              "config.avaritia.is_sword_attack_item_entity": "剣のアイテムエンティティへのダメージ",
+              "config.avaritia.is_sword_attack_item_entity.tooltip": "インフィニティの剣：殺戮モード時にアイテムエンティティを殺すか",
+              "config.avaritia.is_sword_attack_projectile": "剣の発射物へのダメージ",
+              "config.avaritia.is_sword_attack_projectile.tooltip": "インフィニティの剣：殺戮モード時に発射物を殺すか",
+              "config.avaritia.is_sword_attack_lightning": "剣の落雷の発生",
+              "config.avaritia.is_sword_attack_lightning.tooltip": "インフィニティの剣：右クリック時に攻撃範囲のある落雷を発生させるか",
+              "config.avaritia.max_channels_pre_player": "最大プレイヤーチャンネル数",
+              "config.avaritia.max_channels_pre_player.tooltip": "プレイヤーあたりの最大チャンネル数",
+              "config.avaritia.max_page_limit": "最大ページ数制限",
+              "config.avaritia.max_page_limit.tooltip": "最大ページ数制限",
+              "config.avaritia.max_public_channels": "最大公開チャンネル数",
+              "config.avaritia.max_public_channels.tooltip": "最大公開チャンネル数",
+              "config.avaritia.max_size_pre_channel": "チャンネルサイズ",
+              "config.avaritia.max_size_pre_channel.tooltip": "チャンネルあたりの最大サイズ",
+              "config.avaritia.neutron_collector_product_tick": "ニュートロニウム収集機の毎ティック動作",
+              "config.avaritia.neutron_collector_product_tick.tooltip": "ニュートロニウム収集機：毎ティック生成するか",
+              "config.avaritia.neutron_horse_speed": "馬鎧の移動速度",
+              "config.avaritia.neutron_horse_speed.tooltip": "ニュートロニウムの馬鎧：装着時の馬の移動速度",
+              "config.avaritia.pickaxe_break_range": "ツルハシの破壊範囲",
+              "config.avaritia.pickaxe_break_range.tooltip": "インフィニティのツルハシ：破壊できる範囲",
+              "config.avaritia.reset_max_page": "最大ページをリセット",
+              "config.avaritia.reset_max_page.tooltip": "復元設定：最大ページ数を0にリセット",
+              "config.avaritia.shovel_break_range": "シャベルの破壊範囲",
+              "config.avaritia.shovel_break_range.tooltip": "インフィニティのシャベル：破壊できる範囲",
+              "config.avaritia.singularity_time_required": "シンギュラリティ要求時間",
+              "config.avaritia.singularity_time_required.tooltip": "シンギュラリティ：圧縮にかかる時間",
+              "config.avaritia.slot_stack_limit": "スロットスタック制限",
+              "config.avaritia.slot_stack_limit.tooltip": "スロットのスタックサイズ制限",
+              "config.avaritia.sub_arrow_damage": "副矢の攻撃力",
+              "config.avaritia.sub_arrow_damage.tooltip": "インフィニティの弓：降らせるライトアローの攻撃力",
+              "config.avaritia.sword_attack_range": "剣の攻撃範囲",
+              "config.avaritia.sword_attack_range.tooltip": "インフィニティの剣：右クリック時の攻撃範囲",
+              "config.avaritia.sword_range_damage": "剣の範囲攻撃力",
+              "config.avaritia.sword_range_damage.tooltip": "インフィニティの剣：右クリック時の範囲ダメージ値",
+              "config.avaritia.use_advance_tooltips": "高度なツールチップの使用",
+              "config.avaritia.use_advance_tooltips.tooltip": "開発用",
+              "config.avaritia.use_single_page_mode": "シングルページモードを使用する",
+              "config.avaritia.use_single_page_mode.tooltip": "シングルページモードを使用",
+              "config.avaritia.blaze_cube_emc": "ブレイズキューブのEMC",
+              "config.avaritia.blaze_cube_emc.tooltip": "ブレイズキューブ：与えられるEMC",
+              "config.avaritia.neutron_pile_emc": "小さなニュートロンのEMC",
+              "config.avaritia.neutron_pile_emc.tooltip": "小さなニュートロン：与えられるEMC",
+              "config.avaritia.vanilla_totem_emc": "バニラトーテムのEMC",
+              "config.avaritia.vanilla_totem_emc.tooltip": "不死のトーテム：与えられるEMC",
+              "config.avaritia.bedrock_emc": "岩盤のEMC",
+              "config.avaritia.bedrock_emc.tooltip": "岩盤：与えられるEMC",
+              "config.jade.plugin_avaritia.compressor": "圧縮機",
+              "config.jade.plugin_avaritia.crafting_table": "Avaritiaクラフト",
+              "config.jade.plugin_avaritia.extreme_smithing": "至高の鍛冶",
+              "container.end_crafting_table": "エンドの作業台",
+              "container.extreme_crafting_table": "至高の作業台",
+              "container.nether_crafting_table": "ネザーの作業台",
+              "container.sculk_crafting_table": "スカルクの作業台",
+              "container.extreme_smithing": "至高の鍛冶台",
+              "container.infinity_chest": "§6数量: %s / %s",
+              "death.attack.infinity": "%1$sは%2$sによって消し飛ばされた",
+              "death.attack.infinity.0": "%1$sは引き裂かれた",
+              "death.attack.infinity.1": "%1$sは引き裂かれた",
+              "death.attack.infinity.2": "%1$sは存在から抹消された",
+              "death.attack.infinity.3": "%1$sはオーバーキルされた",
+              "death.attack.infinity.4": "%1$sは殲滅された",
+              "death.attack.infinity.item": "%1$sは%2$sによって消し飛ばされた",
+              "death.attack.infinity.player.0": "%1$sは%2$sによって引き裂かれた",
+              "death.attack.infinity.player.1": "%1$sは%2$sによって引き裂かれた",
+              "death.attack.infinity.player.2": "%1$sは%2$sによって存在から抹消された",
+              "death.attack.infinity.player.3": "%1$sは%2$sによってオーバーキルされた",
+              "death.attack.infinity.player.4": "%1$sは%2$sによって殲滅された",
+              "direction.avaritia.down": "下面",
+              "direction.avaritia.east": "東面",
+              "direction.avaritia.north": "北面",
+              "direction.avaritia.south": "南面",
+              "direction.avaritia.up": "上面",
+              "direction.avaritia.west": "西面",
+              "effect.avaritia.burning": "燃焼",
+              "effect.avaritia.burning.description": "20ティック（1秒）毎に最大体力の5%に相当する火炎ダメージを与える。\\n\\nこのデバフはモブの体力を減少させ、水または粉雪の中に入ることで低減できる。\\n\\n体力減少効果は、衰弱や毒に似ている。",
+              "emi.category.avaritia.compressor": "ニュートロニウム圧縮機",
+              "emi.category.avaritia.end_crafting_table": "エンドのクラフト",
+              "emi.category.avaritia.extreme_crafting_table": "至高のクラフト",
+              "emi.category.avaritia.extreme_smithing_table": "至高の鍛冶",
+              "emi.category.avaritia.nether_crafting_table": "ネザーのクラフト",
+              "emi.category.avaritia.sculk_crafting_table": "スカルクのクラフト",
+              "emi.tooltip.avaritia.neutron_collector": "小さなニュートロンの収集",
+              "emi.tooltip.avaritia.neutron_pile": "ニュートロニウム収集機を起動してしばらく待つことで、微量のニュートロンを得られるであろう",
+              "emi.tooltip.shapeless.recipe": "不定形レシピ",
+              "gui.avaritia.addChannel.tip1": "「%d」を追加",
+              "gui.avaritia.addChannel.tip2": "§a左クリック§r：個人用に追加",
+              "gui.avaritia.addChannel.tip3": "§d左SHIFT§r + §a左クリック§r：公開用に追加",
+              "gui.avaritia.addChannel.tip4": "§cストレージコアを消費します！",
+              "gui.avaritia.apply": "適用",
+              "gui.avaritia.back": "戻る",
+              "gui.avaritia.backChannel.tip1": "戻る",
+              "gui.avaritia.cancel": "キャンセル",
+              "gui.avaritia.capability.tip1": "§a左クリック§r：入力1スタック%dを移動する",
+              "gui.avaritia.capability.tip2": "§a右クリック§r：出力1スタック物体を移動する",
+              "gui.avaritia.capability.tip3": "§d左SHIFT§r：全て！",
+              "gui.avaritia.channel.tip1": "チャンネル：「%d」",
+              "gui.avaritia.channel.tip2": "所有者：「%d」",
+              "gui.avaritia.confirm": "確認",
+              "gui.avaritia.craft.channel": "チャンネルにクラフト",
+              "gui.avaritia.craft.drop": "クラフトでドロップ",
+              "gui.avaritia.craft.inv": "インベントリにクラフト",
+              "gui.avaritia.craft.missing": "不足しているアイテム（クリック可能）",
+              "gui.avaritia.craft.tip1": "§a左クリック§r：64個クラフトする",
+              "gui.avaritia.craft.tip2": "§a右クリック§r：8個クラフトする",
+              "gui.avaritia.craft.tip3": "§d左SHIFT§r + §a左クリック§r：512個クラフトする",
+              "gui.avaritia.craft.tip4": "§d左SHIFT§r + §a右クリック§r：1個クラフトする",
+              "gui.avaritia.emptyChannel.tip4": "§cこのターミナルではチャンネルを選択できません",
+              "gui.avaritia.line": "---------------------",
+              "gui.avaritia.name": "名前",
+              "gui.avaritia.noPermission.tip3": "§c権限がありません",
+              "gui.avaritia.owner": "所有者: %d",
+              "gui.avaritia.port.down": "下",
+              "gui.avaritia.port.east": "東",
+              "gui.avaritia.port.input": "チャンネルへの入力",
+              "gui.avaritia.port.north": "北",
+              "gui.avaritia.port.output": "チャンネルからの出力",
+              "gui.avaritia.port.south": "南",
+              "gui.avaritia.port.tip": "クリックで有効化を切り替える",
+              "gui.avaritia.port.up": "上",
+              "gui.avaritia.port.west": "西",
+              "gui.avaritia.public": "公開",
+              "gui.avaritia.rate.tip": "アクティブポートの動作速度。低い方が速い",
+              "gui.avaritia.removeChannel.tip1": "削除：「%d」",
+              "gui.avaritia.removeChannel.tip2": "§cチャンネルを空にする必要があります",
+              "gui.avaritia.renameChannel.tip1": "改名：「%d」",
+              "gui.avaritia.renameChannel.tip2": "変更先：「%d」",
+              "gui.avaritia.rule.any_fluid": "任意の流体",
+              "gui.avaritia.rule.any_item": "任意のアイテム",
+              "gui.avaritia.rule.fe": "エネルギー（FE）",
+              "gui.avaritia.rule.fluid": "流体: %d",
+              "gui.avaritia.rule.item": "アイテム: %d",
+              "gui.avaritia.rule.item_tag": "タグ: %d",
+              "gui.avaritia.rule.mod_fluid": "Mod（流体）: %d",
+              "gui.avaritia.rule.mod_item": "Mod（アイテム）: %d",
+              "gui.avaritia.rule.tip": "マウスホイールで選択",
+              "gui.avaritia.save": "保存",
+              "gui.avaritia.search": "検索",
+              "gui.avaritia.search.tip1": "プレフィックスなしでIDと名前を検索",
+              "gui.avaritia.search.tip2": "プレフィックス「§a*§r」でIDのみを検索",
+              "gui.avaritia.search.tip3": "プレフィックス「§a$§r」でタグを検索",
+              "gui.avaritia.sort.ascending": "昇順",
+              "gui.avaritia.sort.count": "並べ替え：§a数量",
+              "gui.avaritia.sort.descending": "降順",
+              "gui.avaritia.sort.id": "並べ替え：§aID",
+              "gui.avaritia.sort.mirror_id": "並べ替え：§aミラーID",
+              "gui.avaritia.sort.nid": "並べ替え：§aMOD、次にID",
+              "gui.avaritia.sort.tip1": "§a左クリック§r：並べ替え順を変更",
+              "gui.avaritia.sort.tip2": "§d左SHIFT§r + §a左クリック§r：昇順を切り替え",
+              "gui.avaritia.view.all": "§a全て",
+              "gui.avaritia.view.fluid": "§a流体",
+              "gui.avaritia.view.item": "§aアイテム",
+              "info.avaritia.channel.add_success": "チャンネルの追加に成功しました：%s %s %s",
+              "info.avaritia.channel.load_error": "チャンネルの読み込みエラー！",
+              "info.avaritia.channel.load_finish": "チャンネルの読み込みが完了しました！",
+              "info.avaritia.channel.load_success": "チャンネルの読み込みに成功しました：%s %s %s",
+              "info.avaritia.channel.save_success": "チャンネルの保存に成功しました：%s %s %s",
+              "info.avaritia.infinity_chest.add_success": "インフィニティチェストの追加に成功しました：%s %s %s",
+              "info.avaritia.infinity_chest.load_error": "インフィニティチェストの読み込みエラー！",
+              "info.avaritia.infinity_chest.load_finish": "インフィニティチェストの読み込みが完了しました！",
+              "info.avaritia.infinity_chest.load_success": "インフィニティチェストの読み込みに成功しました：%s %s %s",
+              "info.avaritia.infinity_chest.save_success": "インフィニティチェストの保存に成功しました：%s %s %s",
+              "item.avaritia.blaze_axe": "ブレイズの手斧",
+              "item.avaritia.blaze_bow": "ブレイズの輝く弓",
+              "item.avaritia.blaze_cube": "ブレイズキューブ",
+              "item.avaritia.blaze_hoe": "ブレイズの魂のクワ",
+              "item.avaritia.blaze_pickaxe": "ブレイズの溶岩のツルハシ",
+              "item.avaritia.blaze_shovel": "ブレイズの炎のシャベル",
+              "item.avaritia.blaze_sword": "ブレイズの頭蓋骨の剣",
+              "item.avaritia.cosmic_meatballs": "宇宙の合い挽き肉",
+              "item.avaritia.crystal_axe": "クリスタルの斧",
+              "item.avaritia.crystal_bow": "クリスタルの弓",
+              "item.avaritia.crystal_hoe": "クリスタルのクワ",
+              "item.avaritia.crystal_matrix_ingot": "クリスタルマトリックスインゴット",
+              "item.avaritia.crystal_pickaxe": "クリスタルのツルハシ",
+              "item.avaritia.crystal_shovel": "クリスタルのシャベル",
+              "item.avaritia.crystal_sword": "クリスタルの剣",
+              "item.avaritia.diamond_lattice": "ダイヤモンドの格子",
+              "item.avaritia.endest_pearl": "エンデストパール",
+              "item.avaritia.enhancement_core": "強化の核心",
+              "item.avaritia.eternal_singularity": "永久のシンギュラリティ",
+              "item.avaritia.full_matter_cluster": "完全なる物質集合塊",
+              "item.avaritia.infinity_axe": "大自然の破滅",
+              "item.avaritia.infinity_boots": "インフィニティブーツ",
+              "item.avaritia.infinity_bow": "天上の大弓",
+              "item.avaritia.infinity_bucket": "インフィニティバケツ",
+              "item.avaritia.infinity_catalyst": "インフィニティカタリスト",
+              "item.avaritia.infinity_chestplate": "インフィニティチェストプレート",
+              "item.avaritia.infinity_clock": "インフィニティの時計",
+              "item.avaritia.infinity_crossbow": "灼熱のクロスボウ",
+              "item.avaritia.infinity_elytra": "インフィニティエリトラ",
+              "item.avaritia.infinity_helmet": "インフィニティヘルメット",
+              "item.avaritia.infinity_hoe": "恒久の豊沃",
+              "item.avaritia.infinity_ingot": "インフィニティインゴット",
+              "item.avaritia.infinity_nugget": "インフィニティ塊",
+              "item.avaritia.infinity_pants": "インフィニティレギンス",
+              "item.avaritia.infinity_pickaxe": "世界の破壊者",
+              "item.avaritia.infinity_ring": "インフィニティリング（開発中）",
+              "item.avaritia.infinity_shield": "地殻の守護盾",
+              "item.avaritia.infinity_shovel": "惑星を貪る者",
+              "item.avaritia.infinity_sword": "コスモスの剣",
+              "item.avaritia.infinity_totem": "インフィニティトーテム",
+              "item.avaritia.infinity_trident": "海淵のトライデント",
+              "item.avaritia.infinity_mace": "インフィニティのメイス",
+              "item.avaritia.infinity_umbrella": "インフィニティアンブレラ",
+              "item.avaritia.infinity_upgrade": "インフィニティアップグレード",
+              "item.avaritia.matter_cluster": "物質集合塊",
+              "item.avaritia.neutron_gear": "ニュートロニウムの歯車",
+              "item.avaritia.neutron_horse_armor": "ニュートロニウムの馬鎧",
+              "item.avaritia.neutron_ingot": "ニュートロニウムインゴット",
+              "item.avaritia.neutron_nugget": "ニュートロニウム塊",
+              "item.avaritia.neutron_pile": "小さなニュートロン",
+              "item.avaritia.neutron_ring": "ニュートロニウムのリング",
+              "item.avaritia.record_fragment": "レコードの破片",
+              "item.avaritia.refined_coal": "精炭",
+              "item.avaritia.side_config_card": "側面設定カード",
+              "item.avaritia.singularity": "%sのシンギュラリティ",
+              "item.avaritia.star_fuel": "恒星の燃料",
+              "item.avaritia.ultimate_stew": "森羅万象のシチュー",
+              "item.avaritia.upgrade_smithing_template": "アップグレードの鍛冶型",
+              "itemGroup.tab.Infinity": "Re:Avaritia",
+              "itemGroup.tab.Singularity": "Avaritia：シンギュラリティ",
+              "jei.category.avaritia.compressor": "ニュートロニウム圧縮機",
+              "jei.category.avaritia.end_crafting_table": "エンドのクラフト",
+              "jei.category.avaritia.extreme_crafting_table": "至高のクラフト",
+              "jei.category.avaritia.extreme_smithing_table": "至高の鍛冶",
+              "jei.category.avaritia.nether_crafting_table": "ネザーのクラフト",
+              "jei.category.avaritia.sculk_crafting_table": "スカルクのクラフト",
+              "jei.tooltip.avaritia.bedrock": "《クリスタルのツルハシ》または《世界の破壊者》を使うと手に入れることができるであろう...",
+              "jei.tooltip.avaritia.crystal_pickaxe": "この道具は岩盤をも破壊する",
+              "jei.tooltip.avaritia.end_portal_frame": "《クリスタルのツルハシ》または《世界の破壊者》を使うと手に入れることができるであろう...",
+              "jei.tooltip.avaritia.full_matter_cluster": "4096個ものアイテムを含む完全な物質集合塊を使用して作り上げることができる",
+              "jei.tooltip.avaritia.neutron_collector": "小さなニュートロンの収集",
+              "jei.tooltip.avaritia.neutron_pile": "ニュートロニウム収集機を起動してしばらく待つことで、微量のニュートロンを得られるであろう",
+              "jei.tooltip.avaritia.refined_coal": "ブレイズの手斧で原木を切り倒すと得られるであろう...",
+              "jei.tooltip.shapeless.recipe": "不定形レシピ",
+              "key.avaritia.categories": "Avaritia キーバインド",
+              "key.avaritia.config": "Avaritia 設定を開く",
+              "key.avaritia.filter": "フィルタースクリーンを開く",
+              "key.avaritia.neutron_ring": "ニュートロニウムのリングを開く",
+              "rarity.cosmic.name": "コズミック",
+              "rarity.legend.name": "レジェンド",
+              "screen.avaritia.side_config.title": "搬入出設定",
+              "singularity.avaritia.aluminum": "アルミニウム",
+              "singularity.avaritia.amethyst_shard": "アメジストの欠片",
+              "singularity.avaritia.blue_ice": "青氷",
+              "singularity.avaritia.bronze": "青銅",
+              "singularity.avaritia.coal": "石炭",
+              "singularity.avaritia.copper": "銅",
+              "singularity.avaritia.diamond": "ダイヤモンド",
+              "singularity.avaritia.electrum": "エレクトラム",
+              "singularity.avaritia.emerald": "エメラルド",
+              "singularity.avaritia.glowstone": "グロウストーン",
+              "singularity.avaritia.gold": "金",
+              "singularity.avaritia.invar": "インバー",
+              "singularity.avaritia.iron": "鉄",
+              "singularity.avaritia.lapis_lazuli": "ラピスラズリ",
+              "singularity.avaritia.lead": "鉛",
+              "singularity.avaritia.netherite": "ネザライト",
+              "singularity.avaritia.nickel": "ニッケル",
+              "singularity.avaritia.obsidian": "黒曜石",
+              "singularity.avaritia.osmium": "オスミウム",
+              "singularity.avaritia.platinum": "プラチナ",
+              "singularity.avaritia.quartz": "クォーツ",
+              "singularity.avaritia.redstone": "レッドストーン",
+              "singularity.avaritia.refined_obsidian": "精製黒曜石",
+              "singularity.avaritia.silver": "銀",
+              "singularity.avaritia.steel": "鋼鉄",
+              "singularity.avaritia.tin": "錫",
+              "singularity.avaritia.titanium": "チタン",
+              "singularity.avaritia.uranium": "ウラン",
+              "singularity.avaritia.zinc": "亜鉛",
+              "title.avaritia.config.title": "Re:Avaritia",
+              "title.avaritia.resourcepack": "Avaritia 旧リソースパック",
+              "tooltip.armor.desc": "防御力",
+              "tooltip.armor_toughness.desc": "防具強度",
+              "tooltip.avaritia.active": "%sモード有効！",
+              "tooltip.avaritia.added_by": "追加：%s",
+              "tooltip.avaritia.blaze_axe.desc": "森林を焼き払い、木炭が残る",
+              "tooltip.avaritia.blaze_cube.desc": "ブレイズの嵐",
+              "tooltip.avaritia.blaze_hoe.desc": "魂の力、大地を育てる",
+              "tooltip.avaritia.blaze_pickaxe.desc": "全てを溶かし、高温で製錬する",
+              "tooltip.avaritia.blaze_shovel.desc": "ネザーで生まれた呪文",
+              "tooltip.avaritia.blaze_sword.desc": "骸骨の頭蓋骨を刈り取り、黒く焦がす",
+              "tooltip.avaritia.changed": "%sモードに設定",
+              "tooltip.avaritia.compress": "圧縮: %s x %s",
+              "tooltip.avaritia.crafting": "%s: %s x %s",
+              "tooltip.avaritia.crystal_axe.desc": "岩を砕き、盾を破る",
+              "tooltip.avaritia.crystal_hoe.desc": "一撃で花が咲き、また一撃で時が流れる",
+              "tooltip.avaritia.crystal_matrix_ingot.desc": "まだ最終形態ではない",
+              "tooltip.avaritia.crystal_pickaxe.desc": "幸運は宝をもたらし、精密は宝石を見つけ出す",
+              "tooltip.avaritia.crystal_shovel.desc": "風のように昇り、優しく地に触れる",
+              "tooltip.avaritia.crystal_sword.desc": "刃が切り裂き、影が悪を打ち倒す",
+              "tooltip.avaritia.diamond_lattice.desc": "濃密な素材...",
+              "tooltip.avaritia.durability": "耐久値%s",
+              "tooltip.avaritia.eject": "排出",
+              "tooltip.avaritia.ejecting": "排出中...",
+              "tooltip.avaritia.empty": "空",
+              "tooltip.avaritia.endless_cake.desc": "貪欲？",
+              "tooltip.avaritia.enhancement_core.desc": "完全への道！",
+              "tooltip.avaritia.inactive": "%sモード無効！",
+              "tooltip.avaritia.infinity_bucket.desc": "全てを食らう...",
+              "tooltip.avaritia.infinity_bucket.message": "現在の流体: %s | 量: %smL",
+              "tooltip.avaritia.infinity_catalyst.desc": "一即一切、一切即一",
+              "tooltip.avaritia.infinity_clock.desc": "時を操る...",
+              "tooltip.avaritia.infinity_ingot.desc": "宇宙の猛威を、この手のひらに",
+              "tooltip.avaritia.infinity_nugget.desc": "天使の涙...",
+              "tooltip.avaritia.infinity_ring.desc": "...",
+              "tooltip.avaritia.infinity_totem.desc": "永久の守護者...",
+              "tooltip.avaritia.infinity_umbrella.desc": "瞬間的な永遠...",
+              "tooltip.avaritia.infinity_upgrade.desc": "アップグレードを加速！",
+              "tooltip.avaritia.init_enchant": "常に少なくとも%s",
+              "tooltip.avaritia.items_required": "アイテムが必要：",
+              "tooltip.avaritia.limited_input": "制限付き入力",
+              "tooltip.avaritia.matter_cluster.counter": "%s / %sアイテム",
+              "tooltip.avaritia.matter_cluster.desc": "使用して分解。",
+              "tooltip.avaritia.matter_cluster.desc2": "SHIFTを押し続けて内容物を表示",
+              "tooltip.avaritia.mode": "モード：%s",
+              "tooltip.avaritia.more": "さらに%s以上…",
+              "tooltip.avaritia.neutron_gear.desc": "隠されし技術復興の秘密...",
+              "tooltip.avaritia.neutron_horse_armor.desc": "フルパワー...",
+              "tooltip.avaritia.neutron_ingot.desc": "高密度な星の中心部を便利なインゴットの形に凝縮",
+              "tooltip.avaritia.neutron_nugget.desc": "約3,560万トン",
+              "tooltip.avaritia.neutron_pile.desc": "いったん先のことは忘れよう",
+              "tooltip.avaritia.num_items": "%sアイテム必要",
+              "tooltip.avaritia.progress": "進行度：%s",
+              "tooltip.avaritia.record_fragment.desc": "音楽の自由を信じるのが好き～",
+              "tooltip.avaritia.refined_coal.desc": "熱爆発！",
+              "tooltip.avaritia.seconds": "%s秒",
+              "tooltip.avaritia.selected": "選択済",
+              "tooltip.avaritia.side.click_to_cycle": "クリックして変更",
+              "tooltip.avaritia.side.mode.active_input": "能動入力",
+              "tooltip.avaritia.side.mode.active_mixin": "能動混合",
+              "tooltip.avaritia.side.mode.active_output": "能動出力",
+              "tooltip.avaritia.side.mode.off": "オフ",
+              "tooltip.avaritia.side.mode.passive_input": "受動入力",
+              "tooltip.avaritia.side.mode.passive_mixin": "受動混合",
+              "tooltip.avaritia.side.mode.passive_output": "受動出力",
+              "tooltip.avaritia.side_config_card.already_empty": "設定は既に空です",
+              "tooltip.avaritia.side_config_card.apply_success": "機械に設定を適用しました",
+              "tooltip.avaritia.side_config_card.cleared": "設定がクリアされました",
+              "tooltip.avaritia.side_config_card.has_config": "§7保存された設定",
+              "tooltip.avaritia.side_config_card.instruction_right_click": "§7機械を右クリックして適用",
+              "tooltip.avaritia.side_config_card.instruction_shift_air": "§7他のブロックをShift+右クリックで消去",
+              "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7機械をShift+右クリックで設定を保存",
+              "tooltip.avaritia.side_config_card.no_config": "§7空の設定",
+              "tooltip.avaritia.side_config_card.no_config_to_apply": "適用可能な設定はありません",
+              "tooltip.avaritia.side_config_card.read_success": "カードに設定が保存されました",
+              "tooltip.avaritia.singularity_id": "シンギュラリティID：%s",
+              "tooltip.avaritia.smithing": "鍛冶：%s x %s",
+              "tooltip.avaritia.star_fuel.desc": "輝く星のための燃料",
+              "tooltip.avaritia.switch": "%sに切り替え",
+              "tooltip.avaritia.sword_kill_mode.active": "目に見えるものを全て殺戮する",
+              "tooltip.avaritia.ticks": "%sティック",
+              "tooltip.avaritia.tier": "ティア：%s",
+              "tooltip.avaritia.time_consume": "所要時間：%s",
+              "tooltip.avaritia.tool.fire_ball": "ファイアボール",
+              "tooltip.avaritia.tool.blade_slash": "ブレードスラッシュ",
+              "tooltip.avaritia.tool.blaze_bow_burning": "エリア燃焼",
+              "tooltip.avaritia.tool.blaze_shovel_trans": "素材変換",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_1": "幸運IIIに設定",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_2": "シルクタッチに設定",
+              "tooltip.avaritia.tool.infinity_axe_range": "範囲破壊",
+              "tooltip.avaritia.tool.infinity_bow_tracer": "トレース攻撃",
+              "tooltip.avaritia.tool.infinity_clock.overclock_disabled": "スピードアップモードに設定",
+              "tooltip.avaritia.tool.infinity_clock.overclock_enabled": "タイムアップモードに設定",
+              "tooltip.avaritia.tool.infinity_clock_up": "スピードアップ",
+              "tooltip.avaritia.tool.infinity_crossbow_multi": "マルチシュート",
+              "tooltip.avaritia.tool.infinity_hoe_sow": "範囲",
+              "tooltip.avaritia.tool.infinity_pickaxe_hammer": "範囲掘削",
+              "tooltip.avaritia.tool.infinity_shovel_destroyer": "範囲/エンデストパール攻撃",
+              "tooltip.avaritia.tool.infinity_sword_kill": "殺戮",
+              "tooltip.avaritia.tool.infinity_trident_loyalty": "忠誠",
+              "tooltip.avaritia.tool.infinity_trident_normal": "通常",
+              "tooltip.avaritia.tool.infinity_trident_riptide": "激流",
+              "tooltip.avaritia.tool.infinity_umbrella_normal": "基本",
+              "tooltip.avaritia.tool.infinity_umbrella_rain": "雨",
+              "tooltip.avaritia.tool.infinity_umbrella_storm": "雷雨",
+              "tooltip.avaritia.tool.infinity_umbrella_sun": "晴れ",
+              "tooltip.avaritia.tool.smelt": "精錬",
+              "tooltip.avaritia.totem_break": "インフィニティトーテムが使用された！",
+              "tooltip.avaritia.type": "種類：%s",
+              "tooltip.avaritia.unlimited_input": "無制限入力",
+              "tooltip.crystal_pickaxe.enchant_1": "幸運IIIに設定",
+              "tooltip.crystal_pickaxe.enchant_2": "シルクタッチに設定",
+              "tooltip.infinity_pickaxe.enchant_1": "幸運Xに設定",
+              "tooltip.infinity_pickaxe.enchant_2": "シルクタッチに設定",
+              "tooltip.infinity": "無限",
+              "tooltip.infinity.desc": "攻撃力",
+              "tooltip.avaritia.compressor_eject.message_1": "§c[ニュートロニウム圧縮機] §fまずはレシピのロックを解除する必要がある",
+              "tooltip.avaritia.compressor_eject.message_2": "§a[ニュートロニウム圧縮機] §f物質は放出され、物質集合塊として凝縮された",
+              "tooltip.avaritia.compressor_eject.message_3": "§c[ニュートロニウム圧縮機] §f回収する素材がない",
+              "tooltip.avaritia.compressor_lock.message_1": "§a[ニュートロニウム圧縮機] §fレシピはロックされた",
+              "tooltip.avaritia.compressor_lock.message_2": "§e[ニュートロニウム圧縮機] §fレシピはアンロックされた",
+              "tooltip.avaritia.compressor_lock.message_3": "§c[ニュートロニウム圧縮機] §f最初にレシピの材料を追加する必要がある"
+            }
+            """;
+            case "zh_cn" -> """
+            {
+              "advancements.avaritia.start.title": "欢迎来到无尽贪婪：重生！",
+              "advancements.avaritia.start.desc": "",
+              "advancements.avaritia.compressed_crafting_table.desc": "获得压缩工作台",
+              "advancements.avaritia.compressed_crafting_table.title": "初次接触",
+              "advancements.avaritia.sculk_crafting_table.desc": "获得幽匿工作台",
+              "advancements.avaritia.sculk_crafting_table.title": "幽古之音",
+              "advancements.avaritia.diamond_lattice.desc": "制作钻石晶格",
+              "advancements.avaritia.diamond_lattice.title": "璀钻新生",
+              "advancements.avaritia.crystal_matrix_ingot.desc": "获得水晶矩阵锭",
+              "advancements.avaritia.crystal_matrix_ingot.title": "晶能涌现",
+              "advancements.avaritia.crystal_pickaxe.desc": "获得魔能双生之镐",
+              "advancements.avaritia.crystal_pickaxe.title": "基岩破坏者",
+              "advancements.avaritia.nether_crafting_table.desc": "获得炼狱工作台",
+              "advancements.avaritia.nether_crafting_table.title": "浴火之界",
+              "advancements.avaritia.blaze_cube.desc": "获得炽骨立方",
+              "advancements.avaritia.blaze_cube.title": "灼热骸骨",
+              "advancements.avaritia.blaze_sword.desc": "获得炽焰之啄颅剑",
+              "advancements.avaritia.blaze_sword.title": "骷髅的噩梦",
+              "advancements.avaritia.blaze_axe.desc": "获得炽灭之焚林斧",
+              "advancements.avaritia.blaze_axe.title": "炽灭焚林",
+              "advancements.avaritia.refined_coal.desc": "获得精炼煤炭",
+              "advancements.avaritia.refined_coal.title": "高效能源",
+              "advancements.avaritia.end_crafting_table.desc": "获得终末工作台",
+              "advancements.avaritia.end_crafting_table.title": "亦终亦始",
+              "advancements.avaritia.neutron_collector.desc": "获得中子态素收集器",
+              "advancements.avaritia.neutron_collector.title": "漫长的等待",
+              "advancements.avaritia.eternal_singularity.desc": "获得永恒奇点",
+              "advancements.avaritia.eternal_singularity.title": "化零为整 - 二次",
+              "advancements.avaritia.infinity_umbrella.desc": "获得天律统御之伞",
+              "advancements.avaritia.infinity_umbrella.title": "宙斯",
+              "advancements.avaritia.infinity_clock.desc": "获得时序僭越之钟",
+              "advancements.avaritia.infinity_clock.title": "科罗诺斯",
+              "advancements.avaritia.upgrade_smithing_template.desc": "获得羽化模版",
+              "advancements.avaritia.upgrade_smithing_template.title": "浪迹天涯",
+              "advancements.avaritia.enhancement_core.desc": "获得无瑕核心",
+              "advancements.avaritia.enhancement_core.title": "补全之路",
+              "advancements.avaritia.extreme_smithing_table.desc": "获得终焉锻造台",
+              "advancements.avaritia.extreme_smithing_table.title": "噩梦的开始 - 二次",
+              "advancements.avaritia.endest_pearl.desc": "使用终望珍珠",
+              "advancements.avaritia.endest_pearl.title": "小型黑洞",
+              "advancements.avaritia.extreme_crafting_table.desc": "合成终焉工作台",
+              "advancements.avaritia.extreme_crafting_table.title": "噩梦的开始",
+              "advancements.avaritia.infinity_armor.desc": "获取全套无尽装甲",
+              "advancements.avaritia.infinity_armor.title": "无限",
+              "advancements.avaritia.infinity_axe.desc": "合成无尽斧",
+              "advancements.avaritia.infinity_axe.title": "自然荒芜",
+              "advancements.avaritia.infinity_bow.desc": "合成无尽弓",
+              "advancements.avaritia.infinity_bow.title": "天堂陨落",
+              "advancements.avaritia.infinity_catalyst.desc": "合成无尽催化剂",
+              "advancements.avaritia.infinity_catalyst.title": "一即全,全即一",
+              "advancements.avaritia.infinity_food.desc": "食用超级煲或寰宇肉丸",
+              "advancements.avaritia.infinity_food.title": "干净又卫生",
+              "advancements.avaritia.infinity_hoe.desc": "合成无尽锄",
+              "advancements.avaritia.infinity_hoe.title": "无尽奉献",
+              "advancements.avaritia.infinity_ingot.desc": "获取无尽锭",
+              "advancements.avaritia.infinity_ingot.title": "苦尽甘来？",
+              "advancements.avaritia.infinity_pickaxe.desc": "合成无尽镐",
+              "advancements.avaritia.infinity_pickaxe.title": "世界崩解",
+              "advancements.avaritia.infinity_shovel.desc": "合成无尽铲",
+              "advancements.avaritia.infinity_shovel.title": "星球吞噬",
+              "advancements.avaritia.infinity_sword.desc": "合成无尽剑",
+              "advancements.avaritia.infinity_sword.title": "寰宇支配",
+              "advancements.avaritia.matter_cluster.desc": "获取物质团",
+              "advancements.avaritia.matter_cluster.title": "卡顿神器",
+              "advancements.avaritia.neutron_compressor.desc": "获得中子态素压缩机",
+              "advancements.avaritia.neutron_compressor.title": "化零为整",
+              "advancements.avaritia.neutron_ingot.desc": "获得中子锭",
+              "advancements.avaritia.neutron_ingot.title": "九九归一",
+              "advancements.avaritia.neutron_pile.desc": "获得中子素尘埃",
+              "advancements.avaritia.neutron_pile.title": "终有收获",
+              "advancements.avaritia.singularity.desc": "获取任意奇点",
+              "advancements.avaritia.singularity.title": "库存告急",
+              "advancements.avaritia.star_fuel.desc": "获取恒星燃料",
+              "advancements.avaritia.star_fuel.title": "恒星能源",
+              "attribute.name.generic.walking_speed": "移动速度",
+              "block.avaritia.blaze_cube_block": "炽骨立方块",
+              "block.avaritia.compressed_chest": "压缩箱子",
+              "block.avaritia.compressed_crafting_table": "压缩工作台",
+              "block.avaritia.crystal_matrix": "水晶矩阵",
+              "block.avaritia.dense_neutron_collector": "致密中子态素收集器",
+              "block.avaritia.dense_neutron_compressor": "致密中子态素压缩机",
+              "block.avaritia.denser_neutron_collector": "精英中子态素收集器",
+              "block.avaritia.denser_neutron_compressor": "精英中子态素压缩机",
+              "block.avaritia.densest_neutron_collector": "极限中子态素收集器",
+              "block.avaritia.densest_neutron_compressor": "极限中子态素压缩机",
+              "block.avaritia.diamond_lattice_block": "钻石晶格块",
+              "block.avaritia.double_compressed_crafting_table": "二重压缩工作台",
+              "block.avaritia.end_crafting_table": "终末工作台",
+              "block.avaritia.endless_cake": "贪婪蛋糕",
+              "block.avaritia.extreme_anvil": "终焉之砧",
+              "block.avaritia.extreme_crafting_table": "终焉工作台",
+              "block.avaritia.extreme_smithing_table": "终焉锻造台",
+              "block.avaritia.infinity": "无尽之块",
+              "block.avaritia.infinity_chest": "无尽之箱",
+              "block.avaritia.nether_crafting_table": "炼狱工作台",
+              "block.avaritia.neutron": "中子态素块",
+              "block.avaritia.neutron_collector": "基础中子态素收集器",
+              "block.avaritia.neutron_compressor": "基础中子态素压缩机",
+              "block.avaritia.recipe_generator_table": "配方生成器:无尽工作台",
+              "block.avaritia.refined_coal_block": "精炼煤炭块",
+              "block.avaritia.sculk_crafting_table": "幽匿工作台",
+              "block.avaritia.soul_farmland": "灵魂耕地",
+              "block.avaritia.star_fuel_block": "恒星燃料块",
+              "block.avaritia.tesseract": "超立方体",
+              "button.avaritia.side_config_button_1": "配置输入输出",
+              "button.avaritia.side_config_button_2": "点击打开六面配置界面",
+              "button.avaritia.lock_button_1": "已锁定配方",
+              "button.avaritia.lock_button_2": "点击解锁配方",
+              "button.avaritia.lock_button_3": "未锁定配方",
+              "button.avaritia.lock_button_4": "有配方时可点击锁定",
+              "button.avaritia.eject_button_1": "弹出材料",
+              "button.avaritia.eject_button_2": "点击弹出所有材料到物品栏",
+              "config.avaritia.axe_chain_count": "斧连锁数量",
+              "config.avaritia.axe_chain_count.tooltip": "无尽斧砍树的连锁数量",
+              "config.avaritia.blade_slash_damage": "剑气斩击伤害",
+              "config.avaritia.blade_slash_damage.tooltip": "水晶剑剑气斩击的伤害",
+              "config.avaritia.blade_slash_radius": "剑气斩击半径",
+              "config.avaritia.blade_slash_radius.tooltip": "水晶剑剑气斩击的半径",
+              "config.avaritia.boot_speed_backward_multiplier": "靴子后退倍数",
+              "config.avaritia.boot_speed_backward_multiplier.tooltip": "无尽靴子后退时的速度倍数",
+              "config.avaritia.boot_speed_base": "靴子基础速度",
+              "config.avaritia.boot_speed_base.tooltip": "无尽靴的基础移动速度",
+              "config.avaritia.boot_speed_flying_multiplier": "靴子飞行倍数",
+              "config.avaritia.boot_speed_flying_multiplier.tooltip": "无尽靴子飞行时的速度倍数",
+              "config.avaritia.boot_speed_sneaking_multiplier": "靴子潜行倍数",
+              "config.avaritia.boot_speed_sneaking_multiplier.tooltip": "无尽靴子潜行时的速度倍数",
+              "config.avaritia.boot_speed_sprinting_multiplier": "靴子冲刺倍数",
+              "config.avaritia.boot_speed_sprinting_multiplier.tooltip": "无尽靴子冲刺时的额外速度",
+              "config.avaritia.boot_speed_strafing_multiplier": "靴子侧向移动倍数",
+              "config.avaritia.boot_speed_strafing_multiplier.tooltip": "无尽靴子侧向移动时的速度倍数",
+              "config.avaritia.boot_speed_swimming_multiplier": "靴子游泳倍数",
+              "config.avaritia.boot_speed_swimming_multiplier.tooltip": "无尽靴子游泳时的速度倍数",
+              "config.avaritia.category.channel": "频道",
+              "config.avaritia.category.emc": "EMC",
+              "config.avaritia.category.misc": "其他",
+              "config.avaritia.category.storage": "储存",
+              "config.avaritia.category.tools": "工具",
+              "config.avaritia.channel_fast_update_rate": "快速更新率",
+              "config.avaritia.channel_fast_update_rate.tooltip": "频道的快速更新率",
+              "config.avaritia.channel_full_update_rate": "完整更新率",
+              "config.avaritia.channel_full_update_rate.tooltip": "频道的完整更新率",
+              "config.avaritia.chest_max_item_size": "箱子最大物品类型数",
+              "config.avaritia.chest_max_item_size.tooltip": "定义无尽箱子可以存储的最大物品类型数量",
+              "config.avaritia.endless_item_entity_range": "永恒物品范围",
+              "config.avaritia.endless_item_entity_range.tooltip": "永恒物品追踪的范围",
+              "config.avaritia.endless_item_entity_speed": "永恒物品速度",
+              "config.avaritia.endless_item_entity_speed.tooltip": "永恒物品追踪的速度",
+              "config.avaritia.food_time": "食物时间",
+              "config.avaritia.food_time.tooltip": "食物效果时间缩放因子",
+              "config.avaritia.growth_soul_farmland": "灵魂耕地生长率",
+              "config.avaritia.growth_soul_farmland.tooltip": "灵魂耕地生长率",
+              "config.avaritia.infinity_elytra_flying_damage_range": "鞘翅飞行伤害范围",
+              "config.avaritia.infinity_elytra_flying_damage_range.tooltip": "无尽鞘翅飞行冲撞造成伤害的范围",
+              "config.avaritia.infinity_elytra_flying_speed": "无尽鞘翅飞行速度",
+              "config.avaritia.infinity_elytra_flying_speed.tooltip": "无尽鞘翅的飞行速度",
+              "config.avaritia.infinity_helmet_night_vision": "无尽头盔夜视",
+              "config.avaritia.infinity_helmet_night_vision.tooltip": "穿戴无尽头盔是否开启夜视",
+              "config.avaritia.internal_infinity_catalyst_craft": "内部无尽催化剂合成",
+              "config.avaritia.internal_infinity_catalyst_craft.tooltip": "无尽催化剂合成是否使用所有奇点",
+              "config.avaritia.inventory_rows": "物品栏行数",
+              "config.avaritia.inventory_rows.tooltip": "多页模式的物品栏行数",
+              "config.avaritia.is_keep_stone": "保留石头和泥土",
+              "config.avaritia.is_keep_stone.tooltip": "无尽工具的超级模式是否保留石头和泥土",
+              "config.avaritia.is_merge_matter_cluster": "合并物质团",
+              "config.avaritia.is_merge_matter_cluster.tooltip": "是否合并物质团",
+              "config.avaritia.is_sword_attack_endless": "剑造成无限伤害",
+              "config.avaritia.is_sword_attack_endless.tooltip": "右键是否造成无限伤害",
+              "config.avaritia.is_sword_attack_item_entity": "剑攻击掉落物",
+              "config.avaritia.is_sword_attack_item_entity.tooltip": "在杀戮模式下是否攻击掉落物？",
+              "config.avaritia.is_sword_attack_projectile": "剑攻击弹幕",
+              "config.avaritia.is_sword_attack_projectile.tooltip": "在杀戮模式下是否攻击弹幕？",
+              "config.avaritia.is_sword_attack_lightning": "无尽剑召唤闪电",
+              "config.avaritia.is_sword_attack_lightning.tooltip": "右键是否在攻击范围内召唤闪电",
+              "config.avaritia.max_channels_pre_player": "玩家最大频道数",
+              "config.avaritia.max_channels_pre_player.tooltip": "每个玩家的最大频道数",
+              "config.avaritia.max_page_limit": "最大页数限制",
+              "config.avaritia.max_page_limit.tooltip": "最大页数限制",
+              "config.avaritia.max_public_channels": "最大公共频道数",
+              "config.avaritia.max_public_channels.tooltip": "最大公共频道数",
+              "config.avaritia.max_size_pre_channel": "频道大小",
+              "config.avaritia.max_size_pre_channel.tooltip": "每个频道的最大大小",
+              "config.avaritia.neutron_collector_product_tick": "中子收集器产出刻",
+              "config.avaritia.neutron_collector_product_tick.tooltip": "中子收集器的产出刻",
+              "config.avaritia.neutron_horse_speed": "马铠的速度",
+              "config.avaritia.neutron_horse_speed.tooltip": "马穿戴中子战马铠后的速度",
+              "config.avaritia.pickaxe_break_range": "镐破坏范围",
+              "config.avaritia.pickaxe_break_range.tooltip": "无尽镐可破坏的范围",
+              "config.avaritia.reset_max_page": "重置最大页数",
+              "config.avaritia.reset_max_page.tooltip": "恢复选项：重置最大页数为0",
+              "config.avaritia.shovel_break_range": "锹破坏范围",
+              "config.avaritia.shovel_break_range.tooltip": "无尽锹可破坏的范围",
+              "config.avaritia.singularity_time_required": "奇点所需时间",
+              "config.avaritia.singularity_time_required.tooltip": "奇点默认所需时间",
+              "config.avaritia.slot_stack_limit": "槽位堆叠限制",
+              "config.avaritia.slot_stack_limit.tooltip": "槽位的堆叠大小限制",
+              "config.avaritia.sub_arrow_damage": "箭雨伤害",
+              "config.avaritia.sub_arrow_damage.tooltip": "无尽弓和无尽弩的箭雨伤害",
+              "config.avaritia.sword_attack_range": "剑攻击范围",
+              "config.avaritia.sword_attack_range.tooltip": "无尽剑右键攻击范围",
+              "config.avaritia.sword_range_damage": "剑范围伤害",
+              "config.avaritia.sword_range_damage.tooltip": "无尽剑右键的范围伤害值",
+              "config.avaritia.use_advance_tooltips": "使用高级工具提示",
+              "config.avaritia.use_advance_tooltips.tooltip": "用于开发目的",
+              "config.avaritia.use_single_page_mode": "使用单页模式",
+              "config.avaritia.use_single_page_mode.tooltip": "使用单页模式",
+              "config.avaritia.blaze_cube_emc": "炽骨立方EMC",
+              "config.avaritia.blaze_cube_emc.tooltip": "炽骨立方的EMC值",
+              "config.avaritia.neutron_pile_emc": "中子堆EMC",
+              "config.avaritia.neutron_pile_emc.tooltip": "中子素尘埃的EMC值",
+              "config.avaritia.vanilla_totem_emc": "原版不死图腾EMC",
+              "config.avaritia.vanilla_totem_emc.tooltip": "不死图腾的EMC值",
+              "config.avaritia.bedrock_emc": "原版基岩EMC",
+              "config.avaritia.bedrock_emc.tooltip": "基岩的EMC值",
+              "config.jade.plugin_avaritia.compressor": "中子态素压缩机",
+              "config.jade.plugin_avaritia.crafting_table": "无尽合成",
+              "config.jade.plugin_avaritia.extreme_smithing": "终焉锻造台",
+              "container.end_crafting_table": "终末工作台",
+              "container.extreme_crafting_table": "终焉工作台",
+              "container.nether_crafting_table": "炼狱工作台",
+              "container.sculk_crafting_table": "幽匿工作台",
+              "container.extreme_smithing": "终焉锻造台",
+              "container.infinity_chest": "§6数量: %s / %s",
+              "death.attack.infinity": "%1$s 被 %2$s 彻底粉碎",
+              "death.attack.infinity.0": "%1$s 被蒸发",
+              "death.attack.infinity.1": "%1$s 被切成了条",
+              "death.attack.infinity.2": "%1$s 被抹杀了存在",
+              "death.attack.infinity.3": "%1$s 被赶尽杀绝",
+              "death.attack.infinity.4": "%1$s 被湮灭",
+              "death.attack.infinity.item": "%1$s 被 %2$s 彻底粉碎",
+              "death.attack.infinity.player.0": "%1$s 被 %2$s 所蒸发",
+              "death.attack.infinity.player.1": "%1$s 被 %2$s 切成了条",
+              "death.attack.infinity.player.2": "%1$s 被 %2$s 抹杀了存在",
+              "death.attack.infinity.player.3": "%1$s 被 %2$s 赶尽杀绝",
+              "death.attack.infinity.player.4": "%1$s 被 %2$s 所湮灭",
+              "direction.avaritia.down": "下面",
+              "direction.avaritia.east": "右面",
+              "direction.avaritia.north": "前面",
+              "direction.avaritia.south": "后面",
+              "direction.avaritia.up": "上面",
+              "direction.avaritia.west": "左面",
+              "effect.avaritia.burning": "灼烧",
+              "effect.avaritia.burning.description": "每20Tick(1秒)造成一次5％最大生命值的火焰伤害。\\n\\n该debuff会让生物强制扣血，只能在水中、细雪中缓解。\\n\\n扣血效果类似凋零、中毒。",
+              "emi.category.avaritia.compressor": "中子素压缩",
+              "emi.category.avaritia.end_crafting_table": "终末合成",
+              "emi.category.avaritia.extreme_crafting_table": "终焉合成",
+              "emi.category.avaritia.extreme_smithing_table": "终焉锻造",
+              "emi.category.avaritia.nether_crafting_table": "炼狱合成",
+              "emi.category.avaritia.sculk_crafting_table": "幽匿合成",
+              "emi.tooltip.avaritia.neutron_collector": "用于收集中子素尘埃",
+              "emi.tooltip.avaritia.neutron_pile": "通过中子素收集器，你能在一段时间后获得一个中子素尘埃",
+              "emi.tooltip.shapeless.recipe": "无序配方",
+              "gui.avaritia.addChannel.tip1": "添加 \\"%d\\"",
+              "gui.avaritia.addChannel.tip2": "§a左键§r : 添加到你名下",
+              "gui.avaritia.addChannel.tip3": "§d左SHIFT§r + §a左键§r : 添加到公有",
+              "gui.avaritia.addChannel.tip4": "§c消耗一个储存核心!",
+              "gui.avaritia.apply": "应用",
+              "gui.avaritia.back": "返回",
+              "gui.avaritia.backChannel.tip1": "返回",
+              "gui.avaritia.cancel": "取消",
+              "gui.avaritia.capability.tip1": "§a左键§r : 将一组 %d 装到手持物",
+              "gui.avaritia.capability.tip2": "§a右键§r : 从手持物卸下一组东西",
+              "gui.avaritia.capability.tip3": "§d左SHIFT§r : 满上 !",
+              "gui.avaritia.channel.tip1": "频道： \\"%d\\"",
+              "gui.avaritia.channel.tip2": "主人： \\"%d\\"",
+              "gui.avaritia.confirm": "确定",
+              "gui.avaritia.craft.channel": "合成到频道",
+              "gui.avaritia.craft.drop": "合成并丢弃",
+              "gui.avaritia.craft.inv": "合成到物品栏",
+              "gui.avaritia.craft.missing": "缺失物品 (但能按)",
+              "gui.avaritia.craft.tip1": "§a左键§r: 合成64个",
+              "gui.avaritia.craft.tip2": "§a右键§r: 合成8个",
+              "gui.avaritia.craft.tip3": "§d左SHIFT§r + §a左键§r: 合成512个",
+              "gui.avaritia.craft.tip4": "§d左SHIFT§r + §a右键§r: 合成1个",
+              "gui.avaritia.emptyChannel.tip4": "§c这个终端没有选择频道",
+              "gui.avaritia.line": "---------------------",
+              "gui.avaritia.name": "名",
+              "gui.avaritia.noPermission.tip3": "§c你没有权限",
+              "gui.avaritia.owner": "主人: %d",
+              "gui.avaritia.port.down": "下",
+              "gui.avaritia.port.east": "东",
+              "gui.avaritia.port.input": "输入到频道",
+              "gui.avaritia.port.north": "北",
+              "gui.avaritia.port.output": "从频道输出",
+              "gui.avaritia.port.south": "南",
+              "gui.avaritia.port.tip": "点击切换开关",
+              "gui.avaritia.port.up": "上",
+              "gui.avaritia.port.west": "西",
+              "gui.avaritia.public": "公共的",
+              "gui.avaritia.rate.tip": "被动端口的工作速度，越低越快。",
+              "gui.avaritia.removeChannel.tip1": "移除： \\"%d\\"",
+              "gui.avaritia.removeChannel.tip2": "§c频道必须是空的",
+              "gui.avaritia.renameChannel.tip1": "重命名： \\"%d\\"",
+              "gui.avaritia.renameChannel.tip2": "至: \\"%d\\"",
+              "gui.avaritia.rule.any_fluid": "任意流体",
+              "gui.avaritia.rule.any_item": "任意物品",
+              "gui.avaritia.rule.fe": "能量 (FE)",
+              "gui.avaritia.rule.fluid": "流体: %d",
+              "gui.avaritia.rule.item": "物品: %d",
+              "gui.avaritia.rule.item_tag": "标签: %d",
+              "gui.avaritia.rule.mod_fluid": "模组(流体): %d",
+              "gui.avaritia.rule.mod_item": "模组(物品): %d",
+              "gui.avaritia.rule.tip": "用鼠标滚轮选择",
+              "gui.avaritia.save": "保存",
+              "gui.avaritia.search": "搜索",
+              "gui.avaritia.search.tip1": "无前缀搜索ID和名字",
+              "gui.avaritia.search.tip2": "前缀 \\"§a*§r\\" 仅搜索ID",
+              "gui.avaritia.search.tip3": "前缀 \\"§a$§r\\" 搜索Tag",
+              "gui.avaritia.sort.ascending": "升序",
+              "gui.avaritia.sort.count": "排序 : §a数量",
+              "gui.avaritia.sort.descending": "降序",
+              "gui.avaritia.sort.id": "排序 : §aID",
+              "gui.avaritia.sort.mirror_id": "排序 : §a镜向 ID",
+              "gui.avaritia.sort.nid": "排序 : §aMOD 然后 ID",
+              "gui.avaritia.sort.tip1": "§a左键§r : 循环排序类型",
+              "gui.avaritia.sort.tip2": "§d左SHIFT§r + §a左键§r : 切换升序",
+              "gui.avaritia.view.all": "§a所有",
+              "gui.avaritia.view.fluid": "§a流体",
+              "gui.avaritia.view.item": "§a物品",
+              "info.avaritia.channel.add_success": "成功添加频道: %s %s %s",
+              "info.avaritia.channel.load_error": "加载频道错误",
+              "info.avaritia.channel.load_finish": "频道数据加载完毕",
+              "info.avaritia.channel.load_success": "成功加载频道: %s %s %s",
+              "info.avaritia.channel.save_success": "成功保存频道: %s %s %s",
+              "info.avaritia.infinity_chest.add_success": "成功添加无尽箱子: %s %s %s",
+              "info.avaritia.infinity_chest.load_error": "加载无尽箱子错误",
+              "info.avaritia.infinity_chest.load_finish": "无尽箱子数据加载完毕",
+              "info.avaritia.infinity_chest.load_success": "成功加载无尽箱子: %s %s %s",
+              "info.avaritia.infinity_chest.save_success": "成功保存无尽箱子: %s %s %s",
+              "item.avaritia.blaze_axe": "炽灭之焚林斧",
+              "item.avaritia.blaze_bow": "炽阳之辉耀弓",
+              "item.avaritia.blaze_cube": "炽骨立方",
+              "item.avaritia.blaze_hoe": "炽魂之耘灵锄",
+              "item.avaritia.blaze_pickaxe": "炽岩之熔山镐",
+              "item.avaritia.blaze_shovel": "炽咒之狱火锹",
+              "item.avaritia.blaze_sword": "炽焰之啄颅剑",
+              "item.avaritia.cosmic_meatballs": "寰宇肉丸",
+              "item.avaritia.crystal_axe": "晶能裂岩之斧",
+              "item.avaritia.crystal_bow": "耀晶掣空之弓",
+              "item.avaritia.crystal_hoe": "亘古不毁之锄",
+              "item.avaritia.crystal_matrix_ingot": "水晶矩阵锭",
+              "item.avaritia.crystal_pickaxe": "魔能双生之镐",
+              "item.avaritia.crystal_shovel": "晶域疾驰之铲",
+              "item.avaritia.crystal_sword": "双锋裂界之剑",
+              "item.avaritia.diamond_lattice": "钻石晶格",
+              "item.avaritia.endest_pearl": "终望珍珠",
+              "item.avaritia.enhancement_core": "无瑕核心",
+              "item.avaritia.eternal_singularity": "永恒奇点",
+              "item.avaritia.full_matter_cluster": "满载物质团",
+              "item.avaritia.infinity_axe": "自然荒芜之斧",
+              "item.avaritia.infinity_boots": "无尽靴子",
+              "item.avaritia.infinity_bow": "天堂陨落长弓",
+              "item.avaritia.infinity_bucket": "远海鲸吞之桶",
+              "item.avaritia.infinity_catalyst": "无尽催化剂",
+              "item.avaritia.infinity_chestplate": "无尽胸甲",
+              "item.avaritia.infinity_clock": "时序僭越之钟",
+              "item.avaritia.infinity_crossbow": "地狱升华之弩",
+              "item.avaritia.infinity_elytra": "无尽鞘翅",
+              "item.avaritia.infinity_helmet": "无尽头盔",
+              "item.avaritia.infinity_hoe": "地蕴复生之锄",
+              "item.avaritia.infinity_ingot": "无尽之锭",
+              "item.avaritia.infinity_nugget": "无尽之泪",
+              "item.avaritia.infinity_pants": "无尽护腿",
+              "item.avaritia.infinity_pickaxe": "世界崩解之镐",
+              "item.avaritia.infinity_ring": "穹宇洞虚之戒（WIP）",
+              "item.avaritia.infinity_shield": "地核磐石之盾",
+              "item.avaritia.infinity_shovel": "星球吞噬之铲",
+              "item.avaritia.infinity_sword": "寰宇支配之剑",
+              "item.avaritia.infinity_totem": "无尽图腾",
+              "item.avaritia.infinity_trident": "海渊裂空之戟",
+              "item.avaritia.infinity_mace": "山崩地裂之锤",
+              "item.avaritia.infinity_umbrella": "天律统御之伞",
+              "item.avaritia.infinity_upgrade": "无尽升级组件",
+              "item.avaritia.matter_cluster": "物质团",
+              "item.avaritia.neutron_gear": "中子齿轮",
+              "item.avaritia.neutron_horse_armor": "中子战马铠",
+              "item.avaritia.neutron_ingot": "中子锭",
+              "item.avaritia.neutron_nugget": "中子素颗粒",
+              "item.avaritia.neutron_pile": "中子素尘埃",
+              "item.avaritia.neutron_ring": "纳须弥之戒",
+              "item.avaritia.record_fragment": "唱片碎片",
+              "item.avaritia.refined_coal": "精炼煤炭",
+              "item.avaritia.side_config_card": "侧面配置卡",
+              "item.avaritia.singularity": "奇点－%s",
+              "item.avaritia.star_fuel": "恒星燃料",
+              "item.avaritia.ultimate_stew": "超级煲",
+              "item.avaritia.upgrade_smithing_template": "羽化模板",
+              "itemGroup.tab.Infinity": "无尽：重生",
+              "itemGroup.tab.Singularity": "无尽：奇点",
+              "jei.category.avaritia.compressor": "中子素压缩",
+              "jei.category.avaritia.end_crafting_table": "终末合成",
+              "jei.category.avaritia.extreme_crafting_table": "终焉合成",
+              "jei.category.avaritia.extreme_smithing_table": "终焉锻造",
+              "jei.category.avaritia.nether_crafting_table": "炼狱合成",
+              "jei.category.avaritia.sculk_crafting_table": "幽匿合成",
+              "jei.tooltip.avaritia.bedrock": "使用魔能双生之镐或世界崩解之镐挖掘获取",
+              "jei.tooltip.avaritia.crystal_pickaxe": "这个工具可以破坏基岩",
+              "jei.tooltip.avaritia.end_portal_frame": "使用魔能双生之镐或世界崩解之镐挖掘获取",
+              "jei.tooltip.avaritia.full_matter_cluster": "使用内部具有4096个物品的物质团合成",
+              "jei.tooltip.avaritia.neutron_collector": "用于收集中子素尘埃",
+              "jei.tooltip.avaritia.neutron_pile": "通过中子素收集器，你能在一段时间后获得一个中子素尘埃",
+              "jei.tooltip.avaritia.refined_coal": "使用焚林斧砍伐原木获取",
+              "jei.tooltip.shapeless.recipe": "无序配方",
+              "key.avaritia.categories": "无尽贪婪的按键绑定",
+              "key.avaritia.config": "打开设置界面",
+              "key.avaritia.filter": "打开过滤界面",
+              "key.avaritia.neutron_ring": "Open Neutron Ring",
+              "rarity.cosmic.name": "无尽",
+              "rarity.legend.name": "传说",
+              "screen.avaritia.side_config.title": "中子压缩器 - 输入输出配置",
+              "singularity.avaritia.aluminum": "铝",
+              "singularity.avaritia.amethyst_shard": "紫水晶",
+              "singularity.avaritia.blue_ice": "蓝冰",
+              "singularity.avaritia.bronze": "青铜",
+              "singularity.avaritia.coal": "煤",
+              "singularity.avaritia.copper": "铜",
+              "singularity.avaritia.diamond": "钻石",
+              "singularity.avaritia.electrum": "琥珀金",
+              "singularity.avaritia.emerald": "绿宝石",
+              "singularity.avaritia.glowstone": "萤石",
+              "singularity.avaritia.gold": "金",
+              "singularity.avaritia.invar": "殷钢",
+              "singularity.avaritia.iron": "铁",
+              "singularity.avaritia.lapis_lazuli": "青金石",
+              "singularity.avaritia.lead": "铅",
+              "singularity.avaritia.netherite": "下界合金",
+              "singularity.avaritia.nickel": "镍",
+              "singularity.avaritia.obsidian": "黑曜石",
+              "singularity.avaritia.osmium": "锇",
+              "singularity.avaritia.platinum": "铂",
+              "singularity.avaritia.quartz": "石英",
+              "singularity.avaritia.redstone": "红石",
+              "singularity.avaritia.refined_obsidian": "强化黑曜石",
+              "singularity.avaritia.silver": "银",
+              "singularity.avaritia.steel": "钢",
+              "singularity.avaritia.tin": "锡",
+              "singularity.avaritia.titanium": "钛",
+              "singularity.avaritia.uranium": "铀",
+              "singularity.avaritia.zinc": "锌",
+              "title.avaritia.config.title": "无尽贪婪：重生",
+              "title.avaritia.resourcepack": "无尽贪婪旧版纹理",
+              "tooltip.armor.desc": "盔甲",
+              "tooltip.armor_toughness.desc": "盔甲韧性",
+              "tooltip.avaritia.active": "%s 模式已激活!",
+              "tooltip.avaritia.added_by": "添加者：%s",
+              "tooltip.avaritia.blaze_axe.desc": "炽灭焚林，木成炭。",
+              "tooltip.avaritia.blaze_cube.desc": "火焰风暴.",
+              "tooltip.avaritia.blaze_hoe.desc": "以灵魂之力，助万物生长。",
+              "tooltip.avaritia.blaze_pickaxe.desc": "熔山，炽热，熔炼已成。",
+              "tooltip.avaritia.blaze_shovel.desc": "自下界而生的咒语。",
+              "tooltip.avaritia.blaze_sword.desc": "斩骷髅首级，后烧至焦黑。",
+              "tooltip.avaritia.changed": "切换为 %s 模式",
+              "tooltip.avaritia.compress": "中子压缩：%s x %s",
+              "tooltip.avaritia.crafting": "%s：%s x %s",
+              "tooltip.avaritia.crystal_axe.desc": "裂岩破盾，坚盾成空。",
+              "tooltip.avaritia.crystal_hoe.desc": "一锄落，万物兴；再锄起，岁月生。",
+              "tooltip.avaritia.crystal_matrix_ingot.desc": "这甚至不是最终形态.",
+              "tooltip.avaritia.crystal_pickaxe.desc": "时运所至，宝物尽现；精准所及，原石无缺。",
+              "tooltip.avaritia.crystal_shovel.desc": "铲起，疾驰如风；铲落，缓慢无踪。",
+              "tooltip.avaritia.crystal_sword.desc": "锋刃所向，裂界无阻；剑影所至，敌影无存。",
+              "tooltip.avaritia.diamond_lattice.desc": "致密材料…",
+              "tooltip.avaritia.durability": "耐久 %s",
+              "tooltip.avaritia.eject": "弹出",
+              "tooltip.avaritia.ejecting": "弹出中……",
+              "tooltip.avaritia.empty": "空",
+              "tooltip.avaritia.endless_cake.desc": "何为饕餮？",
+              "tooltip.avaritia.enhancement_core.desc": "补全之路！",
+              "tooltip.avaritia.inactive": "%s 模式已取消!",
+              "tooltip.avaritia.infinity_bucket.desc": "吞噬一切…",
+              "tooltip.avaritia.infinity_bucket.message": "当前流体：%s｜剩余量：%s 毫升",
+              "tooltip.avaritia.infinity_catalyst.desc": "一即全，全即一。",
+              "tooltip.avaritia.infinity_clock.desc": "掌控时间…",
+              "tooltip.avaritia.infinity_ingot.desc": "汝掌心中者，寰宇之力也。",
+              "tooltip.avaritia.infinity_nugget.desc": "圣灵的眼泪…",
+              "tooltip.avaritia.infinity_ring.desc": "纳须弥于芥子…",
+              "tooltip.avaritia.infinity_totem.desc": "永恒守护…",
+              "tooltip.avaritia.infinity_umbrella.desc": "刹那永恒…",
+              "tooltip.avaritia.infinity_upgrade.desc": "加速模式!",
+              "tooltip.avaritia.init_enchant": "自带 %s",
+              "tooltip.avaritia.items_required": "所需物品：",
+              "tooltip.avaritia.limited_input": "有限输入",
+              "tooltip.avaritia.matter_cluster.counter": "物品：%s / %s ",
+              "tooltip.avaritia.matter_cluster.desc": "用于毁灭一切。",
+              "tooltip.avaritia.matter_cluster.desc2": "按下SHIFT显示详细信息。",
+              "tooltip.avaritia.mode": "模式：%s",
+              "tooltip.avaritia.more": "and %s more...",
+              "tooltip.avaritia.neutron_gear.desc": "科技复兴的秘密…",
+              "tooltip.avaritia.neutron_horse_armor.desc": "马力全开…",
+              "tooltip.avaritia.neutron_ingot.desc": "致密恒星之心，化为一锭。",
+              "tooltip.avaritia.neutron_nugget.desc": "大约3560 万吨吧。",
+              "tooltip.avaritia.neutron_pile.desc": "尽量不要去想它。",
+              "tooltip.avaritia.num_items": "需要 %s 物品",
+              "tooltip.avaritia.progress": "进度：%s",
+              "tooltip.avaritia.record_fragment.desc": "一位笃信音乐带来的自由的人~",
+              "tooltip.avaritia.refined_coal.desc": "热量爆炸!",
+              "tooltip.avaritia.seconds": "%s 秒",
+              "tooltip.avaritia.selected": "选中",
+              "tooltip.avaritia.side.click_to_cycle": "点击切换模式",
+              "tooltip.avaritia.side.mode.active_input": "主动输入",
+              "tooltip.avaritia.side.mode.active_mixin": "主动混合",
+              "tooltip.avaritia.side.mode.active_output": "主动输出",
+              "tooltip.avaritia.side.mode.off": "关闭",
+              "tooltip.avaritia.side.mode.passive_input": "被动输入",
+              "tooltip.avaritia.side.mode.passive_mixin": "被动混合",
+              "tooltip.avaritia.side.mode.passive_output": "被动输出",
+              "tooltip.avaritia.side_config_card.already_empty": "配置已经是空的了",
+              "tooltip.avaritia.side_config_card.apply_success": "配置已应用到机器",
+              "tooltip.avaritia.side_config_card.cleared": "配置已清除",
+              "tooltip.avaritia.side_config_card.has_config": "§7已保存配置",
+              "tooltip.avaritia.side_config_card.instruction_right_click": "§7右键机器应用配置",
+              "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+右键其它方块清除配置",
+              "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+右键机器保存配置",
+              "tooltip.avaritia.side_config_card.no_config": "§7空配置",
+              "tooltip.avaritia.side_config_card.no_config_to_apply": "没有可应用的配置",
+              "tooltip.avaritia.side_config_card.read_success": "配置已保存到卡片",
+              "tooltip.avaritia.singularity_id": "奇点ID：%s",
+              "tooltip.avaritia.smithing": "终焉锻造： %s 中",
+              "tooltip.avaritia.star_fuel.desc": "致密恒星的遗骸…",
+              "tooltip.avaritia.switch": "切换至 %s",
+              "tooltip.avaritia.sword_kill_mode.active": "戮杀你所看到的一切",
+              "tooltip.avaritia.ticks": "%s刻",
+              "tooltip.avaritia.tier": "等级：%s",
+              "tooltip.avaritia.time_consume": "消耗时间：%s",
+              "tooltip.avaritia.tool.fire_ball": "火球",
+              "tooltip.avaritia.tool.blade_slash": "剑气",
+              "tooltip.avaritia.tool.blaze_bow_burning": "范围灼烧",
+              "tooltip.avaritia.tool.blaze_shovel_trans": "物质转换",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_1": "切换到 时运 III",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_2": "切换到 精准采集",
+              "tooltip.avaritia.tool.infinity_axe_range": "范围砍伐",
+              "tooltip.avaritia.tool.infinity_bow_tracer": "追踪射击",
+              "tooltip.avaritia.tool.infinity_clock.overclock_disabled": "切换到 超频模式",
+              "tooltip.avaritia.tool.infinity_clock.overclock_enabled": "切换到 时序模式",
+              "tooltip.avaritia.tool.infinity_clock_up": "快走",
+              "tooltip.avaritia.tool.infinity_crossbow_multi": "多重射击",
+              "tooltip.avaritia.tool.infinity_hoe_sow": "范围",
+              "tooltip.avaritia.tool.infinity_pickaxe_hammer": "范围挖掘",
+              "tooltip.avaritia.tool.infinity_shovel_destroyer": "范围破坏 | 右键终望攻击",
+              "tooltip.avaritia.tool.infinity_sword_kill": "杀戮",
+              "tooltip.avaritia.tool.infinity_trident_loyalty": "忠诚",
+              "tooltip.avaritia.tool.infinity_trident_normal": "普通",
+              "tooltip.avaritia.tool.infinity_trident_riptide": "激流",
+              "tooltip.avaritia.tool.infinity_umbrella_normal": "普通",
+              "tooltip.avaritia.tool.infinity_umbrella_rain": "雨天",
+              "tooltip.avaritia.tool.infinity_umbrella_storm": "雷暴",
+              "tooltip.avaritia.tool.infinity_umbrella_sun": "晴天",
+              "tooltip.avaritia.tool.smelt": "炽热",
+              "tooltip.avaritia.totem_break": "无尽图腾已耗尽！",
+              "tooltip.avaritia.type": "类型：%s",
+              "tooltip.avaritia.unlimited_input": "无限输入",
+              "tooltip.crystal_pickaxe.enchant_1": "切换到 时运 III",
+              "tooltip.crystal_pickaxe.enchant_2": "切换到 精准采集",
+              "tooltip.infinity_pickaxe.enchant_1": "切换到 时运 X",
+              "tooltip.infinity_pickaxe.enchant_2": "切换到 精准采集",
+              "tooltip.infinity": "无限",
+              "tooltip.infinity.desc": "攻击伤害",
+              "tooltip.avaritia.compressor_eject.message_1": "§c[中子压缩器] §f请先解锁配方",
+              "tooltip.avaritia.compressor_eject.message_2": "§a[中子压缩器] §f已弹出材料，已打包为物质团",
+              "tooltip.avaritia.compressor_eject.message_3": "§c[中子压缩器] §f没有可弹出的材料",
+              "tooltip.avaritia.compressor_lock.message_1": "§a[中子压缩器] §f配方已锁定",
+              "tooltip.avaritia.compressor_lock.message_2": "§e[中子压缩器] §f配方已解锁",
+              "tooltip.avaritia.compressor_lock.message_3": "§c[中子压缩器] §f请先放入一个配方原料"
+            }
+            """;
+            case "zh_tw" -> """
+            {
+              "advancements.avaritia.start.title": "歡迎來到無盡貪婪：重生！",
+              "advancements.avaritia.start.desc": "",
+              "advancements.avaritia.compressed_crafting_table.desc": "獲得壓縮工作台",
+              "advancements.avaritia.compressed_crafting_table.title": "初次接觸",
+              "advancements.avaritia.sculk_crafting_table.desc": "獲得伏聆工作台",
+              "advancements.avaritia.sculk_crafting_table.title": "幽古之音",
+              "advancements.avaritia.diamond_lattice.desc": "製作鑽石晶格",
+              "advancements.avaritia.diamond_lattice.title": "璀鑽新生",
+              "advancements.avaritia.crystal_matrix_ingot.desc": "獲得水晶矩陣錠",
+              "advancements.avaritia.crystal_matrix_ingot.title": "晶能湧現",
+              "advancements.avaritia.crystal_pickaxe.desc": "獲得魔能雙生之鎬",
+              "advancements.avaritia.crystal_pickaxe.title": "基岩破壞者",
+              "advancements.avaritia.nether_crafting_table.desc": "獲得煉獄工作台",
+              "advancements.avaritia.nether_crafting_table.title": "浴火之界",
+              "advancements.avaritia.blaze_cube.desc": "獲得熾骨立方",
+              "advancements.avaritia.blaze_cube.title": "灼熱骸骨",
+              "advancements.avaritia.blaze_sword.desc": "獲得熾焰之啄顱劍",
+              "advancements.avaritia.blaze_sword.title": "骷髏的噩夢",
+              "advancements.avaritia.blaze_axe.desc": "獲得熾滅之焚林斧",
+              "advancements.avaritia.blaze_axe.title": "熾滅焚林",
+              "advancements.avaritia.refined_coal.desc": "獲得精煉煤炭",
+              "advancements.avaritia.refined_coal.title": "高效能源",
+              "advancements.avaritia.end_crafting_table.desc": "獲得終末工作台",
+              "advancements.avaritia.end_crafting_table.title": "亦終亦始",
+              "advancements.avaritia.neutron_collector.desc": "獲得中子態素收集器",
+              "advancements.avaritia.neutron_collector.title": "漫長的等待",
+              "advancements.avaritia.eternal_singularity.desc": "獲得永恆奇點",
+              "advancements.avaritia.eternal_singularity.title": "化零為整－二次",
+              "advancements.avaritia.infinity_umbrella.desc": "獲得天律統御之傘",
+              "advancements.avaritia.infinity_umbrella.title": "宙斯",
+              "advancements.avaritia.infinity_clock.desc": "獲得時序僭越之鐘",
+              "advancements.avaritia.infinity_clock.title": "科羅諾斯",
+              "advancements.avaritia.upgrade_smithing_template.desc": "獲得羽化模版",
+              "advancements.avaritia.upgrade_smithing_template.title": "浪跡天涯",
+              "advancements.avaritia.enhancement_core.desc": "獲得無瑕核心",
+              "advancements.avaritia.enhancement_core.title": "補全之路",
+              "advancements.avaritia.extreme_smithing_table.desc": "獲得終焉鍛造台",
+              "advancements.avaritia.extreme_smithing_table.title": "噩夢的開始－二次",
+              "advancements.avaritia.endest_pearl.desc": "使用終望珍珠",
+              "advancements.avaritia.endest_pearl.title": "小型黑洞",
+              "advancements.avaritia.extreme_crafting_table.desc": "合成終焉工作台",
+              "advancements.avaritia.extreme_crafting_table.title": "噩夢的開始",
+              "advancements.avaritia.infinity_armor.desc": "獲取全套無盡裝甲",
+              "advancements.avaritia.infinity_armor.title": "無限",
+              "advancements.avaritia.infinity_axe.desc": "合成無盡斧",
+              "advancements.avaritia.infinity_axe.title": "自然荒蕪",
+              "advancements.avaritia.infinity_bow.desc": "合成無盡弓",
+              "advancements.avaritia.infinity_bow.title": "天堂隕落",
+              "advancements.avaritia.infinity_catalyst.desc": "合成無盡催化劑",
+              "advancements.avaritia.infinity_catalyst.title": "一即全，全即一",
+              "advancements.avaritia.infinity_food.desc": "食用超級煲或寰宇肉丸",
+              "advancements.avaritia.infinity_food.title": "乾淨又衛生",
+              "advancements.avaritia.infinity_hoe.desc": "合成無盡鋤",
+              "advancements.avaritia.infinity_hoe.title": "無盡奉獻",
+              "advancements.avaritia.infinity_ingot.desc": "獲取無盡錠",
+              "advancements.avaritia.infinity_ingot.title": "苦盡甘來？",
+              "advancements.avaritia.infinity_pickaxe.desc": "合成無盡鎬",
+              "advancements.avaritia.infinity_pickaxe.title": "世界崩解",
+              "advancements.avaritia.infinity_shovel.desc": "合成無盡鏟",
+              "advancements.avaritia.infinity_shovel.title": "星球吞噬",
+              "advancements.avaritia.infinity_sword.desc": "合成無盡劍",
+              "advancements.avaritia.infinity_sword.title": "寰宇支配",
+              "advancements.avaritia.matter_cluster.desc": "獲取物質團",
+              "advancements.avaritia.matter_cluster.title": "卡頓神器",
+              "advancements.avaritia.neutron_compressor.desc": "獲得中子態素壓縮機",
+              "advancements.avaritia.neutron_compressor.title": "化零為整",
+              "advancements.avaritia.neutron_ingot.desc": "獲得中子錠",
+              "advancements.avaritia.neutron_ingot.title": "九九歸一",
+              "advancements.avaritia.neutron_pile.desc": "獲得中子素塵埃",
+              "advancements.avaritia.neutron_pile.title": "終有收穫",
+              "advancements.avaritia.singularity.desc": "獲取任意奇點",
+              "advancements.avaritia.singularity.title": "庫存告急",
+              "advancements.avaritia.star_fuel.desc": "獲取恆星燃料",
+              "advancements.avaritia.star_fuel.title": "恆星能源",
+              "attribute.name.generic.walking_speed": "移動速度",
+              "block.avaritia.blaze_cube_block": "熾骨立方塊",
+              "block.avaritia.compressed_chest": "壓縮箱子",
+              "block.avaritia.compressed_crafting_table": "壓縮工作台",
+              "block.avaritia.crystal_matrix": "水晶矩陣",
+              "block.avaritia.dense_neutron_collector": "緻密中子態素收集器",
+              "block.avaritia.dense_neutron_compressor": "緻密中子態素壓縮機",
+              "block.avaritia.denser_neutron_collector": "精英中子態素收集器",
+              "block.avaritia.denser_neutron_compressor": "精英中子態素壓縮機",
+              "block.avaritia.densest_neutron_collector": "極限中子態素收集器",
+              "block.avaritia.densest_neutron_compressor": "極限中子態素壓縮機",
+              "block.avaritia.diamond_lattice_block": "鑽石晶格塊",
+              "block.avaritia.double_compressed_crafting_table": "二重壓縮工作台",
+              "block.avaritia.end_crafting_table": "終末工作台",
+              "block.avaritia.endless_cake": "貪婪蛋糕",
+              "block.avaritia.extreme_anvil": "終焉之砧",
+              "block.avaritia.extreme_crafting_table": "終焉工作台",
+              "block.avaritia.extreme_smithing_table": "終焉鍛造台",
+              "block.avaritia.infinity": "無盡之塊",
+              "block.avaritia.infinity_chest": "無盡之箱",
+              "block.avaritia.nether_crafting_table": "煉獄工作台",
+              "block.avaritia.neutron": "中子態素塊",
+              "block.avaritia.neutron_collector": "基礎中子態素收集器",
+              "block.avaritia.neutron_compressor": "基礎中子態素壓縮機",
+              "block.avaritia.recipe_generator_table": "配方產生器：無盡工作台",
+              "block.avaritia.refined_coal_block": "精煉煤炭塊",
+              "block.avaritia.sculk_crafting_table": "伏聆工作台",
+              "block.avaritia.soul_farmland": "靈魂耕地",
+              "block.avaritia.star_fuel_block": "恆星燃料塊",
+              "block.avaritia.tesseract": "超立方體",
+              "button.avaritia.side_config_button_1": "配置輸入輸出",
+              "button.avaritia.side_config_button_2": "點擊打開六面配置介面",
+              "button.avaritia.lock_button_1": "已鎖定配方",
+              "button.avaritia.lock_button_2": "點擊解鎖配方",
+              "button.avaritia.lock_button_3": "未鎖定配方",
+              "button.avaritia.lock_button_4": "有配方時可點擊鎖定",
+              "button.avaritia.eject_button_1": "彈出材料",
+              "button.avaritia.eject_button_2": "點擊彈出所有材料到物品欄",
+              "config.avaritia.axe_chain_count": "斧連鎖數量",
+              "config.avaritia.axe_chain_count.tooltip": "無盡斧砍樹的連鎖數量",
+              "config.avaritia.blade_slash_damage": "劍氣斬擊傷害",
+              "config.avaritia.blade_slash_damage.tooltip": "水晶劍劍氣斬擊的傷害",
+              "config.avaritia.blade_slash_radius": "劍氣斬擊半徑",
+              "config.avaritia.blade_slash_radius.tooltip": "水晶劍劍氣斬擊的半徑",
+              "config.avaritia.boot_speed_backward_multiplier": "靴子後退倍數",
+              "config.avaritia.boot_speed_backward_multiplier.tooltip": "無盡靴子後退時的速度倍數",
+              "config.avaritia.boot_speed_base": "靴子基礎速度",
+              "config.avaritia.boot_speed_base.tooltip": "無盡靴的基礎移動速度",
+              "config.avaritia.boot_speed_flying_multiplier": "靴子飛行倍數",
+              "config.avaritia.boot_speed_flying_multiplier.tooltip": "無盡靴子飛行時的速度倍數",
+              "config.avaritia.boot_speed_sneaking_multiplier": "靴子潛行倍數",
+              "config.avaritia.boot_speed_sneaking_multiplier.tooltip": "無盡靴子潛行時的速度倍數",
+              "config.avaritia.boot_speed_sprinting_multiplier": "靴子衝刺倍數",
+              "config.avaritia.boot_speed_sprinting_multiplier.tooltip": "無盡靴子衝刺時的額外速度",
+              "config.avaritia.boot_speed_strafing_multiplier": "靴子側向移動倍數",
+              "config.avaritia.boot_speed_strafing_multiplier.tooltip": "無盡靴子側向移動時的速度倍數",
+              "config.avaritia.boot_speed_swimming_multiplier": "靴子游泳倍數",
+              "config.avaritia.boot_speed_swimming_multiplier.tooltip": "無盡靴子游泳時的速度倍數",
+              "config.avaritia.category.channel": "頻道",
+              "config.avaritia.category.emc": "EMC",
+              "config.avaritia.category.misc": "其他",
+              "config.avaritia.category.storage": "儲存",
+              "config.avaritia.category.tools": "工具",
+              "config.avaritia.channel_fast_update_rate": "快速更新率",
+              "config.avaritia.channel_fast_update_rate.tooltip": "頻道的快速更新率",
+              "config.avaritia.channel_full_update_rate": "完整更新率",
+              "config.avaritia.channel_full_update_rate.tooltip": "頻道的完整更新率",
+              "config.avaritia.chest_max_item_size": "箱子最大物品類型數",
+              "config.avaritia.chest_max_item_size.tooltip": "定義無盡箱子可以存儲的最大物品類型數量",
+              "config.avaritia.endless_item_entity_range": "永恆物品範圍",
+              "config.avaritia.endless_item_entity_range.tooltip": "永恆物品追蹤的範圍",
+              "config.avaritia.endless_item_entity_speed": "永恆物品速度",
+              "config.avaritia.endless_item_entity_speed.tooltip": "永恆物品追蹤的速度",
+              "config.avaritia.food_time": "食物時間",
+              "config.avaritia.food_time.tooltip": "食物效果時間縮放因子",
+              "config.avaritia.growth_soul_farmland": "靈魂耕地生長率",
+              "config.avaritia.growth_soul_farmland.tooltip": "靈魂耕地生長率",
+              "config.avaritia.infinity_elytra_flying_damage_range": "鞘翅飛行傷害範圍",
+              "config.avaritia.infinity_elytra_flying_damage_range.tooltip": "無盡鞘翅飛行衝撞造成傷害的範圍",
+              "config.avaritia.infinity_elytra_flying_speed": "無盡鞘翅飛行速度",
+              "config.avaritia.infinity_elytra_flying_speed.tooltip": "無盡鞘翅的飛行速度",
+              "config.avaritia.infinity_helmet_night_vision": "無盡頭盔夜視",
+              "config.avaritia.infinity_helmet_night_vision.tooltip": "穿戴無盡頭盔是否開啟夜視",
+              "config.avaritia.internal_infinity_catalyst_craft": "內部無盡催化劑合成",
+              "config.avaritia.internal_infinity_catalyst_craft.tooltip": "無盡催化劑合成是否使用所有奇點",
+              "config.avaritia.inventory_rows": "物品欄行數",
+              "config.avaritia.inventory_rows.tooltip": "多頁模式的物品欄行數",
+              "config.avaritia.is_keep_stone": "保留石頭和泥土",
+              "config.avaritia.is_keep_stone.tooltip": "無盡工具的超級模式是否保留石頭和泥土",
+              "config.avaritia.is_merge_matter_cluster": "合併物質團",
+              "config.avaritia.is_merge_matter_cluster.tooltip": "是否合併物質團",
+              "config.avaritia.is_sword_attack_endless": "劍造成無限傷害",
+              "config.avaritia.is_sword_attack_endless.tooltip": "右鍵是否造成無限傷害",
+              "config.avaritia.is_sword_attack_item_entity": "劍攻擊掉落物",
+              "config.avaritia.is_sword_attack_item_entity.tooltip": "在殺戮模式下是否攻擊掉落物？",
+              "config.avaritia.is_sword_attack_projectile": "劍攻擊彈幕",
+              "config.avaritia.is_sword_attack_projectile.tooltip": "在殺戮模式下是否攻擊彈幕？",
+              "config.avaritia.is_sword_attack_lightning": "無盡劍召喚閃電",
+              "config.avaritia.is_sword_attack_lightning.tooltip": "右鍵是否在攻擊範圍內召喚閃電",
+              "config.avaritia.max_channels_pre_player": "玩家最大頻道數",
+              "config.avaritia.max_channels_pre_player.tooltip": "每個玩家的最大頻道數",
+              "config.avaritia.max_page_limit": "最大頁數限制",
+              "config.avaritia.max_page_limit.tooltip": "最大頁數限制",
+              "config.avaritia.max_public_channels": "最大公共頻道數",
+              "config.avaritia.max_public_channels.tooltip": "最大公共頻道數",
+              "config.avaritia.max_size_pre_channel": "頻道大小",
+              "config.avaritia.max_size_pre_channel.tooltip": "每個頻道的最大大小",
+              "config.avaritia.neutron_collector_product_tick": "中子收集器產出刻",
+              "config.avaritia.neutron_collector_product_tick.tooltip": "中子收集器的產出刻",
+              "config.avaritia.neutron_horse_speed": "馬鎧的速度",
+              "config.avaritia.neutron_horse_speed.tooltip": "馬穿戴中子戰馬鎧後的速度",
+              "config.avaritia.pickaxe_break_range": "鎬破壞範圍",
+              "config.avaritia.pickaxe_break_range.tooltip": "無盡鎬可破壞的範圍",
+              "config.avaritia.reset_max_page": "重置最大頁數",
+              "config.avaritia.reset_max_page.tooltip": "恢復選項：重置最大頁數為 0",
+              "config.avaritia.shovel_break_range": "鏟破壞範圍",
+              "config.avaritia.shovel_break_range.tooltip": "無盡鏟可破壞的範圍",
+              "config.avaritia.singularity_time_required": "奇點所需時間",
+              "config.avaritia.singularity_time_required.tooltip": "奇點預設所需時間",
+              "config.avaritia.slot_stack_limit": "槽位堆疊限制",
+              "config.avaritia.slot_stack_limit.tooltip": "槽位的堆疊大小限制",
+              "config.avaritia.sub_arrow_damage": "箭雨傷害",
+              "config.avaritia.sub_arrow_damage.tooltip": "無盡弓和無盡弩的箭雨傷害",
+              "config.avaritia.sword_attack_range": "劍攻擊範圍",
+              "config.avaritia.sword_attack_range.tooltip": "無盡劍右鍵攻擊範圍",
+              "config.avaritia.sword_range_damage": "劍範圍傷害",
+              "config.avaritia.sword_range_damage.tooltip": "無盡劍右鍵的範圍傷害值",
+              "config.avaritia.use_advance_tooltips": "使用高級工具提示",
+              "config.avaritia.use_advance_tooltips.tooltip": "用於開發目的",
+              "config.avaritia.use_single_page_mode": "使用單頁模式",
+              "config.avaritia.use_single_page_mode.tooltip": "使用單頁模式",
+              "config.avaritia.blaze_cube_emc": "熾骨立方EMC",
+              "config.avaritia.blaze_cube_emc.tooltip": "熾骨立方的 EMC 值",
+              "config.avaritia.neutron_pile_emc": "中子堆 EMC",
+              "config.avaritia.neutron_pile_emc.tooltip": "中子素塵埃的 EMC 值",
+              "config.avaritia.vanilla_totem_emc": "原版不死圖騰 EMC",
+              "config.avaritia.vanilla_totem_emc.tooltip": "不死圖騰的 EMC 值",
+              "config.avaritia.bedrock_emc": "原版基岩 EMC",
+              "config.avaritia.bedrock_emc.tooltip": "基岩的 EMC 值",
+              "config.jade.plugin_avaritia.compressor": "中子態素壓縮機",
+              "config.jade.plugin_avaritia.crafting_table": "無盡合成",
+              "config.jade.plugin_avaritia.extreme_smithing": "終焉鍛造台",
+              "container.end_crafting_table": "終末工作台",
+              "container.extreme_crafting_table": "終焉工作台",
+              "container.nether_crafting_table": "煉獄工作台",
+              "container.sculk_crafting_table": "伏聆工作台",
+              "container.extreme_smithing": "終焉鍛造台",
+              "death.attack.infinity": "%1$s 被 %2$s 徹底粉碎",
+              "death.attack.infinity.0": "%1$s 被蒸發",
+              "death.attack.infinity.1": "%1$s 被切成條",
+              "death.attack.infinity.2": "%1$s 被抹殺了存在",
+              "death.attack.infinity.3": "%1$s 被趕盡殺絕",
+              "death.attack.infinity.4": "%1$s 被湮滅",
+              "death.attack.infinity.item": "%1$s 被 %2$s 彻底粉碎",
+              "death.attack.infinity.player.0": "%1$s 被 %2$s 所蒸發",
+              "death.attack.infinity.player.1": "%1$s 被 %2$s 切成了條",
+              "death.attack.infinity.player.2": "%1$s 被 %2$s 抹殺了存在",
+              "death.attack.infinity.player.3": "%1$s 被 %2$s 趕盡殺絕",
+              "death.attack.infinity.player.4": "%1$s 被 %2$s 所湮滅",
+              "direction.avaritia.down": "下面",
+              "direction.avaritia.east": "右面",
+              "direction.avaritia.north": "前面",
+              "direction.avaritia.south": "後面",
+              "direction.avaritia.up": "上面",
+              "direction.avaritia.west": "左面",
+              "effect.avaritia.burning": "灼燒",
+              "effect.avaritia.burning.description": "每 20Tick（1秒）造成一次 5％ 最大生命值的火焰傷害。\\n\\n該 debuff 會讓生物強制扣血，只能在水中、細雪中緩解。\\n\\n扣血效果類似凋零、中毒。",
+              "emi.category.avaritia.compressor": "中子素壓縮",
+              "emi.category.avaritia.end_crafting_table": "終末合成",
+              "emi.category.avaritia.extreme_crafting_table": "終焉合成",
+              "emi.category.avaritia.extreme_smithing_table": "終焉鍛造",
+              "emi.category.avaritia.nether_crafting_table": "煉獄合成",
+              "emi.category.avaritia.sculk_crafting_table": "伏聆合成",
+              "emi.tooltip.avaritia.neutron_collector": "用於收集中子素塵埃",
+              "emi.tooltip.avaritia.neutron_pile": "通過中子素收集器，你能在一段時間後獲得一個中子素塵埃",
+              "emi.tooltip.shapeless.recipe": "無序配方",
+              "gui.avaritia.addChannel.tip1": "添加 \\"%d\\"",
+              "gui.avaritia.addChannel.tip2": "§a左鍵§r：添加到你名下",
+              "gui.avaritia.addChannel.tip3": "§d左SHIFT§r＋§a左鍵§r：添加到公有",
+              "gui.avaritia.addChannel.tip4": "§c消耗一個儲存核心！",
+              "gui.avaritia.apply": "應用",
+              "gui.avaritia.back": "返回",
+              "gui.avaritia.backChannel.tip1": "返回",
+              "gui.avaritia.cancel": "取消",
+              "gui.avaritia.capability.tip1": "§a左鍵§r：將一組 %d 裝到手持物",
+              "gui.avaritia.capability.tip2": "§a右鍵§r：從手持物卸下一組東西",
+              "gui.avaritia.capability.tip3": "§d左SHIFT§r：滿上 ！",
+              "gui.avaritia.channel.tip1": "頻道：\\"%d\\"",
+              "gui.avaritia.channel.tip2": "主人：\\"%d\\"",
+              "gui.avaritia.confirm": "確定",
+              "gui.avaritia.craft.channel": "合成到頻道",
+              "gui.avaritia.craft.drop": "合成並丟棄",
+              "gui.avaritia.craft.inv": "合成到物品欄",
+              "gui.avaritia.craft.missing": "缺失物品（但能按）",
+              "gui.avaritia.craft.tip1": "§a左鍵§r：合成 64 個",
+              "gui.avaritia.craft.tip2": "§a右鍵§r：合成 8 個",
+              "gui.avaritia.craft.tip3": "§d左SHIFT§r＋§a左鍵§r：合成 512 個",
+              "gui.avaritia.craft.tip4": "§d左SHIFT§r＋§a右鍵§r：合成 1 個",
+              "gui.avaritia.emptyChannel.tip4": "§c這個終端沒有選擇頻道",
+              "gui.avaritia.line": "---------------------",
+              "gui.avaritia.name": "名",
+              "gui.avaritia.noPermission.tip3": "§c你沒有權限",
+              "gui.avaritia.owner": "主人：%d",
+              "gui.avaritia.port.down": "下",
+              "gui.avaritia.port.east": "東",
+              "gui.avaritia.port.input": "輸入到頻道",
+              "gui.avaritia.port.north": "北",
+              "gui.avaritia.port.output": "從頻道輸出",
+              "gui.avaritia.port.south": "南",
+              "gui.avaritia.port.tip": "點擊切換開關",
+              "gui.avaritia.port.up": "上",
+              "gui.avaritia.port.west": "西",
+              "gui.avaritia.public": "公共的",
+              "gui.avaritia.rate.tip": "被動埠的工作速度，越低越快。",
+              "gui.avaritia.removeChannel.tip1": "移除：\\"%d\\"",
+              "gui.avaritia.removeChannel.tip2": "§c頻道必須是空的",
+              "gui.avaritia.renameChannel.tip1": "重命名：\\"%d\\"",
+              "gui.avaritia.renameChannel.tip2": "至：\\"%d\\"",
+              "gui.avaritia.rule.any_fluid": "任意流體",
+              "gui.avaritia.rule.any_item": "任意物品",
+              "gui.avaritia.rule.fe": "能量 （FE）",
+              "gui.avaritia.rule.fluid": "流體：%d",
+              "gui.avaritia.rule.item": "物品：%d",
+              "gui.avaritia.rule.item_tag": "標籤：%d",
+              "gui.avaritia.rule.mod_fluid": "模組（流體）：%d",
+              "gui.avaritia.rule.mod_item": "模組（物品）：%d",
+              "gui.avaritia.rule.tip": "用滑鼠滾輪選擇",
+              "gui.avaritia.save": "保存",
+              "gui.avaritia.search": "搜尋",
+              "gui.avaritia.search.tip1": "無前綴搜尋ID和名字",
+              "gui.avaritia.search.tip2": "前綴 \\"§a*§r\\" 僅搜尋 ID",
+              "gui.avaritia.search.tip3": "前綴 \\"§a$§r\\" 搜尋標籤",
+              "gui.avaritia.sort.ascending": "升序",
+              "gui.avaritia.sort.count": "排序：§a數量",
+              "gui.avaritia.sort.descending": "降序",
+              "gui.avaritia.sort.id": "排序：§aID",
+              "gui.avaritia.sort.mirror_id": "排序：§a鏡向 ID",
+              "gui.avaritia.sort.nid": "排序：§aMOD 然後 ID",
+              "gui.avaritia.sort.tip1": "§a左鍵§r：循環排序類型",
+              "gui.avaritia.sort.tip2": "§d左SHIFT§r＋§a左鍵§r：切換升序",
+              "gui.avaritia.view.all": "§a所有",
+              "gui.avaritia.view.fluid": "§a流體",
+              "gui.avaritia.view.item": "§a物品",
+              "info.avaritia.channel.add_success": "成功添加頻道：%s %s %s",
+              "info.avaritia.channel.load_error": "載入頻道錯誤",
+              "info.avaritia.channel.load_finish": "頻道數據載入完畢",
+              "info.avaritia.channel.load_success": "成功載入頻道：%s %s %s",
+              "info.avaritia.channel.save_success": "成功保存頻道：%s %s %s",
+              "info.avaritia.infinity_chest.add_success": "成功添加無盡箱子：%s %s %s",
+              "info.avaritia.infinity_chest.load_error": "載入無盡箱子錯誤",
+              "info.avaritia.infinity_chest.load_finish": "無盡箱子數據載入完畢",
+              "info.avaritia.infinity_chest.load_success": "成功載入無盡箱子：%s %s %s",
+              "info.avaritia.infinity_chest.save_success": "成功保存無盡箱子：%s %s %s",
+              "item.avaritia.blaze_axe": "熾滅之焚林斧",
+              "item.avaritia.blaze_bow": "熾陽之輝耀弓",
+              "item.avaritia.blaze_cube": "熾骨立方",
+              "item.avaritia.blaze_hoe": "熾魂之耘靈鋤",
+              "item.avaritia.blaze_pickaxe": "熾岩之熔山鎬",
+              "item.avaritia.blaze_shovel": "熾咒之獄火鏟",
+              "item.avaritia.blaze_sword": "熾焰之啄顱劍",
+              "item.avaritia.cosmic_meatballs": "寰宇肉丸",
+              "item.avaritia.crystal_axe": "晶能裂岩之斧",
+              "item.avaritia.crystal_bow": "耀晶掣空之弓",
+              "item.avaritia.crystal_hoe": "亙古不毀之鋤",
+              "item.avaritia.crystal_matrix_ingot": "水晶矩陣錠",
+              "item.avaritia.crystal_pickaxe": "魔能雙生之鎬",
+              "item.avaritia.crystal_shovel": "晶域疾馳之鏟",
+              "item.avaritia.crystal_sword": "雙鋒裂界之劍",
+              "item.avaritia.diamond_lattice": "鑽石晶格",
+              "item.avaritia.endest_pearl": "終望珍珠",
+              "item.avaritia.enhancement_core": "無瑕核心",
+              "item.avaritia.eternal_singularity": "永恆奇點",
+              "item.avaritia.full_matter_cluster": "滿載物質團",
+              "item.avaritia.infinity_axe": "自然荒蕪之斧",
+              "item.avaritia.infinity_boots": "無盡靴子",
+              "item.avaritia.infinity_bow": "天堂隕落長弓",
+              "item.avaritia.infinity_bucket": "遠海鯨吞之桶",
+              "item.avaritia.infinity_catalyst": "無盡催化劑",
+              "item.avaritia.infinity_chestplate": "無盡胸甲",
+              "item.avaritia.infinity_clock": "時序僭越之鐘",
+              "item.avaritia.infinity_crossbow": "地獄昇華之弩",
+              "item.avaritia.infinity_elytra": "無盡鞘翅",
+              "item.avaritia.infinity_helmet": "無盡頭盔",
+              "item.avaritia.infinity_hoe": "地蘊復生之鋤",
+              "item.avaritia.infinity_ingot": "無盡之錠",
+              "item.avaritia.infinity_nugget": "無盡之淚",
+              "item.avaritia.infinity_pants": "無盡護腿",
+              "item.avaritia.infinity_pickaxe": "世界崩解之鎬",
+              "item.avaritia.infinity_ring": "穹宇洞虛之戒（WIP）",
+              "item.avaritia.infinity_shield": "地核磐石之盾",
+              "item.avaritia.infinity_shovel": "星球吞噬之鏟",
+              "item.avaritia.infinity_sword": "寰宇支配之劍",
+              "item.avaritia.infinity_totem": "無盡圖騰",
+              "item.avaritia.infinity_trident": "海淵裂空之戟",
+              "item.avaritia.infinity_umbrella": "天律統御之傘",
+              "item.avaritia.infinity_upgrade": "無盡升級組件",
+              "item.avaritia.matter_cluster": "物質團",
+              "item.avaritia.neutron_gear": "中子齒輪",
+              "item.avaritia.neutron_horse_armor": "中子戰馬鎧",
+              "item.avaritia.neutron_ingot": "中子錠",
+              "item.avaritia.neutron_nugget": "中子素顆粒",
+              "item.avaritia.neutron_pile": "中子素塵埃",
+              "item.avaritia.neutron_ring": "納須彌之戒",
+              "item.avaritia.record_fragment": "唱片碎片",
+              "item.avaritia.refined_coal": "精煉煤炭",
+              "item.avaritia.side_config_card": "側面配置卡",
+              "item.avaritia.singularity": "奇點－%s",
+              "item.avaritia.star_fuel": "恆星燃料",
+              "item.avaritia.ultimate_stew": "超級煲",
+              "item.avaritia.upgrade_smithing_template": "羽化模板",
+              "itemGroup.tab.Infinity": "無盡：重生",
+              "itemGroup.tab.Singularity": "無盡：奇點",
+              "jei.category.avaritia.compressor": "中子素壓縮",
+              "jei.category.avaritia.end_crafting_table": "終末合成",
+              "jei.category.avaritia.extreme_crafting_table": "終焉合成",
+              "jei.category.avaritia.extreme_smithing_table": "終焉鍛造",
+              "jei.category.avaritia.nether_crafting_table": "煉獄合成",
+              "jei.category.avaritia.sculk_crafting_table": "伏聆合成",
+              "jei.tooltip.avaritia.bedrock": "使用魔能雙生之鎬或世界崩解之鎬挖掘獲取",
+              "jei.tooltip.avaritia.crystal_pickaxe": "這個工具可以破壞基岩",
+              "jei.tooltip.avaritia.end_portal_frame": "使用魔能雙生之鎬或世界崩解之鎬挖掘獲取",
+              "jei.tooltip.avaritia.full_matter_cluster": "使用內部具有 4096 個物品的物質團合成",
+              "jei.tooltip.avaritia.neutron_collector": "用於收集中子素塵埃",
+              "jei.tooltip.avaritia.neutron_pile": "通過中子素收集器，你能在一段時間後獲得一個中子素塵埃",
+              "jei.tooltip.avaritia.refined_coal": "使用焚林斧砍伐原木獲取",
+              "jei.tooltip.shapeless.recipe": "無序配方",
+              "key.avaritia.categories": "無盡貪婪的按鍵綁定",
+              "key.avaritia.config": "打開設定介面",
+              "key.avaritia.filter": "打開過濾介面",
+              "key.avaritia.neutron_ring": "打開中子素戒指",
+              "rarity.cosmic.name": "無盡",
+              "rarity.legend.name": "傳說",
+              "screen.avaritia.side_config.title": "中子壓縮器－輸入輸出配置",
+              "singularity.avaritia.aluminum": "鋁",
+              "singularity.avaritia.amethyst_shard": "紫水晶",
+              "singularity.avaritia.blue_ice": "藍冰",
+              "singularity.avaritia.bronze": "青銅",
+              "singularity.avaritia.coal": "煤",
+              "singularity.avaritia.copper": "銅",
+              "singularity.avaritia.diamond": "鑽石",
+              "singularity.avaritia.electrum": "琥珀金",
+              "singularity.avaritia.emerald": "綠寶石",
+              "singularity.avaritia.glowstone": "螢光石",
+              "singularity.avaritia.gold": "金",
+              "singularity.avaritia.invar": "不變鋼",
+              "singularity.avaritia.iron": "鐵",
+              "singularity.avaritia.lapis_lazuli": "青金石",
+              "singularity.avaritia.lead": "鉛",
+              "singularity.avaritia.netherite": "下界合金",
+              "singularity.avaritia.nickel": "鎳",
+              "singularity.avaritia.obsidian": "黑曜石",
+              "singularity.avaritia.osmium": "鋨",
+              "singularity.avaritia.platinum": "鉑",
+              "singularity.avaritia.quartz": "石英",
+              "singularity.avaritia.redstone": "紅石",
+              "singularity.avaritia.refined_obsidian": "強化黑曜石",
+              "singularity.avaritia.silver": "銀",
+              "singularity.avaritia.steel": "鋼",
+              "singularity.avaritia.tin": "錫",
+              "singularity.avaritia.titanium": "鈦",
+              "singularity.avaritia.uranium": "鈾",
+              "singularity.avaritia.zinc": "鋅",
+              "title.avaritia.config.title": "無盡貪婪：重生",
+              "title.avaritia.resourcepack": "無盡貪婪舊版紋理",
+              "tooltip.armor.desc": "盔甲",
+              "tooltip.armor_toughness.desc": "盔甲韌性",
+              "tooltip.avaritia.active": "%s 模式已啟動！",
+              "tooltip.avaritia.added_by": "添加者：%s",
+              "tooltip.avaritia.blaze_axe.desc": "熾滅焚林，木成炭。",
+              "tooltip.avaritia.blaze_cube.desc": "火焰風暴.",
+              "tooltip.avaritia.blaze_hoe.desc": "以靈魂之力，助萬物生長。",
+              "tooltip.avaritia.blaze_pickaxe.desc": "熔山，熾熱，熔煉已成。",
+              "tooltip.avaritia.blaze_shovel.desc": "自下界而生的咒語。",
+              "tooltip.avaritia.blaze_sword.desc": "斬骷髏首級，後燒至焦黑。",
+              "tooltip.avaritia.changed": "切換為 %s 模式",
+              "tooltip.avaritia.compress": "中子壓縮：%s x %s",
+              "tooltip.avaritia.crafting": "%s：%s x %s",
+              "tooltip.avaritia.crystal_axe.desc": "裂岩破盾，堅盾成空。",
+              "tooltip.avaritia.crystal_hoe.desc": "一鋤落，萬物興；再鋤起，歲月生。",
+              "tooltip.avaritia.crystal_matrix_ingot.desc": "這甚至不是最終形態.",
+              "tooltip.avaritia.crystal_pickaxe.desc": "幸運所至，寶物盡現；精準所及，原石無缺。",
+              "tooltip.avaritia.crystal_shovel.desc": "鏟起，疾馳如風；鏟落，緩慢無蹤。",
+              "tooltip.avaritia.crystal_sword.desc": "鋒刃所向，裂界無阻；劍影所至，敵影無存。",
+              "tooltip.avaritia.diamond_lattice.desc": "緻密材料…",
+              "tooltip.avaritia.durability": "耐久 %s",
+              "tooltip.avaritia.eject": "彈出",
+              "tooltip.avaritia.ejecting": "彈出中……",
+              "tooltip.avaritia.empty": "空",
+              "tooltip.avaritia.endless_cake.desc": "何為饕餮？",
+              "tooltip.avaritia.enhancement_core.desc": "補全之路！",
+              "tooltip.avaritia.inactive": "%s 模式已取消！",
+              "tooltip.avaritia.infinity_bucket.desc": "吞噬一切…",
+              "tooltip.avaritia.infinity_bucket.message": "當前流體：%s｜剩餘量：%s 毫升",
+              "tooltip.avaritia.infinity_catalyst.desc": "一即全，全即一。",
+              "tooltip.avaritia.infinity_clock.desc": "掌控時間…",
+              "tooltip.avaritia.infinity_ingot.desc": "汝掌心中者，寰宇之力也。",
+              "tooltip.avaritia.infinity_nugget.desc": "聖靈的眼淚…",
+              "tooltip.avaritia.infinity_ring.desc": "納須彌於芥子…",
+              "tooltip.avaritia.infinity_totem.desc": "永恆守護…",
+              "tooltip.avaritia.infinity_umbrella.desc": "剎那永恆…",
+              "tooltip.avaritia.infinity_upgrade.desc": "加速模式！",
+              "tooltip.avaritia.init_enchant": "自帶 %s",
+              "tooltip.avaritia.items_required": "所需物品：",
+              "tooltip.avaritia.limited_input": "有限輸入",
+              "tooltip.avaritia.matter_cluster.counter": "物品：%s / %s ",
+              "tooltip.avaritia.matter_cluster.desc": "用於毀滅一切。",
+              "tooltip.avaritia.matter_cluster.desc2": "按下SHIFT顯示詳細資訊。",
+              "tooltip.avaritia.mode": "模式：%s",
+              "tooltip.avaritia.more": "and %s more...",
+              "tooltip.avaritia.neutron_gear.desc": "科技復興的秘密…",
+              "tooltip.avaritia.neutron_horse_armor.desc": "馬力全開…",
+              "tooltip.avaritia.neutron_ingot.desc": "緻密恆星之心，化為一錠。",
+              "tooltip.avaritia.neutron_nugget.desc": "大約3560 萬噸吧。",
+              "tooltip.avaritia.neutron_pile.desc": "盡量不要去想它。",
+              "tooltip.avaritia.num_items": "需要 %s 物品",
+              "tooltip.avaritia.progress": "進度：%s",
+              "tooltip.avaritia.record_fragment.desc": "一位篤信音樂帶來的自由的人~",
+              "tooltip.avaritia.refined_coal.desc": "熱量爆炸！",
+              "tooltip.avaritia.seconds": "%s 秒",
+              "tooltip.avaritia.selected": "選中",
+              "tooltip.avaritia.side.click_to_cycle": "點擊切換模式",
+              "tooltip.avaritia.side.mode.active_input": "主動輸入",
+              "tooltip.avaritia.side.mode.active_mixin": "主動混合",
+              "tooltip.avaritia.side.mode.active_output": "主動輸出",
+              "tooltip.avaritia.side.mode.off": "關閉",
+              "tooltip.avaritia.side.mode.passive_input": "被動輸入",
+              "tooltip.avaritia.side.mode.passive_mixin": "被動混合",
+              "tooltip.avaritia.side.mode.passive_output": "被動輸出",
+              "tooltip.avaritia.side_config_card.already_empty": "配置已經是空的了",
+              "tooltip.avaritia.side_config_card.apply_success": "配置已應用到機器",
+              "tooltip.avaritia.side_config_card.cleared": "配置已清除",
+              "tooltip.avaritia.side_config_card.has_config": "§7已保存配置",
+              "tooltip.avaritia.side_config_card.instruction_right_click": "§7右鍵機器應用配置",
+              "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+右鍵其它方塊清除配置",
+              "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+右鍵機器保存配置",
+              "tooltip.avaritia.side_config_card.no_config": "§7空配置",
+              "tooltip.avaritia.side_config_card.no_config_to_apply": "沒有可應用的配置",
+              "tooltip.avaritia.side_config_card.read_success": "配置已保存到卡片",
+              "tooltip.avaritia.singularity_id": "奇點ID：%s",
+              "tooltip.avaritia.smithing": "終焉鍛造：%s 中",
+              "tooltip.avaritia.star_fuel.desc": "緻密恆星的遺骸…",
+              "tooltip.avaritia.switch": "切換至 %s",
+              "tooltip.avaritia.sword_kill_mode.active": "戮殺你所看到的一切",
+              "tooltip.avaritia.ticks": "%s刻",
+              "tooltip.avaritia.tier": "等級：%s",
+              "tooltip.avaritia.time_consume": "消耗時間：%s",
+              "tooltip.avaritia.tool.fire_ball": "火球",
+              "tooltip.avaritia.tool.blade_slash": "劍氣",
+              "tooltip.avaritia.tool.blaze_bow_burning": "範圍灼燒",
+              "tooltip.avaritia.tool.blaze_shovel_trans": "物質轉換",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_1": "切換到 幸運 III",
+              "tooltip.avaritia.tool.crystal_pickaxe.enchant_2": "切換到 絲綢之觸",
+              "tooltip.avaritia.tool.infinity_axe_range": "範圍砍伐",
+              "tooltip.avaritia.tool.infinity_bow_tracer": "追蹤射擊",
+              "tooltip.avaritia.tool.infinity_clock.overclock_disabled": "切換到 超頻模式",
+              "tooltip.avaritia.tool.infinity_clock.overclock_enabled": "切換到 時序模式",
+              "tooltip.avaritia.tool.infinity_clock_up": "快走",
+              "tooltip.avaritia.tool.infinity_crossbow_multi": "多重射擊",
+              "tooltip.avaritia.tool.infinity_hoe_sow": "範圍",
+              "tooltip.avaritia.tool.infinity_pickaxe_hammer": "範圍挖掘",
+              "tooltip.avaritia.tool.infinity_shovel_destroyer": "範圍破壞｜右鍵終望攻擊",
+              "tooltip.avaritia.tool.infinity_sword_kill": "殺戮",
+              "tooltip.avaritia.tool.infinity_trident_loyalty": "忠誠",
+              "tooltip.avaritia.tool.infinity_trident_normal": "普通",
+              "tooltip.avaritia.tool.infinity_trident_riptide": "激流",
+              "tooltip.avaritia.tool.infinity_umbrella_normal": "普通",
+              "tooltip.avaritia.tool.infinity_umbrella_rain": "雨天",
+              "tooltip.avaritia.tool.infinity_umbrella_storm": "雷暴",
+              "tooltip.avaritia.tool.infinity_umbrella_sun": "晴天",
+              "tooltip.avaritia.tool.smelt": "熾熱",
+              "tooltip.avaritia.totem_break": "無盡圖騰已耗盡！",
+              "tooltip.avaritia.type": "類型：%s",
+              "tooltip.avaritia.unlimited_input": "無限輸入",
+              "tooltip.crystal_pickaxe.enchant_1": "切換到 幸運 III",
+              "tooltip.crystal_pickaxe.enchant_2": "切換到 絲綢之觸",
+              "tooltip.infinity_pickaxe.enchant_1": "切換到 幸運 X",
+              "tooltip.infinity_pickaxe.enchant_2": "切换到 絲綢之觸",
+              "tooltip.infinity": "無限",
+              "tooltip.infinity.desc": "攻擊傷害",
+              "tooltip.avaritia.compressor_eject.message_1": "§c[中子壓縮器] §f請先解鎖配方",
+              "tooltip.avaritia.compressor_eject.message_2": "§a[中子壓縮器] §f已彈出材料，已打包為物質團",
+              "tooltip.avaritia.compressor_eject.message_3": "§c[中子壓縮器] §f沒有可彈出的材料",
+              "tooltip.avaritia.compressor_lock.message_1": "§a[中子壓縮器] §f配方已鎖定",
+              "tooltip.avaritia.compressor_lock.message_2": "§e[中子壓縮器] §f配方已解鎖",
+              "tooltip.avaritia.compressor_lock.message_3": "§c[中子壓縮器] §f請先放入一個配方原料"
+            }
+            """;
+            default -> "{}";
+        };
     }
 
-    /**
-     * 添加状态效果与附魔名称。
-     */
-    private void addEffectsAndEnchantments() {
-        add(ModMobEffects.BURNING.get(), "Burning");
-        add("effect.avaritia.burning.description", "Deals fire damage equal to 5% of maximum health every 20 ticks (1 second). \n\nThis debuff forces the creature to lose health and can only be alleviated in water or powder snow.\n\nThe health loss effect is similar to wither or poison.");
-        add("enchantment.minecraft.frost_walker", "Frost Walker");
-    }
-
-    /**
-     * 添加奇点名称。
-     */
-    private void addSingularities() {
-        add("singularity.avaritia.obsidian", "Obsidian");
-        add("singularity.avaritia.blue_ice", "Blue Ice");
-        add("singularity.avaritia.coal", "Coal");
-        add("singularity.avaritia.copper", "Copper");
-        add("singularity.avaritia.iron", "Iron");
-        add("singularity.avaritia.lapis_lazuli", "Lapis Lazuli");
-        add("singularity.avaritia.redstone", "Redstone");
-        add("singularity.avaritia.glowstone", "Glowstone");
-        add("singularity.avaritia.gold", "Gold");
-        add("singularity.avaritia.diamond", "Diamond");
-        add("singularity.avaritia.emerald", "Emerald");
-        add("singularity.avaritia.quartz", "Quartz");
-        add("singularity.avaritia.amethyst_shard", "Amethyst Shard");
-        add("singularity.avaritia.netherite", "Netherite");
-        add("singularity.avaritia.aluminum", "Aluminum");
-        add("singularity.avaritia.tin", "Tin");
-        add("singularity.avaritia.bronze", "Bronze");
-        add("singularity.avaritia.silver", "Silver");
-        add("singularity.avaritia.lead", "Lead");
-        add("singularity.avaritia.steel", "Steel");
-        add("singularity.avaritia.nickel", "Nickel");
-        add("singularity.avaritia.electrum", "Electrum");
-        add("singularity.avaritia.invar", "Invar");
-        add("singularity.avaritia.platinum", "Platinum");
-        add("singularity.avaritia.uranium", "Uranium");
-        add("singularity.avaritia.osmium", "Osmium");
-        add("singularity.avaritia.refined_obsidian", "Refined Obsidian");
-    }
-
-    /**
-     * 添加工具模式语言键。
-     */
-    private void addToolModes() {
-        add(ModLang.CURRENT_MODE.getTranslationKey(), "Current Mode: %s");
-        add(ModLang.DEFAULT_MODE.getTranslationKey(), "Default");
-        add(ModLang.ADVANCE_MODE.getTranslationKey(), "Advanced");
-        add(ModLang.RANGE_MODE.getTranslationKey(), "Range");
-        add(ModLang.MODE_SWITCH.getTranslationKey(), "Switched to %s");
-    }
-
-    /**
-     * 添加 Tooltip 文本。
-     */
-    private void addTooltips() {
-        add("tooltip.avaritia.added_by", "Added By: %s");
-        add("tooltip.avaritia.singularity_id", "Singularity ID: %s");
-        add("tooltip.avaritia.active", "%s mode active!");
-        add("tooltip.avaritia.inactive", "%s mode inactive!");
-        add("tooltip.avaritia.switch", "Switch to %s");
-        add("tooltip.avaritia.empty", "Empty");
-        add("tooltip.avaritia.num_items", "Need %s Items");
-        add("tooltip.avaritia.crafting", "%s: %s x %s");
-        add("tooltip.avaritia.smithing", "Smithing: %s x %s");
-        add("tooltip.avaritia.compress", "Compress: %s x %s");
-        add("tooltip.avaritia.changed", "Set to %s Mode");
-        add("tooltip.avaritia.eject", "Eject");
-        add("tooltip.avaritia.ejecting", "Ejecting...");
-        add("tooltip.avaritia.time_consume", "Time Required: %s");
-        add("tooltip.avaritia.progress", "Progress: %s");
-        add("tooltip.avaritia.init_enchant", "Always has at least %s");
-        add("tooltip.avaritia.durability", "Durability %s");
-
-        add("tooltip.avaritia.blaze_axe.desc", "Burn the forest, and the wood turns into charcoal.");
-        add("tooltip.avaritia.blaze_cube.desc", "Blaze Storm.");
-        add("tooltip.avaritia.blaze_hoe.desc", "Power of soul, all things grow.");
-        add("tooltip.avaritia.blaze_pickaxe.desc", "Molten mountain hot smelted.");
-        add("tooltip.avaritia.blaze_shovel.desc", "Spell born from Nether.");
-        add("tooltip.avaritia.blaze_sword.desc", "Beheads skeletons and scorches them black.");
-        add("tooltip.avaritia.crystal_axe.desc", "Breaks rocks, shatters shields.");
-        add("tooltip.avaritia.crystal_hoe.desc", "One swing, life blooms; another, time flows.");
-        add("tooltip.avaritia.crystal_matrix_ingot.desc", "This isn't even its final form.");
-        add("tooltip.avaritia.crystal_pickaxe.desc", "Luck brings treasures; precision finds gems.");
-        add("tooltip.avaritia.crystal_shovel.desc", "Rises like wind, falls to slow.");
-        add("tooltip.avaritia.crystal_sword.desc", "Blades cut through, shadows vanquish foes.");
-        add("tooltip.avaritia.diamond_lattice.desc", "Dense material...");
-        add("tooltip.avaritia.endless_cake.desc", "Gluttony?");
-        add("tooltip.avaritia.enhancement_core.desc", "The road to completion!");
-        add("tooltip.avaritia.infinity_bucket.desc", "Devour everything...");
-        add("tooltip.avaritia.infinity_bucket.message", "Current Fluid: %s | Amount: %smL");
-        add("tooltip.avaritia.infinity_catalyst.desc", "One is all and all is one.");
-        add("tooltip.avaritia.infinity_clock.desc", "Control of your time...");
-        add("tooltip.avaritia.infinity_ingot.desc", "The fury of the universe in the palm of your hand.");
-        add("tooltip.avaritia.infinity_nugget.desc", "Angel's tears...");
-        add("tooltip.avaritia.infinity_ring.desc", "...");
-        add("tooltip.avaritia.infinity_totem.desc", "Eternal Guardian...");
-        add("tooltip.avaritia.infinity_umbrella.desc", "Instant eternity...");
-        add("tooltip.avaritia.infinity_upgrade.desc", "Accelerate upgrade!");
-        add("tooltip.avaritia.items_required", "Items Required:");
-        add("tooltip.avaritia.limited_input", "Limited Input");
-        add("tooltip.avaritia.matter_cluster.counter", "%s / %s items");
-        add("tooltip.avaritia.matter_cluster.desc", "Use to deconstruct.");
-        add("tooltip.avaritia.matter_cluster.desc2", "Hold SHIFT for contents.");
-        add("tooltip.avaritia.mode", "Mode: %s");
-        add("tooltip.avaritia.more", "and %s more...");
-        add("tooltip.avaritia.neutron_gear.desc", "The secret of the tech renaissance...");
-        add("tooltip.avaritia.neutron_horse_armor.desc", "Full power...");
-        add("tooltip.avaritia.neutron_ingot.desc", "The dense heart of a star in convenient ingot form.");
-        add("tooltip.avaritia.neutron_nugget.desc", "About 35.6 million metric tons.");
-        add("tooltip.avaritia.neutron_pile.desc", "Try not to think about it.");
-        add("tooltip.avaritia.record_fragment.desc", "One likes to believe in the freedom of music~");
-        add("tooltip.avaritia.refined_coal.desc", "Heat explosion!");
-        add("tooltip.avaritia.seconds", "%s Seconds");
-        add("tooltip.avaritia.selected", "Selected");
-        add("tooltip.avaritia.star_fuel.desc", "A fuel for the stars.");
-        add("tooltip.avaritia.sword_kill_mode.active", "Kill all you can see.");
-        add("tooltip.avaritia.ticks", "%s Ticks");
-        add("tooltip.avaritia.tier", "Tier: %s");
-        add("tooltip.avaritia.totem_break", "The Endless Totem has been depleted");
-        add("tooltip.avaritia.type", "Type: %s");
-        add("tooltip.avaritia.unlimited_input", "Unlimited Input");
-
-        add("tooltip.avaritia.side.click_to_cycle", "Click To Cycle");
-        add("tooltip.avaritia.side.mode.active_input", "Active Input");
-        add("tooltip.avaritia.side.mode.active_mixin", "Active Mixin");
-        add("tooltip.avaritia.side.mode.active_output", "Active Output");
-        add("tooltip.avaritia.side.mode.off", "OFF");
-        add("tooltip.avaritia.side.mode.passive_input", "Passive Input");
-        add("tooltip.avaritia.side.mode.passive_mixin", "Passive Mixin");
-        add("tooltip.avaritia.side.mode.passive_output", "Passive Output");
-        add("tooltip.avaritia.side_config_card.already_empty", "Configuration is already empty");
-        add("tooltip.avaritia.side_config_card.apply_success", "Configuration applied to machine");
-        add("tooltip.avaritia.side_config_card.cleared", "Configuration cleared");
-        add("tooltip.avaritia.side_config_card.has_config", "§7Configuration saved");
-        add("tooltip.avaritia.side_config_card.instruction_right_click", "§7Right-click on machine to apply");
-        add("tooltip.avaritia.side_config_card.instruction_shift_air", "§7Shift+right-click other block to clear");
-        add("tooltip.avaritia.side_config_card.instruction_shift_right_click", "§7Shift+right-click machine to save");
-        add("tooltip.avaritia.side_config_card.no_config", "§7Empty configuration");
-        add("tooltip.avaritia.side_config_card.no_config_to_apply", "No configuration to apply");
-        add("tooltip.avaritia.side_config_card.read_success", "Configuration saved to card");
-
-        add("tooltip.avaritia.tool.fire_ball", "Fire Ball");
-        add("tooltip.avaritia.tool.blade_slash", "Blade Slash");
-        add("tooltip.avaritia.tool.blaze_bow_burning", "Area Burning");
-        add("tooltip.avaritia.tool.blaze_shovel_trans", "Material conversion");
-        add("tooltip.avaritia.tool.crystal_pickaxe.enchant_1", "Set to Fortune III");
-        add("tooltip.avaritia.tool.crystal_pickaxe.enchant_2", "Set to Silk Touch");
-        add("tooltip.avaritia.tool.infinity_axe_range", "Range Break");
-        add("tooltip.avaritia.tool.infinity_bow_tracer", "Trace Attack");
-        add("tooltip.avaritia.tool.infinity_clock.overclock_disabled", "Set to SpeedUp Mode");
-        add("tooltip.avaritia.tool.infinity_clock.overclock_enabled", "Set to TimeUp Mode");
-        add("tooltip.avaritia.tool.infinity_clock_up", "Speed Up");
-        add("tooltip.avaritia.tool.infinity_crossbow_multi", "MultiShoot");
-        add("tooltip.avaritia.tool.infinity_hoe_sow", "Range");
-        add("tooltip.avaritia.tool.infinity_pickaxe_hammer", "Range Dig");
-        add("tooltip.avaritia.tool.infinity_shovel_destroyer", "Range/Endest Pearl Attack");
-        add("tooltip.avaritia.tool.infinity_sword_kill", "Slaughter");
-        add("tooltip.avaritia.tool.infinity_trident_loyalty", "Loyalty");
-        add("tooltip.avaritia.tool.infinity_trident_normal", "Normal");
-        add("tooltip.avaritia.tool.infinity_trident_riptide", "Riptide");
-        add("tooltip.avaritia.tool.infinity_umbrella_normal", "Base");
-        add("tooltip.avaritia.tool.infinity_umbrella_rain", "Rain");
-        add("tooltip.avaritia.tool.infinity_umbrella_storm", "Storm");
-        add("tooltip.avaritia.tool.infinity_umbrella_sun", "Clear");
-        add("tooltip.avaritia.tool.smelt", "Smelt");
-
-        add("tooltip.armor.desc", "Armor");
-        add("tooltip.armor_toughness.desc", "Armor Toughness");
-        add("tooltip.crystal_pickaxe.enchant_1", "Set to Fortune III");
-        add("tooltip.crystal_pickaxe.enchant_2", "Set to Silk Touch");
-        add("tooltip.infinity_pickaxe.enchant_1", "Set to Fortune X");
-        add("tooltip.infinity_pickaxe.enchant_2", "Set to Silk Touch");
-        add("tooltip.infinity", "Infinity");
-        add("tooltip.infinity.desc", "Attack Damage");
-        add("tooltip.avaritia.compressor_eject.message_1", "§c[Neutron Compressor] §unlock the recipe first");
-        add("tooltip.avaritia.compressor_eject.message_2", "§a[Neutron Compressor] §fThe material has been ejected and packed into a matter cluster.");
-        add("tooltip.avaritia.compressor_eject.message_3", "§c[Neutron Compressor] §fNo materials available to pop out");
-        add("tooltip.avaritia.compressor_lock.message_1", "§a[Neutron Compressor] §fRecipe is locked");
-        add("tooltip.avaritia.compressor_lock.message_2", "§e[Neutron Compressor] §fRecipe unlocked");
-        add("tooltip.avaritia.compressor_lock.message_3", "§c[Neutron Compressor] §fPlease add a recipe ingredient first");
-    }
-
-    /**
-     * 添加容器与屏幕文本。
-     */
-    private void addContainersAndScreens() {
-        add("container.sculk_crafting_table", "Sculk Crafting Table");
-        add("container.nether_crafting_table", "Nether Crafting Table");
-        add("container.end_crafting_table", "End Crafting Table");
-        add("container.extreme_crafting_table", "Extreme Crafting Table");
-        add("container.extreme_smithing", "Extreme Smithing Table");
-        add("container.infinity_chest", "§6Amount: %s / %s");
-        add("screen.avaritia.side_config.title", "IO Config");
-        add("title.avaritia.config.title", "Re:Avaritia");
-        add("title.avaritia.resourcepack", "Avaritia Old Resourcepack");
-    }
-
-    /**
-     * 添加按钮文本。
-     */
-    private void addButtons() {
-        add("button.avaritia.side_config_button_1", "Configure Input and Output");
-        add("button.avaritia.side_config_button_2", "Click to open the six-sided configuration interface");
-        add("button.avaritia.lock_button_1", "Recipe Locked");
-        add("button.avaritia.lock_button_2", "Click to unlock recipe");
-        add("button.avaritia.lock_button_3", "Unlocked Recipe");
-        add("button.avaritia.lock_button_4", "Can click lock when there is a recipe");
-        add("button.avaritia.eject_button_1", "Pop-up material");
-        add("button.avaritia.eject_button_2", "Click to pop up all materials into the inventory");
-    }
-
-    /**
-     * 添加伤害死亡消息。
-     */
-    private void addDeathMessages() {
-        add("death.attack.infinity", "%1$s was obliterated by %2$s");
-        add("death.attack.infinity.0", "%1$s was sliced to ribbons");
-        add("death.attack.infinity.1", "%1$s was sliced to ribbons");
-        add("death.attack.infinity.2", "%1$s was excised from existence");
-        add("death.attack.infinity.3", "%1$s was overkilled");
-        add("death.attack.infinity.4", "%1$s was annihilated");
-        add("death.attack.infinity.item", "%1$s was obliterated by %2$s");
-        add("death.attack.infinity.player.0", "%1$s was sliced to ribbons by %2$s");
-        add("death.attack.infinity.player.1", "%1$s was sliced to ribbons by %2$s");
-        add("death.attack.infinity.player.2", "%1$s was excised from existence by %2$s");
-        add("death.attack.infinity.player.3", "%1$s was overkilled by %2$s");
-        add("death.attack.infinity.player.4", "%1$s was annihilated by %2$s");
-    }
-
-    /**
-     * 添加配方查看器与 Jade 文本。
-     */
-    private void addRecipeViewerTexts() {
-        add("jei.category.avaritia.compressor", "Neutronium Compressor");
-        add("jei.category.avaritia.sculk_crafting_table", "Sculk Craft");
-        add("jei.category.avaritia.nether_crafting_table", "Nether Craft");
-        add("jei.category.avaritia.end_crafting_table", "End Craft");
-        add("jei.category.avaritia.extreme_crafting_table", "Extreme Craft");
-        add("jei.category.avaritia.extreme_smithing_table", "Extreme Smithing");
-        add("jei.tooltip.avaritia.bedrock", "Obtain using Crystal Pickaxe or World Breaker(Infinity Pickaxe)");
-        add("jei.tooltip.avaritia.crystal_pickaxe", "This tool can mine Bedrock");
-        add("jei.tooltip.avaritia.end_portal_frame", "Obtain using Crystal Pickaxe or World Breaker(Infinity Pickaxe)");
-        add("jei.tooltip.avaritia.full_matter_cluster", "Use an internal Matter Cluster with 4096 items to craft");
-        add("jei.tooltip.avaritia.neutron_collector", "Collect Neutron Pile");
-        add("jei.tooltip.avaritia.neutron_pile", "By neutron collector, you can get a neutron pile after a while");
-        add("jei.tooltip.avaritia.refined_coal", "Use Blaze Bush Axe to chop logs and obtain");
-        add("emi.tooltip.avaritia.neutron_collector", "Collect Neutron Pile");
-        add("emi.tooltip.avaritia.neutron_pile", "By neutron collector, you can get a neutron pile after a while");
-        add("jei.tooltip.shapeless.recipe", "Shapeless Recipe");
-        add("tooltip.avaritia.jade.collector_output", "Output: %s");
-        add("config.jade.plugin_avaritia.neutron_collector", "Neutronium Collector");
-        add("config.jade.plugin_avaritia.compressor", "Compressor");
-        add("config.jade.plugin_avaritia.crafting_table", "Avaritia Crafting");
-        add("config.jade.plugin_avaritia.extreme_smithing", "Extreme Smithing");
-    }
-
-    /**
-     * 添加配置界面文本。
-     */
-    private void addConfigTexts() {
-        add("config.avaritia.category.channel", "Channel");
-        add("config.avaritia.category.emc", "EMC");
-        add("config.avaritia.category.misc", "Misc");
-        add("config.avaritia.category.storage", "Storage");
-        add("config.avaritia.category.tools", "Tools");
-        add("config.avaritia.axe_chain_count", "Axe Chain Count");
-        add("config.avaritia.axe_chain_count.tooltip", "Chain number of Infinity Axe cutting trees");
-        add("config.avaritia.blade_slash_damage", "Blade Slash Damage");
-        add("config.avaritia.blade_slash_damage.tooltip", "Damage of Blade Slash for Crystal Sword");
-        add("config.avaritia.blade_slash_radius", "Blade Slash Radius");
-        add("config.avaritia.blade_slash_radius.tooltip", "Radius of Blade Slash for Crystal Sword");
-        add("config.avaritia.endest_pearl_absorption_limit", "Endest Pearl Absorption Limit");
-        add("config.avaritia.endest_pearl_absorption_limit.tooltip", "Matter units absorbed before the Endest Pearl black hole evaporates");
-        add("config.avaritia.boot_speed_backward_multiplier", "Boots Backward Multiplier");
-        add("config.avaritia.boot_speed_backward_multiplier.tooltip", "Infinity Boots speed multiplier when moving backward");
-        add("config.avaritia.boot_speed_base", "Boots Base Speed");
-        add("config.avaritia.boot_speed_base.tooltip", "Base movement speed for Infinity Boots");
-        add("config.avaritia.boot_speed_flying_multiplier", "Boots Flying Multiplier");
-        add("config.avaritia.boot_speed_flying_multiplier.tooltip", "Infinity Boots speed multiplier when flying");
-        add("config.avaritia.boot_speed_sneaking_multiplier", "Boots Sneaking Multiplier");
-        add("config.avaritia.boot_speed_sneaking_multiplier.tooltip", "Infinity Boots speed multiplier when sneaking");
-        add("config.avaritia.boot_speed_sprinting_multiplier", "Boots Sprinting Multiplier");
-        add("config.avaritia.boot_speed_sprinting_multiplier.tooltip", "Infinity Boots additional speed when sprinting");
-        add("config.avaritia.boot_speed_strafing_multiplier", "Boots Strafing Multiplier");
-        add("config.avaritia.boot_speed_strafing_multiplier.tooltip", "Infinity Boots speed multiplier when strafing");
-        add("config.avaritia.boot_speed_swimming_multiplier", "Boots Swimming Multiplier");
-        add("config.avaritia.boot_speed_swimming_multiplier.tooltip", "Infinity Boots speed multiplier when swimming");
-        add("config.avaritia.channel_fast_update_rate", "Fast Update Rate");
-        add("config.avaritia.channel_fast_update_rate.tooltip", "Fast update rate for channels");
-        add("config.avaritia.channel_full_update_rate", "Full Update Rate");
-        add("config.avaritia.channel_full_update_rate.tooltip", "Full update rate for channels");
-        add("config.avaritia.chest_max_item_size", "Chest Max Item Size");
-        add("config.avaritia.chest_max_item_size.tooltip", "Define the maximum number of item types that can be stored in an Infinity Chest");
-        add("config.avaritia.endless_item_entity_range", "Endless Item Range");
-        add("config.avaritia.endless_item_entity_range.tooltip", "Tracking endless item range");
-        add("config.avaritia.endless_item_entity_speed", "Endless Item Speed");
-        add("config.avaritia.endless_item_entity_speed.tooltip", "Tracking endless item speed");
-        add("config.avaritia.food_time", "Food Time");
-        add("config.avaritia.food_time.tooltip", "Food effect time scaling factor");
-        add("config.avaritia.growth_soul_farmland", "Growth Soul Farmland Rate");
-        add("config.avaritia.growth_soul_farmland.tooltip", "Growth soul farmland rate");
-        add("config.avaritia.infinity_elytra_flying_damage_range", "Elytra Flying Damage Range");
-        add("config.avaritia.infinity_elytra_flying_damage_range.tooltip", "The damage range of Infinity Elytra flight collision");
-        add("config.avaritia.infinity_elytra_flying_speed", "Infinity Elytra Flying Speed");
-        add("config.avaritia.infinity_elytra_flying_speed.tooltip", "Speed of Infinity Elytra");
-        add("config.avaritia.infinity_helmet_night_vision", "Infinity Helmet Night Vision");
-        add("config.avaritia.infinity_helmet_night_vision.tooltip", "Whether wearing the Infinity Helmet activates night vision");
-        add("config.avaritia.internal_infinity_catalyst_craft", "Internal Infinity Catalyst Craft");
-        add("config.avaritia.internal_infinity_catalyst_craft.tooltip", "Whether Infinity Catalyst craft uses all singularities");
-        add("config.avaritia.inventory_rows", "Inventory Rows");
-        add("config.avaritia.inventory_rows.tooltip", "Inventory rows for multi-page mode");
-        add("config.avaritia.is_keep_stone", "Keep Stone");
-        add("config.avaritia.is_keep_stone.tooltip", "Whether the super mode of Infinity tools retains stone and soil");
-        add("config.avaritia.is_merge_matter_cluster", "Merge Matter Cluster");
-        add("config.avaritia.is_merge_matter_cluster.tooltip", "Whether to merge matter clusters");
-        add("config.avaritia.is_sword_attack_endless", "Sword Causes Infinity Damage");
-        add("config.avaritia.is_sword_attack_endless.tooltip", "Whether right-click causes infinity damage");
-        add("config.avaritia.is_sword_attack_item_entity", "Sword Damages Item Entity");
-        add("config.avaritia.is_sword_attack_item_entity.tooltip", "Whether kill mode kills item entities");
-        add("config.avaritia.is_sword_attack_projectile", "Sword Damages Projectile");
-        add("config.avaritia.is_sword_attack_projectile.tooltip", "Whether kill mode kills projectiles");
-        add("config.avaritia.is_sword_attack_lightning", "Sword Causes Lightning");
-        add("config.avaritia.is_sword_attack_lightning.tooltip", "Whether right-click spawns lightning in attack range");
-        add("config.avaritia.max_channels_pre_player", "Max Player Channels");
-        add("config.avaritia.max_channels_pre_player.tooltip", "Maximum channels per player");
-        add("config.avaritia.max_page_limit", "Max Page Limit");
-        add("config.avaritia.max_page_limit.tooltip", "Maximum page limit");
-        add("config.avaritia.max_public_channels", "Max Public Channels");
-        add("config.avaritia.max_public_channels.tooltip", "Maximum public channels");
-        add("config.avaritia.max_size_pre_channel", "Channel Size");
-        add("config.avaritia.max_size_pre_channel.tooltip", "Maximum size per channel");
-        add("config.avaritia.neutron_collector_product_tick", "Neutron Collector Product Tick");
-        add("config.avaritia.neutron_collector_product_tick.tooltip", "The product tick of Neutron Collector");
-        add("config.avaritia.neutron_horse_speed", "Horse Armor Speed");
-        add("config.avaritia.neutron_horse_speed.tooltip", "The speed of Neutronium Horse Armor when worn by a horse");
-        add("config.avaritia.pickaxe_break_range", "Pickaxe Break Range");
-        add("config.avaritia.pickaxe_break_range.tooltip", "The range that Infinity Pickaxe can break");
-        add("config.avaritia.reset_max_page", "Reset Max Page");
-        add("config.avaritia.reset_max_page.tooltip", "Recovery option: reset max page to 0");
-        add("config.avaritia.shovel_break_range", "Shovel Break Range");
-        add("config.avaritia.shovel_break_range.tooltip", "The range that Infinity Shovel can break");
-        add("config.avaritia.singularity_time_required", "Singularity Time Required");
-        add("config.avaritia.singularity_time_required.tooltip", "Singularity default time required");
-        add("config.avaritia.slot_stack_limit", "Slot Stack Limit");
-        add("config.avaritia.slot_stack_limit.tooltip", "Stack size limit of slot");
-        add("config.avaritia.sub_arrow_damage", "Sub Arrow Damage");
-        add("config.avaritia.sub_arrow_damage.tooltip", "Infinity Bow scattering light arrow damage");
-        add("config.avaritia.sword_attack_range", "Sword Attack Range");
-        add("config.avaritia.sword_attack_range.tooltip", "Infinity Sword right-click attack range");
-        add("config.avaritia.sword_range_damage", "Sword Range Damage");
-        add("config.avaritia.sword_range_damage.tooltip", "Range damage value of right-click Infinity Sword");
-        add("config.avaritia.use_advance_tooltips", "Use Advanced Tooltips");
-        add("config.avaritia.use_advance_tooltips.tooltip", "For development purposes");
-        add("config.avaritia.use_single_page_mode", "Use Single Page Mode");
-        add("config.avaritia.use_single_page_mode.tooltip", "Use single page mode");
-        add("config.avaritia.blaze_cube_emc", "Blaze Cube EMC");
-        add("config.avaritia.blaze_cube_emc.tooltip", "EMC of Blaze Cube");
-        add("config.avaritia.neutron_pile_emc", "Pile of Neutrons EMC");
-        add("config.avaritia.neutron_pile_emc.tooltip", "EMC of Pile of Neutrons");
-        add("config.avaritia.vanilla_totem_emc", "Vanilla Totem EMC");
-        add("config.avaritia.vanilla_totem_emc.tooltip", "EMC of Totem of Undying");
-        add("config.avaritia.bedrock_emc", "Bedrock EMC");
-        add("config.avaritia.bedrock_emc.tooltip", "EMC of Bedrock");
-    }
-
-    /**
-     * 添加进度文本。
-     */
-    private void addAdvancements() {
-        add("advancements.avaritia.start.title", "Welcome to Re:Avaritia!");
-        add("advancements.avaritia.start.desc", "");
-        add("advancements.avaritia.compressed_crafting_table.title", "First Contact");
-        add("advancements.avaritia.compressed_crafting_table.desc", "Craft Compressed Crafting Table");
-        add("advancements.avaritia.sculk_crafting_table.title", "Sound of Ancient");
-        add("advancements.avaritia.sculk_crafting_table.desc", "Craft Sculk Crafting Table");
-        add("advancements.avaritia.diamond_lattice.title", "Brilliant New Life");
-        add("advancements.avaritia.diamond_lattice.desc", "Craft Diamond Lattice");
-        add("advancements.avaritia.crystal_matrix_ingot.title", "Crystal Energy Emergence");
-        add("advancements.avaritia.crystal_matrix_ingot.desc", "Craft Crystal Matrix Ingot");
-        add("advancements.avaritia.crystal_pickaxe.title", "Bedrock Breaker");
-        add("advancements.avaritia.crystal_pickaxe.desc", "Craft Crystal Pickaxe");
-        add("advancements.avaritia.nether_crafting_table.title", "Realm of Fire");
-        add("advancements.avaritia.nether_crafting_table.desc", "Craft Nether Crafting Table");
-        add("advancements.avaritia.blaze_cube.title", "Scorching Bones");
-        add("advancements.avaritia.blaze_cube.desc", "Craft Blaze Cube");
-        add("advancements.avaritia.blaze_sword.title", "Skeleton's Nightmare");
-        add("advancements.avaritia.blaze_sword.desc", "Craft Blaze Skull Sword");
-        add("advancements.avaritia.blaze_axe.title", "Blaze Annihilates Forest");
-        add("advancements.avaritia.blaze_axe.desc", "Craft Blaze Bush Axe");
-        add("advancements.avaritia.refined_coal.title", "High Efficiency Energy");
-        add("advancements.avaritia.refined_coal.desc", "Craft Refined Coal");
-        add("advancements.avaritia.end_crafting_table.title", "End and Beginning");
-        add("advancements.avaritia.end_crafting_table.desc", "Craft End Crafting Table");
-        add("advancements.avaritia.neutron_collector.title", "Long Wait");
-        add("advancements.avaritia.neutron_collector.desc", "Craft Neutronium Collector");
-        add("advancements.avaritia.eternal_singularity.title", "Zero to Whole - Twice");
-        add("advancements.avaritia.eternal_singularity.desc", "Craft Eternal Singularity");
-        add("advancements.avaritia.infinity_umbrella.title", "Zeus");
-        add("advancements.avaritia.infinity_umbrella.desc", "Craft Infinity Umbrella");
-        add("advancements.avaritia.infinity_clock.title", "Chronos");
-        add("advancements.avaritia.infinity_clock.desc", "Craft Infinity Clock");
-        add("advancements.avaritia.upgrade_smithing_template.title", "Wandering the Ends of the Earth");
-        add("advancements.avaritia.upgrade_smithing_template.desc", "Craft Sublimation Template");
-        add("advancements.avaritia.enhancement_core.title", "Road to Completion");
-        add("advancements.avaritia.enhancement_core.desc", "Craft Flawless Core");
-        add("advancements.avaritia.extreme_smithing_table.title", "Start of Nightmare - Again");
-        add("advancements.avaritia.extreme_smithing_table.desc", "Craft Ultimate Smithing Table");
-        add("advancements.avaritia.endest_pearl.title", "Small black hole");
-        add("advancements.avaritia.endest_pearl.desc", "Use Endest Pearl");
-        add("advancements.avaritia.extreme_crafting_table.title", "The Beginning of a Nightmare");
-        add("advancements.avaritia.extreme_crafting_table.desc", "Craft Extreme Crafting Table");
-        add("advancements.avaritia.infinity_armor.title", "INFINITY");
-        add("advancements.avaritia.infinity_armor.desc", "Get all Infinity Armor");
-        add("advancements.avaritia.infinity_axe.title", "Desolate nature!");
-        add("advancements.avaritia.infinity_axe.desc", "Craft Infinity Axe");
-        add("advancements.avaritia.infinity_bow.title", "Heaven falls");
-        add("advancements.avaritia.infinity_bow.desc", "Craft Infinity Bow");
-        add("advancements.avaritia.infinity_catalyst.title", "-Part is whole, whole is Part-");
-        add("advancements.avaritia.infinity_catalyst.desc", "Craft Infinity Catalyst");
-        add("advancements.avaritia.infinity_food.title", "Clean and hygienic");
-        add("advancements.avaritia.infinity_food.desc", "Eat!");
-        add("advancements.avaritia.infinity_hoe.title", "Earth Resurrection!");
-        add("advancements.avaritia.infinity_hoe.desc", "Craft Infinity Hoe");
-        add("advancements.avaritia.infinity_ingot.title", "Sweet are the uses of adversity?");
-        add("advancements.avaritia.infinity_ingot.desc", "Get Infinity Ingot");
-        add("advancements.avaritia.infinity_pickaxe.title", "World falling apart!");
-        add("advancements.avaritia.infinity_pickaxe.desc", "Craft Infinity Pickaxe");
-        add("advancements.avaritia.infinity_shovel.title", "Planet Devour!");
-        add("advancements.avaritia.infinity_shovel.desc", "Craft Infinity Shovel");
-        add("advancements.avaritia.infinity_sword.title", "World domination!");
-        add("advancements.avaritia.infinity_sword.desc", "Craft Infinity Sword");
-        add("advancements.avaritia.matter_cluster.title", "Cotton artifact");
-        add("advancements.avaritia.matter_cluster.desc", "Get Matter Cluster");
-        add("advancements.avaritia.neutron_compressor.title", "Zero to whole");
-        add("advancements.avaritia.neutron_compressor.desc", "Craft Neutronium Compressor");
-        add("advancements.avaritia.neutron_ingot.title", "Very hard to get");
-        add("advancements.avaritia.neutron_ingot.desc", "Craft Neutronium Ingot");
-        add("advancements.avaritia.neutron_pile.title", "Endless hang up");
-        add("advancements.avaritia.neutron_pile.desc", "Get a pile of neutrons!");
-        add("advancements.avaritia.singularity.title", "Running low on stock");
-        add("advancements.avaritia.singularity.desc", "Get a singularity");
-        add("advancements.avaritia.star_fuel.title", "Stellar Energy");
-        add("advancements.avaritia.star_fuel.desc", "Get Star Fuel");
-    }
-
-    /**
-     * 添加其他界面、键位和提示文本。
-     */
-    private void addMiscTexts() {
-        add("attribute.name.generic.flying_speed", "Flying Speed");
-        add("attribute.name.generic.movement_speed", "Movement Speed");
-        add("attribute.name.generic.walking_speed", "Walking Speed");
-        add("direction.avaritia.down", "down");
-        add("direction.avaritia.east", "east");
-        add("direction.avaritia.north", "north");
-        add("direction.avaritia.south", "south");
-        add("direction.avaritia.up", "up");
-        add("direction.avaritia.west", "west");
-        add("key.avaritia.categories", "Avaritia Key Bindings");
-        add("key.avaritia.config", "Open Avaritia Config");
-        add("key.avaritia.filter", "Open filter screen");
-        add("key.avaritia.neutron_ring", "Open Neutronium Ring");
-        add("rarity.avaritia.cosmic", "Cosmic");
-        add("rarity.avaritia.legend", "Legend");
-        add("rarity.cosmic.name", "Cosmic");
-        add("rarity.legend.name", "Legend");
-
-        add("gui.avaritia.addChannel.tip1", "Add \"%d\"");
-        add("gui.avaritia.addChannel.tip2", "§aLClick§r : Add to yours");
-        add("gui.avaritia.addChannel.tip3", "§dLSHIFT§r + §aLClick§r : Add to public");
-        add("gui.avaritia.addChannel.tip4", "§cConsume a Storage Core!");
-        add("gui.avaritia.apply", "Apply");
-        add("gui.avaritia.back", "back");
-        add("gui.avaritia.backChannel.tip1", "Back");
-        add("gui.avaritia.cancel", "Cancel");
-        add("gui.avaritia.add", "Add");
-        add("gui.avaritia.clear", "Clear");
-        add("gui.avaritia.capability.tip1", "§aLMB§r : Input 1 stack %d to carried");
-        add("gui.avaritia.capability.tip2", "§aRMB§r : Output 1 stack object from carried");
-        add("gui.avaritia.capability.tip3", "§dLSHIFT§r : Full it !");
-        add("gui.avaritia.channel.tip1", "Channel: \"%d\"");
-        add("gui.avaritia.channel.tip2", "Owner: \"%d\"");
-        add("gui.avaritia.confirm", "Confirm");
-        add("gui.avaritia.craft.channel", "Craft to channel");
-        add("gui.avaritia.craft.drop", "Craft and drop");
-        add("gui.avaritia.craft.inv", "Craft to inventory");
-        add("gui.avaritia.craft.missing", "Missing items (can click)");
-        add("gui.avaritia.craft.tip1", "§aLMB§r: Craft 64");
-        add("gui.avaritia.craft.tip2", "§aRMB§r: Craft 8");
-        add("gui.avaritia.craft.tip3", "§dLSHIFT§r + §aLMB§r: Craft 512");
-        add("gui.avaritia.craft.tip4", "§dLSHIFT§r + §aRMB§r: Craft 1");
-        add("gui.avaritia.emptyChannel.tip4", "§cThis terminal has not selected a channel");
-        add("gui.avaritia.line", "---------------------");
-        add("gui.avaritia.name", "name");
-        add("gui.avaritia.noPermission.tip3", "§cYou don't have permissions");
-        add("gui.avaritia.owner", "Owner: %d");
-        add("gui.avaritia.port.down", "Down");
-        add("gui.avaritia.port.east", "East");
-        add("gui.avaritia.port.input", "Input to channel");
-        add("gui.avaritia.port.north", "North");
-        add("gui.avaritia.port.output", "Output from channel");
-        add("gui.avaritia.port.south", "South");
-        add("gui.avaritia.port.tip", "Click toggle enable");
-        add("gui.avaritia.port.up", "Up");
-        add("gui.avaritia.port.west", "West");
-        add("gui.avaritia.public", "Public");
-        add("gui.avaritia.rate.tip", "Active port working rate; lower is faster");
-        add("gui.avaritia.remove", "Remove");
-        add("gui.avaritia.removeChannel.tip1", "Remove: \"%d\"");
-        add("gui.avaritia.removeChannel.tip2", "§cChannel must be empty");
-        add("gui.avaritia.renameChannel.tip1", "Rename: \"%d\"");
-        add("gui.avaritia.renameChannel.tip2", "To: \"%d\"");
-        add("gui.avaritia.rule.any_fluid", "Any fluid");
-        add("gui.avaritia.rule.any_item", "Any item");
-        add("gui.avaritia.rule.fe", "Energy (FE)");
-        add("gui.avaritia.rule.fluid", "Fluid: %d");
-        add("gui.avaritia.rule.item", "Item: %d");
-        add("gui.avaritia.rule.item_tag", "Tag: %d");
-        add("gui.avaritia.rule.mod_fluid", "Mod (fluid): %d");
-        add("gui.avaritia.rule.mod_item", "Mod (item): %d");
-        add("gui.avaritia.rule.tip", "Select with the mouse wheel");
-        add("gui.avaritia.save", "Save");
-        add("gui.avaritia.search", "search");
-        add("gui.avaritia.search.tip1", "Empty prefix searches ID and name");
-        add("gui.avaritia.search.tip2", "Prefix \"§a*§r\" searches ID only");
-        add("gui.avaritia.search.tip3", "Prefix \"§a$§r\" searches tags");
-        add("gui.avaritia.sort.ascending", "Ascending");
-        add("gui.avaritia.sort.count", "Sort : §aCount");
-        add("gui.avaritia.sort.descending", "Descending");
-        add("gui.avaritia.sort.id", "Sort : §aID");
-        add("gui.avaritia.sort.mirror_id", "Sort : §aMirror ID");
-        add("gui.avaritia.sort.nid", "Sort : §aMOD then ID");
-        add("gui.avaritia.sort.tip1", "§aLMB§r : Cycle sort type");
-        add("gui.avaritia.sort.tip2", "§dLSHIFT§r + §aLMB§r : Switch ascending");
-        add("gui.avaritia.view.all", "§aAll");
-        add("gui.avaritia.view.fluid", "§aFluids");
-        add("gui.avaritia.view.item", "§aItems");
-        add("gui.avaritia.item_filter.count", "Filters: %s");
-        add("gui.avaritia.item_select.all", "All");
-        add("gui.avaritia.item_select.count", "Items: %s");
-        add("gui.avaritia.item_select.inventory", "Inventory");
-        add("title.avaritia.item_filter", "Infinity Tool Filter");
-        add("title.avaritia.item_select", "Select Item");
-
-        add("info.avaritia.channel.add_success", "Successfully added channel: %s %s %s");
-        add("info.avaritia.channel.load_error", "Load Channel Error!");
-        add("info.avaritia.channel.load_finish", "Channel load finished!");
-        add("info.avaritia.channel.load_success", "Successfully loaded channel: %s %s %s");
-        add("info.avaritia.channel.save_success", "Successfully saved channel: %s %s %s");
-        add("info.avaritia.infinity_chest.add_success", "Successfully added infinity chest: %s %s %s");
-        add("info.avaritia.infinity_chest.load_error", "Load infinity chest Error!");
-        add("info.avaritia.infinity_chest.load_finish", "Infinity chest load finished!");
-        add("info.avaritia.infinity_chest.load_success", "Successfully loaded infinity chest: %s %s %s");
-        add("info.avaritia.infinity_chest.save_success", "Successfully saved infinity chest: %s %s %s");
+    private static String extraJson(String locale) {
+        return switch (locale) {
+            case "en_us" -> """
+            {
+              "attribute.name.generic.flying_speed": "Flying Speed",
+              "attribute.name.generic.movement_speed": "Movement Speed",
+              "block.avaritia.fake_bedrock": "Fake Bedrock",
+              "block.avaritia.fake_end_portal": "Fake End Portal",
+              "block.avaritia.fake_end_portal_frame": "Fake End Portal Frame",
+              "config.avaritia.endest_pearl_absorption_limit": "Endest Pearl Absorption Limit",
+              "config.avaritia.endest_pearl_absorption_limit.tooltip": "Matter units absorbed before the Endest Pearl black hole evaporates",
+              "config.jade.plugin_avaritia.neutron_collector": "Neutronium Collector",
+              "enchantment.minecraft.frost_walker": "Frost Walker",
+              "entity.avaritia.accelerator_display": "Accelerator Display",
+              "entity.avaritia.blade_slash": "Blade Slash",
+              "entity.avaritia.burning_arrow": "Burning Arrow",
+              "entity.avaritia.burning_ball": "Burning Ball",
+              "entity.avaritia.enderst_pearl": "Endest Pearl",
+              "entity.avaritia.explosions_arrow": "Explosive Arrow",
+              "entity.avaritia.fire_ball": "Fire Ball",
+              "entity.avaritia.gaping_void": "Gaping Void",
+              "entity.avaritia.heaven_arrow": "Heaven Arrow",
+              "entity.avaritia.heaven_sub_arrow": "Heaven Sub Arrow",
+              "entity.avaritia.immortal": "Immortal Item",
+              "entity.avaritia.infinity_thrown_trident": "Infinity Thrown Trident",
+              "entity.avaritia.neutron_arrow": "Neutron Arrow",
+              "entity.avaritia.rain_pro": "Rain Projectile",
+              "entity.avaritia.storm_pro": "Storm Projectile",
+              "entity.avaritia.sun_pro": "Sun Projectile",
+              "entity.avaritia.tnt_pro": "TNT Projectile",
+              "entity.avaritia.trace_arrow": "Trace Arrow",
+              "gui.avaritia.add": "Add",
+              "gui.avaritia.clear": "Clear",
+              "gui.avaritia.item_filter.count": "Filters: %s",
+              "gui.avaritia.item_select.all": "All",
+              "gui.avaritia.item_select.count": "Items: %s",
+              "gui.avaritia.item_select.inventory": "Inventory",
+              "gui.avaritia.remove": "Remove",
+              "item.avaritia.forge_energy": "Forge Energy",
+              "mode.avaritia.advance": "Advanced",
+              "mode.avaritia.current": "Current Mode: %s",
+              "mode.avaritia.default": "Default",
+              "mode.avaritia.range": "Range",
+              "mode.avaritia.switch": "Switched to %s",
+              "rarity.avaritia.cosmic": "Cosmic",
+              "rarity.avaritia.legend": "Legend",
+              "title.avaritia.item_filter": "Infinity Tool Filter",
+              "title.avaritia.item_select": "Select Item",
+              "tooltip.avaritia.jade.collector_output": "Output: %s"
+            }
+            """;
+            case "ja_jp" -> """
+            {}
+            """;
+            case "zh_cn" -> """
+            {
+              "attribute.name.generic.flying_speed": "飞行速度",
+              "attribute.name.generic.movement_speed": "移动速度",
+              "block.avaritia.fake_bedrock": "伪基岩",
+              "block.avaritia.fake_end_portal": "伪末地传送门",
+              "block.avaritia.fake_end_portal_frame": "伪末地传送门框架",
+              "config.avaritia.endest_pearl_absorption_limit": "终望珍珠吸收上限",
+              "config.avaritia.endest_pearl_absorption_limit.tooltip": "终望珍珠形成的黑洞在蒸发前可吸收的物质量",
+              "item.avaritia.forge_energy": "锻造能量",
+              "title.avaritia.item_filter": "无尽工具过滤器",
+              "title.avaritia.item_select": "选择物品"
+            }
+            """;
+            case "zh_tw" -> """
+            {
+              "block.avaritia.fake_bedrock": "偽基岩",
+              "block.avaritia.fake_end_portal": "偽終界傳送門",
+              "block.avaritia.fake_end_portal_frame": "偽終界傳送門框架",
+              "config.avaritia.endest_pearl_absorption_limit": "終望珍珠吸收上限",
+              "config.avaritia.endest_pearl_absorption_limit.tooltip": "終望珍珠形成的黑洞在蒸發前可吸收的物質量",
+              "item.avaritia.forge_energy": "鍛造能量",
+              "item.avaritia.infinity_mace": "山崩地裂之錘"
+            }
+            """;
+            default -> "{}";
+        };
     }
 }
