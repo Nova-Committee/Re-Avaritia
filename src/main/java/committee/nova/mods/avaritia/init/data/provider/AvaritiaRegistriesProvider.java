@@ -1,21 +1,19 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-
-public class AvaritiaRegistriesProvider extends DatapackBuiltinEntriesProvider {
-    public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
+public final class AvaritiaRegistriesProvider {
+    private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
 
-    public AvaritiaRegistriesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, BUILDER, Set.of("minecraft", Const.MOD_ID));
+    private AvaritiaRegistriesProvider() {
+    }
+
+    public static void register(GatherDataEvent.Client event) {
+        // DamageType 属于数据包动态注册表，交给 NeoForge 生成内置 datapack 条目。
+        event.createDatapackRegistryObjects(BUILDER);
     }
 }

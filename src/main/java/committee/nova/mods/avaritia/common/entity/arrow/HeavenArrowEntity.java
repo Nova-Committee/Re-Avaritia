@@ -60,7 +60,7 @@ public class HeavenArrowEntity extends Arrow {
             if (entity == getOwner()) {
                 return;
             }
-            damageEntity(entity, ModDamageTypes.causeRandomDamage(this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            damageEntity(entity, ModDamageTypes.source(this.getOwner()), HEAVEN_ARROW_DAMAGE);
         }
     }
 

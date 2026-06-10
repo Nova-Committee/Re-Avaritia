@@ -87,7 +87,7 @@ public class InfinitySwordItem extends Item implements InitEnchantItem, ISwitcha
     public boolean onLeftClickEntity(@NotNull ItemStack stack, Player player, @NotNull Entity entity) {
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
         if (player.level() instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
-            var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
+            var damageSource = ModDamageTypes.source(player.level(), victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//妯壂
             if (victim instanceof EnderDragon dragon ) {
                 dragon.hurt(serverLevel, dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : ModToolTiers.INFINITY.attackDamageBonus());

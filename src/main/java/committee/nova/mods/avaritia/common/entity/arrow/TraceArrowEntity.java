@@ -192,7 +192,7 @@ public class TraceArrowEntity extends Arrow {
             }
         }
         if (owner != null && PROJECTILE_ANTI_IMMUNE_ENTITIES.contains(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).toString())) {
-            damageSource = ModDamageTypes.causeRandomDamage(owner);
+            damageSource = ModDamageTypes.source(owner);
         }
         return damageSource;
     }

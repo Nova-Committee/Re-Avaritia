@@ -353,7 +353,7 @@ public class ToolUtils {
         }
 
         if (owner != null && projectileAntiImmuneEntities.contains(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).toString())) {
-            damagesource = ModDamageTypes.causeRandomDamage(owner);
+            damagesource = ModDamageTypes.source(owner);
         }
         return damagesource;
     }
@@ -421,7 +421,7 @@ public class ToolUtils {
         if (player.level().isClientSide()) return;
         AABB aabb = player.getBoundingBox().deflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
-        DamageSource src = ModDamageTypes.causeRandomDamage(player);
+        DamageSource src = ModDamageTypes.source(player);
         toAttack.stream()
                 .filter(entity -> {
                     boolean attack = ModConfig.isSwordAttackItemEntity.get();

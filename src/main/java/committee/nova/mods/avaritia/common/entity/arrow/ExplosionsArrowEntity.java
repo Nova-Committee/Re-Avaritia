@@ -67,7 +67,7 @@ public class ExplosionsArrowEntity extends Arrow {
             if (entity == getOwner()) {
                 return;
             }
-            damageEntity(entity, ModDamageTypes.causeRandomDamage(this.getOwner()), HEAVEN_ARROW_DAMAGE);
+            damageEntity(entity, ModDamageTypes.source(this.getOwner()), HEAVEN_ARROW_DAMAGE);
             level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(10.0D, 10.0D, 10.0D), (entityx) -> !entityx.isSpectator())
                     .forEach(entityx -> entityx.addEffect(new MobEffectInstance((Holder<MobEffect>) ModMobEffects.BURNING, -1)));
         }

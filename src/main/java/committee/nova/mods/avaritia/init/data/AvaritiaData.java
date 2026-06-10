@@ -43,8 +43,9 @@ public class AvaritiaData {
     public static void gatherData(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
+        AvaritiaRegistriesProvider.register(event);
+        // 动态注册表先写入事件 lookup，后续标签 Provider 才能解析 avaritia:infinity。
         var lookupProvider = event.getLookupProvider();
-        var datapackProvider = new AvaritiaRegistriesProvider(packOutput, lookupProvider);
 
         // 1. 语言文件提供程序
         generator.addProvider(true, new AvaritiaLanguageProvider(packOutput, "en_us"));
@@ -55,7 +56,7 @@ public class AvaritiaData {
         generator.addProvider(true, new AvaritiaModelProvider(packOutput));
 
         // 3. 合成配方提供程序
-        generator.addProvider(true, new AvaritiaRecipeProvider.Runner(packOutput, event.getLookupProvider()));
+        generator.addProvider(true, new AvaritiaRecipeProvider.Runner(packOutput, lookupProvider));
 
         // 4. 方块战利品表提供程序
         generator.addProvider(true, new AvaritiaLootTableProvider(packOutput, lookupProvider));
@@ -69,8 +70,7 @@ public class AvaritiaData {
         generator.addProvider(true, new AvaritiaSoundDefinitionsProvider(packOutput));
         generator.addProvider(true, new AvaritiaEquipmentAssetProvider(packOutput));
         generator.addProvider(true, new AvaritiaEntityTypeTagsProvider(packOutput, lookupProvider));
-        generator.addProvider(true, datapackProvider);
-        generator.addProvider(true, new AvaritiaDamageTypeTagsProvider(packOutput, datapackProvider.getRegistryProvider()));
+        generator.addProvider(true, new AvaritiaDamageTypeTagsProvider(packOutput, lookupProvider));
         generator.addProvider(true, AvaritiaAdvancementProvider.create(packOutput, lookupProvider));
         generator.addProvider(true, new AvaritiaSingularityProvider(packOutput, lookupProvider));
         var packFormat = DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES);
