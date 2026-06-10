@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundSource;
@@ -56,6 +57,7 @@ public class GapingVoidEntity extends Entity {
     private static final int ENTITY_ABSORPTION_UNITS = 12;
     private static final int BOSS_ABSORPTION_UNITS = 64;
     private static final int BLOCK_ABSORPTION_UNITS = 1;
+    private static final int UNSET_RENDER_AGE = Integer.MIN_VALUE;
     public static final Predicate<Entity> SUCK_PREDICATE = input -> {
         if (input instanceof Player p) {
             return !p.isCreative() || !p.isFallFlying();
@@ -77,6 +79,13 @@ public class GapingVoidEntity extends Entity {
     private FakePlayer fakePlayer;
 
     private LivingEntity user;
+    private int renderProgressAge = UNSET_RENDER_AGE;
+    private float renderPreviousAbsorptionProgress;
+    private float renderCurrentAbsorptionProgress;
+    private float renderPreviousEvaporationProgress;
+    private float renderCurrentEvaporationProgress;
+    private float renderAbsorptionProgress;
+    private float renderEvaporationProgress;
 
     public GapingVoidEntity(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -138,6 +147,53 @@ public class GapingVoidEntity extends Entity {
 
     public float getAbsorptionProgress() {
         return (float) Math.min(1.0, getAbsorbedMatter() / (double) getAbsorptionLimit());
+    }
+
+    /**
+     * 只服务客户端渲染：把服务端同步来的离散吸收量缓动成连续 uniform，避免黑洞 shader 亮度跳变。
+     */
+    public void updateRenderProgress(float partialTicks) {
+        int age = getAge();
+        float targetAbsorption = getAbsorptionProgress();
+        float targetEvaporation = getEvaporationProgress(age + 1.0F);
+        if (this.renderProgressAge == UNSET_RENDER_AGE || age < this.renderProgressAge) {
+            resetRenderProgress(age, targetAbsorption, targetEvaporation);
+        } else if (age != this.renderProgressAge
+                || targetAbsorption != this.renderCurrentAbsorptionProgress
+                || targetEvaporation != this.renderCurrentEvaporationProgress) {
+            this.renderPreviousAbsorptionProgress = this.renderAbsorptionProgress;
+            this.renderCurrentAbsorptionProgress = targetAbsorption;
+            this.renderPreviousEvaporationProgress = this.renderEvaporationProgress;
+            this.renderCurrentEvaporationProgress = targetEvaporation;
+            this.renderProgressAge = age;
+        }
+
+        float smoothPartial = smoothPartialTick(partialTicks);
+        this.renderAbsorptionProgress = Mth.lerp(smoothPartial, this.renderPreviousAbsorptionProgress, this.renderCurrentAbsorptionProgress);
+        this.renderEvaporationProgress = Mth.lerp(smoothPartial, this.renderPreviousEvaporationProgress, this.renderCurrentEvaporationProgress);
+    }
+
+    public float getRenderAbsorptionProgress() {
+        return this.renderAbsorptionProgress;
+    }
+
+    public float getRenderEvaporationProgress() {
+        return this.renderEvaporationProgress;
+    }
+
+    private void resetRenderProgress(int age, float absorptionProgress, float evaporationProgress) {
+        this.renderProgressAge = age;
+        this.renderPreviousAbsorptionProgress = absorptionProgress;
+        this.renderCurrentAbsorptionProgress = absorptionProgress;
+        this.renderPreviousEvaporationProgress = evaporationProgress;
+        this.renderCurrentEvaporationProgress = evaporationProgress;
+        this.renderAbsorptionProgress = absorptionProgress;
+        this.renderEvaporationProgress = evaporationProgress;
+    }
+
+    private static float smoothPartialTick(float partialTicks) {
+        float clamped = Mth.clamp(partialTicks, 0.0F, 1.0F);
+        return clamped * clamped * (3.0F - 2.0F * clamped);
     }
 
     private void setAge(int age) {

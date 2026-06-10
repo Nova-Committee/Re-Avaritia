@@ -38,9 +38,10 @@ public class GapingVoidRender extends EntityRenderer<GapingVoidEntity, GapingVoi
     @Override
     public void extractRenderState(@NotNull GapingVoidEntity entity, @NotNull State state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
+        entity.updateRenderProgress(partialTicks);
         state.voidAge = entity.getAge() + partialTicks;
-        state.absorptionProgress = entity.getAbsorptionProgress();
-        state.evaporationProgress = GapingVoidEntity.getEvaporationProgress(state.voidAge);
+        state.absorptionProgress = entity.getRenderAbsorptionProgress();
+        state.evaporationProgress = entity.getRenderEvaporationProgress();
         state.evaporating = entity.isEvaporating();
     }
 
