@@ -79,7 +79,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
 
     @Override
     public @NotNull ItemUseAnimation getUseAnimation(@NotNull ItemStack stack) {
-        return ItemUseAnimation.SPEAR;
+        return ItemUseAnimation.TRIDENT;
     }
 
     @Override
