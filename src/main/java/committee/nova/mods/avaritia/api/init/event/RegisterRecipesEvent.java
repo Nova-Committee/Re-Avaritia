@@ -39,6 +39,12 @@ public class RegisterRecipesEvent extends Event {
         this.recipes.add(recipe);
     }
 
+    public int removeRecipe(ResourceKey<Recipe<?>> key) {
+        int before = this.recipes.size();
+        this.recipes.removeIf(recipe -> recipe.id().equals(key));
+        return before - this.recipes.size();
+    }
+
     /**
      * 默认奇点配方来自 JSON；运行时扩展配方加入前用此方法避免重复 ID。
      */

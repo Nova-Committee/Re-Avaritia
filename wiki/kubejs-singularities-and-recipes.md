@@ -64,6 +64,31 @@ AvaritiaEvents.singularity(event => {
 | `setRecipeEnabled(false)` | 只注册奇点物品，不自动生成压缩机配方。 |
 | `setEnabled(false)` | 禁用该奇点。 |
 
+移除默认奇点的压缩机配方时，使用奇点事件里的 `removeRecipe`，传入的是奇点 id，不是配方 id：
+
+```js
+AvaritiaEvents.singularity(event => {
+    // 移除铁奇点的默认压缩机配方 avaritia:iron_singularity，但保留铁奇点物品。
+    event.removeRecipe('avaritia:iron')
+})
+```
+
+如果要移除全部默认奇点的压缩机配方：
+
+```js
+AvaritiaEvents.singularity(event => {
+    event.removeAllRecipe()
+})
+```
+
+如果要连奇点本身也从创造栏、寰宇奇点材料列表等位置移除，才使用 `remove` 或 `removeAll`：
+
+```js
+AvaritiaEvents.singularity(event => {
+    event.remove('avaritia:iron')
+})
+```
+
 如果你希望这个奇点显示本地化名称，可以添加资源文件：
 
 ```text
@@ -335,6 +360,31 @@ Method reference:
 | `setIngredient(Ingredient.of(...))` | Sets the compressor input item or tag. |
 | `setRecipeEnabled(false)` | Registers the singularity item without generating its compressor recipe. |
 | `setEnabled(false)` | Disables this singularity. |
+
+To remove a default singularity compressor recipe, use `removeRecipe` in the singularity event. Pass the singularity id, not the recipe id:
+
+```js
+AvaritiaEvents.singularity(event => {
+    // Removes avaritia:iron_singularity while keeping the Iron Singularity item registered.
+    event.removeRecipe('avaritia:iron')
+})
+```
+
+To remove all default singularity compressor recipes:
+
+```js
+AvaritiaEvents.singularity(event => {
+    event.removeAllRecipe()
+})
+```
+
+Only use `remove` or `removeAll` when the singularity itself should also disappear from creative tabs, Eternal Singularity ingredients, and similar singularity lists:
+
+```js
+AvaritiaEvents.singularity(event => {
+    event.remove('avaritia:iron')
+})
+```
 
 For localized names, add resource files:
 

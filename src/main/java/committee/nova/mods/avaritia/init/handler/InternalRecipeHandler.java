@@ -4,8 +4,15 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.ModApi;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Description:
@@ -17,7 +24,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class InternalRecipeHandler {
     @SubscribeEvent
     public static void onRegisterRecipes(RegisterRecipesEvent event) {
-        var allSingularities = SingularityReloadListener.INSTANCE.getAllSingularities().values();
+        SingularityReloadListener listener = SingularityReloadListener.INSTANCE;
+        int removedCount = removeDisabledSingularityRecipes(event, listener);
+        var allSingularities = listener.getAllSingularities().values();
 
         int generatedCount = 0;
         for (var singularity : allSingularities) {
@@ -34,6 +43,26 @@ public class InternalRecipeHandler {
             }
 
         }
-        Const.LOGGER.info("Singularity: Regenerated {} recipes", generatedCount);
+        Const.LOGGER.info("Singularity: Regenerated {} recipes, removed {} recipes", generatedCount, removedCount);
+    }
+
+    private static int removeDisabledSingularityRecipes(RegisterRecipesEvent event, SingularityReloadListener listener) {
+        Set<Identifier> singularities = new LinkedHashSet<>();
+        if (listener.isRemoveAll() || listener.isRemoveAllRecipes()) {
+            singularities.addAll(listener.getDataSingularities().keySet());
+            singularities.addAll(listener.getRunSingularities().keySet());
+        }
+        singularities.addAll(listener.getRemoveRecipes());
+        singularities.addAll(listener.getRemoveSingularities());
+
+        int removedCount = 0;
+        for (Identifier singularityId : singularities) {
+            removedCount += event.removeRecipe(singularityRecipeKey(singularityId));
+        }
+        return removedCount;
+    }
+
+    private static ResourceKey<Recipe<?>> singularityRecipeKey(Identifier singularityId) {
+        return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(singularityId.getNamespace(), singularityId.getPath() + "_singularity"));
     }
 }
