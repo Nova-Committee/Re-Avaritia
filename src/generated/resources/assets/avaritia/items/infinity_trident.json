@@ -1,9 +1,40 @@
 {
   "model": {
-    "type": "avaritia:cosmic_arc",
-    "mask": [
-      "avaritia:mask/item/infinity_trident_mask"
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "avaritia:cosmic_arc",
+          "mask": [
+            "avaritia:mask/item/infinity_trident_mask"
+          ],
+          "model": "avaritia:item/infinity_trident"
+        },
+        "when": [
+          "gui",
+          "ground",
+          "fixed"
+        ]
+      }
     ],
-    "model": "avaritia:item/infinity_trident"
+    "fallback": {
+      "type": "minecraft:condition",
+      "on_false": {
+        "type": "avaritia:cosmic_arc",
+        "mask": [
+          "avaritia:mask/item/infinity_trident_mask"
+        ],
+        "model": "avaritia:item/infinity_trident"
+      },
+      "on_true": {
+        "type": "avaritia:cosmic_arc",
+        "mask": [
+          "avaritia:mask/item/infinity_trident_mask"
+        ],
+        "model": "avaritia:item/infinity_trident_throwing"
+      },
+      "property": "minecraft:using_item"
+    },
+    "property": "minecraft:display_context"
   }
 }

@@ -15,6 +15,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -33,10 +34,11 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
     private static final EntityDataAccessor<Boolean> CHANNELING = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> SHOCKWAVE = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.INT);
+    private static final double RETURN_PICKUP_DISTANCE = 1.25D;
+    private static final int RETURN_FORCE_PICKUP_TICKS = 30;
 
     private ItemStack tridentItem = new ItemStack(ModItems.infinity_trident.get());
     private boolean dealtDamage;
-    private boolean noReturn;
     private int loyaltyLevel = 3;
     public int returningTicks;
 
@@ -70,33 +72,22 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
 
     @Override
     public void tick() {
-        if (inGroundTime > 4) {
-            dealtDamage = true;
-            noReturn = !isAcceptableReturnOwner();
+        if (this.inGroundTime > 4) {
+            this.dealtDamage = true;
         }
-        Entity entity = getOwner();
-        if (!noReturn && (dealtDamage || isNoPhysics()) && entity != null) {
-            if (!isAcceptableReturnOwner() ) {
-                if (level() instanceof ServerLevel serverLevel && pickup == Pickup.ALLOWED) {
-                    this.spawnAtLocation(serverLevel, this.getPickupItem(), 0.1F);
-                }
 
-            } else if (loyaltyLevel > 0){
-                this.onClientRemoval();
-                setNoPhysics(true);
-                Vec3 returnVector = entity.getEyePosition().subtract(position());
-                this.setPosRaw(getX(), getY() + returnVector.y * 0.015D * loyaltyLevel, getZ());
-                if (level().isClientSide()) {
-                    yOld = getY();
-                }
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95D)
-                        .add(returnVector.normalize().scale(0.05D * loyaltyLevel)));
-                if (returningTicks == 0) {
-                    this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
-                }
-                ++this.returningTicks;
+        Entity owner = this.getOwner();
+        if (this.loyaltyLevel > 0 && (this.dealtDamage || this.isNoPhysics()) && owner != null) {
+            if (!this.isAcceptableReturnOwner()) {
+                this.dropAndDiscard();
+                return;
+            }
+
+            if (this.returnToOwner(owner)) {
+                return;
             }
         }
+
         super.tick();
     }
 
@@ -108,6 +99,75 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         return false;
     }
 
+    private boolean returnToOwner(Entity owner) {
+        if (owner instanceof Player player && this.tryCloseOwnerPickup(player)) {
+            return true;
+        }
+
+        if (!(owner instanceof Player) && this.position().distanceTo(owner.getEyePosition()) < owner.getBbWidth() + 1.0D) {
+            this.discard();
+            return true;
+        }
+
+        this.setNoPhysics(true);
+        Vec3 returnVector = owner.getEyePosition().subtract(this.position());
+        if (returnVector.lengthSqr() < 1.0E-7D) {
+            ++this.returningTicks;
+            return owner instanceof Player player && this.tryOwnerPickupOrDrop(player);
+        }
+
+        this.setPosRaw(this.getX(), this.getY() + returnVector.y * 0.015D * this.loyaltyLevel, this.getZ());
+        if (this.level().isClientSide()) {
+            this.yOld = this.getY();
+        }
+
+        this.setDeltaMovement(this.getDeltaMovement().scale(0.95D)
+                .add(returnVector.normalize().scale(0.05D * this.loyaltyLevel)));
+        if (this.returningTicks == 0) {
+            this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
+        }
+
+        ++this.returningTicks;
+        return false;
+    }
+
+    private boolean tryCloseOwnerPickup(Player player) {
+        double pickupDistanceSqr = RETURN_PICKUP_DISTANCE * RETURN_PICKUP_DISTANCE;
+        if (this.position().distanceToSqr(player.getEyePosition()) > pickupDistanceSqr) {
+            return false;
+        }
+
+        return this.tryOwnerPickupOrDrop(player);
+    }
+
+    private boolean tryOwnerPickupOrDrop(Player player) {
+        if (this.level().isClientSide()) {
+            return false;
+        }
+
+        if (this.tryPickup(player)) {
+            player.take(this, 1);
+            this.discard();
+            return true;
+        }
+
+        /* 忠诚返航已经贴到玩家身边仍无法入包时，落成物品实体，避免三叉戟持续卡在碰撞箱边缘。 */
+        if (this.returningTicks >= RETURN_FORCE_PICKUP_TICKS) {
+            this.dropAndDiscard();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void dropAndDiscard() {
+        if (this.level() instanceof ServerLevel serverLevel && this.pickup == Pickup.ALLOWED) {
+            this.spawnAtLocation(serverLevel, this.getPickupItem(), 0.1F);
+        }
+
+        this.discard();
+    }
+
     @NotNull
     @Override
     public ItemStack getPickupItem() {
@@ -117,6 +177,12 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
     @Override
     protected @NotNull ItemStack getDefaultPickupItem() {
         return ModItems.infinity_trident.toStack();
+    }
+
+    @Nullable
+    @Override
+    protected EntityHitResult findHitEntity(Vec3 startVec, Vec3 endVec) {
+        return this.dealtDamage ? null : super.findHitEntity(startVec, endVec);
     }
 
 
@@ -149,7 +215,8 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
                 this.doPostHurtEffects(livingentity);
             }
         }
-        setDeltaMovement(getDeltaMovement().multiply(-0.01D, -0.1D, -0.01D));
+        ProjectileDeflection.REVERSE.deflect(this, hitEntity, this.random);
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.02D, 0.2D, 0.02D));
         float volume = 1.0F;
         SoundEvent sound = SoundEvents.TRIDENT_HIT;
         AABB area = new AABB(hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(), hitEntity.getX(), hitEntity.getY(), hitEntity.getZ()).inflate(this.entityData.get(RADIUS));
@@ -191,7 +258,6 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         super.readAdditionalSaveData(input);
         setStackAndLoyalty(input.read("Trident", ItemStack.CODEC).orElse(this.getDefaultPickupItem()));
         dealtDamage = input.getBooleanOr("DealtDamage", false);
-        noReturn = input.getBooleanOr("NoReturn", false);
     }
 
     @Override
@@ -199,7 +265,6 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         super.addAdditionalSaveData(output);
         output.store("Trident", ItemStack.CODEC, tridentItem);
         output.putBoolean("DealtDamage", dealtDamage);
-        output.putBoolean("NoReturn", noReturn);
     }
 
     @Override
@@ -224,6 +289,18 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
     @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {
         return SoundEvents.TRIDENT_HIT_GROUND;
+    }
+
+    @Override
+    protected boolean tryPickup(Player player) {
+        return super.tryPickup(player) || this.isNoPhysics() && this.ownedBy(player) && player.getInventory().add(this.getPickupItem());
+    }
+
+    @Override
+    public void playerTouch(Player entity) {
+        if (this.ownedBy(entity) || this.getOwner() == null) {
+            super.playerTouch(entity);
+        }
     }
 
     @Override

@@ -17,6 +17,7 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.properties.select.DisplayContext;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
@@ -24,6 +25,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
@@ -186,7 +188,6 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private ItemModel.Unbaked clientItemModel(Identifier id, Identifier model) {
-        // 这里决定每个物品最终写入 items/*.json 的运行时模型；星空/halo 都走 AvaritiaItemModelLoaders。
         return switch (id.getPath()) {
             case "infinity_sword" -> infinitySwordModel(model);
             case "infinity_bow" -> infinityBowModel();
@@ -197,7 +198,7 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_shield" -> infinityShieldModel(model);
             case "infinity_umbrella" -> infinityUmbrellaModel(model);
             case "infinity_clock" -> infinityClockModel(model);
-            case "infinity_trident" -> new AvaritiaItemModelLoaders.CosmicArc(model, List.of(mask("infinity_trident_mask")));
+            case "infinity_trident" -> infinityTridentModel(model);
             case "infinity_helmet", "infinity_chestplate", "infinity_pants", "infinity_boots" ->
                     new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask(id.getPath() + "_mask")));
             case "singularity" -> new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, 4, false, singularityTints());
@@ -304,6 +305,22 @@ public class AvaritiaModelProvider implements DataProvider {
                 ItemModelUtils.specialModel(model, new InfinityShieldRender.Unbaked()));
     }
 
+    private ItemModel.Unbaked infinityTridentModel(Identifier model) {
+        ItemModel.Unbaked normal = new AvaritiaItemModelLoaders.CosmicArc(model, List.of(mask("infinity_trident_mask")));
+        ItemModel.Unbaked throwing = new AvaritiaItemModelLoaders.CosmicArc(
+                tridentThrowingModel("infinity_trident_throwing", "item/tools/infinity_trident/layer_0"),
+                List.of(mask("infinity_trident_mask")));
+        return displayContextDispatch(normal, ItemModelUtils.conditional(ItemModelUtils.isUsingItem(), throwing, normal));
+    }
+
+    private ItemModel.Unbaked displayContextDispatch(ItemModel.Unbaked itemModel, ItemModel.Unbaked holdingModel) {
+        return ItemModelUtils.select(
+                new DisplayContext(),
+                holdingModel,
+                ItemModelUtils.when(List.of(ItemDisplayContext.GUI, ItemDisplayContext.GROUND, ItemDisplayContext.FIXED), itemModel)
+        );
+    }
+
     private ItemModel.Unbaked matterClusterFullModel() {
         Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
         return new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
@@ -392,6 +409,12 @@ public class AvaritiaModelProvider implements DataProvider {
         return model;
     }
 
+    private Identifier tridentThrowingModel(String modelPath, String texturePath) {
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
+        this.generatedModels.put(model, () -> tridentThrowingModelJson(texturePath));
+        return model;
+    }
+
     private JsonObject tridentModelJson(String texturePath) {
         JsonObject root = new JsonObject();
         root.addProperty("parent", "minecraft:item/generated");
@@ -408,6 +431,26 @@ public class AvaritiaModelProvider implements DataProvider {
         display.add("thirdperson_lefthand", transform(new double[]{0, 60, 0}, new double[]{-11, 17, 4}, new double[]{1, 1, 1}));
         display.add("firstperson_righthand", transform(new double[]{0, -90, 25}, new double[]{-3, 17, 1}, new double[]{1, 1, 1}));
         display.add("firstperson_lefthand", transform(new double[]{0, 90, -25}, new double[]{-15, 17, 1}, new double[]{1, 1, 1}));
+        root.add("display", display);
+        return root;
+    }
+
+    private JsonObject tridentThrowingModelJson(String texturePath) {
+        JsonObject root = new JsonObject();
+        root.addProperty("parent", "minecraft:item/generated");
+
+        JsonObject textures = new JsonObject();
+        textures.addProperty("layer0", Const.MOD_ID + ":" + texturePath);
+        root.add("textures", textures);
+
+        JsonObject display = new JsonObject();
+        display.add("ground", transform(new double[]{0, 0, 0}, new double[]{4, 4, 2}, new double[]{0.25, 0.25, 0.25}));
+        display.add("fixed", transform(new double[]{0, 180, 0}, new double[]{-2, 4, -5}, new double[]{0.5, 0.5, 0.5}));
+        display.add("gui", transform(new double[]{15, -25, -5}, new double[]{2, 3, 0}, new double[]{0.65, 0.65, 0.65}));
+        display.add("thirdperson_righthand", transform(new double[]{0, 90, 180}, new double[]{8, -17, 9}, new double[]{1, 1, 1}));
+        display.add("thirdperson_lefthand", transform(new double[]{0, 90, 180}, new double[]{8, -17, -7}, new double[]{1, 1, 1}));
+        display.add("firstperson_righthand", transform(new double[]{0, -90, 25}, new double[]{-3, 17, 1}, new double[]{1, 1, 1}));
+        display.add("firstperson_lefthand", transform(new double[]{0, 90, -25}, new double[]{13, 17, 1}, new double[]{1, 1, 1}));
         root.add("display", display);
         return root;
     }
