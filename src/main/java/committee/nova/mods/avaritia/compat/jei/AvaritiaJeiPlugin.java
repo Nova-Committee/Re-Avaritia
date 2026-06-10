@@ -23,10 +23,10 @@ import committee.nova.mods.avaritia.compat.jei.category.tables.NetherCraftingTab
 import committee.nova.mods.avaritia.compat.jei.category.tables.SculkCraftingTableCategory;
 import committee.nova.mods.avaritia.compat.jei.handler.JeiContainerHandler;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
-import committee.nova.mods.avaritia.util.SingularityUtils;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -144,8 +144,8 @@ public class AvaritiaJeiPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(ModItems.singularity.get(), (stack, context) -> {
-            var singularity = SingularityUtils.getSingularity(stack);
-            return singularity != null ? singularity.getRegistryName().toString() : "";
+            var singularityId = stack.get(ModDataComponents.SINGULARITY_ID.get());
+            return singularityId != null ? singularityId.toString() : "";
         });
     }
 }

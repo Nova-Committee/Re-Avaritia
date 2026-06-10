@@ -89,14 +89,14 @@ public record S2CSingularitiesPacket(Collection<Singularity> dataSingularities,
     public static class Handler implements IPayloadHandler<S2CSingularitiesPacket> {
         @Override
         public void handle(@NotNull S2CSingularitiesPacket packet, IPayloadContext context) {
-            context.enqueueWork(() -> {
-                SingularityReloadListener.INSTANCE.replaceDataSingularities(packet.dataSingularities);
-                SingularityReloadListener.INSTANCE.replaceRunSingularities(packet.runSingularities);
-                SingularityReloadListener.INSTANCE.setRemoveRecipes(new ArrayList<>(packet.removedRecipes));
-                SingularityReloadListener.INSTANCE.setRemoveSingularities(new ArrayList<>(packet.removedSingularities));
-                SingularityReloadListener.INSTANCE.setRemoveAllRecipes(packet.removeAllRecipes);
-                SingularityReloadListener.INSTANCE.setRemoveAll(packet.removeAll);
-            });
+            context.enqueueWork(() -> SingularityReloadListener.INSTANCE.applySyncedState(
+                    packet.dataSingularities,
+                    packet.runSingularities,
+                    packet.removedRecipes,
+                    packet.removedSingularities,
+                    packet.removeAllRecipes,
+                    packet.removeAll
+            ));
         }
     }
 

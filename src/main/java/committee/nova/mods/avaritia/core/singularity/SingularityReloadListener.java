@@ -190,6 +190,21 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
         this.runSingularities = toMap(singularities);
     }
 
+    public void applySyncedState(Collection<Singularity> dataSingularities,
+                                 Collection<Singularity> runSingularities,
+                                 Collection<Identifier> removeRecipes,
+                                 Collection<Identifier> removeSingularities,
+                                 boolean removeAllRecipes,
+                                 boolean removeAll) {
+        this.dataSingularities = toMap(dataSingularities);
+        this.runSingularities = toMap(runSingularities);
+        this.removeRecipes = concurrentSet(removeRecipes);
+        this.removeSingularities = concurrentSet(removeSingularities);
+        this.removeAllRecipes = removeAllRecipes;
+        this.removeAll = removeAll;
+        onSingularitiesReloaded();
+    }
+
     public void registerSingularity(Singularity singularity) {
         if (singularity != null && singularity.getRegistryName() != null) {
             var oldSingularity = this.runSingularities.put(singularity.getRegistryName(), singularity);

@@ -8,6 +8,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +44,12 @@ public record StackIngredient(ItemStack item) implements ICustomIngredient {
     @Override
     public boolean isSimple() {
         return false;
+    }
+
+    @Override
+    public SlotDisplay display() {
+        // JEI 和原版配方展示会读取 SlotDisplay；这里必须保留 ItemStack 的数据组件。
+        return new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(this.item));
     }
 
     @Override
