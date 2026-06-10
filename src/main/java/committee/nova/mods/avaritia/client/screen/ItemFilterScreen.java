@@ -31,7 +31,7 @@ public class ItemFilterScreen extends Screen {
     private static final int SLOT_SIZE = 18;
     private static final int GAP = 3;
     private static final int PANEL_WIDTH = 218;
-    private static final int PANEL_HEIGHT = 166;
+    private static final int PANEL_HEIGHT = 178;
 
     private final List<ItemStack> filterItems = new ArrayList<>();
     private int panelX;
@@ -93,7 +93,6 @@ public class ItemFilterScreen extends Screen {
         updateScrollbarMetrics();
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         graphics.centeredText(font, title, width / 2, panelY + 8, 0xFFFFFFFF);
-        graphics.text(font, Component.translatable("gui.avaritia.item_filter.count", filterItems.size()), panelX + 8, panelY + PANEL_HEIGHT - 48, 0xFFCFCFCF);
 
         for (int row = 0; row < ROWS; row++) {
             for (int column = 0; column < COLUMNS; column++) {
@@ -118,6 +117,8 @@ public class ItemFilterScreen extends Screen {
             graphics.fill(scrollbarX, scrollbarY, scrollbarX + 5, scrollbarY + scrollbarHeight, 0xAA111111);
             graphics.fill(scrollbarX, scrollbarHandleY, scrollbarX + 5, scrollbarHandleY + scrollbarHandleHeight, 0xFFB6B6B6);
         }
+
+        graphics.text(font, Component.translatable("gui.avaritia.item_filter.count", filterItems.size()), panelX + 8, gridY + gridHeight() + 8, 0xFFCFCFCF);
     }
 
     @Override
