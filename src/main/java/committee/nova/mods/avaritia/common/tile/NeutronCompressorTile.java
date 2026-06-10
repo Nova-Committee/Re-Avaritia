@@ -27,7 +27,7 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -61,7 +61,32 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
 
     private final ItemStackWrapper inventory;
     private final ItemStackWrapper recipeInventory;
-    private final SimpleContainerData data = new SimpleContainerData(1);
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case NeutronCompressorMenu.DATA_PROGRESS -> progress;
+                case NeutronCompressorMenu.DATA_MATERIAL_COUNT -> materialCount;
+                case NeutronCompressorMenu.DATA_MATERIALS_REQUIRED -> getMaterialsRequired();
+                case NeutronCompressorMenu.DATA_TIME_REQUIRED -> getTimeRequired();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == NeutronCompressorMenu.DATA_PROGRESS) {
+                progress = value;
+            } else if (index == NeutronCompressorMenu.DATA_MATERIAL_COUNT) {
+                materialCount = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NeutronCompressorMenu.DATA_COUNT;
+        }
+    };
     private ICompressorRecipe recipe;
     private ItemStack materialStack = ItemStack.EMPTY;
     private int materialCount;
@@ -261,7 +286,6 @@ public class NeutronCompressorTile extends BaseInventoryTileEntity implements Wo
     private void setProgress(int progress)
     {
         this.progress = progress;
-        this.data.set(0, this.progress);
     }
 
     public boolean isRecipeLocked() {

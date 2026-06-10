@@ -28,15 +28,22 @@ import java.util.List;
  * Version: 1.0
  */
 public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
-    private final ContainerData progressData;
+    public static final int DATA_PROGRESS = 0;
+    public static final int DATA_MATERIAL_COUNT = 1;
+    public static final int DATA_MATERIALS_REQUIRED = 2;
+    public static final int DATA_TIME_REQUIRED = 3;
+    public static final int DATA_COUNT = 4;
+
+    private final ContainerData data;
+
     public NeutronCompressorMenu(int id, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(1));
+        this(id, playerInventory, NeutronCompressorTile.createInventoryHandler(), buffer.readBlockPos(), new SimpleContainerData(DATA_COUNT));
     }
 
     public NeutronCompressorMenu(int id, Inventory playerInventory, ItemStackWrapper inventory, BlockPos pos, ContainerData data) {
         super(ModMenus.neutron_compressor.get(), id, playerInventory, pos);
-        this.progressData = data;
-        this.addDataSlots(progressData);
+        this.data = data;
+        this.addDataSlots(data);
         inventory.setCanInsert((integer, stack) -> {
             if (integer == 1 && level instanceof ServerLevel serverLevel) {
                 // 获取压缩器实例检查锁定状态
@@ -112,7 +119,19 @@ public class NeutronCompressorMenu extends BaseTileMenu<NeutronCompressorTile> {
         return itemstack;
     }
     public int getProgress() {
-        return this.progressData.get(0);
+        return this.data.get(DATA_PROGRESS);
+    }
+
+    public int getMaterialCount() {
+        return this.data.get(DATA_MATERIAL_COUNT);
+    }
+
+    public int getMaterialsRequired() {
+        return this.data.get(DATA_MATERIALS_REQUIRED);
+    }
+
+    public int getTimeRequired() {
+        return this.data.get(DATA_TIME_REQUIRED);
     }
 
 }

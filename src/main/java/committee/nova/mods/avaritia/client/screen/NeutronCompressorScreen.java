@@ -195,10 +195,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     public boolean hasRecipe() {
-        if (this.menu.getTileEntity() == null)
-            return false;
-
-        return this.menu.getTileEntity().hasRecipe();
+        return this.getMaterialsRequired() > 0;
     }
 
     public boolean hasMaterialStack() {
@@ -216,24 +213,15 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     public int getMaterialCount() {
-        if (this.menu.getTileEntity() == null)
-            return 0;
-
-        return this.menu.getTileEntity().getMaterialCount();
+        return this.menu.getMaterialCount();
     }
 
     public int getMaterialsRequired() {
-        if (this.menu.getTileEntity() == null)
-            return 0;
-
-        return this.menu.getTileEntity().getMaterialsRequired();
+        return this.menu.getMaterialsRequired();
     }
 
     public int getTimeRequired() {
-        if (this.menu.getTileEntity() == null)
-            return 0;
-
-        return this.menu.getTileEntity().getTimeRequired();
+        return this.menu.getTimeRequired();
     }
 
     public int getMaterialBarScaled(int pixels) {
@@ -256,10 +244,7 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
     }
 
     public boolean canEjectMaterials() {
-        if (this.menu.getTileEntity() == null)
-            return false;
-
-        return this.menu.getTileEntity().getMaterialCount() > 0;
+        return this.getMaterialCount() > 0;
     }
 
 
