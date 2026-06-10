@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.client.model.loader;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.model.loader.utils.halo.HaloSetting;
 import committee.nova.mods.avaritia.client.model.loader.utils.halo.HaloUtils;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
@@ -10,11 +11,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
@@ -56,7 +60,7 @@ public final class AvaritiaItemModelRenderers {
         }
     }
 
-    public record HaloLayerArgument(TextureAtlasSprite sprite, HaloSetting setting) {
+    public record HaloLayerArgument(Identifier texture, HaloSetting setting) {
     }
 
     public record PulseLayerArgument(List<BakedQuad> quads) {
@@ -77,8 +81,11 @@ public final class AvaritiaItemModelRenderers {
             }
 
             // halo 使用圆形自定义几何，避免旧式单张方形透明贴图在 JEI/创造栏中露出方边。
-            submitNodeCollector.submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
-                renderCircularHalo(pose, buffer, argument.sprite(), argument.setting(), lightCoords, overlayCoords);
+            TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
+                    .get(new SpriteId(Const.HALO_ATLAS_LOCATION, argument.texture()));
+            RenderType renderType = NeoForgeRenderTypes.getItemLayeredTranslucent(sprite.atlasLocation());
+            submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+                renderCircularHalo(pose, buffer, sprite, argument.setting(), lightCoords, overlayCoords);
             });
         }
 

@@ -7,8 +7,13 @@
     },
     {
       "type": "minecraft:directory",
-      "prefix": "misc/",
-      "source": "misc"
+      "prefix": "misc/cosmic/",
+      "source": "misc/cosmic"
+    },
+    {
+      "type": "minecraft:directory",
+      "prefix": "misc/eternal/",
+      "source": "misc/eternal"
     },
     {
       "type": "minecraft:directory",

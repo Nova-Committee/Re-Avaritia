@@ -34,6 +34,8 @@ import java.util.function.Predicate;
  */
 public class Const {
     public static final String MOD_ID = "avaritia";
+    public static final Identifier HALO_ATLAS_LOCATION = rl("textures/atlas/halo.png");
+    public static final Identifier HALO_ATLAS_INFO = rl("halo");
 
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

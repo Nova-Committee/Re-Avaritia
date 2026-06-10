@@ -154,7 +154,7 @@ public final class LayeredEffectItemModel implements ItemModel {
         this.properties.applyToLayer(layer, displayContext);
         layer.setLocalTransform(this.transformation);
         layer.setExtents(halo::extents);
-        layer.setupSpecialModel(AvaritiaItemModelRenderers.HALO, new AvaritiaItemModelRenderers.HaloLayerArgument(halo.sprite(), halo.setting()));
+        layer.setupSpecialModel(AvaritiaItemModelRenderers.HALO, new AvaritiaItemModelRenderers.HaloLayerArgument(halo.texture(), halo.setting()));
         renderState.setAnimated();
     }
 

@@ -66,6 +66,7 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -94,6 +95,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
+import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -103,6 +105,8 @@ import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.Set;
 
 /**
  * Avaritia 客户端事件总线订阅类，集中注册实体渲染器、方块实体渲染器、界面、模型加载器和粒子提供器。
@@ -206,6 +210,11 @@ public class AvaritiaClient {
     @SubscribeEvent
     public static void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
         AvaritiaShaders.onRegisterShaders(event);
+    }
+
+    @SubscribeEvent
+    public static void registerTextureAtlases(RegisterTextureAtlasesEvent event) {
+        event.register(new AtlasManager.AtlasConfig(Const.HALO_ATLAS_LOCATION, Const.HALO_ATLAS_INFO, false, Set.of()));
     }
 
     @SubscribeEvent

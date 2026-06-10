@@ -69,9 +69,8 @@ public final class EffectItemModelBaker {
      * 将 JSON/datagen 中的 halo 参数转换为运行时层数据，并预先计算 GUI 裁剪所需的 extents。
      */
     public static HaloLayer toHaloLayer(ItemModel.BakingContext context, HaloFields halo) {
-        TextureAtlasSprite sprite = context.blockModelBaker().materials().get(new Material(halo.texture()), DEBUG_NAME).sprite();
         HaloSetting setting = new HaloSetting(new IntArrayList(), halo.texture().toString(), halo.color(), halo.size(), halo.pulse());
-        return new HaloLayer(sprite, setting);
+        return new HaloLayer(halo.texture(), setting);
     }
 
     /**

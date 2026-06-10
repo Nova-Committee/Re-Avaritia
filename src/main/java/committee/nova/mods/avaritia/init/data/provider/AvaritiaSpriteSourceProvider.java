@@ -19,9 +19,13 @@ public class AvaritiaSpriteSourceProvider extends SpriteSourceProvider {
     @Override
     protected void gather() {
         atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("block/chest", "block/chest/"));
-        atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("misc", "misc/"));
+        atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("misc/cosmic", "misc/cosmic/"));
+        atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("misc/eternal", "misc/eternal/"));
         atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("models", "models/"));
         atlas(AtlasIds.BLOCKS).addSource(new DirectoryLister("mask", "mask/"));
+        atlas(Const.HALO_ATLAS_INFO)
+                .addSource(new SingleFile(Const.rl("misc/halo"), Optional.empty()))
+                .addSource(new SingleFile(Const.rl("misc/halo_noise"), Optional.empty()));
         addChestSprite("compressed_chest");
         addChestSprite("infinity_chest");
     }
