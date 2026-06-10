@@ -44,8 +44,8 @@ public abstract class BaseTileEntityBlock extends BaseBlock implements EntityBlo
         super(sound, hardness, resistance, tool);
     }
 
-    public BaseTileEntityBlock(MapColor metal, SoundType sound, int hardness, int resistance, boolean b, Properties properties) {
-        super(metal, sound, hardness, resistance, b, properties);
+    public BaseTileEntityBlock(MapColor color, SoundType sound, int hardness, int resistance, boolean tool, Properties properties) {
+        super(color, sound, hardness, resistance, tool, properties);
     }
 
     @SuppressWarnings("unchecked")
