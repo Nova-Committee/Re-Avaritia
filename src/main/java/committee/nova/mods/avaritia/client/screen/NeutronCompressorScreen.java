@@ -142,7 +142,10 @@ public class NeutronCompressorScreen extends BaseContainerScreen<NeutronCompress
                     tooltip.add(this.getMaterialStackDisplayName());
                 }
 
-                var text = Component.literal(number(this.getMaterialCount()) + " / " + number(this.getMaterialsRequired()));
+                var text = Component.translatable(
+                        "gui.avaritia.neutron_compressor.material_count",
+                        number(this.getMaterialCount()),
+                        number(this.getMaterialsRequired()));
 
                 tooltip.add(text);
             }

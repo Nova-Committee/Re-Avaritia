@@ -288,6 +288,7 @@
   "gui.avaritia.item_select.inventory": "物品栏",
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.name": "名",
+  "gui.avaritia.neutron_compressor.material_count": "材料：%s / %s",
   "gui.avaritia.noPermission.tip3": "§c你没有权限",
   "gui.avaritia.owner": "主人: %d",
   "gui.avaritia.port.down": "下",

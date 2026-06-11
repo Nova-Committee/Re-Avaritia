@@ -308,6 +308,7 @@
   "gui.avaritia.item_select.inventory": "Inventory",
   "gui.avaritia.line": "---------------------",
   "gui.avaritia.name": "name",
+  "gui.avaritia.neutron_compressor.material_count": "Materials: %s / %s",
   "gui.avaritia.noPermission.tip3": "§cYou haven`t permissions",
   "gui.avaritia.owner": "Owner: %d",
   "gui.avaritia.port.down": "Down",
