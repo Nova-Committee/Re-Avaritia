@@ -5,7 +5,6 @@ import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
 import committee.nova.mods.avaritia.core.chest.ServerChestManager;
-import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
@@ -46,7 +45,6 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     private byte sortType = 4;
     @Getter
     private UUID channelID = UUID.randomUUID();
-    @Getter
     private ServerChestHandler channel = new ServerChestHandler();
     @Getter
     private LazyOptional<?> capability = LazyOptional.of(() -> channel);
@@ -70,34 +68,18 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
     
     @Override  
     public void handleUpdateTag(CompoundTag tag) {  
-        if (tag.contains("owner")) {  
-            owner = tag.getUUID("owner");  
-            locked = tag.getBoolean("locked");  
-        }  
-        if (tag.contains("filter")) filter = tag.getString("filter");  
-        if (tag.contains("sortType")) sortType = tag.getByte("sortType");  
-        if (tag.contains("channelID")) channelID = tag.getUUID("channelID");  
+        readChestData(tag);
     }
 
     @Override
     public void load(@NotNull CompoundTag pTag) {
-        if (pTag.contains("owner")) {
-            owner = pTag.getUUID("owner");
-            locked = pTag.getBoolean("locked");
-        }
-        if (pTag.contains("filter")) filter = pTag.getString("filter");
-        if (pTag.contains("sortType")) sortType = pTag.getByte("sortType");
-        if (pTag.contains("channelID")) channelID = pTag.getUUID("channelID");
-        ServerChestManager manager = ServerChestManager.getInstance();  
-        if (manager == null) {  
-            LOGGER.warn("[InfinityChestTile] ServerChestManager is null during load(), skipping channel binding. pos={}", getBlockPos());  
-            return;  
-        }  
-        channel = manager.getChest(owner, channelID);  
+        super.load(pTag);
+        readChestData(pTag);
     }
 
     @Override
     public void saveAdditional(@NotNull CompoundTag pTag) {
+        super.saveAdditional(pTag);
         if (owner != null) {
             pTag.putUUID("owner", owner);
             pTag.putBoolean("locked", locked);
@@ -109,6 +91,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        bindChannel();
         if (channel.isRemoved()) return LazyOptional.empty();
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return capability.cast();
@@ -118,6 +101,7 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
 
     public void setOwner(UUID owner) {
         this.owner = owner;
+        resetChannelBinding();
         this.setChanged();
     }
 
@@ -138,7 +122,47 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
 
     public void setChannelId(UUID id) {
         this.channelID = id;
+        resetChannelBinding();
         this.setChanged();
+    }
+
+    public ServerChestHandler getChannel() {
+        bindChannel();
+        return channel;
+    }
+
+    private void readChestData(CompoundTag tag) {
+        if (tag.contains("owner")) {
+            owner = tag.getUUID("owner");
+            locked = tag.getBoolean("locked");
+        }
+        if (tag.contains("filter")) filter = tag.getString("filter");
+        if (tag.contains("sortType")) sortType = tag.getByte("sortType");
+        if (tag.contains("channelID")) channelID = tag.getUUID("channelID");
+        resetChannelBinding();
+    }
+
+    private void bindChannel() {
+        if (level == null || level.isClientSide || owner == null || channelID == null) return;
+
+        ServerChestManager manager = ServerChestManager.getInstance();
+        if (manager == null) {
+            LOGGER.warn("[InfinityChestTile] ServerChestManager is null during channel binding. pos={}", getBlockPos());
+            return;
+        }
+
+        ServerChestHandler resolved = manager.getChest(owner, channelID);
+        if (channel != resolved) {
+            capability.invalidate();
+            channel = resolved;
+            capability = LazyOptional.of(() -> channel);
+        }
+    }
+
+    private void resetChannelBinding() {
+        capability.invalidate();
+        channel = new ServerChestHandler();
+        capability = LazyOptional.of(() -> channel);
     }
 
     private final ChestLidController chestLidController = new ChestLidController();

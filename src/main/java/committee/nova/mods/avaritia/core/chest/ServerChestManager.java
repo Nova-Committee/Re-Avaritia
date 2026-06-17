@@ -154,11 +154,12 @@ public class ServerChestManager {
     }
 
     public ServerChestHandler getChest(UUID ownerUUID, UUID chestId) {
-        if (chestList.containsKey(ownerUUID)) {
-            HashMap<UUID, ServerChestHandler> list = chestList.get(ownerUUID);
-            if (list.containsKey(chestId)) return list.get(chestId);
+        if (ownerUUID == null || chestId == null) {
+            LOGGER.warn("[ServerChestManager] getChest() called with invalid owner or chest id. owner={}, chestId={}", ownerUUID, chestId);
+            return new ServerChestHandler();
         }
-        return new ServerChestHandler();
+        HashMap<UUID, ServerChestHandler> list = chestList.computeIfAbsent(ownerUUID, ignored -> new HashMap<>());
+        return list.computeIfAbsent(chestId, ignored -> new ServerChestHandler());
     }
 
     public void tryAddChest(ServerPlayer player, UUID chestId) {
@@ -169,7 +170,7 @@ public class ServerChestManager {
             playerChannels = new HashMap<>();
             chestList.put(uuid, playerChannels);
         }
-        playerChannels.put(chestId, new ServerChestHandler());
+        playerChannels.putIfAbsent(chestId, new ServerChestHandler());
         Const.LOGGER.debug(Component.translatable("info.avaritia.infinity_chest.add_success", uuid, chestId, "").getString());
     }
 
