@@ -181,7 +181,7 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
 
     @Override
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
-        var remaining = ITierCraftingRecipe.super.getRemainingItems(inv);
+        var remaining = super.getRemainingItems(inv);
 
         if ("default".equals(group)) {
             var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();

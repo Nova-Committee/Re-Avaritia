@@ -103,7 +103,7 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
 
     @Override
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
-        var remaining = ITierCraftingRecipe.super.getRemainingItems(inv);
+        var remaining = super.getRemainingItems(inv);
 
         var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
         if (singularities != null && !singularities.isEmpty()) {
