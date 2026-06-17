@@ -62,7 +62,8 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         var level = player.level();
         var endlessDamage = ModConfig.isSwordAttackEndless.get();
-        if (!level.isClientSide && level instanceof ServerLevel serverLevel && entity instanceof LivingEntity victim) {
+        LivingEntity victim = this.resolveVictim(entity);
+        if (!level.isClientSide && level instanceof ServerLevel serverLevel && victim != null) {
             var damageSource = player.damageSources().source(ModDamageTypes.INFINITY, victim, player);
             ToolUtils.sweepAttack(serverLevel, player, victim);//横扫
             if (victim instanceof EnderDragon dragon) {
@@ -91,6 +92,16 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
             return true;
         }
         return false;
+    }
+
+    private @Nullable LivingEntity resolveVictim(Entity entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            return livingEntity;
+        }
+        if (entity instanceof PartEntity<?> part && part.getParent() instanceof LivingEntity livingEntity) {
+            return livingEntity;
+        }
+        return null;
     }
 
     public boolean hurt(LivingEntity victim, DamageSource pSource, float pAmount) {
