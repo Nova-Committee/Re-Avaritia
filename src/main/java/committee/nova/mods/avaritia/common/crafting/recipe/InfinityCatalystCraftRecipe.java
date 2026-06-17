@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.RecipeMatcher;
+import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -176,6 +177,35 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         // 使用RecipeMatcher进行标准匹配
         return matched == this.originalInputs.size() &&
                RecipeMatcher.findMatches(inputs, this.originalInputs) != null;
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
+        var remaining = ITierCraftingRecipe.super.getRemainingItems(inv);
+
+        if ("default".equals(group)) {
+            var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
+            if (singularities != null && !singularities.isEmpty()) {
+                for (int i = 0; i < remaining.size(); i++) {
+                    var stack = inv.getStackInSlot(i);
+                    if (!stack.isEmpty()) {
+                        for (var singularity : singularities.values()) {
+                            if (singularity.getIngredient() != Ingredient.EMPTY) {
+                                var singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                                if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                                    var rem = singularityStack.copy();
+                                    rem.setCount(1);
+                                    remaining.set(i, rem);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return remaining;
     }
 
     @Override
