@@ -385,9 +385,14 @@ public class ToolUtils {
     public static void infinityTraceArrowDamage(Level level, @NotNull EntityHitResult result, TraceArrowEntity arrow) {
 
         Entity entity = result.getEntity();
+        Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();
+        if (entity == owner) {
+            arrow.skipOwnerHit();
+            return;
+        }
+
         float f = (float) arrow.getDeltaMovement().length();
         int i = Mth.ceil(Mth.clamp((double) f * arrow.getBaseDamage(), 0.0D, 2.147483647E9D));
-        Entity owner = arrow.getOwner() == null ? arrow : arrow.getOwner();
         if (arrow.getPierceLevel() > 0) {
             if (arrow.piercingIgnoreEntityIds == null) {
                 arrow.piercingIgnoreEntityIds = new IntOpenHashSet(5);

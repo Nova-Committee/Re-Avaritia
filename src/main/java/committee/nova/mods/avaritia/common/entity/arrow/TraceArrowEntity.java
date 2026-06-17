@@ -46,7 +46,6 @@ import org.jetbrains.annotations.NotNull;
 public class TraceArrowEntity extends Arrow {
     private static final EntityDataAccessor<Integer> SPECTRAL_TIME = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> JUMP_COUNT = SynchedEntityData.defineId(TraceArrowEntity.class, EntityDataSerializers.INT);
-    private final Entity owner = this.getOwner() == null ? this : this.getOwner();
     private LivingEntity homingTarget;
     private Vec3 seekOrigin;
     private int homingTime;
@@ -307,14 +306,25 @@ public class TraceArrowEntity extends Arrow {
     }
 
     public void seekNextTarget() {
+        seekNextTarget(true);
+    }
+
+    public void skipOwnerHit() {
+        seekNextTarget(false);
+    }
+
+    private void seekNextTarget(boolean explodeOnFailure) {
         if (this.getJumpCount() <= 16 && this.isCritArrow()) {
             if (this.seekOrigin == null) {
                 this.seekOrigin = this.position();
             }
 
             if (!this.level().isClientSide) {
-                TargetingConditions conditions = TargetingConditions.forCombat().selector((living) -> living.hasLineOfSight(this));
-                this.homingTarget = this.level().getNearestEntity(LivingEntity.class, conditions, owner instanceof LivingEntity ? (LivingEntity) owner : null, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
+                Entity owner = this.traceOwner();
+                LivingEntity source = owner instanceof LivingEntity livingOwner ? livingOwner : null;
+                TargetingConditions conditions = TargetingConditions.forCombat()
+                        .selector(living -> living != owner && living.hasLineOfSight(this));
+                this.homingTarget = this.level().getNearestEntity(LivingEntity.class, conditions, source, this.seekOrigin.x, this.seekOrigin.y, this.seekOrigin.z, this.getBoundingBox().inflate(64.0D));
                 if (this.homingTarget != null) {
                     Vec3 targetPos = this.homingTarget.getEyePosition();
                     double x = targetPos.x - this.getX();
@@ -324,12 +334,20 @@ public class TraceArrowEntity extends Arrow {
                     this.setJumpCount(this.getJumpCount() + 1);
                     this.homingTime = 0;
                 } else {
-                    this.destroyArrow();
+                    this.destroyOrDiscard(explodeOnFailure);
                 }
 
             }
         } else {
+            this.destroyOrDiscard(explodeOnFailure);
+        }
+    }
+
+    private void destroyOrDiscard(boolean explodeOnFailure) {
+        if (explodeOnFailure) {
             this.destroyArrow();
+        } else if (!this.level().isClientSide) {
+            this.discard();
         }
     }
 
@@ -359,16 +377,22 @@ public class TraceArrowEntity extends Arrow {
             if (level1 instanceof ServerLevel level) {
                 ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(ParticleTypes.SMOKE, true, this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F, 4.0F, 10);
 
+                Entity owner = this.traceOwner();
                 if (owner instanceof ServerPlayer player) {
                     player.connection.send(packet);
                 }
-                level.explode(this.getOwner() == null ? this : this.getOwner(), this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+                level.explode(owner, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
             }
 
             this.discard();
         } else {
             level1.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F, 0.0F);
         }
+    }
+
+    private Entity traceOwner() {
+        Entity owner = this.getOwner();
+        return owner == null ? this : owner;
     }
 
 }
