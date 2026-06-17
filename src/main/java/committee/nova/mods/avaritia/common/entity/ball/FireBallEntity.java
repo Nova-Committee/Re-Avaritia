@@ -48,14 +48,14 @@ public class FireBallEntity extends ThrowableProjectile {
                     this.level().setBlockAndUpdate(pos, Blocks.LAVA.defaultBlockState());
                 } else if (state.is(Blocks.SAND)) {
                     BlockPos.betweenClosedStream(pos.offset(-2, -2, -2), pos.offset(2, 2, 2)).forEach((currentPos) -> {
-                        if (this.level().getBlockState(currentPos).is(Blocks.SAND)) {
-                            PlayerUtils.checkedPlaceBlock(player, pos.immutable(), Blocks.GLASS.defaultBlockState());
+                        if (canPlaceAt(currentPos) && this.level().getBlockState(currentPos).is(Blocks.SAND)) {
+                            PlayerUtils.checkedPlaceBlock(player, currentPos.immutable(), Blocks.GLASS.defaultBlockState());
                         }
 
                     });
                 } else {
                     BlockPos.betweenClosedStream(pos.offset(-1, -1, -1), pos.offset(1, 1, 1)).forEach((currentPos) -> {
-                        if (this.level().isEmptyBlock(currentPos)) {
+                        if (canPlaceAt(currentPos) && this.level().isEmptyBlock(currentPos)) {
                             PlayerUtils.checkedPlaceBlock(player, currentPos.immutable(), Blocks.FIRE.defaultBlockState());
                         }
 
@@ -64,6 +64,11 @@ public class FireBallEntity extends ThrowableProjectile {
             }
         }
 
+    }
+
+    private boolean canPlaceAt(BlockPos pos) {
+        Level level = this.level();
+        return level.isInWorldBounds(pos) && level.isLoaded(pos);
     }
 
     @Override

@@ -35,10 +35,14 @@ public class PlayerUtils {
     }
 
     public static boolean checkedPlaceBlock(ServerPlayer player, BlockPos pos, BlockState state) {
+        Level level = player.level();
+        if (!level.isInWorldBounds(pos) || !level.isLoaded(pos)) {
+            return false;
+        }
+
         if (!hasEditPermission(player, pos)) {
             return false;
         } else {
-            Level level = player.level();
             BlockSnapshot before = BlockSnapshot.create(level.dimension(), level, pos);
             level.setBlockAndUpdate(pos, state);
             BlockEvent.EntityPlaceEvent evt = new BlockEvent.EntityPlaceEvent(before, Blocks.AIR.defaultBlockState(), player);
