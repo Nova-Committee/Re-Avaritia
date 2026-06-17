@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
@@ -25,6 +26,7 @@ public class InfinityElytraItem extends ElytraItem {
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
         if (!entity.level().isClientSide && entity.isFallFlying()) {
+            entity.resetFallDistance();
             double range = 3.0;
             AABB boundingBox = new AABB(
                     entity.getX() - range,
@@ -35,9 +37,9 @@ public class InfinityElytraItem extends ElytraItem {
                     entity.getZ() + range
             );
 
-            entity.level().getEntitiesOfClass(LivingEntity.class, boundingBox, e -> e != entity && !(e instanceof Player))
+            entity.level().getEntitiesOfClass(LivingEntity.class, boundingBox, target -> canDamageInFlight(entity, target))
                     .forEach(target -> {
-                        target.hurt(entity.damageSources().flyIntoWall(), ModConfig.infinityElytraFlyingRangeDamage.get().floatValue());
+                        target.hurt(ModDamageTypes.causeRandomDamage(entity.level(), entity), ModConfig.infinityElytraFlyingRangeDamage.get().floatValue());
 
                         double dx = target.getX() - entity.getX();
                         double dz = target.getZ() - entity.getZ();
@@ -52,6 +54,14 @@ public class InfinityElytraItem extends ElytraItem {
 
         return true;
     }
+
+    private static boolean canDamageInFlight(LivingEntity entity, LivingEntity target) {
+        if (target == entity || !target.isAlive() || target.isSpectator()) {
+            return false;
+        }
+        return !(target instanceof Player player && player.isCreative());
+    }
+
     private void createTrailParticles(LivingEntity entity) {
         RandomSource random = entity.level().getRandom();
 

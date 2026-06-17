@@ -7,7 +7,9 @@ import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.common.entity.GapingVoidEntity;
 import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
+import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.client.Camera;
@@ -22,7 +24,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FogType;
@@ -49,7 +50,6 @@ import java.util.TreeSet;
  * Name AvaritiaForgeClient
  * Description
  */
-
 @Mod.EventBusSubscriber(modid = Const.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class AvaritiaForgeClient {
     private static final String CATEGORIES = "key.avaritia.categories";
@@ -58,7 +58,11 @@ public class AvaritiaForgeClient {
     public static float renderFrame = 0;
     public static boolean inventoryRender = false;
     private static float darknessIntensity = 0.0f;
-    private static boolean keepFlying = false;
+    private static final int INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL = 4;
+    private static final int INFINITY_ELYTRA_BOOST_PACKET_INTERVAL = 1;
+    private static boolean infinityElytraLastFlyingIntent = false;
+    private static boolean infinityElytraLastBoosting = false;
+    private static int infinityElytraPacketCooldown = 0;
 
     // region 定义按键绑定
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.KEY_H, CATEGORIES);
@@ -78,7 +82,10 @@ public class AvaritiaForgeClient {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         Level level = mc.level;
-        if (player == null || level == null) return;
+        if (player == null || level == null) {
+            resetInfinityElytraControls();
+            return;
+        }
 
         while (CONFIG_KEY.consumeClick()) {
             mc.setScreen(new AvaritiaConfigScreen(mc.screen));
@@ -111,54 +118,52 @@ public class AvaritiaForgeClient {
      * @param player 当前玩家对象
      */
     public static void handleInfinityElytraFallFlying(Minecraft mc, Player player) {
-        // 检查玩家是否装备了无限鞘翅
-        if (!(player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.infinity_elytra.get())) {
-            keepFlying = false;
+        if (player == null || mc.level == null || mc.screen != null) {
+            resetInfinityElytraControls();
             return;
         }
 
-        boolean isFlying = player.isFallFlying();
-
-        // 如果按下跳跃键，则停止飞行
-        if (mc.options.keyJump.isDown()) {
-            keepFlying = false;
+        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+            resetInfinityElytraControls();
             return;
         }
 
-        // 开始记录飞行状态
-        if (isFlying && !keepFlying) {
-            keepFlying = true;
-        }
+        boolean canRequestGlide = !player.isPassenger()
+                && !player.isInWater()
+                && !player.onClimbable()
+                && !player.getAbilities().flying;
+        boolean wantsLaunch = canRequestGlide
+                && !player.isFallFlying()
+                && mc.options.keyJump.isDown();
+        boolean wantsBoost = (player.isFallFlying() || wantsLaunch)
+                && mc.options.keySprint.isDown()
+                && !mc.options.keyShift.isDown();
 
-        // 处理着陆逻辑：当玩家着陆时造成范围伤害
-        if (keepFlying && player.onGround()) {
-            keepFlying = false;
+        syncInfinityElytraControls(wantsLaunch || wantsBoost, wantsBoost);
+    }
 
-            double radius = 2.5;
-            List<LivingEntity> nearby = player.level().getEntitiesOfClass(
-                    LivingEntity.class,
-                    player.getBoundingBox().inflate(radius),
-                    e -> e != player // 不伤害自己
-            );
-
-            for (LivingEntity target : nearby) {
-                target.hurt(player.damageSources().fellOutOfWorld(), 6.0F);
-            }
+    private static void syncInfinityElytraControls(boolean flyingIntent, boolean boosting) {
+        if (!flyingIntent) {
+            resetInfinityElytraControls();
             return;
         }
 
-        // 维持飞行状态并控制飞行速度
-        if (keepFlying) {
-            if (!player.isFallFlying()) {
-                player.startFallFlying();
-            }
-
-            Vec3 look = player.getLookAngle().normalize();
-            double FLY_SPEED = ModConfig.infinityElytraFlyingSpeed.get();
-            player.setDeltaMovement(look.x * FLY_SPEED, look.y * FLY_SPEED, look.z * FLY_SPEED);
+        boolean changed = flyingIntent != infinityElytraLastFlyingIntent || boosting != infinityElytraLastBoosting;
+        if (changed || infinityElytraPacketCooldown <= 0) {
+            NetworkHandler.CHANNEL.sendToServer(new C2SElytraSpeedUpPacket(flyingIntent, boosting));
+            infinityElytraLastFlyingIntent = flyingIntent;
+            infinityElytraLastBoosting = boosting;
+            infinityElytraPacketCooldown = boosting ? INFINITY_ELYTRA_BOOST_PACKET_INTERVAL : INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL;
+        } else {
+            infinityElytraPacketCooldown--;
         }
     }
 
+    private static void resetInfinityElytraControls() {
+        infinityElytraLastFlyingIntent = false;
+        infinityElytraLastBoosting = false;
+        infinityElytraPacketCooldown = 0;
+    }
 
     // region tooltipExt
     private static Component[] tooltipExt = new Component[0];
@@ -179,9 +184,9 @@ public class AvaritiaForgeClient {
         var player = Minecraft.getInstance().player;
         if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.FIRE) {
             event.setCanceled(true);
-        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.BLOCK) {
+        } else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.BLOCK) {
             event.setCanceled(true);
-        }else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER) {
+        } else if (player != null && ToolUtils.isInfinite(player) && event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER) {
             event.setCanceled(true);
         }
     }
@@ -195,9 +200,7 @@ public class AvaritiaForgeClient {
         if (!ToolUtils.isWearingInfinityHelmet(player)) return;
 
         FogType fogType = camera.getFluidInCamera();
-
         if (fogType == FogType.LAVA || fogType == FogType.POWDER_SNOW) {
-
             float farPlane = event.getRenderer().getRenderDistance();
 
             event.setNearPlaneDistance(-8.0f);
@@ -280,11 +283,9 @@ public class AvaritiaForgeClient {
      * @param level  世界
      */
     private static void calculateDarknessIntensity(Player player, Level level) {
-
         Vec3 playerPos = player.position();
         double maxDistance = 10.0;  //渲染最大距离
         float maxIntensity = 0.0f;
-
 
         for (GapingVoidEntity pearl : level.getEntitiesOfClass(GapingVoidEntity.class, player.getBoundingBox().inflate(maxDistance), Entity::isAlive)) {//疑似对非GapingVoidEntity进行操作
             double distance = playerPos.distanceTo(pearl.position());
@@ -306,7 +307,7 @@ public class AvaritiaForgeClient {
         }
     }
 
-    private static void singularityIconTimer(){
+    private static void singularityIconTimer() {
         if (renderTime % 20 != 0) return;
         if (SingularityItem.enabledSingularities != null && !SingularityItem.enabledSingularities.isEmpty()) {
             SingularityItem.currentSingularityIndex.set((SingularityItem.currentSingularityIndex.get() + 1) % SingularityItem.enabledSingularities.size());

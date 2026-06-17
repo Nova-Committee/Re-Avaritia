@@ -25,6 +25,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -236,7 +237,7 @@ public class InfinityHandler {
     public static void onGetHurt(LivingHurtEvent event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
+            if (isInfiniteOrUsingInfinityElytra(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 event.setCanceled(true);
             }
         }
@@ -245,7 +246,9 @@ public class InfinityHandler {
     //取消对无尽套的伤害
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onAttacked(LivingAttackEvent event) {
-        if (ToolUtils.isInfinite(event.getEntity())) {
+        if (event.getSource().is(ModDamageTypes.INFINITY)) return;
+        if (ToolUtils.isInfinite(event.getEntity())
+                || event.getEntity() instanceof Player player && isUsingInfinityElytra(player)) {
             event.setCanceled(true);
         }
     }
@@ -254,11 +257,22 @@ public class InfinityHandler {
     public static void onLivingDamage(LivingDamageEvent event) {
         DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof Player player) {
-            if (ToolUtils.isInfinite(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
+            if (isInfiniteOrUsingInfinityElytra(player) && !damageSource.is(ModDamageTypes.INFINITY)) {
                 event.setAmount(0.0F);
                 player.hurtTime = 0;
                 player.deathTime = 0;
             }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onInfinityElytraFall(LivingFallEvent event) {
+        if (event.getEntity() instanceof Player player
+                && player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+            event.setDistance(0.0F);
+            event.setDamageMultiplier(0.0F);
+            player.resetFallDistance();
+            event.setCanceled(true);
         }
     }
 
@@ -319,6 +333,15 @@ public class InfinityHandler {
                 item instanceof InfinitySwordItem || item instanceof InfinityCrossBowItem) {
             entityItem.setInvulnerable(true);
         }
+    }
+
+    private static boolean isInfiniteOrUsingInfinityElytra(Player player) {
+        return ToolUtils.isInfinite(player) || isUsingInfinityElytra(player);
+    }
+
+    private static boolean isUsingInfinityElytra(Player player) {
+        return player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())
+                && (player.isFallFlying() || !player.onGround());
     }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {

@@ -1,8 +1,13 @@
 package committee.nova.mods.avaritia.common.net;
 
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
@@ -10,6 +15,10 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class C2SElytraSpeedUpPacket {
+    private static final double TAKEOFF_UPWARD_SPEED = 0.72D;
+    private static final double TAKEOFF_FORWARD_SPEED = 0.35D;
+    private static final double BOOST_TAKEOFF_FORWARD_SPEED = 0.65D;
+
     private final boolean customFlying;
     private final boolean boosting;
 
@@ -29,54 +38,96 @@ public class C2SElytraSpeedUpPacket {
     }
 
     public void run(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+        NetworkEvent.Context context = ctx.get();
+        context.enqueueWork(() -> {
+            ServerPlayer player = context.getSender();
             if (player == null) return;
+            if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) return;
+            if (!customFlying) return;
 
-            // 检查玩家是否装备了无尽鞘翅
-            if (player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
-                if (customFlying) {
-                    // 启用自定义飞行模式
-                    // 强制玩家进入鞘翅飞行状态
-                    if (!player.isFallFlying()) {
-                        // 给玩家一个向下的初始速度来触发飞行
-                        player.push(0, -0.5, 0);
-                    }
-
-                    // 如果正在推进，增加速度
-                    if (boosting) {
-                        applyBoost(player);
-                    }
-                }
-                // 如果customFlying为false，则不执行任何操作，让玩家自然结束飞行
+            boolean fallFlying = ensureFallFlying(player, boosting);
+            if (boosting && fallFlying) {
+                applyBoost(player);
             }
         });
-        ctx.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 
-    private void applyBoost(ServerPlayer player) {
-        // 获取玩家的视线方向
+    private static boolean ensureFallFlying(ServerPlayer player, boolean boosting) {
+        if (player.isFallFlying()) {
+            return true;
+        }
+
+        if (player.tryToStartFallFlying()) {
+            return true;
+        }
+
+        if (canLaunchFromGround(player)) {
+            launchFromGround(player, boosting);
+        }
+
+        return false;
+    }
+
+    private static boolean canLaunchFromGround(ServerPlayer player) {
+        return player.onGround()
+                && !player.isPassenger()
+                && !player.isInWater()
+                && !player.onClimbable()
+                && !player.getAbilities().flying
+                && !player.hasEffect(MobEffects.LEVITATION);
+    }
+
+    private static void launchFromGround(ServerPlayer player, boolean boosting) {
         Vec3 lookVec = player.getLookAngle();
-        // 增加推进力
-        double boostStrength = 0.7; // 推进强度
+        Vec3 horizontalLook = new Vec3(lookVec.x, 0.0D, lookVec.z);
+        Vec3 forward = horizontalLook.lengthSqr() > 1.0E-7D ? horizontalLook.normalize() : Vec3.ZERO;
+        double forwardSpeed = boosting ? BOOST_TAKEOFF_FORWARD_SPEED : TAKEOFF_FORWARD_SPEED;
+        Vec3 currentVelocity = player.getDeltaMovement();
 
-        // 直接增加玩家的速度
-        player.push(
-                lookVec.x * boostStrength,
-                lookVec.y * boostStrength * 0.8, // 略微减少Y轴推进力以保持更好的控制
-                lookVec.z * boostStrength
+        player.setDeltaMovement(
+                currentVelocity.x + forward.x * forwardSpeed,
+                Math.max(currentVelocity.y, TAKEOFF_UPWARD_SPEED),
+                currentVelocity.z + forward.z * forwardSpeed
         );
+        player.resetFallDistance();
+        player.hurtMarked = true;
 
-        // 添加粒子效果
-        for (int i = 0; i < 15; i++) {
-            player.level().addParticle(
-                    net.minecraft.core.particles.ParticleTypes.FLAME,
+        if (player.level() instanceof ServerLevel level) {
+            level.sendParticles(
+                    ParticleTypes.CLOUD,
+                    player.getX(),
+                    player.getY() + 0.15D,
+                    player.getZ(),
+                    10,
+                    0.25D,
+                    0.08D,
+                    0.25D,
+                    0.04D
+            );
+        }
+    }
+
+    private static void applyBoost(ServerPlayer player) {
+        Vec3 lookVec = player.getLookAngle();
+        double targetSpeed = Mth.clamp(ModConfig.infinityElytraFlyingSpeed.get(), 0.0D, 100.0D);
+        Vec3 targetVelocity = lookVec.scale(targetSpeed);
+        Vec3 nextVelocity = player.getDeltaMovement().lerp(targetVelocity, 0.35D);
+
+        player.setDeltaMovement(nextVelocity);
+        player.hurtMarked = true;
+
+        if (player.level() instanceof ServerLevel level) {
+            level.sendParticles(
+                    ParticleTypes.FLAME,
                     player.getX() - lookVec.x * 0.5,
-                    player.getY() + player.getBbHeight() / 2 + (player.level().random.nextDouble() - 0.5) * 0.5,
+                    player.getY() + player.getBbHeight() / 2,
                     player.getZ() - lookVec.z * 0.5,
-                    -lookVec.x * 0.5 + (player.level().random.nextDouble() - 0.5) * 0.2,
-                    -0.3 + player.level().random.nextDouble() * 0.3,
-                    -lookVec.z * 0.5 + (player.level().random.nextDouble() - 0.5) * 0.2
+                    6,
+                    0.18D,
+                    0.18D,
+                    0.18D,
+                    0.02D
             );
         }
     }
