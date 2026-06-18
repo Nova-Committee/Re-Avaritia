@@ -71,11 +71,24 @@ public class InfinityHandler {
         var state = level.getBlockState(pos);
         var player = event.getEntity();
         var face = event.getFace();
-        if (face == null || level.isClientSide || item.isEmpty() || player.isCreative()) {
+        if (face == null || player.isCreative()) {
             return;
         }
 
-        if (item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get())) {
+        var hasBedrockMiningTool = item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get());
+        if (!hasBedrockMiningTool && state.is(ModBlocks.fake_bedrock.get())) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
+            }
+            event.setCanceled(true);
+            return;
+        }
+
+        if (level.isClientSide || item.isEmpty()) {
+            return;
+        }
+
+        if (hasBedrockMiningTool) {
             if (state.is(Blocks.BEDROCK)) {
                 level.setBlock(pos, ModBlocks.fake_bedrock.get().defaultBlockState(), 2);
             } else if (state.is(Blocks.END_PORTAL_FRAME)) {
@@ -90,7 +103,7 @@ public class InfinityHandler {
             }
         }
 
-        if (!(item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get()))) {
+        if (!hasBedrockMiningTool) {
             if (state.is(ModBlocks.fake_bedrock.get())) {
                 level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
