@@ -16,7 +16,7 @@
   },
   "name": "avaritia:refined_obsidian",
   "overlayColor": "a9a1b8",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "8d78b7"
 }

@@ -8,7 +8,7 @@
   },
   "name": "avaritia:emerald",
   "overlayColor": "7df8ac",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "8e1a"
 }

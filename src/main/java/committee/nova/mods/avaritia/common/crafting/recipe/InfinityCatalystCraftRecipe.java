@@ -43,9 +43,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             super.getIngredients().clear();
             super.getIngredients().addAll(originalInputs);
             if ("default".equals(group)) {
-                SingularityReloadListener.INSTANCE.getAllSingularities().values()
+                SingularityReloadListener.INSTANCE.getSingularitiesWithIngredient()
                         .stream()
-                        .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                         .map(SingularityUtils::getItemForSingularity)
                         .map(Ingredient::of)
                         .forEach(super.getIngredients()::add);
@@ -82,17 +81,9 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         if (ingredients.isEmpty()) return false;
 
         // 统计所有有效的奇点数量
-        var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
-        if (singularities == null || singularities.isEmpty()) {
-            return false;
-        }
+        List<Singularity> validSingularities = SingularityReloadListener.INSTANCE.getSingularitiesWithIngredient();
 
         // 收集所有有效的奇点对象
-        List<Singularity> validSingularities = singularities.values()
-                .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .toList();
-
         int singularityCount = validSingularities.size();
         if (singularityCount == 0) return false;
 
@@ -184,20 +175,18 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
         var remaining = super.getRemainingItems(inv);
 
         if ("default".equals(group)) {
-            var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
-            if (singularities != null && !singularities.isEmpty()) {
+            var singularities = SingularityReloadListener.INSTANCE.getSingularitiesWithIngredient();
+            if (!singularities.isEmpty()) {
                 for (int i = 0; i < remaining.size(); i++) {
                     var stack = inv.getStackInSlot(i);
                     if (!stack.isEmpty()) {
-                        for (var singularity : singularities.values()) {
-                            if (singularity.getIngredient() != Ingredient.EMPTY) {
-                                var singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                                if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                                    var rem = singularityStack.copy();
-                                    rem.setCount(1);
-                                    remaining.set(i, rem);
-                                    break;
-                                }
+                        for (var singularity : singularities) {
+                            var singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                            if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                                var rem = singularityStack.copy();
+                                rem.setCount(1);
+                                remaining.set(i, rem);
+                                break;
                             }
                         }
                     }

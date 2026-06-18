@@ -16,7 +16,7 @@
   },
   "name": "avaritia:electrum",
   "overlayColor": "f5f18e",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "9e8d3e"
 }

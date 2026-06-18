@@ -16,7 +16,7 @@
   },
   "name": "avaritia:uranium",
   "overlayColor": "d2f9d1",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "a6c5a4"
 }

@@ -31,12 +31,34 @@ public class SingularityUtils {
         int underlayColor = Integer.parseInt(GsonHelper.getAsString(json, "underlayColor"), 16);
 
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
-        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
+        var time = getTimeCost(json);
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
-        var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
+        var recipeEnabled = getRecipeEnabled(json);
 
         return Singularity.create(ResourceUtil.createInstanceWithColon(name), displayName, new int[]{overlayColor, underlayColor},  ing == null ? Ingredient.EMPTY : Ingredient.fromJson(ing))
-                .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeDisabled);
+                .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeEnabled);
+    }
+
+    private static int getTimeCost(JsonObject json) {
+        return getTimeCost(json, ModConfig.singularityTimeRequired.get());
+    }
+
+    static int getTimeCost(JsonObject json, int defaultTimeCost) {
+        if (json.has("timeCost")) {
+            return GsonHelper.getAsInt(json, "timeCost");
+        }
+        return GsonHelper.getAsInt(json, "timeRequired", defaultTimeCost);
+    }
+
+    static boolean getRecipeEnabled(JsonObject json) {
+        if (json.has("recipeEnabled")) {
+            return GsonHelper.getAsBoolean(json, "recipeEnabled");
+        }
+        if (json.has("recipeDisabled")) {
+            // Legacy generated data used recipeDisabled with recipeEnabled semantics.
+            return GsonHelper.getAsBoolean(json, "recipeDisabled");
+        }
+        return true;
     }
 
     public static JsonObject writeToJson(Singularity singularity) {
@@ -50,7 +72,7 @@ public class SingularityUtils {
         json.addProperty("timeCost", singularity.getTimeCost());
         json.add("ingredient", singularity.getIngredient().toJson());
         json.addProperty("enabled", singularity.isEnabled());
-        json.addProperty("recipeDisabled", singularity.isRecipeEnabled());
+        json.addProperty("recipeEnabled", singularity.isRecipeEnabled());
         json.add("conditions", CraftingHelper.serialize(singularity.getConditions().toArray(ICondition[]::new)));
         return json;
     }

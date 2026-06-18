@@ -8,7 +8,7 @@
   },
   "name": "avaritia:amethyst_shard",
   "overlayColor": "cfa0f3",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "8d6acc"
 }

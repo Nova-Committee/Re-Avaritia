@@ -35,6 +35,11 @@ public class SingularityItem extends Item implements IColored {
         super(new Properties().rarity(ModRarities.UNCOMMON));
     }
 
+    public static void clearCachedSingularities() {
+        enabledSingularities = null;
+        currentSingularityIndex.set(0);
+    }
+
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
         var singularity = SingularityUtils.getSingularity(stack);
@@ -76,7 +81,9 @@ public class SingularityItem extends Item implements IColored {
 
             // 如果有可用的奇点，则使用当前索引的奇点颜色
             if (!enabledSingularities.isEmpty()) {
-                Singularity currentSingularity = enabledSingularities.get(currentSingularityIndex.get());
+                int index = Math.floorMod(currentSingularityIndex.get(), enabledSingularities.size());
+                currentSingularityIndex.set(index);
+                Singularity currentSingularity = enabledSingularities.get(index);
                 return i == 0 ? currentSingularity.getUnderlayColor() : i == 1 ? currentSingularity.getOverlayColor() : -1;
             }
         }

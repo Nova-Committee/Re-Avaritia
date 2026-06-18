@@ -8,6 +8,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
+import java.util.List;
+
 /**
  * @author cnlimiter
  */
@@ -16,8 +18,7 @@ public class DataPackSyncHandler {
     @SubscribeEvent
     public static void onDatapackSync(OnDatapackSyncEvent event) {
         ServerPlayer player = event.getPlayer();
-        var message = new S2CSingularitiesPack(SingularityReloadListener.INSTANCE.getDataSingularities().values(),
-                SingularityReloadListener.INSTANCE.getRunSingularities().values());
+        var message = new S2CSingularitiesPack(SingularityReloadListener.INSTANCE.getAllSingularities().values(), List.of());
 
         if (player != null) {
             NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
