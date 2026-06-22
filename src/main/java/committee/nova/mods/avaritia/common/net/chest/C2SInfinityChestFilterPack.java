@@ -34,13 +34,12 @@ public class C2SInfinityChestFilterPack {
         context.get().enqueueWork(() -> {
             ServerPlayer player = context.get().getSender();
             if (player == null) return;
-            if (player.containerMenu.containerId == containerId) {
-                if (!player.containerMenu.stillValid(player)) {
-                    Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
-                } else {
-                    ((InfinityChestMenu) player.containerMenu).filter = filter;
-                    player.containerMenu.broadcastChanges();
-                }
+            if (!(player.containerMenu instanceof InfinityChestMenu menu) || menu.containerId != containerId) return;
+            if (!menu.stillValid(player)) {
+                Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, menu);
+            } else {
+                menu.filter = filter;
+                menu.broadcastChanges();
             }
         });
         context.get().setPacketHandled(true);

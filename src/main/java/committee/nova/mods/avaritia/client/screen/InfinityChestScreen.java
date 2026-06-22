@@ -1,107 +1,401 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.common.container.slot.InfinitySlot;
+import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
+import committee.nova.mods.avaritia.core.chest.ClientChestHandler;
+import committee.nova.mods.avaritia.core.chest.ClientChestManager;
+import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import committee.nova.mods.avaritia.util.SortUtils;
+import committee.nova.mods.avaritia.util.StorageUtils;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Screen for the 9x27 local infinity chest inventory.
+ * @author cnlimiter
  */
-public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMenu> {
-    private static final ResourceLocation BACKGROUND = Const.rl("textures/gui/chest/infinity_chest_gui.png");
-    private static final int TEXTURE_WIDTH = 500;
-    private static final int TEXTURE_HEIGHT = 275;
+public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
+    @Setter
+    @Getter
+    private int blitOffset;
 
-    public InfinityChestScreen(InfinityChestMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        this.imageWidth = TEXTURE_WIDTH;
-        this.imageHeight = TEXTURE_HEIGHT;
+    private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
+    private final String ownerName;
+    private String lastHoveredItem = "";
+    private long lastCount = 0;
+    private String lastFormatCountTemp = "";
+    private SortButton sortButton;
+    private ItemScrollBar scrollBar;
+    private EditBox searchBox;
+
+    public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
+        super(menu, playerInventory, title, null, 302, 274, 550, 550);
+        this.ownerName = ClientChestManager.getInstance().getUserName(this.getMenu().owner);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        renderInfinitySlotCounts(guiGraphics);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
-    }
+    protected void subInit() {
+        super.subInit();
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
 
-    @Override
-    protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        guiGraphics.blit(BACKGROUND, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        this.scrollBar = new ItemScrollBar(leftPos + 282, topPos + 16, 12, 160);
+        this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
+        this.addRenderableWidget(scrollBar);
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 231, this.topPos + 187));
+        this.sortButton = new SortButton(this.leftPos + 249, this.topPos + 187);
+        this.addRenderableWidget(sortButton);
+
+        this.searchBox = new EditBox(this.font, leftPos + 187, topPos + 4, 89, 10, Component.translatable("gui.avaritia.search"));
+        this.searchBox.setMaxLength(64);
+        this.searchBox.setBordered(false);
+        this.searchBox.setValue(menu.filter);
+        this.addRenderableWidget(searchBox);
+        menu.chestContainer.refreshContainer(true);
+
+        // ???????
     }
 
     @Override
     protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
         guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, 170, this.imageHeight - 94, 4210752, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 50, this.inventoryLabelY + 108, 4210752, false);
     }
 
     @Override
-    protected void renderTooltip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
-            ItemStack stack = this.hoveredSlot.getItem();
-            List<Component> components = this.getTooltipFromContainerItem(stack);
-            if (this.hoveredSlot instanceof InfinitySlot) {
-                components.add(Component.translatable("container.infinity_chest", stack.getCount(), this.menu.getSlotMaxStack(this.hoveredSlot)));
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+        pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0,  this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+    }
+
+    @Override
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderDummyCount(pGuiGraphics);
+    }
+
+    @Override
+    public void renderSlot(@NotNull GuiGraphics guiGraphics, Slot slot) {
+        // ???InfinityChest?????????????????????????????
+        if (slot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
+            // ???????1????????????????
+            ItemStack stack = slot.getItem();
+            int originalCount = stack.getCount();
+            if (stack.getCount() > 1) {
+                stack.setCount(1);
+                super.renderSlot(guiGraphics, slot);
+                stack.setCount(originalCount);
+            } else {
+                super.renderSlot(guiGraphics, slot);
             }
-            guiGraphics.renderTooltip(this.font, components, stack.getTooltipImage(), stack, mouseX, mouseY);
-        }
-    }
-
-    @Override
-    public void renderSlot(@NotNull GuiGraphics guiGraphics, @NotNull Slot slot) {
-        if (!(slot instanceof InfinitySlot) || !slot.hasItem()) {
-            super.renderSlot(guiGraphics, slot);
             return;
         }
-
-        ItemStack stack = slot.getItem();
-        int count = stack.getCount();
-        if (count > 1) {
-            stack.setCount(1);
-            super.renderSlot(guiGraphics, slot);
-            stack.setCount(count);
-        } else {
-            super.renderSlot(guiGraphics, slot);
-        }
-
+        // ???????
+        super.renderSlot(guiGraphics, slot);
     }
 
-    private void renderInfinitySlotCounts(GuiGraphics guiGraphics) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0.0F, 0.0F, 500.0F);
-        for (Slot slot : this.menu.slots) {
-            if (slot instanceof InfinitySlot && slot.hasItem()) {
-                String countText = getCountText(slot.getItem().getCount());
-                int x = this.leftPos + slot.x + 19 - 2 - this.font.width(countText);
-                int y = this.topPos + slot.y + 6 + 3;
-                guiGraphics.drawString(this.font, countText, x, y, 16777215, true);
+    public void renderDummyCount(GuiGraphics guiGraphics) {
+        PoseStack poseStack = guiGraphics.pose();
+        for (int i = 0; i < menu.chestContainer.formatCount.size(); i++) {
+            Slot slot = menu.slots.get(i + InfinityChestMenu.CONTAINER_SLOT_START);
+            String count = menu.chestContainer.formatCount.get(i);
+            this.setBlitOffset(100);
+            RenderSystem.enableDepthTest();
+            float fontSize = 0.5F;
+            poseStack.pushPose();
+            poseStack.translate(leftPos + slot.x, topPos + slot.y, 300.0D);
+            poseStack.scale(fontSize, fontSize, 1.0F);
+            guiGraphics.drawString(font, count,
+                    (16 - this.font.width(count) * fontSize) / fontSize,
+                    (16 - this.font.lineHeight * fontSize) / fontSize,
+                    16777215, false);
+            poseStack.popPose();
+            this.setBlitOffset(0);
+        }
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    protected void renderTooltip(GuiGraphics pPoseStack, int pX, int pY) {
+        if (this.hoveredSlot != null) {
+            if (hoveredSlot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
+                if (menu.getCarried().getCount() == 1)
+                    renderObjectStorageTooltip(pPoseStack, pX, pY);
+                else
+                    renderCounterTooltip(pPoseStack, pX, pY);
+            } else if (!hoveredSlot.getItem().isEmpty() && menu.getCarried().isEmpty())
+                pPoseStack.renderTooltip(font, this.hoveredSlot.getItem(), pX, pY);
+        } else {
+            if (searchBox.isHovered()) {
+                List<Component> list = new ArrayList<>();
+                list.add(Component.translatable("gui.avaritia.search.tip1"));
+                list.add(Component.translatable("gui.avaritia.search.tip2"));
+                list.add(Component.translatable("gui.avaritia.search.tip3"));
+                pPoseStack.renderComponentTooltip(font, list, pX, pY);
             }
         }
-        guiGraphics.pose().popPose();
     }
 
-    private static String getCountText(int count) {
-        if (count < 1000) {
-            return String.valueOf(count);
+    private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
+        if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) >= menu.chestContainer.viewingObject.size()) return;
+        var hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START);
+        List<Component> components;
+        long count;
+        components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
+        count = menu.chest.getRealItemAmount(hoveredObject);
+
+        if (!hoveredObject.equals(lastHoveredItem)) {
+            String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
+            components.add(Component.literal(formatCount));
+            this.lastHoveredItem = hoveredObject;
+            this.lastCount = count;
+            this.lastFormatCountTemp = formatCount;
+        } else if (count == lastCount) {
+            components.add(Component.literal(lastFormatCountTemp));
+        } else {
+            String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
+            long count2 = count - lastCount;
+            String formatCount2 = StorageUtils.DECIMAL_FORMAT.format(count2);
+            if (count2 >= 0) formatCount += "  |  +?a" + formatCount2;
+            else formatCount += "  |  ?c" + formatCount2;
+            components.add(Component.literal(formatCount));
+            lastCount = count;
+            lastFormatCountTemp = formatCount;
         }
-        if (count >= 1_000_000_000) {
-            return count / 1_000_000_000 + "G";
+        pPoseStack.renderTooltip(font, components, hoveredSlot.getItem().getTooltipImage(), pMouseX, pMouseY);
+    }
+
+
+    private void renderObjectStorageTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
+        ItemStack carried = menu.getCarried();
+        boolean hasCapability = carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()
+                || carried.getCapability(ForgeCapabilities.ENERGY).isPresent()
+                || carried.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
+        if (hasCapability) {
+            List<Component> components = Lists.newArrayList();
+            if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) < menu.chestContainer.viewingObject.size()) {
+                components.add(Component.translatable("gui.avaritia.capability.tip1", hoveredSlot.getItem().getHoverName()));
+            }
+            components.add(Component.translatable("gui.avaritia.capability.tip2"));
+            components.add(Component.translatable("gui.avaritia.capability.tip3"));
+            pPoseStack.renderTooltip(font, components, ItemStack.EMPTY.getTooltipImage(), pMouseX, pMouseY);
+        } else renderCounterTooltip(pPoseStack, pMouseX, pMouseY);
+    }
+
+    @Override
+    public void containerTick() {
+        super.containerTick();
+        if (searchBox.isFocused()) searchBox.tick();
+    }
+
+    @Override
+    public void onClose() {
+        NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
+        ((ClientChestHandler) menu.chest).removeListener();
+        super.onClose();
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (pButton == 1) {
+            //???
+            if (searchBox.isMouseOver(pMouseX, pMouseY)) {
+                menu.filter = "";
+                searchBox.setValue("");
+                menu.chestContainer.refreshContainer(true);
+                searchBox.setFocused(true);
+                searchBox.setEditable(true);
+            }
         }
-        if (count >= 1_000_000) {
-            return count / 1_000_000 + "M";
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        if (scrollBar.isScrolling()) scrollBar.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
+        scrollBar.mouseReleased(pMouseX, pMouseY, pButton);
+        return super.mouseReleased(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        if (searchBox.isFocused()) {
+            if (pKeyCode >= InputConstants.KEY_0 && pKeyCode <= InputConstants.KEY_Z) return true;
         }
-        return count / 1000 + "K";
+        if (pKeyCode == InputConstants.KEY_LSHIFT) menu.LShifting = true;
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        if (searchBox.isFocused()) {
+            String s = searchBox.getValue().toLowerCase();
+            if (!s.equals(menu.filter)) {
+                menu.filter = s;
+                menu.chestContainer.refreshContainer(true);
+            }
+        }
+        if (pKeyCode == InputConstants.KEY_LSHIFT) {
+            menu.LShifting = false;
+            menu.chestContainer.refreshContainer(true);
+        }
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        if (pMouseX >= leftPos + 5 && pMouseX <= leftPos + 214 && pMouseY >= topPos + 17 && pMouseY <= topPos + 18 + 119 && scrollBar.canScroll()) {
+            if (pDelta <= 0) scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(false));
+            else scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(true));
+            return true;
+        } else return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    @Override
+    protected boolean isHovering(int pX, int pY, int pWidth, int pHeight, double pMouseX, double pMouseY) {
+        int i = this.leftPos;
+        int j = this.topPos;
+        pMouseX -= i;
+        pMouseY -= j;
+        return pMouseX >= (double) pX && pMouseX < (double) (pX + pWidth) && pMouseY >= (double) pY && pMouseY < (double) (pY + pHeight);
+    }
+
+    private void toggleLock() {
+        if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
+            this.menu.locked = !this.menu.locked;
+            this.searchBox.setFocused(false);
+            NetworkHandler.CHANNEL.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
+            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 0);
+        }
+    }
+
+    private void cycleSort() {
+        if (InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT)) {
+            menu.reverseSort();
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
+        } else {
+            menu.nextSort();
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 1);
+        }
+    }
+
+    private String getSortKey(int sortType) {
+        return switch (sortType) {
+            case SortUtils.Sort.ID_ASCENDING, SortUtils.Sort.ID_DESCENDING -> "gui.avaritia.sort.id";
+            case SortUtils.Sort.NAMESPACE_ID_ASCENDING, SortUtils.Sort.NAMESPACE_ID_DESCENDING ->
+                    "gui.avaritia.sort.nid";
+            case SortUtils.Sort.MIRROR_ID_ASCENDING, SortUtils.Sort.MIRROR_ID_DESCENDING ->
+                    "gui.avaritia.sort.mirror_id";
+            case SortUtils.Sort.COUNT_ASCENDING, SortUtils.Sort.COUNT_DESCENDING -> "gui.avaritia.sort.count";
+            default -> "";
+        };
+    }
+
+
+    private class ItemScrollBar extends SimpleScrollBar {
+
+        private int lastObjectListSize;
+
+        public ItemScrollBar(int x, int y, int weight, int height) {
+            super(x, y, weight, height);
+            this.setScrollTagSize();
+            this.lastObjectListSize = menu.chestContainer.sortedItems.size();
+        }
+
+        public void setScrollTagSize() {
+            double v = (double) this.height * (9.0D / Math.ceil(menu.chestContainer.sortedItems.size() / 15.0D));
+            this.setScrollTagSize(v);
+        }
+
+        @Override
+        public void draggedTo(double scrolledOn) {
+            menu.chestContainer.onScrollTo(scrolledOn);
+        }
+
+        @Override
+        public void beforeRender() {
+            if (menu.chestContainer.sortedItems.size() != lastObjectListSize) {
+                setScrollTagSize();
+                this.lastObjectListSize = menu.chestContainer.sortedItems.size();
+            }
+        }
+    }
+
+
+
+    private class ToggleLockButton extends ImageButton {
+
+        public ToggleLockButton(int pX, int pY) {
+            super(pX, pY, 17, 18, 303, 36, GUI_IMG, pButton -> toggleLock());
+            MutableComponent componentB = Component.translatable("gui.avaritia.owner", "?c" + ownerName);
+            MutableComponent componentC = Component.translatable("gui.avaritia.public");
+            if (menu.locked) setTooltip(Tooltip.create(componentB));
+            else setTooltip(Tooltip.create(componentC));
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            int uOffset = menu.locked ? 303 : 320;
+            if (this.isHovered) {
+                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart + 18, this.width, this.height, 550, 550);
+            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, this.yTexStart, this.width, this.height, 550, 550);
+        }
+    }
+
+
+    private class SortButton extends ImageButton {
+
+        public SortButton(int pX, int pY) {
+            super(pX, pY, 17, 18, 303, 0, GUI_IMG, pButton -> cycleSort());
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            List<FormattedCharSequence> list = new ArrayList<>();
+            int xOffset = menu.sortType * 17 + this.xTexStart;
+            if (this.isHovered) {
+                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, this.yTexStart + 18, this.width, this.height, 550, 550);
+
+            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, this.yTexStart, this.width, this.height, 550, 550);
+            list.add(Component.translatable(getSortKey(menu.sortType)).getVisualOrderText());
+            if (menu.sortType % 2 == 0)
+                list.add(Component.translatable("gui.avaritia.sort.ascending").getVisualOrderText());
+            else list.add(Component.translatable("gui.avaritia.sort.descending").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
+            if (this.isHovered) setTooltipForNextRenderPass(list);
+        }
     }
 }

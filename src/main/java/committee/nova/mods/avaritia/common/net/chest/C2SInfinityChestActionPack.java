@@ -38,12 +38,12 @@ public class C2SInfinityChestActionPack {
         context.get().enqueueWork(() -> {
             ServerPlayer player = context.get().getSender();
             if (player == null) return;
-            if (player.containerMenu.containerId != containerId) return;
-            if (!player.containerMenu.stillValid(player)) {
-                Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
+            if (!(player.containerMenu instanceof InfinityChestMenu menu) || menu.containerId != containerId) return;
+            if (!menu.stillValid(player)) {
+                Const.LOGGER.debug("Player {} interacted with invalid menu {}", player, menu);
             } else {
-                ((InfinityChestMenu) player.containerMenu).action(actionId, id);
-                player.containerMenu.broadcastChanges();
+                menu.action(actionId, id);
+                menu.broadcastChanges();
             }
         });
         context.get().setPacketHandled(true);
