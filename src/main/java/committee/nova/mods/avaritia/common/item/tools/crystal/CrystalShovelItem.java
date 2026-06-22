@@ -71,11 +71,18 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
                 ) {
                     player.removeEffect(potion.getEffect());
                 }
-            } else {
+            } else if (!player.getMainHandItem().is(this)) {
                 player.removeEffect(MobEffects.DIG_SPEED);
                 player.removeEffect(MobEffects.MOVEMENT_SPEED);
             }
         }
+    }
+
+    @Override
+    public boolean onDroppedByPlayer(@NotNull ItemStack item, Player player) {
+        player.removeEffect(MobEffects.DIG_SPEED);
+        player.removeEffect(MobEffects.MOVEMENT_SPEED);
+        return super.onDroppedByPlayer(item, player);
     }
 
     @Override
