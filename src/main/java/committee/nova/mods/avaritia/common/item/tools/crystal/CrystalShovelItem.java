@@ -33,6 +33,8 @@ import java.util.List;
  * Version: 1.0
  */
 public class CrystalShovelItem extends ShovelItem implements ITooltip {
+    private static final int HOTBAR_SLOT_COUNT = 9;
+    private static final int HOTBAR_EFFECT_DURATION_TICKS = 4;
 
     public CrystalShovelItem() {
         super(ModToolTiers.CRYSTAL, -25, 0F,
@@ -56,9 +58,9 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         if (!pLevel.isClientSide && pEntity instanceof Player player) {
-            if (pIsSelected) {
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, 2, false, true));
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, 2, false, true));
+            if (isInHotbar(pSlotId)) {
+                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, HOTBAR_EFFECT_DURATION_TICKS, 2, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, HOTBAR_EFFECT_DURATION_TICKS, 2, false, true));
                 List<MobEffectInstance> effects = Lists.newArrayList(player.getActiveEffects());
                 for (MobEffectInstance potion : Collections2
                         .filter(effects, potion ->
@@ -71,11 +73,12 @@ public class CrystalShovelItem extends ShovelItem implements ITooltip {
                 ) {
                     player.removeEffect(potion.getEffect());
                 }
-            } else {
-                player.removeEffect(MobEffects.DIG_SPEED);
-                player.removeEffect(MobEffects.MOVEMENT_SPEED);
             }
         }
+    }
+
+    private static boolean isInHotbar(int slotId) {
+        return slotId >= 0 && slotId < HOTBAR_SLOT_COUNT;
     }
 
     @Override

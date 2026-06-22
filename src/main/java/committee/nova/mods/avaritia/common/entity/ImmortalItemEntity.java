@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.entity;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +22,6 @@ public class ImmortalItemEntity extends ItemEntity {
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
         this.lifespan = Integer.MAX_VALUE;
-        this.setPickUpDelay(0);
         this.setUnlimitedLifetime();
     }
 
@@ -30,10 +30,26 @@ public class ImmortalItemEntity extends ItemEntity {
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);
-            entity.setPickUpDelay(0);
+            entity.setDefaultPickUpDelay();
+            entity.applyImmortalLifetime();
         }
         return entity;
 
+    }
+
+    public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, Entity location, ItemStack itemStack) {
+        ImmortalItemEntity entity = type.create(level);
+        if (entity != null) {
+            entity.restoreFrom(location);
+            entity.setItem(itemStack);
+            entity.applyImmortalLifetime();
+        }
+        return entity;
+    }
+
+    private void applyImmortalLifetime() {
+        this.lifespan = Integer.MAX_VALUE;
+        this.setUnlimitedLifetime();
     }
 
     @Override

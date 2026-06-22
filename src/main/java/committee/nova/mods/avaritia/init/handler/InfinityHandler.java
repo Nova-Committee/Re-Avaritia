@@ -368,28 +368,19 @@ public class InfinityHandler {
     public static void onItemSpawn(ItemEvent event) {
         ItemEntity entity = event.getEntity();
         ItemStack stack = entity.getItem();
-        Player player = null;
 
         if (stack.is(ModTags.IMMORTAL_ITEM) && !(entity instanceof ImmortalItemEntity)) {
             Level level = entity.level();
 
-            ImmortalItemEntity immortalEntity = ImmortalItemEntity.create(
-                    ModEntities.IMMORTAL.get(),
-                    level,
-                    entity.getX(),
-                    entity.getY(),
-                    entity.getZ(),
-                    stack
-            );
+            ImmortalItemEntity immortalEntity = ImmortalItemEntity.create(ModEntities.IMMORTAL.get(), level, entity, stack);
 
-            immortalEntity.setDeltaMovement(entity.getDeltaMovement());
-            immortalEntity.setDefaultPickUpDelay();
-            immortalEntity.setPickUpDelay(0);
-            if (!level.isClientSide) {
+            if (immortalEntity != null) {
+                event.setCanceled(true);
+            }
+            if (!level.isClientSide && immortalEntity != null) {
                 entity.discard();
                 level.addFreshEntity(immortalEntity);
             }
-            event.setCanceled(true);
         }
 
     }
