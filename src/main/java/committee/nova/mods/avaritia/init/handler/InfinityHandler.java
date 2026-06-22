@@ -318,7 +318,7 @@ public class InfinityHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void toolEnchant(BlockEvent.BreakEvent event) {//炽热
         var player = event.getPlayer();
         if (player == null) return;
@@ -337,7 +337,7 @@ public class InfinityHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void entityItemUnDeath(ItemEvent event) {//取消无尽物品受到的伤害
         ItemEntity entityItem = event.getEntity();
         Item item = entityItem.getItem().getItem();

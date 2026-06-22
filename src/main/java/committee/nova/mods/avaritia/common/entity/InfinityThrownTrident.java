@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -46,6 +47,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
     private boolean noReturn;
     @Setter private int loyaltyLevel = 3;
     public int returningTicks;
+    private static final double RETURN_PICKUP_DISTANCE_SQR = 2.25D;
 
     public InfinityThrownTrident(EntityType<? extends InfinityThrownTrident> type, Level worldIn) {
         super(type, worldIn);
@@ -77,19 +79,24 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
     public void tick() {
         if (inGroundTime > 4) {
             dealtDamage = true;
-            noReturn = !isAcceptableReturnOwner();
         }
         Entity entity = getOwner();
-        if (!noReturn && (dealtDamage || isNoPhysics()) && entity != null) {
-            if (!isAcceptableReturnOwner() ) {
-                if (!level().isClientSide && pickup == Pickup.ALLOWED) {
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+        if ((dealtDamage || isNoPhysics()) && entity != null && loyaltyLevel > 0) {
+            if (!isAcceptableReturnOwner()) {
+                noReturn = true;
+                if (!level().isClientSide) {
+                    dropPickupItem();
+                    discard();
+                    return;
                 }
-
             } else if (loyaltyLevel > 0){
                 this.onClientRemoval();
                 setNoPhysics(true);
                 Vec3 returnVector = entity.getEyePosition().subtract(position());
+                if (!level().isClientSide && canCompleteReturn(entity, returnVector)) {
+                    returnToOwner((Player) entity);
+                    return;
+                }
                 this.setPosRaw(getX(), getY() + returnVector.y * 0.015D * loyaltyLevel, getZ());
                 if (level().isClientSide) {
                     yOld = getY();
@@ -103,6 +110,47 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
             }
         }
         super.tick();
+    }
+
+    private boolean canCompleteReturn(Entity owner, Vec3 returnVector) {
+        return owner instanceof Player
+                && (distanceToSqr(owner) <= RETURN_PICKUP_DISTANCE_SQR
+                || returnVector.lengthSqr() <= RETURN_PICKUP_DISTANCE_SQR);
+    }
+
+    private void returnToOwner(Player player) {
+        if (pickup == Pickup.CREATIVE_ONLY) {
+            discard();
+            return;
+        }
+
+        ItemStack returningStack = getPickupItem();
+        if (returningStack.isEmpty()) {
+            discard();
+            return;
+        }
+
+        if (pickup == Pickup.ALLOWED && player.getInventory().add(returningStack)) {
+            player.take(this, 1);
+            level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
+                    ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+        } else {
+            dropAtOwner(player, returningStack);
+        }
+        discard();
+    }
+
+    private void dropAtOwner(Player player, ItemStack stack) {
+        ItemEntity itemEntity = new ItemEntity(level(), player.getX(), player.getY() + 0.25D, player.getZ(), stack);
+        itemEntity.setDefaultPickUpDelay();
+        level().addFreshEntity(itemEntity);
+    }
+
+    private void dropPickupItem() {
+        if (pickup == Pickup.ALLOWED) {
+            spawnAtLocation(getPickupItem(), 0.1F);
+        }
     }
 
     private boolean isAcceptableReturnOwner() {

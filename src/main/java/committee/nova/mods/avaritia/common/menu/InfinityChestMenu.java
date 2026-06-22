@@ -1,516 +1,182 @@
 package committee.nova.mods.avaritia.common.menu;
 
 import committee.nova.mods.avaritia.Const;
-import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
-import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
+import committee.nova.mods.avaritia.common.container.slot.InfinitySlot;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.core.chest.ChestHandler;
-import committee.nova.mods.avaritia.core.chest.ClientChestManager;
-import committee.nova.mods.avaritia.core.chest.InfinityChestContainer;
-import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
-import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
- * @author cnlimiter
+ * Menu for the local 9x27 infinity chest inventory.
  */
 public class InfinityChestMenu extends AbstractContainerMenu {
-    public static final int CONTAINER_SLOT_START = 36;
-    public static final int CONTAINER_SLOT_SIZE = 15 * 9;
-    public final ChestHandler chest;
-    public final Player player;
-    public final Level level;
-    public final BlockPos blockPos;
+    public static final int CHEST_ROWS = 9;
+    public static final int CHEST_COLUMNS = 27;
+    public static final int CHEST_SLOT_COUNT = CHEST_ROWS * CHEST_COLUMNS;
+    public static final int PLAYER_SLOT_COUNT = 36;
+    public static final int PLAYER_SLOT_START = CHEST_SLOT_COUNT;
+    public static final int PLAYER_SLOT_END = PLAYER_SLOT_START + PLAYER_SLOT_COUNT;
 
-    public InfinityChestTile chestTile;
-    public InfinityChestContainer chestContainer = new InfinityChestContainer(this);
-    public boolean LShifting = false;
+    private final InfinityChestTile tile;
+    private final Container container;
 
-    public final UUID owner;
-    public boolean locked;
-    public String filter;
-    public byte sortType;
-    public UUID channelID;
+    /**
+     * Kept only so the legacy infinity chest filter packet can still compile.
+     */
+    public String filter = "";
 
+    public InfinityChestMenu(int id, Inventory inventory, FriendlyByteBuf buffer) {
+        this(id, inventory, getTile(inventory, buffer.readBlockPos()));
+    }
 
-    //客户端调用这个
-    public InfinityChestMenu(int containerId, Inventory playerInv, FriendlyByteBuf extraData) {
-        super(ModMenus.infinity_chest.get(), containerId);
-        this.player = playerInv.player;
-        this.level = playerInv.player.level();
-        this.blockPos = extraData.readBlockPos();
+    public InfinityChestMenu(int id, Inventory inventory, InfinityChestTile tile) {
+        super(ModMenus.infinity_chest.get(), id);
+        if (tile == null) {
+            throw new IllegalArgumentException("Infinity chest menu requires a valid tile");
+        }
+        this.tile = tile;
+        this.container = tile.chest;
+        this.container.startOpen(inventory.player);
 
-        this.owner = extraData.readUUID();
-        this.locked = extraData.readBoolean();
-        this.filter = extraData.readUtf(64);
-        this.sortType = extraData.readByte();
-        this.channelID = extraData.readUUID();
-
-        addSlots(playerInv.player, playerInv);
-
-        this.chestContainer = new InfinityChestContainer(this);
-        this.chest = ClientChestManager.getInstance().getChest(chestContainer);
-        //虚拟储存物品格41 ~ 118
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 15; j++) {
-                this.addSlot(new FakeSlot(chestContainer, i * 15 + j, 8 + j * 18, 16 + i * 18)
-                {
-                    @Override
-                    public ItemStack getItem()
-                    {
-                        ItemStack itemStack = super.getItem();
-                        itemStack.setCount(1);
-                        return itemStack;
-                    }
-                });
+        for (int row = 0; row < CHEST_ROWS; row++) {
+            for (int column = 0; column < CHEST_COLUMNS; column++) {
+                this.addSlot(new InfinitySlot(this.container, column + row * CHEST_COLUMNS, 8 + column * 18, 17 + row * 18));
             }
         }
-    }
 
-    //服务端用这个
-    public InfinityChestMenu(int containerId, Player player, InfinityChestTile blockEntity) {
-        super(ModMenus.infinity_chest.get(), containerId);
-        this.player = player;
-        this.level = player.level();
-        this.blockPos = blockEntity.getBlockPos();
-        this.chestTile = blockEntity;
-
-        this.owner = blockEntity.getOwner() == null ? player.getUUID() : blockEntity.getOwner();
-        this.locked = blockEntity.isLocked();
-        this.filter = blockEntity.getFilter();
-        this.sortType = blockEntity.getSortType();
-        this.channelID = blockEntity.getChannelID();
-        this.chest = blockEntity.getChannel();
-        if (!chest.isRemoved()) ((ServerChestHandler) this.chest).addListener((ServerPlayer) player);
-        addSlots(player, player.getInventory());
-    }
-
-
-    private void addSlots(Player player, Inventory playerInv) {
-        //快捷栏0~8
-        for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInv, l, 62 + l * 18, 250));
-        }
-
-        //背包9~35
-        for (int k = 0; k < 3; ++k) {
-            for (int i1 = 0; i1 < 9; ++i1) {
-                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 62 + i1 * 18, 192 + k * 18));
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 9; column++) {
+                this.addSlot(new Slot(inventory, column + row * 9 + 9, 170 + column * 18, 193 + row * 18));
             }
         }
-    }
 
-    //按钮相关
-    @Override
-    @ParametersAreNonnullByDefault
-    public boolean clickMenuButton(Player pPlayer, int pId) {
-        switch (pId) {
-            case 0 -> {
-                if (owner.equals(player.getUUID())) {
-                    locked = !locked;
-                    chestTile.setLocked(locked);
-                    if (locked) saveBlock();
-                }
-            }
-            case 1 -> nextSort();
-            case 2 -> reverseSort();
+        for (int column = 0; column < 9; column++) {
+            this.addSlot(new Slot(inventory, column, 170 + column * 18, 251));
         }
-        return pId < 3;
     }
 
+    public InfinityChestTile getTile() {
+        return this.tile;
+    }
 
-    //本类方法
+    public int getSlotMaxStack(Slot slot, ItemStack stack) {
+        return slot instanceof InfinitySlot ? slot.getMaxStackSize() : slot.getMaxStackSize(stack);
+    }
+
+    public int getSlotMaxStack(Slot slot) {
+        return this.getSlotMaxStack(slot, slot.getItem());
+    }
+
     public void action(int actionId, String id) {
-        switch (actionId) {
-            case StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT -> onLeftClickDummySlot(id);
-            case StorageUtils.Action.Right_CLICK_DUMMY_SLOT -> onRightClickDummySlot(id);
-            case StorageUtils.Action.LEFT_SHIFT_DUMMY_SLOT -> onLeftShiftDummySlot(id);
-            case StorageUtils.Action.Right_SHIFT_DUMMY_SLOT -> onRightShiftDummySlot(id);
-            case StorageUtils.Action.THROW_ONE -> tryThrowOneFromDummySlot(id);
-            case StorageUtils.Action.THROW_STICK -> tryThrowStickFromDummySlot(id);
-            case StorageUtils.Action.LEFT_DRAG -> onLeftDragDummySlot(id);
-            case StorageUtils.Action.RIGHT_DRAG -> onRightDragDummySlot(id);
-            case StorageUtils.Action.CLONE -> onCloneFormDummySlot(id);
-            case StorageUtils.Action.DRAG_CLONE -> onDragCloneDummySlot(id);
-        }
-    }
-
-    public void onLeftClickDummySlot(String id) {
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) {
-            if (id.equals("minecraft:air")) return;
-            setCarried(chest.saveTakeItem(id, false));
-        } else {
-            //叠堆大于1不处理特殊操作，防止意外。
-            if (carried.getCount() > 1) {
-                chest.addItem(carried);
-                return;
-            }
-            {
-
-                //其他容器
-                AtomicBoolean canal = new AtomicBoolean(false);
-
-                carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                    if (!chest.storageItems.containsKey(id)) return;
-                    int slots = iItemHandler.getSlots();
-                    for (int i = 0; i < slots; i++) {
-                        ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id));
-                        if (!ItemStack.isSameItemSameTags(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
-                            continue;
-                        int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
-                        if (remainingSlotSpace <= 0) continue;
-                        int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
-                        transmitAmount = Math.max(transmitAmount, 64000);
-                        transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
-                        transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
-                        int markAmount = transmitAmount;
-                        tryInsertItem.setCount(transmitAmount);
-                        for (int j = 0; j < 64; j++) {
-                            ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
-                            transmitAmount = remainingItem.getCount();
-                            if (transmitAmount <= 0) break;
-                            tryInsertItem.setCount(transmitAmount);
-                        }
-                        markAmount -= transmitAmount;
-                        if (markAmount > 0) {
-                            chest.takeItem(id, markAmount);
-                            canal.set(true);
-                            return;
-                        }
-                    }
-                });
-                if (canal.get()) return;
-                chest.addItem(carried);
-            }
-        }
-    }
-
-    public void onRightClickDummySlot(String id) {
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) {
-            if (id.equals("minecraft:air")) return;
-            setCarried(chest.saveTakeItem(id, true));
-        } else {
-            if (carried.getCount() > 1) {
-                chest.fillItemStack(carried, -1);
-                return;
-            }
-            AtomicBoolean canal = new AtomicBoolean(false);
-            carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                int slots = iItemHandler.getSlots();
-                for (int i = 0; i < slots; i++) {
-                    ItemStack itemStack = iItemHandler.getStackInSlot(i);
-                    if (itemStack.isEmpty() || itemStack.hasTag()) continue;
-                    int maxExtractAmount = chest.canStorageAmount(itemStack);
-                    itemStack = iItemHandler.extractItem(i, maxExtractAmount, false);
-                    if (itemStack.isEmpty()) continue;
-                    chest.addItem(itemStack);
-                    canal.set(true);
-                    break;
-                }
-            });
-            if (canal.get()) return;
-            chest.addItem(carried);
-        }
-    }
-
-    public void onLeftShiftDummySlot(String id) {
-        if (id.equals("minecraft:air")) return;
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) {
-            if (!chest.storageItems.containsKey(id)) return;
-            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
-            itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), chest.storageItems.get(id)));
-            int i = itemStack.getCount();
-            moveItemStackTo(itemStack, 41, 50, false);
-            i = i - itemStack.getCount();
-            if (i > 0) {
-                itemStack.setCount(i);
-                chest.removeItem(itemStack);
-            }
-
-        } else {
-            if (carried.getCount() > 1) {
-                chest.fillItemStack(carried, -1);
-                return;
-            }
-            {
-                AtomicBoolean canal = new AtomicBoolean(false);
-
-                carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                    if (!chest.storageItems.containsKey(id)) return;
-                    int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
-                    transmitAmount = Math.max(transmitAmount, 64000);
-                    transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
-                    int markAmount = transmitAmount;
-                    ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
-                    int slots = iItemHandler.getSlots();
-                    for (int i = 0; i < slots; i++) {
-                        for (int j = 0; j < 64; j++) {
-                            ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
-                            if (remainingItem.getCount() == transmitAmount) break;
-                            transmitAmount = remainingItem.getCount();
-                            if (transmitAmount <= 0) break;
-                            tryInsertItem.setCount(transmitAmount);
-                        }
-                    }
-                    markAmount -= transmitAmount;
-                    if (markAmount > 0) {
-                        chest.takeItem(id, markAmount);
-                        canal.set(true);
-                    }
-                });
-                if (canal.get()) return;
-                chest.addItem(carried);
-            }
-        }
-    }
-
-    public void onRightShiftDummySlot(String id) {
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) {
-            if (id.equals("minecraft:air")) return;
-            if (!chest.storageItems.containsKey(id)) return;
-            ItemStack itemStack = new ItemStack(StorageUtils.getItem(id));
-            moveItemStackTo(itemStack, 41, 50, false);
-            if (itemStack.isEmpty()) chest.takeItem(id, 1);
-        } else {
-            if (carried.getCount() > 1) {
-                chest.fillItemStack(carried, -1);
-                return;
-            }
-            AtomicBoolean canal = new AtomicBoolean(false);
-            carried.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                int slots = iItemHandler.getSlots();
-                for (int i = 0; i < slots; i++) {
-                    ItemStack itemStack = iItemHandler.getStackInSlot(i);
-                    if (itemStack.isEmpty() || itemStack.hasTag()) continue;
-                    int maxExtractAmount = chest.canStorageAmount(itemStack);
-                    itemStack = iItemHandler.extractItem(i, maxExtractAmount, false);
-                    if (itemStack.isEmpty()) continue;
-                    chest.addItem(itemStack);
-                    canal.set(true);
-                }
-            });
-            if (canal.get()) return;
-            chest.addItem(carried);
-        }
-    }
-
-    public void tryThrowOneFromDummySlot(String id) {
-        if (id.equals("minecraft:air")) return;
-        if (!chest.storageItems.containsKey(id)) return;
-        ItemStack itemStack = chest.takeItem(id, 1);
-        player.drop(itemStack, false);
-    }
-
-    public void tryThrowStickFromDummySlot(String id) {
-        if (id.equals("minecraft:air")) return;
-        if (!chest.storageItems.containsKey(id)) return;
-        ItemStack itemStack = chest.saveTakeItem(id, false);
-        player.drop(itemStack, false);
-    }
-
-    public void onLeftDragDummySlot(String id) {
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) return;
-        chest.addItem(carried);
-    }
-
-    public void onRightDragDummySlot(String id) {
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) return;
-        chest.fillItemStack(carried, -1);
-    }
-
-    public void onCloneFormDummySlot(String id) {
-        if (id.equals("minecraft:air") || !player.isCreative()) return;
-        chest.addItem(id, Long.max(chest.getRealItemAmount(id), 64L));
-    }
-
-    public void onDragCloneDummySlot(String id) {
-        ItemStack carried = getCarried();
-        if (carried.isEmpty()) return;
-        ItemStack itemStack = carried.copy();
-        itemStack.setCount(itemStack.getMaxStackSize());
-        chest.addItem(itemStack);
-    }
-
-    public void nextSort() {
-        sortType += 2;
-        if (sortType > 7) sortType %= 8;
-        if (level.isClientSide) chestContainer.refreshContainer(true);
-    }
-
-    public void reverseSort() {
-        if (sortType % 2 == 0) sortType++;
-        else sortType--;
-        if (level.isClientSide) chestContainer.refreshContainer(true);
-    }
-
-    private void saveBlock() {
-        chestTile.setFilter(filter);
-        chestTile.setSortType(sortType);
+        Const.LOGGER.warn("Ignored legacy infinity chest action packet: actionId={}, id={}", actionId, id);
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void clicked(int pSlotId, int pButton, ClickType pClickType, Player pPlayer) {
-        if (pSlotId >= CONTAINER_SLOT_START) {
-            //仅客户端能触发
-            String object;
-            if (pSlotId - CONTAINER_SLOT_START < chestContainer.viewingObject.size())
-                object = chestContainer.viewingObject.get(pSlotId - CONTAINER_SLOT_START);
-            else object = "minecraft:air";
-
-            switch (pButton) {
-                case 0 -> {
-                    switch (pClickType) {
-                        case QUICK_MOVE -> {
-                            //左键shift
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_SHIFT_DUMMY_SLOT, object));
-                            onLeftShiftDummySlot(object);
-                        }
-                        case PICKUP -> {
-                            //左键点击
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT, object));
-                            onLeftClickDummySlot(object);
-                        }
-                        case THROW -> {
-                            //丢一个
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.THROW_ONE, object));
-                            tryThrowOneFromDummySlot(object);
-                        }
-                    }
-                }
-                case 1 -> {
-                    switch (pClickType) {
-                        case PICKUP -> {
-                            //右键点击
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.Right_CLICK_DUMMY_SLOT, object));
-                            onRightClickDummySlot(object);
-                        }
-                        case QUICK_MOVE -> {
-                            //右键shift 快速拿一个
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.Right_SHIFT_DUMMY_SLOT, object));
-                            onRightShiftDummySlot(object);
-                        }
-                        case QUICK_CRAFT -> {
-                            //左键拖动
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_DRAG, object));
-                            onLeftDragDummySlot(object);
-                        }
-                        case THROW -> {
-                            //丢一组
-                            NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                                    new C2SInfinityChestActionPack(containerId, StorageUtils.Action.THROW_STICK, object));
-                            tryThrowStickFromDummySlot(object);
-                        }
-                    }
-                }
-                case 4 -> {
-                    if (pClickType == ClickType.CLONE) {
-                        //复制
-                        if (object.equals("minecraft:air")) return;
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SInfinityChestActionPack(containerId, StorageUtils.Action.CLONE, object));
-                        onCloneFormDummySlot(object);
-                    }
-                }
-                case 5 -> {
-                    if (pClickType == ClickType.QUICK_CRAFT) {
-                        //右键拖动
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SInfinityChestActionPack(containerId, StorageUtils.Action.RIGHT_DRAG, object));
-                        onRightDragDummySlot(object);
-                    }
-                }
-                case 9 -> {
-                    if (pClickType == ClickType.QUICK_CRAFT) {
-                        //拖动复制
-                        NetworkHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SInfinityChestActionPack(containerId, StorageUtils.Action.DRAG_CLONE, object));
-                        onDragCloneDummySlot(object);
-                    }
-                }
-            }
-            //剩下的SWAP无视掉(hot bar的快捷键)
-        } else super.clicked(pSlotId, pButton, pClickType, pPlayer);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public @NotNull ItemStack quickMoveStack(Player player, int slotId) {
-        //empty由于退出调用的奇怪循环
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotId);
-        System.out.println(slotId);
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+        ItemStack resultStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
         if (slot.hasItem()) {
-            ItemStack movingStack = slot.getItem();
-            itemStack = movingStack.copy();
-            if (slotId >=0 && slotId <= 35) {
-                chest.addItem(movingStack);
-                return ItemStack.EMPTY;
+            ItemStack slotStack = slot.getItem();
+            resultStack = slotStack.copy();
+
+            if (index < CHEST_SLOT_COUNT) {
+                if (!this.moveItemStackTo(slotStack, PLAYER_SLOT_START, PLAYER_SLOT_END, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (index < PLAYER_SLOT_END) {
+                if (!this.moveItemStackTo(slotStack, 0, CHEST_SLOT_COUNT, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else {
-                Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= 36 + CONTAINER_SLOT_SIZE in server side ?");
+                return ItemStack.EMPTY;
             }
 
-            if (movingStack.getCount() == 0) {
-                slot.set(ItemStack.EMPTY);
+            if (slotStack.isEmpty()) {
+                slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
 
-            if (movingStack.getCount() == itemStack.getCount()) {
+            if (slotStack.getCount() == resultStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(player, movingStack);
+            slot.onTake(player, slotStack);
         }
-        return itemStack;
+        return resultStack;
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public boolean canTakeItemForPickAll(ItemStack itemStack, Slot slot) {
-        return slot.index <= 35;
+    protected boolean moveItemStackTo(@NotNull ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+        boolean moved = false;
+        int index = reverseDirection ? endIndex - 1 : startIndex;
+
+        if (stack.isStackable()) {
+            while (!stack.isEmpty() && (reverseDirection ? index >= startIndex : index < endIndex)) {
+                Slot slot = this.slots.get(index);
+                ItemStack slotStack = slot.getItem();
+                if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(stack, slotStack)) {
+                    int maxSize = this.getSlotMaxStack(slot, stack);
+                    int newCount = slotStack.getCount() + stack.getCount();
+                    if (newCount <= maxSize) {
+                        stack.setCount(0);
+                        slotStack.setCount(newCount);
+                        slot.setChanged();
+                        moved = true;
+                    } else if (slotStack.getCount() < maxSize) {
+                        stack.shrink(maxSize - slotStack.getCount());
+                        slotStack.setCount(maxSize);
+                        slot.setChanged();
+                        moved = true;
+                    }
+                }
+                index += reverseDirection ? -1 : 1;
+            }
+        }
+
+        index = reverseDirection ? endIndex - 1 : startIndex;
+        while (!stack.isEmpty() && (reverseDirection ? index >= startIndex : index < endIndex)) {
+            Slot slot = this.slots.get(index);
+            if (!slot.hasItem() && slot.mayPlace(stack)) {
+                int moveCount = Math.min(stack.getCount(), this.getSlotMaxStack(slot, stack));
+                slot.setByPlayer(stack.split(moveCount));
+                slot.setChanged();
+                moved = true;
+                break;
+            }
+            index += reverseDirection ? -1 : 1;
+        }
+
+        return moved;
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public boolean stillValid(Player player) {
-        return !chestTile.isRemoved() &&
-                player.distanceToSqr(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 32.0D;
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void removed(Player player) {
-        if (level.isClientSide) return;
-        if (!chest.isRemoved()) ((ServerChestHandler) chest).removeListener((ServerPlayer) player);
+    public void removed(@NotNull Player player) {
         super.removed(player);
-        if (!chestTile.isLocked()) saveBlock();
+        this.container.stopOpen(player);
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        BlockPos pos = this.tile.getBlockPos();
+        return this.tile.getLevel() != null
+                && this.tile.getLevel().getBlockState(pos).is(ModBlocks.infinity_chest.get())
+                && player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+    }
+
+    private static InfinityChestTile getTile(Inventory inventory, BlockPos pos) {
+        if (inventory.player.level().getBlockEntity(pos) instanceof InfinityChestTile tile) {
+            return tile;
+        }
+        throw new IllegalStateException("Missing infinity chest tile at " + pos);
     }
 }

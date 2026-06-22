@@ -2,17 +2,14 @@ package committee.nova.mods.avaritia.common.block.chest;
 
 import committee.nova.mods.avaritia.api.common.block.BaseTileEntityBlock;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
-import committee.nova.mods.avaritia.util.StorageUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -20,6 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,7 +25,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -41,6 +45,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -48,34 +54,30 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import org.apache.logging.log4j.LogManager;  
-import org.apache.logging.log4j.Logger;  
-
 import java.util.List;
-import java.util.UUID;
 
-/**
- * @author cnlimiter
- */
 public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWaterloggedBlock {
-    private static final Logger LOGGER = LogManager.getLogger();
-    
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    protected static final VoxelShape AABB = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+    private static final Component TITLE = Component.translatable("block.avaritia.infinity_chest");
+    private static final VoxelShape AABB = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+
     public InfinityChestBlock() {
         super(Properties.of()
                 .mapColor(MapColor.GOLD)
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(30.0F, 1200.0F)
                 .sound(SoundType.GLASS)
-                .lightLevel((b) -> 15)
+                .lightLevel(state -> 15)
                 .isValidSpawn((state, getter, pos, entityType) -> false)
                 .isSuffocating((state, getter, pos) -> false)
-                .ignitedByLava()
-
-        );
+                .ignitedByLava());
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, Boolean.FALSE));
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new InfinityChestTile(pos, state);
     }
 
     @Override
@@ -99,118 +101,78 @@ public class InfinityChestBlock extends BaseTileEntityBlock implements SimpleWat
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         Direction direction = context.getHorizontalDirection().getOpposite();
-        FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-        boolean flag = context.isSecondaryUseActive();
-        Direction direction1 = context.getClickedFace();
-        if (direction1.getAxis().isHorizontal() && flag) {
-            Direction direction2 = this.candidatePartnerFacing(context, direction1.getOpposite());
-            if (direction2 != null && direction2.getAxis() != direction1.getAxis()) {
-                direction = direction2;
-            }
+        FluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
+        return this.defaultBlockState()
+                .setValue(FACING, direction)
+                .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+    }
+
+    @Override
+    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state,
+                            @Nullable LivingEntity placer, @NotNull ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (level.getBlockEntity(pos) instanceof InfinityChestTile tile) {
+            tile.loadFromItem(stack);
+            tile.setChanged();
         }
-        return this.defaultBlockState().setValue(FACING, direction).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
-    }
-
-    @Nullable
-    private Direction candidatePartnerFacing(BlockPlaceContext context, Direction direction) {
-        BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos().relative(direction));
-        return blockstate.is(this) ? blockstate.getValue(FACING) : null;
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new InfinityChestTile(pos, state);
+    public void playerDestroy(@NotNull Level level, @NotNull Player player, @NotNull BlockPos pos, @NotNull BlockState state,
+                              @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable BlockGetter pLevel, @NotNull List<Component> pTooltip, @NotNull TooltipFlag pFlag) {
-        if (Minecraft.getInstance().player == null) return;
-        if (!pStack.hasTag()) return;
-        if (pStack.getTag().contains("BlockEntityTag")) {
-            CompoundTag nbt = pStack.getTag().getCompound("BlockEntityTag");
-            if (nbt.contains("owner") && nbt.contains("channelID")) {
-                ServerChestManager manager = ServerChestManager.getInstance();
-                if (manager == null) {
-                    LOGGER.warn("[InfinityChestBlock] ServerChestManager is null in appendHoverText(), skipping tooltip content.");  
-                    return;
-                }
-                var owner = nbt.getUUID("owner");
-                var channelID = nbt.getUUID("channelID");
-                var channel = manager.getChest(owner, channelID);
-                int i = 0;
-                int j = 0;
-                for (var item : channel.storageItems.keySet()) {
-                    ++j;
-                    if (i <= 4) {
-                        ++i;
-                        MutableComponent textComponent = StorageUtils.getItem(item).getDefaultInstance().getHoverName().copy();
-                        textComponent.append(" x").append(String.format("%,d",  channel.storageItems.get(item)));
-                        pTooltip.add(textComponent);
-                    }
-                }
-                if (j - i > 0) {
-                    pTooltip.add((Component.translatable("container.shulkerBox.more", j - i)).withStyle(ChatFormatting.ITALIC));
-                }
+    public @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.Builder builder) {
+        BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        ItemStack stack = new ItemStack(ModBlocks.infinity_chest.get().asItem());
+        if (blockEntity instanceof InfinityChestTile tile) {
+            tile.saveToItem(stack);
+        }
+        return List.of(stack);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable BlockGetter level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains(BlockItem.BLOCK_ENTITY_TAG, Tag.TAG_COMPOUND)) {
+            return;
+        }
+
+        CompoundTag blockEntityTag = tag.getCompound(BlockItem.BLOCK_ENTITY_TAG);
+        if (blockEntityTag.contains("Items", Tag.TAG_LIST)) {
+            ListTag items = blockEntityTag.getList("Items", Tag.TAG_COMPOUND);
+            if (!items.isEmpty()) {
+                tooltip.add(Component.translatable("container.shulkerBox.more", items.size()));
             }
         }
     }
 
     @Override
-    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
-        if (pPlacer instanceof ServerPlayer player && !pStack.getOrCreateTag().contains("BlockEntityTag")) {
-            InfinityChestTile blockEntity = (InfinityChestTile) pLevel.getBlockEntity(pPos);
-            if (blockEntity != null) {
-                blockEntity.setOwner(player.getUUID());
-                blockEntity.setChannelId(UUID.randomUUID());
-                ServerChestManager.getInstance().tryAddChest(player, blockEntity.getChannelID());
-            }
-        }
-    }
-
-    @Override
-    public void playerDestroy(@NotNull Level pLevel, @NotNull Player player, @NotNull BlockPos pPos, @NotNull BlockState state, @Nullable BlockEntity blockEntity, @NotNull ItemStack tool) {
-        if (pLevel instanceof ServerLevel serverLevel && pLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
-            var pStack = new ItemStack(ModBlocks.infinity_chest.get().asItem());
-
-            if (blockEntity instanceof InfinityChestTile infinityChestTile) {
-                infinityChestTile.saveToItem(pStack);
-            }
-            popResource(serverLevel, pPos, pStack);
-            state.spawnAfterBreak(serverLevel, pPos, tool, false);
-        }
-    }
-
-    @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
-        if (!level.isClientSide() && !player.isSpectator()) {
-            var tile = level.getBlockEntity(pos);
-
-            if (tile instanceof InfinityChestTile chestTile) {
-                if (chestTile.getOwner() == null) {
-                    chestTile.setOwner(player.getUUID());
-                    chestTile.setLocked(false);
-                }
-                NetworkHooks.openScreen((ServerPlayer) player, chestTile, buf -> {
-                        buf.writeBlockPos(pos);
-                        buf.writeUUID(chestTile.getOwner());
-                        buf.writeBoolean(chestTile.isLocked());
-                        buf.writeUtf(chestTile.getFilter(), 64);
-                        buf.writeByte(chestTile.getSortType());
-                        buf.writeUUID(chestTile.getChannelID());
-                });
-                player.awardStat(Stats.CUSTOM.get(Stats.OPEN_CHEST));
-
-            }
+    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos,
+                                          @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult trace) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
         }
 
-        return InteractionResult.SUCCESS;
+        if (!player.isSpectator() && level.getBlockEntity(pos) instanceof InfinityChestTile tile) {
+            NetworkHooks.openScreen((ServerPlayer) player, tile, buf -> buf.writeBlockPos(pos));
+            player.awardStat(Stats.CUSTOM.get(Stats.OPEN_CHEST));
+        }
+        return InteractionResult.CONSUME;
     }
 
     @Override
     protected <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createTicker(type, ModTileEntities.infinity_chest_tile.get(), InfinityChestTile::lidAnimateTick);
+    }
+
+    @Override
+    protected <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return createTicker(type, ModTileEntities.infinity_chest_tile.get(), (tickLevel, pos, tickState, tile) -> tile.recheckOpen());
     }
 
     @Override

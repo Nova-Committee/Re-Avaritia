@@ -1,60 +1,105 @@
 package committee.nova.mods.avaritia.common.tile;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.common.tile.BaseTileEntity;
 import committee.nova.mods.avaritia.api.util.lang.Localizable;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
-import committee.nova.mods.avaritia.core.chest.ServerChestHandler;
-import committee.nova.mods.avaritia.core.chest.ServerChestManager;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
-import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.ChestLidController;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import org.apache.logging.log4j.LogManager;  
-import org.apache.logging.log4j.Logger;
-
-import java.util.UUID;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /**
- * @author cnlimiter
+ * Infinity chest block entity backed by fixed local storage.
  */
 public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity {
-    @Getter
-    private UUID owner;
-    @Getter
-    private boolean locked = false;
-    @Getter
-    private String filter = "";
-    @Getter
-    private byte sortType = 4;
-    @Getter
-    private UUID channelID = UUID.randomUUID();
-    private ServerChestHandler channel = new ServerChestHandler();
-    @Getter
-    private LazyOptional<?> capability = LazyOptional.of(() -> channel);
-    
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final int SLOT_COUNT = 243;
+    public static final int MAX_STACK_SIZE = Integer.MAX_VALUE;
+    private static final String TAG_ITEMS = "Items";
+    private static final String TAG_SLOT = "Slot";
+
+    private final ChestLidController chestLidController = new ChestLidController();
+    private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
+        @Override
+        protected void onOpen(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state) {
+            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+        }
+
+        @Override
+        protected void onClose(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state) {
+            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+        }
+
+        @Override
+        protected void openerCountChanged(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, int eventId, int eventParam) {
+            InfinityChestTile.this.signalOpenCount(level, pos, state, eventId, eventParam);
+        }
+
+        @Override
+        protected boolean isOwnContainer(@NotNull Player player) {
+            return player.containerMenu instanceof InfinityChestMenu menu && menu.getTile() == InfinityChestTile.this;
+        }
+    };
+
+    public final SimpleContainer chest = new SimpleContainer(SLOT_COUNT) {
+        @Override
+        public void setChanged() {
+            InfinityChestTile.this.setChanged();
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return MAX_STACK_SIZE;
+        }
+
+        @Override
+        public void fillStackedContents(@NotNull StackedContents contents) {
+            for (int slot = 0; slot < this.getContainerSize(); slot++) {
+                ItemStack stack = this.getItem(slot);
+                contents.accountStack(stack, MAX_STACK_SIZE);
+            }
+        }
+
+        @Override
+        public void startOpen(@NotNull Player player) {
+            if (!InfinityChestTile.this.remove && !player.isSpectator()) {
+                InfinityChestTile.this.openersCounter.incrementOpeners(player, InfinityChestTile.this.getLevel(), InfinityChestTile.this.getBlockPos(), InfinityChestTile.this.getBlockState());
+            }
+        }
+
+        @Override
+        public void stopOpen(@NotNull Player player) {
+            if (!InfinityChestTile.this.remove && !player.isSpectator()) {
+                InfinityChestTile.this.openersCounter.decrementOpeners(player, InfinityChestTile.this.getLevel(), InfinityChestTile.this.getBlockPos(), InfinityChestTile.this.getBlockState());
+            }
+        }
+    };
 
     public InfinityChestTile(BlockPos pos, BlockState state) {
         super(ModTileEntities.infinity_chest_tile.get(), pos, state);
     }
-
 
     @Override
     public @NotNull Component getDisplayName() {
@@ -63,111 +108,71 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new InfinityChestMenu(containerId, player, this);
-    }
-    
-    @Override  
-    public void handleUpdateTag(CompoundTag tag) {  
-        readChestData(tag);
+        return new InfinityChestMenu(containerId, playerInventory, this);
     }
 
     @Override
-    public void load(@NotNull CompoundTag pTag) {
-        super.load(pTag);
-        readChestData(pTag);
-    }
-
-    @Override
-    public void saveAdditional(@NotNull CompoundTag pTag) {
-        super.saveAdditional(pTag);
-        if (owner != null) {
-            pTag.putUUID("owner", owner);
-            pTag.putBoolean("locked", locked);
-        }
-        pTag.putString("filter", filter);
-        pTag.putByte("sortType", sortType);
-        pTag.putUUID("channelID", channelID);
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        bindChannel();
-        if (channel.isRemoved()) return LazyOptional.empty();
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return capability.cast();
-        }
-        return LazyOptional.empty();
-    }
-
-    public void setOwner(UUID owner) {
-        this.owner = owner;
-        resetChannelBinding();
-        this.setChanged();
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
-        this.setChanged();
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-        this.setChanged();
-    }
-
-    public void setSortType(byte sortType) {
-        this.sortType = sortType;
-        this.setChanged();
-    }
-
-    public void setChannelId(UUID id) {
-        this.channelID = id;
-        resetChannelBinding();
-        this.setChanged();
-    }
-
-    public ServerChestHandler getChannel() {
-        bindChannel();
-        return channel;
-    }
-
-    private void readChestData(CompoundTag tag) {
-        if (tag.contains("owner")) {
-            owner = tag.getUUID("owner");
-            locked = tag.getBoolean("locked");
-        }
-        if (tag.contains("filter")) filter = tag.getString("filter");
-        if (tag.contains("sortType")) sortType = tag.getByte("sortType");
-        if (tag.contains("channelID")) channelID = tag.getUUID("channelID");
-        resetChannelBinding();
-    }
-
-    private void bindChannel() {
-        if (level == null || level.isClientSide || owner == null || channelID == null) return;
-
-        ServerChestManager manager = ServerChestManager.getInstance();
-        if (manager == null) {
-            LOGGER.warn("[InfinityChestTile] ServerChestManager is null during channel binding. pos={}", getBlockPos());
+    public void load(@NotNull CompoundTag tag) {
+        super.load(tag);
+        this.chest.clearContent();
+        if (!tag.contains(TAG_ITEMS, Tag.TAG_LIST)) {
             return;
         }
 
-        ServerChestHandler resolved = manager.getChest(owner, channelID);
-        if (channel != resolved) {
-            capability.invalidate();
-            channel = resolved;
-            capability = LazyOptional.of(() -> channel);
+        ListTag items = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
+        for (int i = 0; i < items.size(); ++i) {
+            CompoundTag itemTag = items.getCompound(i);
+            int slot = itemTag.getInt(TAG_SLOT);
+            if (slot < 0 || slot >= this.chest.getContainerSize()) {
+                Const.LOGGER.warn("Skipping infinity chest item with invalid slot {} at {}", slot, this.getBlockPos());
+                continue;
+            }
+            ItemStack stack = loadStoredItem(itemTag);
+            if (!stack.isEmpty()) {
+                this.chest.setItem(slot, stack);
+            }
         }
     }
 
-    private void resetChannelBinding() {
-        capability.invalidate();
-        channel = new ServerChestHandler();
-        capability = LazyOptional.of(() -> channel);
+    @Override
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
+        saveItems(tag);
     }
 
-    private final ChestLidController chestLidController = new ChestLidController();
+    @Override
+    public void saveToItem(@NotNull ItemStack stack) {
+        CompoundTag tag = new CompoundTag();
+        this.saveAdditional(tag);
+        BlockItem.setBlockEntityData(stack, this.getType(), tag);
+    }
+
+    public void loadFromItem(ItemStack stack) {
+        CompoundTag itemTag = stack.getTag();
+        if (itemTag == null || !itemTag.contains(BlockItem.BLOCK_ENTITY_TAG, Tag.TAG_COMPOUND)) {
+            return;
+        }
+        this.load(itemTag.getCompound(BlockItem.BLOCK_ENTITY_TAG));
+    }
+
+    public int getStoredStackCount() {
+        int count = 0;
+        for (int slot = 0; slot < this.chest.getContainerSize(); slot++) {
+            if (!this.chest.getItem(slot).isEmpty()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, InfinityChestTile blockEntity) {
         blockEntity.chestLidController.tickLid();
+    }
+
+    public void recheckOpen() {
+        if (!this.remove) {
+            this.openersCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
+        }
     }
 
     @Override
@@ -175,9 +180,8 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         if (id == 1) {
             this.chestLidController.shouldBeOpen(type > 0);
             return true;
-        } else {
-            return super.triggerEvent(id, type);
         }
+        return super.triggerEvent(id, type);
     }
 
     @Override
@@ -185,10 +189,60 @@ public class InfinityChestTile extends BaseTileEntity implements LidBlockEntity 
         return this.chestLidController.getOpenness(partialTicks);
     }
 
-    public static void playSound(Level pLevel, BlockPos pPos, SoundEvent pSound) {
-        double d0 = (double) pPos.getX() + 0.5;
-        double d1 = (double) pPos.getY() + 0.5;
-        double d2 = (double) pPos.getZ() + 0.5;
-        pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
+    private void signalOpenCount(Level level, BlockPos pos, BlockState state, int eventId, int eventParam) {
+        Block block = state.getBlock();
+        level.blockEvent(pos, block, 1, eventParam);
+    }
+
+    private void saveItems(CompoundTag tag) {
+        ListTag items = new ListTag();
+        for (int slot = 0; slot < this.chest.getContainerSize(); ++slot) {
+            ItemStack stack = this.chest.getItem(slot);
+            if (!stack.isEmpty()) {
+                CompoundTag itemTag = new CompoundTag();
+                itemTag.putInt(TAG_SLOT, slot);
+                saveStoredItem(stack, itemTag);
+                items.add(itemTag);
+            }
+        }
+        if (!items.isEmpty()) {
+            tag.put(TAG_ITEMS, items);
+        }
+    }
+
+    private ItemStack loadStoredItem(CompoundTag tag) {
+        String itemId = tag.getString("id");
+        ResourceLocation itemName = ResourceLocation.tryParse(itemId);
+        if (itemName == null) {
+            Const.LOGGER.warn("Skipping infinity chest item with invalid id {} at {}", itemId, this.getBlockPos());
+            return ItemStack.EMPTY;
+        }
+
+        Item item = ForgeRegistries.ITEMS.getValue(itemName);
+        if (item == null) {
+            Const.LOGGER.warn("Skipping infinity chest item with unknown id {} at {}", itemId, this.getBlockPos());
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack stack = new ItemStack(item);
+        stack.setCount(Math.max(1, tag.getInt("Count")));
+        if (tag.contains("tag", Tag.TAG_COMPOUND)) {
+            stack.setTag(tag.getCompound("tag"));
+        }
+        return stack;
+    }
+
+    private void saveStoredItem(ItemStack stack, CompoundTag tag) {
+        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (itemId == null) {
+            Const.LOGGER.warn("Skipping infinity chest item with unregistered item {} at {}", stack, this.getBlockPos());
+            return;
+        }
+
+        tag.putString("id", itemId.toString());
+        tag.putInt("Count", stack.getCount());
+        if (stack.getTag() != null) {
+            tag.put("tag", stack.getTag().copy());
+        }
     }
 }
