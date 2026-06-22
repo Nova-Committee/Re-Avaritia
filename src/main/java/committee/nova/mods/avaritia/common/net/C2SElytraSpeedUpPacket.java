@@ -15,6 +15,10 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class C2SElytraSpeedUpPacket {
+    private static final double TAKEOFF_UPWARD_SPEED = 0.72D;
+    private static final double TAKEOFF_FORWARD_SPEED = 0.35D;
+    private static final double BOOST_TAKEOFF_FORWARD_SPEED = 0.65D;
+
     private final boolean customFlying;
     private final boolean boosting;
 
@@ -39,10 +43,7 @@ public class C2SElytraSpeedUpPacket {
             ServerPlayer player = context.getSender();
             if (player == null) return;
             if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) return;
-            if (!customFlying) {
-                stopFallFlying(player);
-                return;
-            }
+            if (!customFlying) return;
 
             boolean fallFlying = ensureFallFlying(player, boosting);
             if (boosting && fallFlying) {
@@ -61,17 +62,50 @@ public class C2SElytraSpeedUpPacket {
             return true;
         }
 
+        if (canLaunchFromGround(player)) {
+            launchFromGround(player, boosting);
+        }
+
         return false;
     }
 
-    private static void stopFallFlying(ServerPlayer player) {
-        if (!player.isFallFlying()) {
-            return;
-        }
+    private static boolean canLaunchFromGround(ServerPlayer player) {
+        return player.onGround()
+                && !player.isPassenger()
+                && !player.isInWater()
+                && !player.onClimbable()
+                && !player.getAbilities().flying
+                && !player.hasEffect(MobEffects.LEVITATION);
+    }
 
-        player.stopFallFlying();
+    private static void launchFromGround(ServerPlayer player, boolean boosting) {
+        Vec3 lookVec = player.getLookAngle();
+        Vec3 horizontalLook = new Vec3(lookVec.x, 0.0D, lookVec.z);
+        Vec3 forward = horizontalLook.lengthSqr() > 1.0E-7D ? horizontalLook.normalize() : Vec3.ZERO;
+        double forwardSpeed = boosting ? BOOST_TAKEOFF_FORWARD_SPEED : TAKEOFF_FORWARD_SPEED;
+        Vec3 currentVelocity = player.getDeltaMovement();
+
+        player.setDeltaMovement(
+                currentVelocity.x + forward.x * forwardSpeed,
+                Math.max(currentVelocity.y, TAKEOFF_UPWARD_SPEED),
+                currentVelocity.z + forward.z * forwardSpeed
+        );
         player.resetFallDistance();
         player.hurtMarked = true;
+
+        if (player.level() instanceof ServerLevel level) {
+            level.sendParticles(
+                    ParticleTypes.CLOUD,
+                    player.getX(),
+                    player.getY() + 0.15D,
+                    player.getZ(),
+                    10,
+                    0.25D,
+                    0.08D,
+                    0.25D,
+                    0.04D
+            );
+        }
     }
 
     private static void applyBoost(ServerPlayer player) {

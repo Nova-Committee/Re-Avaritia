@@ -58,13 +58,10 @@ public class AvaritiaForgeClient {
     public static float renderFrame = 0;
     public static boolean inventoryRender = false;
     private static float darknessIntensity = 0.0f;
+    private static final int INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL = 4;
     private static final int INFINITY_ELYTRA_BOOST_PACKET_INTERVAL = 1;
     private static boolean infinityElytraLastFlyingIntent = false;
     private static boolean infinityElytraLastBoosting = false;
-    private static boolean infinityElytraLastJumpDown = false;
-    private static boolean infinityElytraLastOnGround = true;
-    private static boolean infinityElytraLastFallFlying = false;
-    private static boolean infinityElytraCancelSent = false;
     private static int infinityElytraPacketCooldown = 0;
 
     // region 定义按键绑定
@@ -131,39 +128,23 @@ public class AvaritiaForgeClient {
             return;
         }
 
-        boolean onGround = player.onGround();
-        boolean wasOnGround = infinityElytraLastOnGround;
-        boolean wasFallFlying = infinityElytraLastFallFlying;
-        boolean jumpDown = mc.options.keyJump.isDown();
-        boolean jumpPressed = jumpDown && !infinityElytraLastJumpDown;
-        infinityElytraLastJumpDown = jumpDown;
-        infinityElytraLastOnGround = onGround;
-        infinityElytraLastFallFlying = player.isFallFlying();
-
-        if (player.isFallFlying() && ((jumpPressed && wasFallFlying) || onGround || player.horizontalCollision)) {
-            sendInfinityElytraCancel();
-            return;
-        }
-
-        infinityElytraCancelSent = false;
-
         boolean canRequestGlide = !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
                 && !player.getAbilities().flying;
         boolean wantsLaunch = canRequestGlide
                 && !player.isFallFlying()
-                && !onGround
-                && !wasOnGround
-                && jumpPressed;
-        boolean wantsBoost = player.isFallFlying() || wantsLaunch;
+                && mc.options.keyJump.isDown();
+        boolean wantsBoost = (player.isFallFlying() || wantsLaunch)
+                && mc.options.keySprint.isDown()
+                && !mc.options.keyShift.isDown();
 
         syncInfinityElytraControls(wantsLaunch || wantsBoost, wantsBoost);
     }
 
     private static void syncInfinityElytraControls(boolean flyingIntent, boolean boosting) {
         if (!flyingIntent) {
-            resetInfinityElytraPacketState();
+            resetInfinityElytraControls();
             return;
         }
 
@@ -172,29 +153,13 @@ public class AvaritiaForgeClient {
             NetworkHandler.CHANNEL.sendToServer(new C2SElytraSpeedUpPacket(flyingIntent, boosting));
             infinityElytraLastFlyingIntent = flyingIntent;
             infinityElytraLastBoosting = boosting;
-            infinityElytraPacketCooldown = INFINITY_ELYTRA_BOOST_PACKET_INTERVAL;
+            infinityElytraPacketCooldown = boosting ? INFINITY_ELYTRA_BOOST_PACKET_INTERVAL : INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL;
         } else {
             infinityElytraPacketCooldown--;
         }
     }
 
-    private static void sendInfinityElytraCancel() {
-        if (!infinityElytraCancelSent) {
-            NetworkHandler.CHANNEL.sendToServer(new C2SElytraSpeedUpPacket(false, false));
-            infinityElytraCancelSent = true;
-        }
-        resetInfinityElytraPacketState();
-    }
-
     private static void resetInfinityElytraControls() {
-        resetInfinityElytraPacketState();
-        infinityElytraLastJumpDown = false;
-        infinityElytraLastOnGround = true;
-        infinityElytraLastFallFlying = false;
-        infinityElytraCancelSent = false;
-    }
-
-    private static void resetInfinityElytraPacketState() {
         infinityElytraLastFlyingIntent = false;
         infinityElytraLastBoosting = false;
         infinityElytraPacketCooldown = 0;
