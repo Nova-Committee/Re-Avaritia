@@ -179,6 +179,11 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
     }
 
     @Override
+    protected EntityHitResult findHitEntity(Vec3 startVec, Vec3 endVec) {
+        return dealtDamage ? null : super.findHitEntity(startVec, endVec);
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity hitEntity = result.getEntity();
         float damage = Float.MAX_VALUE;
@@ -257,6 +262,18 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
 
     @Override
     protected void tickDespawn() {
+    }
+
+    @Override
+    protected boolean tryPickup(Player player) {
+        return super.tryPickup(player) || isNoPhysics() && ownedBy(player) && player.getInventory().add(getPickupItem());
+    }
+
+    @Override
+    public void playerTouch(Player player) {
+        if (ownedBy(player) || getOwner() == null) {
+            super.playerTouch(player);
+        }
     }
 
     @Override
