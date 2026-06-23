@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class CuriosTools {
+    public static final String BACK_SLOT = "back";
 
     public static ItemStack getFirstItemFromCuriosInv(Player player, Predicate<ItemStack> filter) {
         return CuriosApi.getCuriosInventory(player)
@@ -24,6 +25,16 @@ public class CuriosTools {
                     .map(SlotResult::stack)
                     .orElse(ItemStack.EMPTY))
             .orElse(ItemStack.EMPTY);
+    }
+
+    public static ItemStack getFirstItemFromCuriosSlot(Player player, String slotIdentifier, Predicate<ItemStack> filter) {
+        return CuriosApi.getCuriosInventory(player)
+                .map(handler -> handler.findCurios(filter).stream()
+                        .filter(result -> slotIdentifier.equals(result.slotContext().identifier()))
+                        .findFirst()
+                        .map(SlotResult::stack)
+                        .orElse(ItemStack.EMPTY))
+                .orElse(ItemStack.EMPTY);
     }
 
     public static ICapabilityProvider getSlowProvider(ItemStack stack) {

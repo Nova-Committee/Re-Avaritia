@@ -29,7 +29,7 @@ public class InfinityElytraUtils {
         if (!Const.curios) {
             return ItemStack.EMPTY;
         }
-        return CuriosTools.getFirstItemFromCuriosInv(player, InfinityElytraUtils::isInfinityElytra);
+        return CuriosTools.getFirstItemFromCuriosSlot(player, CuriosTools.BACK_SLOT, InfinityElytraUtils::isInfinityElytra);
     }
 
     private static boolean isInfinityElytra(ItemStack stack) {

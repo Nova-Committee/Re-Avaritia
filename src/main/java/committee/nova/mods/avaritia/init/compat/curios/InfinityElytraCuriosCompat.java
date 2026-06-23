@@ -52,7 +52,7 @@ public class InfinityElytraCuriosCompat {
 
             @Override
             public boolean canEquip(SlotContext slotContext) {
-                return true;
+                return CuriosTools.BACK_SLOT.equals(slotContext.identifier());
             }
 
             @Override
@@ -62,7 +62,7 @@ public class InfinityElytraCuriosCompat {
 
             @Override
             public boolean canEquipFromUse(SlotContext slotContext) {
-                return true;
+                return CuriosTools.BACK_SLOT.equals(slotContext.identifier());
             }
         });
     }
