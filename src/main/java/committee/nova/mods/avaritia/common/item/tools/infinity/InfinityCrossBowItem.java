@@ -60,10 +60,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             setCharged(stack, false);
             return InteractionResultHolder.consume(stack);
         } else {
-
-            if (!level.isClientSide) {
-                setCharged(stack, true);
-            }
             player.startUsingItem(hand);
             return InteractionResultHolder.consume(stack);
         }
@@ -71,7 +67,16 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
 
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity, int timeLeft) {
-
+        if (entity instanceof Player player && !isCharged(stack)) {
+            int chargeTime = getUseDuration(stack) - timeLeft;
+            if (chargeTime >= getUseDuration(stack)) {
+                if (!level.isClientSide) {
+                    setCharged(stack, true);
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                            SoundEvents.CROSSBOW_LOADING_END, SoundSource.PLAYERS, 1.0F, 1.0F);
+                }
+            }
+        }
     }
 
     @Override
