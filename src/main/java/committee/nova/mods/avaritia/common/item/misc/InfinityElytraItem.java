@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.compat.curios.InfinityElytraCuriosCompat;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
@@ -97,7 +98,7 @@ public class InfinityElytraItem extends ElytraItem {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        if (ModList.get().isLoaded("curios")) {
+        if (Const.curios) {
             return InfinityElytraCuriosCompat.createProvider(stack);
         }
         return super.initCapabilities(stack, nbt);

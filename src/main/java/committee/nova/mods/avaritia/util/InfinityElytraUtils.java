@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.util;
 
 import committee.nova.mods.avaritia.init.compat.curios.CuriosTools;
 import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.Const;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +26,7 @@ public class InfinityElytraUtils {
     }
 
     private static ItemStack findInfinityElytraInCurios(Player player) {
-        if (!ModList.get().isLoaded("curios")) {
+        if (!Const.curios) {
             return ItemStack.EMPTY;
         }
         return CuriosTools.getFirstItemFromCuriosInv(player, InfinityElytraUtils::isInfinityElytra);
