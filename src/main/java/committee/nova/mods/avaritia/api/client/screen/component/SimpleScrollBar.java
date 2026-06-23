@@ -22,12 +22,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class SimpleScrollBar extends AbstractWidget {
-    private static final int SCROLL_TAG_IDLE_U = 303;
-    private static final int SCROLL_TAG_ACTIVE_U = 316;
-    private static final int SCROLL_TAG_V = 72;
-    private static final int SCROLL_TAG_SOURCE_HEIGHT = 15;
-    private static final int SCROLL_TAG_SLICE_HEIGHT = 3;
-
     @Getter
     @Setter
     private boolean scrolling = false;
@@ -116,11 +110,9 @@ public abstract class SimpleScrollBar extends AbstractWidget {
         this.beforeRender();
         if (!this.visible) return;
         double v = getY() + ((getHeight() - scrollTagSize) * scrolledOn);
-        int tagHeight = (int) Math.ceil(scrollTagSize);
-        int textureX = this.isScrolling() ? SCROLL_TAG_ACTIVE_U : SCROLL_TAG_IDLE_U;
-        guiGraphics.blitNineSliced(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v),
-                width, tagHeight, 0, SCROLL_TAG_SLICE_HEIGHT, width, SCROLL_TAG_SOURCE_HEIGHT,
-                textureX, SCROLL_TAG_V);
+        if (this.isScrolling()) {
+            guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 316, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
+        } else guiGraphics.blit(Res.INFINITY_CHEST_TEX, getX(), (int) Math.floor(v), 303, 72, width, (int) Math.ceil(v + scrollTagSize), 550, 550);
     }
 
     @Override
