@@ -1,9 +1,11 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.compat.curios.InfinityElytraCuriosCompat;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +15,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InfinityElytraItem extends ElytraItem {
     public InfinityElytraItem() {
@@ -87,5 +92,14 @@ public class InfinityElytraItem extends ElytraItem {
     @Override
     public boolean canElytraFly(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return true;
+    }
+
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        if (ModList.get().isLoaded("curios")) {
+            return InfinityElytraCuriosCompat.createProvider(stack);
+        }
+        return super.initCapabilities(stack, nbt);
     }
 }

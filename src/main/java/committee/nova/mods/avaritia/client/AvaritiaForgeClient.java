@@ -10,7 +10,7 @@ import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.common.net.C2SElytraSpeedUpPacket;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
@@ -23,7 +23,6 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FogType;
@@ -123,7 +122,7 @@ public class AvaritiaForgeClient {
             return;
         }
 
-        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+        if (!InfinityElytraUtils.hasInfinityElytraEquipped(player)) {
             resetInfinityElytraControls();
             return;
         }

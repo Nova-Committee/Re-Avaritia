@@ -10,6 +10,7 @@ import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
+import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -25,7 +26,6 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -281,7 +281,7 @@ public class InfinityHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onInfinityElytraFall(LivingFallEvent event) {
         if (event.getEntity() instanceof Player player
-                && player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+                && InfinityElytraUtils.hasInfinityElytraEquipped(player)) {
             event.setDistance(0.0F);
             event.setDamageMultiplier(0.0F);
             player.resetFallDistance();
@@ -353,7 +353,7 @@ public class InfinityHandler {
     }
 
     private static boolean isUsingInfinityElytra(Player player) {
-        return player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())
+        return InfinityElytraUtils.hasInfinityElytraEquipped(player)
                 && (player.isFallFlying() || !player.onGround());
     }
 
