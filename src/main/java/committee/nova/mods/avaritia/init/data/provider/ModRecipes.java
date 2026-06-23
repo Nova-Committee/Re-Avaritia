@@ -1684,7 +1684,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                         .define('A', ModItems.infinity_catalyst.get())
                         .define('B', Const.getIngredient("tconstruct", "iron_reinforcement"))
-                        .define('C', Const.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('C', Const.getIngredient("tconstruct", "queens_slime_ingot"))
                         .define('E', Const.getIngredient("tconstruct", "manyullyn_block"))
                         .define('F', Const.getIngredient("tconstruct", "jeweled_apple"))
                         .define('G', Const.getIngredient("tconstruct", "iron_reinforcement"))
@@ -1709,7 +1709,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                         .define('A', ModItems.infinity_catalyst.get())
                         .define('B', Const.getIngredient("tconstruct", "iron_reinforcement"))
-                        .define('C', Const.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('C', Const.getIngredient("tconstruct", "queens_slime_ingot"))
                         .define('E', Const.getIngredient("tconstruct", "manyullyn_block"))
                         .define('F', Const.getIngredient("tconstruct", "jeweled_apple"))
                         .define('G', Const.getIngredient("tconstruct", "iron_reinforcement"))
@@ -1735,7 +1735,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                         .define('A', ModItems.infinity_catalyst.get())
                         .define('B', Const.getIngredient("tconstruct", "iron_reinforcement"))
-                        .define('C', Const.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('C', Const.getIngredient("tconstruct", "queens_slime_ingot"))
                         .define('E', Const.getIngredient("tconstruct", "manyullyn_block"))
                         .define('F', Const.getIngredient("tconstruct", "jeweled_apple"))
                         .define('G', Const.getIngredient("tconstruct", "iron_reinforcement"))
@@ -1760,7 +1760,7 @@ public class ModRecipes extends RecipeProvider implements IConditionBuilder {
 
                         .define('A', ModItems.infinity_catalyst.get())
                         .define('B', Const.getIngredient("tconstruct", "iron_reinforcement"))
-                        .define('C', Const.getIngredient("tconstruct", "knightslime_ingot"))
+                        .define('C', Const.getIngredient("tconstruct", "queens_slime_ingot"))
                         .define('E', Const.getIngredient("tconstruct", "manyullyn_block"))
                         .define('F', Const.getIngredient("tconstruct", "jeweled_apple"))
                         .define('G', Const.getIngredient("tconstruct", "iron_reinforcement"))
