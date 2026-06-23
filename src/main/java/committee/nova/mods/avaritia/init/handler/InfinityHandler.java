@@ -9,6 +9,7 @@ import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.*;
 import committee.nova.mods.avaritia.common.net.S2CTotemPack;
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import committee.nova.mods.avaritia.init.mixins.ServerPlayerGameModeAccessor;
 import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import committee.nova.mods.avaritia.util.ToolUtils;
@@ -16,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -50,10 +52,15 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Description:
@@ -63,6 +70,8 @@ import net.minecraftforge.network.PacketDistributor;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InfinityHandler {
+    private static final Map<TemporaryFakeBlock, BlockState> TEMPORARY_FAKE_BLOCKS = new HashMap<>();
+
     @SubscribeEvent
     public static void onPlayerMine(PlayerInteractEvent.LeftClickBlock event) {
         var item = event.getItemStack();
@@ -75,12 +84,18 @@ public class InfinityHandler {
             return;
         }
 
-        var hasBedrockMiningTool = item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get());
-        if (!hasBedrockMiningTool && state.is(ModBlocks.fake_bedrock.get())) {
-            if (!level.isClientSide) {
-                level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
+        var hasBedrockMiningTool = hasBedrockMiningTool(item);
+        if (isTemporaryFakeBlock(state)) {
+            if (!hasBedrockMiningTool) {
+                restoreTemporaryFakeBlock(level, pos, state);
+                event.setCanceled(true);
+                return;
             }
-            event.setCanceled(true);
+            if (!level.isClientSide && !isTemporaryFakeBlockBeingMined((ServerLevel) level, pos)) {
+                restoreTemporaryFakeBlock(level, pos, state);
+                event.setCanceled(true);
+                return;
+            }
             return;
         }
 
@@ -90,31 +105,48 @@ public class InfinityHandler {
 
         if (hasBedrockMiningTool) {
             if (state.is(Blocks.BEDROCK)) {
+                trackTemporaryFakeBlock(level, pos, state);
                 level.setBlock(pos, ModBlocks.fake_bedrock.get().defaultBlockState(), 2);
             } else if (state.is(Blocks.END_PORTAL_FRAME)) {
                 // 保留原方块状态（包括是否有末影之眼）
                 BlockState fakeEndPortalFrameState = ModBlocks.fake_end_portal_frame.get().defaultBlockState()
                         .setValue(EndPortalFrameBlock.FACING, state.getValue(EndPortalFrameBlock.FACING))
                         .setValue(EndPortalFrameBlock.HAS_EYE, state.getValue(EndPortalFrameBlock.HAS_EYE));
+                trackTemporaryFakeBlock(level, pos, state);
                 level.setBlock(pos, fakeEndPortalFrameState, 2);
             } else if (state.is(Blocks.END_PORTAL)) {
                 // 保留末地传送门状态
+                trackTemporaryFakeBlock(level, pos, state);
                 level.setBlock(pos, ModBlocks.fake_end_portal.get().defaultBlockState(), 2);
             }
         }
+    }
 
-        if (!hasBedrockMiningTool) {
-            if (state.is(ModBlocks.fake_bedrock.get())) {
-                level.setBlock(pos, Blocks.BEDROCK.defaultBlockState(), 2);
-            } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
-                // 保留原方块状态（包括是否有末影之眼）
-                BlockState endPortalFrameState = Blocks.END_PORTAL_FRAME.defaultBlockState()
-                        .setValue(EndPortalFrameBlock.FACING, state.getValue(EndPortalFrameBlock.FACING))
-                        .setValue(EndPortalFrameBlock.HAS_EYE, state.getValue(EndPortalFrameBlock.HAS_EYE));
-                level.setBlock(pos, endPortalFrameState, 2);
-            } else if (state.is(ModBlocks.fake_end_portal.get())) {
-                // 保留末地传送门状态
-                level.setBlock(pos, Blocks.END_PORTAL.defaultBlockState(), 2);
+    @SubscribeEvent
+    public static void restoreAbandonedTemporaryFakeBlocks(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || TEMPORARY_FAKE_BLOCKS.isEmpty()) {
+            return;
+        }
+
+        Iterator<Map.Entry<TemporaryFakeBlock, BlockState>> iterator = TEMPORARY_FAKE_BLOCKS.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<TemporaryFakeBlock, BlockState> entry = iterator.next();
+            TemporaryFakeBlock temporaryBlock = entry.getKey();
+            ServerLevel level = event.getServer().getLevel(temporaryBlock.dimension());
+            if (level == null) {
+                iterator.remove();
+                continue;
+            }
+
+            BlockState currentState = level.getBlockState(temporaryBlock.pos());
+            if (!isTemporaryFakeBlock(currentState)) {
+                iterator.remove();
+                continue;
+            }
+
+            if (!isTemporaryFakeBlockBeingMined(level, temporaryBlock.pos())) {
+                level.setBlock(temporaryBlock.pos(), entry.getValue(), 2);
+                iterator.remove();
             }
         }
     }
@@ -127,10 +159,13 @@ public class InfinityHandler {
         BlockState state = event.getState();
         if (!event.getPlayer().isCreative()) {
             if (state.is(ModBlocks.fake_bedrock.get())) {
+                removeTemporaryFakeBlock(level, pos);
                 Block.popResource(level, pos, Blocks.BEDROCK.asItem().getDefaultInstance());
             } else if (state.is(ModBlocks.fake_end_portal_frame.get())) {
+                removeTemporaryFakeBlock(level, pos);
                 Block.popResource(level, pos, Blocks.END_PORTAL_FRAME.asItem().getDefaultInstance());
             } else if (state.is(ModBlocks.fake_end_portal.get())) {
+                removeTemporaryFakeBlock(level, pos);
                 Block.popResource(level, pos, Blocks.END_PORTAL.asItem().getDefaultInstance());
             } else if (state.is(Blocks.REINFORCED_DEEPSLATE)) {
                 Block.popResource(level, pos, Blocks.REINFORCED_DEEPSLATE.asItem().getDefaultInstance());
@@ -355,6 +390,67 @@ public class InfinityHandler {
     private static boolean isUsingInfinityElytra(Player player) {
         return InfinityElytraUtils.hasInfinityElytraEquipped(player)
                 && (player.isFallFlying() || !player.onGround());
+    }
+
+    private static boolean hasBedrockMiningTool(ItemStack item) {
+        return item.is(ModItems.crystal_pickaxe.get()) || item.is(ModItems.infinity_pickaxe.get());
+    }
+
+    private static boolean isTemporaryFakeBlock(BlockState state) {
+        return state.is(ModBlocks.fake_bedrock.get())
+                || state.is(ModBlocks.fake_end_portal_frame.get())
+                || state.is(ModBlocks.fake_end_portal.get());
+    }
+
+    private static void trackTemporaryFakeBlock(Level level, BlockPos pos, BlockState originalState) {
+        if (!level.isClientSide) {
+            TEMPORARY_FAKE_BLOCKS.put(new TemporaryFakeBlock(level.dimension(), pos.immutable()), originalState);
+        }
+    }
+
+    private static void removeTemporaryFakeBlock(ServerLevel level, BlockPos pos) {
+        TEMPORARY_FAKE_BLOCKS.remove(new TemporaryFakeBlock(level.dimension(), pos.immutable()));
+    }
+
+    private static void restoreTemporaryFakeBlock(Level level, BlockPos pos, BlockState fakeState) {
+        if (level.isClientSide) {
+            return;
+        }
+
+        TemporaryFakeBlock temporaryBlock = new TemporaryFakeBlock(level.dimension(), pos.immutable());
+        BlockState originalState = TEMPORARY_FAKE_BLOCKS.remove(temporaryBlock);
+        if (originalState == null) {
+            originalState = getOriginalStateFromFakeState(fakeState);
+        }
+        level.setBlock(pos, originalState, 2);
+    }
+
+    private static BlockState getOriginalStateFromFakeState(BlockState fakeState) {
+        if (fakeState.is(ModBlocks.fake_end_portal_frame.get())) {
+            return Blocks.END_PORTAL_FRAME.defaultBlockState()
+                    .setValue(EndPortalFrameBlock.FACING, fakeState.getValue(EndPortalFrameBlock.FACING))
+                    .setValue(EndPortalFrameBlock.HAS_EYE, fakeState.getValue(EndPortalFrameBlock.HAS_EYE));
+        }
+        if (fakeState.is(ModBlocks.fake_end_portal.get())) {
+            return Blocks.END_PORTAL.defaultBlockState();
+        }
+        return Blocks.BEDROCK.defaultBlockState();
+    }
+
+    private static boolean isTemporaryFakeBlockBeingMined(ServerLevel level, BlockPos pos) {
+        for (ServerPlayer player : level.players()) {
+            ServerPlayerGameModeAccessor gameMode = (ServerPlayerGameModeAccessor) player.gameMode;
+            if (gameMode.avaritia$isDestroyingBlock() && pos.equals(gameMode.avaritia$destroyPos())) {
+                return true;
+            }
+            if (gameMode.avaritia$hasDelayedDestroy() && pos.equals(gameMode.avaritia$delayedDestroyPos())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private record TemporaryFakeBlock(ResourceKey<Level> dimension, BlockPos pos) {
     }
 
     private static void addDrop(LivingDropsEvent event, ItemStack drop) {

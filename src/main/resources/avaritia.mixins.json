@@ -11,7 +11,8 @@
     "NetherWartBlockMixin",
     "PlayerMixin",
     "RecipeManagerMixin",
-    "ReloadableServerResourcesMixin"
+    "ReloadableServerResourcesMixin",
+    "ServerPlayerGameModeAccessor"
   ],
   "client": [
     "ItemRendererMixin",
