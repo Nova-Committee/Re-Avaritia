@@ -73,7 +73,6 @@ public class C2SElytraSpeedUpPacket {
                 && !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
-                && !player.getAbilities().flying
                 && !player.hasEffect(MobEffects.LEVITATION);
     }
 
@@ -83,6 +82,11 @@ public class C2SElytraSpeedUpPacket {
         Vec3 forward = horizontalLook.lengthSqr() > 1.0E-7D ? horizontalLook.normalize() : Vec3.ZERO;
         double forwardSpeed = boosting ? BOOST_TAKEOFF_FORWARD_SPEED : TAKEOFF_FORWARD_SPEED;
         Vec3 currentVelocity = player.getDeltaMovement();
+
+        if (player.getAbilities().flying) {
+            player.getAbilities().flying = false;
+            player.onUpdateAbilities();
+        }
 
         player.setDeltaMovement(
                 currentVelocity.x + forward.x * forwardSpeed,

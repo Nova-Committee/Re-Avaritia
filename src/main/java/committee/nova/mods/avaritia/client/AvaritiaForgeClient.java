@@ -130,7 +130,7 @@ public class AvaritiaForgeClient {
         boolean canRequestGlide = !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
-                && !player.getAbilities().flying;
+                && (!player.getAbilities().flying || player.onGround());
         boolean wantsLaunch = canRequestGlide
                 && !player.isFallFlying()
                 && mc.options.keyJump.isDown();
