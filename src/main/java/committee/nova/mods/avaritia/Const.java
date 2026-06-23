@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import committee.nova.mods.avaritia.api.util.data.RawValue;
+import committee.nova.mods.avaritia.init.compat.curios.CuriosTools;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,14 +14,9 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -61,13 +57,11 @@ public class Const {
         return ForgeRegistries.ITEMS.getKey(item);
     }
 
+    // do not use curios api here or we will break something
     public static <T> T checkExtraSlots(Player player, Predicate<ItemStack> is, T def, Function<ItemStack, T> map) {
         if (curios) {
-            AtomicReference<List<SlotResult>> s = new AtomicReference<>(new ArrayList<>());
-            CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
-                s.set(curiosInventory.findCurios(is));
-            });
-            if (!s.get().isEmpty()) return map.apply(s.get().get(0).stack());
+            ItemStack stack = CuriosTools.getFirstItemFromCuriosInv(player, is);
+            if (!stack.isEmpty()) return map.apply(stack);
         }
         return def;
     }

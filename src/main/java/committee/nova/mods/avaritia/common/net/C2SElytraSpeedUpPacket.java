@@ -1,14 +1,13 @@
 package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -42,7 +41,7 @@ public class C2SElytraSpeedUpPacket {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player == null) return;
-            if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) return;
+            if (!InfinityElytraUtils.hasInfinityElytraEquipped(player)) return;
             if (!customFlying) return;
 
             boolean fallFlying = ensureFallFlying(player, boosting);
