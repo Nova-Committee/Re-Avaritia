@@ -526,7 +526,7 @@
   "tooltip.avaritia.side_config_card.cleared": "配置已清除",
   "tooltip.avaritia.side_config_card.has_config": "§7已保存配置",
   "tooltip.avaritia.side_config_card.instruction_right_click": "§7右键机器应用配置",
-  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+右键其它方块清除配置",
+  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+右键其它方块/空气清除配置",
   "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+右键机器保存配置",
   "tooltip.avaritia.side_config_card.no_config": "§7空配置",
   "tooltip.avaritia.side_config_card.no_config_to_apply": "没有可应用的配置",

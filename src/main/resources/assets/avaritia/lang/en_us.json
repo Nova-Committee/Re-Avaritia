@@ -526,7 +526,7 @@
   "tooltip.avaritia.side_config_card.cleared": "Configuration cleared",
   "tooltip.avaritia.side_config_card.has_config": "§7Configuration saved",
   "tooltip.avaritia.side_config_card.instruction_right_click": "§7Right-click on machine to apply",
-  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+right-click other block to clear",
+  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+right-click other block/air to clear",
   "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+right-click machine to save",
   "tooltip.avaritia.side_config_card.no_config": "§7Empty configuration",
   "tooltip.avaritia.side_config_card.no_config_to_apply": "No configuration to apply",

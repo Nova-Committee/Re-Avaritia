@@ -526,7 +526,7 @@
   "tooltip.avaritia.side_config_card.cleared": "Конфігурацію очищено",
   "tooltip.avaritia.side_config_card.has_config": "§7Конфігурація збережена",
   "tooltip.avaritia.side_config_card.instruction_right_click": "§7ПКМ по машині, щоб застосувати",
-  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+ПКМ по повітрю, щоб очистити",
+  "tooltip.avaritia.side_config_card.instruction_shift_air": "§7Shift+ПКМ по іншому блоку/повітрю, щоб очистити",
   "tooltip.avaritia.side_config_card.instruction_shift_right_click": "§7Shift+ПКМ по машині, щоб зберегти",
   "tooltip.avaritia.side_config_card.no_config": "§7Порожня конфігурація",
   "tooltip.avaritia.side_config_card.no_config_to_apply": "Немає конфігурації для застосування",
