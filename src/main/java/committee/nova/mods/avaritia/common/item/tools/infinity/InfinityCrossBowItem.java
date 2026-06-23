@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ISwitchable, IUndamageable, IBowTransform {
+    private static final int CHARGE_DURATION_TICKS = 1;
 
     public InfinityCrossBowItem() {
         super(new Properties()
@@ -81,7 +82,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack) {
-        return 10;
+        return CHARGE_DURATION_TICKS;
     }
 
     @Override
