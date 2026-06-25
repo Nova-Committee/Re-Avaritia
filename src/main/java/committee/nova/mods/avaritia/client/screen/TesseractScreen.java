@@ -31,6 +31,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -73,8 +74,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void renderLabels(GuiGraphics stack, int i, int j) {
+    protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
     }
 
 
@@ -82,8 +83,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     protected void init() {
         super.init();
         this.leftPos = (this.width - imageWidth + 4) / 2;
-        this.topPos = (this.height - imageHeight) / 2;
-        this.scrollBar = new ItemScrollBar(leftPos + 198, topPos + 17, 16, menu.craftingMode ? 118 : 152);
+        this.topPos = Math.max(0, (this.height - imageHeight) / 2);
+        this.scrollBar = new ItemScrollBar(leftPos + 199, topPos + 17, 12, menu.craftingMode ? 118 : 152);
         this.scrollBar.setScrolledOn(menu.dummyChannelContainer.getScrollOn());
         this.addRenderableWidget(scrollBar);
         this.addRenderableWidget(new ToggleCraftingButton(this.leftPos + 198, this.topPos + 195));
