@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.common.entity;
 
 
 import committee.nova.mods.avaritia.init.config.ModConfig;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -11,6 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 /**
  * Description:
@@ -22,6 +27,8 @@ public class ImmortalItemEntity extends ItemEntity {
     private static final double STOP_PULLING_DISTANCE = 1.0D;
     private static final double HOMING_SPEED_SCALE = 0.1D;
     private Player followingPlayer;
+    @Nullable
+    private UUID lockedHomingPlayerId;
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
@@ -46,6 +53,7 @@ public class ImmortalItemEntity extends ItemEntity {
         if (entity != null) {
             entity.restoreFrom(location);
             entity.setItem(itemStack);
+            entity.lockedHomingPlayerId = getLockedHomingPlayerId(location);
             entity.applyImmortalLifetime();
         }
         return entity;
@@ -75,8 +83,9 @@ public class ImmortalItemEntity extends ItemEntity {
             return;
         }
 
-        if (!isValidFollowingPlayer()) {
-            this.followingPlayer = this.level().getNearestPlayer(this, ModConfig.immortalItemEntityRange.get());
+        UUID lockedPlayerId = this.lockedHomingPlayerId;
+        if (!isValidFollowingPlayer(lockedPlayerId)) {
+            this.followingPlayer = findFollowingPlayer(lockedPlayerId);
         }
         if (this.followingPlayer == null) {
             return;
@@ -98,11 +107,58 @@ public class ImmortalItemEntity extends ItemEntity {
         this.setDeltaMovement(direction.scale(speed).add(0, -0.02D, 0));
     }
 
-    private boolean isValidFollowingPlayer() {
+    @Nullable
+    private static UUID getLockedHomingPlayerId(Entity location) {
+        if (!(location instanceof ItemEntity itemEntity)) {
+            return null;
+        }
+
+        CompoundTag itemData = new CompoundTag();
+        itemEntity.addAdditionalSaveData(itemData);
+        return getLockedHomingPlayerId(itemData);
+    }
+
+    @Nullable
+    private static UUID getLockedHomingPlayerId(CompoundTag itemData) {
+        if (itemData.hasUUID("Owner")) {
+            return itemData.getUUID("Owner");
+        }
+        if (itemData.hasUUID("Thrower")) {
+            return itemData.getUUID("Thrower");
+        }
+        return null;
+    }
+
+    @Nullable
+    private Player findFollowingPlayer(@Nullable UUID lockedPlayerId) {
+        if (lockedPlayerId == null) {
+            return this.level().getNearestPlayer(this, ModConfig.immortalItemEntityRange.get());
+        }
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return null;
+        }
+
+        Player player = serverLevel.getPlayerByUUID(lockedPlayerId);
+        return isPlayerInHomingRange(player) ? player : null;
+    }
+
+    private boolean isValidFollowingPlayer(@Nullable UUID lockedPlayerId) {
         return this.followingPlayer != null
-                && this.followingPlayer.isAlive()
-                && this.followingPlayer.level() == this.level()
-                && this.distanceTo(this.followingPlayer) <= ModConfig.immortalItemEntityRange.get();
+                && (lockedPlayerId == null || this.followingPlayer.getUUID().equals(lockedPlayerId))
+                && isPlayerInHomingRange(this.followingPlayer);
+    }
+
+    private boolean isPlayerInHomingRange(@Nullable Player player) {
+        return player != null
+                && player.isAlive()
+                && player.level() == this.level()
+                && this.distanceTo(player) <= ModConfig.immortalItemEntityRange.get();
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.lockedHomingPlayerId = getLockedHomingPlayerId(compound);
     }
 
     @Override
