@@ -41,11 +41,14 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
     private static final EntityDataAccessor<Boolean> CHANNELING = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> SHOCKWAVE = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.INT);
+    private static final String RETURN_SLOT_TAG = "ReturnSlot";
+    private static final int NO_RETURN_SLOT = -1;
 
     private ItemStack tridentItem = new ItemStack(ModItems.infinity_trident.get());
     private boolean dealtDamage;
     private boolean noReturn;
     @Setter private int loyaltyLevel = 3;
+    @Setter private int returnSlot = NO_RETURN_SLOT;
     public int returningTicks;
     private static final double RETURN_PICKUP_DISTANCE_SQR = 2.25D;
 
@@ -130,7 +133,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
             return;
         }
 
-        if (pickup == Pickup.ALLOWED && player.getInventory().add(returningStack)) {
+        if (pickup == Pickup.ALLOWED && addToReturnSlot(player, returningStack)) {
             player.take(this, 1);
             level().playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
@@ -247,6 +250,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
         }
         dealtDamage = compound.getBoolean("DealtDamage");
         noReturn = compound.getBoolean("NoReturn");
+        returnSlot = compound.contains(RETURN_SLOT_TAG, Tag.TAG_INT) ? compound.getInt(RETURN_SLOT_TAG) : NO_RETURN_SLOT;
         this.entityData.set(SHOCKWAVE, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentShockwave(tridentItem));
         this.entityData.set(CHANNELING, ((InfinityTridentItem) ModItems.infinity_trident.get()).getCurrentChanneling(tridentItem));
         //this.entityData.set(RADIUS, ItemInfinity.getSelectedTier(thrownStack).getRadius());
@@ -258,6 +262,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
         compound.put("Trident", tridentItem.serializeNBT());
         compound.putBoolean("DealtDamage", dealtDamage);
         compound.putBoolean("NoReturn", noReturn);
+        compound.putInt(RETURN_SLOT_TAG, returnSlot);
     }
 
     @Override
@@ -266,7 +271,31 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityAddit
 
     @Override
     protected boolean tryPickup(Player player) {
-        return super.tryPickup(player) || isNoPhysics() && ownedBy(player) && player.getInventory().add(getPickupItem());
+        if (isNoPhysics() && ownedBy(player)) {
+            return pickup == Pickup.CREATIVE_ONLY && player.getAbilities().instabuild
+                    || pickup == Pickup.ALLOWED && addToReturnSlot(player, getPickupItem());
+        }
+        return super.tryPickup(player);
+    }
+
+    private boolean addToReturnSlot(Player player, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return true;
+        }
+        if (isValidReturnSlot(player) && player.getInventory().getItem(returnSlot).isEmpty()) {
+            player.getInventory().setItem(returnSlot, stack);
+            return true;
+        }
+        int freeSlot = player.getInventory().getFreeSlot();
+        if (freeSlot >= 0) {
+            player.getInventory().setItem(freeSlot, stack);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isValidReturnSlot(Player player) {
+        return returnSlot >= 0 && returnSlot < player.getInventory().getContainerSize();
     }
 
     @Override
