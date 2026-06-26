@@ -10,6 +10,7 @@ import committee.nova.mods.avaritia.common.entity.arrow.HeavenArrowEntity;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import committee.nova.mods.avaritia.util.ProjectileItemUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -17,7 +18,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.*;
@@ -25,7 +25,6 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.EggItem;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ExperienceBottleItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SnowballItem;
@@ -35,20 +34,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ISwitchable, IUndamageable, IBowTransform {
     private static final int CHARGE_DURATION_TICKS = 10;
-    private static final Map<Item, EntityType<?>> THROWABLE_PROJECTILE_TYPES = new IdentityHashMap<>();
-    private static final Set<Item> NON_THROWABLE_PROJECTILE_ITEMS = Collections.newSetFromMap(new IdentityHashMap<>());
 
     public InfinityCrossBowItem() {
         super(new Properties()
@@ -170,80 +162,13 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         return shotAmmo;
     }
 
-    private boolean hasMatchingThrowableItemProjectile(Level level, ItemStack stack) {
-        return findThrowableProjectileType(level, stack) != null;
-    }
-
-    private EntityType<?> findThrowableProjectileType(Level level, ItemStack stack) {
-        if (stack.isEmpty()) {
-            return null;
-        }
-
-        Item item = stack.getItem();
-        EntityType<?> cachedType = THROWABLE_PROJECTILE_TYPES.get(item);
-        if (cachedType != null) {
-            return cachedType;
-        }
-        if (NON_THROWABLE_PROJECTILE_ITEMS.contains(item)) {
-            return null;
-        }
-
-        for (EntityType<?> type : ForgeRegistries.ENTITY_TYPES.getValues()) {
-            Entity entity = createEntity(type, level);
-            if (entity instanceof ThrowableItemProjectile projectile && projectile.getItem().is(item)) {
-                entity.discard();
-                THROWABLE_PROJECTILE_TYPES.put(item, type);
-                return type;
-            }
-            if (entity != null) {
-                entity.discard();
-            }
-        }
-
-        EntityType<?> knownType = findKnownThrowableProjectileType(stack);
-        if (knownType != null) {
-            THROWABLE_PROJECTILE_TYPES.put(item, knownType);
-            return knownType;
-        }
-
-        NON_THROWABLE_PROJECTILE_ITEMS.add(item);
-        return null;
-    }
-
-    private Entity createEntity(EntityType<?> type, Level level) {
-        try {
-            return type.create(level);
-        } catch (RuntimeException ignored) {
-            return null;
-        }
-    }
-
-    private EntityType<?> findKnownThrowableProjectileType(ItemStack stack) {
-        if (stack.getItem() instanceof EnderpearlItem) {
-            return EntityType.ENDER_PEARL;
-        }
-        if (stack.getItem() instanceof SnowballItem) {
-            return EntityType.SNOWBALL;
-        }
-        if (stack.getItem() instanceof EggItem) {
-            return EntityType.EGG;
-        }
-        if (stack.getItem() instanceof ExperienceBottleItem) {
-            return EntityType.EXPERIENCE_BOTTLE;
-        }
-        if (stack.getItem() instanceof ThrowablePotionItem) {
-            return EntityType.POTION;
-        }
-        return null;
-    }
-
     private boolean shootThrowableItemProjectile(Level level, Player player, ItemStack ammo, float angle) {
-        EntityType<?> type = findThrowableProjectileType(level, ammo);
+        var type = ProjectileItemUtils.findThrowableProjectileType(level, ammo);
         if (type == null) {
             return false;
         }
 
-        Entity entity = createEntity(type, level);
+        Entity entity = ProjectileItemUtils.createEntitySafely(type, level);
         if (!(entity instanceof ThrowableItemProjectile projectile)) {
             if (entity != null) {
                 entity.discard();
@@ -324,7 +249,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
                 stack.is(Items.FIREWORK_ROCKET) ||
                 stack.is(Items.TRIDENT) ||
                 stack.is(Items.TNT) ||
-                hasMatchingThrowableItemProjectile(level, stack);
+                ProjectileItemUtils.hasMatchingThrowableItemProjectile(level, stack);
 
     }
 
