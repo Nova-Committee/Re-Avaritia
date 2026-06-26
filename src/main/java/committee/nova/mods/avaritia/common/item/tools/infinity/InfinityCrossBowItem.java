@@ -104,7 +104,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             ItemStack ammo = findAmmo(player);
             if (!ammo.isEmpty()) {
                 shootBasedOnAmmo(level, player, copySingleAmmo(ammo), angle);
-                consumeAmmo(player, ammo);
             } else {
                 shootInfnityArrow(level, player, 3.0F, 1.0F, angle);
             }
@@ -159,12 +158,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         ItemStack shotAmmo = ammo.copy();
         shotAmmo.setCount(1);
         return shotAmmo;
-    }
-
-    private void consumeAmmo(Player player, ItemStack ammo) {
-        if (!player.getAbilities().instabuild) {
-            ammo.shrink(1);
-        }
     }
 
     //需要在这里声明物品是否可以充当发射物
