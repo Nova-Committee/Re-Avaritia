@@ -34,6 +34,7 @@ public class TransformUtils {
     public static final PerspectiveModelState DEFAULT_BOW;
     public static final PerspectiveModelState DEFAULT_HANDHELD_ROD;
     public static final PerspectiveModelState DEFAULT_TRIDENT;
+    public static final PerspectiveModelState DEFAULT_THROWING_TRIDENT;
     private static final Transformation flipX = new Transformation(null, null, new Vector3f(-1, 1, 1), null);
 
     static {
@@ -99,6 +100,16 @@ public class TransformUtils {
         map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(-3F,17F,1F,  0F, -90F, 25F,1F));
         map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(-15F,17F,1F,  0F,  90F,-25F,1F));
         DEFAULT_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
+
+        map = new HashMap<>();
+        map.put(ItemDisplayContext.GROUND,                   create(   4F,  4F,   2F, 0F,   0F,  0F,0.25F));
+        map.put(ItemDisplayContext.FIXED,                    create(  -2F,  4F,  -5F, 0F, 180F,  0F, 0.5F));
+        map.put(ItemDisplayContext.GUI,                      create(   2F,  3F,   0F,15F, -25F, -5F,0.65F));
+        map.put(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,  create(   8F,-17F,   9F, 0F,  90F,180F,   1F));
+        map.put(ItemDisplayContext.THIRD_PERSON_LEFT_HAND,   create(   8F,-17F,  -7F, 0F,  90F,180F,   1F));
+        map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,  create(  -3F, 17F,   1F, 0F, -90F, 25F,   1F));
+        map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND,   create(  13F, 17F,   1F, 0F,  90F,-25F,   1F));
+        DEFAULT_THROWING_TRIDENT = new PerspectiveModelState(ImmutableMap.copyOf(map));
         //@formatter:on
     }
 

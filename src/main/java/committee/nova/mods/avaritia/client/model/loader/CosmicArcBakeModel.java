@@ -48,7 +48,7 @@ public class CosmicArcBakeModel extends WrappedItemModel {
 
         // 渲染基础模型
         if (stack.is(ModItems.infinity_trident.get())) {
-            this.parentState = TransformUtils.DEFAULT_TRIDENT;
+            this.parentState = isThrowingTrident(stack) ? TransformUtils.DEFAULT_THROWING_TRIDENT : TransformUtils.DEFAULT_TRIDENT;
             if (transformType == ItemDisplayContext.GUI || transformType == ItemDisplayContext.GROUND || transformType == ItemDisplayContext.FIXED) {
                 this.cosmic = true;
                 this.renderWrapped(stack, pStack, source, packedLight, packedOverlay, true);
@@ -131,5 +131,9 @@ public class CosmicArcBakeModel extends WrappedItemModel {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
         }
         mc.getItemRenderer().renderQuadList(pStack, cons, bakeItem(atlasSprite), stack, packedLight, packedOverlay);
+    }
+
+    private boolean isThrowingTrident(ItemStack stack) {
+        return this.entity != null && this.entity.isUsingItem() && this.entity.getUseItem() == stack;
     }
 }

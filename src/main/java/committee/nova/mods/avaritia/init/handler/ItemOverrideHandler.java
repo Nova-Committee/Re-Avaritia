@@ -49,6 +49,9 @@ public class ItemOverrideHandler {
             setPropertyOverride(ModItems.infinity_shield.get(), Const.rl("blocking"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
             });
+            setPropertyOverride(ModItems.infinity_trident.get(), new ResourceLocation("throwing"), (itemStack, world, livingEntity, d) -> {
+                return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
+            });
             ItemProperties.register(ModItems.infinity_umbrella.get(),
                     new ResourceLocation("mode"),
                     (stack, world, entity, seed) -> {
