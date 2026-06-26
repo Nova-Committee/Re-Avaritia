@@ -6,7 +6,6 @@ import committee.nova.mods.avaritia.Const;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
 
 /**
  * Seperate logics of infinity elytra checking from single chest to both curios and equipment
@@ -23,6 +22,10 @@ public class InfinityElytraUtils {
             return chestStack;
         }
         return findInfinityElytraInCurios(player);
+    }
+
+    public static boolean hasInfinityElytraInCurios(Player player) {
+        return !findInfinityElytraInCurios(player).isEmpty();
     }
 
     private static ItemStack findInfinityElytraInCurios(Player player) {

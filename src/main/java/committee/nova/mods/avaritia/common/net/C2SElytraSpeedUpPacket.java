@@ -77,6 +77,7 @@ public class C2SElytraSpeedUpPacket {
 
     private static boolean canStartInfinityElytraFallFlying(ServerPlayer player) {
         return !Const.isLoad(CAELUS_MOD_ID)
+                && InfinityElytraUtils.hasInfinityElytraInCurios(player)
                 && !player.onGround()
                 && !player.isFallFlying()
                 && !player.isPassenger()
