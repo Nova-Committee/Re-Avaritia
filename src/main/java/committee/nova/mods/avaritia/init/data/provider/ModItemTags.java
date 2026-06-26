@@ -65,5 +65,6 @@ public class ModItemTags extends IntrinsicHolderTagsProvider<Item> {
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_chestplate.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_pants.get());
         tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_boots.get());
+        tag(ModTags.IMMORTAL_ITEM).add(ModItems.infinity_totem.get());
     }
 }
