@@ -42,6 +42,10 @@ public class C2SElytraSpeedUpPacket {
             ServerPlayer player = context.getSender();
             if (player == null) return;
             if (!InfinityElytraUtils.hasInfinityElytraEquipped(player)) return;
+            if (InfinityElytraUtils.isUsingOtherFlightMode(player)) {
+                InfinityElytraUtils.clearCuriosFallbackFallFlying(player);
+                return;
+            }
             if (!customFlying) return;
 
             boolean fallFlying = ensureFallFlying(player, boosting);
@@ -67,6 +71,7 @@ public class C2SElytraSpeedUpPacket {
 
     private static boolean canLaunchFromGround(ServerPlayer player) {
         return player.onGround()
+                && !InfinityElytraUtils.isUsingOtherFlightMode(player)
                 && !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
@@ -79,11 +84,6 @@ public class C2SElytraSpeedUpPacket {
         Vec3 forward = horizontalLook.lengthSqr() > 1.0E-7D ? horizontalLook.normalize() : Vec3.ZERO;
         double forwardSpeed = boosting ? BOOST_TAKEOFF_FORWARD_SPEED : TAKEOFF_FORWARD_SPEED;
         Vec3 currentVelocity = player.getDeltaMovement();
-
-        if (player.getAbilities().flying) {
-            player.getAbilities().flying = false;
-            player.onUpdateAbilities();
-        }
 
         player.setDeltaMovement(
                 currentVelocity.x + forward.x * forwardSpeed,

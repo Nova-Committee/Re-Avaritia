@@ -44,7 +44,15 @@ public class InfinityElytraUtils {
         return !findInfinityElytraInCurios(player).isEmpty();
     }
 
+    public static boolean isUsingOtherFlightMode(Player player) {
+        return player.isSpectator() || player.getAbilities().flying;
+    }
+
     public static boolean tryStartFallFlying(ServerPlayer player) {
+        if (isUsingOtherFlightMode(player)) {
+            clearCuriosFallbackFallFlying(player);
+            return false;
+        }
         if (player.isFallFlying()) {
             return true;
         }
@@ -60,6 +68,10 @@ public class InfinityElytraUtils {
     }
 
     public static void prepareCuriosFallbackTakeoff(ServerPlayer player) {
+        if (isUsingOtherFlightMode(player)) {
+            clearCuriosFallbackFallFlying(player);
+            return;
+        }
         if (canUseCuriosFallback(player)) {
             CURIO_FALL_FLYERS.put(player.getUUID(), PENDING_TAKEOFF_TICKS);
         }
@@ -68,6 +80,11 @@ public class InfinityElytraUtils {
     public static void updateCuriosFallbackFallFlying(ServerPlayer player) {
         Integer state = CURIO_FALL_FLYERS.get(player.getUUID());
         if (state == null) {
+            return;
+        }
+
+        if (isUsingOtherFlightMode(player)) {
+            CURIO_FALL_FLYERS.remove(player.getUUID());
             return;
         }
 
@@ -96,6 +113,7 @@ public class InfinityElytraUtils {
     private static boolean canUseCuriosFallback(Player player) {
         return needsCuriosFallback(player)
                 && hasInfinityElytraInCurios(player)
+                && !isUsingOtherFlightMode(player)
                 && !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()

@@ -126,11 +126,15 @@ public class AvaritiaForgeClient {
             resetInfinityElytraControls();
             return;
         }
+        if (InfinityElytraUtils.isUsingOtherFlightMode(player)) {
+            resetInfinityElytraControls();
+            return;
+        }
 
         boolean canRequestGlide = !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
-                && (!player.getAbilities().flying || player.onGround());
+                && !player.getAbilities().flying;
         boolean wantsLaunch = canRequestGlide
                 && !player.isFallFlying()
                 && mc.options.keyJump.isDown();
