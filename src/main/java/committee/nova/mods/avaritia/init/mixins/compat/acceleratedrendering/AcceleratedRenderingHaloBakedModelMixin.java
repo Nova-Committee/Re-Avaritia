@@ -17,6 +17,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Mixin HaloBakedModel, this influent a small scope of classes and easy to port
+ * 
+ * @author HowXu <dev@howxu.cn>
+ */
 @Mixin(value = {HaloBakedModel.class, HaloCosmicBakedModel.class, HaloEternalBakedModel.class}, remap = false)
 public abstract class AcceleratedRenderingHaloBakedModelMixin {
     @Unique
