@@ -8,7 +8,9 @@ import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ExperienceBottleItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SnowballItem;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -28,6 +30,26 @@ public class ProjectileItemUtils {
 
     public static boolean hasMatchingThrowableItemProjectile(Level level, ItemStack stack) {
         return findThrowableProjectileType(level, stack) != null;
+    }
+
+    public static boolean isLaunchableProjectileItem(Level level, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        return stack.is(Items.ARROW)
+                || stack.is(Items.FIRE_CHARGE)
+                || stack.is(Items.SPECTRAL_ARROW)
+                || stack.is(Items.TIPPED_ARROW)
+                || stack.is(Items.FIREWORK_ROCKET)
+                || stack.getItem() instanceof TridentItem
+                || stack.is(Items.TNT)
+                || hasMatchingThrowableItemProjectile(level, stack);
+    }
+
+    public static ItemStack copySingle(ItemStack stack) {
+        ItemStack copy = stack.copy();
+        copy.setCount(1);
+        return copy;
     }
 
     @Nullable

@@ -28,6 +28,7 @@ import net.minecraft.world.item.ExperienceBottleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SnowballItem;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -111,7 +112,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             float angle = angles[Math.min(i, angles.length - 1)];
             ItemStack ammo = findAmmo(level, player);
             if (!ammo.isEmpty()) {
-                shootBasedOnAmmo(level, player, copySingleAmmo(ammo), angle);
+                shootBasedOnAmmo(level, player, ProjectileItemUtils.copySingle(ammo), angle);
             } else {
                 shootInfnityArrow(level, player, 3.0F, 1.0F, angle);
             }
@@ -135,7 +136,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
             shootTippedArrow(level, player, ammo, 3.0F, 1.0F, angle);
         } else if (ammo.is(Items.FIREWORK_ROCKET)) {
             shootFireworkRocket(level, player, ammo, 3.0F, 1.0F, angle);
-        } else if (ammo.is(Items.TRIDENT)) {
+        } else if (ammo.getItem() instanceof TridentItem) {
             shootTrident(level, player, ammo, 3.0F, 1.0F, angle);
         } else if (ammo.is(Items.TNT)) {
             shootTNT(level, player, angle);
@@ -154,12 +155,6 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         }
 
         return ItemStack.EMPTY;
-    }
-
-    private ItemStack copySingleAmmo(ItemStack ammo) {
-        ItemStack shotAmmo = ammo.copy();
-        shotAmmo.setCount(1);
-        return shotAmmo;
     }
 
     private boolean shootThrowableItemProjectile(Level level, Player player, ItemStack ammo, float angle) {
@@ -242,14 +237,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
      * TNT
      **/
     private boolean isAmmo(Level level, ItemStack stack) {
-        return stack.is(Items.ARROW) ||
-                stack.is(Items.FIRE_CHARGE) ||
-                stack.is(Items.SPECTRAL_ARROW) ||
-                stack.is(Items.TIPPED_ARROW) ||
-                stack.is(Items.FIREWORK_ROCKET) ||
-                stack.is(Items.TRIDENT) ||
-                stack.is(Items.TNT) ||
-                ProjectileItemUtils.hasMatchingThrowableItemProjectile(level, stack);
+        return ProjectileItemUtils.isLaunchableProjectileItem(level, stack);
 
     }
 
@@ -338,6 +326,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     //三叉戟
     private void shootTrident(Level level, Player player, ItemStack trident, float velocity, float inaccuracy, float angle) {
         ThrownTrident tridentEntity = new ThrownTrident(level, player, trident);
+        tridentEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         tridentEntity.shootFromRotation(player, player.getXRot(), player.getYRot() + angle, 0.0F, velocity, inaccuracy);
         level.addFreshEntity(tridentEntity);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
