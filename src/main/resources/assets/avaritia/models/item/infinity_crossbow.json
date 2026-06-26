@@ -45,6 +45,12 @@
         "avaritia:pull": 1.0
       },
       "model": "avaritia:item/infinity_crossbow_pulling_2"
+    },
+    {
+      "predicate": {
+        "avaritia:charged": 1
+      },
+      "model": "avaritia:item/infinity_crossbow_pulling_2"
     }
   ]
 }
