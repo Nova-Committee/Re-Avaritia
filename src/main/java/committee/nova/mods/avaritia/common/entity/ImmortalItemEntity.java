@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.common.entity;
 
 
-import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -11,7 +10,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,11 +22,10 @@ import java.util.UUID;
  * Version: 1.0
  */
 public class ImmortalItemEntity extends ItemEntity {
-    private static final double STOP_PULLING_DISTANCE = 1.0D;
-    private static final double HOMING_SPEED_SCALE = 0.1D;
-    private Player followingPlayer;
+    private static final int RETURN_PICKUP_DELAY = 5;
+    private static final int INFINITE_PICKUP_DELAY = 32767;
     @Nullable
-    private UUID lockedHomingPlayerId;
+    private UUID lockedReturnPlayerId;
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
@@ -41,7 +38,7 @@ public class ImmortalItemEntity extends ItemEntity {
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);
-            entity.setDefaultPickUpDelay();
+            entity.setPickUpDelay(RETURN_PICKUP_DELAY);
             entity.applyImmortalLifetime();
         }
         return entity;
@@ -53,7 +50,9 @@ public class ImmortalItemEntity extends ItemEntity {
         if (entity != null) {
             entity.restoreFrom(location);
             entity.setItem(itemStack);
-            entity.lockedHomingPlayerId = getLockedHomingPlayerId(location);
+            entity.lockedReturnPlayerId = getLockedReturnPlayerId(location);
+            entity.lockToReturnPlayer();
+            entity.shortenPickupDelay();
             entity.applyImmortalLifetime();
         }
         return entity;
@@ -74,52 +73,57 @@ public class ImmortalItemEntity extends ItemEntity {
         super.tick();
 
         if (!this.level().isClientSide) {
-            updateHomingMotion();
+            returnToOwner();
         }
     }
 
-    private void updateHomingMotion() {
+    private void returnToOwner() {
         if (this.pickupDelay > 0) {
             return;
         }
 
-        UUID lockedPlayerId = this.lockedHomingPlayerId;
-        if (!isValidFollowingPlayer(lockedPlayerId)) {
-            this.followingPlayer = findFollowingPlayer(lockedPlayerId);
-        }
-        if (this.followingPlayer == null) {
+        Player player = findReturnPlayer();
+        if (player == null) {
             return;
         }
 
-        double distance = this.distanceTo(this.followingPlayer);
-        if (distance <= STOP_PULLING_DISTANCE) {
-            this.setDeltaMovement(Vec3.ZERO);
+        ItemStack remaining = this.getItem().copy();
+        if (remaining.isEmpty()) {
             return;
         }
 
-        Vec3 direction = new Vec3(
-                this.followingPlayer.getX() - this.getX(),
-                this.followingPlayer.getY() + this.followingPlayer.getEyeHeight() - this.getY(),
-                this.followingPlayer.getZ() - this.getZ()
-        ).normalize();
-        double speed = Math.min(distance * HOMING_SPEED_SCALE, ModConfig.immortalItemEntitySpeed.get());
+        player.getInventory().add(remaining);
+        if (remaining.isEmpty()) {
+            this.discard();
+            return;
+        }
 
-        this.setDeltaMovement(direction.scale(speed).add(0, -0.02D, 0));
+        this.setItem(remaining);
+        this.teleportTo(player.getX(), player.getY() + 0.25D, player.getZ());
+        this.setDeltaMovement(0.0D, 0.0D, 0.0D);
+        this.setPickUpDelay(RETURN_PICKUP_DELAY);
+        this.lockToReturnPlayer();
+    }
+
+    private void shortenPickupDelay() {
+        if (this.pickupDelay != INFINITE_PICKUP_DELAY) {
+            this.pickupDelay = Math.min(this.pickupDelay, RETURN_PICKUP_DELAY);
+        }
     }
 
     @Nullable
-    private static UUID getLockedHomingPlayerId(Entity location) {
+    private static UUID getLockedReturnPlayerId(Entity location) {
         if (!(location instanceof ItemEntity itemEntity)) {
             return null;
         }
 
         CompoundTag itemData = new CompoundTag();
         itemEntity.addAdditionalSaveData(itemData);
-        return getLockedHomingPlayerId(itemData);
+        return getLockedReturnPlayerId(itemData);
     }
 
     @Nullable
-    private static UUID getLockedHomingPlayerId(CompoundTag itemData) {
+    private static UUID getLockedReturnPlayerId(CompoundTag itemData) {
         if (itemData.hasUUID("Owner")) {
             return itemData.getUUID("Owner");
         }
@@ -130,35 +134,35 @@ public class ImmortalItemEntity extends ItemEntity {
     }
 
     @Nullable
-    private Player findFollowingPlayer(@Nullable UUID lockedPlayerId) {
-        if (lockedPlayerId == null) {
-            return this.level().getNearestPlayer(this, ModConfig.immortalItemEntityRange.get());
+    private Player findReturnPlayer() {
+        if (this.lockedReturnPlayerId == null) {
+            return null;
         }
         if (!(this.level() instanceof ServerLevel serverLevel)) {
             return null;
         }
 
-        Player player = serverLevel.getPlayerByUUID(lockedPlayerId);
-        return isPlayerInHomingRange(player) ? player : null;
+        Player player = serverLevel.getPlayerByUUID(this.lockedReturnPlayerId);
+        return isValidReturnPlayer(player) ? player : null;
     }
 
-    private boolean isValidFollowingPlayer(@Nullable UUID lockedPlayerId) {
-        return this.followingPlayer != null
-                && (lockedPlayerId == null || this.followingPlayer.getUUID().equals(lockedPlayerId))
-                && isPlayerInHomingRange(this.followingPlayer);
-    }
-
-    private boolean isPlayerInHomingRange(@Nullable Player player) {
+    private boolean isValidReturnPlayer(@Nullable Player player) {
         return player != null
                 && player.isAlive()
-                && player.level() == this.level()
-                && this.distanceTo(player) <= ModConfig.immortalItemEntityRange.get();
+                && player.level() == this.level();
+    }
+
+    private void lockToReturnPlayer() {
+        if (this.lockedReturnPlayerId != null) {
+            this.setTarget(this.lockedReturnPlayerId);
+        }
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.lockedHomingPlayerId = getLockedHomingPlayerId(compound);
+        this.lockedReturnPlayerId = getLockedReturnPlayerId(compound);
+        this.lockToReturnPlayer();
     }
 
     @Override
