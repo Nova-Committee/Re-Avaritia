@@ -28,21 +28,21 @@
   "overrides": [
     {
       "predicate": {
-        "pulling": 1
+        "avaritia:pulling": 1
       },
       "model": "avaritia:item/infinity_crossbow_pulling_0"
     },
     {
       "predicate": {
-        "pulling": 1,
-        "pull": 0.58
+        "avaritia:pulling": 1,
+        "avaritia:pull": 0.58
       },
       "model": "avaritia:item/infinity_crossbow_pulling_1"
     },
     {
       "predicate": {
-        "pulling": 1,
-        "pull": 1.0
+        "avaritia:pulling": 1,
+        "avaritia:pull": 1.0
       },
       "model": "avaritia:item/infinity_crossbow_pulling_2"
     }

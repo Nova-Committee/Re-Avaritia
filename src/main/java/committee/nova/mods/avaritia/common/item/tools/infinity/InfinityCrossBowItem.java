@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantItem, ISwitchable, IUndamageable, IBowTransform {
-    private static final int CHARGE_DURATION_TICKS = 1;
+    private static final int CHARGE_DURATION_TICKS = 10;
 
     public InfinityCrossBowItem() {
         super(new Properties()
@@ -95,16 +95,16 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     private void performShooting(Level level, Player player, InteractionHand hand, ItemStack crossbow, float velocity, float inaccuracy) {
         if (level.isClientSide) return;
         ItemStack stack = player.getItemInHand(hand);
-        ItemStack ammo = findAmmo(player);
         boolean isMulti = isActive(crossbow, "infinity_crossbow_multi");
         int projectileCount = isMulti ? 5 : 1;
         float[] angles = isMulti ? new float[]{-20.0F, -10.0F, 0.0F, 10.0F, 20.0F} : new float[]{0.0F};
 
         for (int i = 0; i < projectileCount; i++) {
             float angle = angles[Math.min(i, angles.length - 1)];
+            ItemStack ammo = findAmmo(player);
             if (!ammo.isEmpty()) {
-
-                shootBasedOnAmmo(level, player, ammo, angle);
+                shootBasedOnAmmo(level, player, copySingleAmmo(ammo), angle);
+                consumeAmmo(player, ammo);
             } else {
                 shootInfnityArrow(level, player, 3.0F, 1.0F, angle);
             }
@@ -153,6 +153,18 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
         }
 
         return ItemStack.EMPTY;
+    }
+
+    private ItemStack copySingleAmmo(ItemStack ammo) {
+        ItemStack shotAmmo = ammo.copy();
+        shotAmmo.setCount(1);
+        return shotAmmo;
+    }
+
+    private void consumeAmmo(Player player, ItemStack ammo) {
+        if (!player.getAbilities().instabuild) {
+            ammo.shrink(1);
+        }
     }
 
     //需要在这里声明物品是否可以充当发射物
