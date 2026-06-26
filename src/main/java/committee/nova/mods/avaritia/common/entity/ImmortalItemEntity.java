@@ -19,6 +19,10 @@ import org.jetbrains.annotations.NotNull;
  * Version: 1.0
  */
 public class ImmortalItemEntity extends ItemEntity {
+    private static final double STOP_PULLING_DISTANCE = 1.0D;
+    private static final double HOMING_SPEED_SCALE = 0.1D;
+    private Player followingPlayer;
+
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
         this.lifespan = Integer.MAX_VALUE;
@@ -61,27 +65,44 @@ public class ImmortalItemEntity extends ItemEntity {
     public void tick() {
         super.tick();
 
-
         if (!this.level().isClientSide) {
-
-            Player targetPlayer = this.level().getNearestPlayer(this, ModConfig.immortalItemEntityRange.get());
-
-
-            if (targetPlayer != null) {
-
-                Vec3 direction = new Vec3(
-                        targetPlayer.getX() - this.getX(),
-                        targetPlayer.getY() + targetPlayer.getEyeHeight() - this.getY(),
-                        targetPlayer.getZ() - this.getZ()
-                ).normalize();
-
-
-                this.setDeltaMovement(direction.scale(ModConfig.immortalItemEntitySpeed.get()));
-
-
-                this.setDeltaMovement(this.getDeltaMovement().add(0, -0.02D, 0));
-            }
+            updateHomingMotion();
         }
+    }
+
+    private void updateHomingMotion() {
+        if (this.pickupDelay > 0) {
+            return;
+        }
+
+        if (!isValidFollowingPlayer()) {
+            this.followingPlayer = this.level().getNearestPlayer(this, ModConfig.immortalItemEntityRange.get());
+        }
+        if (this.followingPlayer == null) {
+            return;
+        }
+
+        double distance = this.distanceTo(this.followingPlayer);
+        if (distance <= STOP_PULLING_DISTANCE) {
+            this.setDeltaMovement(Vec3.ZERO);
+            return;
+        }
+
+        Vec3 direction = new Vec3(
+                this.followingPlayer.getX() - this.getX(),
+                this.followingPlayer.getY() + this.followingPlayer.getEyeHeight() - this.getY(),
+                this.followingPlayer.getZ() - this.getZ()
+        ).normalize();
+        double speed = Math.min(distance * HOMING_SPEED_SCALE, ModConfig.immortalItemEntitySpeed.get());
+
+        this.setDeltaMovement(direction.scale(speed).add(0, -0.02D, 0));
+    }
+
+    private boolean isValidFollowingPlayer() {
+        return this.followingPlayer != null
+                && this.followingPlayer.isAlive()
+                && this.followingPlayer.level() == this.level()
+                && this.distanceTo(this.followingPlayer) <= ModConfig.immortalItemEntityRange.get();
     }
 
     @Override
