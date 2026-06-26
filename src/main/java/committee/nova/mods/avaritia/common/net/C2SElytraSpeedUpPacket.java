@@ -1,6 +1,5 @@
 package committee.nova.mods.avaritia.common.net;
 
-import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,7 +17,6 @@ public class C2SElytraSpeedUpPacket {
     private static final double TAKEOFF_UPWARD_SPEED = 0.72D;
     private static final double TAKEOFF_FORWARD_SPEED = 0.35D;
     private static final double BOOST_TAKEOFF_FORWARD_SPEED = 0.65D;
-    private static final String CAELUS_MOD_ID = "caelus";
 
     private final boolean customFlying;
     private final boolean boosting;
@@ -63,27 +61,17 @@ public class C2SElytraSpeedUpPacket {
             return true;
         }
 
-        if (canStartInfinityElytraFallFlying(player)) {
-            player.startFallFlying();
+        if (InfinityElytraUtils.canStartCuriosFallbackFallFlying(player)) {
+            InfinityElytraUtils.startCuriosFallbackFallFlying(player);
             return true;
         }
 
         if (canLaunchFromGround(player)) {
             launchFromGround(player, boosting);
+            InfinityElytraUtils.startCuriosFallbackFallFlying(player);
         }
 
         return false;
-    }
-
-    private static boolean canStartInfinityElytraFallFlying(ServerPlayer player) {
-        return !Const.isLoad(CAELUS_MOD_ID)
-                && InfinityElytraUtils.hasInfinityElytraInCurios(player)
-                && !player.onGround()
-                && !player.isFallFlying()
-                && !player.isPassenger()
-                && !player.isInWater()
-                && !player.onClimbable()
-                && !player.hasEffect(MobEffects.LEVITATION);
     }
 
     private static boolean canLaunchFromGround(ServerPlayer player) {

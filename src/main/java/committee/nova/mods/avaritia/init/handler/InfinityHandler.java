@@ -326,6 +326,21 @@ public class InfinityHandler {
 
 
     @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide()) {
+            return;
+        }
+        if (event.player instanceof ServerPlayer player) {
+            InfinityElytraUtils.updateCuriosFallbackFallFlying(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        InfinityElytraUtils.clearCuriosFallbackFallFlying(event.getEntity());
+    }
+
+    @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
         if (event.isRecentlyHit() &&
                 event.getEntity() instanceof AbstractSkeleton
