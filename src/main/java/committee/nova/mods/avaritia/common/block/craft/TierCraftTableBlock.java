@@ -32,7 +32,11 @@ public class TierCraftTableBlock extends BaseTileEntityBlock {
     ModCraftTier tier;
 
     public TierCraftTableBlock(ModCraftTier tier, BlockBehaviour.Properties properties) {
-        super(MapColor.METAL, tier.sound, tier.hardness, tier.resistance, true, properties);
+        super(properties
+                .mapColor(MapColor.METAL)
+                .sound(tier.sound)
+                .strength(tier.hardness, tier.resistance)
+                .requiresCorrectToolForDrops());
         this.tier = tier;
     }
 
