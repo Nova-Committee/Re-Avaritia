@@ -145,7 +145,7 @@ public class ProjectileItemUtils {
 
         for (EntityType<?> type : ForgeRegistries.ENTITY_TYPES.getValues()) {
             Entity entity = createEntitySafely(type, level);
-            if (entity instanceof ThrowableItemProjectile projectile && projectile.getItem().is(item)) {
+            if (entity instanceof ThrowableItemProjectile projectile && hasDefaultItem(projectile, item)) {
                 entity.discard();
                 THROWABLE_PROJECTILE_TYPES.put(item, type);
                 return type;
@@ -171,6 +171,14 @@ public class ProjectileItemUtils {
             return type.create(level);
         } catch (RuntimeException ignored) {
             return null;
+        }
+    }
+
+    private static boolean hasDefaultItem(ThrowableItemProjectile projectile, Item item) {
+        try {
+            return projectile.getItem().is(item);
+        } catch (RuntimeException ignored) {
+            return false;
         }
     }
 

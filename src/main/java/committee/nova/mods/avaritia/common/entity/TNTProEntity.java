@@ -9,7 +9,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -49,6 +48,7 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     protected void defineSynchedData() {
+        super.defineSynchedData();
         this.entityData.define(DATA_FUSE_ID, 80);
     }
 
@@ -159,6 +159,6 @@ public class TNTProEntity extends ThrowableItemProjectile implements TraceableEn
     }
 
     static {
-        DATA_FUSE_ID = SynchedEntityData.defineId(PrimedTnt.class, EntityDataSerializers.INT);
+        DATA_FUSE_ID = SynchedEntityData.defineId(TNTProEntity.class, EntityDataSerializers.INT);
     }
 }
