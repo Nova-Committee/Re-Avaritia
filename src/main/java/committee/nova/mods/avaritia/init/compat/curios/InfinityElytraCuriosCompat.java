@@ -17,11 +17,12 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 import java.util.UUID;
 
 /**
- * Add Single Curios Compat for infinity elytra
- * @author  HowXu <dev@howxu.cn>
+ * 无尽鞘翅的 Curios 背饰槽能力适配。
+ *
+ * @author HowXu <dev@howxu.cn>
+ * @author cnlimiter
  */
 public class InfinityElytraCuriosCompat {
-    // special register for caelus which provides a elytra modifier api
     private static final ResourceLocation CAELUS_FALL_FLYING = new ResourceLocation("caelus", "fall_flying");
 
     public static ICapabilityProvider createProvider(ItemStack stack) {
@@ -43,6 +44,7 @@ public class InfinityElytraCuriosCompat {
             @Override
             public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid) {
                 Multimap<Attribute, AttributeModifier> modifiers = HashMultimap.create();
+                // cnlimiter：Caelus 存在时用它的 fall_flying 属性接入原版鞘翅判定；无 Caelus 的兜底逻辑放在 InfinityElytraUtils。
                 Attribute fallFlying = ForgeRegistries.ATTRIBUTES.getValue(CAELUS_FALL_FLYING);
                 if (fallFlying != null) {
                     modifiers.put(fallFlying, new AttributeModifier(uuid, "Infinity elytra curio modifier", 1.0D, AttributeModifier.Operation.ADDITION));

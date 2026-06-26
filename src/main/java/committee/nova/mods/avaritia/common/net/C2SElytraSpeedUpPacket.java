@@ -53,22 +53,13 @@ public class C2SElytraSpeedUpPacket {
     }
 
     private static boolean ensureFallFlying(ServerPlayer player, boolean boosting) {
-        if (player.isFallFlying()) {
-            return true;
-        }
-
-        if (player.tryToStartFallFlying()) {
-            return true;
-        }
-
-        if (InfinityElytraUtils.canStartCuriosFallbackFallFlying(player)) {
-            InfinityElytraUtils.startCuriosFallbackFallFlying(player);
+        if (InfinityElytraUtils.tryStartFallFlying(player)) {
             return true;
         }
 
         if (canLaunchFromGround(player)) {
             launchFromGround(player, boosting);
-            InfinityElytraUtils.startCuriosFallbackFallFlying(player);
+            InfinityElytraUtils.prepareCuriosFallbackTakeoff(player);
         }
 
         return false;

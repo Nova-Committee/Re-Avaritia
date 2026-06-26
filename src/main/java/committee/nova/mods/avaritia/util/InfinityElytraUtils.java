@@ -1,8 +1,8 @@
 package committee.nova.mods.avaritia.util;
 
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.compat.curios.CuriosTools;
 import committee.nova.mods.avaritia.init.registry.ModItems;
-import committee.nova.mods.avaritia.Const;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -14,15 +14,20 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Seperate logics of infinity elytra checking from single chest to both curios and equipment
- * @author  HowXu <dev@howxu.cn>
+ * 无尽鞘翅装备查询与 Curios/Caelus 兼容入口。
+ *
+ * @author HowXu <dev@howxu.cn>
+ * @author cnlimiter
  */
 public class InfinityElytraUtils {
     private static final String CAELUS_MOD_ID = "caelus";
-    private static final int ACTIVE_FALL_FLYING = -1;
+    private static final int FALL_FLYING_ACTIVE = -1;
     private static final int PENDING_TAKEOFF_TICKS = 8;
     private static final Map<UUID, Integer> CURIO_FALL_FLYERS = new HashMap<>();
 
+    /**
+     * cnlimiter：统一无尽鞘翅的胸甲位和 Curios 背饰槽查询，避免各处自行判断导致兼容逻辑分叉。
+     */
     public static boolean hasInfinityElytraEquipped(Player player) {
         return !getInfinityElytraStack(player).isEmpty();
     }
@@ -39,15 +44,23 @@ public class InfinityElytraUtils {
         return !findInfinityElytraInCurios(player).isEmpty();
     }
 
-    public static boolean canStartCuriosFallbackFallFlying(Player player) {
-        return canMaintainCuriosFallbackFallFlying(player) && !player.isFallFlying();
+    public static boolean tryStartFallFlying(ServerPlayer player) {
+        if (player.isFallFlying()) {
+            return true;
+        }
+        if (player.tryToStartFallFlying()) {
+            return true;
+        }
+        if (!canUseCuriosFallback(player) || player.onGround()) {
+            return false;
+        }
+
+        activateCuriosFallbackFallFlying(player);
+        return true;
     }
 
-    public static void startCuriosFallbackFallFlying(ServerPlayer player) {
-        if (canMaintainCuriosFallbackFallFlying(player)) {
-            CURIO_FALL_FLYERS.put(player.getUUID(), ACTIVE_FALL_FLYING);
-            keepCuriosFallbackFallFlying(player);
-        } else if (canWaitForCuriosFallbackTakeoff(player)) {
+    public static void prepareCuriosFallbackTakeoff(ServerPlayer player) {
+        if (canUseCuriosFallback(player)) {
             CURIO_FALL_FLYERS.put(player.getUUID(), PENDING_TAKEOFF_TICKS);
         }
     }
@@ -57,10 +70,13 @@ public class InfinityElytraUtils {
         if (state == null) {
             return;
         }
-        if (canMaintainCuriosFallbackFallFlying(player)) {
-            CURIO_FALL_FLYERS.put(player.getUUID(), ACTIVE_FALL_FLYING);
-            keepCuriosFallbackFallFlying(player);
-        } else if (state > 0 && canWaitForCuriosFallbackTakeoff(player)) {
+
+        if (canUseCuriosFallback(player) && !player.onGround()) {
+            activateCuriosFallbackFallFlying(player);
+            return;
+        }
+
+        if (state > 0 && canUseCuriosFallback(player)) {
             CURIO_FALL_FLYERS.put(player.getUUID(), state - 1);
         } else {
             CURIO_FALL_FLYERS.remove(player.getUUID());
@@ -71,23 +87,25 @@ public class InfinityElytraUtils {
         CURIO_FALL_FLYERS.remove(player.getUUID());
     }
 
-    private static void keepCuriosFallbackFallFlying(ServerPlayer player) {
+    private static void activateCuriosFallbackFallFlying(ServerPlayer player) {
+        CURIO_FALL_FLYERS.put(player.getUUID(), FALL_FLYING_ACTIVE);
         player.startFallFlying();
         player.resetFallDistance();
     }
 
-    private static boolean canMaintainCuriosFallbackFallFlying(Player player) {
-        return canWaitForCuriosFallbackTakeoff(player)
-                && !player.onGround();
-    }
-
-    private static boolean canWaitForCuriosFallbackTakeoff(Player player) {
-        return !Const.isLoad(CAELUS_MOD_ID)
+    private static boolean canUseCuriosFallback(Player player) {
+        return needsCuriosFallback(player)
                 && hasInfinityElytraInCurios(player)
                 && !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
                 && !player.hasEffect(MobEffects.LEVITATION);
+    }
+
+    private static boolean needsCuriosFallback(Player player) {
+        return Const.curios
+                && !Const.isLoad(CAELUS_MOD_ID)
+                && !isInfinityElytra(player.getItemBySlot(EquipmentSlot.CHEST));
     }
 
     private static ItemStack findInfinityElytraInCurios(Player player) {

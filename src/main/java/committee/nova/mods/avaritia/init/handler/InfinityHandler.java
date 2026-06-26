@@ -331,6 +331,7 @@ public class InfinityHandler {
             return;
         }
         if (event.player instanceof ServerPlayer player) {
+            // cnlimiter：仅维护无 Caelus 时 Curios 背饰槽无尽鞘翅的服务端滑翔状态。
             InfinityElytraUtils.updateCuriosFallbackFallFlying(player);
         }
     }
