@@ -35,6 +35,7 @@ public class Const {
     public static final GameProfile AVARITIA_FAKE_PLAYER = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
     public static final boolean curios = ModList.get().isLoaded("curios");
+    public static final boolean acceleratedrendering = ModList.get().isLoaded("acceleratedrendering");
 
 
     public static ResourceLocation rl(String path) {
