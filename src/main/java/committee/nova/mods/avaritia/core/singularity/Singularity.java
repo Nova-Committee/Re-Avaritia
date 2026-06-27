@@ -85,13 +85,6 @@ public class Singularity {
         return this;
     }
 
-    public Singularity copy() {
-        Singularity singularity = new Singularity(this.registryName, this.displayName, this.overlayColor, this.underlayColor,
-                this.count, this.timeCost, this.ingredient, this.enabled, this.recipeEnabled);
-        singularity.conditions.addAll(this.conditions);
-        return singularity;
-    }
-
     public Singularity addCondition(ICondition condition) {
         this.conditions.add(condition);
         return this;

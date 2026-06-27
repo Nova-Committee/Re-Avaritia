@@ -8,7 +8,7 @@
   },
   "name": "avaritia:quartz",
   "overlayColor": "eae5de",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "b6a48e"
 }

@@ -8,7 +8,7 @@
   },
   "name": "avaritia:blue_ice",
   "overlayColor": "8eb8fe",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "6b9dfb"
 }

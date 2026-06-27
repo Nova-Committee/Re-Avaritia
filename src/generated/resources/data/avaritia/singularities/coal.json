@@ -8,7 +8,7 @@
   },
   "name": "avaritia:coal",
   "overlayColor": "363739",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "261e24"
 }

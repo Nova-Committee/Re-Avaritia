@@ -8,7 +8,7 @@
   },
   "name": "avaritia:netherite",
   "overlayColor": "443a3b",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "1a1616"
 }

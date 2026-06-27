@@ -16,7 +16,7 @@
   },
   "name": "avaritia:aluminum",
   "overlayColor": "caccda",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "9a9ca6"
 }

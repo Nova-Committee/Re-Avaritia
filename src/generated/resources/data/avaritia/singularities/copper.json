@@ -8,7 +8,7 @@
   },
   "name": "avaritia:copper",
   "overlayColor": "fa977c",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "bc5430"
 }

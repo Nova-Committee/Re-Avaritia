@@ -7,24 +7,21 @@ import com.google.gson.JsonParseException;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
-import committee.nova.mods.avaritia.common.item.singularity.SingularityItem;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.Const.GSON;
 
@@ -34,14 +31,12 @@ import static committee.nova.mods.avaritia.Const.GSON;
 public class SingularityReloadListener extends SimpleJsonResourceReloadListener {
     public static SingularityReloadListener INSTANCE = new SingularityReloadListener();
     public ICondition.IContext context;
-    @Getter private Map<ResourceLocation, Singularity> dataSingularities = Maps.newConcurrentMap();
-    @Getter private Map<ResourceLocation, Singularity> runSingularities = Maps.newConcurrentMap();
-    @Getter private List<ResourceLocation> removeRecipes = Lists.newCopyOnWriteArrayList();
-    @Getter private List<ResourceLocation> removeSingularities = Lists.newCopyOnWriteArrayList();
-    @Getter private boolean removeAllRecipes = false;
-    @Getter private boolean removeAll = false;
-    private volatile Map<ResourceLocation, Singularity> allSingularities = Collections.emptyMap();
-    private volatile List<Singularity> singularitiesWithIngredient = List.of();
+    @Getter @Setter private Map<ResourceLocation, Singularity> dataSingularities = Maps.newConcurrentMap();
+    @Getter @Setter private Map<ResourceLocation, Singularity> runSingularities = Maps.newConcurrentMap();
+    @Getter @Setter private List<ResourceLocation> removeRecipes = Lists.newCopyOnWriteArrayList();
+    @Getter @Setter private List<ResourceLocation> removeSingularities = Lists.newCopyOnWriteArrayList();
+    @Getter @Setter private boolean removeAllRecipes = false;
+    @Getter @Setter private boolean removeAll = false;
 
     public SingularityReloadListener() {
         super(GSON, "singularities");
@@ -54,8 +49,6 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
 
     @Override
     protected void apply(@NotNull Map<ResourceLocation, JsonElement> object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-        Map<ResourceLocation, Singularity> loadedSingularities = Maps.newConcurrentMap();
-
         for (Map.Entry<ResourceLocation, JsonElement> entry : object.entrySet()) {
             ResourceLocation resourcelocation = entry.getKey();
             if (resourcelocation.getPath().startsWith("_")) continue;
@@ -70,22 +63,24 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
                     Const.LOGGER.info("Singularity: Skipping loading singularity {} as it's serializer returned null", resourcelocation);
                     continue;
                 }
-                loadedSingularities.put(resourcelocation, singularity);
+                dataSingularities.put(resourcelocation, singularity);
             } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
                 Const.LOGGER.error("Singularity: Parsing error loading singularity {}", resourcelocation, jsonparseexception);
             }
         }
-        this.dataSingularities = loadedSingularities;
-        refreshSingularityView();
         onSingularitiesReloaded(getAllSingularities());
     }
 
     public Map<ResourceLocation, Singularity> getAllSingularities() {
-        return this.allSingularities;
-    }
-
-    public List<Singularity> getSingularitiesWithIngredient() {
-        return this.singularitiesWithIngredient;
+        Map<ResourceLocation, Singularity> all = new ConcurrentHashMap<>(this.dataSingularities);
+        all.putAll(this.runSingularities);
+        all.forEach((id, singularity) -> {
+            if (this.removeRecipes.contains(id)) all.get(id).setRecipeEnabled(false);
+            if (this.removeSingularities.contains(id)) all.remove(id);
+        });
+        if (this.removeAllRecipes) all.forEach((id, singularity) -> singularity.setRecipeEnabled(false));
+        if (this.removeAll) all.clear();
+        return all;
     }
 
     public void registerSingularity(Singularity singularity) {
@@ -96,141 +91,33 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
             } else {
                 Const.LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
             }
-            refreshSingularityView();
-            invalidateDerivedCaches();
-            MinecraftForge.EVENT_BUS.post(new SingularityEvent.Add(getAllSingularities(), singularity));
+            MinecraftForge.EVENT_BUS.post(new SingularityEvent.Add(runSingularities, singularity));
         }
     }
 
     public void removeSingularityRecipe(ResourceLocation id) {
         this.removeRecipes.add(id);
-        refreshSingularityView();
-        invalidateDerivedCaches();
     }
 
     public void removeSingularity(ResourceLocation id) {
         this.removeSingularities.add(id);
-        refreshSingularityView();
-        invalidateDerivedCaches();
         MinecraftForge.EVENT_BUS.post(new SingularityEvent.Remove(getAllSingularities(), id));
 
     }
 
     public Singularity getSingularity(ResourceLocation id) {
-        return this.allSingularities.get(id);
-    }
-
-    public void replaceSingularities(Collection<Singularity> dataSingularities, Collection<Singularity> runSingularities) {
-        this.dataSingularities = toSingularityMap(dataSingularities);
-        this.runSingularities = toSingularityMap(runSingularities);
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    public void setDataSingularities(Map<ResourceLocation, Singularity> dataSingularities) {
-        this.dataSingularities = copyToConcurrentMap(dataSingularities);
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    public void setRunSingularities(Map<ResourceLocation, Singularity> runSingularities) {
-        this.runSingularities = copyToConcurrentMap(runSingularities);
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    public void setRemoveRecipes(List<ResourceLocation> removeRecipes) {
-        this.removeRecipes = Lists.newCopyOnWriteArrayList(removeRecipes);
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    public void setRemoveSingularities(List<ResourceLocation> removeSingularities) {
-        this.removeSingularities = Lists.newCopyOnWriteArrayList(removeSingularities);
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    public void setRemoveAllRecipes(boolean removeAllRecipes) {
-        this.removeAllRecipes = removeAllRecipes;
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    public void setRemoveAll(boolean removeAll) {
-        this.removeAll = removeAll;
-        refreshSingularityView();
-        invalidateDerivedCaches();
-    }
-
-    private static Map<ResourceLocation, Singularity> toSingularityMap(Collection<Singularity> singularities) {
-        Map<ResourceLocation, Singularity> map = Maps.newConcurrentMap();
-        if (singularities == null) {
-            return map;
-        }
-        for (Singularity singularity : singularities) {
-            if (singularity != null && singularity.getRegistryName() != null) {
-                map.put(singularity.getRegistryName(), singularity);
-            }
-        }
-        return map;
-    }
-
-    private static Map<ResourceLocation, Singularity> copyToConcurrentMap(Map<ResourceLocation, Singularity> singularities) {
-        Map<ResourceLocation, Singularity> map = Maps.newConcurrentMap();
-        if (singularities != null) {
-            map.putAll(singularities);
-        }
-        return map;
-    }
-
-    private void refreshSingularityView() {
-        if (this.removeAll) {
-            this.allSingularities = Collections.emptyMap();
-            this.singularitiesWithIngredient = List.of();
-            return;
+        Singularity runtimeSingularity = this.runSingularities.get(id);
+        if (runtimeSingularity != null) {
+            return runtimeSingularity;
         }
 
-        Map<ResourceLocation, Singularity> singularities = new LinkedHashMap<>();
-        appendNormalizedSingularities(singularities, this.dataSingularities);
-        appendNormalizedSingularities(singularities, this.runSingularities);
-
-        this.removeSingularities.forEach(singularities::remove);
-
-        if (this.removeAllRecipes) {
-            singularities.replaceAll((id, singularity) -> singularity.copy().setRecipeEnabled(false));
-        } else {
-            for (ResourceLocation id : this.removeRecipes) {
-                Singularity singularity = singularities.get(id);
-                if (singularity != null) {
-                    singularities.put(id, singularity.copy().setRecipeEnabled(false));
-                }
-            }
-        }
-
-        this.allSingularities = Collections.unmodifiableMap(singularities);
-        this.singularitiesWithIngredient = singularities.values()
-                .stream()
-                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
-                .toList();
+        return this.dataSingularities.get(id);
     }
 
-    private static void appendNormalizedSingularities(Map<ResourceLocation, Singularity> target, Map<ResourceLocation, Singularity> source) {
-        source.forEach((id, singularity) -> {
-            if (singularity != null) {
-                target.put(id, singularity.copy());
-            }
-        });
-    }
-
-    private static void invalidateDerivedCaches() {
-        InfinityCatalystCraftRecipe.INGREDIENTS_LOADED.clear();
-        EternalSingularityCraftRecipe.INGREDIENTS_LOADED.clear();
-        SingularityItem.clearCachedSingularities();
-    }
 
     private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
-        invalidateDerivedCaches();
+        InfinityCatalystCraftRecipe.INGREDIENTS_LOADED.clear();
+        EternalSingularityCraftRecipe.INGREDIENTS_LOADED.clear();
         MinecraftForge.EVENT_BUS.post(new SingularityEvent.Reload(singularities));
     }
 

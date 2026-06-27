@@ -16,7 +16,7 @@
   },
   "name": "avaritia:nickel",
   "overlayColor": "e1d798",
-  "recipeEnabled": true,
+  "recipeDisabled": true,
   "timeCost": 240,
   "underlayColor": "b1976c"
 }

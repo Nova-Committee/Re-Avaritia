@@ -41,8 +41,11 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
         var ingredients = this.getIngredients();
         if (ingredients.isEmpty()) return false;
 
-        var singularities = SingularityReloadListener.INSTANCE.getSingularitiesWithIngredient();
-        int singularityCount = singularities.size();
+        int singularityCount = SingularityReloadListener.INSTANCE.getAllSingularities().values()
+                .stream()
+                .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
+                .mapToInt(singularity -> 1)
+                .sum();
 
         boolean[] found = new boolean[singularityCount];
         int validItems = 0;
@@ -53,16 +56,18 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
                 validItems++;
                 boolean matched = false;
                 int index = 0;
-                for (var singularity : singularities) {
-                    ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                    if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                        if (!found[index]) {
-                            found[index] = true;
-                            matched = true;
-                            break;
+                for (var singularity : SingularityReloadListener.INSTANCE.getAllSingularities().values()) {
+                    if (singularity.getIngredient() != Ingredient.EMPTY) {
+                        ItemStack singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                        if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                            if (!found[index]) {
+                                found[index] = true;
+                                matched = true;
+                                break;
+                            }
                         }
+                        index++;
                     }
-                    index++;
                 }
                 if (!matched) {
                     return false;
@@ -82,8 +87,9 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public @NotNull NonNullList<Ingredient> getIngredients() {
         if (!INGREDIENTS_LOADED.getOrDefault(this, false)) {
             super.getIngredients().clear();
-            SingularityReloadListener.INSTANCE.getSingularitiesWithIngredient()
+            SingularityReloadListener.INSTANCE.getAllSingularities().values()
                     .stream()
+                    .filter(singularity -> singularity.getIngredient() != Ingredient.EMPTY)
                     .map(SingularityUtils::getItemForSingularity)
                     .map(Ingredient::of)
                     .forEach(super.getIngredients()::add);
@@ -99,18 +105,20 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
         var remaining = super.getRemainingItems(inv);
 
-        var singularities = SingularityReloadListener.INSTANCE.getSingularitiesWithIngredient();
-        if (!singularities.isEmpty()) {
+        var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
+        if (singularities != null && !singularities.isEmpty()) {
             for (int i = 0; i < remaining.size(); i++) {
                 var stack = inv.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    for (var singularity : singularities) {
-                        var singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                        if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                            var rem = singularityStack.copy();
-                            rem.setCount(1);
-                            remaining.set(i, rem);
-                            break;
+                    for (var singularity : singularities.values()) {
+                        if (singularity.getIngredient() != Ingredient.EMPTY) {
+                            var singularityStack = SingularityUtils.getItemForSingularity(singularity);
+                            if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
+                                var rem = singularityStack.copy();
+                                rem.setCount(1);
+                                remaining.set(i, rem);
+                                break;
+                            }
                         }
                     }
                 }
