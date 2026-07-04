@@ -18,8 +18,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +39,7 @@ public class Avaritia {
         @SuppressWarnings("removal")
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
+        bus.addListener(this::imc);
         bus.addListener(ModDataGen::gatherData);
 
         var forgeBus = MinecraftForge.EVENT_BUS;
@@ -62,6 +65,12 @@ public class Avaritia {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
                 return Util.make(new EndestPearlEntity(level, position.x(), position.y(), position.z()), (entity) -> entity.setItem(stack));
             }
+        });
+    }
+
+    public void imc(final InterModEnqueueEvent event) {
+        ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {
+            InterModComms.sendTo("acceleratedrendering", "item_blacklist", itemRegistryObject);
         });
     }
 

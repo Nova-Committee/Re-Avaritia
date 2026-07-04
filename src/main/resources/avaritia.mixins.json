@@ -16,8 +16,7 @@
   ],
   "client": [
     "ItemRendererMixin",
-    "PlayerRendererMixin",
-    "compat.acceleratedrendering.AcceleratedRenderingHaloBakedModelMixin"
+    "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

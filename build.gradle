@@ -122,10 +122,10 @@ dependencies {
     modImplementation("curse.maven:applied-energistics-2-223794:${ae2_version}")
     modRuntimeOnly("curse.maven:packagedauto-308380:${packagedauto_version}")
     modRuntimeOnly("curse.maven:packagedavaritia-308383:${packagedavaritia_version}")
-    // Accelerated Rendering 1.0.10.1-1.20.1-alpha
-    // For 1.21.1 this should be changed
-    modCompileOnly("curse.maven:accelerated-rendering-1314021:8179092")
 
+    // Accelerated Rendering
+    modRuntimeOnly("curse.maven:accelerated-rendering-1314021:${acceleratedrendering_version}")
+    // Mekanism
     modImplementation("mekanism:Mekanism:${mek_version}")
     //CoFH Core
     modRuntimeOnly("curse.maven:cofh-core-69162:${cofh_core_version}")//Thermal Expansion
