@@ -15,5 +15,6 @@
         "type": "avaritia:rainbow"
       }
     ]
-  }
+  },
+  "oversized_in_gui": true
 }

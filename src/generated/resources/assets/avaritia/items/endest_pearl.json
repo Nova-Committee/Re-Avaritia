@@ -4,5 +4,6 @@
     "model": "avaritia:item/endest_pearl",
     "size": 4,
     "texture": "avaritia:misc/halo"
-  }
+  },
+  "oversized_in_gui": true
 }

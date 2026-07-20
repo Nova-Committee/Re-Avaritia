@@ -4,5 +4,6 @@
     "model": "avaritia:item/enhancement_core",
     "size": 8,
     "texture": "avaritia:misc/halo"
-  }
+  },
+  "oversized_in_gui": true
 }

@@ -6,5 +6,6 @@
     ],
     "model": "avaritia:item/full_matter_cluster",
     "texture": "avaritia:misc/halo"
-  }
+  },
+  "oversized_in_gui": true
 }

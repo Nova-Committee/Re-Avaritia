@@ -45,7 +45,6 @@ public final class LayeredEffectItemModel implements ItemModel {
     private final List<BakedQuad> baseQuads;
     private final Optional<HaloLayer> haloLayer;
     private final Vector3fc[] effectExtents;
-    private final Vector3fc[] baseExtents;
     private final boolean cosmicArc;
     private final Map<String, SimpleMesh> tridentModels;
 
@@ -60,7 +59,6 @@ public final class LayeredEffectItemModel implements ItemModel {
         this.baseQuads = baseQuads;
         this.haloLayer = haloLayer;
         this.effectExtents = CuboidItemModelWrapper.computeExtents(effectQuads);
-        this.baseExtents = CuboidItemModelWrapper.computeExtents(baseQuads);
         this.cosmicArc = cosmicArc;
         this.tridentModels = tridentModels;
     }
@@ -167,7 +165,8 @@ public final class LayeredEffectItemModel implements ItemModel {
         ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         this.properties.applyToLayer(layer, displayContext);
         layer.setLocalTransform(pulseTransform(level, seed));
-        layer.setExtents(() -> this.baseExtents);
+        // 脉冲始终位于固定 halo 外包络内，不能让动画缩放参与 oversized GUI 的离屏纹理尺寸计算。
+        // 同一模型在创造栏和 JEI 中会使用不同 seed；动态 extents 会让共享渲染器在同帧改尺寸并关闭待绘制纹理。
         layer.setupSpecialModel(AvaritiaItemModelRenderers.PULSE, new AvaritiaItemModelRenderers.PulseLayerArgument(this.baseQuads));
         renderState.setAnimated();
     }
@@ -206,7 +205,9 @@ public final class LayeredEffectItemModel implements ItemModel {
         layer.setupSpecialModel(AvaritiaItemModelRenderers.EFFECT, argument);
         this.properties.applyToLayer(layer, displayContext);
         renderState.setAnimated();
-        // effect 参数包含独立 RenderType 和 uniform 数据，加入 identity 可避免多个物品图标共享错误缓存。
-        renderState.appendModelIdentityElement(argument);
+        // 超尺寸 GUI 物品按 model identity 复用离屏纹理。RenderType 每次提交都会新建，不能进入 identity，
+        // 否则每帧都会分配并关闭新的离屏纹理；只保留真正影响缓存画面的稳定参数。
+        renderState.appendModelIdentityElement(this.effect);
+        renderState.appendModelIdentityElement(Float.floatToIntBits(argument.opacity()));
     }
 }

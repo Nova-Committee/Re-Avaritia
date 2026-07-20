@@ -17,5 +17,6 @@
       "texture": "avaritia:misc/halo"
     },
     "property": "avaritia:matter_cluster_full"
-  }
+  },
+  "oversized_in_gui": true
 }

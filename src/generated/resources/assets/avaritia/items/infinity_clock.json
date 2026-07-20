@@ -13,5 +13,6 @@
       "texture": "avaritia:misc/halo"
     },
     "property": "avaritia:mode_flag"
-  }
+  },
+  "oversized_in_gui": true
 }

@@ -14,5 +14,6 @@
         "index": 1
       }
     ]
-  }
+  },
+  "oversized_in_gui": true
 }

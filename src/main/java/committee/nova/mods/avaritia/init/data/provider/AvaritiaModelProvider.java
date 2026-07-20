@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.client.model.loader.AvaritiaItemModelLoaders;
+import committee.nova.mods.avaritia.client.model.loader.base.HaloFields;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.Const;
@@ -16,7 +17,9 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.ConditionalItemModel;
 import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.RangeSelectItemModel;
 import net.minecraft.client.renderer.item.properties.select.DisplayContext;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -508,7 +511,29 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private void clientItem(Item item, ItemModel.Unbaked model) {
-        this.generatedClientItems.put(BuiltInRegistries.ITEM.getKey(item), new ClientItem(model, ClientItem.Properties.DEFAULT));
+        ClientItem.Properties properties = hasHaloLayer(model)
+                ? new ClientItem.Properties(true, true, 1.0F)
+                : ClientItem.Properties.DEFAULT;
+        this.generatedClientItems.put(BuiltInRegistries.ITEM.getKey(item), new ClientItem(model, properties));
+    }
+
+    /**
+     * halo 半径会超出普通 16x16 物品图标边界，必须让 GUI 渲染器保留越界区域。
+     */
+    private static boolean hasHaloLayer(ItemModel.Unbaked model) {
+        if (model instanceof HaloFields) {
+            return true;
+        }
+        if (model instanceof ConditionalItemModel.Unbaked conditional) {
+            return hasHaloLayer(conditional.onTrue()) || hasHaloLayer(conditional.onFalse());
+        }
+        if (model instanceof RangeSelectItemModel.Unbaked rangeSelect) {
+            return rangeSelect.fallback().map(AvaritiaModelProvider::hasHaloLayer).orElse(false)
+                    || rangeSelect.entries().stream()
+                    .map(RangeSelectItemModel.Entry::model)
+                    .anyMatch(AvaritiaModelProvider::hasHaloLayer);
+        }
+        return false;
     }
 
     private Identifier modelLocation(Item item) {

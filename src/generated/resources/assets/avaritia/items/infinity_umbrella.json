@@ -41,5 +41,6 @@
       "texture": "avaritia:misc/halo"
     },
     "property": "avaritia:umbrella_mode"
-  }
+  },
+  "oversized_in_gui": true
 }

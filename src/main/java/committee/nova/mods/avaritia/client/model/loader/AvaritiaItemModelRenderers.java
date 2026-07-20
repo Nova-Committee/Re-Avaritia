@@ -43,6 +43,8 @@ public final class AvaritiaItemModelRenderers {
     public static final SpecialModelRenderer<ArcLayerArgument> ARC = new ArcSpecialRenderer();
 
     private static final int PULSE_ALPHA_COLOR = 0x99FFFFFF;
+    // halo 与 pulse 是底模背后的背景层；普通物品保持 order(0)，星空遮罩使用 order(1)。
+    private static final int ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER = -1;
     // effect 覆盖层要排在基础物品层之后，才能让星空遮罩覆盖在原模型上而不是抢先写入。
     private static final int ITEM_EFFECT_OVERLAY_SUBMIT_ORDER = 1;
 
@@ -84,7 +86,7 @@ public final class AvaritiaItemModelRenderers {
             TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
                     .get(new SpriteId(Const.HALO_ATLAS_LOCATION, argument.texture()));
             RenderType renderType = NeoForgeRenderTypes.getItemLayeredTranslucent(sprite.atlasLocation());
-            submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER).submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
                 renderCircularHalo(pose, buffer, sprite, argument.setting(), lightCoords, overlayCoords);
             });
         }
@@ -149,7 +151,8 @@ public final class AvaritiaItemModelRenderers {
                 return;
             }
 
-            submitNodeCollector.submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
+            submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER)
+                    .submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
                 QuadInstance instance = new QuadInstance();
                 instance.setColor(PULSE_ALPHA_COLOR);
                 instance.setLightCoords(lightCoords);

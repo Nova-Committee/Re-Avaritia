@@ -3,5 +3,6 @@
     "type": "avaritia:halo",
     "model": "avaritia:item/infinity_ingot",
     "texture": "avaritia:misc/halo"
-  }
+  },
+  "oversized_in_gui": true
 }

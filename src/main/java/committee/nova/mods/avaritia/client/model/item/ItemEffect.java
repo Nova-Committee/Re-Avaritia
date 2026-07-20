@@ -36,7 +36,6 @@ public enum ItemEffect {
     UNSTABLE;
 
     private static final AtomicInteger RENDER_TYPE_SEQUENCE = new AtomicInteger();
-    private static final float OVERLAY_OPACITY = 0.65F;
 
     /**
      * 用于烘焙 mask quad 的基础 RenderType；实际提交时会优先创建带独立 pipeline 状态的新 RenderType。
@@ -67,7 +66,7 @@ public enum ItemEffect {
                 yaw,
                 pitch,
                 scale,
-                this.opacity(stack) * OVERLAY_OPACITY,
+                this.opacity(stack),
                 this.uvs());
     }
 
@@ -80,7 +79,10 @@ public enum ItemEffect {
             return this.renderType();
         }
         String name = "avaritia_" + this.name().toLowerCase(Locale.ROOT) + "_item_" + RENDER_TYPE_SEQUENCE.incrementAndGet();
-        return AvaritiaRenderTypeHelper.texturedForwardOffset(name, pipeline, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true);
+        // The overlay quads are already offset outwards along their own face
+        // normals. A global view-space offset can invert under item display
+        // transforms and place the mask behind the wrapped model.
+        return AvaritiaRenderTypeHelper.textured(name, pipeline, RenderUtils.COSMIC_TEXTURE_ISOLATED, true, true, true, false);
     }
 
     private @Nullable RenderPipeline pipeline() {

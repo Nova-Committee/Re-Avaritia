@@ -19,10 +19,6 @@ public class AvaritiaRenderTypeHelper {
                 viewOffset ? LayeringTransform.VIEW_OFFSET_Z_LAYERING : null);
     }
 
-    public static RenderType texturedForwardOffset(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay, boolean sortOnUpload) {
-        return textured(name, pipeline, texture, lightmap, overlay, sortOnUpload, LayeringTransform.VIEW_OFFSET_Z_LAYERING_FORWARD);
-    }
-
     private static RenderType textured(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay,
                                        boolean sortOnUpload, @Nullable LayeringTransform layeringTransform) {
         RenderSetup.RenderSetupBuilder builder = RenderSetup.builder(pipeline).withTexture("Sampler0", texture);

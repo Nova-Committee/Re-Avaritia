@@ -82,7 +82,10 @@ public final class EffectItemModelBaker {
         for (Identifier mask : masks) {
             sprites.add(materials.get(new Material(mask), DEBUG_NAME).sprite());
         }
-        return ItemQuadBakery.bakeItem(effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
+        // Custom geometry writes packed UVs directly to the effect buffer. Use
+        // the direct bakery so positions and atlas UVs are explicit and remain
+        // in the wrapped item's 0..1 model space / mask sprite bounds.
+        return ItemQuadBakery.bakeItemOverlay(effect.renderType(), sprites.toArray(TextureAtlasSprite[]::new));
     }
 
     /**

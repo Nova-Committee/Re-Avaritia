@@ -49,6 +49,9 @@ mat4 rotationMatrix(vec3 axis, float angle)
 void main (void)
 {
     vec4 mask = texture(Sampler0, texCoord0.xy);
+    if (mask.r <= 0.01) {
+        discard;
+    }
 
     float oneOverExternalScale = 1.0/externalScale;
 
