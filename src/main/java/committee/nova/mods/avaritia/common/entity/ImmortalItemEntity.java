@@ -1,6 +1,8 @@
 package committee.nova.mods.avaritia.common.entity;
 
-import committee.nova.mods.avaritia.init.config.ModConfig;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -8,17 +10,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class ImmortalItemEntity extends ItemEntity {
-    private Player followingPlayer;
+    private static final int RETURN_PICKUP_DELAY = 5;
+
+    @Nullable
+    private UUID lockedReturnPlayerId;
 
     public ImmortalItemEntity(EntityType<? extends ItemEntity> type, Level level) {
         super(type, level);
-        this.setPickUpDelay(0);
-        this.setUnlimitedLifetime();
         this.setInvulnerable(true);
+        this.applyImmortalLifetime();
     }
 
     public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, double x, double y, double z, ItemStack itemStack) {
@@ -26,69 +33,104 @@ public class ImmortalItemEntity extends ItemEntity {
         if (entity != null) {
             entity.setPos(x, y, z);
             entity.setItem(itemStack);
-            entity.setPickUpDelay(0);
-            entity.setUnlimitedLifetime();
+            entity.setPickUpDelay(RETURN_PICKUP_DELAY);
+            entity.applyImmortalLifetime();
         }
         return entity;
+    }
+
+    public static ImmortalItemEntity create(EntityType<ImmortalItemEntity> type, Level level, Entity location, ItemStack itemStack) {
+        ImmortalItemEntity entity = type.create(level, EntitySpawnReason.EVENT);
+        if (entity != null) {
+            entity.restoreFrom(location);
+            entity.setItem(itemStack);
+            entity.lockedReturnPlayerId = getLockedReturnPlayerId(location);
+            entity.lockToReturnPlayer();
+            entity.setPickUpDelay(RETURN_PICKUP_DELAY);
+            entity.applyImmortalLifetime();
+        }
+        return entity;
+    }
+
+    private void applyImmortalLifetime() {
+        this.lifespan = Integer.MAX_VALUE;
+        this.setUnlimitedLifetime();
     }
 
     @Override
     public void tick() {
         super.tick();
 
-
-        if (this.followingPlayer == null || !this.followingPlayer.isAlive()) {
-            this.findClosestPlayer();
+        if (!this.level().isClientSide()) {
+            this.returnToOwner();
         }
-
-
-        if (this.followingPlayer != null && this.followingPlayer.isAlive()) {
-            this.moveToPlayer();
-        }
-
-        this.setPickUpDelay(0);
-        this.setUnlimitedLifetime();
+        this.applyImmortalLifetime();
     }
 
-
-    private void findClosestPlayer() {
-        Player closestPlayer = null;
-        double closestDistance = ModConfig.immortalItemEntityRange.get();
-
-        for (Player player : this.level().players()) {
-            double distance = this.distanceToSqr(player);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestPlayer = player;
-            }
+    private void returnToOwner() {
+        if (this.hasPickUpDelay()) {
+            return;
         }
 
-        this.followingPlayer = closestPlayer;
+        Player player = this.findReturnPlayer();
+        if (player == null) {
+            return;
+        }
+
+        ItemStack remaining = this.getItem().copy();
+        if (remaining.isEmpty()) {
+            return;
+        }
+
+        player.getInventory().add(remaining);
+        if (remaining.isEmpty()) {
+            this.discard();
+            return;
+        }
+
+        this.setItem(remaining);
+        this.teleportTo(player.getX(), player.getY() + 0.25D, player.getZ());
+        this.setDeltaMovement(0.0D, 0.0D, 0.0D);
+        this.setPickUpDelay(RETURN_PICKUP_DELAY);
+        this.lockToReturnPlayer();
     }
 
-    private void moveToPlayer() {
-        Vec3 playerPos = new Vec3(
-                this.followingPlayer.getX(),
-                this.followingPlayer.getY() + this.followingPlayer.getEyeHeight(),
-                this.followingPlayer.getZ()
-        );
-
-        Vec3 itemPos = new Vec3(this.getX(), this.getY(), this.getZ());
-        Vec3 direction = playerPos.subtract(itemPos).normalize();
-
-        double distance = this.distanceTo(this.followingPlayer);
-        double speed = Math.min(distance * 0.1D, ModConfig.immortalItemEntitySpeed.get());
-
-        this.setDeltaMovement(direction.scale(speed));
-
-        if (distance < 1.0D) {
-            this.setPos(playerPos.x, playerPos.y, playerPos.z);
-
-            if (!this.level().isClientSide()) {
-                this.followingPlayer.getInventory().add(this.getItem());
-                this.discard();
-            }
+    @Nullable
+    private static UUID getLockedReturnPlayerId(Entity location) {
+        if (!(location instanceof ItemEntity itemEntity)) {
+            return null;
         }
+
+        UUID target = itemEntity.getTarget();
+        if (target != null) {
+            return target;
+        }
+        Entity owner = itemEntity.getOwner();
+        return owner == null ? null : owner.getUUID();
+    }
+
+    @Nullable
+    private Player findReturnPlayer() {
+        if (this.lockedReturnPlayerId == null || !(this.level() instanceof ServerLevel serverLevel)) {
+            return null;
+        }
+
+        Player player = serverLevel.getPlayerByUUID(this.lockedReturnPlayerId);
+        return player != null && player.isAlive() && player.level() == this.level() ? player : null;
+    }
+
+    private void lockToReturnPlayer() {
+        if (this.lockedReturnPlayerId != null) {
+            this.setTarget(this.lockedReturnPlayerId);
+        }
+    }
+
+    @Override
+    protected void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.lockedReturnPlayerId = input.read("Owner", UUIDUtil.CODEC).orElse(null);
+        this.lockToReturnPlayer();
+        this.applyImmortalLifetime();
     }
 
     @Override

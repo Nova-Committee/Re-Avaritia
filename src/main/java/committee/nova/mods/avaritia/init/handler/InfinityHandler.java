@@ -326,16 +326,11 @@ public class InfinityHandler {
                     ImmortalItemEntity immortalEntity = ImmortalItemEntity.create(
                             ModEntityTypes.IMMORTAL.get(),
                             level,
-                            itemEntity.getX(),
-                            itemEntity.getY(),
-                            itemEntity.getZ(),
+                            itemEntity,
                             stack
                     );
 
                     if (immortalEntity != null) {
-
-                        immortalEntity.setDeltaMovement(itemEntity.getDeltaMovement());
-                        immortalEntity.setPickUpDelay(0);
 
                         event.setCanceled(true);
                         itemEntity.discard();

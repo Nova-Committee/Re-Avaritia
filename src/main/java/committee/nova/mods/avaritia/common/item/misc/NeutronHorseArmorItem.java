@@ -4,15 +4,20 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 
 import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
 import committee.nova.mods.avaritia.init.registry.ModEnchants;
+import committee.nova.mods.avaritia.init.registry.ModEntityTypes;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
@@ -22,7 +27,7 @@ import static committee.nova.mods.avaritia.init.registry.ModArmorMaterial.infini
 public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
     private final InitEnchantment FROST_WALKER = new InitEnchantment(ModEnchants.FROST_WALKER, 10);
     private final InitEnchantment ALL_DAMAGE_PROTECTION = new InitEnchantment(Enchantments.PROTECTION, 10);
-    private final InitEnchantment FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 4);
+    private final InitEnchantment FALL_PROTECTION = new InitEnchantment(Enchantments.FEATHER_FALLING, 10);
     public NeutronHorseArmorItem() {
         super(ModItems.properties()
                 .horseArmor(infinity_horse_armor)
@@ -49,13 +54,24 @@ public class NeutronHorseArmorItem extends Item implements InitEnchantItem {
     }
 
     @Override
+    public boolean hasCustomEntity(@NotNull ItemStack stack) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location, stack);
+    }
+
+    @Override
     public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
         if (enchantmentHolder.is(ModEnchants.FROST_WALKER)) {
             return 10;
         }else if (enchantmentHolder.is(Enchantments.PROTECTION)) {
             return 10;
         }else if (enchantmentHolder.is(Enchantments.FEATHER_FALLING)) {
-            return 4;
+            return 10;
         }
         return 0;
     }

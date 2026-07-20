@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EternalSingularityItem extends Item {
     public EternalSingularityItem() {
-        super(ModItems.properties().stacksTo(8).rarity(ModRarities.RARE));
+        super(ModItems.properties().stacksTo(16).rarity(ModRarities.RARE));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class EternalSingularityItem extends Item {
     @Nullable
     @Override
     public Entity createEntity(@NotNull Level level, Entity location, @NotNull ItemStack stack) {
-        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location.getX(), location.getY(), location.getZ(), stack);
+        return ImmortalItemEntity.create(ModEntityTypes.IMMORTAL.get(), level, location, stack);
     }
 
     @Override

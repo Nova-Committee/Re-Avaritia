@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class CrystalShovelItem extends ShovelItem implements ITooltip {
     public CrystalShovelItem() {
-        super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.CRYSTAL.speed(),
                 ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

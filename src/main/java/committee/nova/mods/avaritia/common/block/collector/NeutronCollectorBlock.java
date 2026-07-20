@@ -31,7 +31,7 @@ public class NeutronCollectorBlock extends BaseTileEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public NeutronCollectorBlock() {
-        super(MapColor.METAL, SoundType.METAL, 50f, 2000f);
+        super(MapColor.METAL, SoundType.METAL, 50f, 2000f, true);
     }
 
     @Nullable

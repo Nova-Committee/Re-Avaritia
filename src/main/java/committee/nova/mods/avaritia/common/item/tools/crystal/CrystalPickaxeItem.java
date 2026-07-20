@@ -46,7 +46,7 @@ private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .pickaxe(ModToolTiers.CRYSTAL, 0, ModToolTiers.BLAZE.speed())
+                        .pickaxe(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed())
         );
     }
 

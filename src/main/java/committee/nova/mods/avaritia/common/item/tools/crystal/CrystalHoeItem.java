@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 public class CrystalHoeItem extends HoeItem implements ITooltip {
 
     public CrystalHoeItem() {
-        super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.CRYSTAL.speed(),
                 ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

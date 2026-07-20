@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -33,6 +34,7 @@ import java.util.function.Consumer;
  * Version: 1.0
  */
 public class SideConfigurationCardItem extends Item {
+    private static final String TAG_SIDE_CONFIG = "SideConfig";
 
     public SideConfigurationCardItem() {
         super(ModItems.properties()
@@ -45,7 +47,7 @@ public class SideConfigurationCardItem extends Item {
         super.appendHoverText(stack, context, display, builder, tooltipFlag);
 
         //check saved config置
-        if (ItemUtils.hasTag(stack) && ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
+        if (hasSavedConfig(stack)) {
             builder.accept(Component.translatable("tooltip.avaritia.side_config_card.has_config"));
             builder.accept(Component.translatable("tooltip.avaritia.side_config_card.instruction_right_click"));
         } else {
@@ -62,63 +64,91 @@ public class SideConfigurationCardItem extends Item {
         Level level = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
 
-        if (player == null || level.isClientSide()) {
+        if (player == null) {
             return InteractionResult.PASS;
         }
 
-
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
-        // 检查是否是实现了ITileIO接口的机器?
-        if (player.isShiftKeyDown()) {
-            if (blockEntity instanceof ITileIO tileIO) {
-                if (!ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
-                    // Shift+右键：读取配置?
+        if (blockEntity instanceof ITileIO tileIO) {
+            if (player.isShiftKeyDown()) {
+                if (!level.isClientSide()) {
                     SideConfiguration config = tileIO.getSideConfiguration();
                     saveConfigToItem(stack, config);
                     player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.read_success"));
-                    return InteractionResult.SUCCESS;
-                } else {
-                    SideConfiguration config = loadConfigFromItem(stack);
-                    tileIO.setSideConfiguration(config);
-                    player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"));
-                    return InteractionResult.SUCCESS;
                 }
-            } else {
-                if (ItemUtils.hasTag(stack)) {
-                    if (ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
-                        ItemUtils.updateTag(stack, tag -> tag.remove("SideConfig"));
-                        player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"));
-                    } else {
-                        player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"));
-                    }
-                    return InteractionResult.SUCCESS;
-                }
+                return InteractionResult.SUCCESS;
             }
+
+            if (!hasSavedConfig(stack)) {
+                if (!level.isClientSide()) {
+                    player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.no_config_to_apply"));
+                }
+                return InteractionResult.SUCCESS;
+            }
+
+            if (!level.isClientSide()) {
+                tileIO.setSideConfiguration(loadConfigFromItem(stack));
+                player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.apply_success"));
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (player.isShiftKeyDown()) {
+            if (!level.isClientSide()) {
+                clearConfig(stack, player);
+            }
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;
     }
 
+    @Override
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!player.isShiftKeyDown()) {
+            return InteractionResult.PASS;
+        }
+
+        if (!level.isClientSide()) {
+            clearConfig(stack, player);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
     /**
      * 将SideConfiguration保存到物品的NBT�?     */
     private void saveConfigToItem(ItemStack stack, SideConfiguration config) {
-        ItemUtils.updateTag(stack, tag -> tag.put("SideConfig", config.toNBT()));
+        ItemUtils.updateTag(stack, tag -> tag.put(TAG_SIDE_CONFIG, config.toNBT()));
     }
 
     /**
      * 从物品的NBT中加载SideConfiguration
      */
     private SideConfiguration loadConfigFromItem(ItemStack stack) {
-        if (!ItemUtils.hasTag(stack) || !ItemUtils.getOrCreateTag(stack).contains("SideConfig")) {
+        if (!hasSavedConfig(stack)) {
             return new SideConfiguration();
         }
-        return SideConfiguration.fromNBT(ItemUtils.getOrCreateTag(stack).getCompound("SideConfig").orElseThrow());
+        return SideConfiguration.fromNBT(ItemUtils.getOrCreateTag(stack).getCompound(TAG_SIDE_CONFIG).orElseThrow());
+    }
+
+    private boolean hasSavedConfig(ItemStack stack) {
+        return ItemUtils.hasTag(stack) && ItemUtils.getOrCreateTag(stack).contains(TAG_SIDE_CONFIG);
+    }
+
+    private void clearConfig(ItemStack stack, Player player) {
+        if (hasSavedConfig(stack)) {
+            ItemUtils.updateTag(stack, tag -> tag.remove(TAG_SIDE_CONFIG));
+            player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.cleared"));
+        } else {
+            player.sendOverlayMessage(Component.translatable("tooltip.avaritia.side_config_card.already_empty"));
+        }
     }
 
     @Override
     public boolean isFoil(@NotNull ItemStack stack) {
         // 如果配置卡中有配置，则显示附魔光效?
-        return ItemUtils.hasTag(stack) && ItemUtils.getOrCreateTag(stack).contains("SideConfig");
+        return hasSavedConfig(stack);
     }
 }

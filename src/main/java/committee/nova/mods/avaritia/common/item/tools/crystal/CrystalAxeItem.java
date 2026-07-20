@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 public class CrystalAxeItem extends AxeItem implements ITooltip {
 
     public CrystalAxeItem() {
-        super(ModToolTiers.CRYSTAL,0, ModToolTiers.BLAZE.speed(),
+        super(ModToolTiers.CRYSTAL,0, ModToolTiers.CRYSTAL.speed(),
                 ModItems.properties()
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)

@@ -125,6 +125,9 @@ public class AvaritiaTagProvider implements DataProvider {
                         // 特殊物品
                         ModItems.infinity_elytra.get(),
                         ModItems.infinity_upgrade.get(),
+                        ModItems.singularity.get(),
+                        ModItems.matter_cluster.get(),
+                        ModItems.full_matter_cluster.get(),
                         ModItems.eternal_singularity.get()
                 );
 

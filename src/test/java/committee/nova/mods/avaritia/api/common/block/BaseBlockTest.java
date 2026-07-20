@@ -38,7 +38,7 @@ class BaseBlockTest {
                 contains("common/block/craft/DoubleCompressedCraftTableBlock.java",
                         "super(MapColor.WOOD, SoundType.WOOD, 20F, 500F, true)"),
                 contains("common/block/collector/NeutronCollectorBlock.java",
-                        "super(MapColor.METAL, SoundType.METAL, 50f, 2000f)"),
+                        "super(MapColor.METAL, SoundType.METAL, 50f, 2000f, true)"),
                 contains("common/block/compressor/NeutronCompressorBlock.java",
                         "super(MapColor.METAL, SoundType.METAL, 50F, 2000F, true)"),
                 contains("common/block/chest/CompressedChestBlock.java",
