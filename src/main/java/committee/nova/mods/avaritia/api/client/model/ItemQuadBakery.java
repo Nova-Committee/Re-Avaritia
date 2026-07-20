@@ -22,6 +22,7 @@ public class ItemQuadBakery {
 
     public static final PerspectiveModelState IDENTITY = PerspectiveModelState.IDENTITY;
     private static final float MODEL_UNIT = 1.0F / 16.0F;
+    private static final float OVERLAY_INSET = 0.25F;
     private static final float OVERLAY_DEPTH_OFFSET = 0.02F;
 
     public static List<BakedQuad> bakeItem(TextureAtlasSprite... sprites) {
@@ -33,9 +34,9 @@ public class ItemQuadBakery {
     }
 
     /**
-     * Bakes a flat item overlay slightly in front of both generated-item faces.
-     * The offset avoids coplanar depth rejection without changing the X/Y model
-     * footprint or disabling depth testing for the whole effect pipeline.
+     * Bakes a flat item overlay slightly inset from and in front of both generated-item faces.
+     * The inset keeps filtered mask edges inside the wrapped item, while the depth offset
+     * avoids coplanar rejection without disabling depth testing for the whole effect pipeline.
      */
     public static List<BakedQuad> bakeItemOverlay(RenderType renderType, TextureAtlasSprite... sprites) {
         return bakeItem(IDENTITY, renderType, OVERLAY_DEPTH_OFFSET, sprites);
@@ -72,10 +73,10 @@ public class ItemQuadBakery {
     private static BakedQuad frontFace(ModelState state, BakedQuad.MaterialInfo materialInfo, float depthOffset) {
         TextureAtlasSprite sprite = materialInfo.sprite();
         return new BakedQuad(
-                transform(state, 0.0F, 0.0F, 8.5F + depthOffset),
-                transform(state, 16.0F, 0.0F, 8.5F + depthOffset),
-                transform(state, 16.0F, 16.0F, 8.5F + depthOffset),
-                transform(state, 0.0F, 16.0F, 8.5F + depthOffset),
+                transform(state, OVERLAY_INSET, OVERLAY_INSET, 8.5F + depthOffset),
+                transform(state, 16.0F - OVERLAY_INSET, OVERLAY_INSET, 8.5F + depthOffset),
+                transform(state, 16.0F - OVERLAY_INSET, 16.0F - OVERLAY_INSET, 8.5F + depthOffset),
+                transform(state, OVERLAY_INSET, 16.0F - OVERLAY_INSET, 8.5F + depthOffset),
                 uv(sprite, 0.0F, 16.0F),
                 uv(sprite, 16.0F, 16.0F),
                 uv(sprite, 16.0F, 0.0F),
@@ -88,10 +89,10 @@ public class ItemQuadBakery {
     private static BakedQuad backFace(ModelState state, BakedQuad.MaterialInfo materialInfo, float depthOffset) {
         TextureAtlasSprite sprite = materialInfo.sprite();
         return new BakedQuad(
-                transform(state, 16.0F, 0.0F, 7.5F - depthOffset),
-                transform(state, 0.0F, 0.0F, 7.5F - depthOffset),
-                transform(state, 0.0F, 16.0F, 7.5F - depthOffset),
-                transform(state, 16.0F, 16.0F, 7.5F - depthOffset),
+                transform(state, 16.0F - OVERLAY_INSET, OVERLAY_INSET, 7.5F - depthOffset),
+                transform(state, OVERLAY_INSET, OVERLAY_INSET, 7.5F - depthOffset),
+                transform(state, OVERLAY_INSET, 16.0F - OVERLAY_INSET, 7.5F - depthOffset),
+                transform(state, 16.0F - OVERLAY_INSET, 16.0F - OVERLAY_INSET, 7.5F - depthOffset),
                 uv(sprite, 16.0F, 16.0F),
                 uv(sprite, 0.0F, 16.0F),
                 uv(sprite, 0.0F, 0.0F),

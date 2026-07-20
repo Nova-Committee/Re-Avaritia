@@ -66,8 +66,8 @@ class ItemQuadBakeryTest {
     }
 
     @Test
-    @DisplayName("offsets overlay faces outwards without changing their model footprint")
-    void overlayFacesAreOffsetOutwards() {
+    @DisplayName("insets overlay faces and offsets them outwards")
+    void overlayFacesAreInsetAndOffsetOutwards() {
         NativeImage image = new NativeImage(16, 16, false);
         SpriteContents contents = new SpriteContents(
                 Identifier.withDefaultNamespace("item_quad_overlay_test"),
@@ -78,13 +78,18 @@ class ItemQuadBakeryTest {
         try (TextureAtlasSprite sprite = new TestSprite(contents)) {
             List<BakedQuad> base = ItemQuadBakery.bakeItem(sprite);
             List<BakedQuad> overlay = ItemQuadBakery.bakeItemOverlay(null, sprite);
+            float inset = 0.25F / 16.0F;
 
             assertAll(
                     () -> assertEquals(2, overlay.size()),
                     () -> assertTrue(overlay.get(0).position(0).z() > base.get(0).position(0).z()),
                     () -> assertTrue(overlay.get(1).position(0).z() < base.get(1).position(0).z()),
-                    () -> assertEquals(base.get(0).position(0).x(), overlay.get(0).position(0).x(), EPSILON),
-                    () -> assertEquals(base.get(0).position(0).y(), overlay.get(0).position(0).y(), EPSILON)
+                    () -> assertEquals(inset, overlay.get(0).position(0).x(), EPSILON),
+                    () -> assertEquals(inset, overlay.get(0).position(0).y(), EPSILON),
+                    () -> assertEquals(1.0F - inset, overlay.get(0).position(2).x(), EPSILON),
+                    () -> assertEquals(1.0F - inset, overlay.get(0).position(2).y(), EPSILON),
+                    () -> assertEquals(1.0F - inset, overlay.get(1).position(0).x(), EPSILON),
+                    () -> assertEquals(inset, overlay.get(1).position(0).y(), EPSILON)
             );
         }
     }
