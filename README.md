@@ -89,7 +89,7 @@ mods.avaritia.Singularity.removeAllRecipe();
 mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)
 mods.avaritia.CraftingTable.addEternal("name", ingredients)
 ```
-`mods.avaritia.Singularity.register` is a static call. Invalid non-positive `count` or `timeCost` values are rejected.
+`mods.avaritia.Singularity.register` is a static call. Invalid IDs and non-positive `count` or `timeCost` values are logged and only that definition is skipped; unrelated script errors are still reported by the script engine. Singularity operations are staged until the current resource reload finishes its script phase and then committed once. Conflicts resolve as datapack < Java API < CraftTweaker < KubeJS, while later operations from the same source win. Script changes take effect only after `/reload`.
 
 ### **KubeJs:**
 ```javascript

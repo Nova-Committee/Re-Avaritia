@@ -114,6 +114,7 @@ dependencies {
     modImplementation("top.theillusivec4.curios:curios-forge:${curios_version}")
 
     modCompileOnly("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    testImplementation("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     modImplementation("dev.latvian.mods:rhino-forge:${rhino_version}")
     modImplementation "dev.architectury:architectury-forge:${architectury_version}"
 

@@ -49,6 +49,68 @@ class SingularityLifecycleTest {
     }
 
     @Test
+    void appliesSourcePrecedenceIndependentOfScriptExecutionOrder() {
+        SingularityReloadListener listener = new SingularityReloadListener();
+        listener.beginReload(Map.of(DATA_ID, new Singularity(DATA_ID).setCount(10)));
+        listener.registerPersistentSingularity(new Singularity(DATA_ID).setCount(20));
+
+        // KubeJS executes while recipes load, before CraftTweaker's reload listener.
+        listener.registerScriptSingularity(SingularityReloadListener.ScriptSource.KUBE_JS,
+                new Singularity(DATA_ID).setCount(40));
+        listener.registerScriptSingularity(SingularityReloadListener.ScriptSource.CRAFT_TWEAKER,
+                new Singularity(DATA_ID).setCount(30));
+
+        assertTrue(listener.finalizeScriptTransaction());
+        assertEquals(40, listener.getSingularity(DATA_ID).getRealCount());
+        assertFalse(listener.finalizeScriptTransaction());
+    }
+
+    @Test
+    void rollsBackEffectiveSnapshotWhenFinalizationFails() {
+        SingularityReloadListener listener = new SingularityReloadListener();
+        listener.beginReload(Map.of(DATA_ID, new Singularity(DATA_ID)));
+        assertTrue(listener.finalizeScriptTransaction());
+
+        listener.beginReload(Map.of(SCRIPT_ID, new Singularity(SCRIPT_ID)));
+        assertThrows(IllegalStateException.class, () -> listener.finalizeScriptTransaction(() -> {
+            throw new IllegalStateException("recipe generation failed");
+        }));
+
+        assertNotNull(listener.getSingularity(DATA_ID));
+        assertNull(listener.getSingularity(SCRIPT_ID));
+        assertTrue(listener.finalizeScriptTransaction());
+        assertNull(listener.getSingularity(DATA_ID));
+        assertNotNull(listener.getSingularity(SCRIPT_ID));
+    }
+
+    @Test
+    void replaysOperationsInOrderWithinEachScriptSource() {
+        ResourceLocation orderedId = ResourceLocation.parse("test:ordered");
+        ResourceLocation lateId = ResourceLocation.parse("test:late");
+        SingularityReloadListener listener = new SingularityReloadListener();
+        listener.beginReload(Map.of(DATA_ID, new Singularity(DATA_ID)));
+
+        listener.setRemoveAll(SingularityReloadListener.ScriptSource.CRAFT_TWEAKER, true);
+        listener.registerScriptSingularity(SingularityReloadListener.ScriptSource.CRAFT_TWEAKER,
+                new Singularity(orderedId).setCount(10));
+        listener.removeSingularityRecipe(SingularityReloadListener.ScriptSource.CRAFT_TWEAKER, orderedId);
+        listener.removeSingularity(SingularityReloadListener.ScriptSource.CRAFT_TWEAKER, orderedId);
+        listener.registerScriptSingularity(SingularityReloadListener.ScriptSource.CRAFT_TWEAKER,
+                new Singularity(orderedId).setCount(30));
+
+        listener.setRemoveAllRecipes(SingularityReloadListener.ScriptSource.KUBE_JS, true);
+        listener.registerScriptSingularity(SingularityReloadListener.ScriptSource.KUBE_JS,
+                new Singularity(lateId).setCount(50));
+        listener.finalizeScriptTransaction();
+
+        assertNull(listener.getSingularity(DATA_ID));
+        assertEquals(30, listener.getSingularity(orderedId).getRealCount());
+        assertFalse(listener.getSingularity(orderedId).isRecipeEnabled());
+        assertEquals(50, listener.getSingularity(lateId).getRealCount());
+        assertTrue(listener.getSingularity(lateId).isRecipeEnabled());
+    }
+
+    @Test
     void replacesDatapackSnapshotAndDoesNotMutateSourcesWhenFilteringRecipes() {
         SingularityReloadListener listener = new SingularityReloadListener();
         listener.beginReload(Map.of(DATA_ID, new Singularity(DATA_ID)));

@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.init.handler;
 
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -12,7 +13,9 @@ import net.minecraftforge.fml.common.Mod;
  */
 @Mod.EventBusSubscriber
 public class ResourceReloadHandler {
-    @SubscribeEvent//指定不了加载顺序
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new SingularityScriptTransactionFinalizer(
+                event.getServerResources().getRecipeManager()));
     }
 }

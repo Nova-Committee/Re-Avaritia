@@ -81,7 +81,7 @@ public class Singularity {
     public Singularity setTag(String tag) {
         ResourceLocation tagId = ResourceLocation.tryParse(tag);
         if (tagId == null) {
-            throw new IllegalArgumentException("Invalid item tag: " + tag);
+            throw new SingularityValidationException("Invalid item tag: " + tag);
         }
         return this.setIngredient(Ingredient.of(TagKey.create(Registries.ITEM, tagId)));
     }
@@ -128,7 +128,7 @@ public class Singularity {
 
     private static int requirePositive(String field, int value) {
         if (value <= 0) {
-            throw new IllegalArgumentException(field + " must be greater than zero, got " + value);
+            throw new SingularityValidationException(field + " must be greater than zero, got " + value);
         }
         return value;
     }
