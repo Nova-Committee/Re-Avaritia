@@ -12,6 +12,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
@@ -30,6 +31,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final ResultContainer result;
     private final Player player;
     private final ModCraftTier tier;
+    private final TierCraftTile craftTile;
     private final ModCraftContainer craftContainer;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
@@ -44,8 +46,9 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.world = playerInventory.player.level();
         this.result = new ResultContainer();
         this.tier = tier;
+        this.craftTile = getTileEntity();
 
-        this.craftContainer = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size);
+        this.craftContainer = new ModCraftContainer(this, this.craftTile.getInventory(), tier.size);
 
         this.addSlot(new ModCraftResultSlot(this.player, this, craftContainer, this.result, 0, tier.outX, tier.outY));
 
@@ -103,21 +106,62 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var inventory = this.craftContainer.asCraftInput();
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world);
-
-        if (recipe.isPresent()) {
-            var result = recipe.get().value().assemble(inventory, this.world.registryAccess());
-            this.result.setItem(0, result);
-        } else {
-            this.result.setItem(0, ItemStack.EMPTY);
-        }
+        this.result.setItem(0, this.assembleCurrentResult());
 
         super.slotsChanged(matrix);
     }
 
     @Override
+    public boolean stillValid(@NotNull Player player) {
+        return super.stillValid(player)
+                && !this.craftTile.isRemoved()
+                && this.world.getBlockEntity(this.getBlockPos()) == this.craftTile;
+    }
+
+    public boolean canTakeCraftingResult() {
+        if (this.world.isClientSide) {
+            return true;
+        }
+
+        var currentResult = this.assembleCurrentResult();
+        var displayedResult = this.result.getItem(0);
+        var valid = !currentResult.isEmpty()
+                && currentResult.getCount() == displayedResult.getCount()
+                && ItemStack.isSameItemSameComponents(currentResult, displayedResult);
+
+        if (!valid) {
+            this.result.setItem(0, currentResult);
+            this.broadcastChanges();
+        }
+        return valid;
+    }
+
+    private ItemStack assembleCurrentResult() {
+        if (!this.stillValid(this.player) || this.craftContainer.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        var inventory = this.craftContainer.asCraftInput();
+        return this.world.getRecipeManager()
+                .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world)
+                .map(recipe -> recipe.value().assemble(inventory, this.world.registryAccess()))
+                .orElse(ItemStack.EMPTY);
+    }
+
+    @Override
+    public void clicked(int slotId, int button, @NotNull ClickType clickType, @NotNull Player player) {
+        if (slotId == 0 && !this.canTakeCraftingResult()) {
+            return;
+        }
+        super.clicked(slotId, button, clickType, player);
+    }
+
+    @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
+        if (slotNumber == 0 && !this.canTakeCraftingResult()) {
+            return ItemStack.EMPTY;
+        }
+
         var itemstack = ItemStack.EMPTY;
         var slot = this.slots.get(slotNumber);
 

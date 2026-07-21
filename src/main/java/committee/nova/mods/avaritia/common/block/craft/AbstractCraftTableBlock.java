@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.level.Level;
@@ -33,10 +34,11 @@ public class AbstractCraftTableBlock extends BaseBlock {
 
     @Override
     public MenuProvider getMenuProvider(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos) {
-        return new SimpleMenuProvider((i, inventory, player) -> new CraftingMenu(i, inventory, ContainerLevelAccess.create(pLevel, pPos)) {
+        var access = ContainerLevelAccess.create(pLevel, pPos);
+        return new SimpleMenuProvider((i, inventory, player) -> new CraftingMenu(i, inventory, access) {
             @Override
             public boolean stillValid(@NotNull Player playerIn) {
-                return true;
+                return AbstractContainerMenu.stillValid(access, playerIn, pState.getBlock());
             }
         }, CONTAINER_TITLE);
     }
