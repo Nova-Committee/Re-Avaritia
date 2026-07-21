@@ -34,8 +34,8 @@ public class Const {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
     public static final GameProfile AVARITIA_FAKE_PLAYER = new GameProfile(UUID.fromString("32283731-bbef-487c-bb69-c7e32f84ed27"), "[Avaritia]");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(",###");
-    public static final boolean curios = ModList.get().isLoaded("curios");
-    public static final boolean acceleratedrendering = ModList.get().isLoaded("acceleratedrendering");
+    public static final boolean curios = isLoad("curios");
+    public static final boolean acceleratedrendering = isLoad("acceleratedrendering");
 
 
     public static ResourceLocation rl(String path) {
@@ -43,7 +43,8 @@ public class Const {
     }
 
     public static boolean isLoad(String name) {
-        return ModList.get().isLoaded(name);
+        ModList modList = ModList.get();
+        return modList != null && modList.isLoaded(name);
     }
 
     public static Ingredient getIngredient(String modid, String name) {

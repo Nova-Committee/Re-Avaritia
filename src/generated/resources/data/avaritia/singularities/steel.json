@@ -16,7 +16,7 @@
   },
   "name": "avaritia:steel",
   "overlayColor": "565656",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "232323"
 }

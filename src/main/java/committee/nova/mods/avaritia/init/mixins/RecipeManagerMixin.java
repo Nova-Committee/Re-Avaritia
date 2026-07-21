@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import committee.nova.mods.avaritia.api.Lib;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -67,6 +68,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
         var recipes = new CopyOnWriteArrayList<Recipe<?>>();
 
         try {
+            SingularityReloadListener.INSTANCE.commitReload();
             MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, recipes));
         } catch (Exception e) {
             Lib.LOGGER.error("An error occurred while firing RegisterRecipesEvent", e);

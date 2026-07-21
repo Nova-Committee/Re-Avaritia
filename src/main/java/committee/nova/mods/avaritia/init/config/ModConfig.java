@@ -70,7 +70,7 @@ public class ModConfig {
         axeChainCount = buildInt(common, "Axe Chain Count", 64, 16, 128, "Chain number of endless axe cutting trees");
         pickAxeBreakRange = buildInt(common, "config.avaritia.pickaxe_break_range", 8, 2, 32, "config.avaritia.pickaxe_break_range.tooltip");
         shovelBreakRange = buildInt(common, "config.avaritia.shovel_break_range", 8, 2, 32, "config.avaritia.shovel_break_range.tooltip");
-        singularityTimeRequired = buildInt(common, "config.avaritia.singularity_time_required", 240, 0, Integer.MAX_VALUE, "config.avaritia.singularity_time_required.tooltip");
+        singularityTimeRequired = buildInt(common, "config.avaritia.singularity_time_required", 240, 1, Integer.MAX_VALUE, "config.avaritia.singularity_time_required.tooltip");
         growthSoulFarmland = buildDouble(common, "config.avaritia.growth_soul_farmland", 0.8, 0.0, 1.0, "config.avaritia.growth_soul_farmland.tooltip");
         bladeSlashDamage = buildInt(common, "config.avaritia.blade_slash_damage", 200, 0, Integer.MAX_VALUE, "config.avaritia.blade_slash_damage.tooltip");
         bladeSlashRadius = buildInt(common, "config.avaritia.blade_slash_radius", 10, 5, 100, "config.avaritia.blade_slash_radius.tooltip");

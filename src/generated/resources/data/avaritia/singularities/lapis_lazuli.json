@@ -8,7 +8,7 @@
   },
   "name": "avaritia:lapis_lazuli",
   "overlayColor": "678dea",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "1b53a7"
 }

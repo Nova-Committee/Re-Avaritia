@@ -14,7 +14,5 @@ import net.minecraftforge.fml.common.Mod;
 public class ResourceReloadHandler {
     @SubscribeEvent//指定不了加载顺序
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
-//        SingularityReloadListener.INSTANCE = new SingularityReloadListener(event.getConditionContext());
-//        event.addListener(SingularityReloadListener.INSTANCE);
     }
 }

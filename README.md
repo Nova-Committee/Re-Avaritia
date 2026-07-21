@@ -54,6 +54,23 @@
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
 ## **⚙️Develop:**
+### **Singularities:**
+Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
+```json
+{
+  "name": "example:iron",
+  "displayName": "singularity.example.iron",
+  "overlayColor": "e1e1e1",
+  "underlayColor": "6c6c6c",
+  "count": 1000,
+  "timeCost": 240,
+  "ingredient": { "item": "minecraft:iron_ingot" },
+  "enabled": true,
+  "recipeEnabled": true
+}
+```
+The historical `timeRequired` and `recipeDisabled` aliases are still read with a deprecation warning. To preserve old 1.20 data, the stored `recipeDisabled` boolean keeps its historical `recipeEnabled` meaning and is not inverted. Datapack and script changes take effect on `/reload`.
+
 ### **CraftTweaker:**
 ```
 mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);
@@ -72,6 +89,7 @@ mods.avaritia.Singularity.removeAllRecipe();
 mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)
 mods.avaritia.CraftingTable.addEternal("name", ingredients)
 ```
+`mods.avaritia.Singularity.register` is a static call. Invalid non-positive `count` or `timeCost` values are rejected.
 
 ### **KubeJs:**
 ```javascript

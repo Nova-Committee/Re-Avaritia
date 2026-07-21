@@ -16,7 +16,7 @@
   },
   "name": "avaritia:bronze",
   "overlayColor": "d99f43",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "bb6b3b"
 }

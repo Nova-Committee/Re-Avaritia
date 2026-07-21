@@ -24,22 +24,44 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
  */
 public class SingularityUtils {
     public static Singularity loadFromJson(JsonObject json) {
+        return loadFromJson(json, null);
+    }
+
+    public static Singularity loadFromJson(JsonObject json, ResourceLocation sourceId) {
         var name = GsonHelper.getAsString(json, "name");
-        var displayName = GsonHelper.getAsString(json, "displayName");
-        int materialCount = Const.isLoad("projecte") ? 10000 : GsonHelper.getAsInt(json, "count", 1000);
+        var displayName = GsonHelper.getAsString(json, "displayName", name);
+        int materialCount = GsonHelper.getAsInt(json, "count", 1000);
         int overlayColor = Integer.parseInt(GsonHelper.getAsString(json, "overlayColor"), 16);
         int underlayColor = Integer.parseInt(GsonHelper.getAsString(json, "underlayColor"), 16);
 
         var ing = GsonHelper.getAsJsonObject(json, "ingredient", null);
-        var time = GsonHelper.getAsInt(json, "timeRequired", ModConfig.singularityTimeRequired.get());
+        int time;
+        if (json.has("timeCost")) {
+            time = GsonHelper.getAsInt(json, "timeCost");
+        } else if (json.has("timeRequired")) {
+            time = GsonHelper.getAsInt(json, "timeRequired");
+            Const.LOGGER.warn("Singularity: {} uses deprecated field timeRequired; use timeCost", sourceId == null ? name : sourceId);
+        } else {
+            time = ModConfig.singularityTimeRequired.get();
+        }
         var enabled = GsonHelper.getAsBoolean(json, "enabled", true);
-        var recipeDisabled = GsonHelper.getAsBoolean(json, "recipeDisabled", false);
+        boolean recipeEnabled;
+        if (json.has("recipeEnabled")) {
+            recipeEnabled = GsonHelper.getAsBoolean(json, "recipeEnabled");
+        } else if (json.has("recipeDisabled")) {
+            // Historical 1.20 generated data wrote this value with recipeEnabled semantics.
+            recipeEnabled = GsonHelper.getAsBoolean(json, "recipeDisabled");
+            Const.LOGGER.warn("Singularity: {} uses deprecated field recipeDisabled; use recipeEnabled", sourceId == null ? name : sourceId);
+        } else {
+            recipeEnabled = true;
+        }
 
         return Singularity.create(ResourceUtil.createInstanceWithColon(name), displayName, new int[]{overlayColor, underlayColor},  ing == null ? Ingredient.EMPTY : Ingredient.fromJson(ing))
-                .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeDisabled);
+                .setTimeCost(time).setCount(materialCount).setEnabled(enabled).setRecipeEnabled(recipeEnabled).validate();
     }
 
     public static JsonObject writeToJson(Singularity singularity) {
+        singularity = singularity.copy();
         var json = new JsonObject();
 
         json.addProperty("name", singularity.getRegistryName().toString());
@@ -50,7 +72,7 @@ public class SingularityUtils {
         json.addProperty("timeCost", singularity.getTimeCost());
         json.add("ingredient", singularity.getIngredient().toJson());
         json.addProperty("enabled", singularity.isEnabled());
-        json.addProperty("recipeDisabled", singularity.isRecipeEnabled());
+        json.addProperty("recipeEnabled", singularity.isRecipeEnabled());
         json.add("conditions", CraftingHelper.serialize(singularity.getConditions().toArray(ICondition[]::new)));
         return json;
     }

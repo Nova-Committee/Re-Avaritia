@@ -63,11 +63,13 @@ public abstract class SingularityProvider implements DataProvider {
 
     public final void addSingularity(List<Singularity> singularities) {
         this.singularities.putAll(singularities.stream()
+                .map(Singularity::copy)
                 .collect(Collectors.toMap(Singularity::getRegistryName, s -> s)));
     }
 
     public final void addSingularity(Singularity singularities) {
-        this.singularities.put(singularities.getRegistryName(), singularities);
+        Singularity copy = singularities.copy();
+        this.singularities.put(copy.getRegistryName(), copy);
     }
 
     @Override

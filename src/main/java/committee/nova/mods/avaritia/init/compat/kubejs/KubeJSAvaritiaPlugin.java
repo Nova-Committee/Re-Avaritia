@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import committee.nova.mods.avaritia.api.Lib;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.compat.kubejs.event.AvaritiaEvents;
 import committee.nova.mods.avaritia.init.compat.kubejs.event.SingularityRegisterEventJS;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
@@ -56,6 +57,10 @@ public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
         var stopwatch = Stopwatch.createStarted();
         CopyOnWriteArrayList<Recipe<?>> addRecipes = new CopyOnWriteArrayList<>();
 
+        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS();
+        AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
+        SingularityReloadListener.INSTANCE.commitReload();
+
         try {
             MinecraftForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, addRecipes));
         } catch (Exception e) {
@@ -67,9 +72,6 @@ public class KubeJSAvaritiaPlugin extends KubeJSPlugin {
         }
 
         Lib.LOGGER.info("Avaritia: Registered {} recipes in {} ms (KubeJS mode)", addRecipes.size(), stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
-
-        SingularityRegisterEventJS registerEventJS = new SingularityRegisterEventJS();
-        AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, registerEventJS);
     }
 
     @Override

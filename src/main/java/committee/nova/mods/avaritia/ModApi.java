@@ -50,6 +50,7 @@ public class ModApi {
 
     @ApiStatus.AvailableSince("1.3.9.2")
     public static CompressorRecipe addSingularityRecipe(Singularity singularity) {
+        singularity = singularity.copy();
         var ingredient = singularity.getIngredient();
         if (ingredient == Ingredient.EMPTY)
             return null;
@@ -74,7 +75,7 @@ public class ModApi {
     public static Singularity registerSingularity(@NotNull ResourceLocation resourceLocation, @NotNull Consumer<Singularity> builder) {
         var singularity = new Singularity(resourceLocation);
         builder.accept(singularity);
-        SingularityReloadListener.INSTANCE.registerSingularity(singularity);
+        SingularityReloadListener.INSTANCE.registerPersistentSingularity(singularity);
         return singularity;
     }
 }

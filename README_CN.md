@@ -54,6 +54,22 @@
 ### **Singularities**
 * [奇点Wiki](wiki/KUBEJS_SINGULARITY_GUIDE_CN.md)
 
+数据包定义位于 `data/<命名空间>/singularities/<路径>.json`。JSON 内的 `name` 必须等于文件资源 ID，且 `count`、`timeCost` 必须大于 0。
+```json
+{
+  "name": "example:iron",
+  "displayName": "singularity.example.iron",
+  "overlayColor": "e1e1e1",
+  "underlayColor": "6c6c6c",
+  "count": 1000,
+  "timeCost": 240,
+  "ingredient": { "item": "minecraft:iron_ingot" },
+  "enabled": true,
+  "recipeEnabled": true
+}
+```
+历史字段 `timeRequired`、`recipeDisabled` 仍可迁移读取，但会记录弃用提示。为保持旧版 1.20 数据语义，`recipeDisabled` 中保存的布尔值仍按历史上的 `recipeEnabled` 含义读取，不会取反。数据包和脚本修改在执行 `/reload` 后生效。
+
 ### **CraftTweaker:**
 ```
 mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);//添加无尽工作台有序配方。
@@ -72,6 +88,7 @@ mods.avaritia.Singularity.removeAllRecipe();//删除所有奇点配方
 mods.avaritia.CraftingTable.addCatalyst("name", ingredients, catalystCount)//添加无尽催化剂配方
 mods.avaritia.CraftingTable.addEternal("name", ingredients)//添加永恒奇点配方
 ```
+`mods.avaritia.Singularity.register` 为静态调用；非正数 `count` 或 `timeCost` 会被拒绝。
 
 ### **KubeJs:**
 ```javascript

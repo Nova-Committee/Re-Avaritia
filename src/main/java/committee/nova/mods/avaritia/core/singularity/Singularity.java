@@ -4,13 +4,16 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import dev.latvian.mods.rhino.Context;
 import lombok.Getter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -29,24 +32,24 @@ public class Singularity {
     @Getter private Ingredient ingredient = Ingredient.EMPTY;
     @Getter private boolean enabled = true;
     @Getter private boolean recipeEnabled  = true;
-    @Getter private List<ICondition> conditions = new CopyOnWriteArrayList<>();
+    private final List<ICondition> conditions = new CopyOnWriteArrayList<>();
 
 
     public Singularity(ResourceLocation registryName, String displayName, int overlayColor, int underlayColor,
                        int count, int timeCost, Ingredient ingredient, boolean enabled, boolean recipeEnable) {
-        this.registryName = registryName;
-        this.displayName = displayName;
-        this.overlayColor = overlayColor;
-        this.underlayColor = underlayColor;
-        this.count = count;
-        this.timeCost = timeCost;
-        this.ingredient = ingredient;
-        this.enabled = enabled;
-        this.recipeEnabled = recipeEnable;
+        this.registryName = Objects.requireNonNull(registryName, "registryName");
+        this.setDisplayName(displayName);
+        this.setColors(overlayColor, underlayColor);
+        this.setCount(count);
+        this.setTimeCost(timeCost);
+        this.setIngredient(ingredient);
+        this.setEnabled(enabled);
+        this.setRecipeEnabled(recipeEnable);
     }
 
     public Singularity(ResourceLocation registryName) {
-        this.registryName = registryName;
+        this.registryName = Objects.requireNonNull(registryName, "registryName");
+        this.displayName = registryName.toString();
     }
 
     public Singularity setColors(int overlayColor, int underlayColor) {
@@ -56,23 +59,31 @@ public class Singularity {
     }
 
     public Singularity setDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.displayName = displayName == null || displayName.isBlank() ? this.registryName.toString() : displayName;
         return this;
     }
 
     public Singularity setCount(int count) {
-        this.count = count;
+        this.count = requirePositive("count", count);
         return this;
     }
 
     public Singularity setTimeCost(int timeCost) {
-        this.timeCost = timeCost;
+        this.timeCost = requirePositive("timeCost", timeCost);
         return this;
     }
 
     public Singularity setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
+        this.ingredient = Objects.requireNonNull(ingredient, "ingredient");
         return this;
+    }
+
+    public Singularity setTag(String tag) {
+        ResourceLocation tagId = ResourceLocation.tryParse(tag);
+        if (tagId == null) {
+            throw new IllegalArgumentException("Invalid item tag: " + tag);
+        }
+        return this.setIngredient(Ingredient.of(TagKey.create(Registries.ITEM, tagId)));
     }
 
     public Singularity setEnabled(boolean enabled) {
@@ -85,9 +96,41 @@ public class Singularity {
         return this;
     }
 
+    public Singularity setRecipeDisabled(boolean recipeDisabled) {
+        return this.setRecipeEnabled(!recipeDisabled);
+    }
+
     public Singularity addCondition(ICondition condition) {
-        this.conditions.add(condition);
+        this.conditions.add(Objects.requireNonNull(condition, "condition"));
         return this;
+    }
+
+    public List<ICondition> getConditions() {
+        return List.copyOf(this.conditions);
+    }
+
+    public Singularity validate() {
+        Objects.requireNonNull(this.registryName, "registryName");
+        Objects.requireNonNull(this.displayName, "displayName");
+        Objects.requireNonNull(this.ingredient, "ingredient");
+        requirePositive("count", this.count);
+        requirePositive("timeCost", this.timeCost);
+        return this;
+    }
+
+    public Singularity copy() {
+        this.validate();
+        Singularity copy = new Singularity(this.registryName, this.displayName, this.overlayColor, this.underlayColor,
+                this.count, this.timeCost, this.ingredient, this.enabled, this.recipeEnabled);
+        copy.conditions.addAll(this.conditions);
+        return copy;
+    }
+
+    private static int requirePositive(String field, int value) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(field + " must be greater than zero, got " + value);
+        }
+        return value;
     }
 
     public static Singularity create(ResourceLocation registryName, String displayName, int[] colors, Ingredient ingredient, ICondition condition) {
@@ -107,9 +150,6 @@ public class Singularity {
     }
 
     public int getCount() {
-        if (this.count == -1) {
-            return 1000;
-        }
         return this.count > 10000 ? this.count : Const.isLoad("projecte") ? 10000 : this.count;
     }
 
@@ -131,15 +171,16 @@ public class Singularity {
     }
 
     public static void write(FriendlyByteBuf buffer, Singularity singularity) {
-        buffer.writeResourceLocation(singularity.registryName);
-        buffer.writeUtf(singularity.displayName);
-        buffer.writeInt(singularity.overlayColor);
-        buffer.writeInt(singularity.underlayColor);
-        singularity.getIngredient().toNetwork(buffer);
-        buffer.writeVarInt(singularity.timeCost);
-        buffer.writeVarInt(singularity.getCount());
-        buffer.writeBoolean(singularity.enabled);
-        buffer.writeBoolean(singularity.recipeEnabled);
+        Singularity validated = singularity.validate();
+        buffer.writeResourceLocation(validated.registryName);
+        buffer.writeUtf(validated.displayName);
+        buffer.writeInt(validated.overlayColor);
+        buffer.writeInt(validated.underlayColor);
+        validated.ingredient.toNetwork(buffer);
+        buffer.writeVarInt(validated.timeCost);
+        buffer.writeVarInt(validated.getRealCount());
+        buffer.writeBoolean(validated.enabled);
+        buffer.writeBoolean(validated.recipeEnabled);
     }
 
 

@@ -1,5 +1,6 @@
 AvaritiaEvents.singularity(
     event => {
+        // 修改脚本后执行 /reload；本事件会在内部压缩机配方生成前运行。
         event.removeRecipe("avaritia:coal")//remove recipe
         event.remove("avaritia:iron")//remove singularity
         event.register("avaritia:dragon_egg", s => {

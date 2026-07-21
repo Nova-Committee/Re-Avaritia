@@ -6,7 +6,7 @@
 
 ## 概述
 
-新的奇点系统完全支持KubeJS脚本化创建！您可以使用JavaScript动态定义奇点，支持复杂的条件逻辑和动态内容生成。
+奇点系统支持基于资源重载的 KubeJS 定义。脚本中的新增、替换和删除会在配方加载期间收集，并在本次 `/reload` 后生效；不会即时修改正在使用的配方管理器。
 
 ## 📋 目录
 
@@ -28,7 +28,7 @@ AvaritiaEvents.singularity(event => {
             .setTimeCost(200)
             .setIngredient(Ingredient.of("minecraft:iron_ingot"))
             .setEnabled(true)
-            .setRecipeDisabled(false)
+            .setRecipeEnabled(true)
     })
 })
 ```
@@ -60,20 +60,18 @@ AvaritiaEvents.singularity(event => {
 | `setColors`         | 十六进制       | ✅  | -     | `[覆盖色, 底层色]` 十六进制颜色  |
 | `setIngredient`     | Ingredient | ❌  | -     | 物品ID（与tag二选一）        |
 | `setTag`            | 字符串        | ❌  | -     | 物品标签（与ingredient二选一） |
-| `setCount`          | 整数         | ❌  | 1000  | 所需材料数量               |
-| `setTimeCost`       | 整数         | ❌  | 240   | 压缩时间（游戏刻）            |
+| `setCount`          | 整数         | ❌  | 1000  | 所需材料数量，必须大于 0       |
+| `setTimeCost`       | 整数         | ❌  | 240   | 压缩时间（游戏刻），必须大于 0 |
 | `setEnabled`        | 布尔值        | ❌  | true  | 是否启用此奇点              |
+| `setRecipeEnabled`  | 布尔值        | ❌  | true  | 是否生成对应压缩机配方        |
 | `setRecipeDisabled` | 布尔值        | ❌  | false | 是否禁用配方               |
 
 ### 颜色格式
 
-颜色使用8位十六进制字符串：
+颜色使用 JavaScript 十六进制整数：
 
 ```javascript
-colors: [
-    '0xFF0000',  // 红色 (覆盖色)
-    '0x0000FF'   // 蓝色 (底层色)
-]
+s.setColors(0xFF0000, 0x0000FF)
 ```
 
 常用颜色参考：
@@ -88,18 +86,13 @@ colors: [
 
 ## 📚 API参考
 
-### KubeJS全局对象
+### 奇点事件
 
-- `ServerEvents.recipes()` - 注册配方事件
-- `Platform.isLoaded(modid)` - 检查模组是否加载
-- `Platform.getLoadedMods()` - 获取已加载模组列表
-- `global.config` - 访问全局配置
+- `event.register(id)` / `event.register(id, consumer)`：新增或替换脚本奇点
+- `event.remove(id)` / `event.removeAll()`：删除一个或全部有效奇点
+- `event.removeRecipe(id)` / `event.removeAllRecipe()`：禁用生成的压缩机配方
 
-### 奇点相关
-
-- `SingularityDataHandler.getInstance()` - 获取数据管理器
-- `manager.getSingularities()` - 获取所有奇点
-- `manager.getSingularity(id)` - 获取特定奇点
+`event.register(id)` 会创建显示名默认为 id 的合法对象。默认对象没有原料，因此配置原料前不会生成压缩机配方。
 
 ## 🎉 最佳实践
 
@@ -115,6 +108,7 @@ colors: [
 3. **兼容性**
    - 使用条件确保模组依赖
    - 提供默认选项供其他模组覆盖
+   - 修改或删除脚本定义后执行 `/reload`，旧脚本状态不会残留
 
 4. **性能考虑**
    - 避免创建过多奇点

@@ -16,7 +16,7 @@
   },
   "name": "avaritia:osmium",
   "overlayColor": "e6eef7",
-  "recipeDisabled": true,
+  "recipeEnabled": true,
   "timeCost": 240,
   "underlayColor": "c0c4cd"
 }
