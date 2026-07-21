@@ -49,7 +49,7 @@ public class InfinityUmbrellaItem extends ResourceItem implements ISwitchable, I
     private static final int MAX_DURATION = 20 * 60 * 20;
 
     public InfinityUmbrellaItem() {
-        super(ModRarities.COSMIC.getValue(),false, ModItems.properties().stacksTo(1));
+        super(ModRarities.COSMIC.getValue(), true, ModItems.properties().stacksTo(1));
     }
 
     private int getRandomDuration(Level level) {

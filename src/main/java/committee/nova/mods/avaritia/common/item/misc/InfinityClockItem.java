@@ -33,7 +33,7 @@ public class InfinityClockItem extends ResourceItem implements IInfinityClockSwi
     public static final Map<ResourceKey<Level>, Map<BlockPos, AcceleratorDisplayEntity>> displayEntities = new HashMap<>();
 
     public InfinityClockItem() {
-        super(ModRarities.COSMIC.getValue(), false, ModItems.properties().stacksTo(1));
+        super(ModRarities.COSMIC.getValue(), true, ModItems.properties().stacksTo(1));
     }
 
     @Override
