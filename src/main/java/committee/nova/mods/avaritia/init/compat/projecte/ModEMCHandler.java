@@ -62,7 +62,7 @@ public class ModEMCHandler implements IEMCMapper<NSSItem, Long> {
         NSSItem totem = NSSItem.createItem(Items.TOTEM_OF_UNDYING);
         NSSItem full_matter_cluster = NSSItem.createItem(ModItems.full_matter_cluster.get());
 
-        collector.setValueBefore(full_matter_cluster, null);
+        collector.setValueBefore(full_matter_cluster, 0L);
         collector.setValueBefore(neutronPile, ModConfig.neutronPileEmc.get().longValue());
         collector.setValueBefore(blaze_cube, ModConfig.blazeCubeEmc.get().longValue());
         collector.setValueBefore(totem, ModConfig.vanillaTotemEmc.get().longValue());

@@ -16,9 +16,10 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static committee.nova.mods.avaritia.Const.GSON;
@@ -32,11 +33,9 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
 
     private volatile Map<ResourceLocation, Singularity> dataSingularities = Map.of();
     private final Map<ResourceLocation, Singularity> persistentSingularities = new ConcurrentHashMap<>();
-    private final Map<ResourceLocation, Singularity> scriptSingularities = new ConcurrentHashMap<>();
-    private final Set<ResourceLocation> removeRecipes = ConcurrentHashMap.newKeySet();
-    private final Set<ResourceLocation> removeSingularities = ConcurrentHashMap.newKeySet();
-    private volatile boolean removeAllRecipes;
-    private volatile boolean removeAll;
+    private final List<ScriptOperation> craftTweakerOperations = new ArrayList<>();
+    private final List<ScriptOperation> kubeJsOperations = new ArrayList<>();
+    private boolean scriptTransactionFinalized;
     private volatile Map<ResourceLocation, Singularity> effectiveSingularities = Map.of();
 
     public SingularityReloadListener() {
@@ -74,20 +73,57 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         beginReload(nextDataSnapshot);
     }
 
-    /** Clears all script-owned state and atomically replaces the datapack snapshot. */
+    /** Replaces the datapack snapshot and opens a fresh per-reload script transaction. */
     public synchronized void beginReload(Map<ResourceLocation, Singularity> nextDataSnapshot) {
         this.dataSingularities = copyMap(nextDataSnapshot, true);
-        this.scriptSingularities.clear();
-        this.removeRecipes.clear();
-        this.removeSingularities.clear();
-        this.removeAllRecipes = false;
-        this.removeAll = false;
+        beginScriptTransaction();
     }
 
-    /** Publishes the staged reload state immediately before internal recipes are generated. */
-    public synchronized void commitReload() {
+    /** Clears all script operations collected by the previous resource reload. */
+    public synchronized void beginScriptTransaction() {
+        this.craftTweakerOperations.clear();
+        this.kubeJsOperations.clear();
+        this.scriptTransactionFinalized = false;
+    }
+
+    /**
+     * Publishes the staged state once, after both script loaders have completed
+     * and immediately before internal recipes are regenerated.
+     *
+     * @return {@code true} when this call published the transaction
+     */
+    public boolean finalizeScriptTransaction() {
+        return finalizeScriptTransaction(() -> {
+        });
+    }
+
+    /**
+     * Publishes the staged state while {@code finalizationAction} rebuilds all
+     * derived state. If rebuilding fails, the previously committed snapshot is
+     * restored. Reload notification happens only after the snapshot and its
+     * derived state are both committed.
+     */
+    public synchronized boolean finalizeScriptTransaction(Runnable finalizationAction) {
+        if (this.scriptTransactionFinalized) {
+            return false;
+        }
+        Map<ResourceLocation, Singularity> previousSnapshot = this.effectiveSingularities;
         this.effectiveSingularities = Map.copyOf(buildEffectiveSnapshot());
+        this.scriptTransactionFinalized = true;
+        try {
+            finalizationAction.run();
+        } catch (RuntimeException | Error exception) {
+            this.effectiveSingularities = previousSnapshot;
+            this.scriptTransactionFinalized = false;
+            throw exception;
+        }
         onSingularitiesReloaded(getAllSingularities());
+        return true;
+    }
+
+    /** Kept for source compatibility; reload wiring should use the explicit finalizer. */
+    public void commitReload() {
+        finalizeScriptTransaction();
     }
 
     /** Replaces the client view with the effective snapshot calculated by the server. */
@@ -109,9 +145,10 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         return copyMap(this.dataSingularities, false);
     }
 
-    public Map<ResourceLocation, Singularity> getRunSingularities() {
+    public synchronized Map<ResourceLocation, Singularity> getRunSingularities() {
         Map<ResourceLocation, Singularity> allRuntime = copyMap(this.persistentSingularities, false);
-        allRuntime.putAll(copyMap(this.scriptSingularities, false));
+        applyOperations(allRuntime, this.craftTweakerOperations);
+        applyOperations(allRuntime, this.kubeJsOperations);
         return allRuntime;
     }
 
@@ -123,32 +160,57 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     public synchronized void registerPersistentSingularity(Singularity singularity) {
         Singularity copy = singularity.copy();
         Singularity old = this.persistentSingularities.put(copy.getRegistryName(), copy);
-        logRegistration("persistent", copy.getRegistryName(), old);
+        logRegistration("persistent", copy.getRegistryName(), old != null);
         NeoForge.EVENT_BUS.post(new SingularityEvent.Add(buildEffectiveSnapshot(), copy.copy()));
     }
 
-    public synchronized void registerScriptSingularity(Singularity singularity) {
+    public void registerScriptSingularity(Singularity singularity) {
+        registerScriptSingularity(ScriptSource.KUBE_JS, singularity);
+    }
+
+    public synchronized void registerScriptSingularity(ScriptSource source, Singularity singularity) {
         Singularity copy = singularity.copy();
-        Singularity old = this.scriptSingularities.put(copy.getRegistryName(), copy);
-        logRegistration("script", copy.getRegistryName(), old);
+        boolean replaced = buildEffectiveSnapshot().containsKey(copy.getRegistryName());
+        operations(source).add(ScriptOperation.add(copy));
+        logRegistration(source.logName(), copy.getRegistryName(), replaced);
         NeoForge.EVENT_BUS.post(new SingularityEvent.Add(buildEffectiveSnapshot(), copy.copy()));
     }
 
-    public synchronized void removeSingularityRecipe(ResourceLocation id) {
-        this.removeRecipes.add(id);
+    public void removeSingularityRecipe(ResourceLocation id) {
+        removeSingularityRecipe(ScriptSource.KUBE_JS, id);
     }
 
-    public synchronized void removeSingularity(ResourceLocation id) {
-        this.removeSingularities.add(id);
+    public synchronized void removeSingularityRecipe(ScriptSource source, ResourceLocation id) {
+        operations(source).add(ScriptOperation.removeRecipe(id));
+    }
+
+    public void removeSingularity(ResourceLocation id) {
+        removeSingularity(ScriptSource.KUBE_JS, id);
+    }
+
+    public synchronized void removeSingularity(ScriptSource source, ResourceLocation id) {
+        operations(source).add(ScriptOperation.remove(id));
         NeoForge.EVENT_BUS.post(new SingularityEvent.Remove(buildEffectiveSnapshot(), id));
     }
 
-    public synchronized void setRemoveAllRecipes(boolean removeAllRecipes) {
-        this.removeAllRecipes = removeAllRecipes;
+    public void setRemoveAllRecipes(boolean removeAllRecipes) {
+        setRemoveAllRecipes(ScriptSource.KUBE_JS, removeAllRecipes);
     }
 
-    public synchronized void setRemoveAll(boolean removeAll) {
-        this.removeAll = removeAll;
+    public synchronized void setRemoveAllRecipes(ScriptSource source, boolean removeAllRecipes) {
+        if (removeAllRecipes) {
+            operations(source).add(ScriptOperation.removeAllRecipes());
+        }
+    }
+
+    public void setRemoveAll(boolean removeAll) {
+        setRemoveAll(ScriptSource.KUBE_JS, removeAll);
+    }
+
+    public synchronized void setRemoveAll(ScriptSource source, boolean removeAll) {
+        if (removeAll) {
+            operations(source).add(ScriptOperation.removeAll());
+        }
     }
 
     public Singularity getSingularity(ResourceLocation id) {
@@ -209,21 +271,32 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     private Map<ResourceLocation, Singularity> buildEffectiveSnapshot() {
         Map<ResourceLocation, Singularity> all = copyMap(this.dataSingularities, false);
         all.putAll(copyMap(this.persistentSingularities, false));
-        all.putAll(copyMap(this.scriptSingularities, false));
-        this.removeRecipes.forEach(id -> {
-            Singularity singularity = all.get(id);
-            if (singularity != null) {
-                singularity.setRecipeEnabled(false);
-            }
-        });
-        this.removeSingularities.forEach(all::remove);
-        if (this.removeAllRecipes) {
-            all.values().forEach(singularity -> singularity.setRecipeEnabled(false));
-        }
-        if (this.removeAll) {
-            all.clear();
-        }
+        applyOperations(all, this.craftTweakerOperations);
+        applyOperations(all, this.kubeJsOperations);
         return all;
+    }
+
+    private List<ScriptOperation> operations(ScriptSource source) {
+        return source == ScriptSource.CRAFT_TWEAKER ? this.craftTweakerOperations : this.kubeJsOperations;
+    }
+
+    private static void applyOperations(Map<ResourceLocation, Singularity> singularities,
+                                        List<ScriptOperation> operations) {
+        for (ScriptOperation operation : operations) {
+            switch (operation.type()) {
+                case ADD -> singularities.put(operation.id(), operation.singularity().copy());
+                case REMOVE -> singularities.remove(operation.id());
+                case REMOVE_RECIPE -> {
+                    Singularity singularity = singularities.get(operation.id());
+                    if (singularity != null) {
+                        singularity.setRecipeEnabled(false);
+                    }
+                }
+                case REMOVE_ALL_RECIPES ->
+                        singularities.values().forEach(singularity -> singularity.setRecipeEnabled(false));
+                case REMOVE_ALL -> singularities.clear();
+            }
+        }
     }
 
     private static Map<ResourceLocation, Singularity> copyMap(Map<ResourceLocation, Singularity> source,
@@ -240,8 +313,8 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
         return copy;
     }
 
-    private static void logRegistration(String source, ResourceLocation id, Singularity old) {
-        Const.LOGGER.info("Singularity: {} {} {} singularity", old == null ? "Registered" : "Updated", source, id);
+    private static void logRegistration(String source, ResourceLocation id, boolean replaced) {
+        Const.LOGGER.info("Singularity: {} {} {} singularity", replaced ? "Updated" : "Registered", source, id);
     }
 
     private void onSingularitiesReloaded(Map<ResourceLocation, Singularity> singularities) {
@@ -253,5 +326,50 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener 
     @Override
     public @NotNull String getName() {
         return "Avaritia Singularity Listener";
+    }
+
+    public enum ScriptSource {
+        CRAFT_TWEAKER("CraftTweaker"),
+        KUBE_JS("KubeJS");
+
+        private final String logName;
+
+        ScriptSource(String logName) {
+            this.logName = logName;
+        }
+
+        private String logName() {
+            return this.logName;
+        }
+    }
+
+    private enum ScriptOperationType {
+        ADD,
+        REMOVE,
+        REMOVE_RECIPE,
+        REMOVE_ALL_RECIPES,
+        REMOVE_ALL
+    }
+
+    private record ScriptOperation(ScriptOperationType type, ResourceLocation id, Singularity singularity) {
+        private static ScriptOperation add(Singularity singularity) {
+            return new ScriptOperation(ScriptOperationType.ADD, singularity.getRegistryName(), singularity.copy());
+        }
+
+        private static ScriptOperation remove(ResourceLocation id) {
+            return new ScriptOperation(ScriptOperationType.REMOVE, id, null);
+        }
+
+        private static ScriptOperation removeRecipe(ResourceLocation id) {
+            return new ScriptOperation(ScriptOperationType.REMOVE_RECIPE, id, null);
+        }
+
+        private static ScriptOperation removeAllRecipes() {
+            return new ScriptOperation(ScriptOperationType.REMOVE_ALL_RECIPES, null, null);
+        }
+
+        private static ScriptOperation removeAll() {
+            return new ScriptOperation(ScriptOperationType.REMOVE_ALL, null, null);
+        }
     }
 }

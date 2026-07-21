@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
+import committee.nova.mods.avaritia.core.singularity.SingularityValidationException;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import net.minecraft.resources.RegistryOps;
@@ -23,16 +24,32 @@ public class SingularityRegisterEventJS implements KubeEvent {
     public SingularityRegisterEventJS(RecipesKubeEvent event) {
         this.event = event;
     }
-    public void register(ResourceLocation key) {
+    public void register(Object key) {
         this.register(key,singularity -> {});
     }
 
-    public void register(ResourceLocation key, Consumer<Singularity> consumer) {
+    public void register(Object key, Consumer<Singularity> consumer) {
+        ResourceLocation id = parseId(key);
+        if (id == null) {
+            return;
+        }
+        Singularity singularity = new Singularity(id);
         try {
-            Singularity singularity = new Singularity(key);
             consumer.accept(singularity);
+        } catch (RuntimeException exception) {
+            Throwable validationFailure = findValidationFailure(exception);
+            if (validationFailure == null) {
+                throw exception;
+            }
+            Const.LOGGER.error("Singularity: Invalid KubeJS singularity {}; skipping this entry", id,
+                    validationFailure);
+            return;
+        }
+
+        try {
             if (singularity.getConditions().isEmpty()) {
-                SingularityReloadListener.INSTANCE.registerScriptSingularity(singularity);
+                SingularityReloadListener.INSTANCE.registerScriptSingularity(
+                        SingularityReloadListener.ScriptSource.KUBE_JS, singularity);
                 return;
             }
             RegistryOps<JsonElement> registryOps = new ConditionalOps<>(event.ops.json(), event.registries);
@@ -42,28 +59,59 @@ public class SingularityRegisterEventJS implements KubeEvent {
             var decoded = Singularity.CONDITIONAL_CODEC.parse(registryOps, encoded)
                     .getOrThrow(JsonParseException::new);
             decoded.ifPresentOrElse(withConditions ->
-                            SingularityReloadListener.INSTANCE.registerScriptSingularity(withConditions.carrier()),
+                            SingularityReloadListener.INSTANCE.registerScriptSingularity(
+                                    SingularityReloadListener.ScriptSource.KUBE_JS, withConditions.carrier()),
                     () -> Const.LOGGER.debug(
-                            "Singularity: Skipping KubeJS singularity {} because its conditions were not met", key));
-        } catch (IllegalArgumentException | JsonParseException exception) {
-            Const.LOGGER.error("Singularity: Invalid KubeJS singularity {}; skipping this entry", key, exception);
+                            "Singularity: Skipping KubeJS singularity {} because its conditions were not met", id));
+        } catch (JsonParseException | SingularityValidationException exception) {
+            Const.LOGGER.error("Singularity: Invalid KubeJS singularity {}; skipping this entry", id, exception);
         }
     }
     public void removeAll() {
-        SingularityReloadListener.INSTANCE.setRemoveAll(true);
+        SingularityReloadListener.INSTANCE.setRemoveAll(
+                SingularityReloadListener.ScriptSource.KUBE_JS, true);
     }
 
     public void removeAllRecipe() {
-        SingularityReloadListener.INSTANCE.setRemoveAllRecipes(true);
+        SingularityReloadListener.INSTANCE.setRemoveAllRecipes(
+                SingularityReloadListener.ScriptSource.KUBE_JS, true);
     }
 
 
-    public void remove(ResourceLocation key) {
-        SingularityReloadListener.INSTANCE.removeSingularity(key);
+    public void remove(Object key) {
+        ResourceLocation id = parseId(key);
+        if (id != null) {
+            SingularityReloadListener.INSTANCE.removeSingularity(
+                    SingularityReloadListener.ScriptSource.KUBE_JS, id);
+        }
     }
 
-    public void removeRecipe(ResourceLocation key) {
-        SingularityReloadListener.INSTANCE.removeSingularityRecipe(key);
+    public void removeRecipe(Object key) {
+        ResourceLocation id = parseId(key);
+        if (id != null) {
+            SingularityReloadListener.INSTANCE.removeSingularityRecipe(
+                    SingularityReloadListener.ScriptSource.KUBE_JS, id);
+        }
     }
 
+    private static ResourceLocation parseId(Object key) {
+        ResourceLocation id = key instanceof ResourceLocation resourceLocation
+                ? resourceLocation
+                : key == null ? null : ResourceLocation.tryParse(key.toString());
+        if (id == null) {
+            Const.LOGGER.error("Singularity: Invalid KubeJS singularity id {}; skipping this operation", key);
+        }
+        return id;
+    }
+
+    private static Throwable findValidationFailure(Throwable exception) {
+        Throwable current = exception;
+        while (current != null) {
+            if (current instanceof SingularityValidationException) {
+                return current;
+            }
+            current = current.getCause();
+        }
+        return null;
+    }
 }

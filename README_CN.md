@@ -81,7 +81,7 @@ mods.avaritia.Singularity.removeAll();//删除所有奇点
 mods.avaritia.Singularity.removeRecipe("key");//禁用指定奇点配方
 mods.avaritia.Singularity.removeAllRecipe();//禁用所有奇点配方
 ```
-`mods.avaritia.Singularity.register` 为静态调用；非正数 `count` 或 `timeCost` 会被拒绝。
+`mods.avaritia.Singularity.register` 为静态调用。非法 ID、非正数 `count` 或 `timeCost` 会记录错误并只跳过当前定义；与奇点校验无关的脚本异常仍交给脚本引擎报告。奇点操作会暂存到本轮资源重载的脚本阶段结束，再统一提交一次；冲突优先级为“数据包 < Java API < CraftTweaker < KubeJS”，同一来源内后操作覆盖前操作。脚本变更仅在执行 `/reload` 后生效。
 
 ### **KubeJs:**
 ```javascript
