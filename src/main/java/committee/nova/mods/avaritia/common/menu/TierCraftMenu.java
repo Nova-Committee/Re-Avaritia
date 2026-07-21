@@ -12,6 +12,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
@@ -30,6 +31,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final Container result;
     private final Player player;
     private final ModCraftTier tier;
+    private final TierCraftTile craftTile;
     public final ModCraftContainer matrix;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
@@ -44,8 +46,9 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.world = playerInventory.player.level();
         this.result = new ResultContainer();
         this.tier = tier;
+        this.craftTile = getTileEntity();
 
-        matrix = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size * tier.size);
+        matrix = new ModCraftContainer(this, this.craftTile.getInventory(), tier.size * tier.size);
 
         this.addSlot(new ModCraftResultSlot(this.player, this, matrix, this.result, tier.size * tier.size, tier.outX, tier.outY));
 
@@ -106,20 +109,61 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         if (this.level.isClientSide) {
             return;
         }
-        var recipe = this.world.getRecipeManager().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), matrix, this.world);
-
-        if (recipe.isPresent() && !matrix.isEmpty()) {
-            var result = recipe.get().assemble(matrix, this.world.registryAccess());
-            this.result.setItem(0, result);
-        } else {
-            this.result.setItem(0, ItemStack.EMPTY);
-        }
+        this.result.setItem(0, this.assembleCurrentResult());
 
         super.slotsChanged(matrix);
     }
 
     @Override
+    public boolean stillValid(@NotNull Player player) {
+        return super.stillValid(player)
+                && !this.craftTile.isRemoved()
+                && this.world.getBlockEntity(this.getBlockPos()) == this.craftTile;
+    }
+
+    public boolean canTakeCraftingResult() {
+        if (this.world.isClientSide) {
+            return true;
+        }
+
+        var currentResult = this.assembleCurrentResult();
+        var displayedResult = this.result.getItem(0);
+        var valid = !currentResult.isEmpty()
+                && currentResult.getCount() == displayedResult.getCount()
+                && ItemStack.isSameItemSameTags(currentResult, displayedResult);
+
+        if (!valid) {
+            this.result.setItem(0, currentResult);
+            this.broadcastChanges();
+        }
+        return valid;
+    }
+
+    private ItemStack assembleCurrentResult() {
+        if (!this.stillValid(this.player) || this.matrix.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        return this.world.getRecipeManager()
+                .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), this.matrix, this.world)
+                .map(recipe -> recipe.assemble(this.matrix, this.world.registryAccess()))
+                .orElse(ItemStack.EMPTY);
+    }
+
+    @Override
+    public void clicked(int slotId, int button, @NotNull ClickType clickType, @NotNull Player player) {
+        if (slotId == 0 && !this.canTakeCraftingResult()) {
+            return;
+        }
+        super.clicked(slotId, button, clickType, player);
+    }
+
+    @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
+        if (slotNumber == 0 && !this.canTakeCraftingResult()) {
+            return ItemStack.EMPTY;
+        }
+
         var itemstack = ItemStack.EMPTY;
         var slot = this.slots.get(slotNumber);
 

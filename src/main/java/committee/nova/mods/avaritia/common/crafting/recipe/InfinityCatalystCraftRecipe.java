@@ -116,7 +116,9 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             return false;
         }
 
-        // 检查每个输入物品：要么匹配奇点，要么匹配 originalInputs
+        List<ItemStack> standardInputs = new ArrayList<>();
+
+        // 检查每个输入物品：优先一对一匹配奇点，其余交给 RecipeMatcher 匹配普通材料
         for (ItemStack stack : inputStacks) {
             boolean matched = false;
 
@@ -134,19 +136,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
                 }
             }
 
-            // 如果没有匹配奇点，检查是否匹配 originalInputs
             if (!matched) {
-                for (Ingredient ingredient : this.originalInputs) {
-                    if (ingredient.test(stack)) {
-                        matched = true;
-                        break;
-                    }
-                }
-            }
-
-            // 如果有物品既不匹配奇点也不匹配 originalInputs，返回false
-            if (!matched) {
-                return false;
+                standardInputs.add(stack);
             }
         }
 
@@ -155,7 +146,8 @@ public class InfinityCatalystCraftRecipe extends ShapelessTableCraftingRecipe {
             if (!b) return false;
         }
 
-        return true;
+        return standardInputs.size() == this.originalInputs.size()
+                && RecipeMatcher.findMatches(standardInputs, this.originalInputs) != null;
     }
 
     /**

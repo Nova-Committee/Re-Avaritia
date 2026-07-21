@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -99,33 +98,6 @@ public class EternalSingularityCraftRecipe extends ShapelessTableCraftingRecipe 
             INGREDIENTS_LOADED.put(this, true);
         }
         return super.getIngredients();
-    }
-
-    @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull IItemHandler inv) {
-        var remaining = super.getRemainingItems(inv);
-
-        var singularities = SingularityReloadListener.INSTANCE.getAllSingularities();
-        if (singularities != null && !singularities.isEmpty()) {
-            for (int i = 0; i < remaining.size(); i++) {
-                var stack = inv.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    for (var singularity : singularities.values()) {
-                        if (singularity.getIngredient() != Ingredient.EMPTY) {
-                            var singularityStack = SingularityUtils.getItemForSingularity(singularity);
-                            if (ItemStack.isSameItemSameTags(stack, singularityStack)) {
-                                var rem = singularityStack.copy();
-                                rem.setCount(1);
-                                remaining.set(i, rem);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return remaining;
     }
 
     @Override
