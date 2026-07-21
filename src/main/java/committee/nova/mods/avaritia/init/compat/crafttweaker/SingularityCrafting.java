@@ -14,10 +14,10 @@ import org.openzen.zencode.java.ZenCodeType;
 @ZenRegister
 public class SingularityCrafting {
     @ZenCodeType.Method
-    public void register(String key, String displayName, int overlayColor, int underlayColor,
+    public static void register(String key, String displayName, int overlayColor, int underlayColor,
                          int count, int timeCost, IIngredient ingredient, boolean enabled, boolean recipeEnable) {
         Singularity singularity = new Singularity(ResourceLocation.parse(key), displayName, overlayColor, underlayColor, count, timeCost, ingredient.asVanillaIngredient(), enabled, recipeEnable);
-        SingularityReloadListener.INSTANCE.registerSingularity(singularity);
+        SingularityReloadListener.INSTANCE.registerScriptSingularity(singularity);
     }
 
     @ZenCodeType.Method

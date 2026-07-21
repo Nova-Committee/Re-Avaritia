@@ -74,7 +74,7 @@ public class ModConfig {
         axeChainCount = buildInt(common, "Axe Chain Count", 64, 16, 128, "Chain number of endless axe cutting trees");
         pickAxeBreakRange = buildInt(common, "PickAxe Break Range", 8, 2, 32, "The range of Infinity PickAxe can break");
         shovelBreakRange = buildInt(common, "Shovel Break Range", 8, 2, 32, "The range of Infinity Shovel can break");
-        singularityTimeRequired = buildInt(common, "Singularity Time Required", 240, 0, Integer.MAX_VALUE, "Singularity default time required");
+        singularityTimeRequired = buildInt(common, "Singularity Time Required", 240, 1, Integer.MAX_VALUE, "Singularity default time required");
         growthSoulFarmland = buildDouble(common, "Growth soul farmland rate", 0.8, 0.0, 1.0, "Growth soul farmland rate");
         bladeSlashDamage = buildInt(common, "BladeSlash Damage", 200, 0, Integer.MAX_VALUE, "Damage of BladeSlash for Crystal Sword");
         bladeSlashRadius = buildInt(common, "BladeSlash Radius", 10, 5, 100, "Radius of BladeSlash for Crystal Sword");

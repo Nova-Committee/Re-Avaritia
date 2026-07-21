@@ -52,6 +52,7 @@ public class ModApi {
 
     @ApiStatus.AvailableSince("1.3.9.2")
     public static RecipeHolder<CompressorRecipe> addSingularityRecipe(Singularity singularity) {
+        singularity = singularity.copy();
         var ingredient = singularity.getIngredient();
         if (ingredient == Ingredient.EMPTY)
             return null;
@@ -77,7 +78,7 @@ public class ModApi {
         var singularity = new Singularity(resourceLocation);
         builder.accept(singularity);
         // 注册奇点到数据管理器
-        SingularityReloadListener.INSTANCE.registerSingularity(singularity);
+        SingularityReloadListener.INSTANCE.registerPersistentSingularity(singularity);
         return singularity;
     }
 }

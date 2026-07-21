@@ -6,7 +6,7 @@
 
 ## Overview
 
-The new singularity system fully supports KubeJS scripting! You can dynamically define singularities using JavaScript, supporting complex conditional logic and dynamic content generation.
+The singularity system supports reload-based KubeJS definitions. Script additions, replacements, and removals are collected while recipes load and become effective after the current `/reload`; they are not live recipe mutations.
 
 ## 📋 Table of Contents
 
@@ -22,12 +22,12 @@ AvaritiaEvents.singularity(event => {
     event.register("avaritia:example", s => {
         s
             .setDisplayName("singularity.avaritia.example")
-            .setColors(C0C0C0, 808080) // [overlay color, underlay color]
+            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
             .setCount(1000)
             .setTimeCost(200)
             .setIngredient(Ingredient.of("minecraft:iron_ingot"))
             .setEnabled(true)
-            .setRecipeDisabled(false)
+            .setRecipeEnabled(true)
     })
 })
 ```
@@ -42,7 +42,7 @@ AvaritiaEvents.singularity(event => {
             .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
             .setCount(1000)
             .setTimeCost(200)
-            .setTag('forge:ingots/iron')
+            .setTag('c:ingots/iron')
             .setEnabled(true)
             .setRecipeDisabled(false)
     })
@@ -59,20 +59,18 @@ AvaritiaEvents.singularity(event => {
 | `setColors`         | Integer    | ✅        | -       | `[overlay color, underlay color]` hex colors |
 | `setIngredient`     | Ingredient | ❌        | -       | Item ID (choose one with tag)                |
 | `setTag`            | String     | ❌        | -       | Item tag (choose one with ingredient)        |
-| `setCount`          | Integer    | ❌        | 1000    | Required material count                      |
-| `setTimeCost`       | Integer    | ❌        | 240     | Compression time (game ticks)                |
+| `setCount`          | Integer    | ❌        | 1000    | Required material count; must be greater than zero |
+| `setTimeCost`       | Integer    | ❌        | 240     | Compression time; must be greater than zero  |
 | `setEnabled`        | Boolean    | ❌        | true    | Whether to enable this singularity           |
+| `setRecipeEnabled`  | Boolean    | ❌        | true    | Whether to generate its compressor recipe    |
 | `setRecipeDisabled` | Boolean    | ❌        | false   | Whether to disable recipe                    |
 
 ### Color Format
 
-Colors use 8-digit hexadecimal strings:
+Colors use JavaScript hexadecimal integers:
 
 ```javascript
-colors: [
-    '0xFF0000',  // Red (overlay color)
-    '0x0000FF'   // Blue (underlay color)
-]
+s.setColors(0xFF0000, 0x0000FF)
 ```
 
 Common color references:
@@ -88,18 +86,13 @@ Common color references:
 
 ## 📚 API Reference
 
-### KubeJS Global Objects
+### Singularity Event
 
-- `ServerEvents.recipes()` - Register recipe events
-- `Platform.isLoaded(modid)` - Check if mod is loaded
-- `Platform.getLoadedMods()` - Get list of loaded mods
-- `global.config` - Access global configuration
+- `event.register(id)` / `event.register(id, consumer)` - Add or replace a script singularity
+- `event.remove(id)` / `event.removeAll()` - Remove one or all effective singularities
+- `event.removeRecipe(id)` / `event.removeAllRecipe()` - Disable generated compressor recipes
 
-### Singularity Related
-
-- `SingularityDataHandler.getInstance()` - Get data manager
-- `manager.getSingularities()` - Get all singularities
-- `manager.getSingularity(id)` - Get specific singularity
+`event.register(id)` creates a valid default object whose display name is the id. It has no ingredient, so it will not generate a compressor recipe until configured.
 
 ## 🎉 Best Practices
 
@@ -115,6 +108,7 @@ Common color references:
 3. **Compatibility**
    - Use conditions to ensure mod dependencies
    - Provide default options for other mods to override
+   - Run `/reload` after editing the script; removing a script definition also takes effect on reload
 
 4. **Performance Considerations**
    - Avoid creating too many singularities

@@ -53,6 +53,23 @@
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
 ## **⚙️Develop:**
+### **Singularities:**
+Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
+```json
+{
+  "name": "example:iron",
+  "displayName": "singularity.example.iron",
+  "overlayColor": 14803425,
+  "underlayColor": 7105644,
+  "count": 1000,
+  "timeCost": 240,
+  "ingredient": { "item": "minecraft:iron_ingot" },
+  "enabled": true,
+  "recipeEnabled": true
+}
+```
+The 1.20 aliases `timeRequired`, `recipeDisabled`, and hexadecimal string colors are migrated while loading. To preserve old data, the stored `recipeDisabled` boolean keeps its historical `recipeEnabled` meaning and is not inverted. Datapack and script changes take effect on `/reload`.
+
 ### **CraftTweaker:**
 ```
 mods.avaritia.Compressor.addRecipe("name", input, output, inputCount, timeCost);
@@ -60,7 +77,14 @@ mods.avaritia.Compressor.remove(output);
 mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);
 mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);
 mods.avaritia.CraftingTable.remove(output);
+
+mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnabled);
+mods.avaritia.Singularity.remove("key");
+mods.avaritia.Singularity.removeAll();
+mods.avaritia.Singularity.removeRecipe("key");
+mods.avaritia.Singularity.removeAllRecipe();
 ```
+`mods.avaritia.Singularity.register` is a static call. Invalid non-positive `count` or `timeCost` values are rejected.
 
 ### **KubeJs:**
 ```javascript
@@ -113,12 +137,12 @@ AvaritiaEvents.singularity(event => {
     event.register("avaritia:example", s => {
         s
             .setDisplayName("singularity.avaritia.example")
-            .setColors(C0C0C0, 808080) // [overlay color, underlay color]
+            .setColors(0xC0C0C0, 0x808080) // [overlay color, underlay color]
             .setCount(1000)
             .setTimeCost(200)
             .setIngredient(Ingredient.of("minecraft:iron_ingot"))
             .setEnabled(true)
-            .setRecipeDisabled(false)
+            .setRecipeEnabled(true)
     })
 })
 ```

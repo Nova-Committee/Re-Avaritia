@@ -51,31 +51,21 @@
 
 ## **⚙️开发:**
 ### **Singularities**
-    位于config/avaritia/singularities文件夹下，可以利用json自定义奇点：
-```json5
+数据包定义位于 `data/<命名空间>/singularities/<路径>.json`。JSON 内的 `name` 必须等于文件资源 ID，且 `count`、`timeCost` 必须大于 0。
+```json
 {
-  "name": "singularity.avaritia.bronze", // 在语言文件中本地化的名称。
-  "colors": [
-    "d99f43",   //覆盖色。
-    "bb6b3b"  //背景色。
-  ],
-  "materialCount": 1000, //默认是1000个合成一个对应奇点。
-  "timeRequired": 240,  //在中子态素压缩机中产生对应奇点所需tick。
-  "conditions": [    //启用条件。
-    {
-      "type": "forge:not",
-      "value": {
-        "tag": "forge:ingots/bronze",
-        "type": "forge:tag_empty"
-      }
-    }
-  ],
-  "ingredient": {  //输入中子态素压缩机的物品或tag。
-    "tag": "forge:ingots/bronze"
-  },
-  "enable": true //是否启用。
+  "name": "example:iron",
+  "displayName": "singularity.example.iron",
+  "overlayColor": 14803425,
+  "underlayColor": 7105644,
+  "count": 1000,
+  "timeCost": 240,
+  "ingredient": { "item": "minecraft:iron_ingot" },
+  "enabled": true,
+  "recipeEnabled": true
 }
 ```
+1.20 历史字段 `timeRequired`、`recipeDisabled` 和十六进制字符串颜色仍可迁移读取。为保持旧数据语义，`recipeDisabled` 中保存的布尔值仍按历史上的 `recipeEnabled` 含义读取，不会取反。数据包和脚本修改在执行 `/reload` 后生效。
 
 ### **CraftTweaker:**
 ```
@@ -84,7 +74,14 @@ mods.avaritia.Compressor.remove(output);//移除中子态素压缩配方。
 mods.avaritia.CraftingTable.addShaped("name", tier, output, ingredients);//添加无尽工作台有序配方。
 mods.avaritia.CraftingTable.addShapeless("name", tier, output, ingredients);//添加无尽工作台无序配方。
 mods.avaritia.CraftingTable.remove(output);//删除无尽工作台配方。
+
+mods.avaritia.Singularity.register("key", "displayName", overlayColor, underlayColor, count, timeCost, ingredient, enabled, recipeEnabled);//添加或替换奇点
+mods.avaritia.Singularity.remove("key");//删除指定奇点
+mods.avaritia.Singularity.removeAll();//删除所有奇点
+mods.avaritia.Singularity.removeRecipe("key");//禁用指定奇点配方
+mods.avaritia.Singularity.removeAllRecipe();//禁用所有奇点配方
 ```
+`mods.avaritia.Singularity.register` 为静态调用；非正数 `count` 或 `timeCost` 会被拒绝。
 
 ### **KubeJs:**
 ```javascript

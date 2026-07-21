@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.sugar.Local;
 import committee.nova.mods.avaritia.api.Lib;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -56,6 +57,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
         ArrayList<RecipeHolder<?>> recipes = new ArrayList<>();
 
         try {
+            SingularityReloadListener.INSTANCE.commitReload();
             NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, recipes, this.getRegistryLookup(), this.getContext()));
         } catch (Exception e) {
             Lib.LOGGER.error("Avaritia: An error occurred while firing RecipeManagerLoadingEvent", e);

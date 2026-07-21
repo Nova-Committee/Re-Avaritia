@@ -10,7 +10,9 @@ import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -26,18 +28,26 @@ public class SingularityRegisterEventJS implements KubeEvent {
     }
 
     public void register(ResourceLocation key, Consumer<Singularity> consumer) {
-        Singularity singularity = new Singularity(key);
-        consumer.accept(singularity);
-        RegistryOps<JsonElement> registryops = new ConditionalOps<>(event.ops.json(), event.registries);
-        var decoded = Singularity.CONDITIONAL_CODEC.parse(registryops,
-                Singularity.CODEC.encodeStart(event.ops.json(), singularity).getOrThrow()
-                ).getOrThrow(JsonParseException::new);
-        decoded.ifPresentOrElse(r -> {
-            var carrier = r.carrier();
-            SingularityReloadListener.INSTANCE.registerSingularity(carrier);
-        }, () -> {
-            Const.LOGGER.debug("Singularity: Skipping loading singularity {} as its conditions were not met", key);
-        });
+        try {
+            Singularity singularity = new Singularity(key);
+            consumer.accept(singularity);
+            if (singularity.getConditions().isEmpty()) {
+                SingularityReloadListener.INSTANCE.registerScriptSingularity(singularity);
+                return;
+            }
+            RegistryOps<JsonElement> registryOps = new ConditionalOps<>(event.ops.json(), event.registries);
+            JsonElement encoded = Singularity.CONDITIONAL_CODEC.encodeStart(
+                    event.ops.json(), Optional.of(new WithConditions<>(singularity.getConditions(), singularity)))
+                    .getOrThrow(JsonParseException::new);
+            var decoded = Singularity.CONDITIONAL_CODEC.parse(registryOps, encoded)
+                    .getOrThrow(JsonParseException::new);
+            decoded.ifPresentOrElse(withConditions ->
+                            SingularityReloadListener.INSTANCE.registerScriptSingularity(withConditions.carrier()),
+                    () -> Const.LOGGER.debug(
+                            "Singularity: Skipping KubeJS singularity {} because its conditions were not met", key));
+        } catch (IllegalArgumentException | JsonParseException exception) {
+            Const.LOGGER.error("Singularity: Invalid KubeJS singularity {}; skipping this entry", key, exception);
+        }
     }
     public void removeAll() {
         SingularityReloadListener.INSTANCE.setRemoveAll(true);

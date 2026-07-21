@@ -1,14 +1,11 @@
 package committee.nova.mods.avaritia.init.mixins;
 
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
-import net.minecraft.commands.Commands;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.ServerFunctionLibrary;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.tags.TagManager;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +13,6 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -48,14 +44,6 @@ public abstract class ReloadableServerResourcesMixin{
     private ServerAdvancementManager advancements;
 
     public ReloadableServerResourcesMixin() {
-    }
-
-    @Inject(
-            at = {@At(value = "RETURN")},
-            method = {"<init>"}
-    )
-    public void avaritia$constructor(RegistryAccess.Frozen registryAccess, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
-        SingularityReloadListener.INSTANCE = new SingularityReloadListener();
     }
 
     @Inject(
