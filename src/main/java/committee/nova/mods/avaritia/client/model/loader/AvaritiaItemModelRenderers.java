@@ -25,6 +25,9 @@ import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -65,7 +68,19 @@ public final class AvaritiaItemModelRenderers {
     public record HaloLayerArgument(Identifier texture, HaloSetting setting) {
     }
 
-    public record PulseLayerArgument(List<BakedQuad> quads) {
+    public record PulseLayerArgument(Map<RenderType, List<BakedQuad>> quadsByRenderType) {
+        public PulseLayerArgument(List<BakedQuad> quads) {
+            this(groupQuadsByRenderType(quads));
+        }
+
+        private static Map<RenderType, List<BakedQuad>> groupQuadsByRenderType(List<BakedQuad> quads) {
+            Map<RenderType, List<BakedQuad>> grouped = new LinkedHashMap<>();
+            for (BakedQuad quad : quads) {
+                grouped.computeIfAbsent(quad.materialInfo().itemRenderType(), ignored -> new ArrayList<>()).add(quad);
+            }
+            grouped.replaceAll((renderType, group) -> List.copyOf(group));
+            return Collections.unmodifiableMap(grouped);
+        }
     }
 
     public record TridentLayerArgument(Map<String, SimpleMesh> models, ItemDisplayContext displayContext) {
@@ -147,21 +162,23 @@ public final class AvaritiaItemModelRenderers {
         @Override
         public void submit(@Nullable PulseLayerArgument argument, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
                            int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor) {
-            if (argument == null || argument.quads().isEmpty()) {
+            if (argument == null || argument.quadsByRenderType().isEmpty()) {
                 return;
             }
 
-            submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER)
-                    .submitCustomGeometry(poseStack, NeoForgeRenderTypes.BLOCK_ITEM_LAYERED_TRANSLUCENT.get(), (pose, buffer) -> {
-                QuadInstance instance = new QuadInstance();
-                instance.setColor(PULSE_ALPHA_COLOR);
-                instance.setLightCoords(lightCoords);
-                instance.setOverlayCoords(overlayCoords);
+            for (Map.Entry<RenderType, List<BakedQuad>> entry : argument.quadsByRenderType().entrySet()) {
+                submitNodeCollector.order(ITEM_EFFECT_BACKGROUND_SUBMIT_ORDER)
+                        .submitCustomGeometry(poseStack, entry.getKey(), (pose, buffer) -> {
+                    QuadInstance instance = new QuadInstance();
+                    instance.setColor(PULSE_ALPHA_COLOR);
+                    instance.setLightCoords(lightCoords);
+                    instance.setOverlayCoords(overlayCoords);
 
-                for (BakedQuad quad : argument.quads()) {
-                    buffer.putBakedQuad(pose, quad, instance);
-                }
-            });
+                    for (BakedQuad quad : entry.getValue()) {
+                        buffer.putBakedQuad(pose, quad, instance);
+                    }
+                });
+            }
         }
 
         @Override

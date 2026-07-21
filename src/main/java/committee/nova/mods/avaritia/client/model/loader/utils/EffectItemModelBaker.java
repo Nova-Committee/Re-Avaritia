@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.client.render.mesh.SimpleMesh;
 import committee.nova.mods.avaritia.client.render.mesh.SimpleObjMeshLoader;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
@@ -59,7 +60,7 @@ public final class EffectItemModelBaker {
         ItemModel wrapped = new CuboidItemModelWrapper.Unbaked(model, Optional.empty(), tints).bake(context, transformation);
         ModelRenderProperties properties = ModelRenderProperties.fromResolvedModel(baker, resolvedModel, textureSlots);
         // baseQuads 给 halo 脉冲层使用，effectQuads 则来自 mask 贴图，两者来源不同。
-        List<BakedQuad> baseQuads = bakeBaseQuads(baker, textureSlots);
+        List<BakedQuad> baseQuads = bakeBaseQuads(baker, resolvedModel, textureSlots);
         List<BakedQuad> effectQuads = effect == null ? List.of() : bakeEffectQuads(baker, effect, masks);
         Map<String, SimpleMesh> tridentModels = cosmicArc ? loadTridentModels() : Map.of();
         return new LayeredEffectItemModel(wrapped, properties, transformation, effect, effectQuads, baseQuads, haloLayer, cosmicArc, tridentModels);
@@ -89,21 +90,11 @@ public final class EffectItemModelBaker {
     }
 
     /**
-     * 从基础模型的 layer0/layer1 取出普通物品贴图，用于 pulse 层复用原图轮廓。
+     * pulse 必须复用基础模型已烘焙的几何和 UV。直接从 layer 贴图重建方形面会把纵向动画图集
+     * 当成完整纹理采样，导致无暇核心和终望珍珠被压成横向条带。
      */
-    private static List<BakedQuad> bakeBaseQuads(ModelBaker baker, TextureSlots textureSlots) {
-        MaterialBaker materials = baker.materials();
-        List<TextureAtlasSprite> sprites = new ArrayList<>(2);
-        addLayerSprite(materials, textureSlots, "layer0", sprites);
-        addLayerSprite(materials, textureSlots, "layer1", sprites);
-        return sprites.isEmpty() ? List.of() : ItemQuadBakery.bakeItem(sprites.toArray(TextureAtlasSprite[]::new));
-    }
-
-    private static void addLayerSprite(MaterialBaker materials, TextureSlots textureSlots, String layer, List<TextureAtlasSprite> sprites) {
-        Material material = textureSlots.getMaterial(layer);
-        if (material != null) {
-            sprites.add(materials.get(material, DEBUG_NAME).sprite());
-        }
+    static List<BakedQuad> bakeBaseQuads(ModelBaker baker, ResolvedModel resolvedModel, TextureSlots textureSlots) {
+        return resolvedModel.bakeTopGeometry(textureSlots, baker, BlockModelRotation.IDENTITY).getAll();
     }
 
     private static Map<String, SimpleMesh> loadTridentModels() {
