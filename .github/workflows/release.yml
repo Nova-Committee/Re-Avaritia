@@ -3,45 +3,102 @@ name: Forge Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
-  build:
-
+  publish:
+    name: Build and publish
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           show-progress: false
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'zulu'
+          java-version: "17"
+          distribution: zulu
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/actions/wrapper-validation@v4
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 8.12
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Make Gradle Wrapper Executable
+      - name: Make Gradle Wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build project
+      - name: Read release metadata
+        id: metadata
+        shell: bash
         run: |
-          gradle wrapper
-          bash gradlew buildNeeded
+          set -euo pipefail
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+          get_property() {
+            sed -n "s/^${1}=//p" gradle.properties | tail -n 1 | tr -d '\r'
+          }
+
+          game_version="$(get_property mc_version)"
+          if [[ -z "$game_version" ]]; then
+            game_version="$(get_property minecraft_version)"
+          fi
+
+          mod_version="$(get_property mod_version)"
+          version_tag="$(get_property mod_version_tag)"
+
+          if [[ -z "$game_version" || -z "$mod_version" || -z "$version_tag" ]]; then
+            echo "::error::Unable to read release metadata from gradle.properties"
+            exit 1
+          fi
+
+          case "$version_tag" in
+            alpha*) version_type="alpha" ;;
+            beta*|rc*) version_type="beta" ;;
+            *) version_type="release" ;;
+          esac
+
+          {
+            echo "game_version=$game_version"
+            echo "version=${game_version}-${mod_version}-${version_tag}"
+            echo "version_type=$version_type"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Validate publishing secrets
+        shell: bash
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+        run: |
+          if [[ -z "$MODRINTH_TOKEN" || -z "$CURSEFORGE_TOKEN" ]]; then
+            echo "::error::MODRINTH_TOKEN and CURSEFORGE_TOKEN repository secrets are required"
+            exit 1
+          fi
+
+      - name: Build project
+        run: ./gradlew build --no-daemon
+
+      - name: Publish release
+        uses: Kira-NT/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3.3.1
         with:
-          name: Re-Avaritia-Forged-${{ github.ref_name }}
-          files: build/libs/*
-          body: Please refer to [CHANGELOG.md](https://github.com/Nova-Committee/re-avaritia/blob/master/CHANGELOG.md) for details.
+          modrinth-id: QeB3NRC5
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: 623969
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          files: build/libs/Re-Avaritia-forge-${{ steps.metadata.outputs.version }}.jar
+          name: "Re:Avaritia ${{ steps.metadata.outputs.version }}"
+          version: ${{ steps.metadata.outputs.version }}
+          version-type: ${{ steps.metadata.outputs.version_type }}
+          loaders: forge
+          game-versions: ${{ steps.metadata.outputs.game_version }}
+          game-version-filter: none
+          github-generate-changelog: true
+          retry-attempts: 2
+          fail-mode: fail
