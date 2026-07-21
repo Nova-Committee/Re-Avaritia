@@ -60,7 +60,6 @@ public class Avaritia {
     }
 
     public void setup(final FMLCommonSetupEvent event) {
-        if (Const.isLoad("projecte")) ModEMCHandler.init();
         DispenserBlock.registerBehavior(ModItems.endest_pearl.get(), new AbstractProjectileDispenseBehavior() {
             protected @NotNull Projectile getProjectile(@NotNull Level level, @NotNull Position position, @NotNull ItemStack stack) {
                 return Util.make(new EndestPearlEntity(level, position.x(), position.y(), position.z()), (entity) -> entity.setItem(stack));
@@ -69,6 +68,9 @@ public class Avaritia {
     }
 
     public void imc(final InterModEnqueueEvent event) {
+        if (Const.isLoad("projecte")) {
+            ModEMCHandler.enqueue();
+        }
         ModItems.ITEMS.getEntries().forEach(itemRegistryObject -> {
             InterModComms.sendTo("acceleratedrendering", "item_blacklist", itemRegistryObject);
         });
