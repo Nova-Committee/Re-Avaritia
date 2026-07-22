@@ -10,6 +10,8 @@ import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -28,6 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_HEIGHT;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_WIDTH;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_X;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_TEXTURE_Y;
+import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.sortTextureX;
+
 /** 无尽箱 15×7 虚拟库存界面。 */
 public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMenu> {
     private static final Identifier TEXTURE = Const.rl("textures/gui/chest/infinity_chest1.png");
@@ -42,7 +51,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
 
     private EditBox searchBox;
     private Button lockButton;
-    private Button sortButton;
+    private final WidgetSprites legacyButtonSprites = new WidgetSprites(TEXTURE, TEXTURE);
     private boolean draggingScrollbar;
     private ItemResource lastDragged = ItemResource.EMPTY;
 
@@ -73,16 +82,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         }).bounds(leftPos + 231, topPos + 151, 17, 18).build());
         lockButton.active = menu.getOwner().equals(minecraft.player.getUUID());
 
-        sortButton = addRenderableWidget(Button.builder(sortText(), button -> {
-            if (isShiftDown()) {
-                menu.reverseSort();
-                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 2);
-            } else {
-                menu.nextSort();
-                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1);
-            }
-            button.setMessage(sortText());
-        }).bounds(leftPos + 249, topPos + 151, 27, 18).build());
+        addRenderableWidget(new LegacySortButton(leftPos + SORT_BUTTON_X, topPos + SORT_BUTTON_Y));
     }
 
     @Override
@@ -259,8 +259,14 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
         return Component.literal(menu.isLocked() ? "L" : "U");
     }
 
-    private Component sortText() {
-        return Component.literal("S" + menu.getSortType());
+    private void cycleSort() {
+        if (isShiftDown()) {
+            menu.reverseSort();
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 2);
+        } else {
+            menu.nextSort();
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1);
+        }
     }
 
     private boolean isShiftDown() {
@@ -277,5 +283,20 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
                 com.mojang.blaze3d.platform.InputConstants.KEY_LCONTROL)
                 || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window,
                 com.mojang.blaze3d.platform.InputConstants.KEY_RCONTROL);
+    }
+
+    private final class LegacySortButton extends ImageButton {
+        private LegacySortButton(int x, int y) {
+            super(x, y, SORT_BUTTON_WIDTH, SORT_BUTTON_HEIGHT, legacyButtonSprites,
+                    ignored -> cycleSort());
+        }
+
+        @Override
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            int textureY = SORT_TEXTURE_Y + (isHovered() ? SORT_BUTTON_HEIGHT : 0);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(),
+                    sortTextureX(menu.getSortType()), textureY,
+                    width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+        }
     }
 }
