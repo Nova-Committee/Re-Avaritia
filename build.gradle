@@ -103,7 +103,17 @@ repositories {
     maven { url = "https://maven.architectury.dev" }
     maven { url = "https://maven.saps.dev/minecraft" }
     maven { url = 'https://www.jitpack.io' }
-    maven { url = "https://maven.terraformersmc.com/" }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -143,14 +153,14 @@ dependencies {
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
 
     // EMI
-    modCompileOnly("dev.emi:emi-forge:${emi_version}")
+    modCompileOnly("maven.modrinth:emi:${emi_version}+forge")
 
     if (recipe_viewer == 'jei')
         modRuntimeOnly("mezz.jei:jei-${mc_version}-forge:${jei_version}")
     else if (recipe_viewer == 'rei')
         modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
     else if (recipe_viewer == 'emi')
-        modRuntimeOnly("dev.emi:emi-forge:${emi_version}")
+        modRuntimeOnly("maven.modrinth:emi:${emi_version}+forge")
     else
         println("unknown recipe viewer: $recipe_viewer")
 
