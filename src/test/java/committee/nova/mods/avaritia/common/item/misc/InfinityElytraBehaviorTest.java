@@ -34,22 +34,20 @@ class InfinityElytraBehaviorTest {
 
     @Test
     void infinityElytraUsesDedicatedWornTextureChain() throws IOException {
-        String itemSource = compact(read("common/item/misc/InfinityElytraItem.java"));
         String mixinConfig = compact(Files.readString(MIXIN_CONFIG));
 
         assertAll(
-                () -> assertFalse(itemSource.contains(".setAsset("),
-                        "the vanilla wings layer must not render a duplicate elytra"),
-                contains("client/render/entity/InfinityElytraLayer.java", "state.chestEquipment"),
-                contains("client/render/entity/InfinityElytraLayer.java",
-                        "stack.is(ModItems.infinity_elytra.get())"),
-                contains("client/render/entity/InfinityElytraLayer.java", "EquipmentAssets.ELYTRA"),
-                contains("client/render/entity/InfinityElytraLayer.java", "Res.INFINITY_ELYTRA"),
-                contains("mixin/client/PlayerRendererMixin.java", "@Mixin(AvatarRenderer.class)"),
-                contains("mixin/client/PlayerRendererMixin.java",
-                        "new InfinityElytraLayer<>(this, context.getModelSet(), context.getEquipmentRenderer())"),
+                contains("common/item/misc/InfinityElytraItem.java", ".setAsset(EquipmentAssets.ELYTRA)"),
+                contains("client/AvaritiaClient.java", "INFINITY_ELYTRA_EXTENSIONS = new IClientItemExtensions()"),
+                contains("client/AvaritiaClient.java",
+                        "type == EquipmentClientInfo.LayerType.WINGS ? Res.INFINITY_ELYTRA : fallback"),
+                contains("client/AvaritiaClient.java",
+                        "event.registerItem(INFINITY_ELYTRA_EXTENSIONS, ModItems.infinity_elytra.get())"),
                 contains("Res.java", "textures/entity/infinity_elytra.png"),
-                () -> assertTrue(mixinConfig.contains("\"client.PlayerRendererMixin\"")),
+                () -> assertFalse(mixinConfig.contains("client.PlayerRendererMixin"),
+                        "the vanilla wings layer must be the only elytra model submitter"),
+                () -> assertFalse(Files.exists(MAIN_SOURCES.resolve("client/render/entity/InfinityElytraLayer.java")),
+                        "a second custom wings layer would duplicate the vanilla model"),
                 () -> assertTrue(Files.isRegularFile(ELYTRA_TEXTURE), "infinity elytra texture must exist")
         );
     }

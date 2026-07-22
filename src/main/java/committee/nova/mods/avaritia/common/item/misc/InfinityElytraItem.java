@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
@@ -27,9 +28,9 @@ public class InfinityElytraItem extends Item {
                 .fireResistant()
                 .stacksTo(1)
                 .component(DataComponents.GLIDER, Unit.INSTANCE)
-                // InfinityElytraLayer owns the worn model; no asset id prevents a duplicate vanilla wings layer.
                 .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
                         .setEquipSound(SoundEvents.ARMOR_EQUIP_ELYTRA)
+                        .setAsset(EquipmentAssets.ELYTRA)
                         .setDamageOnHurt(false)
                         .build()));
     }

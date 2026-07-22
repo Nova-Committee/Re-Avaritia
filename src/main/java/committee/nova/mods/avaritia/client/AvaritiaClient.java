@@ -142,6 +142,13 @@ public class AvaritiaClient {
                     : Const.rl("textures/models/armor/infinity_armor_layer_1.png");
         }
     };
+    private static final IClientItemExtensions INFINITY_ELYTRA_EXTENSIONS = new IClientItemExtensions() {
+        @Override
+        public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type,
+                                          EquipmentClientInfo.Layer layer, Identifier fallback) {
+            return type == EquipmentClientInfo.LayerType.WINGS ? Res.INFINITY_ELYTRA : fallback;
+        }
+    };
     private static final IClientItemExtensions INFINITY_CROSSBOW_EXTENSIONS = new IClientItemExtensions() {
         @Override
         public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
@@ -258,6 +265,7 @@ public class AvaritiaClient {
                 ModItems.infinity_chestplate.get(),
                 ModItems.infinity_pants.get(),
                 ModItems.infinity_boots.get());
+        event.registerItem(INFINITY_ELYTRA_EXTENSIONS, ModItems.infinity_elytra.get());
         event.registerItem(INFINITY_CROSSBOW_EXTENSIONS, ModItems.infinity_crossbow.get());
     }
 

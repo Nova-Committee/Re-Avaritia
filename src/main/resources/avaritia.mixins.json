@@ -16,7 +16,6 @@
   ],
   "client": [
     "compat.JeiModIdHelperMixin",
-    "client.PlayerRendererMixin",
     "client.RenderPassMixin",
     "client.RenderSystemMixin",
     "client.RenderTypeMixin"
