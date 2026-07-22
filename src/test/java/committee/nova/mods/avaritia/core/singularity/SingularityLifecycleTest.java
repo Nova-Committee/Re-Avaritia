@@ -1,6 +1,7 @@
 package committee.nova.mods.avaritia.core.singularity;
 
 import com.google.gson.JsonObject;
+import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,15 @@ class SingularityLifecycleTest {
         assertThrows(IllegalArgumentException.class, () -> new Singularity(DATA_ID).setCount(-1));
         assertThrows(IllegalArgumentException.class, () -> new Singularity(DATA_ID).setTimeCost(0));
         assertThrows(IllegalArgumentException.class, () -> new Singularity(DATA_ID).setTimeCost(-1));
+    }
+
+    @Test
+    void gatesProjectESingularityIngredientBoost() {
+        assertTrue(ModConfig.enableProjectESingularityCountBoost.getDefault());
+        assertEquals(10_000, Singularity.resolveRecipeCount(1_000, true, true));
+        assertEquals(1_000, Singularity.resolveRecipeCount(1_000, true, false));
+        assertEquals(1_000, Singularity.resolveRecipeCount(1_000, false, true));
+        assertEquals(12_000, Singularity.resolveRecipeCount(12_000, true, true));
     }
 
     @Test

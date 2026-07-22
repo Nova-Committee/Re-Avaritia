@@ -212,6 +212,8 @@
   "config.avaritia.blaze_cube_emc.tooltip": "熾骨立方的 EMC 值",
   "config.avaritia.neutron_pile_emc": "中子堆 EMC",
   "config.avaritia.neutron_pile_emc.tooltip": "中子素塵埃的 EMC 值",
+  "config.avaritia.enable_projecte_singularity_count_boost": "啟用等價交換奇點原料 10 倍",
+  "config.avaritia.enable_projecte_singularity_count_boost.tooltip": "載入等價交換時，將低於 10000 的奇點配方原料數量提高至 10000。需要重新載入配方後生效。",
   "config.avaritia.vanilla_totem_emc": "原版不死圖騰 EMC",
   "config.avaritia.vanilla_totem_emc.tooltip": "不死圖騰的 EMC 值",
   "config.avaritia.bedrock_emc": "原版基岩 EMC",

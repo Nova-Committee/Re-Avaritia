@@ -115,6 +115,10 @@ public class AvaritiaConfigScreen extends Screen {
 
         addCategoryHeader("config.avaritia.category.emc");
 
+        addBooleanEntry("enable_projecte_singularity_count_boost", ModConfig.enableProjectESingularityCountBoost,
+                Component.translatable("config.avaritia.enable_projecte_singularity_count_boost.tooltip"),
+                ModConfig.enableProjectESingularityCountBoost::set, ModConfig.enableProjectESingularityCountBoost);
+
         addIntEntry("neutron_pile_emc", ModConfig.neutronPileEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.neutron_pile_emc.tooltip"),
                 ModConfig.neutronPileEmc::set, ModConfig.neutronPileEmc);
@@ -218,6 +222,7 @@ public class AvaritiaConfigScreen extends Screen {
         ModConfig.bladeSlashRadius.set(ModConfig.bladeSlashRadius.getDefault());
 
         // EMC 配置项
+        ModConfig.enableProjectESingularityCountBoost.set(ModConfig.enableProjectESingularityCountBoost.getDefault());
         ModConfig.neutronPileEmc.set(ModConfig.neutronPileEmc.getDefault());
         ModConfig.blazeCubeEmc.set(ModConfig.blazeCubeEmc.getDefault());
         ModConfig.vanillaTotemEmc.set(ModConfig.vanillaTotemEmc.getDefault());

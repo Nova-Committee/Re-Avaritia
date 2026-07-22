@@ -212,6 +212,8 @@
   "config.avaritia.blaze_cube_emc.tooltip": "EMC пломеневого куба",
   "config.avaritia.neutron_pile_emc": "Значення EMC купки нейтронів",
   "config.avaritia.neutron_pile_emc.tooltip": "EMC купки нейтронів",
+  "config.avaritia.enable_projecte_singularity_count_boost": "Увімкнути 10-кратну кількість матеріалів сингулярності ProjectE",
+  "config.avaritia.enable_projecte_singularity_count_boost.tooltip": "Коли ProjectE завантажено, збільшує кількість матеріалів у рецептах сингулярності, меншу за 10 000, до 10 000. Потрібне перезавантаження рецептів.",
   "config.avaritia.vanilla_totem_emc": "Значення EMC тотема безсмертя",
   "config.avaritia.vanilla_totem_emc.tooltip": "EMC тотема безсмертя",
   "config.avaritia.bedrock_emc": "Значення EMC корінної породи",

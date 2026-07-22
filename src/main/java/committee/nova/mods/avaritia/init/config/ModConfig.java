@@ -42,6 +42,7 @@ public class ModConfig {
     public static final ForgeConfigSpec.DoubleValue bootSpeedSprintingMultiplier;
 
 
+    public static final ForgeConfigSpec.BooleanValue enableProjectESingularityCountBoost;
     public static final ForgeConfigSpec.IntValue neutronPileEmc;
     public static final ForgeConfigSpec.IntValue blazeCubeEmc;
     public static final ForgeConfigSpec.IntValue vanillaTotemEmc;
@@ -76,6 +77,7 @@ public class ModConfig {
         bladeSlashRadius = buildInt(common, "config.avaritia.blade_slash_radius", 10, 5, 100, "config.avaritia.blade_slash_radius.tooltip");
         common.pop();
         common.push("emc");
+        enableProjectESingularityCountBoost = buildBoolean(common, "config.avaritia.enable_projecte_singularity_count_boost", true, "config.avaritia.enable_projecte_singularity_count_boost.tooltip");
         neutronPileEmc = buildInt(common, "config.avaritia.neutron_pile_emc", 512, 0, Integer.MAX_VALUE, "config.avaritia.neutron_pile_emc.tooltip");
         blazeCubeEmc = buildInt(common, "config.avaritia.blaze_cube_emc", 30568, 0, Integer.MAX_VALUE, "config.avaritia.blaze_cube_emc.tooltip");
         vanillaTotemEmc = buildInt(common, "config.avaritia.vanilla_totem_emc", 1000, 0, Integer.MAX_VALUE, "config.avaritia.vanilla_totem_emc.tooltip");
