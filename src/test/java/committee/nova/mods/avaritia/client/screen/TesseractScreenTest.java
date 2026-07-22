@@ -32,7 +32,11 @@ class TesseractScreenTest {
         assertAll(
                 () -> assertEquals(TesseractScreenLayout.HEIGHT, bottomOfLastSlice(false)),
                 () -> assertEquals(TesseractScreenLayout.HEIGHT, bottomOfLastSlice(true)),
-                () -> assertEquals(97, TesseractScreenLayout.VIEW_Y + TesseractScreenLayout.CONTROL_SIZE),
+                () -> assertEquals(240, TesseractScreenLayout.VIEW_Y + TesseractScreenLayout.CONTROL_SIZE),
+                () -> assertEquals(TesseractScreenLayout.CONTROL_SIZE,
+                        TesseractScreenLayout.LOCK_Y - TesseractScreenLayout.CRAFTING_TOGGLE_Y),
+                () -> assertEquals(TesseractScreenLayout.CONTROL_SIZE,
+                        TesseractScreenLayout.VIEW_Y - TesseractScreenLayout.SORT_Y),
                 () -> assertEquals(178, TesseractScreenLayout.CRAFT_AND_DROP_Y
                         + TesseractScreenLayout.CRAFT_BUTTON_HEIGHT)
         );

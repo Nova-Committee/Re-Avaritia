@@ -12,11 +12,11 @@ final class TesseractScreenLayout {
 
     static final int CONTROL_X = 198;
     static final int CONTROL_SIZE = 16;
-    static final int CRAFTING_TOGGLE_Y = 17;
-    static final int LOCK_Y = 33;
-    static final int CHANNEL_Y = 49;
-    static final int SORT_Y = 65;
-    static final int VIEW_Y = 81;
+    static final int CRAFTING_TOGGLE_Y = 160;
+    static final int LOCK_Y = 176;
+    static final int CHANNEL_Y = 192;
+    static final int SORT_Y = 208;
+    static final int VIEW_Y = 224;
 
     static final int ICON_TEXTURE_X = 219;
     static final int ACTIVE_ICON_TEXTURE_X = 235;
