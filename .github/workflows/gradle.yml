@@ -1,0 +1,49 @@
+name: Forge Action
+
+on:
+  push:
+    branches: [ "neo/*" ]
+  pull_request:
+    branches: [ "neo/*" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+
+      - name: Find Correct JAR
+        id: findjar
+        run: |
+          output="$(find build/libs/ -name "*-release.jar" -type f -printf "%f\n")"
+          echo "::set-output name=jarname::$output"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.findjar.outputs.jarname }}
+          path: build/libs/${{ steps.findjar.outputs.jarname }}
