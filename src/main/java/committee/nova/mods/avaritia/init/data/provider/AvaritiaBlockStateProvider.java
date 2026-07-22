@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.init.data.provider;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.item.InfinityChestItemRender;
+import committee.nova.mods.avaritia.common.block.chest.TesseractBlock;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import com.google.gson.JsonObject;
@@ -9,6 +10,8 @@ import com.google.gson.JsonParser;
 import com.mojang.math.Quadrant;
 import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.blockstates.ConditionBuilder;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelInstance;
@@ -112,6 +115,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
 
         simpleBlockWithItem(ModBlocks.compressed_chest.get());
         horizontalBlockWithItem(ModBlocks.infinity_chest.get());
+        tesseractBlockWithItem(ModBlocks.tesseract.get());
 
         simpleBlockWithItem(ModBlocks.soul_farmland.get());
         simpleBlockWithItem(ModBlocks.endless_cake.get());
@@ -142,6 +146,30 @@ public class AvaritiaBlockStateProvider implements DataProvider {
                 )
                 .create());
         blockItem(block, model);
+    }
+
+    private void tesseractBlockWithItem(Block block) {
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(block);
+        Identifier frame = mod("block/chest/tesseract/tesseract");
+        Identifier cover = mod("block/chest/tesseract/tesseract_cover");
+        MultiVariant frameVariant = new MultiVariant(WeightedList.of(new Variant(frame)));
+        MultiVariant coverVariant = new MultiVariant(WeightedList.of(new Variant(cover)));
+
+        this.generatedBlockStates.put(blockId, MultiPartGenerator.multiPart(block)
+                .with(frameVariant)
+                .with(new ConditionBuilder().term(TesseractBlock.NORTH, false), coverVariant)
+                .with(new ConditionBuilder().term(TesseractBlock.SOUTH, false),
+                        coverVariant.with(VariantMutator.Y_ROT.withValue(Quadrant.R180)))
+                .with(new ConditionBuilder().term(TesseractBlock.EAST, false),
+                        coverVariant.with(VariantMutator.Y_ROT.withValue(Quadrant.R90)))
+                .with(new ConditionBuilder().term(TesseractBlock.WEST, false),
+                        coverVariant.with(VariantMutator.Y_ROT.withValue(Quadrant.R270)))
+                .with(new ConditionBuilder().term(TesseractBlock.UP, false),
+                        coverVariant.with(VariantMutator.X_ROT.withValue(Quadrant.R270)))
+                .with(new ConditionBuilder().term(TesseractBlock.DOWN, false),
+                        coverVariant.with(VariantMutator.X_ROT.withValue(Quadrant.R90)))
+                .create());
+        blockItem(block, frame);
     }
 
     private void horizontalBlockWithItem(Block block, Quadrant north, Quadrant east, Quadrant south, Quadrant west) {
@@ -302,6 +330,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
                 case "endless_cake" -> flatItemModel("endless_cake", mod("item/misc/endless_cake"));
                 case "extreme_anvil" -> jsonModel(mod("item/extreme_anvil"), EXTREME_ANVIL_ITEM_MODEL);
                 case "infinity_chest" -> jsonModel(mod("item/infinity_chest"), INFINITY_CHEST_ITEM_MODEL);
+                case "tesseract" -> jsonModel(mod("item/tesseract"), TESSERACT_ITEM_MODEL);
                 case "neutron_collector", "dense_neutron_collector", "denser_neutron_collector", "densest_neutron_collector",
                      "neutron_compressor", "dense_neutron_compressor", "denser_neutron_compressor", "densest_neutron_compressor" ->
                         machineBlockItemModel(path, model);
@@ -543,6 +572,20 @@ public class AvaritiaBlockStateProvider implements DataProvider {
               "textures": {
                 "particle": "avaritia:block/resource/infinity"
               },
+              "display": {
+                "gui": {"rotation": [30, 45, 0], "translation": [0, 0, 0], "scale": [0.625, 0.625, 0.625]},
+                "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25, 0.25, 0.25]},
+                "head": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+                "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [0.5, 0.5, 0.5]},
+                "thirdperson_righthand": {"rotation": [75, 315, 0], "translation": [0, 2.5, 0], "scale": [0.375, 0.375, 0.375]},
+                "firstperson_righthand": {"rotation": [0, 315, 0], "translation": [0, 0, 0], "scale": [0.4, 0.4, 0.4]}
+              }
+            }
+            """;
+
+    private static final String TESSERACT_ITEM_MODEL = """
+            {
+              "parent": "avaritia:block/chest/tesseract/tesseract",
               "display": {
                 "gui": {"rotation": [30, 45, 0], "translation": [0, 0, 0], "scale": [0.625, 0.625, 0.625]},
                 "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25, 0.25, 0.25]},

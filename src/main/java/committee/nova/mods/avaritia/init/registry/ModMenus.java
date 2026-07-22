@@ -44,6 +44,10 @@ public class ModMenus {
             () -> new MenuType<>((IContainerFactory<ExtremeSmithingMenu>)ExtremeSmithingMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<InfinityChestMenu>> infinity_chest = menu("infinity_chest",
             () -> new MenuType<>((IContainerFactory<InfinityChestMenu>) InfinityChestMenu::new, FeatureFlagSet.of()));
+    public static DeferredHolder<MenuType<?>, MenuType<TesseractMenu>> tesseract = menu("tesseract",
+            () -> new MenuType<>((IContainerFactory<TesseractMenu>) TesseractMenu::new, FeatureFlagSet.of()));
+    public static DeferredHolder<MenuType<?>, MenuType<TesseractChannelMenu>> tesseract_channel = menu("tesseract_channel",
+            () -> new MenuType<>((IContainerFactory<TesseractChannelMenu>) TesseractChannelMenu::new, FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<InfinityClockMenu>> infinity_clock_menu = menu("infinity_clock_menu",
             () -> new MenuType<>((IContainerFactory<InfinityClockMenu>)(id, inv, buf) -> new InfinityClockMenu(id, inv), FeatureFlagSet.of()));
     public static DeferredHolder<MenuType<?>, MenuType<CompressedChestMenu>> GENERIC_9x27 = menu("generic_9x27",

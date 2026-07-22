@@ -1,42 +1,36 @@
 package committee.nova.mods.avaritia.common.net.chest;
 
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.handler.codec.DecoderException;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * 压缩箱频道操作类型。
- */
+/** 无尽箱虚拟槽支持的全部交互。 */
 public enum ChannelAction {
-    ADD(0, "add"),
-    REMOVE(1, "remove"),
-    SET(2, "set");
+    LEFT_CLICK,
+    RIGHT_CLICK,
+    LEFT_SHIFT,
+    RIGHT_SHIFT,
+    THROW_ONE,
+    THROW_STACK,
+    LEFT_DRAG,
+    RIGHT_DRAG,
+    CLONE,
+    DRAG_CLONE;
 
-    private final int id;
-    private final String name;
-
-    ChannelAction(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getSerializedName() {
-        return this.name;
-    }
-
-    public static final StreamCodec<FriendlyByteBuf, ChannelAction> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ChannelAction> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @NotNull ChannelAction decode(@NotNull FriendlyByteBuf buffer) {
-            return buffer.readEnum(ChannelAction.class);
+        public @NotNull ChannelAction decode(@NotNull RegistryFriendlyByteBuf buffer) {
+            int ordinal = buffer.readVarInt();
+            if (ordinal < 0 || ordinal >= values().length) {
+                throw new DecoderException("Invalid infinity chest action: " + ordinal);
+            }
+            return values()[ordinal];
         }
 
         @Override
-        public void encode(@NotNull FriendlyByteBuf buffer, @NotNull ChannelAction channelAction) {
-            buffer.writeEnum(channelAction);
+        public void encode(@NotNull RegistryFriendlyByteBuf buffer, @NotNull ChannelAction action) {
+            buffer.writeVarInt(action.ordinal());
         }
     };
 }

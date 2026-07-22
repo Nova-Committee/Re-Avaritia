@@ -30,6 +30,7 @@ import committee.nova.mods.avaritia.client.render.item.InfinityShieldRender;
 import committee.nova.mods.avaritia.client.render.tile.AcceleratorDisplayRender;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
+import committee.nova.mods.avaritia.client.render.tile.TesseractRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.CompressedChestScreen;
 import committee.nova.mods.avaritia.client.screen.ExtremeAnvilScreen;
@@ -37,6 +38,8 @@ import committee.nova.mods.avaritia.client.screen.ExtremeSmithingScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
 import committee.nova.mods.avaritia.client.screen.InfinityChestScreen;
 import committee.nova.mods.avaritia.client.screen.InfinityClockScreen;
+import committee.nova.mods.avaritia.client.screen.TesseractChannelScreen;
+import committee.nova.mods.avaritia.client.screen.TesseractScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCollectorScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronCompressorScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronRingScreen;
@@ -171,6 +174,7 @@ public class AvaritiaClient {
         event.registerEntityRenderer(ModEntityTypes.INFINITY_THROWN_TRIDENT.get(), InfinityThrownTridentRender::new);
 
         event.registerBlockEntityRenderer(ModTileEntities.INFINITY_CHEST_TILE.get(), InfinityChestBlockRender::new);
+        event.registerBlockEntityRenderer(ModTileEntities.TESSERACT_TILE.get(), TesseractRender::new);
         event.registerBlockEntityRenderer(ModTileEntities.compressed_chest_tile.get(), CompressedChestRenderer::new);
     }
 
@@ -276,6 +280,8 @@ public class AvaritiaClient {
         event.register(ModMenus.extreme_smithing_table.get(), ExtremeSmithingScreen::new);
         event.register(ModMenus.extreme_anvil.get(), ExtremeAnvilScreen::new);
         event.register(ModMenus.infinity_chest.get(), InfinityChestScreen::new);
+        event.register(ModMenus.tesseract.get(), TesseractScreen::new);
+        event.register(ModMenus.tesseract_channel.get(), TesseractChannelScreen::new);
         event.register(ModMenus.infinity_clock_menu.get(), InfinityClockScreen::new);
         event.register(ModMenus.GENERIC_9x27.get(), CompressedChestScreen::new);
     }

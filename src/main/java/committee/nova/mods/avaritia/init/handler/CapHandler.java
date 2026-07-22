@@ -44,7 +44,7 @@ public class CapHandler {
         event.registerBlockEntity(
                 Capabilities.Item.BLOCK,
                 ModTileEntities.INFINITY_CHEST_TILE.get(),
-                (be, side) -> VanillaContainerWrapper.of(be.chest)
+                (be, side) -> be
         );
 
         var sidedVanillaContainers = List.of(

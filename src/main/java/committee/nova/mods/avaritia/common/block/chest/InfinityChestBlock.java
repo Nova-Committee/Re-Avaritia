@@ -4,16 +4,15 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.MapCodec;
 
-import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
@@ -32,13 +31,16 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.List;
 
 public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
 
@@ -78,25 +80,29 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
     }
 
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @org.jetbrains.annotations.Nullable BlockEntity blockEntity, ItemStack tool) {
-        if (level instanceof ServerLevel serverLevel && blockEntity instanceof InfinityChestTile tile && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS)) {
-            ItemStack dropStack = new ItemStack(this);
-            dropStack.set(ModDataComponents.CLUSTER_CONTAINER, ClusterContainerContents.fromItems(tile.chest.getItems()));
-            Block.popResource(serverLevel, pos, dropStack);
-            state.spawnAfterBreak(serverLevel, pos, tool, false);
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+        ItemStack stack = new ItemStack(this);
+        if (builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof InfinityChestTile tile) {
+            stack.applyComponents(tile.collectComponents());
         }
+        return List.of(stack);
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
+                                       Player player) {
+        ItemStack stack = super.getCloneItemStack(level, pos, state, includeData, player);
+        if (level.getBlockEntity(pos) instanceof InfinityChestTile tile) {
+            stack.applyComponents(tile.collectComponents());
+        }
+        return stack;
     }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @org.jetbrains.annotations.Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof InfinityChestTile) {
-            InfinityChestTile tile = (InfinityChestTile) blockEntity;
-            ClusterContainerContents contents = stack.get(ModDataComponents.CLUSTER_CONTAINER);
-            if (contents != null) {
-                contents.copyInto(tile.chest.getItems());
-            }
+        if (level.getBlockEntity(pos) instanceof InfinityChestTile tile) {
+            tile.initializePlaced(placer, stack);
         }
     }
 
@@ -170,11 +176,20 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
-            if (blockEntity instanceof InfinityChestTile) {
-                InfinityChestTile tile = (InfinityChestTile) blockEntity;
-                SimpleMenuProvider simpleMenuProvider = new SimpleMenuProvider((id, inventory, access) -> new InfinityChestMenu(id, inventory, tile), TITLE);
-
-                player.openMenu(simpleMenuProvider, pos);
+            if (blockEntity instanceof InfinityChestTile tile) {
+                tile.ensureIdentity(player.getUUID());
+                tile.initializePlaced(player, ItemStack.EMPTY);
+                if (!tile.canPlayerModify(player)) {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.sendSystemMessage(Component.translatable("gui.avaritia.noPermission.tip3"));
+                    }
+                    return InteractionResult.CONSUME;
+                }
+                SimpleMenuProvider simpleMenuProvider = new SimpleMenuProvider(
+                        (id, inventory, access) -> new InfinityChestMenu(id, inventory, tile), TITLE);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.openMenu(simpleMenuProvider, tile::writeMenuData);
+                }
             }
             return InteractionResult.CONSUME;
         }

@@ -52,7 +52,53 @@ public class AvaritiaLanguageProvider implements DataProvider {
                 language.add(entry.getKey(), entry.getValue());
             }
         }
+        addStorageTranslations(language, locale);
         return language;
+    }
+
+    private static void addStorageTranslations(JsonObject language, String locale) {
+        String[] values = switch (locale) {
+            case "zh_cn" -> new String[]{"搜索", "全部", "物品", "流体与能量"};
+            case "zh_tw" -> new String[]{"搜尋", "全部", "物品", "流體與能量"};
+            case "ja_jp" -> new String[]{"検索", "すべて", "アイテム", "流体とエネルギー"};
+            case "uk_ua" -> new String[]{"Пошук", "Усе", "Предмети", "Рідини та енергія"};
+            default -> new String[]{"Search", "All", "Items", "Fluids & Energy"};
+        };
+        if (!language.has("gui.avaritia.search")) {
+            language.addProperty("gui.avaritia.search", values[0]);
+        }
+        language.addProperty("gui.avaritia.tesseract.view.0", values[1]);
+        language.addProperty("gui.avaritia.tesseract.view.1", values[2]);
+        language.addProperty("gui.avaritia.tesseract.view.2", values[3]);
+
+        String[] channelValues = switch (locale) {
+            case "zh_cn" -> new String[]{"名称", "频道选择", "我的频道", "所有者频道", "公共频道",
+                    "锁", "合", "序", "反", "视", "频", "频道", "物品栏", "丢弃"};
+            case "zh_tw" -> new String[]{"名稱", "頻道選擇", "我的頻道", "擁有者頻道", "公共頻道",
+                    "鎖", "合", "序", "反", "視", "頻", "頻道", "物品欄", "丟棄"};
+            case "ja_jp" -> new String[]{"名前", "チャンネル選択", "自分のチャンネル", "所有者のチャンネル", "公開チャンネル",
+                    "錠", "作", "順", "逆", "表", "Ch", "チャンネル", "インベントリ", "ドロップ"};
+            case "uk_ua" -> new String[]{"Назва", "Вибір каналу", "Мої канали", "Канали власника", "Публічні канали",
+                    "Б", "К", "С", "З", "В", "Кн", "Канал", "Інвентар", "Викинути"};
+            default -> new String[]{"Name", "Channel Selection", "My Channels", "Owner Channels", "Public Channels",
+                    "L", "C", "S", "R", "V", "Ch", "Channel", "Inventory", "Drop"};
+        };
+        if (!language.has("gui.avaritia.name")) {
+            language.addProperty("gui.avaritia.name", channelValues[0]);
+        }
+        language.addProperty("gui.avaritia.tesseract.channel_select", channelValues[1]);
+        language.addProperty("gui.avaritia.tesseract.channels.mine", channelValues[2]);
+        language.addProperty("gui.avaritia.tesseract.channels.owner", channelValues[3]);
+        language.addProperty("gui.avaritia.tesseract.channels.public", channelValues[4]);
+        language.addProperty("gui.avaritia.tesseract.button.lock", channelValues[5]);
+        language.addProperty("gui.avaritia.tesseract.button.craft", channelValues[6]);
+        language.addProperty("gui.avaritia.tesseract.button.sort", channelValues[7]);
+        language.addProperty("gui.avaritia.tesseract.button.reverse", channelValues[8]);
+        language.addProperty("gui.avaritia.tesseract.button.view", channelValues[9]);
+        language.addProperty("gui.avaritia.tesseract.button.channel", channelValues[10]);
+        language.addProperty("gui.avaritia.tesseract.craft.channel_short", channelValues[11]);
+        language.addProperty("gui.avaritia.tesseract.craft.inventory_short", channelValues[12]);
+        language.addProperty("gui.avaritia.tesseract.craft.drop_short", channelValues[13]);
     }
 
     private static String legacyJson(String locale) {
@@ -1704,7 +1750,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.side_config_card.no_config_to_apply": "没有可应用的配置",
               "tooltip.avaritia.side_config_card.read_success": "配置已保存到卡片",
               "tooltip.avaritia.singularity_id": "奇点ID：%s",
-              "tooltip.avaritia.smithing": "终焉锻造：%s × %s",
+              "tooltip.avaritia.smithing": "终焉锻造： %s 中",
               "tooltip.avaritia.star_fuel.desc": "致密恒星的遗骸…",
               "tooltip.avaritia.switch": "切换至 %s",
               "tooltip.avaritia.sword_kill_mode.active": "戮杀你所看到的一切",
@@ -2267,7 +2313,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "tooltip.avaritia.side_config_card.no_config_to_apply": "沒有可應用的配置",
               "tooltip.avaritia.side_config_card.read_success": "配置已保存到卡片",
               "tooltip.avaritia.singularity_id": "奇點ID：%s",
-              "tooltip.avaritia.smithing": "終焉鍛造：%s × %s",
+              "tooltip.avaritia.smithing": "終焉鍛造：%s 中",
               "tooltip.avaritia.star_fuel.desc": "緻密恆星的遺骸…",
               "tooltip.avaritia.switch": "切換至 %s",
               "tooltip.avaritia.sword_kill_mode.active": "戮殺你所看到的一切",

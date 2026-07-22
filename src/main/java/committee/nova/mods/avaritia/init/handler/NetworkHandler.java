@@ -2,6 +2,10 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
+import committee.nova.mods.avaritia.common.net.channel.*;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPacket;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPacket;
+import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePacket;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -62,6 +66,14 @@ public final class NetworkHandler {
                 new S2CTotemPacket.Handler());
         registrar.playToClient(S2CSingularitiesPacket.TYPE, S2CSingularitiesPacket.STREAM_CODEC,
                 new S2CSingularitiesPacket.Handler());
+        registrar.playToClient(S2CChannelActionPack.TYPE, S2CChannelActionPack.STREAM_CODEC,
+                new S2CChannelActionPack.Handler());
+        registrar.playToClient(S2CChannelListPack.TYPE, S2CChannelListPack.STREAM_CODEC,
+                new S2CChannelListPack.Handler());
+        registrar.playToClient(S2CChannelStatePack.TYPE, S2CChannelStatePack.STREAM_CODEC,
+                new S2CChannelStatePack.Handler());
+        registrar.playToClient(S2CInfinityChestStatePacket.TYPE, S2CInfinityChestStatePacket.STREAM_CODEC,
+                new S2CInfinityChestStatePacket.Handler());
 
         // === 客户端 → 服务端 (C2S) ===
         registrar.playToServer(C2SCompressorEjectPacket.TYPE, C2SCompressorEjectPacket.STREAM_CODEC,
@@ -80,6 +92,24 @@ public final class NetworkHandler {
                 new C2SRenamePacket.Handler());
         registrar.playToServer(C2SOpenRingPacket.TYPE, C2SOpenRingPacket.STREAM_CODEC,
                 new C2SOpenRingPacket.Handler());
+        registrar.playToServer(C2SAddChannelPack.TYPE, C2SAddChannelPack.STREAM_CODEC,
+                new C2SAddChannelPack.Handler());
+        registrar.playToServer(C2SSetChannelPack.TYPE, C2SSetChannelPack.STREAM_CODEC,
+                new C2SSetChannelPack.Handler());
+        registrar.playToServer(C2SRemoveChannelPack.TYPE, C2SRemoveChannelPack.STREAM_CODEC,
+                new C2SRemoveChannelPack.Handler());
+        registrar.playToServer(C2SRenameChannelPack.TYPE, C2SRenameChannelPack.STREAM_CODEC,
+                new C2SRenameChannelPack.Handler());
+        registrar.playToServer(C2SChannelFilterPack.TYPE, C2SChannelFilterPack.STREAM_CODEC,
+                new C2SChannelFilterPack.Handler());
+        registrar.playToServer(C2SChannelViewPack.TYPE, C2SChannelViewPack.STREAM_CODEC,
+                new C2SChannelViewPack.Handler());
+        registrar.playToServer(C2SChannelActionPack.TYPE, C2SChannelActionPack.STREAM_CODEC,
+                new C2SChannelActionPack.Handler());
+        registrar.playToServer(C2SInfinityChestActionPacket.TYPE, C2SInfinityChestActionPacket.STREAM_CODEC,
+                new C2SInfinityChestActionPacket.Handler());
+        registrar.playToServer(C2SInfinityChestFilterPacket.TYPE, C2SInfinityChestFilterPacket.STREAM_CODEC,
+                new C2SInfinityChestFilterPacket.Handler());
 
         // === 双向 ===
         registrar.playBidirectional(NbtDataPacket.TYPE, NbtDataPacket.STREAM_CODEC,

@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
+import committee.nova.mods.avaritia.common.tile.TesseractTile;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,6 +51,11 @@ public class ModTileEntities {
             "infinity_chest_tile",
             InfinityChestTile::new,
             () -> new Block[]{ModBlocks.infinity_chest.get()}
+    );
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TesseractTile>> TESSERACT_TILE = blockEntity(
+            "tesseract_tile",
+            TesseractTile::new,
+            () -> new Block[]{ModBlocks.tesseract.get()}
     );
 
     public static DeferredHolder<BlockEntityType<?>, BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,

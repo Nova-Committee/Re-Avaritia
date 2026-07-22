@@ -32,6 +32,8 @@ public class ModConfig {
 
     public static final ModConfigSpec.IntValue CHANNEL_FAST_UPDATE_RATE;
     public static final ModConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
+    public static final ModConfigSpec.IntValue MAX_CHANNELS_PRE_PLAYER;
+    public static final ModConfigSpec.IntValue MAX_PUBLIC_CHANNELS;
 
     public static final ModConfigSpec.BooleanValue useAdvanceTooltips;
     public static final ModConfigSpec.DoubleValue immortalItemEntityRange;
@@ -77,6 +79,10 @@ public class ModConfig {
         common.push("channel");
         CHANNEL_FAST_UPDATE_RATE = buildInt(common, "FastUpdate Rate", 1, 1, 40, "");
         CHANNEL_FULL_UPDATE_RATE = buildInt(common, "FullUpdate Rate", 40, 20, 1200, "");
+        MAX_CHANNELS_PRE_PLAYER = buildInt(common, "config.avaritia.max_channels_pre_player", 16, 4, 64,
+                "config.avaritia.max_channels_pre_player.tooltip");
+        MAX_PUBLIC_CHANNELS = buildInt(common, "config.avaritia.max_public_channels", 128, 32, 1024,
+                "config.avaritia.max_public_channels.tooltip");
         common.pop();
 
         common.push("misc");

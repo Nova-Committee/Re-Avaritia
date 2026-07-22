@@ -205,6 +205,7 @@ public class AvaritiaTagProvider implements DataProvider {
                         ModBlocks.densest_neutron_compressor.get(),
                         ModBlocks.extreme_anvil.get(),
                         ModBlocks.infinity_chest.get(),
+                        ModBlocks.tesseract.get(),
                         ModBlocks.extreme_smithing_table.get(),
                         Blocks.BEDROCK,
                         Blocks.END_PORTAL_FRAME,
@@ -234,6 +235,7 @@ public class AvaritiaTagProvider implements DataProvider {
                 );
 
                 tag(BlockTags.ANVIL).add(ModBlocks.extreme_anvil.get());
+                tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.tesseract.get());
 
                 tag(ModTags.NEUTRON_BLOCK).add(
                         ModBlocks.neutron.get()
@@ -251,6 +253,7 @@ public class AvaritiaTagProvider implements DataProvider {
                         ModBlocks.neutron.get(),
                         ModBlocks.infinity.get(),
                         ModBlocks.infinity_chest.get(),
+                        ModBlocks.tesseract.get(),
                         ModBlocks.endless_cake.get(),
                         ModBlocks.extreme_anvil.get(),
                         ModBlocks.fake_bedrock.get(),

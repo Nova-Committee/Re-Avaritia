@@ -34,7 +34,7 @@ class RegisteredBlockAndItemParityTest {
 
         assertAll(
                 () -> assertEquals(59, explicitItems.size(), "explicit item registry inventory changed unexpectedly"),
-                () -> assertEquals(30, blocks.size(), "block registry inventory changed unexpectedly"),
+                () -> assertEquals(31, blocks.size(), "block registry inventory changed unexpectedly"),
                 () -> assertEquals(expectedItemModels, itemModels, "registered item/block item models must be complete"),
                 () -> assertEquals(blocks, blockStates, "every registered block must have a blockstate")
         );
@@ -52,6 +52,7 @@ class RegisteredBlockAndItemParityTest {
     void storageAndMachineBlocksKeepTheirDataRemovalContracts() throws IOException {
         String compressedChest = compact(readMain("common/block/chest/CompressedChestBlock.java"));
         String infinityChest = compact(readMain("common/block/chest/InfinityChestBlock.java"));
+        String infinityChestTile = compact(readMain("common/tile/InfinityChestTile.java"));
         String inventoryTile = compact(readMain("api/common/tile/BaseInventoryTileEntity.java"));
         String collector = compact(readMain("common/block/collector/NeutronCollectorBlock.java"));
         String collectorTile = compact(readMain("common/tile/NeutronCollectorTile.java"));
@@ -64,8 +65,15 @@ class RegisteredBlockAndItemParityTest {
         assertAll(
                 () -> assertTrue(compressedChest.contains("pStack.applyComponents(chestTile.collectComponents());")),
                 () -> assertTrue(compressedChest.contains("itemstack.applyComponents(chestTile.collectComponents())")),
-                () -> assertTrue(infinityChest.contains("dropStack.set(ModDataComponents.CLUSTER_CONTAINER,ClusterContainerContents.fromItems(tile.chest.getItems()));")),
-                () -> assertTrue(infinityChest.contains("contents.copyInto(tile.chest.getItems());")),
+                () -> assertTrue(infinityChest.contains(
+                                "stack.applyComponents(tile.collectComponents());"),
+                        "infinity chest drops must retain the global channel reference and pending legacy import"),
+                () -> assertTrue(infinityChest.contains("tile.initializePlaced(placer,stack);"),
+                        "placing an infinity chest must restore its channel reference or import legacy contents"),
+                () -> assertTrue(infinityChestTile.contains("ModDataComponents.INFINITY_CHEST_REFERENCE"),
+                        "infinity chest block items must carry the dedicated reference component"),
+                () -> assertTrue(infinityChestTile.contains("ClusterContainerContents"),
+                        "legacy component-backed chest contents must remain importable"),
                 () -> assertTrue(inventoryTile.contains("publicvoidpreRemoveSideEffects(BlockPospos,BlockStatestate)")),
                 () -> assertTrue(inventoryTile.contains("if(level!=null&&!level.isClientSide())"),
                         "inventory contents must only be dropped by the authoritative server"),
