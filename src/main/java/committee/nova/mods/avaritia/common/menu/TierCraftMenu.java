@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
@@ -31,6 +32,7 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
     private final ResultContainer result;
     private final Player player;
     private final ModCraftTier tier;
+    private final TierCraftTile craftTile;
     private final ModCraftContainer craftContainer;
 
     private TierCraftMenu(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf buf, ModCraftTier tier) {
@@ -45,8 +47,9 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
         this.world = playerInventory.player.level();
         this.result = new ResultContainer();
         this.tier = tier;
+        this.craftTile = getTileEntity();
 
-        this.craftContainer = new ModCraftContainer(this, getTileEntity().getInventory(), tier.size);
+        this.craftContainer = new ModCraftContainer(this, this.craftTile.getInventory(), tier.size);
 
         this.addSlot(new ModCraftResultSlot(this.player, this, craftContainer, this.result, 0, tier.outX, tier.outY));
 
@@ -104,22 +107,71 @@ public class TierCraftMenu extends BaseTileMenu<TierCraftTile> {
 
     @Override
     public void slotsChanged(@NotNull Container matrix) {
-        var inventory = this.craftContainer.asCraftInput();
-
-        if (this.world instanceof ServerLevel serverLevel){
-            var recipe = serverLevel.recipeAccess().getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, this.world);
-            if (recipe.isPresent()) {
-                var result = recipe.get().value().assemble(inventory);
-                this.result.setItem(0, result);
-            } else {
-                this.result.setItem(0, ItemStack.EMPTY);
-            }
+        if (this.world instanceof ServerLevel) {
+            this.result.setItem(0, this.assembleCurrentResult());
         }
         super.slotsChanged(matrix);
     }
 
     @Override
+    public boolean stillValid(@NotNull Player player) {
+        return super.stillValid(player)
+                && this.craftTile != null
+                && !this.craftTile.isRemoved()
+                && this.world.getBlockEntity(this.getBlockPos()) == this.craftTile;
+    }
+
+    public boolean canTakeCraftingResult() {
+        if (!(this.world instanceof ServerLevel)) {
+            return true;
+        }
+
+        var currentResult = this.assembleCurrentResult();
+        var displayedResult = this.result.getItem(0);
+        var valid = matchesDisplayedResult(
+                currentResult.getCount(),
+                displayedResult.getCount(),
+                ItemStack.isSameItemSameComponents(currentResult, displayedResult)
+        );
+        if (!valid) {
+            this.result.setItem(0, currentResult);
+            this.broadcastChanges();
+        }
+        return valid;
+    }
+
+    static boolean matchesDisplayedResult(int currentCount, int displayedCount, boolean sameItemAndComponents) {
+        return currentCount > 0 && currentCount == displayedCount && sameItemAndComponents;
+    }
+
+    private ItemStack assembleCurrentResult() {
+        if (!(this.world instanceof ServerLevel serverLevel)
+                || !this.stillValid(this.player)
+                || this.craftContainer.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        var inventory = this.craftContainer.asCraftInput();
+        return serverLevel.recipeAccess()
+                .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, serverLevel)
+                .map(recipe -> recipe.value().assemble(inventory))
+                .orElse(ItemStack.EMPTY);
+    }
+
+    @Override
+    public void clicked(int slotId, int button, @NotNull ContainerInput input, @NotNull Player player) {
+        if (slotId == 0 && !this.canTakeCraftingResult()) {
+            return;
+        }
+        super.clicked(slotId, button, input, player);
+    }
+
+    @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotNumber) {
+        if (slotNumber == 0 && !this.canTakeCraftingResult()) {
+            return ItemStack.EMPTY;
+        }
+
         var itemstack = ItemStack.EMPTY;
         var slot = this.slots.get(slotNumber);
 

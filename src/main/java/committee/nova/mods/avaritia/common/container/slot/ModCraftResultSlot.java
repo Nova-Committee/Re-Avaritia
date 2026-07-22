@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.container.slot;
 
 import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
+import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
@@ -43,7 +44,16 @@ public class ModCraftResultSlot extends Slot {
     }
 
     @Override
+    public boolean mayPickup(@NotNull Player player) {
+        return !(this.container instanceof TierCraftMenu menu) || menu.canTakeCraftingResult();
+    }
+
+    @Override
     public @NotNull ItemStack remove(int pAmount) {
+        if (!this.mayPickup(this.player)) {
+            return ItemStack.EMPTY;
+        }
+
         if (this.hasItem()) {
             this.removeCount += Math.min(pAmount, this.getItem().getCount());
         }

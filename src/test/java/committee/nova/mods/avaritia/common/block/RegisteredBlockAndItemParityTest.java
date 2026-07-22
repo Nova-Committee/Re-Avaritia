@@ -54,15 +54,40 @@ class RegisteredBlockAndItemParityTest {
         String infinityChest = compact(readMain("common/block/chest/InfinityChestBlock.java"));
         String inventoryTile = compact(readMain("api/common/tile/BaseInventoryTileEntity.java"));
         String collector = compact(readMain("common/block/collector/NeutronCollectorBlock.java"));
+        String collectorTile = compact(readMain("common/tile/NeutronCollectorTile.java"));
+        String compressorTile = compact(readMain("common/tile/NeutronCompressorTile.java"));
+        String tierCraftTile = compact(readMain("common/tile/TierCraftTile.java"));
+        String modBlocks = compact(Files.readString(MOD_BLOCKS));
+        int dropContents = inventoryTile.indexOf("Containers.dropContents(level,pos,this.getInventory().getStacks());");
+        int superRemoval = inventoryTile.indexOf("super.preRemoveSideEffects(pos,state);");
 
         assertAll(
                 () -> assertTrue(compressedChest.contains("pStack.applyComponents(chestTile.collectComponents());")),
                 () -> assertTrue(compressedChest.contains("itemstack.applyComponents(chestTile.collectComponents())")),
                 () -> assertTrue(infinityChest.contains("dropStack.set(ModDataComponents.CLUSTER_CONTAINER,ClusterContainerContents.fromItems(tile.chest.getItems()));")),
                 () -> assertTrue(infinityChest.contains("contents.copyInto(tile.chest.getItems());")),
-                () -> assertTrue(inventoryTile.contains("Containers.dropContents(level,pos,this.getInventory().getStacks());")),
+                () -> assertTrue(inventoryTile.contains("publicvoidpreRemoveSideEffects(BlockPospos,BlockStatestate)")),
+                () -> assertTrue(inventoryTile.contains("if(level!=null&&!level.isClientSide())"),
+                        "inventory contents must only be dropped by the authoritative server"),
+                () -> assertTrue(dropContents >= 0 && dropContents < superRemoval,
+                        "inventory stacks must be drained once before the vanilla block-entity removal hook"),
+                () -> assertEquals(1, countOccurrences(inventoryTile,
+                        "Containers.dropContents(level,pos,this.getInventory().getStacks());")),
+                () -> assertTrue(collectorTile.contains("extendsBaseInventoryTileEntity"),
+                        "collector inventories must use the shared pre-removal drop lifecycle"),
+                () -> assertTrue(compressorTile.contains("extendsBaseInventoryTileEntity"),
+                        "compressor inventories must use the shared pre-removal drop lifecycle"),
+                () -> assertTrue(tierCraftTile.contains("extendsBaseInventoryTileEntity"),
+                        "tier crafting inventories must use the shared pre-removal drop lifecycle"),
+                () -> assertEquals(4, countOccurrences(modBlocks, "NeutronCollectorBlock::new")),
+                () -> assertEquals(4, countOccurrences(modBlocks, "NeutronCompressorBlock::new")),
+                () -> assertEquals(4, countOccurrences(modBlocks, "newTierCraftTableBlock(")),
                 () -> assertTrue(collector.contains("super(MapColor.METAL,SoundType.METAL,50f,2000f,true);"))
         );
+    }
+
+    private static int countOccurrences(String source, String expected) {
+        return (source.length() - source.replace(expected, "").length()) / expected.length();
     }
 
     private static Set<String> registrations(Path source, Pattern pattern) throws IOException {
