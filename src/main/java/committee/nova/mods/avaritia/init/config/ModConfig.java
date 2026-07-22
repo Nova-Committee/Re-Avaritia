@@ -33,6 +33,7 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue bladeSlashDamage;
     public static final ModConfigSpec.IntValue bladeSlashRadius;
 
+    public static final ModConfigSpec.BooleanValue enableProjectESingularityCountBoost;
     public static final ModConfigSpec.IntValue neutronPileEmc;
     public static final ModConfigSpec.IntValue blazeCubeEmc;
     public static final ModConfigSpec.IntValue vanillaTotemEmc;
@@ -82,6 +83,7 @@ public class ModConfig {
         bladeSlashRadius = buildInt(common, "BladeSlash Radius", 10, 5, 100, "Radius of BladeSlash for Crystal Sword");
         common.pop();
         common.push("emc");
+        enableProjectESingularityCountBoost = buildBoolean(common, "config.avaritia.enable_projecte_singularity_count_boost", true, "config.avaritia.enable_projecte_singularity_count_boost.tooltip");
         neutronPileEmc = buildInt(common, "Neutron Pile Emc", 512, 0, Integer.MAX_VALUE, "Emc of Neutron Pile");
         blazeCubeEmc = buildInt(common, "Blaze Cube Emc", 30568, 0, Integer.MAX_VALUE, "Emc of Blaze Cube");
         vanillaTotemEmc = buildInt(common, "Vanilla Totem Emc", 1000, 0, Integer.MAX_VALUE, "Emc of Totem Of Undying");

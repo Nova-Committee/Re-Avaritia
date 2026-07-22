@@ -29,6 +29,7 @@ import java.util.function.IntSupplier;
  * Version: 1.0
  */
 public class Singularity {
+    private static final int PROJECTE_MINIMUM_SINGULARITY_COUNT = 10_000;
     public static final Codec<Singularity> CODEC = createCodec(Singularity::getDefaultTimeCost);
 
     static Codec<Singularity> createCodec(IntSupplier defaultTimeCost) {
@@ -191,7 +192,16 @@ public class Singularity {
     }
 
     public int getCount() {
-        return this.count > 10000 ? this.count : Const.isLoad("projecte") ? 10000 : this.count;
+        boolean countBoostEnabled = ModConfig.COMMON.isLoaded()
+                ? ModConfig.enableProjectESingularityCountBoost.get()
+                : ModConfig.enableProjectESingularityCountBoost.getDefault();
+        return resolveRecipeCount(this.count, Const.isLoad("projecte"), countBoostEnabled);
+    }
+
+    static int resolveRecipeCount(int configuredCount, boolean projectELoaded, boolean countBoostEnabled) {
+        return projectELoaded && countBoostEnabled
+                ? Math.max(configuredCount, PROJECTE_MINIMUM_SINGULARITY_COUNT)
+                : configuredCount;
     }
 
     public static Singularity read(RegistryFriendlyByteBuf buffer) {

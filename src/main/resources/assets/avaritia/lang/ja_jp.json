@@ -212,6 +212,8 @@
   "config.avaritia.blaze_cube_emc.tooltip": "ブレイズキューブ：与えられるEMC",
   "config.avaritia.neutron_pile_emc": "小さなニュートロンのEMC",
   "config.avaritia.neutron_pile_emc.tooltip": "小さなニュートロン：与えられるEMC",
+  "config.avaritia.enable_projecte_singularity_count_boost": "ProjectEのシンギュラリティ素材10倍化を有効化",
+  "config.avaritia.enable_projecte_singularity_count_boost.tooltip": "ProjectE導入時、シンギュラリティレシピの素材数が10000未満なら10000に引き上げます。レシピの再読み込み後に反映されます。",
   "config.avaritia.vanilla_totem_emc": "バニラトーテムのEMC",
   "config.avaritia.vanilla_totem_emc.tooltip": "不死のトーテム：与えられるEMC",
   "config.avaritia.bedrock_emc": "岩盤のEMC",
