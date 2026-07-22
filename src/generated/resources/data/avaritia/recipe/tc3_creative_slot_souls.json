@@ -1,0 +1,53 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "tconstruct"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "A": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "B": {
+      "item": "tconstruct:iron_reinforcement"
+    },
+    "C": {
+      "item": "tconstruct:queens_slime_ingot"
+    },
+    "E": {
+      "item": "tconstruct:manyullyn_block"
+    },
+    "F": {
+      "item": "tconstruct:jeweled_apple"
+    },
+    "G": {
+      "item": "tconstruct:iron_reinforcement"
+    },
+    "H": {
+      "item": "tconstruct:sky_slime_crystal"
+    }
+  },
+  "pattern": [
+    "GGBHHHBGG",
+    "GCCCCCCCG",
+    "BCBFFFBCB",
+    "HCFFEFFCH",
+    "HCFEAEFCH",
+    "HCFFEFFCH",
+    "BCBFFFBCB",
+    "GCCCCCCCG",
+    "GGBHHHBGG"
+  ],
+  "result": {
+    "components": {
+      "minecraft:custom_data": {
+        "slot": "souls"
+      }
+    },
+    "count": 1,
+    "id": "tconstruct:creative_slot"
+  },
+  "tier": 4
+}

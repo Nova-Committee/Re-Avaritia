@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.core.chest;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -29,6 +30,19 @@ public abstract class ChestHandler implements IItemHandler {
 
     public boolean hasItem(ItemSuper item) {
         return storageItems.containsKey(item);
+    }
+
+    @Nullable
+    public ItemSuper resolveStoredItem(ItemSuper requested) {
+        if (requested == null) {
+            return null;
+        }
+        for (ItemSuper stored : storageItems.keySet()) {
+            if (stored.equals(requested)) {
+                return stored;
+            }
+        }
+        return null;
     }
 
     public int canStorageAmount(ItemStack itemStack) {
@@ -77,7 +91,7 @@ public abstract class ChestHandler implements IItemHandler {
      * @return 成功进入的
      */
     public long addItem(ItemSuper itemSuper, long count) {
-        if (itemSuper.getStack().isEmpty() || count == 0) return 0L;
+        if (itemSuper == null || itemSuper.getStack().isEmpty() || count <= 0) return 0L;
         if (storageItems.containsKey(itemSuper)) {
             long storageCount = storageItems.get(itemSuper);
             long remainingSpaces = Long.MAX_VALUE - storageCount;
@@ -141,7 +155,7 @@ public abstract class ChestHandler implements IItemHandler {
      * 获取物品，但不限制数量。
      */
     public ItemStack takeItem(ItemSuper itemSuper, int count) {
-        if (!storageItems.containsKey(itemSuper) || itemSuper.getStack().isEmpty() || count == 0) return ItemStack.EMPTY;
+        if (itemSuper == null || !storageItems.containsKey(itemSuper) || itemSuper.getStack().isEmpty() || count <= 0) return ItemStack.EMPTY;
         long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
             var actionItemSuper = itemSuper.copyWithCount(storageCount -count);
@@ -159,7 +173,7 @@ public abstract class ChestHandler implements IItemHandler {
      * 获取物品，数量限制在叠堆最大值。
      */
     public ItemStack saveTakeItem(ItemSuper itemSuper, int count) {
-        if (!storageItems.containsKey(itemSuper) || itemSuper.getStack().isEmpty() || count == 0) return ItemStack.EMPTY;
+        if (itemSuper == null || !storageItems.containsKey(itemSuper) || itemSuper.getStack().isEmpty() || count <= 0) return ItemStack.EMPTY;
         ItemStack itemStack = itemSuper.getStack();
         count = Integer.min(count, itemStack.getMaxStackSize());
         long storageCount = storageItems.get(itemSuper);
@@ -210,7 +224,7 @@ public abstract class ChestHandler implements IItemHandler {
     }
 
     public void removeItem(ItemSuper itemSuper, long count) {
-        if (!storageItems.containsKey(itemSuper)) return;
+        if (itemSuper == null || count <= 0 || !storageItems.containsKey(itemSuper)) return;
         long storageCount = storageItems.get(itemSuper);
         if (count < storageCount) {
             var actionItemSuper = itemSuper.copyWithCount(storageCount - count);
@@ -276,7 +290,7 @@ public abstract class ChestHandler implements IItemHandler {
 
     @Override
     public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
+        if (amount <= 0 || slot >= itemKeys.length + 27 || slot < 27) return ItemStack.EMPTY;
         var itemSuper = slotItemTemp[slot - 27];
         var itemStack = itemSuper.getStack();
         if (!storageItems.containsKey(itemSuper)) return ItemStack.EMPTY;

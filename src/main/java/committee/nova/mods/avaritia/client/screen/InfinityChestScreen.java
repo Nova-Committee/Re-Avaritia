@@ -1,309 +1,457 @@
 package committee.nova.mods.avaritia.client.screen;
 
-import java.text.DecimalFormat;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.datafixers.util.Pair;
-
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
-import committee.nova.mods.avaritia.common.container.slot.InfinitySlot;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
+import committee.nova.mods.avaritia.core.chest.ClientChestHandler;
+import committee.nova.mods.avaritia.core.chest.ClientChestManager;
+import committee.nova.mods.avaritia.core.chest.ItemSuper;
+import committee.nova.mods.avaritia.util.SortUtils;
+import committee.nova.mods.avaritia.util.StorageUtils;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
-public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMenu> {
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
+import java.util.List;
 
-    public static final ResourceLocation BACKGROUND_LOCATION = Res.INFINITY_CHEST_TEX;
+/**
+ * @author cnlimiter
+ */
+public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> {
+    private static final int SCREEN_MARGIN = 4;
 
-    public InfinityChestScreen(InfinityChestMenu menu, Inventory inventory, Component title) {
-        super(menu,inventory,title);
-        this.imageWidth = 500;
-        this.imageHeight = 275;
+    @Setter
+    @Getter
+    private int blitOffset;
+
+    private static final ResourceLocation GUI_IMG = Res.INFINITY_CHEST_TEX;
+    private final String ownerName;
+    private ItemSuper lastHoveredItem = ItemSuper.EMPTY;
+    private long lastCount = 0;
+    private String lastFormatCountTemp = "";
+    private SortButton sortButton;
+    private ItemScrollBar scrollBar;
+    private EditBox searchBox;
+    private Integer originalGuiScale;
+
+    public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
+        super(menu, playerInventory, title, null, 302, 274, 550, 550);
+        this.ownerName = ClientChestManager.getInstance().getUserName(this.getMenu().owner);
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        guiGraphics.blit(BACKGROUND_LOCATION, this.getGuiLeft(), this.getGuiTop(), 0.0F, 0.0F, this.imageWidth, this.imageHeight, 500, 275);
-    }
-
-    @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, 170, this.imageHeight - 94, 4210752, false);
-    }
-
-    @Override
-    protected void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
-            ItemStack itemStack = this.hoveredSlot.getItem();
-            List<Component> components = this.getTooltipFromContainerItem(itemStack);
-            if (this.hoveredSlot instanceof InfinitySlot) {
-                components.add(Component.translatable("container.infinity_chest", itemStack.getCount(), this.menu.getSlotMaxStack(this.hoveredSlot)));
-            }
-            guiGraphics.renderTooltip(this.font, components, itemStack.getTooltipImage(), itemStack, mouseX, mouseY);
+    protected void init() {
+        if (!resizeGuiToFit()) {
+            super.init();
         }
     }
 
-    @Override
-    protected void renderSlot(GuiGraphics guiGraphics, Slot slot) {
-        int i = slot.x;
-        int j = slot.y;
-        ItemStack itemStack = slot.getItem();
-        boolean flag = false;
-        boolean flag1 = slot == this.clickedSlot && !this.draggingItem.isEmpty() && !this.isSplittingStack;
-        ItemStack itemStack1 = this.menu.getCarried();
-        if (slot == this.clickedSlot && !this.draggingItem.isEmpty() && this.isSplittingStack && !itemStack.isEmpty()) {
-            itemStack = itemStack.copyWithCount(itemStack.getCount() / 2);
-        } else if (this.isQuickCrafting && this.quickCraftSlots.contains(slot) && !itemStack1.isEmpty()) {
-            if (this.quickCraftSlots.size() == 1) {
-                return;
-            }
-
-            if (InfinityChestMenu.canItemQuickReplace(this.menu.getTile().chest, slot, itemStack1, true, this.menu.getSlotMaxStack(slot)) && this.menu.canDragTo(slot)) {
-                flag = true;
-                int k = Math.min(this.menu.getTile().chest.getMaxStackSize(itemStack1), this.menu.getSlotMaxStack(slot));
-                int l = slot.getItem().isEmpty() ? 0 : slot.getItem().getCount();
-                int i1 = InfinityChestMenu.getQuickCraftPlaceCount(this.quickCraftSlots, this.quickCraftingType, itemStack1) + l;
-                if (i1 > k) {
-                    i1 = k;
-                }
-
-                itemStack = itemStack1.copyWithCount(i1);
-            } else {
-                this.quickCraftSlots.remove(slot);
-                this.recalculateQuickCraftRemaining();
-            }
+    private boolean resizeGuiToFit() {
+        if (minecraft == null
+                || (width >= imageWidth + SCREEN_MARGIN * 2 && height >= imageHeight + SCREEN_MARGIN * 2)) {
+            return false;
         }
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0.0F, 0.0F, 100.0F);
-        if (itemStack.isEmpty() && slot.isActive()) {
-            Pair<ResourceLocation, ResourceLocation> pair = slot.getNoItemIcon();
-            if (pair != null) {
-                TextureAtlasSprite textureatlassprite = this.minecraft.getTextureAtlas(pair.getFirst()).apply(pair.getSecond());
-                guiGraphics.blit(i, j, 0, 16, 16, textureatlassprite);
-                flag1 = true;
-            }
+        double currentScale = minecraft.getWindow().getGuiScale();
+        int targetScale = Math.max(1, (int) Math.floor(currentScale));
+        double framebufferWidth = width * currentScale;
+        double framebufferHeight = height * currentScale;
+        while (targetScale > 1
+                && (framebufferWidth / targetScale < imageWidth + SCREEN_MARGIN * 2
+                || framebufferHeight / targetScale < imageHeight + SCREEN_MARGIN * 2)) {
+            targetScale--;
         }
 
-        if (!flag1) {
-            if (flag) {
-                guiGraphics.fill(i, j, i + 16, j + 16, -2130706433);
-            }
-
-            int j1 = slot.x + slot.y * this.imageWidth;
-            if (slot.isFake()) {
-                guiGraphics.renderFakeItem(itemStack, i, j, j1);
-            } else {
-                guiGraphics.renderItem(itemStack, i, j, j1);
-            }
-
-            String text = null;
-            int count = itemStack.getCount();
-
-            if (count >= 1000) {
-                text = new DecimalFormat("#").format(count / 1000) + "K";
-            }
-            if (count >= 10000) {
-                text = new DecimalFormat("#").format(count / 10000) + "W";
-            }
-            if (count >= 1000000) {
-                text = new DecimalFormat("#").format(count / 1000000) + "M";
-            }
-            if (count >= 1000000000) {
-                text = new DecimalFormat("#").format(count / 1000000000) + "G";
-            }
-
-            guiGraphics.renderItemDecorations(this.font, itemStack, i, j, text);
+        if (targetScale >= currentScale || minecraft.options.guiScale().get() == targetScale) {
+            return false;
         }
 
-        guiGraphics.pose().popPose();
-    }
-@Override
-    public void recalculateQuickCraftRemaining() {
-        ItemStack itemStack = this.menu.getCarried();
-        if (!itemStack.isEmpty() && this.isQuickCrafting) {
-            if (this.quickCraftingType == 2) {
-                this.quickCraftingRemainder = itemStack.getMaxStackSize();
-            } else {
-                this.quickCraftingRemainder = itemStack.getCount();
-
-                for (Slot slot : this.quickCraftSlots) {
-                    ItemStack itemStack1 = slot.getItem();
-                    int i = itemStack1.isEmpty() ? 0 : itemStack1.getCount();
-                    int j = Math.min(this.menu.getTile().chest.getMaxStackSize(itemStack), this.menu.getSlotMaxStack(slot));
-                    int k = Math.min(InfinityChestMenu.getQuickCraftPlaceCount(this.quickCraftSlots, this.quickCraftingType, itemStack) + i, j);
-                    this.quickCraftingRemainder -= k - i;
-                }
-            }
+        if (originalGuiScale == null) {
+            originalGuiScale = minecraft.options.guiScale().get();
         }
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        Slot slot = this.findSlot(mouseX, mouseY);
-        ItemStack itemStack = this.menu.getCarried();
-        if (this.clickedSlot != null && this.minecraft.options.touchscreen().get()) {
-            if (button == 0 || button == 1) {
-                if (this.draggingItem.isEmpty()) {
-                    if (slot != this.clickedSlot && !this.clickedSlot.getItem().isEmpty()) {
-                        this.draggingItem = this.clickedSlot.getItem().copy();
-                    }
-                } else if (this.draggingItem.getCount() > 1 && slot != null && InfinityChestMenu.canItemQuickReplace(this.menu.getTile().chest, slot, this.draggingItem, false, this.menu.getSlotMaxStack(slot))) {
-                    long i = net.minecraft.Util.getMillis();
-                    if (this.quickdropSlot == slot) {
-                        if (i - this.quickdropTime > 500L) {
-                            this.slotClicked(this.clickedSlot, this.clickedSlot.index, 0, ClickType.PICKUP);
-                            this.slotClicked(slot, slot.index, 1, ClickType.PICKUP);
-                            this.slotClicked(this.clickedSlot, this.clickedSlot.index, 0, ClickType.PICKUP);
-                            this.quickdropTime = i + 750L;
-                            this.draggingItem.shrink(1);
-                        }
-                    } else {
-                        this.quickdropSlot = slot;
-                        this.quickdropTime = i;
-                    }
-                }
-            }
-        } else if (this.isQuickCrafting && slot != null && !itemStack.isEmpty() && (itemStack.getCount() > this.quickCraftSlots.size() || this.quickCraftingType == 2) && InfinityChestMenu.canItemQuickReplace(this.menu.getTile().chest, slot, itemStack, true, this.menu.getSlotMaxStack(slot)) && slot.mayPlace(itemStack) && this.menu.canDragTo(slot)) {
-            this.quickCraftSlots.add(slot);
-            this.recalculateQuickCraftRemaining();
-        }
+        minecraft.options.guiScale().set(targetScale);
         return true;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0 && this.isDragging()) {
-            this.setDragging(false);
-            if (this.getFocused() != null) {
-                return this.getFocused().mouseReleased(mouseX, mouseY, button);
+    protected void subInit() {
+        super.subInit();
+        this.leftPos = Math.max(0, (this.width - this.imageWidth) / 2);
+        this.topPos = Math.max(0, (this.height - this.imageHeight) / 2);
+
+        this.scrollBar = new ItemScrollBar(leftPos + 282, topPos + 16, 12, 160);
+        this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
+        this.addRenderableWidget(scrollBar);
+        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 231, this.topPos + 187));
+        this.sortButton = new SortButton(this.leftPos + 249, this.topPos + 187);
+        this.addRenderableWidget(sortButton);
+
+        this.searchBox = new EditBox(this.font, leftPos + 187, topPos + 4, 89, 10, Component.translatable("gui.avaritia.search"));
+        this.searchBox.setMaxLength(64);
+        this.searchBox.setBordered(false);
+        this.searchBox.setValue(menu.filter);
+        this.addRenderableWidget(searchBox);
+        menu.chestContainer.refreshContainer(true);
+
+        // 创建两侧避让区
+    }
+
+    @Override
+    protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX + 50, this.inventoryLabelY + 108, 4210752, false);
+    }
+
+    @Override
+    protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
+        int x = this.getGuiLeft();
+        int y = this.getGuiTop();
+        pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0,  this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+    }
+
+    @Override
+    protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderDummyCount(pGuiGraphics);
+    }
+
+    @Override
+    public void renderSlot(@NotNull GuiGraphics guiGraphics, Slot slot) {
+        // 如果是InfinityChest的虚拟物品槽，不渲染原版的数量（避免与自定义数量显示冲突）
+        if (slot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
+            // 临时修改数量为1以隐藏原版数量渲染，然后恢复正常
+            ItemStack stack = slot.getItem();
+            int originalCount = stack.getCount();
+            if (stack.getCount() > 1) {
+                stack.setCount(1);
+                super.renderSlot(guiGraphics, slot);
+                stack.setCount(originalCount);
+            } else {
+                super.renderSlot(guiGraphics, slot);
+            }
+            return;
+        }
+        // 其他槽正常渲染
+        super.renderSlot(guiGraphics, slot);
+    }
+
+    public void renderDummyCount(GuiGraphics guiGraphics) {
+        PoseStack poseStack = guiGraphics.pose();
+        for (int i = 0; i < menu.chestContainer.formatCount.size(); i++) {
+            Slot slot = menu.slots.get(i + InfinityChestMenu.CONTAINER_SLOT_START);
+            String count = menu.chestContainer.formatCount.get(i);
+            this.setBlitOffset(100);
+            RenderSystem.enableDepthTest();
+            float fontSize = 0.5F;
+            poseStack.pushPose();
+            poseStack.translate(leftPos + slot.x, topPos + slot.y, 300.0D);
+            poseStack.scale(fontSize, fontSize, 1.0F);
+            guiGraphics.drawString(font, count,
+                    (16 - this.font.width(count) * fontSize) / fontSize,
+                    (16 - this.font.lineHeight * fontSize) / fontSize,
+                    16777215, false);
+            poseStack.popPose();
+            this.setBlitOffset(0);
+        }
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    protected void renderTooltip(GuiGraphics pPoseStack, int pX, int pY) {
+        if (this.hoveredSlot != null) {
+            if (hoveredSlot.index >= InfinityChestMenu.CONTAINER_SLOT_START) {
+                if (menu.getCarried().getCount() == 1)
+                    renderObjectStorageTooltip(pPoseStack, pX, pY);
+                else
+                    renderCounterTooltip(pPoseStack, pX, pY);
+            } else if (!hoveredSlot.getItem().isEmpty() && menu.getCarried().isEmpty())
+                pPoseStack.renderTooltip(font, this.hoveredSlot.getItem(), pX, pY);
+        } else {
+            if (searchBox.isHovered()) {
+                List<Component> list = new ArrayList<>();
+                list.add(Component.translatable("gui.avaritia.search.tip1"));
+                list.add(Component.translatable("gui.avaritia.search.tip2"));
+                list.add(Component.translatable("gui.avaritia.search.tip3"));
+                pPoseStack.renderComponentTooltip(font, list, pX, pY);
             }
         }
+    }
 
-        this.getChildAt(mouseX, mouseY).filter(listener -> listener.mouseReleased(mouseX, mouseY, button));
+    private void renderCounterTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
+        if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) >= menu.chestContainer.viewingObject.size()) return;
+        var hoveredObject = menu.chestContainer.viewingObject.get(hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START);
+        List<Component> components;
+        long count;
+        components = getTooltipFromItem(minecraft, hoveredSlot.getItem());
+        count = hoveredObject.getRealCount();
 
-        Slot slot = this.findSlot(mouseX, mouseY);
+        if (!hoveredObject.equals(lastHoveredItem)) {
+            String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
+            components.add(Component.literal(formatCount));
+            this.lastHoveredItem = hoveredObject;
+            this.lastCount = count;
+            this.lastFormatCountTemp = formatCount;
+        } else if (count == lastCount) {
+            components.add(Component.literal(lastFormatCountTemp));
+        } else {
+            String formatCount = StorageUtils.DECIMAL_FORMAT.format(count);
+            long count2 = count - lastCount;
+            String formatCount2 = StorageUtils.DECIMAL_FORMAT.format(count2);
+            if (count2 >= 0) formatCount += "  |  +§a" + formatCount2;
+            else formatCount += "  |  §c" + formatCount2;
+            components.add(Component.literal(formatCount));
+            lastCount = count;
+            lastFormatCountTemp = formatCount;
+        }
+        pPoseStack.renderTooltip(font, components, hoveredSlot.getItem().getTooltipImage(), pMouseX, pMouseY);
+    }
+
+
+    private void renderObjectStorageTooltip(GuiGraphics pPoseStack, int pMouseX, int pMouseY) {
+        ItemStack carried = menu.getCarried();
+        boolean hasCapability = carried.getCapability(Capabilities.ItemHandler.ITEM) != null;
+        if (hasCapability) {
+            List<Component> components = Lists.newArrayList();
+            if ((hoveredSlot.index - InfinityChestMenu.CONTAINER_SLOT_START) < menu.chestContainer.viewingObject.size()) {
+                components.add(Component.translatable("gui.avaritia.capability.tip1", hoveredSlot.getItem().getHoverName()));
+            }
+            components.add(Component.translatable("gui.avaritia.capability.tip2"));
+            components.add(Component.translatable("gui.avaritia.capability.tip3"));
+            pPoseStack.renderTooltip(font, components, ItemStack.EMPTY.getTooltipImage(), pMouseX, pMouseY);
+        } else renderCounterTooltip(pPoseStack, pMouseX, pMouseY);
+    }
+
+
+    @Override
+    public void onClose() {
+        PacketDistributor.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
+        ((ClientChestHandler) menu.chest).removeListener();
+        super.onClose();
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        restoreGuiScale();
+    }
+
+    private void restoreGuiScale() {
+        if (originalGuiScale == null || minecraft == null) {
+            return;
+        }
+
+        int scale = originalGuiScale;
+        originalGuiScale = null;
+        minecraft.tell(() -> {
+            if (minecraft.options.guiScale().get() != scale) {
+                minecraft.options.guiScale().set(scale);
+            }
+        });
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (pButton == 1) {
+            //搜索框
+            if (searchBox.isMouseOver(pMouseX, pMouseY)) {
+                menu.filter = "";
+                searchBox.setValue("");
+                menu.chestContainer.refreshContainer(true);
+                searchBox.setFocused(true);
+                searchBox.setEditable(true);
+            }
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        if (scrollBar.isScrolling()) scrollBar.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
+        scrollBar.mouseReleased(pMouseX, pMouseY, pButton);
+        return super.mouseReleased(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        if (searchBox.isFocused()) {
+            if (pKeyCode >= InputConstants.KEY_0 && pKeyCode <= InputConstants.KEY_Z) return true;
+        }
+        if (pKeyCode == InputConstants.KEY_LSHIFT) menu.LShifting = true;
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        if (searchBox.isFocused()) {
+            String s = searchBox.getValue().toLowerCase();
+            if (!s.equals(menu.filter)) {
+                menu.filter = s;
+                menu.chestContainer.refreshContainer(true);
+            }
+        }
+        if (pKeyCode == InputConstants.KEY_LSHIFT) {
+            menu.LShifting = false;
+            menu.chestContainer.refreshContainer(true);
+        }
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (mouseX >= leftPos + 5 && mouseX <= leftPos + 214 && mouseY >= topPos + 17 && mouseY <= topPos + 18 + 119 && scrollBar.canScroll()) {
+            if (scrollY <= 0) scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(false));
+            else scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(true));
+            return true;
+        } else return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+
+    @Override
+    protected boolean isHovering(int pX, int pY, int pWidth, int pHeight, double pMouseX, double pMouseY) {
         int i = this.leftPos;
         int j = this.topPos;
-        boolean flag = this.hasClickedOutside(mouseX, mouseY, i, j, button);
-        if (slot != null) {
-            flag = false; // Forge, prevent dropping of items through slots outside of GUI boundaries
-        }
-        InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(button);
-        int k = -1;
-        if (slot != null) {
-            k = slot.index;
-        }
+        pMouseX -= i;
+        pMouseY -= j;
+        return pMouseX >= (double) pX && pMouseX < (double) (pX + pWidth) && pMouseY >= (double) pY && pMouseY < (double) (pY + pHeight);
+    }
 
-        if (flag) {
-            k = -999;
+    private void toggleLock() {
+        if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {
+            this.menu.locked = !this.menu.locked;
+            this.searchBox.setFocused(false);
+            PacketDistributor.sendToServer(new C2SInfinityChestFilterPack(menu.containerId, menu.filter));
+            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 0);
         }
+    }
 
-        if (this.doubleclick && slot != null && button == 0 && this.menu.canTakeItemForPickAll(ItemStack.EMPTY, slot)) {
-            if (hasShiftDown()) {
-                if (!this.lastQuickMoved.isEmpty()) {
-                    for (Slot slot2 : this.menu.slots) {
-                        if (slot2 != null && slot2.mayPickup(this.minecraft.player) && slot2.hasItem() && slot2.isSameInventory(slot) && InfinityChestMenu.canItemQuickReplace(this.menu.getTile().chest, slot2, this.lastQuickMoved, true, this.menu.getSlotMaxStack(slot2))) {
-                            this.slotClicked(slot2, slot2.index, button, ClickType.QUICK_MOVE);
-                        }
-                    }
-                }
-            } else {
-                this.slotClicked(slot, k, button, ClickType.PICKUP_ALL);
-            }
-
-            this.doubleclick = false;
-            this.lastClickTime = 0L;
+    private void cycleSort() {
+        if (InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), InputConstants.KEY_LSHIFT)) {
+            menu.reverseSort();
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 2);
         } else {
-            if (this.isQuickCrafting && this.quickCraftingButton != button) {
-                this.isQuickCrafting = false;
-                this.quickCraftSlots.clear();
-                this.skipNextRelease = true;
-                return true;
-            }
+            menu.nextSort();
+            minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, 1);
+        }
+    }
 
-            if (this.skipNextRelease) {
-                this.skipNextRelease = false;
-                return true;
-            }
+    private String getSortKey(int sortType) {
+        return switch (sortType) {
+            case SortUtils.Sort.ID_ASCENDING, SortUtils.Sort.ID_DESCENDING -> "gui.avaritia.sort.itemSuper";
+            case SortUtils.Sort.NAMESPACE_ID_ASCENDING, SortUtils.Sort.NAMESPACE_ID_DESCENDING ->
+                    "gui.avaritia.sort.nid";
+            case SortUtils.Sort.MIRROR_ID_ASCENDING, SortUtils.Sort.MIRROR_ID_DESCENDING ->
+                    "gui.avaritia.sort.mirror_id";
+            case SortUtils.Sort.COUNT_ASCENDING, SortUtils.Sort.COUNT_DESCENDING -> "gui.avaritia.sort.count";
+            default -> "";
+        };
+    }
 
-            if (this.clickedSlot != null && this.minecraft.options.touchscreen().get()) {
-                if (button == 0 || button == 1) {
-                    if (this.draggingItem.isEmpty() && slot != this.clickedSlot) {
-                        this.draggingItem = this.clickedSlot.getItem();
-                    }
 
-                    boolean flag2 = InfinityChestMenu.canItemQuickReplace(this.menu.getTile().chest, slot, this.draggingItem, false, this.menu.getSlotMaxStack(slot));
-                    if (k != -1 && !this.draggingItem.isEmpty() && flag2) {
-                        this.slotClicked(this.clickedSlot, this.clickedSlot.index, button, ClickType.PICKUP);
-                        this.slotClicked(slot, k, 0, ClickType.PICKUP);
-                        if (this.menu.getCarried().isEmpty()) {
-                            this.snapbackItem = ItemStack.EMPTY;
-                        } else {
-                            this.slotClicked(this.clickedSlot, this.clickedSlot.index, button, ClickType.PICKUP);
-                            this.snapbackStartX = Mth.floor(mouseX - (double) i);
-                            this.snapbackStartY = Mth.floor(mouseY - (double) j);
-                            this.snapbackEnd = this.clickedSlot;
-                            this.snapbackItem = this.draggingItem;
-                            this.snapbackTime = Util.getMillis();
-                        }
-                    } else if (!this.draggingItem.isEmpty()) {
-                        this.snapbackStartX = Mth.floor(mouseX - (double) i);
-                        this.snapbackStartY = Mth.floor(mouseY - (double) j);
-                        this.snapbackEnd = this.clickedSlot;
-                        this.snapbackItem = this.draggingItem;
-                        this.snapbackTime = Util.getMillis();
-                    }
+    private class ItemScrollBar extends SimpleScrollBar {
 
-                    this.clearDraggingState();
-                }
-            } else if (this.isQuickCrafting && !this.quickCraftSlots.isEmpty()) {
-                this.slotClicked(null, -999, AbstractContainerMenu.getQuickcraftMask(0, this.quickCraftingType), ClickType.QUICK_CRAFT);
+        private int lastObjectListSize;
 
-                for (Slot slot1 : this.quickCraftSlots) {
-                    this.slotClicked(slot1, slot1.index, AbstractContainerMenu.getQuickcraftMask(1, this.quickCraftingType), ClickType.QUICK_CRAFT);
-                }
-
-                this.slotClicked(null, -999, AbstractContainerMenu.getQuickcraftMask(2, this.quickCraftingType), ClickType.QUICK_CRAFT);
-            } else if (!this.menu.getCarried().isEmpty()) {
-                if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
-                    this.slotClicked(slot, k, button, ClickType.CLONE);
-                } else {
-                    boolean flag1 = k != -999 && (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 340) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 344));
-                    if (flag1) {
-                        this.lastQuickMoved = slot != null && slot.hasItem() ? slot.getItem().copy() : ItemStack.EMPTY;
-                    }
-
-                    this.slotClicked(slot, k, button, flag1 ? ClickType.QUICK_MOVE : ClickType.PICKUP);
-                }
-            }
+        public ItemScrollBar(int x, int y, int weight, int height) {
+            super(x, y, weight, height);
+            this.setScrollTagSize();
+            this.lastObjectListSize = menu.chestContainer.sortedItems.size();
         }
 
-        if (this.menu.getCarried().isEmpty()) {
-            this.lastClickTime = 0L;
+        public void setScrollTagSize() {
+            double v = (double) this.height * (9.0D / Math.ceil(menu.chestContainer.sortedItems.size() / 15.0D));
+            this.setScrollTagSize(v);
         }
 
-        this.isQuickCrafting = false;
-        return true;
+        @Override
+        public void draggedTo(double scrolledOn) {
+            menu.chestContainer.onScrollTo(scrolledOn);
+        }
+
+        @Override
+        public void beforeRender() {
+            if (menu.chestContainer.sortedItems.size() != lastObjectListSize) {
+                setScrollTagSize();
+                this.lastObjectListSize = menu.chestContainer.sortedItems.size();
+            }
+        }
+    }
+
+
+
+    private class ToggleLockButton extends ImageButton {
+
+        public ToggleLockButton(int pX, int pY) {
+            super(pX, pY, 17, 18, new WidgetSprites(GUI_IMG, GUI_IMG), pButton -> toggleLock());
+            MutableComponent componentB = Component.translatable("gui.avaritia.owner", "§c" + ownerName);
+            MutableComponent componentC = Component.translatable("gui.avaritia.public");
+            if (menu.locked) setTooltip(Tooltip.create(componentB));
+            else setTooltip(Tooltip.create(componentC));
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            int uOffset = menu.locked ? 303 : 320;
+            var yTexStart = 36;
+            if (this.isHovered) {
+                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, yTexStart + 18, this.width, this.height, 550, 550);
+            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), uOffset, yTexStart, this.width, this.height, 550, 550);
+        }
+    }
+
+
+    private class SortButton extends ImageButton {
+
+        public SortButton(int pX, int pY) {
+            super(pX, pY, 17, 18, new WidgetSprites(GUI_IMG, GUI_IMG), pButton -> cycleSort());
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            var xTexStart = 303;
+            var yTexStart = 0;
+            List<FormattedCharSequence> list = new ArrayList<>();
+            int xOffset = menu.sortType * 17 + xTexStart;
+            if (this.isHovered) {
+                pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, yTexStart + 18, this.width, this.height, 550, 550);
+
+            } else pPoseStack.blit(GUI_IMG, this.getX(), this.getY(), xOffset, yTexStart, this.width, this.height, 550, 550);
+            list.add(Component.translatable(getSortKey(menu.sortType)).getVisualOrderText());
+            if (menu.sortType % 2 == 0)
+                list.add(Component.translatable("gui.avaritia.sort.ascending").getVisualOrderText());
+            else list.add(Component.translatable("gui.avaritia.sort.descending").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.line").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.sort.tip1").getVisualOrderText());
+            list.add(Component.translatable("gui.avaritia.sort.tip2").getVisualOrderText());
+            if (this.isHovered) setTooltipForNextRenderPass(list);
+        }
     }
 }

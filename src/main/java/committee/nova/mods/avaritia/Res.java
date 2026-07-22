@@ -47,7 +47,7 @@ public class Res {
     public static final ResourceLocation EXTREME_SMITHING_TEX = Const.rl("textures/gui/machine/extreme_smithing_table_gui.png");
     public static final ResourceLocation BLACK_HOLE_CHANNEL_PANEL = Const.rl("textures/gui/chest/channel_panel.png");
     public static final ResourceLocation BLACK_HOLE_CHANNEL_SELECT = Const.rl("textures/gui/chest/channel_select.png");
-    public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest_gui.png");
+    public static final ResourceLocation INFINITY_CHEST_TEX = Const.rl("textures/gui/chest/infinity_chest1.png");
     public static final ResourceLocation ARC_TEX = Const.rl("textures/effect/line_segment.png");
 
     public static TextureAtlasSprite ARMOR_MASK;

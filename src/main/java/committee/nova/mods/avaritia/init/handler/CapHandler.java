@@ -40,6 +40,12 @@ public class CapHandler {
                 (be, side) -> new InvWrapper(be)
         );
 
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ModTileEntities.INFINITY_CHEST_TILE.get(),
+                (be, side) -> be
+        );
+
         var sidedVanillaContainers = List.of(
                 ModTileEntities.neutron_collector_tile.get(),
                 ModTileEntities.neutron_compressor_tile.get()

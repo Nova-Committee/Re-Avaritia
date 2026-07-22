@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -168,7 +167,7 @@ public final class ClusterContainerContents {
                 .create(p_331695_ -> p_331695_
                         .group(Codec.intRange(0, MAX_SIZE - 1).fieldOf("slot")
                                         .forGetter(ClusterContainerContents.Slot::index),
-                                InfinityChestTile.CODEC.fieldOf("item").forGetter(ClusterContainerContents.Slot::item))
+                                ItemStack.CODEC.fieldOf("item").forGetter(ClusterContainerContents.Slot::item))
                         .apply(p_331695_, ClusterContainerContents.Slot::new));
     }
 }

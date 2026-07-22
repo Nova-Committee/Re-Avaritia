@@ -41,6 +41,7 @@ public class ModDataGen {
         }
         if (event.includeServer()) {
             generator.addProvider(true, new ModRecipes(output, lookupProvider));
+            generator.addProvider(true, new ModCompatRecipes(output));
             generator.addProvider(true, new ModLootTables(output, lookupProvider));
             generator.addProvider(true, new ModItemTags(output, lookupProvider, helper));
             generator.addProvider(true, new ModBlockTags(output, lookupProvider, helper));

@@ -7,7 +7,6 @@ import moze_intel.projecte.api.nss.NSSItem;
 import moze_intel.projecte.api.mapper.EMCMapper;
 import moze_intel.projecte.api.mapper.IEMCMapper;
 import moze_intel.projecte.api.mapper.collector.IMappingCollector;
-import moze_intel.projecte.config.CustomEMCParser;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -17,18 +16,11 @@ import net.minecraft.world.level.ItemLike;
 @EMCMapper
 public class ModEMCHandler implements IEMCMapper<NSSItem, Long> {
 
-    private static void registerEMC(ItemLike item, long emcValue, RegistryAccess registries) {
-
+    private static void registerEMC(IMappingCollector<NSSItem, Long> collector, ItemLike item, long emcValue) {
         if (emcValue < 0) {
             throw new IllegalArgumentException("EMC 值不能为负数: " + emcValue);
         }
-
-        NSSItem nssItem = NSSItem.createItem(item);
-
-        CustomEMCParser.addToFile(nssItem, emcValue);
-
-        CustomEMCParser.flush(registries);
-
+        collector.setValueBefore(NSSItem.createItem(item), emcValue);
     }
 
     @Override
@@ -52,20 +44,10 @@ public class ModEMCHandler implements IEMCMapper<NSSItem, Long> {
                             RegistryAccess registries,
                             ResourceManager resourceManager) {
 
-        registerEMC(ModItems.neutron_pile.get(), ModConfig.neutronPileEmc.get(), registries);
-        registerEMC(ModItems.blaze_cube.get(), ModConfig.blazeCubeEmc.get(), registries);
-        registerEMC(Items.TOTEM_OF_UNDYING, ModConfig.vanillaTotemEmc.get(), registries);
-        registerEMC(ModItems.full_matter_cluster.get(), 0, registries);
-
-        NSSItem neutronPile = NSSItem.createItem(ModItems.neutron_pile.get());
-        NSSItem blaze_cube = NSSItem.createItem(ModItems.blaze_cube.get());
-        NSSItem totem = NSSItem.createItem(Items.TOTEM_OF_UNDYING);
-        NSSItem full_matter_cluster = NSSItem.createItem(ModItems.full_matter_cluster.get());
-
-        collector.setValueBefore(full_matter_cluster, 0L);
-        collector.setValueBefore(neutronPile, ModConfig.neutronPileEmc.get().longValue());
-        collector.setValueBefore(blaze_cube, ModConfig.blazeCubeEmc.get().longValue());
-        collector.setValueBefore(totem, ModConfig.vanillaTotemEmc.get().longValue());
+        registerEMC(collector, ModItems.neutron_pile.get(), ModConfig.neutronPileEmc.get());
+        registerEMC(collector, ModItems.blaze_cube.get(), ModConfig.blazeCubeEmc.get());
+        registerEMC(collector, Items.TOTEM_OF_UNDYING, ModConfig.vanillaTotemEmc.get());
+        registerEMC(collector, ModItems.full_matter_cluster.get(), 0L);
     }
 
 }

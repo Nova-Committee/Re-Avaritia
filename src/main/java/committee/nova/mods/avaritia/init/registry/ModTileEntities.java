@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.init.registry;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
+import committee.nova.mods.avaritia.client.render.tile.TesseractRender;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
 import committee.nova.mods.avaritia.common.tile.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -34,6 +35,7 @@ public class ModTileEntities {
     public static void onClientSetup() {
         BlockEntityRenderers.register(compressed_chest_tile.get(), CompressedChestRenderer::new);
         BlockEntityRenderers.register(INFINITY_CHEST_TILE.get(), InfinityChestBlockRender::new);
+        BlockEntityRenderers.register(tesseract_tile.get(), TesseractRender::new);
     }
 
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<NeutronCollectorTile>> neutron_collector_tile = blockEntity(
@@ -60,6 +62,11 @@ public class ModTileEntities {
             "infinity_chest_tile",
             InfinityChestTile::new,
             () -> new Block[]{ModBlocks.infinity_chest.get()}
+    );
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TesseractTile>> tesseract_tile = blockEntity(
+            "tesseract_tile",
+            TesseractTile::new,
+            () -> new Block[]{ModBlocks.tesseract.get()}
     );
 
     public static DeferredHolder<BlockEntityType<?>,BlockEntityType<TierCraftTile>> mod_craft_tile = blockEntity("mod_craft_tile", TierCraftTile::new,

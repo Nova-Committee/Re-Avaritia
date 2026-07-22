@@ -1,402 +1,545 @@
 package committee.nova.mods.avaritia.common.menu;
 
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.api.common.slot.FakeSlot;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.common.container.slot.InfinitySlot;
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
+import committee.nova.mods.avaritia.core.chest.*;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
+import committee.nova.mods.avaritia.util.StorageUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.Container;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * @Project: Avaritia
+ * @Author: cnlimiter
+ * @CreateTime: 2025/1/31 15:38
+ * @Description:
+ */
 public class InfinityChestMenu extends AbstractContainerMenu {
+    public static final int CONTAINER_SLOT_START = 36;
+    public static final int CONTAINER_SLOT_SIZE = 15 * 9;
+    public final ChestHandler chest;
+    public final Player player;
+    public final Level level;
+    public final BlockPos blockPos;
 
-    private final InfinityChestTile tile;
+    public InfinityChestTile chestTile;
+    public InfinityChestContainer chestContainer = new InfinityChestContainer(this);
+    public boolean LShifting = false;
 
-    public InfinityChestMenu(int id, Inventory inventory, FriendlyByteBuf friendlyByteBuf) {
-        this(id, inventory, (InfinityChestTile) inventory.player.level().getBlockEntity(friendlyByteBuf.readBlockPos()));
-    }
+    public final UUID owner;
+    public boolean locked;
+    public String filter;
+    public byte sortType;
+    public UUID channelID;
 
-    public InfinityChestMenu(int id, Inventory inventory, InfinityChestTile tile) {
-        super(ModMenus.infinity_chest.get(), id);
-        this.tile = tile;
-        this.tile.chest.startOpen(inventory.player);
 
-        int y;
-        for (y = 0; y < 9; y++) {
-            for (int i = 0; i < 27; i++) {
-                this.addSlot(new InfinitySlot(tile.chest, i + y * 27, 8 + i * 18, 17 + y * 18));
+    //客户端调用这个
+    public InfinityChestMenu(int containerId, Inventory playerInv, FriendlyByteBuf extraData) {
+        super(ModMenus.infinity_chest.get(), containerId);
+        this.player = playerInv.player;
+        this.level = playerInv.player.level();
+        this.blockPos = extraData.readBlockPos();
+
+        this.owner = extraData.readUUID();
+        this.locked = extraData.readBoolean();
+        this.filter = extraData.readUtf(64);
+        this.sortType = extraData.readByte();
+        this.channelID = extraData.readUUID();
+
+        addSlots(playerInv.player, playerInv);
+
+        this.chestContainer = new InfinityChestContainer(this);
+        this.chest = ClientChestManager.getInstance().getChest(chestContainer);
+        //虚拟储存物品格41 ~ 118
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 15; j++) {
+                this.addSlot(new FakeSlot(chestContainer, i * 15 + j, 8 + j * 18, 16 + i * 18)
+                {
+                    @Override
+                    public @NotNull ItemStack getItem()
+                    {
+                        ItemStack itemStack = super.getItem();
+                        itemStack.setCount(1);
+                        return itemStack;
+                    }
+                });
             }
         }
+    }
 
-        for (y = 0; y < 3; y++) {
-            for (int i = 0; i < 9; i++) {
-                this.addSlot(new Slot(inventory, i + y * 9 + 9, 170 + i * 18, 193 + y * 18));
+    //服务端用这个
+    public InfinityChestMenu(int containerId, Player player, InfinityChestTile blockEntity) {
+        super(ModMenus.infinity_chest.get(), containerId);
+        this.player = player;
+        this.level = player.level();
+        this.blockPos = blockEntity.getBlockPos();
+        this.chestTile = blockEntity;
+
+        this.owner = blockEntity.getOwner() == null ? player.getUUID() : blockEntity.getOwner();
+        this.locked = blockEntity.isLocked();
+        this.filter = blockEntity.getFilter();
+        this.sortType = blockEntity.getSortType();
+        this.channelID = blockEntity.getChestID();
+        this.chest = blockEntity.getChest();
+        if (!chest.isRemoved()) ((ServerChestHandler) this.chest).addListener((ServerPlayer) player);
+        blockEntity.startOpen(player);
+        addSlots(player, player.getInventory());
+    }
+
+
+    private void addSlots(Player player, Inventory playerInv) {
+        //快捷栏0~8
+        for (int l = 0; l < 9; ++l) {
+            this.addSlot(new Slot(playerInv, l, 62 + l * 18, 250));
+        }
+
+        //背包9~35
+        for (int k = 0; k < 3; ++k) {
+            for (int i1 = 0; i1 < 9; ++i1) {
+                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 62 + i1 * 18, 192 + k * 18));
             }
         }
-        for (int x = 0; x < 9; x++) {
-            this.addSlot(new Slot(inventory, x, 170 + x * 18, 251));
-        }
     }
 
-    public InfinityChestTile getTile() {
-        return this.tile;
-    }
-
-    public static boolean canItemQuickReplace(Container inventory, @Nullable Slot slot, ItemStack stack, boolean stackSizeMatters, int maxStackSize) {
-        boolean flag = slot == null || !slot.hasItem();
-        return !flag && ItemStack.isSameItemSameComponents(stack, slot.getItem()) ? slot.getItem().getCount() + (stackSizeMatters ? 0 : stack.getCount()) < (slot instanceof InfinitySlot ? maxStackSize : stack.getMaxStackSize()) : flag;
-    }
-
-    public int getSlotMaxStack(Slot slot, ItemStack stack) {
-        return slot instanceof InfinitySlot ? slot.getMaxStackSize() : slot.getMaxStackSize(stack);
-    }
-
-    public int getSlotMaxStack(Slot slot) {
-        ItemStack itemStack = slot.getItem();
-        return this.getSlotMaxStack(slot, itemStack);
-    }
-
-    public ItemStack safeInsert(Slot slot, ItemStack stack, int increment) {
-        if (!stack.isEmpty() && slot.mayPlace(stack)) {
-            ItemStack itemStack = slot.getItem();
-            int i = Math.min(Math.min(increment, stack.getCount()), this.getSlotMaxStack(slot, stack) - itemStack.getCount());
-
-            if (itemStack.isEmpty()) {
-                slot.setByPlayer(stack.split(i));
-            } else if (ItemStack.isSameItemSameComponents(itemStack, stack)) {
-                stack.shrink(i);
-                itemStack.grow(i);
-                slot.setByPlayer(itemStack);
-            }
-            return stack;
-        } else {
-            return stack;
-        }
-    }
-
+    //按钮相关
     @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player player) {
-        Inventory inventory = player.getInventory();
-
-        if (clickType == ClickType.QUICK_CRAFT) {
-            int i = this.quickcraftStatus;
-            this.quickcraftStatus = getQuickcraftHeader(button);
-            if ((i != 1 || this.quickcraftStatus != 2) && i != this.quickcraftStatus) {
-                this.resetQuickCraft();
-            } else if (this.getCarried().isEmpty()) {
-                this.resetQuickCraft();
-            } else if (this.quickcraftStatus == 0) {
-                this.quickcraftType = getQuickcraftType(button);
-                if (isValidQuickcraftType(this.quickcraftType, player)) {
-                    this.quickcraftStatus = 1;
-                    this.quickcraftSlots.clear();
-                } else {
-                    this.resetQuickCraft();
-                }
-            } else if (this.quickcraftStatus == 1) {
-                Slot slot = this.slots.get(slotId);
-                ItemStack itemStack = this.getCarried();
-                if (canItemQuickReplace(this.tile.chest, slot, itemStack, true, this.getSlotMaxStack(slot))
-                        && slot.mayPlace(itemStack)
-                        && (this.quickcraftType == 2 || itemStack.getCount() > this.quickcraftSlots.size())
-                        && this.canDragTo(slot)) {
-                    this.quickcraftSlots.add(slot);
-                }
-            } else if (this.quickcraftStatus == 2) {
-                if (!this.quickcraftSlots.isEmpty()) {
-                    if (this.quickcraftSlots.size() == 1) {
-                        int i1 = this.quickcraftSlots.iterator().next().index;
-                        this.resetQuickCraft();
-                        this.clicked(i1, this.quickcraftType, ClickType.PICKUP, player);
-                        return;
-                    }
-
-                    ItemStack itemStack3 = this.getCarried().copy();
-                    if (itemStack3.isEmpty()) {
-                        this.resetQuickCraft();
-                        return;
-                    }
-
-                    int k1 = this.getCarried().getCount();
-
-                    for (Slot slot1 : this.quickcraftSlots) {
-                        ItemStack itemStack1 = this.getCarried();
-                        if (slot1 != null
-                                && canItemQuickReplace(this.tile.chest, slot1, itemStack1, true, this.getSlotMaxStack(slot1))
-                                && slot1.mayPlace(itemStack1)
-                                && (this.quickcraftType == 2 || itemStack1.getCount() >= this.quickcraftSlots.size())
-                                && this.canDragTo(slot1)) {
-                            int j = slot1.hasItem() ? slot1.getItem().getCount() : 0;
-                            int k = Math.min(this.tile.chest.getMaxStackSize(itemStack3), this.getSlotMaxStack(slot1, itemStack3));
-                            int l = Math.min(getQuickCraftPlaceCount(this.quickcraftSlots, this.quickcraftType, itemStack3) + j, k);
-                            k1 -= l - j;
-                            slot1.setByPlayer(itemStack3.copyWithCount(l));
-                        }
-                    }
-
-                    itemStack3.setCount(k1);
-                    this.setCarried(itemStack3);
-                }
-
-                this.resetQuickCraft();
-            } else {
-                this.resetQuickCraft();
-            }
-        } else if (this.quickcraftStatus != 0) {
-            this.resetQuickCraft();
-        } else if ((clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE) && (button == 0 || button == 1)) {
-            ClickAction clickaction = button == 0 ? ClickAction.PRIMARY : ClickAction.SECONDARY;
-            if (slotId == -999) {
-                if (!this.getCarried().isEmpty()) {
-                    if (clickaction == ClickAction.PRIMARY) {
-                        player.drop(this.getCarried(), true);
-                        this.setCarried(ItemStack.EMPTY);
-                    } else {
-                        player.drop(this.getCarried().split(1), true);
-                    }
-                }
-            } else if (clickType == ClickType.QUICK_MOVE) {
-                if (slotId < 0) {
-                    return;
-                }
-
-                Slot slot6 = this.slots.get(slotId);
-                if (!slot6.mayPickup(player)) {
-                    return;
-                }
-
-                ItemStack itemStack8 = this.quickMoveStack(player, slotId);
-
-                while (!itemStack8.isEmpty() && ItemStack.isSameItem(slot6.getItem(), itemStack8)) {
-                    itemStack8 = this.quickMoveStack(player, slotId);
-                }
-            } else {
-                if (slotId < 0) {
-                    return;
-                }
-
-                Slot slot7 = this.slots.get(slotId);
-                ItemStack itemStack9 = slot7.getItem();
-                ItemStack itemStack10 = this.getCarried();
-                player.updateTutorialInventoryAction(itemStack10, slot7.getItem(), clickaction);
-                if (!this.tryItemClickBehaviourOverride(player, clickaction, slot7, itemStack9, itemStack10)) {
-                    if (itemStack9.isEmpty()) {
-                        if (!itemStack10.isEmpty()) {
-                            int i3 = clickaction == ClickAction.PRIMARY ? itemStack10.getCount() : 1;
-                            this.setCarried(this.safeInsert(slot7, itemStack10, i3));
-                        }
-                    } else if (slot7.mayPickup(player)) {
-                        if (itemStack10.isEmpty()) {
-                            int j3 = clickaction == ClickAction.PRIMARY ? Math.min(64, itemStack9.getCount()) : (Math.min(64, itemStack9.getCount()) + 1) / 2;
-                            Optional<ItemStack> optional1 = slot7.tryRemove(j3, Integer.MAX_VALUE, player);
-                            optional1.ifPresent(stack -> {
-                                this.setCarried(stack);
-                                slot7.onTake(player, stack);
-                            });
-                        } else if (slot7.mayPlace(itemStack10)) {
-                            if (ItemStack.isSameItemSameComponents(itemStack9, itemStack10)) {
-                                int k3 = clickaction == ClickAction.PRIMARY ? itemStack10.getCount() : 1;
-                                this.setCarried(this.safeInsert(slot7, itemStack10, k3));
-                            } else if (itemStack10.getCount() <= this.getSlotMaxStack(slot7, itemStack10)) {
-                                this.setCarried(itemStack9);
-                                slot7.setByPlayer(itemStack10);
-                            }
-                        } else if (ItemStack.isSameItemSameComponents(itemStack9, itemStack10)) {
-                            Optional<ItemStack> optional = slot7.tryRemove(itemStack9.getCount(), itemStack10.getMaxStackSize() - itemStack10.getCount(), player);
-                            optional.ifPresent(stack -> {
-                                itemStack10.grow(stack.getCount());
-                                slot7.onTake(player, stack);
-                            });
-                        }
-                    }
-                }
-
-                slot7.setChanged();
-            }
-        } else if (clickType == ClickType.SWAP && (button >= 0 && button < 9 || button == 40)) {
-            ItemStack itemStack2 = inventory.getItem(button);
-            Slot slot5 = this.slots.get(slotId);
-            ItemStack itemStack7 = slot5.getItem();
-            if (!itemStack2.isEmpty() || !itemStack7.isEmpty()) {
-                if (itemStack2.isEmpty()) {
-                    if (slot5.mayPickup(player)) {
-                        ItemStack itemStack3 = itemStack7.split(Math.min(itemStack7.getCount(), Math.min(64, itemStack7.getMaxStackSize())));
-                        inventory.setItem(button, itemStack3);
-                        // slot5.onSwapCraft(itemStack7.getCount());
-                        slot5.onTake(player, itemStack7);
-                    }
-                } else if (itemStack7.isEmpty()) {
-                    if (slot5.mayPlace(itemStack2)) {
-                        int j2 = this.getSlotMaxStack(slot5, itemStack2);
-                        if (itemStack2.getCount() > j2) {
-                            slot5.setByPlayer(itemStack2.split(j2));
-                        } else {
-                            inventory.setItem(button, ItemStack.EMPTY);
-                            slot5.setByPlayer(itemStack2);
-                        }
-                    }
-                } else if (slot5.mayPickup(player) && slot5.mayPlace(itemStack2) && itemStack7.getCount() <= Math.min(itemStack7.getMaxStackSize(), Math.min(64, slot5.getMaxStackSize()))) {
-                    inventory.setItem(button, itemStack7);
-                    slot5.setByPlayer(itemStack2);
-                    slot5.onTake(player, itemStack7);
+    @ParametersAreNonnullByDefault
+    public boolean clickMenuButton(Player pPlayer, int pId) {
+        if (!canPlayerModify(pPlayer)) {
+            return false;
+        }
+        switch (pId) {
+            case 0 -> {
+                if (owner.equals(player.getUUID())) {
+                    locked = !locked;
+                    chestTile.setLocked(locked);
+                    if (locked) saveBlock();
                 }
             }
-        } else if (clickType == ClickType.CLONE && player.hasInfiniteMaterials() && this.getCarried().isEmpty() && slotId >= 0) {
-            Slot slot4 = this.slots.get(slotId);
-            if (slot4.hasItem()) {
-                ItemStack itemStack5 = slot4.getItem();
-                ItemStack itemStack6 = itemStack5.copyWithCount(Math.min(64, itemStack5.getMaxStackSize()));
-                this.setCarried(itemStack6);
-            }
-        } else if (clickType == ClickType.THROW && this.getCarried().isEmpty() && slotId >= 0) {
-            Slot slot3 = this.slots.get(slotId);
-            int j1 = button == 0 ? 1 : Math.min(64, slot3.getItem().getCount());
-            ItemStack itemStack7 = slot3.safeTake(j1, Integer.MAX_VALUE, player);
-            player.drop(itemStack7, true);
-        } else if (clickType == ClickType.PICKUP_ALL && slotId >= 0) {
-            Slot slot2 = this.slots.get(slotId);
-            ItemStack itemStack4 = this.getCarried();
-            if (!itemStack4.isEmpty() && (!slot2.hasItem() || !slot2.mayPickup(player))) {
-                int l1 = button == 0 ? 0 : this.slots.size() - 1;
-                int i2 = button == 0 ? 1 : -1;
+            case 1 -> nextSort();
+            case 2 -> reverseSort();
+        }
+        return pId < 3;
+    }
 
-                for (int l2 = 0; l2 < 2; l2++) {
-                    for (int l3 = l1; l3 >= 0 && l3 < this.slots.size() && itemStack4.getCount() < itemStack4.getMaxStackSize(); l3 += i2) {
-                        Slot slot8 = this.slots.get(l3);
-                        if (slot8.hasItem()
-                                && canItemQuickReplace(this.tile.chest, slot8, itemStack4, true, this.getSlotMaxStack(slot8))
-                                && slot8.mayPickup(player)
-                                && this.canTakeItemForPickAll(itemStack4, slot8)) {
-                            ItemStack itemStack11 = slot8.getItem();
-                            if (l2 != 0 || itemStack11.getCount() != itemStack11.getMaxStackSize()) {
-                                ItemStack itemStack12 = slot8.safeTake(itemStack11.getCount(), itemStack4.getMaxStackSize() - itemStack4.getCount(), player);
-                                itemStack4.grow(itemStack12.getCount());
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            super.clicked(slotId, button, clickType, player);
+
+    //本类方法
+    public void action(int actionId, ItemSuper id) {
+        if (!canPlayerModify(player) || actionId < StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT
+                || actionId > StorageUtils.Action.DRAG_CLONE || id == null) {
+            return;
+        }
+        ItemSuper storedId = chest.resolveStoredItem(id);
+        if (storedId != null) {
+            id = storedId;
+        }
+        switch (actionId) {
+            case StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT -> onLeftClickDummySlot(id);
+            case StorageUtils.Action.Right_CLICK_DUMMY_SLOT -> onRightClickDummySlot(id);
+            case StorageUtils.Action.LEFT_SHIFT_DUMMY_SLOT -> onLeftShiftDummySlot(id);
+            case StorageUtils.Action.Right_SHIFT_DUMMY_SLOT -> onRightShiftDummySlot(id);
+            case StorageUtils.Action.THROW_ONE -> tryThrowOneFromDummySlot(id);
+            case StorageUtils.Action.THROW_STICK -> tryThrowStickFromDummySlot(id);
+            case StorageUtils.Action.LEFT_DRAG -> onLeftDragDummySlot(id);
+            case StorageUtils.Action.RIGHT_DRAG -> onRightDragDummySlot(id);
+            case StorageUtils.Action.CLONE -> onCloneFormDummySlot(id);
+            case StorageUtils.Action.DRAG_CLONE -> onDragCloneDummySlot(id);
         }
     }
 
-    protected boolean moveItemStackTo(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection, boolean inventory) {
-        boolean flag = false;
-        int i = startIndex;
-        if (reverseDirection) {
-            i = endIndex - 1;
-        }
+    public void onLeftClickDummySlot(ItemSuper id) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty()) {
+            if (id.getStack().isEmpty()) return;
+            setCarried(chest.saveTakeItem(id, false));
+        } else {
+            //叠堆大于1不处理特殊操作，防止意外。
+            if (carried.getCount() > 1) {
+                chest.addItem(carried);
+                return;
+            }
 
-        if (!stack.isEmpty()) {
-            while (reverseDirection ? i >= startIndex : i < endIndex) {
-                Slot slot = this.slots.get(i);
-                ItemStack itemStack = slot.getItem();
-                if (!itemStack.isEmpty() && ItemStack.isSameItemSameComponents(stack, itemStack)) {
-                    int j = itemStack.getCount() + stack.getCount();
-                    int maxSize = inventory ? Math.min(Math.min(64, slot.getMaxStackSize()), stack.getMaxStackSize()) : this.getSlotMaxStack(slot);
-                    if (j <= maxSize && j > 0) {
-                        stack.setCount(0);
-                        itemStack.setCount(j);
-                        slot.setChanged();
-                        flag = true;
-                    } else if (itemStack.getCount() < maxSize) {
-                        stack.shrink(maxSize - itemStack.getCount());
-                        itemStack.setCount(maxSize);
-                        slot.setChanged();
-                        flag = true;
+            //其他容器
+            AtomicBoolean canal = new AtomicBoolean(false);
+            var iItemHandler = carried.getCapability(Capabilities.ItemHandler.ITEM);
+            if (iItemHandler != null) {
+                if (!chest.storageItems.containsKey(id)) return;
+                int slots = iItemHandler.getSlots();
+                for (int i = 0; i < slots; i++) {
+                    ItemStack tryInsertItem = id.getStack();
+                    if (!ItemStack.isSameItemSameComponents(tryInsertItem, iItemHandler.getStackInSlot(i)) && !iItemHandler.getStackInSlot(i).isEmpty())
+                        continue;
+                    int remainingSlotSpace = iItemHandler.getSlotLimit(i) - iItemHandler.getStackInSlot(i).getCount();
+                    if (remainingSlotSpace <= 0) continue;
+                    int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
+                    transmitAmount = Math.max(transmitAmount, 64000);
+                    transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
+                    transmitAmount = Math.min(transmitAmount, remainingSlotSpace);
+                    int markAmount = transmitAmount;
+                    tryInsertItem.setCount(transmitAmount);
+                    for (int j = 0; j < 64; j++) {
+                        ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
+                        transmitAmount = remainingItem.getCount();
+                        if (transmitAmount <= 0) break;
+                        tryInsertItem.setCount(transmitAmount);
+                    }
+                    markAmount -= transmitAmount;
+                    if (markAmount > 0) {
+                        chest.takeItem(id, markAmount);
+                        canal.set(true);
+                        return;
                     }
                 }
-
-                if (reverseDirection) {
-                    --i;
-                } else {
-                    ++i;
-                }
             }
+            if (canal.get()) return;
+            chest.addItem(carried);
+
         }
+    }
 
-        if (!stack.isEmpty()) {
-            if (reverseDirection) {
-                i = endIndex - 1;
-            } else {
-                i = startIndex;
+    public void onRightClickDummySlot(ItemSuper id) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty()) {
+            if (id.getStack().isEmpty()) return;
+            setCarried(chest.saveTakeItem(id, true));
+        } else {
+            if (carried.getCount() > 1) {
+                chest.fillItemStack(carried, -1);
+                return;
             }
-
-            while (reverseDirection ? i >= startIndex : i < endIndex) {
-                Slot slot1 = this.slots.get(i);
-                ItemStack itemStack1 = slot1.getItem();
-                if (itemStack1.isEmpty() && slot1.mayPlace(stack)) {
-                    slot1.setByPlayer(stack.split(Math.min(stack.getCount(), Math.min(64, slot1.getMaxStackSize()))));
-                    slot1.setChanged();
-                    flag = true;
+            AtomicBoolean canal = new AtomicBoolean(false);
+            var iItemHandler = carried.getCapability(Capabilities.ItemHandler.ITEM);
+            if (iItemHandler != null){
+                int slots = iItemHandler.getSlots();
+                for (int i = 0; i < slots; i++) {
+                    ItemStack itemStack = iItemHandler.getStackInSlot(i);
+                    if (itemStack.isEmpty()) continue;
+                    int maxExtractAmount = chest.canStorageAmount(itemStack);
+                    itemStack = iItemHandler.extractItem(i, maxExtractAmount, false);
+                    if (itemStack.isEmpty()) continue;
+                    chest.addItem(itemStack);
+                    canal.set(true);
                     break;
                 }
+            }
+            if (canal.get()) return;
+            chest.addItem(carried);
+        }
+    }
 
-                if (reverseDirection) {
-                    --i;
-                } else {
-                    ++i;
+    public void onLeftShiftDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty()) return;
+        ItemStack carried = getCarried();
+        if (carried.isEmpty()) {
+            if (!chest.storageItems.containsKey(id)) return;
+            ItemStack itemStack = id.getStack();
+            itemStack.setCount((int) Math.min(itemStack.getMaxStackSize(), chest.storageItems.get(id)));
+            int i = itemStack.getCount();
+            moveItemStackTo(itemStack, 0, 36, false);
+            i = i - itemStack.getCount();
+            if (i > 0) {
+                itemStack.setCount(i);
+                chest.removeItem(itemStack);
+            }
+
+        } else {
+            if (carried.getCount() > 1) {
+                chest.fillItemStack(carried, -1);
+                return;
+            }
+
+            AtomicBoolean canal = new AtomicBoolean(false);
+            var iItemHandler = carried.getCapability(Capabilities.ItemHandler.ITEM);
+            if (iItemHandler != null) {
+                if (!chest.storageItems.containsKey(id)) return;
+                int transmitAmount = (int) Math.min(Integer.MAX_VALUE, chest.storageItems.get(id) / 2);
+                transmitAmount = Math.max(transmitAmount, 64000);
+                transmitAmount = (int) Math.min(transmitAmount, chest.storageItems.get(id));
+                int markAmount = transmitAmount;
+                ItemStack tryInsertItem = id.getStack().copyWithCount(transmitAmount);
+                int slots = iItemHandler.getSlots();
+                for (int i = 0; i < slots; i++) {
+                    for (int j = 0; j < 64; j++) {
+                        ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
+                        if (remainingItem.getCount() == transmitAmount) break;
+                        transmitAmount = remainingItem.getCount();
+                        if (transmitAmount <= 0) break;
+                        tryInsertItem.setCount(transmitAmount);
+                    }
+                }
+                markAmount -= transmitAmount;
+                if (markAmount > 0) {
+                    chest.takeItem(id, markAmount);
+                    canal.set(true);
                 }
             }
+            if (canal.get()) return;
+            chest.addItem(carried);
+
         }
-        return flag;
+    }
+
+    public void onRightShiftDummySlot(ItemSuper id) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty()) {
+            if (id.getStack().isEmpty()) return;
+            if (!chest.storageItems.containsKey(id)) return;
+            ItemStack itemStack = id.getStack();
+            moveItemStackTo(itemStack, 0, 36, false);
+            if (itemStack.isEmpty()) chest.takeItem(id, 1);
+        } else {
+            if (carried.getCount() > 1) {
+                chest.fillItemStack(carried, -1);
+                return;
+            }
+            AtomicBoolean canal = new AtomicBoolean(false);
+            var iItemHandler = carried.getCapability(Capabilities.ItemHandler.ITEM);
+            if (iItemHandler != null) {
+                int slots = iItemHandler.getSlots();
+                for (int i = 0; i < slots; i++) {
+                    ItemStack itemStack = iItemHandler.getStackInSlot(i);
+                    if (itemStack.isEmpty()) continue;
+                    int maxExtractAmount = chest.canStorageAmount(itemStack);
+                    itemStack = iItemHandler.extractItem(i, maxExtractAmount, false);
+                    if (itemStack.isEmpty()) continue;
+                    chest.addItem(itemStack);
+                    canal.set(true);
+                }
+            }
+            if (canal.get()) return;
+            chest.addItem(carried);
+        }
+    }
+
+    public void tryThrowOneFromDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty()) return;
+        if (!chest.storageItems.containsKey(id)) return;
+        ItemStack itemStack = chest.takeItem(id, 1);
+        player.drop(itemStack, false);
+    }
+
+    public void tryThrowStickFromDummySlot(ItemSuper id) {
+        if (id.getStack().isEmpty()) return;
+        if (!chest.storageItems.containsKey(id)) return;
+        ItemStack itemStack = chest.saveTakeItem(id, false);
+        player.drop(itemStack, false);
+    }
+
+    public void onLeftDragDummySlot(ItemSuper id) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty()) return;
+        chest.addItem(carried);
+    }
+
+    public void onRightDragDummySlot(ItemSuper id) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty()) return;
+        chest.fillItemStack(carried, -1);
+    }
+
+    public void onCloneFormDummySlot(ItemSuper id) {
+        ItemSuper storedId = chest.resolveStoredItem(id);
+        if (storedId == null || storedId.getStack().isEmpty() || !player.isCreative()) return;
+        long storedCount = chest.storageItems.getOrDefault(storedId, 0L);
+        chest.addItem(storedId, Long.max(storedCount, 64L));
+    }
+
+    public void onDragCloneDummySlot(ItemSuper id) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty() || !player.isCreative()) return;
+        ItemStack itemStack = carried.copy();
+        itemStack.setCount(itemStack.getMaxStackSize());
+        chest.addItem(itemStack);
+    }
+
+    public void nextSort() {
+        sortType += 2;
+        if (sortType > 7) sortType %= 8;
+        if (level.isClientSide) chestContainer.refreshContainer(true);
+    }
+
+    public void reverseSort() {
+        if (sortType % 2 == 0) sortType++;
+        else sortType--;
+        if (level.isClientSide) chestContainer.refreshContainer(true);
+    }
+
+    private void saveBlock() {
+        if (chestTile != null) {
+            chestTile.setFilter(filter);
+            chestTile.setSortType(sortType);
+        }
+    }
+
+    public void setFilterFromClient(String filter) {
+        if (!canPlayerModify(player)) {
+            return;
+        }
+        this.filter = filter == null ? "" : filter.substring(0, Math.min(filter.length(), 64));
+    }
+
+    public boolean canPlayerModify(Player candidate) {
+        return !locked || owner.equals(candidate.getUUID()) || owner.equals(Const.AVARITIA_FAKE_PLAYER.getId());
+    }
+
+    public boolean isBoundTo(InfinityChestTile tile) {
+        return chestTile == tile;
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
-        ItemStack resultStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
-            ItemStack slotStack = slot.getItem();
+    @ParametersAreNonnullByDefault
+    public void clicked(int pSlotId, int pButton, ClickType pClickType, Player pPlayer) {
+        if (pSlotId >= CONTAINER_SLOT_START) {
+            //仅客户端能触发
+            ItemSuper object;
+            if (pSlotId - CONTAINER_SLOT_START < chestContainer.viewingObject.size())
+                object = chestContainer.viewingObject.get(pSlotId - CONTAINER_SLOT_START);
+            else object = ItemSuper.EMPTY;
 
-            if (index < 243) {
-                if (!this.moveItemStackTo(slotStack, 243, 279, true, true)) {
-                    return ItemStack.EMPTY;
+            switch (pButton) {
+                case 0 -> {
+                    switch (pClickType) {
+                        case QUICK_MOVE -> {
+                            //左键shift
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_SHIFT_DUMMY_SLOT, object));
+                            onLeftShiftDummySlot(object);
+                        }
+                        case PICKUP -> {
+                            //左键点击
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_CLICK_DUMMY_SLOT, object));
+                            onLeftClickDummySlot(object);
+                        }
+                        case THROW -> {
+                            //丢一个
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.THROW_ONE, object));
+                            tryThrowOneFromDummySlot(object);
+                        }
+                    }
+                }
+                case 1 -> {
+                    switch (pClickType) {
+                        case PICKUP -> {
+                            //右键点击
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.Right_CLICK_DUMMY_SLOT, object));
+                            onRightClickDummySlot(object);
+                        }
+                        case QUICK_MOVE -> {
+                            //右键shift 快速拿一个
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.Right_SHIFT_DUMMY_SLOT, object));
+                            onRightShiftDummySlot(object);
+                        }
+                        case QUICK_CRAFT -> {
+                            //左键拖动
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.LEFT_DRAG, object));
+                            onLeftDragDummySlot(object);
+                        }
+                        case THROW -> {
+                            //丢一组
+                            PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.THROW_STICK, object));
+                            tryThrowStickFromDummySlot(object);
+                        }
+                    }
+                }
+                case 4 -> {
+                    if (pClickType == ClickType.CLONE) {
+                        //复制
+                        if (object.getStack().isEmpty()) return;
+                        PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.CLONE, object));
+                        onCloneFormDummySlot(object);
+                    }
+                }
+                case 5 -> {
+                    if (pClickType == ClickType.QUICK_CRAFT) {
+                        //右键拖动
+                        PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.RIGHT_DRAG, object));
+                        onRightDragDummySlot(object);
+                    }
+                }
+                case 9 -> {
+                    if (pClickType == ClickType.QUICK_CRAFT) {
+                        //拖动复制
+                        PacketDistributor.sendToServer(new C2SInfinityChestActionPack(containerId, StorageUtils.Action.DRAG_CLONE, object));
+                        onDragCloneDummySlot(object);
+                    }
                 }
             }
-            else if (index >= 243 && index < 279) {
+            //剩下的SWAP无视掉(hot bar的快捷键)
+        } else super.clicked(pSlotId, pButton, pClickType, pPlayer);
+    }
 
-                if (!this.moveItemStackTo(slotStack, 0, 243, false, false)) {
-                    return ItemStack.EMPTY;
-                }
+    @Override
+    @ParametersAreNonnullByDefault
+    public @NotNull ItemStack quickMoveStack(Player player, int slotId) {
+        //empty由于退出调用的奇怪循环
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(slotId);
+        if (slot.hasItem()) {
+            ItemStack movingStack = slot.getItem();
+            itemStack = movingStack.copy();
+            if (slotId >=0 && slotId <= 35) {
+                chest.addItem(movingStack);
+                return ItemStack.EMPTY;
+            } else {
+                Const.LOGGER.warn("Ohh! Who trigger the quickMoveStack() when slotId >= 36 + CONTAINER_SLOT_SIZE in server side ?");
             }
 
-            if (slotStack.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
+            if (movingStack.getCount() == 0) {
+                slot.set(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
 
-            if (slotStack.getCount() == resultStack.getCount()) {
+            if (movingStack.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(player, slotStack);
+            slot.onTake(player, movingStack);
         }
-        return resultStack;
-    }
-
-
-    @Override
-    public void removed(Player player) {
-        super.removed(player);
-        this.tile.chest.stopOpen(player);
+        return itemStack;
     }
 
     @Override
+    @ParametersAreNonnullByDefault
+    public boolean canTakeItemForPickAll(ItemStack itemStack, Slot slot) {
+        return slot.index <= 35;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
     public boolean stillValid(Player player) {
-        BlockPos pos = this.tile.getBlockPos();
-        return this.tile.getLevel().getBlockState(pos).is(ModBlocks.infinity_chest.get()) && player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
-    }}
+        if (chestTile == null) {
+            return true;
+        }
+        return !chestTile.isRemoved()
+                && level.getBlockEntity(blockPos) == chestTile
+                && player.distanceToSqr(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D) <= 64.0D
+                && canPlayerModify(player);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void removed(Player player) {
+        if (level.isClientSide) return;
+        if (!chest.isRemoved()) ((ServerChestHandler) chest).removeListener((ServerPlayer) player);
+        chestTile.stopOpen(player);
+        super.removed(player);
+        if (!chestTile.isLocked()) saveBlock();
+    }
+}

@@ -4,10 +4,11 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.MapCodec;
 
-import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
+import committee.nova.mods.avaritia.common.component.InfinityChestReference;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.tile.InfinityChestTile;
-import committee.nova.mods.avaritia.init.registry.ModDataComponents;
+import committee.nova.mods.avaritia.core.chest.ServerChestManager;
+import committee.nova.mods.avaritia.init.registry.ModBlocks;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,9 +34,14 @@ import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.List;
+import java.util.UUID;
 
 public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
 
@@ -76,29 +82,36 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof InfinityChestTile) {
-                InfinityChestTile tile = (InfinityChestTile) blockEntity;
-                ItemStack dropStack = new ItemStack(this);
-                dropStack.set(ModDataComponents.CLUSTER_CONTAINER, ClusterContainerContents.fromItems(tile.chest.getItems()));
-                Block.popResource(level, pos, dropStack);
-            }
-            super.onRemove(state, level, pos, newState, isMoving);
-        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @org.jetbrains.annotations.Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof InfinityChestTile) {
-            InfinityChestTile tile = (InfinityChestTile) blockEntity;
-            ClusterContainerContents contents = stack.get(ModDataComponents.CLUSTER_CONTAINER);
-            if (contents != null) {
-                contents.copyInto(tile.chest.getItems());
+        if (!level.isClientSide && blockEntity instanceof InfinityChestTile tile && placer != null) {
+            InfinityChestReference reference = InfinityChestTile.readReference(stack);
+            if (reference != null) {
+                tile.applyReference(reference);
+            } else if (tile.getOwner() == null) {
+                tile.setOwner(placer.getUUID());
+                tile.setLocked(false);
+                tile.setChannelId(UUID.randomUUID());
+            }
+            ServerChestManager manager = ServerChestManager.getInstance();
+            if (manager != null && tile.getOwner() != null) {
+                manager.getOrCreateChest(tile.getOwner(), tile.getChannelID());
             }
         }
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+        ItemStack stack = new ItemStack(ModBlocks.infinity_chest.get());
+        if (builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof InfinityChestTile tile) {
+            tile.saveToItem(stack, builder.getLevel().registryAccess());
+        }
+        return List.of(stack);
     }
 
     @Override
@@ -170,15 +183,28 @@ public class InfinityChestBlock extends BaseEntityBlock implements EntityBlock {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
-        } else {
-            if (blockEntity instanceof InfinityChestTile) {
-                InfinityChestTile tile = (InfinityChestTile) blockEntity;
-                SimpleMenuProvider simpleMenuProvider = new SimpleMenuProvider((id, inventory, access) -> new InfinityChestMenu(id, inventory, tile), TITLE);
-
-                player.openMenu(simpleMenuProvider, pos);
-            }
-            return InteractionResult.CONSUME;
         }
+        if (blockEntity instanceof InfinityChestTile tile && !player.isSpectator()) {
+            if (tile.getOwner() == null) {
+                tile.setOwner(player.getUUID());
+                tile.setLocked(false);
+                tile.setChannelId(UUID.randomUUID());
+            }
+            if (tile.isLocked() && !player.getUUID().equals(tile.getOwner())) {
+                player.displayClientMessage(Component.translatable("gui.avaritia.noPermission.tip3"), true);
+                return InteractionResult.CONSUME;
+            }
+            tile.getChest();
+            player.openMenu(tile, buffer -> {
+                buffer.writeBlockPos(pos);
+                buffer.writeUUID(tile.getOwner());
+                buffer.writeBoolean(tile.isLocked());
+                buffer.writeUtf(tile.getFilter(), 64);
+                buffer.writeByte(tile.getSortType());
+                buffer.writeUUID(tile.getChannelID());
+            });
+        }
+        return InteractionResult.CONSUME;
     }
 
     @Nullable

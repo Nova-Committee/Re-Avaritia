@@ -2,6 +2,10 @@ package committee.nova.mods.avaritia.init.handler;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.net.*;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestActionPack;
+import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
+import committee.nova.mods.avaritia.common.net.chest.S2CInfinityChestStatePack;
+import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +24,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 public class NetworkHandler {
     @SubscribeEvent
     public static void init(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("1.1");
+        var registrar = event.registrar("1.3");
 
         registrar.playToClient(S2CSingularitiesPack.TYPE, S2CSingularitiesPack.STREAM_CODEC,
                 new S2CSingularitiesPack.Handler());
@@ -28,6 +32,14 @@ public class NetworkHandler {
                 new S2CTotemPack.Handler());
         registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,
                 new S2CSideConfigSyncPacket.Handler());
+        registrar.playToClient(S2CInfinityChestStatePack.TYPE, S2CInfinityChestStatePack.STREAM_CODEC,
+                new S2CInfinityChestStatePack.Handler());
+        registrar.playToClient(S2CChannelActionPack.TYPE, S2CChannelActionPack.STREAM_CODEC,
+                new S2CChannelActionPack.Handler());
+        registrar.playToClient(S2CChannelListPack.TYPE, S2CChannelListPack.STREAM_CODEC,
+                new S2CChannelListPack.Handler());
+        registrar.playToClient(S2CChannelStatePack.TYPE, S2CChannelStatePack.STREAM_CODEC,
+                new S2CChannelStatePack.Handler());
         registrar.playToClient(S2CNameCachePack.TYPE, S2CNameCachePack.STREAM_CODEC,
                 new S2CNameCachePack.Handler());
 
@@ -43,6 +55,20 @@ public class NetworkHandler {
                 new C2SRenamePack.Handler());
         registrar.playToServer(C2SOpenRingPack.TYPE, C2SOpenRingPack.STREAM_CODEC,
                 new C2SOpenRingPack.Handler());
+        registrar.playToServer(C2SInfinityChestActionPack.TYPE, C2SInfinityChestActionPack.STREAM_CODEC,
+                new C2SInfinityChestActionPack.Handler());
+        registrar.playToServer(C2SInfinityChestFilterPack.TYPE, C2SInfinityChestFilterPack.STREAM_CODEC,
+                new C2SInfinityChestFilterPack.Handler());
+        registrar.playToServer(C2SAddChannelPack.TYPE, C2SAddChannelPack.STREAM_CODEC,
+                new C2SAddChannelPack.Handler());
+        registrar.playToServer(C2SSetChannelPack.TYPE, C2SSetChannelPack.STREAM_CODEC,
+                new C2SSetChannelPack.Handler());
+        registrar.playToServer(C2SRenameChannelPack.TYPE, C2SRenameChannelPack.STREAM_CODEC,
+                new C2SRenameChannelPack.Handler());
+        registrar.playToServer(C2SChannelFilterPack.TYPE, C2SChannelFilterPack.STREAM_CODEC,
+                new C2SChannelFilterPack.Handler());
+        registrar.playToServer(C2SChannelActionPack.TYPE, C2SChannelActionPack.STREAM_CODEC,
+                new C2SChannelActionPack.Handler());
 
         registrar.playBidirectional(NbtDataPack.TYPE, NbtDataPack.STREAM_CODEC, new NbtDataPack.Handler());
         //CHANNEL.registerMessage(itemSuper++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);

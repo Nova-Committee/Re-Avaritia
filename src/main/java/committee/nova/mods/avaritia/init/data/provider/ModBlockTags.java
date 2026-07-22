@@ -45,7 +45,7 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
                 ModBlocks.neutron_compressor.get(), ModBlocks.dense_neutron_compressor.get(), ModBlocks.denser_neutron_compressor.get(), ModBlocks.densest_neutron_compressor.get(),
                 ModBlocks.extreme_anvil.get(),
-                ModBlocks.infinity_chest.get(), ModBlocks.extreme_smithing_table.get(),
+                ModBlocks.infinity_chest.get(), ModBlocks.tesseract.get(), ModBlocks.extreme_smithing_table.get(),
                 Blocks.BEDROCK, Blocks.END_PORTAL_FRAME, Blocks.END_PORTAL,
                 ModBlocks.fake_bedrock.get(), ModBlocks.fake_end_portal_frame.get(), ModBlocks.fake_end_portal.get()
         );
@@ -66,8 +66,9 @@ public class ModBlockTags extends IntrinsicHolderTagsProvider<Block> {
                 ModBlocks.dense_neutron_collector.get(), ModBlocks.denser_neutron_collector.get(), ModBlocks.densest_neutron_collector.get(),
                 ModBlocks.extreme_crafting_table.get(), ModBlocks.extreme_smithing_table.get(), ModBlocks.neutron_compressor.get(),
                 ModBlocks.neutron.get(), ModBlocks.infinity.get(),
-                ModBlocks.infinity_chest.get(), ModBlocks.endless_cake.get(), ModBlocks.extreme_anvil.get()
+                ModBlocks.infinity_chest.get(), ModBlocks.tesseract.get(), ModBlocks.endless_cake.get(), ModBlocks.extreme_anvil.get()
         );
+        tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.tesseract.get());
         tag(BlockTags.ANVIL).add(ModBlocks.extreme_anvil.get());
     }
 }

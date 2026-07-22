@@ -1,0 +1,45 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "botania"
+    }
+  ],
+  "type": "avaritia:shaped_table",
+  "key": {
+    "C": {
+      "item": "botania:mana_pool"
+    },
+    "E": {
+      "item": "botania:dragonstone_block"
+    },
+    "F": {
+      "item": "botania:mana_tablet"
+    },
+    "N": {
+      "item": "avaritia:neutron_ingot"
+    },
+    "X": {
+      "item": "avaritia:infinity_catalyst"
+    },
+    "Y": {
+      "item": "botania:fabulous_pool"
+    }
+  },
+  "pattern": [
+    "NNNNNNNNN",
+    "NXCXYXCXN",
+    "NCXEYEXCN",
+    "NXEEYEEXN",
+    "YYYYFYYYY",
+    "NXEEYEEXN",
+    "NCXEYEXCN",
+    "NXCXYXCXN",
+    "NNNNNNNNN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "botania:creative_pool"
+  },
+  "tier": 4
+}

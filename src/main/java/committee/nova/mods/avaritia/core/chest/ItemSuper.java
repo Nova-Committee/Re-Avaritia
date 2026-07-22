@@ -41,14 +41,21 @@ public class ItemSuper {
             ItemSuper::writeToPacket, ItemSuper::fromPacket
     );
 
-    @Getter private final ItemStack stack;
     @Getter private final long realCount;
+    private final ItemStack stack;
     private final int hashCode;
 
     public ItemSuper(ItemStack stack, long realCount) {
-        this.stack = stack;
+        this.stack = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
         this.realCount = realCount;
-        this.hashCode = ItemStack.hashItemAndComponents(stack);
+        this.hashCode = ItemStack.hashItemAndComponents(this.stack);
+    }
+
+    /**
+     * Returns a defensive copy so callers cannot mutate the identity used as a map key.
+     */
+    public ItemStack getStack() {
+        return stack.copy();
     }
 
     @Nullable
@@ -61,11 +68,11 @@ public class ItemSuper {
     }
 
     public ItemSuper copyWithCount(long realCount){
-        return new ItemSuper(stack.copy(), realCount);
+        return new ItemSuper(stack, realCount);
     }
 
     public boolean hasComponents() {
-        return stack.getComponents().isEmpty();
+        return !stack.isComponentsPatchEmpty();
     }
 
     @Nullable
