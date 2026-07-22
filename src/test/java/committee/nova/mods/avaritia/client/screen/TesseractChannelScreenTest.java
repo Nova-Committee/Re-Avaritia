@@ -3,24 +3,21 @@ package committee.nova.mods.avaritia.client.screen;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DisplayName("Tesseract selector pagination")
+@DisplayName("Tesseract legacy selector layout")
 class TesseractChannelScreenTest {
     @Test
-    @DisplayName("the maximum page follows the largest of all three channel columns")
-    void clampsToLargestColumn() {
-        Map<Integer, String> fourteen = new HashMap<>();
-        for (int index = 0; index < 14; index++) fourteen.put(index, "channel" + index);
+    @DisplayName("the viewport and scrolling follow the 1.20.1 nine-row panel")
+    void keepsLegacyViewportContract() {
         assertAll(
-                () -> assertEquals(0, TesseractChannelScreen.maximumPage(Map.of(), Map.of(), Map.of())),
-                () -> assertEquals(0, TesseractChannelScreen.maximumPage(Map.of(1, "one"), Map.of(), Map.of())),
-                () -> assertEquals(1, TesseractChannelScreen.maximumPage(Map.of(), fourteen, Map.of())),
-                () -> assertEquals(1, TesseractChannelScreen.maximumPage(Map.of(), Map.of(), fourteen))
+                () -> assertEquals(88, TesseractChannelScreen.WIDTH),
+                () -> assertEquals(154, TesseractChannelScreen.HEIGHT),
+                () -> assertEquals(9, TesseractChannelScreen.ROWS),
+                () -> assertEquals(0, TesseractChannelScreen.maxScrollOffset(0)),
+                () -> assertEquals(0, TesseractChannelScreen.maxScrollOffset(9)),
+                () -> assertEquals(5, TesseractChannelScreen.maxScrollOffset(14))
         );
     }
 }
