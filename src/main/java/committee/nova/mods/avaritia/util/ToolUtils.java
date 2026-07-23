@@ -418,8 +418,13 @@ public class ToolUtils {
      * @param lightOn    使用闪电
      */
     public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn) {
-        if (player.level().isClientSide()) return;
-        AABB aabb = player.getBoundingBox().deflate(range);
+        aoeAttack(player, range, damage, hurtAnimal, lightOn, false);
+    }
+
+    public static void aoeAttack(Player player, float range, float damage, boolean hurtAnimal, boolean lightOn,
+                                 boolean endlessDamage) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+        AABB aabb = player.getBoundingBox().inflate(range);
         List<Entity> toAttack = player.level().getEntities(player, aabb);
         DamageSource src = ModDamageTypes.source(player);
         toAttack.stream()
@@ -436,6 +441,11 @@ public class ToolUtils {
                     } else return true;
                 })
                 .filter(entity -> !(entity.getClass().getSimpleName().equals("ImmortalItemEntity")))
+                .map(entity -> {
+                    LivingEntity livingTarget = InfinityDamageUtils.resolveLivingTarget(entity);
+                    return livingTarget != null ? livingTarget : entity;
+                })
+                .distinct()
                 .filter(entity -> {
                     if (hurtAnimal) {
                         return true;
@@ -446,7 +456,9 @@ public class ToolUtils {
 
                 .forEach(entity -> {
                     if (entity instanceof LivingEntity livingEntity) {
-                        if (livingEntity instanceof EnderDragon dragon) {
+                        if (endlessDamage) {
+                            InfinityDamageUtils.forceKill(serverLevel, livingEntity, src);
+                        } else if (livingEntity instanceof EnderDragon dragon) {
                             dragon.setHealth(0);
                         } else if (livingEntity instanceof WitherBoss wither) {
                             wither.setInvulnerableTicks(0);
