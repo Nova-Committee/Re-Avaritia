@@ -67,6 +67,24 @@ class AvaritiaLanguageProviderTest {
         }
     }
 
+    @Test
+    void correctedTranslationsDoNotRegress() throws IOException {
+        assertEquals("Storage", readLocale("en_us").get("config.avaritia.category.storage").getAsString());
+
+        JsonObject simplifiedChinese = readLocale("zh_cn");
+        assertEquals("打开纳须弥之戒", simplifiedChinese.get("key.avaritia.neutron_ring").getAsString());
+        assertEquals("以及另外 %s 项……", simplifiedChinese.get("tooltip.avaritia.more").getAsString());
+
+        JsonObject traditionalChinese = readLocale("zh_tw");
+        assertEquals("打開納須彌之戒", traditionalChinese.get("key.avaritia.neutron_ring").getAsString());
+        assertEquals("以及另外 %s 項……", traditionalChinese.get("tooltip.avaritia.more").getAsString());
+
+        JsonObject ukrainian = readLocale("uk_ua");
+        assertEquals("Булава нескінченності", ukrainian.get("item.avaritia.infinity_mace").getAsString());
+        assertEquals("Вибір предмета", ukrainian.get("title.avaritia.item_select").getAsString());
+        assertEquals("Вихід: %s", ukrainian.get("tooltip.avaritia.jade.collector_output").getAsString());
+    }
+
     private static JsonObject readLocale(String locale) throws IOException {
         Path path = LANGUAGES.resolve(locale + ".json");
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {

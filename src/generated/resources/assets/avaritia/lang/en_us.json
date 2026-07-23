@@ -143,7 +143,7 @@
   "config.avaritia.category.channel": "Channel",
   "config.avaritia.category.emc": "EMC",
   "config.avaritia.category.misc": "Misc",
-  "config.avaritia.category.storage": "Storge",
+  "config.avaritia.category.storage": "Storage",
   "config.avaritia.category.tools": "Tools",
   "config.avaritia.channel_fast_update_rate": "Fast Update Rate",
   "config.avaritia.channel_fast_update_rate.tooltip": "Fast update rate for channels",
