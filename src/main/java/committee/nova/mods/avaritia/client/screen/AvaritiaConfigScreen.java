@@ -97,6 +97,9 @@ public class AvaritiaConfigScreen extends Screen {
         addIntEntry("blade_slash_radius", ModConfig.bladeSlashRadius, 5, 100,
                 Component.translatable("config.avaritia.blade_slash_radius.tooltip"),
                 ModConfig.bladeSlashRadius::set, ModConfig.bladeSlashRadius);
+        addIntEntry("endest_pearl_absorption_limit", ModConfig.endestPearlAbsorptionLimit, 16, 4096,
+                Component.translatable("config.avaritia.endest_pearl_absorption_limit.tooltip"),
+                ModConfig.endestPearlAbsorptionLimit::set, ModConfig.endestPearlAbsorptionLimit);
 
         addCategoryHeader("config.avaritia.category.emc");
         addIntEntry("neutron_pile_emc", ModConfig.neutronPileEmc, 0, Integer.MAX_VALUE,
@@ -110,6 +113,12 @@ public class AvaritiaConfigScreen extends Screen {
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
 
         addCategoryHeader("config.avaritia.category.channel");
+        addIntEntry("max_channels_pre_player", ModConfig.MAX_CHANNELS_PRE_PLAYER, 4, 64,
+                Component.translatable("config.avaritia.max_channels_pre_player.tooltip"),
+                ModConfig.MAX_CHANNELS_PRE_PLAYER::set, ModConfig.MAX_CHANNELS_PRE_PLAYER);
+        addIntEntry("max_public_channels", ModConfig.MAX_PUBLIC_CHANNELS, 32, 1024,
+                Component.translatable("config.avaritia.max_public_channels.tooltip"),
+                ModConfig.MAX_PUBLIC_CHANNELS::set, ModConfig.MAX_PUBLIC_CHANNELS);
         addIntEntry("channel_fast_update_rate", ModConfig.CHANNEL_FAST_UPDATE_RATE, 1, 40,
                 Component.translatable("config.avaritia.channel_fast_update_rate.tooltip"),
                 ModConfig.CHANNEL_FAST_UPDATE_RATE::set, ModConfig.CHANNEL_FAST_UPDATE_RATE);
