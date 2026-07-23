@@ -37,7 +37,7 @@ float hash3(vec3 p) {
 }
 
 // 时间作为第三维参与噪声插值，避免二维噪声平移时产生明显闪烁。
-float noise3(vec3 p) {
+float avaritiaValueNoise(vec3 p) {
     vec3 i = floor(p);
     vec3 f = fract(p);
     vec3 u = f * f * (3.0 - 2.0 * f);
@@ -85,7 +85,7 @@ void main(void) {
     float diskCore = exp(-abs(diskY) / (0.064 + mass * 0.026));
     float diskMask = smoothstep(horizonRadius * 0.78, horizonRadius * 1.95, abs(uv.x))
             * (1.0 - smoothstep(0.92, 1.14, r));
-    float diskNoise = noise3(vec3(angle * 2.3 + spin * 1.8, r * 8.0, time * 0.032));
+    float diskNoise = avaritiaValueNoise(vec3(angle * 2.3 + spin * 1.8, r * 8.0, time * 0.032));
     diskNoise = smoothstep(0.12, 0.94, diskNoise);
     float disk = diskCore * diskMask * (0.68 + diskNoise * 0.34) * (0.72 + mass * 0.65);
 
@@ -103,7 +103,7 @@ void main(void) {
     color += vec3(0.32, 0.58, 1.0) * outerLens * lensPulse * (0.28 + mass * 0.28);
 
     float jetColumn = exp(-abs(uv.x) / 0.07) * smoothstep(0.16, 0.88, abs(uv.y)) * (1.0 - smoothstep(0.86, 1.18, abs(uv.y)));
-    float jetSpark = noise3(vec3(uv.x * 10.0, uv.y * 7.0, time * 0.075 + mass * 0.4));
+    float jetSpark = avaritiaValueNoise(vec3(uv.x * 10.0, uv.y * 7.0, time * 0.075 + mass * 0.4));
     jetSpark = smoothstep(0.2, 0.95, jetSpark);
     float evaporationFlash = sin(evap * M_PI);
     float jet = jetColumn * evaporationFlash * (0.72 + jetSpark * 0.38);
