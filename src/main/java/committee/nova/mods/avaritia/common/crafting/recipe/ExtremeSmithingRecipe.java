@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.common.crafting.recipe;
 import com.google.gson.JsonObject;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -74,6 +76,17 @@ public class ExtremeSmithingRecipe implements SmithingRecipe {
     @Override
     public boolean isAdditionIngredient(@NotNull ItemStack pStack) {
         return this.additions.test(pStack);
+    }
+
+    @Override
+    public @NotNull NonNullList<Ingredient> getIngredients() {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        ingredients.add(this.template);
+        ingredients.add(this.base);
+        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(0)));
+        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(1)));
+        ingredients.add(Ingredient.of(Arrays.asList(this.additions.getItems()).get(2)));
+        return ingredients;
     }
 
     @Override
