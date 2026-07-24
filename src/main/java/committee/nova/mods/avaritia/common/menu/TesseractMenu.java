@@ -767,13 +767,13 @@ public class TesseractMenu extends AbstractContainerMenu {
     private void addSlots(Player player, Inventory playerInv) {
         //蹇嵎鏍?~8
         for (int l = 0; l < 9; ++l) {
-            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 258));
+            this.addSlot(new Slot(playerInv, l, 23 + l * 17, 240));
         }
 
         //鑳屽寘9~35
         for (int k = 0; k < 3; ++k) {
             for (int i1 = 0; i1 < 9; ++i1) {
-                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 23 + i1 * 17, 195 + k * 17));
+                this.addSlot(new Slot(playerInv, i1 + k * 9 + 9, 23 + i1 * 17, 188 + k * 17));
             }
         }
 
