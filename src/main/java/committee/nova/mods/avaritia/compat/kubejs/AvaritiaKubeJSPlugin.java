@@ -11,6 +11,7 @@ import committee.nova.mods.avaritia.compat.kubejs.schema.NoConsumeCatalystShaped
 import committee.nova.mods.avaritia.compat.kubejs.schema.ShapedTableRecipeSchema;
 import committee.nova.mods.avaritia.compat.kubejs.schema.ShapelessTableRecipeSchema;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
@@ -62,6 +63,8 @@ public class AvaritiaKubeJSPlugin implements KubeJSPlugin {
 
     @Override
     public void beforeRecipeLoading(RecipesKubeEvent event, Map<Identifier, JsonElement> recipeJsons) {
+        // KubeJS 在配方监听器的 prepare 阶段执行；此处是清理上一轮脚本操作的确定边界。
+        SingularityReloadListener.INSTANCE.beginScriptTransaction();
         AvaritiaEvents.REGISTRY.post(ScriptType.SERVER, new SingularityRegisterEventJS(event));
     }
 

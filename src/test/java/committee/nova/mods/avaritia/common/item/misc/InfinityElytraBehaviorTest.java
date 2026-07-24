@@ -16,6 +16,10 @@ class InfinityElytraBehaviorTest {
     private static final Path MIXIN_CONFIG = Path.of("src/main/resources/avaritia.mixins.json");
     private static final Path ELYTRA_TEXTURE = Path.of(
             "src/main/resources/assets/avaritia/textures/entity/infinity_elytra.png");
+    private static final Path CURIOS_PLAYER = Path.of(
+            "src/main/resources/data/avaritia/curios/entities/player.json");
+    private static final Path CURIOS_BACK_TAG = Path.of(
+            "src/generated/resources/data/curios/tags/item/back.json");
 
     @Test
     void infinityElytraFlightKeepsInfinityDamageAndFallProtectionContracts() {
@@ -49,6 +53,38 @@ class InfinityElytraBehaviorTest {
                 () -> assertFalse(Files.exists(MAIN_SOURCES.resolve("client/render/entity/InfinityElytraLayer.java")),
                         "a second custom wings layer would duplicate the vanilla model"),
                 () -> assertTrue(Files.isRegularFile(ELYTRA_TEXTURE), "infinity elytra texture must exist")
+        );
+    }
+
+    @Test
+    void infinityElytraWorksFromCuriosBackSlotAcrossClientAndServer() throws IOException {
+        String curiosPlayer = compact(Files.readString(CURIOS_PLAYER));
+        String curiosBackTag = compact(Files.readString(CURIOS_BACK_TAG));
+
+        assertAll(
+                contains("util/InfinityElytraUtils.java",
+                        "CuriosTools.getFirstItemFromCuriosSlot(player, BACK_SLOT, InfinityElytraUtils::isInfinityElytra)"),
+                contains("client/AvaritiaClient.java",
+                        "InfinityElytraUtils.hasInfinityElytraEquipped(player)"),
+                contains("common/net/C2SElytraSpeedUpPacket.java",
+                        "InfinityElytraUtils.hasInfinityElytraEquipped(player)"),
+                contains("common/net/C2SElytraSpeedUpPacket.java",
+                        "InfinityElytraUtils.prepareCuriosFallbackTakeoff(player)"),
+                contains("common/net/C2SElytraSpeedUpPacket.java",
+                        "return InfinityElytraUtils.startCuriosFallbackFallFlying(player)"),
+                contains("util/InfinityElytraUtils.java",
+                        "!player.isPassenger() && !player.isInWater() && !player.onClimbable()"),
+                contains("util/InfinityElytraUtils.java",
+                        "if (!player.isFallFlying()) { activateCuriosFallbackFallFlying(player); }"),
+                contains("util/InfinityElytraUtils.java", "player.startFallFlying()"),
+                contains("util/InfinityElytraUtils.java", "return player.isFallFlying()"),
+                contains("init/handler/InfinityHandler.java",
+                        "return InfinityElytraUtils.hasInfinityElytraEquipped(player)"),
+                contains("init/handler/InfinityHandler.java",
+                        "InfinityElytraUtils.updateCuriosFallbackFallFlying(player)"),
+                () -> assertTrue(curiosPlayer.contains("\"minecraft:player\"")),
+                () -> assertTrue(curiosPlayer.contains("\"back\"")),
+                () -> assertTrue(curiosBackTag.contains("\"avaritia:infinity_elytra\""))
         );
     }
 

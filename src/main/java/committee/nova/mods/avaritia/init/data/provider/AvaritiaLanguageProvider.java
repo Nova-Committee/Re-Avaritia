@@ -53,7 +53,20 @@ public class AvaritiaLanguageProvider implements DataProvider {
             }
         }
         addStorageTranslations(language, locale);
+        addProjectETranslations(language, locale);
         return language;
+    }
+
+    private static void addProjectETranslations(JsonObject language, String locale) {
+        String[] values = switch (locale) {
+            case "zh_cn" -> new String[]{"启用 ProjectE 奇点数量增强", "安装 ProjectE 时，将奇点配方需求提升到至少 10,000 个物品"};
+            case "zh_tw" -> new String[]{"啟用 ProjectE 奇點數量增強", "安裝 ProjectE 時，將奇點配方需求提升到至少 10,000 個物品"};
+            case "ja_jp" -> new String[]{"ProjectE 特異点数ブーストを有効化", "ProjectE 導入時、特異点レシピの必要数を最低 10,000 個にします"};
+            case "uk_ua" -> new String[]{"Увімкнути збільшення кількості сингулярності ProjectE", "За наявності ProjectE підвищує вимогу рецепта сингулярності щонайменше до 10 000 предметів"};
+            default -> new String[]{"Enable ProjectE Singularity Count Boost", "When ProjectE is installed, raises singularity recipe requirements to at least 10,000 items"};
+        };
+        language.addProperty("config.avaritia.enable_projecte_singularity_count_boost", values[0]);
+        language.addProperty("config.avaritia.enable_projecte_singularity_count_boost.tooltip", values[1]);
     }
 
     private static void addStorageTranslations(JsonObject language, String locale) {

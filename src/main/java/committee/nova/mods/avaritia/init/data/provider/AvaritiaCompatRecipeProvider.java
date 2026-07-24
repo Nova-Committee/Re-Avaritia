@@ -39,6 +39,39 @@ public class AvaritiaCompatRecipeProvider implements DataProvider {
                                 key('D', "ae2:cell_component_256k"),
                                 key('Y', "ae2:dense_energy_cell"),
                                 key('X', "ae2:singularity")))),
+                save(output, "botania_mana_tablet", recipe("botania:mana_tablet", botaniaCreativeManaTabletComponents(), mods("botania"),
+                        pattern("BAAACAAAD", "ATTJKLTTA", "ATUUMUUTA", "ANUOPOUQA", "EUUPRPUUF", "ASUOPOUSA", "ATUUUUUTA", "ATTSISTTA", "GAAAHAAAA"),
+                        keys(
+                                key('A', "avaritia:infinity_ingot"),
+                                key('B', "botania:rune_envy"),
+                                key('C', "botania:rune_gluttony"),
+                                key('D', "botania:rune_winter"),
+                                key('E', "botania:rune_lust"),
+                                key('F', "botania:rune_pride"),
+                                key('G', "botania:rune_wrath"),
+                                key('H', "botania:rune_greed"),
+                                key('I', "botania:rune_sloth"),
+                                key('J', "botania:infinite_fruit"),
+                                key('K', "botania:flight_tiara"),
+                                key('L', "botania:king_key"),
+                                key('M', "botania:flugel_eye"),
+                                key('N', "botania:odin_ring"),
+                                key('O', "botania:spawner_mover"),
+                                key('P', "botania:mana_mirror"),
+                                key('Q', "botania:thor_ring"),
+                                key('R', "botania:mana_tablet"),
+                                key('S', "botania:dice"),
+                                key('T', "botania:fabulous_pool"),
+                                key('U', "botania:terrasteel_block")))),
+                save(output, "botania_creative_pool", recipe("botania:creative_pool", mods("botania"),
+                        pattern("NNNNNNNNN", "NXCXYXCXN", "NCXEYEXCN", "NXEEYEEXN", "YYYYFYYYY", "NXEEYEEXN", "NCXEYEXCN", "NXCXYXCXN", "NNNNNNNNN"),
+                        keys(
+                                key('X', "avaritia:infinity_catalyst"),
+                                key('N', "avaritia:neutron_ingot"),
+                                key('C', "botania:mana_pool"),
+                                key('Y', "botania:fabulous_pool"),
+                                key('E', "botania:dragonstone_block"),
+                                key('F', "botania:mana_tablet")))),
                 save(output, "de_creative_capacitor", recipe("draconicevolution:creative_capacitor", mods("draconicevolution"),
                         pattern("AAAACAAAA", "AEEBCBEEA", "AEBFCFBEA", "ABFFCFFBA", "CCCCDCCCC", "ABFFCFFBA", "AEBFCFBEA", "AEEBCBEEA", "AAAACAAAA"),
                         keys(
@@ -97,6 +130,20 @@ public class AvaritiaCompatRecipeProvider implements DataProvider {
                                 key('S', "minecraft:nether_star"),
                                 key('D', "#storagedrawers:drawers"),
                                 key('E', "storagedrawers:emerald_storage_upgrade")))),
+                save(output, "tc3_creative_slot_ability", tconstructCreativeSlotRecipe("abilities", "tconstruct:ichor_slime_crystal")),
+                save(output, "tc3_creative_slot_defense", tconstructCreativeSlotRecipe("defense", "tconstruct:earth_slime_crystal")),
+                save(output, "tc3_creative_slot_souls", tconstructCreativeSlotRecipe("souls", "tconstruct:sky_slime_crystal")),
+                save(output, "tc3_creative_slot_upgrades", tconstructCreativeSlotRecipe("upgrades", "tconstruct:ender_slime_crystal")),
+                save(output, "mek_creative_energy_cube", recipe("mekanism:creative_energy_cube", mekanismCreativeEnergyCubeComponents(), mods("mekanism"),
+                        pattern("BBBCECBBB", "BDDDADDDB", "BDSDADSDB", "CDDDIDDDC", "EAAISIAAE", "CDDDIDDDC", "BDSDADSDB", "BDDDADDDB", "BBBCECBBB"),
+                        keys(
+                                key('I', "avaritia:infinity_ingot"),
+                                key('S', "avaritia:infinity_catalyst"),
+                                key('A', "mekanism:ultimate_energy_cube"),
+                                key('B', "mekanism:induction_casing"),
+                                key('C', "mekanism:induction_port"),
+                                key('D', "mekanism:ultimate_induction_cell"),
+                                key('E', "mekanism:ultimate_induction_provider")))),
                 save(output, "mek_creative_fluid_tank", recipe("mekanism:creative_fluid_tank", mods("mekanism"),
                         pattern("         ", " SAADAAS ", " ABBCBBA ", " ABBCBBA ", " ACCICCA ", " ABBCBBA ", " ABBCBBA ", " SAADAAS ", "         "),
                         keys(
@@ -148,6 +195,10 @@ public class AvaritiaCompatRecipeProvider implements DataProvider {
     }
 
     private static JsonObject recipe(String result, String[] modIds, String[] pattern, Map<Character, String> keys) {
+        return recipe(result, new JsonObject(), modIds, pattern, keys);
+    }
+
+    private static JsonObject recipe(String result, JsonObject components, String[] modIds, String[] pattern, Map<Character, String> keys) {
         JsonObject json = new JsonObject();
         JsonArray conditions = new JsonArray();
         for (String modId : modIds) {
@@ -172,9 +223,56 @@ public class AvaritiaCompatRecipeProvider implements DataProvider {
         JsonObject resultJson = new JsonObject();
         resultJson.addProperty("count", 1);
         resultJson.addProperty("id", result);
+        if (components.size() > 0) {
+            resultJson.add("components", components);
+        }
         json.add("result", resultJson);
         json.addProperty("tier", 4);
         return json;
+    }
+
+    private static JsonObject tconstructCreativeSlotRecipe(String slot, String slimeCrystal) {
+        return recipe("tconstruct:creative_slot", tconstructCreativeSlotComponents(slot), mods("tconstruct"),
+                pattern("GGBHHHBGG", "GCCCCCCCG", "BCBFFFBCB", "HCFFEFFCH", "HCFEAEFCH", "HCFFEFFCH", "BCBFFFBCB", "GCCCCCCCG", "GGBHHHBGG"),
+                keys(
+                        key('A', "avaritia:infinity_catalyst"),
+                        key('B', "tconstruct:iron_reinforcement"),
+                        key('C', "tconstruct:knightslime_ingot"),
+                        key('E', "tconstruct:manyullyn_block"),
+                        key('F', "tconstruct:jeweled_apple"),
+                        key('G', "tconstruct:iron_reinforcement"),
+                        key('H', slimeCrystal)));
+    }
+
+    private static JsonObject botaniaCreativeManaTabletComponents() {
+        JsonObject customData = new JsonObject();
+        customData.addProperty("mana", 500000);
+        customData.addProperty("creative", true);
+        return customDataComponents(customData);
+    }
+
+    private static JsonObject tconstructCreativeSlotComponents(String slot) {
+        JsonObject customData = new JsonObject();
+        customData.addProperty("slot", slot);
+        return customDataComponents(customData);
+    }
+
+    private static JsonObject mekanismCreativeEnergyCubeComponents() {
+        JsonArray energyContainers = new JsonArray();
+        energyContainers.add(Long.MAX_VALUE);
+
+        JsonObject energy = new JsonObject();
+        energy.add("energy_containers", energyContainers);
+
+        JsonObject components = new JsonObject();
+        components.add("mekanism:energy", energy);
+        return components;
+    }
+
+    private static JsonObject customDataComponents(JsonObject customData) {
+        JsonObject components = new JsonObject();
+        components.add("minecraft:custom_data", customData);
+        return components;
     }
 
     private static JsonElement ingredient(String ingredient) {

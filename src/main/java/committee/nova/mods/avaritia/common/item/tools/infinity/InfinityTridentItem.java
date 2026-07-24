@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.entity.InfinityThrownTrident;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
+import committee.nova.mods.avaritia.util.ProjectileItemUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
@@ -96,7 +98,9 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 switch (currentMode) {
                     case MODE_LOYALTY -> {
                         player.awardStat(Stats.ITEM_USED.get(this));
-                        shootTrident(itemStack, level, player,  false);
+                        if (!tryShootOffhandProjectile(level, player)) {
+                            shootTrident(itemStack, level, player, false);
+                        }
                     }
                     case MODE_RIPTIDE -> {
                         player.awardStat(Stats.ITEM_USED.get(this));
@@ -129,6 +133,7 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
         if (!level.isClientSide()) {
             InfinityThrownTrident throwntrident = new InfinityThrownTrident(level, player, itemStack, null);
             throwntrident.setLoyaltyLevel(noReturn ? 0 : 2);
+            throwntrident.setReturnSlot(findSourceSlot(player, itemStack));
             throwntrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);
             if (player.getAbilities().instabuild) {
                 throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
@@ -142,6 +147,38 @@ public class InfinityTridentItem extends TridentItem implements IUndamageable, I
                 player.getInventory().removeItem(itemStack);
             }
         }
+    }
+
+    private int findSourceSlot(Player player, ItemStack itemStack) {
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            if (inventory.getItem(slot) == itemStack) {
+                return slot;
+            }
+        }
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            if (ItemStack.matches(inventory.getItem(slot), itemStack)) {
+                return slot;
+            }
+        }
+        return -1;
+    }
+
+    private boolean tryShootOffhandProjectile(Level level, Player player) {
+        if (level.isClientSide()) {
+            return false;
+        }
+
+        ProjectileItemUtils.LaunchProjectile launch =
+                ProjectileItemUtils.createLaunchProjectile(level, player, player.getOffhandItem());
+        if (launch == null) {
+            return false;
+        }
+        launch.shootFromRotation(player, 0.0F);
+        level.addFreshEntity(launch.entity());
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                launch.sound(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        return true;
     }
 
     @Override

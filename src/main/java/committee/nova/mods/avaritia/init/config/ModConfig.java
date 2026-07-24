@@ -31,6 +31,7 @@ public class ModConfig {
     public static final ModConfigSpec.IntValue neutronPileEmc;
     public static final ModConfigSpec.IntValue blazeCubeEmc;
     public static final ModConfigSpec.IntValue vanillaTotemEmc;
+    public static final ModConfigSpec.BooleanValue enableProjectESingularityCountBoost;
 
     public static final ModConfigSpec.IntValue CHANNEL_FAST_UPDATE_RATE;
     public static final ModConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
@@ -76,6 +77,8 @@ public class ModConfig {
         neutronPileEmc = buildInt(common, "neutron_pile_emc", 512, 0, Integer.MAX_VALUE, "EMC value of a Neutron Pile");
         blazeCubeEmc = buildInt(common, "blaze_cube_emc", 30568, 0, Integer.MAX_VALUE, "EMC value of a Blaze Cube");
         vanillaTotemEmc = buildInt(common, "vanilla_totem_emc", 1000, 0, Integer.MAX_VALUE, "EMC value of a Totem of Undying");
+        enableProjectESingularityCountBoost = buildBoolean(common, "enable_projecte_singularity_count_boost", true,
+                "Whether ProjectE raises singularity recipe counts to at least 10000 items");
         common.pop();
 
         common.push("channel");

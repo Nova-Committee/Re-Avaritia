@@ -58,6 +58,7 @@ import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModMenus;
 import committee.nova.mods.avaritia.init.registry.ModParticles;
 import committee.nova.mods.avaritia.init.registry.ModTileEntities;
+import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
@@ -77,7 +78,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
@@ -401,7 +401,7 @@ public class AvaritiaClient {
             return;
         }
 
-        if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) {
+        if (!InfinityElytraUtils.hasInfinityElytraEquipped(player)) {
             resetInfinityElytraControls();
             return;
         }

@@ -151,6 +151,8 @@
   "config.avaritia.channel_full_update_rate.tooltip": "チャンネル：完全更新レート",
   "config.avaritia.chest_max_item_size": "チェストの最大アイテムサイズ",
   "config.avaritia.chest_max_item_size.tooltip": "インフィニティチェスト：一スロットに格納できるアイテムの最大数",
+  "config.avaritia.enable_projecte_singularity_count_boost": "ProjectE 特異点数ブーストを有効化",
+  "config.avaritia.enable_projecte_singularity_count_boost.tooltip": "ProjectE 導入時、特異点レシピの必要数を最低 10,000 個にします",
   "config.avaritia.endest_pearl_absorption_limit": "エンドエストパール吸収上限",
   "config.avaritia.endest_pearl_absorption_limit.tooltip": "エンドエストパールのブラックホールが消滅するまでに吸収できる物質量",
   "config.avaritia.endless_item_entity_range": "インフィニティアイテム範囲",

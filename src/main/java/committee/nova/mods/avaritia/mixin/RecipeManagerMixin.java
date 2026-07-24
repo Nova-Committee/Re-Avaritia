@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.mixin;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.init.event.RegisterRecipesEvent;
+import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
 import com.google.common.base.Stopwatch;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -45,16 +46,21 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener {
         Const.LOGGER.info("Avaritia: Loading recipes...");
         Stopwatch stopwatch = Stopwatch.createStarted();
         List<RecipeHolder<?>> recipes = new ArrayList<>(recipeMap.values());
+        List<RecipeHolder<?>> originalRecipes = List.copyOf(recipes);
         int vanillaRecipeCount = recipes.size();
 
         try {
-            NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(manager, recipes, this.getRegistryLookup(), this.getContext()));
-        } catch (Exception e) {
+            SingularityReloadListener.INSTANCE.finalizeScriptTransaction(() ->
+                    NeoForge.EVENT_BUS.post(new RegisterRecipesEvent(
+                            manager, recipes, this.getRegistryLookup(), this.getContext())));
+        } catch (RuntimeException | Error e) {
+            recipes.clear();
+            recipes.addAll(originalRecipes);
             Const.LOGGER.error("Avaritia: An error occurred while firing RegisterRecipesEvent", e);
         }
 
         int generatedRecipeCount = recipes.size() - vanillaRecipeCount;
-        if (generatedRecipeCount > 0) {
+        if (!recipes.equals(originalRecipes)) {
             this.recipes = RecipeMap.create(recipes);
             ci.cancel();
         }

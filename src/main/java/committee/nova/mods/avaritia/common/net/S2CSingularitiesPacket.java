@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * S2CSingularitiesPacket
@@ -36,13 +37,14 @@ public record S2CSingularitiesPacket(Collection<Singularity> dataSingularities,
     );
 
     public static S2CSingularitiesPacket from(SingularityReloadListener listener) {
+        SingularityReloadListener.Snapshot snapshot = listener.getSnapshot();
         return new S2CSingularitiesPacket(
-                listener.getDataSingularities().values(),
-                listener.getRunSingularities().values(),
-                listener.getRemoveRecipes(),
-                listener.getRemoveSingularities(),
-                listener.isRemoveAllRecipes(),
-                listener.isRemoveAll()
+                snapshot.singularities().values(),
+                List.of(),
+                snapshot.recipeRemovals(),
+                List.of(),
+                false,
+                false
         );
     }
 

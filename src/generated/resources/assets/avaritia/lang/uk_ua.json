@@ -151,6 +151,8 @@
   "config.avaritia.channel_full_update_rate.tooltip": "Повна швидкість оновлень для каналів",
   "config.avaritia.chest_max_item_size": "Максимальний обсяг предметів скрині",
   "config.avaritia.chest_max_item_size.tooltip": "Визначає максимальну кількість слотів у скрині нескінченності",
+  "config.avaritia.enable_projecte_singularity_count_boost": "Увімкнути збільшення кількості сингулярності ProjectE",
+  "config.avaritia.enable_projecte_singularity_count_boost.tooltip": "За наявності ProjectE підвищує вимогу рецепта сингулярності щонайменше до 10 000 предметів",
   "config.avaritia.endest_pearl_absorption_limit": "Межа поглинання перлини найскінченності",
   "config.avaritia.endest_pearl_absorption_limit.tooltip": "Кількість одиниць матерії, яку чорна діра перлини найскінченності поглине до випаровування",
   "config.avaritia.endless_item_entity_range": "Досяжність предметів нескінченності",

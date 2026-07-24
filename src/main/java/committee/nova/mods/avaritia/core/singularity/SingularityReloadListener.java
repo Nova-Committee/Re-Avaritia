@@ -3,8 +3,6 @@ package committee.nova.mods.avaritia.core.singularity;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.crafting.recipe.EternalSingularityCraftRecipe;
 import committee.nova.mods.avaritia.common.crafting.recipe.InfinityCatalystCraftRecipe;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -20,8 +18,10 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,218 +30,250 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 加载数据包和运行时脚本声明的奇点，并统一计算脚本覆盖后的有效视图。
+ * 奇点数据的事务边界。数据包、Java API 和各脚本源先进入暂存区，配方重建成功后才发布。
  */
 public class SingularityReloadListener extends SimpleJsonResourceReloadListener<JsonElement> {
     private static final Codec<JsonElement> JSON_CODEC = ExtraCodecs.JSON;
     public static final Identifier RELOAD_LISTENER_ID = Identifier.fromNamespaceAndPath(Const.MOD_ID, "singularities");
+    public static final SingularityReloadListener INSTANCE = new SingularityReloadListener();
 
-    public static SingularityReloadListener INSTANCE = new SingularityReloadListener();
+    private volatile Map<Identifier, Singularity> dataSingularities = Map.of();
+    private final Map<Identifier, Singularity> persistentSingularities = new ConcurrentHashMap<>();
+    private final EnumMap<ScriptSource, List<ScriptOperation>> scriptOperations = new EnumMap<>(ScriptSource.class);
+    private final AtomicSnapshotTransaction<Snapshot> snapshotTransaction =
+            new AtomicSnapshotTransaction<>(new Snapshot(Map.of(), Set.of()));
 
-    private Map<Identifier, Singularity> dataSingularities = new ConcurrentHashMap<>();
-    private Map<Identifier, Singularity> runSingularities = new ConcurrentHashMap<>();
-    private Set<Identifier> removeRecipes = ConcurrentHashMap.newKeySet();
-    private Set<Identifier> removeSingularities = ConcurrentHashMap.newKeySet();
-    private boolean removeAllRecipes = false;
-    private boolean removeAll = false;
-
-    /**
-     * 只读快照是奇点系统对外的稳定视图：singularities 用于展示和配方生成，recipeRemovals 用于清理已加载的默认 JSON 配方。
-     */
     public record Snapshot(Map<Identifier, Singularity> singularities, Set<Identifier> recipeRemovals) {
         public Snapshot {
-            singularities = Collections.unmodifiableMap(new LinkedHashMap<>(singularities));
+            singularities = Collections.unmodifiableMap(copyMap(singularities, false));
             recipeRemovals = Collections.unmodifiableSet(new LinkedHashSet<>(recipeRemovals));
         }
     }
 
     public SingularityReloadListener() {
         super(JSON_CODEC, FileToIdConverter.json("singularities"));
+        for (ScriptSource source : ScriptSource.values()) {
+            this.scriptOperations.put(source, new ArrayList<>());
+        }
     }
 
-
     @Override
-    protected void apply(@NotNull Map<Identifier, JsonElement> object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-        var registryops = this.makeConditionalOps();
-        this.dataSingularities.clear();
-
-        for (Map.Entry<Identifier, JsonElement> entry : object.entrySet()) {
-            Identifier identifier = entry.getKey();
-            if (identifier.getPath().startsWith("_")) {
+    protected void apply(@NotNull Map<Identifier, JsonElement> objects, @NotNull ResourceManager resourceManager,
+                         @NotNull ProfilerFiller profiler) {
+        var registryOps = this.makeConditionalOps();
+        Map<Identifier, Singularity> nextDataSnapshot = new LinkedHashMap<>();
+        for (Map.Entry<Identifier, JsonElement> entry : objects.entrySet()) {
+            Identifier resourceId = entry.getKey();
+            if (resourceId.getPath().startsWith("_")) {
                 continue;
             }
-
             try {
-                var decoded = Singularity.CONDITIONAL_CODEC.parse(registryops, entry.getValue()).getOrThrow(JsonParseException::new);
-                decoded.ifPresentOrElse(r -> {
-                    var singularity = r.carrier();
-                    dataSingularities.put(identifier, singularity);
-                }, () -> Const.LOGGER.debug("Singularity: Skipping loading singularity {} as its conditions were not met", identifier));
-            } catch (IllegalArgumentException | JsonParseException jsonparseexception) {
-                Const.LOGGER.error("Singularity: Parsing error loading singularity {}", identifier, jsonparseexception);
+                var decoded = Singularity.CONDITIONAL_CODEC.parse(registryOps, entry.getValue())
+                        .getOrThrow(JsonParseException::new);
+                decoded.ifPresentOrElse(withConditions -> {
+                    Singularity singularity = validatedCopy(withConditions.carrier());
+                    if (!resourceId.equals(singularity.getRegistryName())) {
+                        throw new SingularityValidationException("Singularity file id " + resourceId
+                                + " does not match its name " + singularity.getRegistryName());
+                    }
+                    nextDataSnapshot.put(resourceId, singularity);
+                }, () -> Const.LOGGER.debug(
+                        "Singularity: Skipping {} because its conditions were not met", resourceId));
+            } catch (IllegalArgumentException | JsonParseException exception) {
+                Const.LOGGER.error("Singularity: Parsing error loading singularity {}", resourceId, exception);
             }
         }
+        beginReload(nextDataSnapshot);
+    }
 
-        onSingularitiesReloaded();
+    public synchronized void beginReload(Map<Identifier, Singularity> nextDataSnapshot) {
+        this.dataSingularities = copyMap(nextDataSnapshot, true);
+        this.snapshotTransaction.begin();
+    }
+
+    public synchronized void beginScriptTransaction() {
+        this.scriptOperations.values().forEach(List::clear);
+        this.snapshotTransaction.begin();
+    }
+
+    public boolean finalizeScriptTransaction() {
+        return finalizeScriptTransaction(() -> {
+        });
+    }
+
+    /**
+     * 将暂存状态与派生配方作为一个提交发布。派生状态失败时恢复旧快照并允许本轮重试。
+     */
+    public synchronized boolean finalizeScriptTransaction(Runnable finalizationAction) {
+        Snapshot candidate = buildSnapshot();
+        return this.snapshotTransaction.commit(candidate, () -> {
+            finalizationAction.run();
+            onSingularitiesReloaded(candidate.singularities());
+        });
     }
 
     public Map<Identifier, Singularity> getDataSingularities() {
-        return this.dataSingularities;
+        return copyMap(this.dataSingularities, false);
     }
 
-    public void setDataSingularities(Map<Identifier, Singularity> dataSingularities) {
-        this.dataSingularities = new ConcurrentHashMap<>(dataSingularities);
+    public synchronized void setDataSingularities(Map<Identifier, Singularity> singularities) {
+        this.dataSingularities = copyMap(singularities, true);
     }
 
-    public Map<Identifier, Singularity> getRunSingularities() {
-        return this.runSingularities;
+    public synchronized Map<Identifier, Singularity> getRunSingularities() {
+        Map<Identifier, Singularity> runtime = copyMap(this.persistentSingularities, false);
+        applyOperations(runtime, new LinkedHashSet<>(), this.scriptOperations.get(ScriptSource.CRAFT_TWEAKER));
+        applyOperations(runtime, new LinkedHashSet<>(), this.scriptOperations.get(ScriptSource.KUBE_JS));
+        return runtime;
     }
 
-    public void setRunSingularities(Map<Identifier, Singularity> runSingularities) {
-        this.runSingularities = new ConcurrentHashMap<>(runSingularities);
+    public synchronized void setRunSingularities(Map<Identifier, Singularity> singularities) {
+        this.persistentSingularities.clear();
+        this.persistentSingularities.putAll(copyMap(singularities, true));
     }
 
-    public List<Identifier> getRemoveRecipes() {
-        return List.copyOf(this.removeRecipes);
+    public synchronized List<Identifier> getRemoveRecipes() {
+        return List.copyOf(buildSnapshot().recipeRemovals());
     }
 
-    public void setRemoveRecipes(List<Identifier> removeRecipes) {
-        this.removeRecipes = concurrentSet(removeRecipes);
+    public synchronized void setRemoveRecipes(List<Identifier> ids) {
+        ids.forEach(id -> operations(ScriptSource.KUBE_JS).add(ScriptOperation.removeRecipe(id)));
     }
 
-    public List<Identifier> getRemoveSingularities() {
-        return List.copyOf(this.removeSingularities);
+    public synchronized List<Identifier> getRemoveSingularities() {
+        return this.scriptOperations.values().stream()
+                .flatMap(Collection::stream)
+                .filter(operation -> operation.type == ScriptOperationType.REMOVE)
+                .map(ScriptOperation::id)
+                .distinct()
+                .toList();
     }
 
-    public void setRemoveSingularities(List<Identifier> removeSingularities) {
-        this.removeSingularities = concurrentSet(removeSingularities);
+    public synchronized void setRemoveSingularities(List<Identifier> ids) {
+        ids.forEach(id -> operations(ScriptSource.KUBE_JS).add(ScriptOperation.remove(id)));
     }
 
-    public boolean isRemoveAllRecipes() {
-        return this.removeAllRecipes;
+    public synchronized boolean isRemoveAllRecipes() {
+        return hasOperation(ScriptOperationType.REMOVE_ALL_RECIPES);
     }
 
     public void setRemoveAllRecipes(boolean removeAllRecipes) {
-        this.removeAllRecipes = removeAllRecipes;
+        setRemoveAllRecipes(ScriptSource.KUBE_JS, removeAllRecipes);
     }
 
-    public boolean isRemoveAll() {
-        return this.removeAll;
+    public synchronized void setRemoveAllRecipes(ScriptSource source, boolean removeAllRecipes) {
+        if (removeAllRecipes) {
+            operations(source).add(ScriptOperation.removeAllRecipes());
+        }
+    }
+
+    public synchronized boolean isRemoveAll() {
+        return hasOperation(ScriptOperationType.REMOVE_ALL);
     }
 
     public void setRemoveAll(boolean removeAll) {
-        this.removeAll = removeAll;
+        setRemoveAll(ScriptSource.KUBE_JS, removeAll);
+    }
+
+    public synchronized void setRemoveAll(ScriptSource source, boolean removeAll) {
+        if (removeAll) {
+            operations(source).add(ScriptOperation.removeAll());
+        }
     }
 
     public Map<Identifier, Singularity> getAllSingularities() {
-        return new LinkedHashMap<>(this.getSnapshot().singularities());
+        return copyMap(this.snapshotTransaction.current().singularities(), false);
     }
 
-    /**
-     * 所有运行时覆盖规则都在这里解释，避免 KubeJS、网络同步和配方注册各自推导出不同状态。
-     */
     public Snapshot getSnapshot() {
-        Map<Identifier, Singularity> singularities = new LinkedHashMap<>();
-        this.dataSingularities.forEach((id, singularity) -> singularities.put(id, singularity.copy()));
-        this.runSingularities.forEach((id, singularity) -> singularities.put(id, singularity.copy()));
-
-        Set<Identifier> recipeRemovals = new LinkedHashSet<>();
-        recipeRemovals.addAll(this.removeRecipes);
-        recipeRemovals.addAll(this.removeSingularities);
-
-        if (this.removeAll || this.removeAllRecipes) {
-            recipeRemovals.addAll(singularities.keySet());
-        }
-
-        if (this.removeAll) {
-            singularities.clear();
-            return new Snapshot(singularities, recipeRemovals);
-        }
-
-        this.removeSingularities.forEach(singularities::remove);
-        if (this.removeAllRecipes) {
-            singularities.replaceAll((id, singularity) -> singularity.copyWithRecipeEnabled(false));
-        } else {
-            this.removeRecipes.forEach(id ->
-                    singularities.computeIfPresent(id, (ignored, singularity) -> singularity.copyWithRecipeEnabled(false))
-            );
-        }
-
-        singularities.forEach((id, singularity) -> {
-            if (!singularity.isEnabled() || !singularity.isRecipeEnabled()) {
-                recipeRemovals.add(id);
-            }
-        });
-
-        return new Snapshot(singularities, recipeRemovals);
+        Snapshot snapshot = this.snapshotTransaction.current();
+        return new Snapshot(snapshot.singularities(), snapshot.recipeRemovals());
     }
 
-    /**
-     * 客户端同步直接替换数据包奇点集合，不暴露内部 Map 的可变实现。
-     */
     public void replaceDataSingularities(Collection<Singularity> singularities) {
         this.dataSingularities = toMap(singularities);
     }
 
-    /**
-     * 客户端同步直接替换运行时奇点集合，不暴露内部 Map 的可变实现。
-     */
-    public void replaceRunSingularities(Collection<Singularity> singularities) {
-        this.runSingularities = toMap(singularities);
+    public synchronized void replaceRunSingularities(Collection<Singularity> singularities) {
+        this.persistentSingularities.clear();
+        this.persistentSingularities.putAll(toMap(singularities));
     }
 
-    public void applySyncedState(Collection<Singularity> dataSingularities,
-                                 Collection<Singularity> runSingularities,
-                                 Collection<Identifier> removeRecipes,
-                                 Collection<Identifier> removeSingularities,
-                                 boolean removeAllRecipes,
-                                 boolean removeAll) {
+    /** 客户端只在单次调用末尾替换有效快照，避免观察到半同步状态。 */
+    public synchronized void applySyncedState(Collection<Singularity> dataSingularities,
+                                              Collection<Singularity> runSingularities,
+                                              Collection<Identifier> removeRecipes,
+                                              Collection<Identifier> removeSingularities,
+                                              boolean removeAllRecipes,
+                                              boolean removeAll) {
         this.dataSingularities = toMap(dataSingularities);
-        this.runSingularities = toMap(runSingularities);
-        this.removeRecipes = concurrentSet(removeRecipes);
-        this.removeSingularities = concurrentSet(removeSingularities);
-        this.removeAllRecipes = removeAllRecipes;
-        this.removeAll = removeAll;
-        onSingularitiesReloaded();
+        this.persistentSingularities.clear();
+        this.persistentSingularities.putAll(toMap(runSingularities));
+        beginScriptTransaction();
+        setRemoveRecipes(List.copyOf(removeRecipes));
+        setRemoveSingularities(List.copyOf(removeSingularities));
+        setRemoveAllRecipes(removeAllRecipes);
+        setRemoveAll(removeAll);
+        Snapshot syncedSnapshot = buildSnapshot();
+        this.snapshotTransaction.replaceCommitted(syncedSnapshot);
+        onSingularitiesReloaded(syncedSnapshot.singularities());
     }
 
+    /** Java API 注册在所有资源重载之间持久保留。 */
     public void registerSingularity(Singularity singularity) {
-        if (singularity != null && singularity.getRegistryName() != null) {
-            var oldSingularity = this.runSingularities.put(singularity.getRegistryName(), singularity);
-            if (oldSingularity == null) {
-                Const.LOGGER.info("Singularity: Registered runtime singularity: {}", singularity.getRegistryName());
-            } else {
-                Const.LOGGER.info("Singularity: Updated runtime singularity: {}", singularity.getRegistryName());
-            }
-            NeoForge.EVENT_BUS.post(new SingularityEvent.Add(getAllSingularities(), singularity));
-        }
+        registerPersistentSingularity(singularity);
+    }
+
+    public synchronized void registerPersistentSingularity(Singularity singularity) {
+        Singularity copy = validatedCopy(singularity);
+        Singularity old = this.persistentSingularities.put(copy.getRegistryName(), copy);
+        logRegistration("persistent", copy.getRegistryName(), old != null);
+        NeoForge.EVENT_BUS.post(new SingularityEvent.Add(buildSnapshot().singularities(), copy.copy()));
+    }
+
+    public void registerScriptSingularity(Singularity singularity) {
+        registerScriptSingularity(ScriptSource.KUBE_JS, singularity);
+    }
+
+    public synchronized void registerScriptSingularity(ScriptSource source, Singularity singularity) {
+        Singularity copy = validatedCopy(singularity);
+        boolean replaced = buildSnapshot().singularities().containsKey(copy.getRegistryName());
+        operations(source).add(ScriptOperation.add(copy));
+        logRegistration(source.logName, copy.getRegistryName(), replaced);
+        NeoForge.EVENT_BUS.post(new SingularityEvent.Add(buildSnapshot().singularities(), copy.copy()));
     }
 
     public void removeSingularityRecipe(Identifier id) {
-        this.removeRecipes.add(id);
+        removeSingularityRecipe(ScriptSource.KUBE_JS, id);
+    }
+
+    public synchronized void removeSingularityRecipe(ScriptSource source, Identifier id) {
+        operations(source).add(ScriptOperation.removeRecipe(requireId(id)));
     }
 
     public void removeSingularity(Identifier id) {
-        this.removeSingularities.add(id);
-        NeoForge.EVENT_BUS.post(new SingularityEvent.Remove(getAllSingularities(), id));
+        removeSingularity(ScriptSource.KUBE_JS, id);
+    }
+
+    public synchronized void removeSingularity(ScriptSource source, Identifier id) {
+        Identifier validatedId = requireId(id);
+        operations(source).add(ScriptOperation.remove(validatedId));
+        NeoForge.EVENT_BUS.post(new SingularityEvent.Remove(buildSnapshot().singularities(), validatedId));
     }
 
     public Singularity getSingularity(Identifier id) {
-        return this.getSnapshot().singularities().get(id);
+        Singularity singularity = this.snapshotTransaction.current().singularities().get(id);
+        return singularity == null ? null : singularity.copy();
     }
 
     public static Singularity fromJson(JsonObject json, HolderLookup.Provider registries) {
-        return Singularity.CODEC.parse(registries.createSerializationContext(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
+        return validatedCopy(Singularity.CODEC.parse(registries.createSerializationContext(JsonOps.INSTANCE), json)
+                .getOrThrow(JsonParseException::new));
     }
 
     public static JsonElement toJson(Singularity singularity, HolderLookup.Provider registries) {
-        return Singularity.CODEC.encodeStart(registries.createSerializationContext(JsonOps.INSTANCE), singularity).getOrThrow(JsonParseException::new);
-    }
-
-    private void onSingularitiesReloaded() {
-        InfinityCatalystCraftRecipe.invalidate();
-        EternalSingularityCraftRecipe.invalidate();
-        NeoForge.EVENT_BUS.post(new SingularityEvent.Reload(getAllSingularities()));
+        return Singularity.CODEC.encodeStart(registries.createSerializationContext(JsonOps.INSTANCE),
+                validatedCopy(singularity)).getOrThrow(JsonParseException::new);
     }
 
     @Override
@@ -249,19 +281,147 @@ public class SingularityReloadListener extends SimpleJsonResourceReloadListener<
         return "Avaritia Singularity Listener";
     }
 
-    private static Set<Identifier> concurrentSet(Collection<Identifier> ids) {
-        Set<Identifier> set = ConcurrentHashMap.newKeySet();
-        set.addAll(ids);
-        return set;
+    private Snapshot buildSnapshot() {
+        Map<Identifier, Singularity> singularities = copyMap(this.dataSingularities, false);
+        singularities.putAll(copyMap(this.persistentSingularities, false));
+        Set<Identifier> recipeRemovals = new LinkedHashSet<>();
+        applyOperations(singularities, recipeRemovals, this.scriptOperations.get(ScriptSource.CRAFT_TWEAKER));
+        applyOperations(singularities, recipeRemovals, this.scriptOperations.get(ScriptSource.KUBE_JS));
+        singularities.forEach((id, singularity) -> {
+            if (!singularity.isEnabled() || !singularity.isRecipeEnabled()) {
+                recipeRemovals.add(id);
+            }
+        });
+        return new Snapshot(singularities, recipeRemovals);
+    }
+
+    private List<ScriptOperation> operations(ScriptSource source) {
+        return this.scriptOperations.get(source);
+    }
+
+    private boolean hasOperation(ScriptOperationType type) {
+        return this.scriptOperations.values().stream().flatMap(Collection::stream)
+                .anyMatch(operation -> operation.type == type);
+    }
+
+    private static void applyOperations(Map<Identifier, Singularity> singularities,
+                                        Set<Identifier> recipeRemovals,
+                                        List<ScriptOperation> operations) {
+        for (ScriptOperation operation : operations) {
+            switch (operation.type) {
+                case ADD -> singularities.put(operation.id, operation.singularity.copy());
+                case REMOVE -> {
+                    singularities.remove(operation.id);
+                    recipeRemovals.add(operation.id);
+                }
+                case REMOVE_RECIPE -> {
+                    recipeRemovals.add(operation.id);
+                    singularities.computeIfPresent(operation.id,
+                            (ignored, singularity) -> singularity.copyWithRecipeEnabled(false));
+                }
+                case REMOVE_ALL_RECIPES -> {
+                    recipeRemovals.addAll(singularities.keySet());
+                    singularities.replaceAll((ignored, singularity) -> singularity.copyWithRecipeEnabled(false));
+                }
+                case REMOVE_ALL -> {
+                    recipeRemovals.addAll(singularities.keySet());
+                    singularities.clear();
+                }
+            }
+        }
+    }
+
+    private static Map<Identifier, Singularity> copyMap(Map<Identifier, Singularity> source,
+                                                        boolean requireMatchingIds) {
+        Map<Identifier, Singularity> copy = new LinkedHashMap<>();
+        source.forEach((id, singularity) -> {
+            Singularity singularityCopy = validatedCopy(singularity);
+            if (requireMatchingIds && !id.equals(singularityCopy.getRegistryName())) {
+                throw new SingularityValidationException("Singularity map id " + id
+                        + " does not match " + singularityCopy.getRegistryName());
+            }
+            copy.put(id, singularityCopy);
+        });
+        return copy;
     }
 
     private static Map<Identifier, Singularity> toMap(Collection<Singularity> singularities) {
-        Map<Identifier, Singularity> map = new ConcurrentHashMap<>();
+        Map<Identifier, Singularity> map = new LinkedHashMap<>();
         for (Singularity singularity : singularities) {
-            if (singularity != null && singularity.getRegistryName() != null) {
-                map.put(singularity.getRegistryName(), singularity);
-            }
+            Singularity copy = validatedCopy(singularity);
+            map.put(copy.getRegistryName(), copy);
         }
         return map;
+    }
+
+    private static Singularity validatedCopy(Singularity singularity) {
+        if (singularity == null || singularity.getRegistryName() == null) {
+            throw new SingularityValidationException("Singularity and its id must not be null");
+        }
+        if (singularity.getRealCount() == 0 || singularity.getRealCount() < -1) {
+            throw new SingularityValidationException("Singularity count must be positive or -1");
+        }
+        if (singularity.getTimeCost() <= 0) {
+            throw new SingularityValidationException("Singularity timeCost must be positive");
+        }
+        return singularity.copy();
+    }
+
+    private static Identifier requireId(Identifier id) {
+        if (id == null) {
+            throw new SingularityValidationException("Singularity id must not be null");
+        }
+        return id;
+    }
+
+    private static void logRegistration(String source, Identifier id, boolean replaced) {
+        Const.LOGGER.info("Singularity: {} {} {} singularity", replaced ? "Updated" : "Registered", source, id);
+    }
+
+    private void onSingularitiesReloaded(Map<Identifier, Singularity> singularities) {
+        InfinityCatalystCraftRecipe.invalidate();
+        EternalSingularityCraftRecipe.invalidate();
+        NeoForge.EVENT_BUS.post(new SingularityEvent.Reload(singularities));
+    }
+
+    public enum ScriptSource {
+        CRAFT_TWEAKER("CraftTweaker"),
+        KUBE_JS("KubeJS");
+
+        private final String logName;
+
+        ScriptSource(String logName) {
+            this.logName = logName;
+        }
+    }
+
+    private enum ScriptOperationType {
+        ADD,
+        REMOVE,
+        REMOVE_RECIPE,
+        REMOVE_ALL_RECIPES,
+        REMOVE_ALL
+    }
+
+    private record ScriptOperation(ScriptOperationType type, Identifier id, Singularity singularity) {
+        private static ScriptOperation add(Singularity singularity) {
+            return new ScriptOperation(ScriptOperationType.ADD, singularity.getRegistryName(), singularity.copy());
+        }
+
+        private static ScriptOperation remove(Identifier id) {
+            return new ScriptOperation(ScriptOperationType.REMOVE, id, null);
+        }
+
+        private static ScriptOperation removeRecipe(Identifier id) {
+            return new ScriptOperation(ScriptOperationType.REMOVE_RECIPE, id, null);
+        }
+
+        private static ScriptOperation removeAllRecipes() {
+            return new ScriptOperation(ScriptOperationType.REMOVE_ALL_RECIPES, null, null);
+        }
+
+        private static ScriptOperation removeAll() {
+            return new ScriptOperation(ScriptOperationType.REMOVE_ALL, null, null);
+        }
     }
 }

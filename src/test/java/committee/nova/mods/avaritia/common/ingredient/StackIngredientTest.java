@@ -36,8 +36,8 @@ class StackIngredientTest {
         String listenerSource = compact(Files.readString(RELOAD_LISTENER_SOURCE));
 
         assertTrue(packetSource.contains("SingularityReloadListener.INSTANCE.applySyncedState("));
-        assertTrue(listenerSource.contains("publicvoidapplySyncedState("));
-        assertTrue(listenerSource.contains("onSingularitiesReloaded();"));
+        assertTrue(listenerSource.contains("publicsynchronizedvoidapplySyncedState("));
+        assertTrue(listenerSource.contains("onSingularitiesReloaded(syncedSnapshot.singularities());"));
     }
 
     private static String compact(String value) {

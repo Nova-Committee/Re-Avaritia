@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InfinityTridentItemTest {
     private static final Path ITEM_SOURCE = Path.of("src/main/java/committee/nova/mods/avaritia/common/item/tools/infinity/InfinityTridentItem.java");
+    private static final Path ENTITY_SOURCE = Path.of("src/main/java/committee/nova/mods/avaritia/common/entity/InfinityThrownTrident.java");
     private static final Path MODEL_JSON = Path.of("src/generated/resources/assets/avaritia/items/infinity_trident.json");
 
     @Test
@@ -26,6 +27,20 @@ class InfinityTridentItemTest {
                 () -> assertTrue(itemSource.contains("returnInteractionResult.CONSUME;")),
                 () -> assertTrue(modelJson.contains("\"property\": \"minecraft:using_item\"")),
                 () -> assertTrue(modelJson.contains("\"model\": \"avaritia:item/infinity_trident_throwing\""))
+        );
+    }
+
+    @Test
+    void loyaltyModeKeepsOffhandProjectileAndOriginalSlotReturnContracts() throws IOException {
+        String itemSource = compact(Files.readString(ITEM_SOURCE));
+        String entitySource = compact(Files.readString(ENTITY_SOURCE));
+
+        assertAll(
+                () -> assertTrue(itemSource.contains("ProjectileItemUtils.createLaunchProjectile(level,player,player.getOffhandItem())")),
+                () -> assertTrue(itemSource.contains("throwntrident.setReturnSlot(findSourceSlot(player,itemStack))")),
+                () -> assertTrue(entitySource.contains("returnSlot=input.getIntOr(\"ReturnSlot\",NO_RETURN_SLOT)")),
+                () -> assertTrue(entitySource.contains("output.putInt(\"ReturnSlot\",returnSlot)")),
+                () -> assertTrue(entitySource.contains("player.getInventory().setItem(returnSlot,stack)"))
         );
     }
 

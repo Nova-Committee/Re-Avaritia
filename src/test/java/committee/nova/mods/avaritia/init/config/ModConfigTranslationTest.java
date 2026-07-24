@@ -26,7 +26,7 @@ class ModConfigTranslationTest {
     @Test
     void configPathsTranslationsAndCommentsStaySeparated() throws Exception {
         List<ModConfigSpec.ConfigValue<?>> values = configValues();
-        assertEquals(36, values.size(), "新增配置项时应同步验证配置路径与翻译键");
+        assertEquals(37, values.size(), "新增配置项时应同步验证配置路径与翻译键");
 
         for (ModConfigSpec.ConfigValue<?> value : values) {
             List<String> path = value.getPath();

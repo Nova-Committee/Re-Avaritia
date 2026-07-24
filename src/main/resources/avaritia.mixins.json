@@ -12,7 +12,8 @@
     "NetherWartBlockMixin",
     "PlayerMixin",
     "RecipeManagerMixin",
-    "accessor.MappedRegistryAccessor"
+    "accessor.MappedRegistryAccessor",
+    "accessor.ServerPlayerGameModeAccessor"
   ],
   "client": [
     "compat.JeiModIdHelperMixin",

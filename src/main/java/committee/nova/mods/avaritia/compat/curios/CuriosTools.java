@@ -16,4 +16,14 @@ public class CuriosTools {
                         .orElse(ItemStack.EMPTY))
                 .orElse(ItemStack.EMPTY);
     }
+
+    public static ItemStack getFirstItemFromCuriosSlot(Player player, String slotId, Predicate<ItemStack> filter) {
+        return CuriosApi.getCuriosInventory(player)
+                .map(handler -> handler.findCurios(slotId).stream()
+                        .map(SlotResult::stack)
+                        .filter(filter)
+                        .findFirst()
+                        .orElse(ItemStack.EMPTY))
+                .orElse(ItemStack.EMPTY);
+    }
 }

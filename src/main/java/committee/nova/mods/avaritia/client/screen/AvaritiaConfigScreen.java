@@ -111,6 +111,9 @@ public class AvaritiaConfigScreen extends Screen {
         addIntEntry("vanilla_totem_emc", ModConfig.vanillaTotemEmc, 0, Integer.MAX_VALUE,
                 Component.translatable("config.avaritia.vanilla_totem_emc.tooltip"),
                 ModConfig.vanillaTotemEmc::set, ModConfig.vanillaTotemEmc);
+        addBooleanEntry("enable_projecte_singularity_count_boost", ModConfig.enableProjectESingularityCountBoost,
+                Component.translatable("config.avaritia.enable_projecte_singularity_count_boost.tooltip"),
+                ModConfig.enableProjectESingularityCountBoost::set, ModConfig.enableProjectESingularityCountBoost);
 
         addCategoryHeader("config.avaritia.category.channel");
         addIntEntry("max_channels_pre_player", ModConfig.MAX_CHANNELS_PRE_PLAYER, 4, 64,

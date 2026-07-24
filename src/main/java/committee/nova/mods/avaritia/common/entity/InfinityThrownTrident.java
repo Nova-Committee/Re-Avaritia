@@ -36,10 +36,12 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
     private static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(InfinityThrownTrident.class, EntityDataSerializers.INT);
     private static final double RETURN_PICKUP_DISTANCE = 1.25D;
     private static final int RETURN_FORCE_PICKUP_TICKS = 30;
+    private static final int NO_RETURN_SLOT = -1;
 
     private ItemStack tridentItem = new ItemStack(ModItems.infinity_trident.get());
     private boolean dealtDamage;
     private int loyaltyLevel = 3;
+    private int returnSlot = NO_RETURN_SLOT;
     public int returningTicks;
 
     public InfinityThrownTrident(EntityType<? extends InfinityThrownTrident> type, Level worldIn) {
@@ -59,6 +61,10 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
 
     public void setLoyaltyLevel(int loyaltyLevel) {
         this.loyaltyLevel = loyaltyLevel;
+    }
+
+    public void setReturnSlot(int returnSlot) {
+        this.returnSlot = returnSlot;
     }
 
     @Override
@@ -258,6 +264,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         super.readAdditionalSaveData(input);
         setStackAndLoyalty(input.read("Trident", ItemStack.CODEC).orElse(this.getDefaultPickupItem()));
         dealtDamage = input.getBooleanOr("DealtDamage", false);
+        returnSlot = input.getIntOr("ReturnSlot", NO_RETURN_SLOT);
     }
 
     @Override
@@ -265,6 +272,7 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
         super.addAdditionalSaveData(output);
         output.store("Trident", ItemStack.CODEC, tridentItem);
         output.putBoolean("DealtDamage", dealtDamage);
+        output.putInt("ReturnSlot", returnSlot);
     }
 
     @Override
@@ -293,7 +301,27 @@ public class InfinityThrownTrident extends AbstractArrow implements IEntityWithC
 
     @Override
     protected boolean tryPickup(Player player) {
-        return super.tryPickup(player) || this.isNoPhysics() && this.ownedBy(player) && player.getInventory().add(this.getPickupItem());
+        if (this.isNoPhysics() && this.ownedBy(player)) {
+            if (this.pickup == Pickup.CREATIVE_ONLY) {
+                return player.getAbilities().instabuild;
+            }
+            if (this.pickup == Pickup.ALLOWED) {
+                return addToReturnSlot(player, this.getPickupItem());
+            }
+        }
+        return super.tryPickup(player);
+    }
+
+    private boolean addToReturnSlot(Player player, ItemStack stack) {
+        if (stack.isEmpty()) {
+            return true;
+        }
+        if (returnSlot >= 0 && returnSlot < player.getInventory().getContainerSize()
+                && player.getInventory().getItem(returnSlot).isEmpty()) {
+            player.getInventory().setItem(returnSlot, stack);
+            return true;
+        }
+        return player.getInventory().add(stack);
     }
 
     @Override

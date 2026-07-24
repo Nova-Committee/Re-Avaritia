@@ -151,6 +151,8 @@
   "config.avaritia.channel_full_update_rate.tooltip": "頻道的完整更新率",
   "config.avaritia.chest_max_item_size": "箱子最大物品類型數",
   "config.avaritia.chest_max_item_size.tooltip": "定義無盡箱子可以存儲的最大物品類型數量",
+  "config.avaritia.enable_projecte_singularity_count_boost": "啟用 ProjectE 奇點數量增強",
+  "config.avaritia.enable_projecte_singularity_count_boost.tooltip": "安裝 ProjectE 時，將奇點配方需求提升到至少 10,000 個物品",
   "config.avaritia.endest_pearl_absorption_limit": "終望珍珠吸收上限",
   "config.avaritia.endest_pearl_absorption_limit.tooltip": "終望珍珠形成的黑洞在蒸發前可吸收的物質量",
   "config.avaritia.endless_item_entity_range": "永恆物品範圍",

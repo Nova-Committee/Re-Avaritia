@@ -2,7 +2,7 @@ package committee.nova.mods.avaritia.common.net;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.init.config.ModConfig;
-import committee.nova.mods.avaritia.init.registry.ModItems;
+import committee.nova.mods.avaritia.util.InfinityElytraUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -13,7 +13,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -44,7 +43,11 @@ public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) imp
         public void handle(@NotNull C2SElytraSpeedUpPacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
                 if (!(context.player() instanceof ServerPlayer player)) return;
-                if (!player.getItemBySlot(EquipmentSlot.CHEST).is(ModItems.infinity_elytra.get())) return;
+                if (!InfinityElytraUtils.hasInfinityElytraEquipped(player)) return;
+                if (InfinityElytraUtils.isUsingOtherFlightMode(player)) {
+                    InfinityElytraUtils.clearCuriosFallbackFallFlying(player);
+                    return;
+                }
                 if (!packet.customFlying()) return;
 
                 boolean fallFlying = ensureFallFlying(player, packet.boosting());
@@ -60,16 +63,14 @@ public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) imp
     }
 
     private static boolean ensureFallFlying(ServerPlayer player, boolean boosting) {
-        if (player.isFallFlying()) {
-            return true;
-        }
-
-        if (player.tryToStartFallFlying()) {
+        if (InfinityElytraUtils.tryStartFallFlying(player)) {
             return true;
         }
 
         if (canLaunchFromGround(player)) {
             launchFromGround(player, boosting);
+            InfinityElytraUtils.prepareCuriosFallbackTakeoff(player);
+            return InfinityElytraUtils.startCuriosFallbackFallFlying(player);
         }
 
         return false;
@@ -77,10 +78,10 @@ public record C2SElytraSpeedUpPacket(boolean customFlying, boolean boosting) imp
 
     private static boolean canLaunchFromGround(ServerPlayer player) {
         return player.onGround()
+                && !InfinityElytraUtils.isUsingOtherFlightMode(player)
                 && !player.isPassenger()
                 && !player.isInWater()
                 && !player.onClimbable()
-                && !player.getAbilities().flying
                 && !player.hasEffect(MobEffects.LEVITATION);
     }
 

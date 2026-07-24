@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -222,10 +223,10 @@ public class Singularity {
     }
 
     public int getCount() {
-        if (this.count == -1) {
-            return 1000;
-        }
-        return this.count;
+        int configuredCount = this.count == -1 ? 1000 : this.count;
+        return SingularityCountResolver.resolve(configuredCount,
+                ModConfig.COMMON.isLoaded() && ModConfig.enableProjectESingularityCountBoost.get(),
+                ModList.get().isLoaded("projecte"));
     }
 
     public static Singularity read(RegistryFriendlyByteBuf buffer) {

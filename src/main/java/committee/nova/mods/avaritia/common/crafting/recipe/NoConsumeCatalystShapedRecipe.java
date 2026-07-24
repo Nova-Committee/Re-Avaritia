@@ -33,7 +33,7 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getItem(i);
             if (stack.is(ModItems.infinity_catalyst.get())) {
-                remaining.set(i, stack.copy());
+                remaining.set(i, stack.copyWithCount(1));
             }
         }
         return remaining;
