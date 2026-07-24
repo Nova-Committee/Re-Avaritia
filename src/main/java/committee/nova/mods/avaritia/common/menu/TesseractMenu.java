@@ -54,6 +54,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class TesseractMenu extends AbstractContainerMenu {
 
+    static final int CRAFTING_SLOT_SPACING = 17;
+    static final int CRAFTING_SLOT_TOP_Y = 136;
+    static final int CRAFTING_SLOT_MIDDLE_Y = CRAFTING_SLOT_TOP_Y + CRAFTING_SLOT_SPACING;
+    static final int CRAFTING_SLOT_BOTTOM_Y = CRAFTING_SLOT_MIDDLE_Y + CRAFTING_SLOT_SPACING;
+
     public final Channel channel;
     public final UUID owner;
     public final Player player;
@@ -779,11 +784,11 @@ public class TesseractMenu extends AbstractContainerMenu {
 
 
         //鎶ょ敳36~40
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.HEAD, 39, 7, 139));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.CHEST, 38, 7, 156));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.LEGS, 37, 58, 139));
-        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.FEET, 36, 58, 156));
-        this.addSlot(new Slot(playerInv, 40, 7, 173) {
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.HEAD, 39, 7, CRAFTING_SLOT_TOP_Y));
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.CHEST, 38, 7, CRAFTING_SLOT_MIDDLE_Y));
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.LEGS, 37, 58, CRAFTING_SLOT_TOP_Y));
+        this.addSlot(getArmorSlot(player, playerInv, EquipmentSlot.FEET, 36, 58, CRAFTING_SLOT_MIDDLE_Y));
+        this.addSlot(new Slot(playerInv, 40, 7, CRAFTING_SLOT_BOTTOM_Y) {
             @Override
             public boolean isActive() {
                 return craftingMode;
@@ -793,7 +798,8 @@ public class TesseractMenu extends AbstractContainerMenu {
         //鍚堟垚鏍?1~50
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                this.addSlot(new Slot(this.craftSlots, j + i * 3, 92 + j * 17, 139 + i * 17) {
+                this.addSlot(new Slot(this.craftSlots, j + i * 3, 92 + j * CRAFTING_SLOT_SPACING,
+                        CRAFTING_SLOT_TOP_Y + i * CRAFTING_SLOT_SPACING) {
                     @Override
                     public boolean isActive() {
                         return craftingMode;
@@ -801,7 +807,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 });
             }
         }
-        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 161, 156) {
+        this.addSlot(new ResultSlot(player, this.craftSlots, this.resultSlots, 0, 161, CRAFTING_SLOT_MIDDLE_Y) {
             @Override
             public boolean isActive() {
                 return craftingMode;
