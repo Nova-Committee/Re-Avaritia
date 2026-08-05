@@ -49,6 +49,7 @@ public class ModItems {
     /** 工具 */
     // infinity
     public static final DeferredItem<Item> infinity_sword = item("infinity_sword", id -> new InfinitySwordItem());
+    public static final DeferredItem<Item> infinity_spear = item("infinity_spear", id -> new InfinitySpearItem());
     public static final DeferredItem<Item> infinity_hoe = item("infinity_hoe", id -> new InfinityHoeItem());
     public static final DeferredItem<Item> infinity_pickaxe = item("infinity_pickaxe", id -> new InfinityPickaxeItem());
     public static final DeferredItem<Item> infinity_shovel = item("infinity_shovel", id -> new InfinityShovelItem());
@@ -62,6 +63,7 @@ public class ModItems {
 
     // crystal
     public static final DeferredItem<Item> crystal_sword = item("crystal_sword", id -> new CrystalSwordItem());
+    public static final DeferredItem<Item> crystal_spear = item("crystal_spear", id -> new CrystalSpearItem());
     public static final DeferredItem<Item> crystal_hoe = item("crystal_hoe", id -> new CrystalHoeItem());
     public static final DeferredItem<Item> crystal_pickaxe = item("crystal_pickaxe", id -> new CrystalPickaxeItem());
     public static final DeferredItem<Item> crystal_shovel = item("crystal_shovel", id -> new CrystalShovelItem());
@@ -70,6 +72,7 @@ public class ModItems {
 
     // blaze
     public static final DeferredItem<Item> blaze_sword = item("blaze_sword", id -> new BlazeSwordItem());
+    public static final DeferredItem<Item> blaze_spear = item("blaze_spear", id -> new BlazeSpearItem());
     public static final DeferredItem<Item> blaze_hoe = item("blaze_hoe", id -> new BlazeHoeItem());
     public static final DeferredItem<Item> blaze_pickaxe = item("blaze_pickaxe", id -> new BlazePickaxeItem());
     public static final DeferredItem<Item> blaze_shovel = item("blaze_shovel", id -> new BlazeShovelItem());

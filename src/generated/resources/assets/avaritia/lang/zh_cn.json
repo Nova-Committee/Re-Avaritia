@@ -624,5 +624,16 @@
   "tooltip.infinity": "无限",
   "tooltip.infinity.desc": "攻击伤害",
   "tooltip.infinity_pickaxe.enchant_1": "切换到 时运 X",
-  "tooltip.infinity_pickaxe.enchant_2": "切换到 精准采集"
+  "tooltip.infinity_pickaxe.enchant_2": "切换到 精准采集",
+  "item.avaritia.infinity_spear": "星辰贯穿之矛",
+  "item.avaritia.blaze_spear": "炽烬之穿骸矛",
+  "item.avaritia.crystal_spear": "双锋破界之矛",
+  "tooltip.avaritia.infinity_spear.desc": "星辉所向，寰宇尽穿。",
+  "tooltip.avaritia.blaze_spear.desc": "刺枯骸躯壳，烬焚尽残形。",
+  "tooltip.avaritia.crystal_spear.desc": "寒芒所向，破界无拘；矛锋所贯，众敌难栖。",
+  "tooltip.avaritia.tool.lunge": "突进",
+  "tooltip.avaritia.tool.infinity_spear_lunge": "突进",
+  "tooltip.avaritia.infinity_spear_lunge.active": "突进模式已激活",
+  "tooltip.avaritia.tool.crystal_shatter": "晶爆",
+  "tooltip.avaritia.crystal_shatter.active": "晶爆已激活"
 }

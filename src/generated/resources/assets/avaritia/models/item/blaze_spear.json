@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/tools/blaze_spear/blaze_spear"
+  }
+}

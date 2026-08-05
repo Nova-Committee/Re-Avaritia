@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "avaritia:item/tools/crystal_spear/crystal_spear"
+  }
+}
