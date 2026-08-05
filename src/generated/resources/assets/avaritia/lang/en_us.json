@@ -624,5 +624,16 @@
   "tooltip.infinity": "Infinity",
   "tooltip.infinity.desc": "Attack Damage",
   "tooltip.infinity_pickaxe.enchant_1": "Set to Fortune X",
-  "tooltip.infinity_pickaxe.enchant_2": "Set to Silk Touch"
+  "tooltip.infinity_pickaxe.enchant_2": "Set to Silk Touch",
+  "item.avaritia.infinity_spear": "Stellar Piercing Spear",
+  "item.avaritia.blaze_spear": "Emberbone Piercing Spear",
+  "item.avaritia.crystal_spear": "Dualedge Realmbreaker Spear",
+  "tooltip.avaritia.infinity_spear.desc": "Where starlight pierces, the cosmos yields.",
+  "tooltip.avaritia.blaze_spear.desc": "Pierce skeletal husks, incinerate all remnants.",
+  "tooltip.avaritia.crystal_spear.desc": "Cold light strides past every bound; spear thrust impales every foe.",
+  "tooltip.avaritia.tool.lunge": "Lunge",
+  "tooltip.avaritia.tool.infinity_spear_lunge": "Lunge",
+  "tooltip.avaritia.infinity_spear_lunge.active": "Lunge Mode Active",
+  "tooltip.avaritia.tool.crystal_shatter": "Crystal Shatter",
+  "tooltip.avaritia.crystal_shatter.active": "Crystal Shatter Active"
 }

@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.utils.lang.TextUtils;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinitySwordItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinitySpearItem;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.ChatFormatting;
@@ -57,7 +58,9 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
-        if (ModConfig.isSwordAttackEndless.get() && event.getItemStack().getItem() instanceof InfinitySwordItem) {
+        if (ModConfig.isSwordAttackEndless.get()
+                && (event.getItemStack().getItem() instanceof InfinitySwordItem
+                || event.getItemStack().getItem() instanceof InfinitySpearItem)) {
             Component infinityDamage = Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))
                     .append(" ")
                     .append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN));
