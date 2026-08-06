@@ -635,5 +635,7 @@
   "tooltip.avaritia.tool.infinity_spear_lunge": "Lunge",
   "tooltip.avaritia.infinity_spear_lunge.active": "Lunge Mode Active",
   "tooltip.avaritia.tool.crystal_shatter": "Crystal Shatter",
-  "tooltip.avaritia.crystal_shatter.active": "Crystal Shatter Active"
+  "tooltip.avaritia.crystal_shatter.active": "Crystal Shatter Active",
+  "tooltip.avaritia.tool.blaze_spear_blast": "Blast",
+  "tooltip.avaritia.blaze_spear_blast.active": "Blast Mode Active"
 }
