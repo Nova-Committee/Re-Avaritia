@@ -70,8 +70,10 @@ public class InfinitySwordItem extends SwordItem implements InitEnchantItem, ISw
                 dragon.hurt(dragon.head, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());
             } else if (victim instanceof Player pvp) {
                 if (ToolUtils.isInfinite(pvp)) {
-                    // 玩家身着无尽甲则只造成爆炸伤害
-                    serverLevel.explode(player, pvp.getBlockX(), pvp.getBlockY(), pvp.getBlockZ(), 25.0F, Level.ExplosionInteraction.MOB);
+                     if(ModConfig.isSwordAttackExplode.get()) {
+                         // 玩家身着无尽甲则只造成爆炸伤害
+                         serverLevel.explode(player, pvp.getBlockX(), pvp.getBlockY(), pvp.getBlockZ(), 25.0F, Level.ExplosionInteraction.MOB);
+                     }
                     return true;//直接返回
                 } else {
                     this.hurt(victim, damageSource, endlessDamage ? Float.MAX_VALUE : this.getTier().getAttackDamageBonus());

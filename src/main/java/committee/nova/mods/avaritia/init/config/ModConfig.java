@@ -53,6 +53,8 @@ public class ModConfig {
     public static ForgeConfigSpec.IntValue CHANNEL_FAST_UPDATE_RATE;
     public static ForgeConfigSpec.IntValue CHANNEL_FULL_UPDATE_RATE;
 
+    public static final ForgeConfigSpec.BooleanValue isSwordAttackExplode;
+
     public static final ForgeConfigSpec.BooleanValue useAdvanceTooltips;
 
     //SERVER
@@ -75,6 +77,7 @@ public class ModConfig {
         growthSoulFarmland = buildDouble(common, "config.avaritia.growth_soul_farmland", 0.8, 0.0, 1.0, "config.avaritia.growth_soul_farmland.tooltip");
         bladeSlashDamage = buildInt(common, "config.avaritia.blade_slash_damage", 200, 0, Integer.MAX_VALUE, "config.avaritia.blade_slash_damage.tooltip");
         bladeSlashRadius = buildInt(common, "config.avaritia.blade_slash_radius", 10, 5, 100, "config.avaritia.blade_slash_radius.tooltip");
+        isSwordAttackExplode = buildBoolean(common,"config.avaritia.is_sword_attack_explode",true,"config.avaritia.is_sword_attack_explode.tooltip");
         common.pop();
         common.push("emc");
         enableProjectESingularityCountBoost = buildBoolean(common, "config.avaritia.enable_projecte_singularity_count_boost", true, "config.avaritia.enable_projecte_singularity_count_boost.tooltip");
