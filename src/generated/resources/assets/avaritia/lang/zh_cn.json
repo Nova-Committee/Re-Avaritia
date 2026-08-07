@@ -635,5 +635,7 @@
   "tooltip.avaritia.tool.infinity_spear_lunge": "突进",
   "tooltip.avaritia.infinity_spear_lunge.active": "突进模式已激活",
   "tooltip.avaritia.tool.crystal_shatter": "晶爆",
-  "tooltip.avaritia.crystal_shatter.active": "晶爆已激活"
+  "tooltip.avaritia.crystal_shatter.active": "晶爆已激活",
+  "tooltip.avaritia.tool.blaze_spear_blast": "炎爆",
+  "tooltip.avaritia.blaze_spear_blast.active": "炎爆模式已激活"
 }

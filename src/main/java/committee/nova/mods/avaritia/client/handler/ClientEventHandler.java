@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.api.distmarker.Dist;
@@ -64,14 +65,15 @@ public final class ClientEventHandler {
             Component infinityDamage = Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity")))
                     .append(" ")
                     .append(Component.translatable("tooltip.infinity.desc").withStyle(ChatFormatting.DARK_GREEN));
-            replaceOrAppendTooltipLine(event.getToolTip(), I18n.get("attribute.name.generic.attack_damage"), infinityDamage);
+            replaceOrAppendTooltipLine(event.getToolTip(),
+                    I18n.get(Attributes.ATTACK_DAMAGE.value().getDescriptionId()), infinityDamage);
         } else if (event.getItemStack().getItem() instanceof InfinityArmorItem) {
-            replaceFirstTooltipLine(event.getToolTip(), I18n.get("attribute.name.generic.armor"),
+            replaceFirstTooltipLine(event.getToolTip(), I18n.get(Attributes.ARMOR.value().getDescriptionId()),
                     Component.literal("+").withStyle(ChatFormatting.BLUE)
                             .append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity"))))
                             .append(" ")
                             .append(Component.translatable("tooltip.armor.desc").withStyle(ChatFormatting.BLUE)));
-            replaceFirstTooltipLine(event.getToolTip(), I18n.get("attribute.name.generic.armor_toughness"),
+            replaceFirstTooltipLine(event.getToolTip(), I18n.get(Attributes.ARMOR_TOUGHNESS.value().getDescriptionId()),
                     Component.literal("+").withStyle(ChatFormatting.BLUE)
                             .append(Component.literal(TextUtils.makeFabulous(I18n.get("tooltip.infinity"))))
                             .append(" ")

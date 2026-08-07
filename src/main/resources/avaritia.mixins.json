@@ -13,7 +13,8 @@
     "PlayerMixin",
     "RecipeManagerMixin",
     "accessor.MappedRegistryAccessor",
-    "accessor.ServerPlayerGameModeAccessor"
+    "accessor.ServerPlayerGameModeAccessor",
+    "ApplyExhaustionMixin"
   ],
   "client": [
     "compat.JeiModIdHelperMixin",
