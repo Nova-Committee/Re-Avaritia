@@ -51,7 +51,7 @@ public class BlazeSpearItem extends Item implements ITooltip, InitEnchantItem, I
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .spear(BLAZE, 0.5f, 26f, 0.4f, 1.8f, 1.4f, 2.7f, 1.4f, 3.9f, 1.2f)
+                .spear(BLAZE, 0.5f, 26f, 0.4f, 4f, 1.4f, 4f, 5f, 4f, 3f)
                 .component(DataComponents.ATTACK_RANGE, new AttackRange(2.0F, 6.5F, 2.0F, 8.5F, 0.125F, 0.5F))
                 .attributes(ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, ModToolTiers.BLAZE.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)

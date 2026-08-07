@@ -48,7 +48,7 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable, Ini
                 .rarity(ModRarities.EPIC)
                 .stacksTo(1)
                 .fireResistant()
-                .spear(CRYSTAL, 0.35f, 51f, 0.4f, 2.4f, 1.7f, 3.6f, 1.7f, 5.1f, 1.6f)
+                .spear(CRYSTAL, 0.35f, 51f, 0.3f, 5f, 1.7f, 5f, 4.5f, 5f, 2f)
                 .component(DataComponents.ATTACK_RANGE, new AttackRange(1.5F, 7.5F, 0.0F, 9.5F, 0.125F, 0.5F))
                 .attributes(ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, ModToolTiers.CRYSTAL.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)

@@ -46,7 +46,7 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                 .rarity(ModRarities.COSMIC.getValue())
                 .stacksTo(1)
                 .fireResistant()
-                .spear(INFINITY,0.25f,9999f,0.4f,7.5f,5.1f,10.5f,5.1f,15f,4.6f)
+                .spear(INFINITY,0.25f,9999f,0.2f,10f,5.1f,10f,4f,10f,0.1f)
                 .component(DataComponents.ATTACK_RANGE, new AttackRange(1.0F, 9.5F, 0.0F, 11.5F, 0.125F, 0.5F))
                 .attributes(ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, ModToolTiers.INFINITY.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
