@@ -316,17 +316,18 @@ public class InfinityHandler {
         }
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             InfinityElytraUtils.updateCuriosFallbackFallFlying(player);
+            //InfinityElytraUtils.tickInfinityElytra(player);
         }
-    }
+    }*/
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         InfinityElytraUtils.clearCuriosFallbackFallFlying(event.getEntity());
-    }
+    }*/
 
     private static boolean isUsingInfinityElytra(Player player) {
         return isWearingInfinityElytra(player) && (player.isFallFlying() || !player.onGround());

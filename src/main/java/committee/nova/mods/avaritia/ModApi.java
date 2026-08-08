@@ -5,12 +5,16 @@ import committee.nova.mods.avaritia.common.crafting.recipe.ShapelessTableCraftin
 import committee.nova.mods.avaritia.common.ingredient.StackIngredient;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
 import committee.nova.mods.avaritia.core.singularity.SingularityReloadListener;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
+import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.util.SingularityUtils;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -60,7 +64,12 @@ public class ModApi {
         if (!singularity.hasIngredient())
             return null;
 
-        var output = SingularityUtils.getItemForSingularity(singularity);
+        ItemStackTemplate output = new ItemStackTemplate(
+                ModItems.singularity.get(),
+                DataComponentPatch.builder()
+                        .set(ModDataComponents.SINGULARITY_ID.get(), singularity.getRegistryName())
+                        .build()
+        );
         int ingredientCount = singularity.getCount();
         int timeRequired = singularity.getTimeCost();
 

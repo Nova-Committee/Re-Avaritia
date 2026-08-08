@@ -637,5 +637,9 @@
   "tooltip.avaritia.tool.crystal_shatter": "晶爆",
   "tooltip.avaritia.crystal_shatter.active": "晶爆已激活",
   "tooltip.avaritia.tool.blaze_spear_blast": "炎爆",
-  "tooltip.avaritia.blaze_spear_blast.active": "炎爆模式已激活"
+  "tooltip.avaritia.blaze_spear_blast.active": "炎爆模式已激活",
+  "tooltip.avaritia.tool.infinity_shield_normal": "普通",
+  "tooltip.avaritia.tool.infinity_shield_defending": "防御",
+  "tooltip.avaritia.tool.infinity_shield_definite_defending": "终极防御",
+  "tooltip.avaritia.tool.infinity_shield_float":"漂浮"
 }
