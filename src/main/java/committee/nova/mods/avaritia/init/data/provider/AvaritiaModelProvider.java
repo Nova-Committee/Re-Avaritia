@@ -183,7 +183,7 @@ public class AvaritiaModelProvider implements DataProvider {
                     "item/tools/infinity_sword/layer_0",
                     "item/tools/infinity_sword/layer_1");
             case "infinity_crossbow" -> crossbowModel("infinity_crossbow", "item/tools/infinity_crossbow/standby");
-            case "infinity_shield" -> shieldModel("infinity_shield", false);
+            case "infinity_shield" -> Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/infinity_shield");
             case "blaze_bow", "crystal_bow" -> bowModel(id.getPath(), itemTexture(id).getPath());
             default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
@@ -302,10 +302,27 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private ItemModel.Unbaked infinityShieldModel(Identifier model) {
-        Identifier blockingModel = shieldModel("infinity_shield_blocking", true);
         return ItemModelUtils.conditional(ItemModelUtils.isUsingItem(),
-                ItemModelUtils.specialModel(blockingModel, new InfinityShieldRender.Unbaked()),
-                ItemModelUtils.specialModel(model, new InfinityShieldRender.Unbaked()));
+                shieldModeModels(true),
+                shieldModeModels(false));
+    }
+
+    private ItemModel.Unbaked shieldModeModels(boolean blocking) {
+        Identifier baseId = Identifier.fromNamespaceAndPath(
+                Const.MOD_ID,
+                "item/" + (blocking ? "infinity_shield_blocking" : "infinity_shield")
+        );
+        ItemModel.Unbaked base = ItemModelUtils.specialModel(baseId, new InfinityShieldRender.Unbaked());
+
+        return ItemModelUtils.rangeSelect(new ItemOverrideHandler.ShieldMode(),
+                base,
+                ItemModelUtils.override(ItemModelUtils.plainModel(shieldModelId("infinity_shield_defending", blocking)), 1.0F),
+                ItemModelUtils.override(ItemModelUtils.plainModel(shieldModelId("infinity_shield_definite_defending", blocking)), 2.0F),
+                ItemModelUtils.override(ItemModelUtils.plainModel(shieldModelId("infinity_shield_float", blocking)), 3.0F));
+    }
+
+    private Identifier shieldModelId(String name, boolean blocking) {
+        return Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + (blocking ? name + "_blocking" : name));
     }
 
     private ItemModel.Unbaked infinityTridentModel(Identifier model) {

@@ -1,20 +1,74 @@
 {
   "model": {
     "type": "minecraft:condition",
-    "on_false": {
-      "type": "minecraft:special",
-      "base": "avaritia:item/infinity_shield",
-      "model": {
-        "type": "avaritia:infinity_shield"
-      }
-    },
+    "property": "minecraft:using_item",
     "on_true": {
-      "type": "minecraft:special",
-      "base": "avaritia:item/infinity_shield_blocking",
-      "model": {
-        "type": "avaritia:infinity_shield"
-      }
+      "type": "minecraft:range_dispatch",
+      "property": "avaritia:shield_mode",
+      "fallback": {
+        "type": "minecraft:special",
+        "base": "avaritia:item/infinity_shield_blocking",
+        "model": {
+          "type": "avaritia:infinity_shield"
+        }
+      },
+      "entries": [
+        {
+          "threshold": 1.0,
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/infinity_shield_defending_blocking"
+          }
+        },
+        {
+          "threshold": 2.0,
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/infinity_shield_definite_defending_blocking"
+          }
+        },
+        {
+          "threshold": 3.0,
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/infinity_shield_float_blocking"
+          }
+        }
+      ]
     },
-    "property": "minecraft:using_item"
+    "on_false": {
+      "type": "minecraft:range_dispatch",
+      "property": "avaritia:shield_mode",
+      "fallback": {
+        "type": "minecraft:special",
+        "base": "avaritia:item/infinity_shield",
+        "model": {
+          "type": "avaritia:infinity_shield"
+        }
+      },
+      "entries": [
+        {
+          "threshold": 1.0,
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/infinity_shield_defending"
+          }
+        },
+        {
+          "threshold": 2.0,
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/infinity_shield_definite_defending"
+          }
+        },
+        {
+          "threshold": 3.0,
+          "model": {
+            "type": "minecraft:model",
+            "model": "avaritia:item/infinity_shield_float"
+          }
+        }
+      ]
+    }
   }
 }

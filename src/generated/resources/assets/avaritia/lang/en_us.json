@@ -637,5 +637,9 @@
   "tooltip.avaritia.tool.crystal_shatter": "Crystal Shatter",
   "tooltip.avaritia.crystal_shatter.active": "Crystal Shatter Active",
   "tooltip.avaritia.tool.blaze_spear_blast": "Blast",
-  "tooltip.avaritia.blaze_spear_blast.active": "Blast Mode Active"
+  "tooltip.avaritia.blaze_spear_blast.active": "Blast Mode Active",
+  "tooltip.avaritia.tool.infinity_shield_normal": "Normal",
+  "tooltip.avaritia.tool.infinity_shield_defending": "Defending",
+  "tooltip.avaritia.tool.infinity_shield_definite_defending": "Ultimate Defending",
+  "tooltip.avaritia.tool.infinity_shield_float":"Floating"
 }

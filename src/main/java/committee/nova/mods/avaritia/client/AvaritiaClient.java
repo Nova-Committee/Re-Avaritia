@@ -128,12 +128,12 @@ public class AvaritiaClient {
     public static boolean inventoryRender = false;
     public static long lastTime = System.currentTimeMillis();
     public static int renderTime = 0;
-    private static final int INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL = 4;
-    private static final int INFINITY_ELYTRA_BOOST_PACKET_INTERVAL = 1;
+    //private static final int INFINITY_ELYTRA_LAUNCH_PACKET_INTERVAL = 4;
+    //private static final int INFINITY_ELYTRA_BOOST_PACKET_INTERVAL = 1;
     private static float darknessIntensity = 0.0f;
-    private static boolean infinityElytraLastFlyingIntent = false;
-    private static boolean infinityElytraLastBoosting = false;
-    private static int infinityElytraPacketCooldown = 0;
+    //private static boolean infinityElytraLastFlyingIntent = false;
+    //private static boolean infinityElytraLastBoosting = false;
+    //private static int infinityElytraPacketCooldown = 0;
     private static final IClientItemExtensions INFINITY_ARMOR_EXTENSIONS = new IClientItemExtensions() {
         @Override
         public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, Identifier fallback) {
@@ -329,9 +329,6 @@ public class AvaritiaClient {
         }
         if (minecraft.player != null && minecraft.level != null) {
             calculateDarknessIntensity(minecraft.player, minecraft.level);
-            handleInfinityElytraControls(minecraft);
-        } else {
-            resetInfinityElytraControls();
         }
     }
 
@@ -394,10 +391,10 @@ public class AvaritiaClient {
         }
     }
 
-    private static void handleInfinityElytraControls(Minecraft minecraft) {
+    /*private static void handleInfinityElytraControls(Minecraft minecraft) {
         Player player = minecraft.player;
         if (player == null || minecraft.level == null || minecraft.screen != null) {
-            resetInfinityElytraControls();
+           resetInfinityElytraControls();
             return;
         }
 
@@ -418,9 +415,9 @@ public class AvaritiaClient {
                 && !minecraft.options.keyShift.isDown();
 
         syncInfinityElytraControls(wantsLaunch || wantsBoost, wantsBoost);
-    }
+    }*/
 
-    private static void syncInfinityElytraControls(boolean flyingIntent, boolean boosting) {
+    /*private static void syncInfinityElytraControls(boolean flyingIntent, boolean boosting) {
         if (!flyingIntent) {
             resetInfinityElytraControls();
             return;
@@ -435,13 +432,13 @@ public class AvaritiaClient {
         } else {
             infinityElytraPacketCooldown--;
         }
-    }
+    }*/
 
-    private static void resetInfinityElytraControls() {
+    /*private static void resetInfinityElytraControls() {
         infinityElytraLastFlyingIntent = false;
         infinityElytraLastBoosting = false;
         infinityElytraPacketCooldown = 0;
-    }
+    }*/
 
     private static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(Const.MOD_ID, path);

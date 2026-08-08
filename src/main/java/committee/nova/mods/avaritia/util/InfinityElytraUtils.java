@@ -13,9 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * 统一查询原版胸甲位与 Curios 背部槽中的无尽鞘翅。
- */
 public final class InfinityElytraUtils {
     private static final String BACK_SLOT = "back";
     private static final int FALL_FLYING_ACTIVE = -1;
@@ -59,7 +56,6 @@ public final class InfinityElytraUtils {
         if (player.onGround() || !canUseCuriosFallback(player)) {
             return false;
         }
-
         return startCuriosFallbackFallFlying(player);
     }
 

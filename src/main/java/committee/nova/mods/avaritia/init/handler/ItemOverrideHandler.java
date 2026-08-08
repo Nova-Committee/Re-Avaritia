@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
@@ -39,6 +40,7 @@ public final class ItemOverrideHandler {
         event.register(Const.rl("bow_pull"), BowPull.MAP_CODEC);
         event.register(Const.rl("infinity_crossbow_pull"), InfinityCrossbowPull.MAP_CODEC);
         event.register(Const.rl("infinity_crossbow_charged"), InfinityCrossbowCharged.MAP_CODEC);
+        event.register(Const.rl("shield_mode"), ShieldMode.MAP_CODEC);
     }
 
     @SubscribeEvent
@@ -200,5 +202,24 @@ public final class ItemOverrideHandler {
     private static CompoundTag modeTag(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         return data == null ? new CompoundTag() : data.copyTag().getCompound("mode").orElseGet(CompoundTag::new);
+    }
+    public record ShieldMode() implements RangeSelectItemModelProperty {
+        public static final MapCodec<ShieldMode> MAP_CODEC = MapCodec.unit(new ShieldMode());
+
+        @Override
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+            CompoundTag mode = modeTag(stack);
+            for (int i = 0; i < InfinityShieldItem.MODES.size(); i++) {
+                if (mode.getBoolean(InfinityShieldItem.MODES.get(i)).orElse(false)) {
+                    return i;
+                }
+            }
+            return 0.0F;
+        }
+
+        @Override
+        public MapCodec<ShieldMode> type() {
+            return MAP_CODEC;
+        }
     }
 }
