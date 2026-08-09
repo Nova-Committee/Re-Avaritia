@@ -99,6 +99,9 @@ public class AvaritiaModelProvider implements DataProvider {
             Map.entry("infinity_pants", "item/armor/legs/layer_0"),
             Map.entry("infinity_boots", "item/armor/boots/layer_0"),
             Map.entry("neutron_horse_armor", "item/armor/horse/neutron_horse_armor_item"),
+            Map.entry("neutron_nautilus_armor", "item/armor/nautilus/neutron_nautilus_armor"),
+            Map.entry("neutron_wolf_armor", "item/armor/wolf/neutron_wolf_armor"),
+            Map.entry("neutron_harness", "item/armor/harness/neutron_harness"),
             Map.entry("infinity_elytra", "item/armor/elytra/infinity_elytra"),
             Map.entry("blaze_cube", "item/resource/blaze/blaze_cube"),
             Map.entry("diamond_lattice", "item/resource/crystal/diamond_lattice"),
@@ -217,7 +220,7 @@ public class AvaritiaModelProvider implements DataProvider {
             case "endest_pearl" -> haloModel(model, 4, true);
             case "neutron_pile" -> haloNoiseModel(model, 872415231);
             case "neutron_nugget" -> haloNoiseModel(model, 1308622847);
-            case "neutron_ingot", "neutron_gear", "neutron_horse_armor", "upgrade_smithing_template" ->
+            case "neutron_ingot", "neutron_gear", "neutron_horse_armor", "neutron_nautilus_armor", "upgrade_smithing_template" ->
                     haloNoiseModel(model, -1711276033);
             default -> ItemModelUtils.plainModel(model);
         };

@@ -85,7 +85,11 @@ public class ModItems {
     public static final DeferredItem<Item> infinity_pants = item("infinity_pants", id -> new InfinityArmorItem(ArmorType.LEGGINGS, new Item.Properties()));
     public static final DeferredItem<Item> infinity_boots = item("infinity_boots", id -> new InfinityArmorItem(ArmorType.BOOTS, new Item.Properties()));
     public static final DeferredItem<Item> neutron_horse_armor = item("neutron_horse_armor", id -> new NeutronHorseArmorItem());
+    public static final DeferredItem<Item> neutron_nautilus_armor = item("neutron_nautilus_armor", id -> new NeutronNautilusArmorItem());
+    public static final DeferredItem<Item> neutron_wolf_armor = item("neutron_wolf_armor", id -> new NeutronWolfArmorItem());
+    public static final DeferredItem<Item> neutron_harness = item("neutron_harness", id -> new NeutronHarnessItem());
     public static final DeferredItem<Item> infinity_elytra = item("infinity_elytra", id -> new InfinityElytraItem());
+
 
     /** 资源 */
     // fire

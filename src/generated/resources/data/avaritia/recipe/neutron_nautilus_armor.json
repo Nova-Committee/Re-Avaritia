@@ -7,18 +7,18 @@
         "neoforge:ingredient_type": "neoforge:components",
         "components": {
           "minecraft:potion_contents": {
-            "potion": "minecraft:swiftness"
+            "potion": "minecraft:water_breathing"
           }
         },
         "items": "minecraft:potion"
       },
       "avaritia:enhancement_core",
-      "minecraft:blue_ice"
+      "minecraft:water_bucket"
     ]
   },
-  "base": "minecraft:netherite_horse_armor",
+  "base": "minecraft:netherite_nautilus_armor",
   "result": {
-    "id": "avaritia:neutron_horse_armor"
+    "id": "avaritia:neutron_nautilus_armor"
   },
   "template": "avaritia:upgrade_smithing_template"
 }

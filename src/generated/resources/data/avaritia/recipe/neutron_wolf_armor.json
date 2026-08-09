@@ -13,12 +13,12 @@
         "items": "minecraft:potion"
       },
       "avaritia:enhancement_core",
-      "minecraft:blue_ice"
+      "minecraft:bone_block"
     ]
   },
-  "base": "minecraft:netherite_horse_armor",
+  "base": "minecraft:wolf_armor",
   "result": {
-    "id": "avaritia:neutron_horse_armor"
+    "id": "avaritia:neutron_wolf_armor"
   },
   "template": "avaritia:upgrade_smithing_template"
 }

@@ -1,0 +1,11 @@
+{
+  "model": {
+    "type": "avaritia:halo",
+    "color": -1711276033,
+    "model": "avaritia:item/neutron_harness",
+    "pulse": false,
+    "size": 6,
+    "texture": "avaritia:misc/halo_noise"
+  },
+  "oversized_in_gui": true
+}
