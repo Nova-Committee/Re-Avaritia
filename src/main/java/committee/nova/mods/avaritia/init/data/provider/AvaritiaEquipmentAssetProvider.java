@@ -20,6 +20,14 @@ public class AvaritiaEquipmentAssetProvider extends EquipmentAssetProvider {
         output.accept(ModArmorMaterial.INFINITY_ARMOR_ASSET, EquipmentClientInfo.builder()
                 .addHumanoidLayers(Const.rl("infinity_armor"), false)
                 .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, new EquipmentClientInfo.Layer(Const.rl("infinity_armor")))
+                .addLayers(EquipmentClientInfo.LayerType.NAUTILUS_BODY, new EquipmentClientInfo.Layer(Const.rl("neutron")))
+                .build());
+        output.accept(ModArmorMaterial.NEUTRON_WOLF_ARMOR_ASSET, EquipmentClientInfo.builder()
+                .addLayers(EquipmentClientInfo.LayerType.WOLF_BODY, new EquipmentClientInfo.Layer(Const.rl("neutron_wolf_armor")))
+                .build());
+
+        output.accept(ModArmorMaterial.NEUTRON_HARNESS_ASSET, EquipmentClientInfo.builder()
+                .addLayers(EquipmentClientInfo.LayerType.HAPPY_GHAST_BODY, new EquipmentClientInfo.Layer(Const.rl("neutron_harness")))
                 .build());
     }
 }

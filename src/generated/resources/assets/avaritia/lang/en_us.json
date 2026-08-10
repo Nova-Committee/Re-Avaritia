@@ -626,8 +626,8 @@
   "tooltip.infinity_pickaxe.enchant_1": "Set to Fortune X",
   "tooltip.infinity_pickaxe.enchant_2": "Set to Silk Touch",
   "item.avaritia.infinity_spear": "Stellar Piercing Spear",
-  "item.avaritia.blaze_spear": "Emberbone Piercing Spear",
-  "item.avaritia.crystal_spear": "Dualedge Realmbreaker Spear",
+  "item.avaritia.blaze_spear": "Blaze Spear",
+  "item.avaritia.crystal_spear": "Crystal Spear",
   "tooltip.avaritia.infinity_spear.desc": "Where starlight pierces, the cosmos yields.",
   "tooltip.avaritia.blaze_spear.desc": "Pierce skeletal husks, incinerate all remnants.",
   "tooltip.avaritia.crystal_spear.desc": "Cold light strides past every bound; spear thrust impales every foe.",
@@ -641,5 +641,8 @@
   "tooltip.avaritia.tool.infinity_shield_normal": "Normal",
   "tooltip.avaritia.tool.infinity_shield_defending": "Defending",
   "tooltip.avaritia.tool.infinity_shield_definite_defending": "Ultimate Defending",
-  "tooltip.avaritia.tool.infinity_shield_float":"Floating"
+  "tooltip.avaritia.tool.infinity_shield_float":"Floating",
+  "item.avaritia.neutron_nautilus_armor": "Neutron Nautilus Armor",
+  "item.avaritia.neutron_wolf_armor": "Neutron Wolf Armor",
+  "item.avaritia.neutron_harness": "Neutron Harness"
 }

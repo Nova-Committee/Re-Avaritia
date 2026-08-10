@@ -7,18 +7,18 @@
         "neoforge:ingredient_type": "neoforge:components",
         "components": {
           "minecraft:potion_contents": {
-            "potion": "minecraft:swiftness"
+            "potion": "minecraft:slow_falling"
           }
         },
         "items": "minecraft:potion"
       },
       "avaritia:enhancement_core",
-      "minecraft:blue_ice"
+      "minecraft:feather"
     ]
   },
-  "base": "minecraft:netherite_horse_armor",
+  "base": "#minecraft:harnesses",
   "result": {
-    "id": "avaritia:neutron_horse_armor"
+    "id": "avaritia:neutron_harness"
   },
   "template": "avaritia:upgrade_smithing_template"
 }

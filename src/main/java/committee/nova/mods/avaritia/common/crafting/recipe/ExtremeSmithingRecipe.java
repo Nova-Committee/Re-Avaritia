@@ -25,6 +25,7 @@ import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SmithingRecipeDisplay;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -96,10 +97,10 @@ public class ExtremeSmithingRecipe implements Recipe<ExtremeSmithingRecipeInput>
     }
 
     public List<Ingredient> getAdditionIngredients() {
-        return this.additions.items()
-                .limit(3)
-                .map(holder -> Ingredient.of(HolderSet.direct(holder)))
-                .toList();
+        if (this.additions.getCustomIngredient() instanceof CompoundIngredient compound) {
+            return compound.children().stream().limit(3).toList();
+        }
+        return List.of(this.additions);
     }
 
     @Override

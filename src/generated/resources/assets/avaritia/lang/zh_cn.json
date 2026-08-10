@@ -641,5 +641,8 @@
   "tooltip.avaritia.tool.infinity_shield_normal": "普通",
   "tooltip.avaritia.tool.infinity_shield_defending": "防御",
   "tooltip.avaritia.tool.infinity_shield_definite_defending": "终极防御",
-  "tooltip.avaritia.tool.infinity_shield_float":"漂浮"
+  "tooltip.avaritia.tool.infinity_shield_float":"漂浮",
+  "item.avaritia.neutron_nautilus_armor": "中子鹦鹉螺铠",
+  "item.avaritia.neutron_wolf_armor": "中子战狼铠",
+  "item.avaritia.neutron_harness": "中子战魂铠"
 }

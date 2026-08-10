@@ -19,6 +19,11 @@
       {
         "texture": "avaritia:infinity_armor"
       }
+    ],
+    "nautilus_body": [
+      {
+        "texture": "avaritia:neutron"
+      }
     ]
   }
 }
