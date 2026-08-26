@@ -1,6 +1,7 @@
 {
   "model": {
     "type": "avaritia:halo",
+    "color": -855638017,
     "model": "avaritia:item/infinity_ingot",
     "texture": "avaritia:misc/halo"
   },

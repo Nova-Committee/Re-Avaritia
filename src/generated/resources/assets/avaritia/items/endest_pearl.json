@@ -1,6 +1,7 @@
 {
   "model": {
     "type": "avaritia:halo",
+    "color": -855638017,
     "model": "avaritia:item/endest_pearl",
     "size": 4,
     "texture": "avaritia:misc/halo"

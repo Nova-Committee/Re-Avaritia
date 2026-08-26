@@ -1,6 +1,7 @@
 {
   "model": {
     "type": "avaritia:halo",
+    "color": -855638017,
     "model": "avaritia:item/infinity_elytra",
     "pulse": false,
     "size": 6,

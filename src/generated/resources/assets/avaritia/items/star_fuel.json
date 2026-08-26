@@ -1,6 +1,7 @@
 {
   "model": {
     "type": "avaritia:halo",
+    "color": -855638017,
     "model": "avaritia:item/star_fuel",
     "pulse": false,
     "size": 6,

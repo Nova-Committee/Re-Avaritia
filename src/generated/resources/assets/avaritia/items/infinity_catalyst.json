@@ -1,6 +1,7 @@
 {
   "model": {
     "type": "avaritia:halo",
+    "color": -855638017,
     "model": "avaritia:item/infinity_catalyst",
     "size": 8,
     "texture": "avaritia:misc/halo"

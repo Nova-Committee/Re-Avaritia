@@ -1,6 +1,7 @@
 {
   "model": {
     "type": "avaritia:halo_cosmic",
+    "color": -855638017,
     "mask": [
       "avaritia:mask/item/eternal_singularity_mask"
     ],

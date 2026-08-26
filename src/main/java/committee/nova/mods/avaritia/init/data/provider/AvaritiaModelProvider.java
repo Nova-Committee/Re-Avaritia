@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class AvaritiaModelProvider implements DataProvider {
+    private static final int HALO_COLOR = 0xCCFFFFFF;
     private static final Set<DeferredItem<Item>> HANDHELD_ITEMS = Set.of(
             ModItems.infinity_sword,
             ModItems.infinity_hoe,
@@ -207,11 +208,11 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_trident" -> infinityTridentModel(model);
             case "infinity_helmet", "infinity_chestplate", "infinity_pants", "infinity_boots" ->
                     new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask(id.getPath() + "_mask")));
-            case "singularity" -> new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, 4, false, singularityTints());
-            case "eternal_singularity" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), -16777216, 6, false, rainbowTints());
+            case "singularity" -> new AvaritiaItemModelLoaders.Halo(model, halo(), HALO_COLOR, 4, false, singularityTints());
+            case "eternal_singularity" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("eternal_singularity_mask")), halo(), HALO_COLOR, 6, false, rainbowTints());
             case "matter_cluster" -> ItemModelUtils.conditional(new ItemOverrideHandler.MatterClusterFull(),
                     matterClusterFullModel(), new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("matter_cluster_empty_mask"))));
-            case "full_matter_cluster" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
+            case "full_matter_cluster" -> new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), HALO_COLOR, 10, false);
             case "infinity_ingot", "infinity_nugget" -> haloModel(model, 10, true);
             case "infinity_catalyst", "enhancement_core" -> haloModel(model, 8, true);
             case "infinity_totem", "infinity_ring", "infinity_bucket", "infinity_elytra", "neutron_ring", "star_fuel" ->
@@ -283,21 +284,21 @@ public class AvaritiaModelProvider implements DataProvider {
     private ItemModel.Unbaked infinityClockModel(Identifier model) {
         Identifier upModel = flatModel("infinity_clock_up", "item/misc/infinity_clock_up", false);
         return ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_clock_up"),
-                new AvaritiaItemModelLoaders.Halo(upModel, halo(), -16777216, 6, true),
+                new AvaritiaItemModelLoaders.Halo(upModel, halo(), HALO_COLOR, 6, true),
                 ItemModelUtils.plainModel(model));
     }
 
     private ItemModel.Unbaked infinityUmbrellaModel(Identifier model) {
-        ItemModel.Unbaked normal = new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, 6, false);
+        ItemModel.Unbaked normal = new AvaritiaItemModelLoaders.Halo(model, halo(), HALO_COLOR, 6, false);
         ItemModel.Unbaked sun = new AvaritiaItemModelLoaders.Halo(
                 handheldModel("infinity_umbrella_sun", "item/misc/infinity_umbrella_sun"),
-                halo(), -16777216, 6, false);
+                halo(), HALO_COLOR, 6, false);
         ItemModel.Unbaked rain = new AvaritiaItemModelLoaders.Halo(
                 handheldModel("infinity_umbrella_rain", "item/misc/infinity_umbrella_rain"),
-                halo(), -16777216, 6, false);
+                halo(), HALO_COLOR, 6, false);
         ItemModel.Unbaked storm = new AvaritiaItemModelLoaders.Halo(
                 handheldModel("infinity_umbrella_storm", "item/misc/infinity_umbrella_storm"),
-                halo(), -16777216, 6, false);
+                halo(), HALO_COLOR, 6, false);
         return ItemModelUtils.rangeSelect(new ItemOverrideHandler.UmbrellaMode(), normal,
                 ItemModelUtils.override(sun, 1.0F),
                 ItemModelUtils.override(rain, 2.0F),
@@ -346,11 +347,11 @@ public class AvaritiaModelProvider implements DataProvider {
 
     private ItemModel.Unbaked matterClusterFullModel() {
         Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
-        return new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), -16777216, 10, false);
+        return new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), HALO_COLOR, 10, false);
     }
 
     private ItemModel.Unbaked haloModel(Identifier model, int size, boolean pulse) {
-        return new AvaritiaItemModelLoaders.Halo(model, halo(), -16777216, size, pulse);
+        return new AvaritiaItemModelLoaders.Halo(model, halo(), HALO_COLOR, size, pulse);
     }
 
     private ItemModel.Unbaked haloNoiseModel(Identifier model, int color) {
