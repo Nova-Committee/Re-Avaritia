@@ -347,7 +347,7 @@ public class AvaritiaModelProvider implements DataProvider {
 
     private ItemModel.Unbaked matterClusterFullModel() {
         Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
-        return new AvaritiaItemModelLoaders.HaloCosmic(model, List.of(mask("matter_cluster_full_mask")), halo(), HALO_COLOR, 10, false);
+        return new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("matter_cluster_full_mask")));
     }
 
     private ItemModel.Unbaked haloModel(Identifier model, int size, boolean pulse) {

@@ -9,15 +9,12 @@
       "model": "avaritia:item/matter_cluster"
     },
     "on_true": {
-      "type": "avaritia:halo_cosmic",
-      "color": -872415232,
+      "type": "avaritia:cosmic",
       "mask": [
         "avaritia:mask/item/matter_cluster_full_mask"
       ],
-      "model": "avaritia:item/matter_cluster/full",
-      "texture": "avaritia:misc/halo"
+      "model": "avaritia:item/matter_cluster/full"
     },
     "property": "avaritia:matter_cluster_full"
-  },
-  "oversized_in_gui": true
+  }
 }
