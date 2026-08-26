@@ -12,12 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * ??????????
- * <p>
- * ?????????????? JSON???????????????????
- * ????????????????????????????????????
- */
 public class AvaritiaLanguageProvider implements DataProvider {
     private static final String[] LOCALES = {"en_us", "ja_jp", "uk_ua", "zh_cn", "zh_tw"};
 
@@ -520,7 +514,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "jei.tooltip.avaritia.neutron_pile": "By neutron collector, you can get a neutron pile after a while",
               "jei.tooltip.avaritia.refined_coal": "Use Blaze Bush Axe to chop logs and obtain",
               "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
-              "key.avaritia.categories": "Avaritia KeyBindings",
+              "key.category.avaritia.categories": "Avaritia KeyBindings",
               "key.avaritia.config": "Open Avaritia Config",
               "key.avaritia.filter": "Open filter screen",
               "key.avaritia.neutron_ring": "Open Neutron Ring",
@@ -556,7 +550,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "singularity.avaritia.titanium": "Titanium",
               "singularity.avaritia.uranium": "Uranium",
               "singularity.avaritia.zinc": "Zinc",
-              "title.avaritia.config.title": "Re：Avaritia",
+              "title.avaritia.config.title": "Re:Avaritia",
               "title.avaritia.resourcepack": "Avaritia Old Resourcepack",
               "tooltip.armor.desc": "Armor",
               "tooltip.armor_toughness.desc": "Armor Toughness",
@@ -1085,7 +1079,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "jei.tooltip.avaritia.neutron_pile": "ニュートロニウム収集機を起動してしばらく待つことで、微量のニュートロンを得られるであろう",
               "jei.tooltip.avaritia.refined_coal": "ブレイズの手斧で原木を切り倒すと得られるであろう...",
               "jei.tooltip.shapeless.recipe": "不定形レシピ",
-              "key.avaritia.categories": "Avaritia キーバインド",
+              "key.category.avaritia.categories": "Avaritia キーバインド",
               "key.avaritia.config": "Avaritia 設定を開く",
               "key.avaritia.filter": "フィルタースクリーンを開く",
               "key.avaritia.neutron_ring": "ニュートロニウムのリングを開く",
@@ -1650,7 +1644,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "jei.tooltip.avaritia.neutron_pile": "通过中子素收集器，你能在一段时间后获得一个中子素尘埃",
               "jei.tooltip.avaritia.refined_coal": "使用焚林斧砍伐原木获取",
               "jei.tooltip.shapeless.recipe": "无序配方",
-              "key.avaritia.categories": "无尽贪婪的按键绑定",
+              "key.category.avaritia.categories": "无尽贪婪的按键绑定",
               "key.avaritia.config": "打开设置界面",
               "key.avaritia.filter": "打开过滤界面",
               "key.avaritia.neutron_ring": "打开纳须弥之戒",
@@ -2213,7 +2207,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "jei.tooltip.avaritia.neutron_pile": "通過中子素收集器，你能在一段時間後獲得一個中子素塵埃",
               "jei.tooltip.avaritia.refined_coal": "使用焚林斧砍伐原木獲取",
               "jei.tooltip.shapeless.recipe": "無序配方",
-              "key.avaritia.categories": "無盡貪婪的按鍵綁定",
+              "key.category.avaritia.categories": "無盡貪婪的按鍵綁定",
               "key.avaritia.config": "打開設定介面",
               "key.avaritia.filter": "打開過濾介面",
               "key.avaritia.neutron_ring": "打開納須彌之戒",
@@ -2791,7 +2785,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "jei.tooltip.avaritia.refined_coal": "Можна отримати, рублячи колоди сокирою буйного полум'я",
               "jei.tooltip.shapeless.recipe": "Безформний рецепт",
 
-              "key.avaritia.categories": "Прив'язки клавіш Avaritia",
+              "key.category.avaritia.categories": "Прив'язки клавіш Avaritia",
               "key.avaritia.config": "Відкрити конфігурацію Avaritia",
               "key.avaritia.filter": "Відкрити екран фільтра",
               "key.avaritia.neutron_ring": "Відкрити нейтронне кільце",

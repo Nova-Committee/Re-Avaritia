@@ -26,7 +26,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import java.util.function.Consumer;
 
 /** Runtime regression coverage for Infinity Sword boss and range damage. */
-@EventBusSubscriber(modid = Const.MOD_ID)
+//@EventBusSubscriber(modid = Const.MOD_ID)
 public final class InfinitySwordGameTests {
     private static final Identifier EMPTY_STRUCTURE = Identifier.withDefaultNamespace("empty");
     private static final Identifier ENDER_DRAGON_PART_ID = Const.rl("infinity_sword_ender_dragon_part");

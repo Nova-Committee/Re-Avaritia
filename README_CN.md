@@ -27,7 +27,7 @@
 
 ## **✏️作者:**
 
-- 程序: `cnlimiter` `Asek3` `MikhailTapio`
+- 程序: `cnlimiter` `Asek3` `MikhailTapio` `lying_ice`
 
 ## **🔒许可:**
 

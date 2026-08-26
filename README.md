@@ -27,7 +27,7 @@
 
 ## **✏️Authors:**
 
-- Programmer: `cnlimiter` `Asek3` `MikhailTapio`
+- Programmer: `cnlimiter` `Asek3` `MikhailTapio` `lying_ice`
 
 ## **🔒License:**
 
