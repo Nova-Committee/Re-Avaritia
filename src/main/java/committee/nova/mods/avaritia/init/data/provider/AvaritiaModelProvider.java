@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class AvaritiaModelProvider implements DataProvider {
-    private static final int HALO_COLOR = 0xCCFFFFFF;
+    private static final int HALO_COLOR = 0xCC000000;
     private static final Set<DeferredItem<Item>> HANDHELD_ITEMS = Set.of(
             ModItems.infinity_sword,
             ModItems.infinity_hoe,

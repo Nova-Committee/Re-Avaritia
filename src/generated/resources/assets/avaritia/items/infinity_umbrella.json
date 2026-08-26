@@ -5,7 +5,7 @@
       {
         "model": {
           "type": "avaritia:halo",
-          "color": -855638017,
+          "color": -872415232,
           "model": "avaritia:item/infinity_umbrella_sun",
           "pulse": false,
           "size": 6,
@@ -16,7 +16,7 @@
       {
         "model": {
           "type": "avaritia:halo",
-          "color": -855638017,
+          "color": -872415232,
           "model": "avaritia:item/infinity_umbrella_rain",
           "pulse": false,
           "size": 6,
@@ -27,7 +27,7 @@
       {
         "model": {
           "type": "avaritia:halo",
-          "color": -855638017,
+          "color": -872415232,
           "model": "avaritia:item/infinity_umbrella_storm",
           "pulse": false,
           "size": 6,
@@ -38,7 +38,7 @@
     ],
     "fallback": {
       "type": "avaritia:halo",
-      "color": -855638017,
+      "color": -872415232,
       "model": "avaritia:item/infinity_umbrella",
       "pulse": false,
       "size": 6,
