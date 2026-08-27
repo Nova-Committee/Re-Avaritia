@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 
 import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
+import committee.nova.mods.avaritia.common.component.CrystalSpearCooldown;
 import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
 import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
 import committee.nova.mods.avaritia.common.component.InfinityChestReference;
@@ -53,6 +54,13 @@ public class ModDataComponents {
                     () -> DataComponentType.<Integer>builder()
                             .persistent(Codec.intRange(0, CrystalSpearTarget.MAX_THRUSTS))
                             .networkSynchronized(ByteBufCodecs.VAR_INT)
+                            .cacheEncoding()
+                            .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CrystalSpearCooldown>> CRYSTAL_SPEAR_COOLDOWN =
+            DATA_COMPONENTS.register("crystal_spear_cooldown",
+                    () -> DataComponentType.<CrystalSpearCooldown>builder()
+                            .persistent(CrystalSpearCooldown.CODEC)
+                            .networkSynchronized(CrystalSpearCooldown.STREAM_CODEC)
                             .cacheEncoding()
                             .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SpearTargetReference>> INFINITY_SPEAR_TARGET =

@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.common.item.tools.crystal;
 
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
+import committee.nova.mods.avaritia.common.component.CrystalSpearCooldown;
 import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
 import committee.nova.mods.avaritia.common.item.tools.SpearMarkUtils;
 import committee.nova.mods.avaritia.common.item.tools.SpearThrustUtils;
@@ -19,6 +20,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -31,6 +34,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -73,10 +77,11 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             if (!level.isClientSide()) {
                 stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
                 if (isActive(stack, MODE_SEVENFOLD)) {
-                    stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(),
-                            CrystalSpearTarget.MAX_THRUSTS);
-                } else {
-                    stack.remove(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get());
+                    refreshCompletedCooldown(stack, level.getGameTime());
+                    if (!stack.has(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get())) {
+                        stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(),
+                                CrystalSpearTarget.MAX_THRUSTS);
+                    }
                 }
             }
             return InteractionResult.SUCCESS;
@@ -91,13 +96,24 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
 
         ServerLevel serverLevel = (ServerLevel) level;
         ServerPlayer serverPlayer = (ServerPlayer) player;
+        long gameTime = serverLevel.getGameTime();
+        CrystalSpearCooldown cooldown = stack.get(ModDataComponents.CRYSTAL_SPEAR_COOLDOWN.get());
+        if (cooldown != null && cooldown.isActive(gameTime)) {
+            player.sendOverlayMessage(Component.translatable(
+                    "message.avaritia.crystal_spear.cooldown", cooldown.remainingSeconds(gameTime)));
+            return InteractionResult.SUCCESS_SERVER;
+        }
+        refreshCompletedCooldown(stack, gameTime);
+
         Integer remainingThrusts = stack.get(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get());
         if (remainingThrusts == null) {
             remainingThrusts = CrystalSpearTarget.MAX_THRUSTS;
             stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(), remainingThrusts);
         }
         if (remainingThrusts <= 0) {
-            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.exhausted"));
+            CrystalSpearCooldown startedCooldown = startCooldown(stack, gameTime);
+            player.sendOverlayMessage(Component.translatable(
+                    "message.avaritia.crystal_spear.cooldown", startedCooldown.remainingSeconds(gameTime)));
             return InteractionResult.SUCCESS_SERVER;
         }
 
@@ -118,10 +134,34 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             int nextRemaining = remainingThrusts - 1;
             stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(), nextRemaining);
             if (nextRemaining == 0) {
-                player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.exhausted"));
+                startCooldown(stack, gameTime);
+                player.sendOverlayMessage(Component.translatable(
+                        "message.avaritia.crystal_spear.exhausted", CrystalSpearCooldown.DURATION_TICKS / 20));
             }
         }
         return InteractionResult.SUCCESS_SERVER;
+    }
+
+    @Override
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel level, @NotNull Entity owner,
+                              @Nullable EquipmentSlot slot) {
+        refreshCompletedCooldown(stack, level.getGameTime());
+        super.inventoryTick(stack, level, owner, slot);
+    }
+
+    private static CrystalSpearCooldown startCooldown(ItemStack stack, long gameTime) {
+        CrystalSpearCooldown cooldown = CrystalSpearCooldown.start(gameTime);
+        stack.set(ModDataComponents.CRYSTAL_SPEAR_COOLDOWN.get(), cooldown);
+        return cooldown;
+    }
+
+    private static void refreshCompletedCooldown(ItemStack stack, long gameTime) {
+        CrystalSpearCooldown cooldown = stack.get(ModDataComponents.CRYSTAL_SPEAR_COOLDOWN.get());
+        if (cooldown == null || cooldown.isActive(gameTime)) {
+            return;
+        }
+        stack.remove(ModDataComponents.CRYSTAL_SPEAR_COOLDOWN.get());
+        stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(), CrystalSpearTarget.MAX_THRUSTS);
     }
     // ==================== 攻击结算：护甲/韧性加成虚空伤害 + 晶爆 + 破盾 ====================
     @Override

@@ -57,6 +57,28 @@ class CrystalSpearItemContractTest {
     }
 
     @Test
+    void exhaustedBudgetStartsAPersistentPerStackCooldownAndCannotBeResetByModeSwitching() throws IOException {
+        String spear = compact(Files.readString(SPEAR_SOURCE));
+        String components = compact(Files.readString(COMPONENT_SOURCE));
+        int successfulAttack = spear.indexOf("if(SpearThrustUtils.stabTarget(serverPlayer,hand,target)){");
+        int cooldownStart = spear.indexOf("if(nextRemaining==0){startCooldown(stack,gameTime);", successfulAttack);
+
+        assertAll(
+                () -> assertTrue(cooldownStart > successfulAttack),
+                () -> assertTrue(spear.contains("CrystalSpearCooldown.DURATION_TICKS/20")),
+                () -> assertTrue(spear.contains("cooldown.remainingSeconds(gameTime)")),
+                () -> assertTrue(spear.contains("refreshCompletedCooldown(stack,level.getGameTime())")),
+                () -> assertTrue(spear.contains(
+                        "stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(),CrystalSpearTarget.MAX_THRUSTS)")),
+                () -> assertFalse(spear.contains(
+                        "else{stack.remove(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get())")),
+                () -> assertTrue(components.contains("DataComponentType<CrystalSpearCooldown>")),
+                () -> assertTrue(components.contains("persistent(CrystalSpearCooldown.CODEC)")),
+                () -> assertTrue(components.contains("networkSynchronized(CrystalSpearCooldown.STREAM_CODEC)"))
+        );
+    }
+
+    @Test
     void everyLivingHitRefreshesTheOwnerMarkAndRemoteDamageDoublesTogether() throws IOException {
         String spear = compact(Files.readString(SPEAR_SOURCE));
         String movement = compact(Files.readString(THRUST_UTILS_SOURCE));
