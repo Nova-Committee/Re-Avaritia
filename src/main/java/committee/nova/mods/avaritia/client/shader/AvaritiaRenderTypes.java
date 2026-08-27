@@ -31,7 +31,7 @@ public class AvaritiaRenderTypes {
     }
 
     public static RenderType WingGlow(Identifier Identifier) {
-        return AvaritiaRenderTypeHelper.lightning("wing_glow", Identifier);
+        return AvaritiaRenderTypeHelper.armorGlow("wing_glow", Identifier);
     }
 
     public static RenderType HELL = AvaritiaRenderTypeHelper.entityTranslucentNoCullViewOffset("hell", RenderUtils.COSMIC_TEXTURE_ISOLATED);

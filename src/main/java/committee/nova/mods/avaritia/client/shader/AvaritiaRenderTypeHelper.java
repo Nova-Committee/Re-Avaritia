@@ -14,6 +14,8 @@ import org.jspecify.annotations.Nullable;
  * 26.1.2 渲染管线兼容工具。
  */
 public class AvaritiaRenderTypeHelper {
+    static final RenderPipeline ARMOR_GLOW_PIPELINE = RenderPipelines.ARMOR_TRANSLUCENT;
+
     public static RenderType textured(String name, RenderPipeline pipeline, Identifier texture, boolean lightmap, boolean overlay, boolean sortOnUpload, boolean viewOffset) {
         return textured(name, pipeline, texture, lightmap, overlay, sortOnUpload,
                 viewOffset ? LayeringTransform.VIEW_OFFSET_Z_LAYERING : null);
@@ -49,16 +51,16 @@ public class AvaritiaRenderTypeHelper {
         return textured(name, RenderPipelines.ARMOR_TRANSLUCENT, texture, true, true, true, true);
     }
 
+    public static RenderType armorGlow(String name, Identifier texture) {
+        return textured(name, ARMOR_GLOW_PIPELINE, texture, true, true, true, true);
+    }
+
     public static RenderType entityCutoutNoCull(String name, Identifier texture) {
         return textured(name, RenderPipelines.ARMOR_CUTOUT_NO_CULL, texture, true, true, false, false);
     }
 
     public static RenderType textSeeThrough(String name, Identifier texture) {
         return textured(name, RenderPipelines.TEXT_SEE_THROUGH, texture, true, false, false, false);
-    }
-
-    public static RenderType lightning(String name, Identifier texture) {
-        return textured(name, RenderPipelines.LIGHTNING, texture, false, false, true, true);
     }
 
     public static RenderType itemTranslucent() {

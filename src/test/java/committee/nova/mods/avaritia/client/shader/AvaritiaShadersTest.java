@@ -1,11 +1,13 @@
 package committee.nova.mods.avaritia.client.shader;
 
 import com.mojang.blaze3d.platform.CompareOp;
+import net.minecraft.client.renderer.RenderPipelines;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @DisplayName("Avaritia shader pipelines")
 class AvaritiaShadersTest {
@@ -22,5 +24,12 @@ class AvaritiaShadersTest {
     void cosmicSubstrateDependsOnEffect() {
         assertEquals(0.0F, AvaritiaShaderUniforms.Effect.COSMIC.substrateAlpha());
         assertEquals(1.0F, AvaritiaShaderUniforms.Effect.COSMIC_ARMOR.substrateAlpha());
+    }
+
+    @Test
+    @DisplayName("armor glow samples texture transparency")
+    void armorGlowUsesTexturedTranslucentPipeline() {
+        assertSame(RenderPipelines.ARMOR_TRANSLUCENT,
+                AvaritiaRenderTypeHelper.ARMOR_GLOW_PIPELINE);
     }
 }

@@ -24,12 +24,13 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.Item;
 
-import java.awt.Color;
 import java.util.function.Function;
 
 public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidModel<S> {
     private static final int WHITE = ARGB.colorFromFloat(1.0F, 1.0F, 1.0F, 1.0F);
-    private static final float COSMIC_BODY_DEFORMATION = 0.05F;
+    // PlayerModel 的外层皮肤为 0.25F，无尽护腿的最小外壳为 0.40F。
+    private static final float COSMIC_BODY_DEFORMATION = 0.35F;
+    private static final float HELMET_EYE_DEPTH = -5.01F;
 
     public final ModelPart root = createLayer().bakeRoot();
     public final ModelPart bodyRoot = createBodyLayer(new CubeDeformation(1.0F)).bakeRoot();
@@ -51,6 +52,7 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         MeshDefinition meshDefinition = new MeshDefinition();
         PartDefinition partDefinition = meshDefinition.getRoot();
         CubeDeformation cubeDeformation = new CubeDeformation(0.0F);
+        partDefinition.addOrReplaceChild("helmet_eye", CubeListBuilder.create().texOffs(9, 11).addBox(-3.0F, -5.0F, HELMET_EYE_DEPTH, 6.0F, 1.0F, 0.0F, cubeDeformation), PartPose.ZERO);
         partDefinition.addOrReplaceChild("left_wing", CubeListBuilder.create().texOffs(0, 0).addBox(0.0F, -11.6F, 0.0F, 0.0F, 32.0F, 32.0F, cubeDeformation), PartPose.offsetAndRotation(-1.5F, 0.0F, 2.0F, 0.0F, (float) (Math.PI * 0.4), 0.0F));
         partDefinition.addOrReplaceChild("right_wing", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(0.0F, -11.6F, 0.0F, 0.0F, 32.0F, 32.0F, cubeDeformation), PartPose.offsetAndRotation(1.5F, 0.0F, 2.0F, 0.0F, (float) (-Math.PI * 0.4), 0.0F));
         return LayerDefinition.create(meshDefinition, 64, 64);
@@ -97,6 +99,7 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         copyPartPose(head, this.head);
         ModelPart hat = this.bodyRoot.getChild("hat");
         copyPartPose(hat, this.hat);
+        copyPartPose(this.root.getChild("helmet_eye"), this.head);
 
         ModelPart body = this.bodyRoot.getChild("body");
         copyPartPose(body, this.body);
@@ -186,10 +189,8 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         if (headItem == ModItems.infinity_helmet.get()) {
             poseStack.pushPose();
 
-            ModelPart head = this.bodyRoot.getChild("head");
-            submitPart(poseStack, output, cosmicArmorRenderType, head, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
-            ModelPart hat = this.bodyRoot.getChild("hat");
-            submitPart(poseStack, output, cosmicArmorRenderType, hat, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
+            ModelPart helmetEye = this.root.getChild("helmet_eye");
+            submitPart(poseStack, output, cosmicArmorRenderType, helmetEye, Res.ARMOR_MASK::wrap, packedLight, packedOverlay, WHITE);
 
             poseStack.popPose();
         }
@@ -237,21 +238,7 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         }
 
         if (headItem == ModItems.infinity_helmet.get() && chestItem == ModItems.infinity_chestplate.get() && legsItem == ModItems.infinity_pants.get() && feetItem == ModItems.infinity_boots.get()) {
-            poseStack.pushPose();
-
-            ModelPart hat = this.bodyRoot.getChild("hat");
-            float hue = (System.currentTimeMillis() - AvaritiaClient.lastTime) / 2000.0F;
-
-            int rgb = Color.HSBtoRGB(hue, 1.0F, 1.0F);
-            float r = ((rgb >> 16) & 0xFF) / 255.0F;
-            float g = ((rgb >> 8) & 0xFF) / 255.0F;
-            float b = (rgb & 0xFF) / 255.0F;
-
-            submitPart(poseStack, output, AvaritiaRenderTypes.Glow(Res.EYE_TEX), hat, packedLight, packedOverlay, ARGB.colorFromFloat(1.0F, r, g, b));
-
             submitBodyParts(poseStack, output, cosmicArmorRenderType, Res.ARMOR_MASK_INV::wrap, packedLight, packedOverlay, WHITE);
-
-            poseStack.popPose();
         }
     }
 
