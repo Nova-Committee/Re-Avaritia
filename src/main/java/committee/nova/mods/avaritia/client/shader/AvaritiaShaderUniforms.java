@@ -30,11 +30,15 @@ public final class AvaritiaShaderUniforms {
     }
 
     public static void set(Effect effect, float time, float yaw, float pitch, float externalScale, float opacity, float[] uvs) {
-        CURRENT_SLICES.put(effect, storage().writeUniform(new CosmicUniform(time, yaw, pitch, externalScale, opacity, copyUvs(uvs))));
+        CURRENT_SLICES.put(effect, storage().writeUniform(new CosmicUniform(
+                time, yaw, pitch, externalScale, opacity, effect.substrateAlpha(), copyUvs(uvs)
+        )));
     }
 
     public static void set(RenderType renderType, Effect effect, float time, float yaw, float pitch, float externalScale, float opacity, float[] uvs) {
-        GpuBufferSlice slice = storage().writeUniform(new CosmicUniform(time, yaw, pitch, externalScale, opacity, copyUvs(uvs)));
+        GpuBufferSlice slice = storage().writeUniform(new CosmicUniform(
+                time, yaw, pitch, externalScale, opacity, effect.substrateAlpha(), copyUvs(uvs)
+        ));
         CURRENT_SLICES.put(effect, slice);
         RENDER_TYPE_SLICES.put(renderType, slice);
     }
@@ -94,12 +98,22 @@ public final class AvaritiaShaderUniforms {
     }
 
     public enum Effect {
-        COSMIC,
-        COSMIC_ARMOR,
-        HELL,
-        ETERNAL,
-        UNSTABLE,
-        BLACK_HOLE;
+        COSMIC(0.0F),
+        COSMIC_ARMOR(1.0F),
+        HELL(0.0F),
+        ETERNAL(0.0F),
+        UNSTABLE(0.0F),
+        BLACK_HOLE(0.0F);
+
+        private final float substrateAlpha;
+
+        Effect(float substrateAlpha) {
+            this.substrateAlpha = substrateAlpha;
+        }
+
+        float substrateAlpha() {
+            return this.substrateAlpha;
+        }
 
         private static @Nullable Effect fromPipeline(@Nullable RenderPipeline pipeline) {
             if (pipeline == AvaritiaShaders.COSMIC_SHADER) {
@@ -124,7 +138,8 @@ public final class AvaritiaShaderUniforms {
         }
     }
 
-    private record CosmicUniform(float time, float yaw, float pitch, float externalScale, float opacity, float[] uvs)
+    private record CosmicUniform(float time, float yaw, float pitch, float externalScale, float opacity,
+                                 float substrateAlpha, float[] uvs)
             implements DynamicUniformStorage.DynamicUniform {
         @Override
         public void write(ByteBuffer buffer) {
@@ -133,7 +148,7 @@ public final class AvaritiaShaderUniforms {
             buffer.putFloat(this.pitch);
             buffer.putFloat(this.externalScale);
             buffer.putFloat(this.opacity);
-            buffer.putFloat(0.0F);
+            buffer.putFloat(this.substrateAlpha);
             buffer.putFloat(0.0F);
             buffer.putFloat(0.0F);
 

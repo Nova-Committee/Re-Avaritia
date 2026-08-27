@@ -22,6 +22,7 @@ layout(std140) uniform AvaritiaCosmic {
 #define pitch CosmicParams0.z
 #define externalScale CosmicParams0.w
 #define opacity CosmicParams1.x
+#define substrateAlpha CosmicParams1.y
 
 in float sphericalVertexDistance;
 in float cylindricalVertexDistance;
@@ -57,8 +58,8 @@ void main (void)
 
     int uvtiles = 16;
 
-    // Keep the substrate transparent; only sampled stars contribute alpha.
-    vec4 col = vec4(0.1,0.0,0.0,0.0);
+    // Item overlays keep a transparent substrate; armor supplies an opaque cosmic interior.
+    vec4 col = vec4(0.1,0.0,0.0,substrateAlpha);
 
     float pulse = mod(time,400)/400.0;
 

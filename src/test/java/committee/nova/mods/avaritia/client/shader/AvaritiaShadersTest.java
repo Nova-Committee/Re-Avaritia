@@ -16,4 +16,11 @@ class AvaritiaShadersTest {
         assertEquals(CompareOp.LESS_THAN_OR_EQUAL, AvaritiaShaders.ITEM_EFFECT_OVERLAY_DEPTH.depthTest());
         assertFalse(AvaritiaShaders.ITEM_EFFECT_OVERLAY_DEPTH.writeDepth());
     }
+
+    @Test
+    @DisplayName("item overlays stay transparent while armor keeps a cosmic interior")
+    void cosmicSubstrateDependsOnEffect() {
+        assertEquals(0.0F, AvaritiaShaderUniforms.Effect.COSMIC.substrateAlpha());
+        assertEquals(1.0F, AvaritiaShaderUniforms.Effect.COSMIC_ARMOR.substrateAlpha());
+    }
 }
