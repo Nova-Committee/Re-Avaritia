@@ -74,7 +74,7 @@ public class InfinityArmorItem extends Item implements IUndamageable {
         }
         if (armorType.getSlot() == EquipmentSlot.CHEST) {
             adder.accept(Component.literal(""));
-            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.flying_speed")));
+            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.flying_speed")));
         }
         if (armorType.getSlot() == EquipmentSlot.LEGS) {
             adder.accept(Component.literal(""));
@@ -82,7 +82,7 @@ public class InfinityArmorItem extends Item implements IUndamageable {
         }
         if (armorType.getSlot() == EquipmentSlot.FEET) {
             adder.accept(Component.literal(""));
-            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.generic.movement_speed")));
+            adder.accept(Component.literal(ChatFormatting.BLUE + "+" + ChatFormatting.ITALIC + TextUtils.makeSANIC(I18n.get("tooltip.infinity")) + ChatFormatting.RESET + ChatFormatting.BLUE + "% ").append(I18n.get("attribute.name.movement_speed")));
         }
         super.appendHoverText(stack, context, display, adder, isAdvanced);
     }
