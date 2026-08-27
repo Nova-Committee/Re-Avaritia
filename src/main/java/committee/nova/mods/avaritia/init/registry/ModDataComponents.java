@@ -4,6 +4,7 @@ import committee.nova.mods.avaritia.Const;
 
 import committee.nova.mods.avaritia.Avaritia;
 import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
+import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
 import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
 import committee.nova.mods.avaritia.common.component.InfinityChestReference;
 import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
@@ -39,6 +40,13 @@ public class ModDataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> ACTIVE = registerBoolean("active");
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> TOOL_FILTERS = registerTag("tool_filters");
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CrystalSpearTarget>> CRYSTAL_SPEAR_TARGET =
+            DATA_COMPONENTS.register("crystal_spear_target",
+                    () -> DataComponentType.<CrystalSpearTarget>builder()
+                            .persistent(CrystalSpearTarget.CODEC)
+                            .networkSynchronized(CrystalSpearTarget.STREAM_CODEC)
+                            .cacheEncoding()
+                            .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_CREATIVE_TAB_ICON =
             DATA_COMPONENTS.register("is_creative_tab_icon",
                     () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());

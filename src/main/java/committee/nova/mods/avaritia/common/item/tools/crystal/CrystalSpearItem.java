@@ -1,25 +1,25 @@
 package committee.nova.mods.avaritia.common.item.tools.crystal;
 
-import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
-import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import lombok.NonNull;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -29,20 +29,22 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.AttackRange;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.init.registry.ModToolTiers.CRYSTAL;
 
-public class CrystalSpearItem extends Item implements ITooltip, ISwitchable, InitEnchantItem {
+public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
+    private static final String MODE_NORMAL = "crystal_spear_normal";
+    private static final String MODE_SHATTER = "crystal_shatter";
+    private static final String MODE_SEVENFOLD = "crystal_spear_sevenfold";
+    private static final List<String> MODES = List.of(MODE_NORMAL, MODE_SHATTER, MODE_SEVENFOLD);
+
     public CrystalSpearItem() {
         super(ModItems.properties()
                 .rarity(ModRarities.EPIC)
@@ -55,33 +57,154 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable, Ini
                         .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, ModToolTiers.CRYSTAL.speed(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                         .build()));
     }
-    private static final String MODE_SHATTER = "crystal_shatter";
     /** 每点护甲值增加的伤害倍率 */
     private static final float ARMOR_BONUS = 0.25F;
     /** 每点盔甲韧性增加的伤害倍率 */
     private static final float TOUGHNESS_BONUS = 0.40F;
-    private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.LUNGE, 3);
+    /** 远距离目标区块加载期间避免重复提交同一攻击 */
+    private static final int TARGET_LOAD_COOLDOWN_TICKS = 10;
     public ToolMaterial getTier() {
         return ModToolTiers.CRYSTAL;
-    }
-    @Override
-    public int getInitEnchantLevel(ItemInstance stack, Holder<Enchantment> enchantmentHolder) {
-        if (enchantmentHolder.is(Enchantments.LUNGE)) return 3;
-        return 0;
     }
     // ==================== 模式切换：shift+右键 ====================
     @Override
     public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            switchMode(level, player, hand, MODE_SHATTER);
+            cycleMode(level, player, hand, MODES);
+            if (!level.isClientSide() && !isActive(stack, MODE_SEVENFOLD)) {
+                stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+            }
             return InteractionResult.SUCCESS;
         }
-        return super.use(level, player, hand);
+
+        if (!isActive(stack, MODE_SEVENFOLD)) {
+            return super.use(level, player, hand);
+        }
+        CrystalSpearTarget lockedTarget = stack.get(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+        if (lockedTarget == null) {
+            return super.use(level, player, hand);
+        }
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        ServerLevel serverLevel = (ServerLevel) level;
+        if (tryAttackLockedTarget(serverLevel, player, hand, stack, lockedTarget)) {
+            return InteractionResult.SUCCESS_SERVER;
+        }
+        if (!lockedTarget.dimension().equals(level.dimension().identifier())) {
+            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.target_unavailable"));
+            return InteractionResult.SUCCESS_SERVER;
+        }
+
+        loadTargetChunkAndAttack(serverLevel, player, hand, stack, lockedTarget);
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
+    private static boolean tryAttackLockedTarget(ServerLevel level, Player player, InteractionHand hand,
+                                                 ItemStack stack, CrystalSpearTarget lockedTarget) {
+        LivingEntity target = lockedTarget.resolve(level);
+        if (target == null || target.level() != level) {
+            return false;
+        }
+        if (target == player || !target.isAlive() || target.isRemoved()) {
+            stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.target_invalid"));
+            return true;
+        }
+
+        float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        boolean attacked = player.stabAttack(hand.asEquipmentSlot(), target, damage, true, false, false);
+        if (!attacked) {
+            return true;
+        }
+
+        player.onAttack();
+        CrystalSpearTarget currentTarget = stack.get(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+        if (currentTarget == null || !currentTarget.targetId().equals(lockedTarget.targetId())) {
+            return true;
+        }
+
+        CrystalSpearTarget nextTarget = currentTarget.consumeThrust();
+        if (nextTarget == null) {
+            stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.exhausted"));
+        } else {
+            stack.set(ModDataComponents.CRYSTAL_SPEAR_TARGET.get(), nextTarget);
+        }
+        return true;
+    }
+
+    private static void loadTargetChunkAndAttack(ServerLevel level, Player player, InteractionHand hand,
+                                                 ItemStack stack, CrystalSpearTarget requestedTarget) {
+        player.getCooldowns().addCooldown(stack, TARGET_LOAD_COOLDOWN_TICKS);
+        level.getChunkSource()
+                .addTicketAndLoadWithRadius(TicketType.PORTAL, requestedTarget.lastKnownChunk(), 0)
+                .whenComplete((ignored, error) -> level.getServer().execute(() -> {
+                    if (player.isRemoved() || player.level() != level || player.getItemInHand(hand) != stack) {
+                        return;
+                    }
+                    if (error != null) {
+                        player.sendOverlayMessage(Component.translatable(
+                                "message.avaritia.crystal_spear.target_unavailable"));
+                        return;
+                    }
+
+                    CrystalSpearTarget currentTarget = stack.get(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+                    if (currentTarget == null || !currentTarget.targetId().equals(requestedTarget.targetId())) {
+                        return;
+                    }
+                    if (!tryAttackLockedTarget(level, player, hand, stack, currentTarget)) {
+                        player.sendOverlayMessage(Component.translatable(
+                                "message.avaritia.crystal_spear.target_unavailable"));
+                    }
+                }));
+    }
+
+    @Override
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel level, @NotNull Entity owner,
+                              @Nullable EquipmentSlot slot) {
+        if (!isActive(stack, MODE_SEVENFOLD)) {
+            stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+            super.inventoryTick(stack, level, owner, slot);
+            return;
+        }
+
+        CrystalSpearTarget lockedTarget = stack.get(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+        if (lockedTarget != null) {
+            LivingEntity target = lockedTarget.resolve(level);
+            if (target != null) {
+                if (!target.isAlive() || target.isRemoved() || target == owner) {
+                    stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+                } else {
+                    CrystalSpearTarget refreshedTarget = lockedTarget.refreshPosition(target);
+                    if (refreshedTarget != lockedTarget) {
+                        stack.set(ModDataComponents.CRYSTAL_SPEAR_TARGET.get(), refreshedTarget);
+                    }
+                }
+            }
+        }
+        super.inventoryTick(stack, level, owner, slot);
     }
     // ==================== 攻击结算：护甲/韧性加成虚空伤害 + 晶爆 + 破盾 ====================
     @Override
     public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         if (attacker instanceof Player player && target.level() instanceof ServerLevel serverLevel && target.isAlive()) {
+            if (isActive(stack, MODE_SEVENFOLD)) {
+                CrystalSpearTarget currentTarget = stack.get(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+                if (currentTarget == null || !currentTarget.matches(target)) {
+                    stack.set(ModDataComponents.CRYSTAL_SPEAR_TARGET.get(), CrystalSpearTarget.of(target));
+                    player.sendOverlayMessage(Component.translatable(
+                            "message.avaritia.crystal_spear.locked", target.getDisplayName()));
+                } else {
+                    CrystalSpearTarget refreshedTarget = currentTarget.refreshPosition(target);
+                    if (refreshedTarget != currentTarget) {
+                        stack.set(ModDataComponents.CRYSTAL_SPEAR_TARGET.get(), refreshedTarget);
+                    }
+                }
+            }
+
             // 破盾：被击中的持盾玩家盾牌失效（只强制停用+冷却）
             if (target instanceof ServerPlayer serverPlayer) {
                 serverPlayer.getCooldowns().addCooldown(serverPlayer.getUseItem(), 1200);
@@ -119,11 +242,6 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable, Ini
                 }
             }
 
-            // 蓄力突刺（KineticWeapon）原版不会触发 postPiercingAttack，这里补调用以保留自带突刺附魔；
-            // 左键穿刺（PiercingWeapon）原版已触发，重复调用会造成二次突进，所以用 isUsingItem 区分
-            if (player.isUsingItem()) {
-                EnchantmentHelper.doPostPiercingAttackEffects(serverLevel, player);
-            }
         }
         super.hurtEnemy(stack, target, attacker);
     }
@@ -143,7 +261,17 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable, Ini
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context,
                                 @NonNull TooltipDisplay display, @NotNull Consumer<Component> tooltipComponents,
                                 @NotNull TooltipFlag isAdvanced) {
-        this.initEnchantment.appendHoverText(context, tooltipComponents);
+        if (isActive(stack, MODE_SEVENFOLD)) {
+            tooltipComponents.accept(Component.translatable("tooltip.avaritia.tool.crystal_spear_sevenfold")
+                    .withStyle(ChatFormatting.AQUA));
+            CrystalSpearTarget lockedTarget = stack.get(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
+            if (lockedTarget != null) {
+                tooltipComponents.accept(Component.translatable(
+                                "tooltip.avaritia.crystal_spear_sevenfold.remaining",
+                                lockedTarget.remainingThrusts())
+                        .withStyle(ChatFormatting.AQUA));
+            }
+        }
         if (isActive(stack, MODE_SHATTER)) {
             tooltipComponents.accept(Component.translatable("tooltip.avaritia.crystal_shatter.active")
                     .withStyle(ChatFormatting.LIGHT_PURPLE));

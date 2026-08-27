@@ -37,7 +37,7 @@ public class AvaritiaLanguageProvider implements DataProvider {
         return DataProvider.saveStable(output, language, this.pathProvider.json(Identifier.fromNamespaceAndPath(Const.MOD_ID, locale)));
     }
 
-    private static JsonObject buildLanguage(String locale) {
+    static JsonObject buildLanguage(String locale) {
         JsonObject language = JsonParser.parseString(legacyJson(locale)).getAsJsonObject();
         JsonObject extras = JsonParser.parseString(extraJson(locale)).getAsJsonObject();
         for (var entry : extras.entrySet()) {
@@ -3007,7 +3007,34 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "title.avaritia.item_filter": "Infinity Tool Filter",
               "title.avaritia.item_select": "Select Item",
               "tooltip.avaritia.jade.collector_output": "Output: %s",
-              "tooltip.avaritia.neutron_ring.desc": "Neutrons in the palm of your hand..."
+              "tooltip.avaritia.neutron_ring.desc": "Neutrons in the palm of your hand...",
+              "item.avaritia.infinity_spear": "Stellar Piercing Spear",
+              "item.avaritia.blaze_spear": "Blaze Spear",
+              "item.avaritia.crystal_spear": "Crystal Spear",
+              "tooltip.avaritia.infinity_spear.desc": "Where starlight pierces, the cosmos yields.",
+              "tooltip.avaritia.blaze_spear.desc": "Pierce skeletal husks, incinerate all remnants.",
+              "tooltip.avaritia.crystal_spear.desc": "Cold light strides past every bound; spear thrust impales every foe.",
+              "tooltip.avaritia.tool.lunge": "Lunge",
+              "tooltip.avaritia.tool.infinity_spear_lunge": "Lunge",
+              "tooltip.avaritia.infinity_spear_lunge.active": "Lunge Mode Active",
+              "tooltip.avaritia.tool.crystal_shatter": "Crystal Shatter",
+              "tooltip.avaritia.crystal_shatter.active": "Crystal Shatter Active",
+              "tooltip.avaritia.tool.crystal_spear_normal": "Normal",
+              "tooltip.avaritia.tool.crystal_spear_sevenfold": "Seven In, Seven Out",
+              "tooltip.avaritia.crystal_spear_sevenfold.remaining": "Seven In, Seven Out — Thrusts Remaining: %s/14",
+              "message.avaritia.crystal_spear.locked": "Locked target: %s",
+              "message.avaritia.crystal_spear.target_unavailable": "Locked target is temporarily unavailable.",
+              "message.avaritia.crystal_spear.target_invalid": "Locked target is no longer valid.",
+              "message.avaritia.crystal_spear.exhausted": "Seven In, Seven Out complete. Target lock released.",
+              "tooltip.avaritia.tool.blaze_spear_blast": "Blast",
+              "tooltip.avaritia.blaze_spear_blast.active": "Blast Mode Active",
+              "tooltip.avaritia.tool.infinity_shield_normal": "Normal",
+              "tooltip.avaritia.tool.infinity_shield_defending": "Defending",
+              "tooltip.avaritia.tool.infinity_shield_definite_defending": "Ultimate Defending",
+              "tooltip.avaritia.tool.infinity_shield_float": "Floating",
+              "item.avaritia.neutron_nautilus_armor": "Neutron Nautilus Armor",
+              "item.avaritia.neutron_wolf_armor": "Neutron Wolf Armor",
+              "item.avaritia.neutron_harness": "Neutron Harness"
             }
             """;
             case "ja_jp" -> """
@@ -3060,7 +3087,34 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "title.avaritia.item_filter": "インフィニティツールフィルター",
               "title.avaritia.item_select": "アイテムを選択",
               "tooltip.avaritia.jade.collector_output": "出力: %s",
-              "tooltip.avaritia.neutron_ring.desc": "中性子を掌中に…"
+              "tooltip.avaritia.neutron_ring.desc": "中性子を掌中に…",
+              "item.avaritia.infinity_spear": "星穿ちの槍",
+              "item.avaritia.blaze_spear": "ブレイズスピア",
+              "item.avaritia.crystal_spear": "クリスタルスピア",
+              "tooltip.avaritia.infinity_spear.desc": "星光が貫く先、宇宙すら屈する。",
+              "tooltip.avaritia.blaze_spear.desc": "骸を貫き、残骸を焼き尽くす。",
+              "tooltip.avaritia.crystal_spear.desc": "冷光はあらゆる境界を越え、槍の一突きが全ての敵を貫く。",
+              "tooltip.avaritia.tool.lunge": "突進",
+              "tooltip.avaritia.tool.infinity_spear_lunge": "突進",
+              "tooltip.avaritia.infinity_spear_lunge.active": "突進モード有効",
+              "tooltip.avaritia.tool.crystal_shatter": "クリスタルシャター",
+              "tooltip.avaritia.crystal_shatter.active": "クリスタルシャター有効",
+              "tooltip.avaritia.tool.crystal_spear_normal": "通常",
+              "tooltip.avaritia.tool.crystal_spear_sevenfold": "七進七退",
+              "tooltip.avaritia.crystal_spear_sevenfold.remaining": "七進七退 — 残りの標的突き: %s/14",
+              "message.avaritia.crystal_spear.locked": "ターゲットをロック: %s",
+              "message.avaritia.crystal_spear.target_unavailable": "ロック対象は現在利用できません。",
+              "message.avaritia.crystal_spear.target_invalid": "ロック対象は無効になりました。",
+              "message.avaritia.crystal_spear.exhausted": "七進七退が完了し、ターゲットロックを解除しました。",
+              "tooltip.avaritia.tool.blaze_spear_blast": "爆炎",
+              "tooltip.avaritia.blaze_spear_blast.active": "爆炎モード有効",
+              "tooltip.avaritia.tool.infinity_shield_normal": "通常",
+              "tooltip.avaritia.tool.infinity_shield_defending": "防御",
+              "tooltip.avaritia.tool.infinity_shield_definite_defending": "究極防御",
+              "tooltip.avaritia.tool.infinity_shield_float": "浮遊",
+              "item.avaritia.neutron_nautilus_armor": "ニュートロン・ノーチラスアーマー",
+              "item.avaritia.neutron_wolf_armor": "ニュートロン・ウルフアーマー",
+              "item.avaritia.neutron_harness": "ニュートロン・ハーネス"
             }
             """;
             case "zh_cn" -> """
@@ -3113,7 +3167,34 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "title.avaritia.item_filter": "无尽工具过滤器",
               "title.avaritia.item_select": "选择物品",
               "tooltip.avaritia.jade.collector_output": "输出：%s",
-              "tooltip.avaritia.neutron_ring.desc": "中子尽在掌中…"
+              "tooltip.avaritia.neutron_ring.desc": "中子尽在掌中…",
+              "item.avaritia.infinity_spear": "星辰贯穿之矛",
+              "item.avaritia.blaze_spear": "炽烬之穿骸矛",
+              "item.avaritia.crystal_spear": "双锋破界之矛",
+              "tooltip.avaritia.infinity_spear.desc": "星辉所向，寰宇尽穿。",
+              "tooltip.avaritia.blaze_spear.desc": "刺枯骸躯壳，烬焚尽残形。",
+              "tooltip.avaritia.crystal_spear.desc": "寒芒所向，破界无拘；矛锋所贯，众敌难栖。",
+              "tooltip.avaritia.tool.lunge": "突进",
+              "tooltip.avaritia.tool.infinity_spear_lunge": "突进",
+              "tooltip.avaritia.infinity_spear_lunge.active": "突进模式已激活",
+              "tooltip.avaritia.tool.crystal_shatter": "晶爆",
+              "tooltip.avaritia.crystal_shatter.active": "晶爆已激活",
+              "tooltip.avaritia.tool.crystal_spear_normal": "普通",
+              "tooltip.avaritia.tool.crystal_spear_sevenfold": "七进七出",
+              "tooltip.avaritia.crystal_spear_sevenfold.remaining": "七进七出——剩余标记突刺：%s/14",
+              "message.avaritia.crystal_spear.locked": "已锁定目标：%s",
+              "message.avaritia.crystal_spear.target_unavailable": "锁定目标暂时不可用",
+              "message.avaritia.crystal_spear.target_invalid": "锁定目标已失效",
+              "message.avaritia.crystal_spear.exhausted": "七进七出已完成，目标锁定解除",
+              "tooltip.avaritia.tool.blaze_spear_blast": "炎爆",
+              "tooltip.avaritia.blaze_spear_blast.active": "炎爆模式已激活",
+              "tooltip.avaritia.tool.infinity_shield_normal": "普通",
+              "tooltip.avaritia.tool.infinity_shield_defending": "防御",
+              "tooltip.avaritia.tool.infinity_shield_definite_defending": "终极防御",
+              "tooltip.avaritia.tool.infinity_shield_float": "漂浮",
+              "item.avaritia.neutron_nautilus_armor": "中子鹦鹉螺铠",
+              "item.avaritia.neutron_wolf_armor": "中子战狼铠",
+              "item.avaritia.neutron_harness": "中子战魂铠"
             }
             """;
             case "zh_tw" -> """
@@ -3166,7 +3247,34 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "title.avaritia.item_filter": "無盡工具過濾器",
               "title.avaritia.item_select": "選擇物品",
               "tooltip.avaritia.jade.collector_output": "輸出：%s",
-              "tooltip.avaritia.neutron_ring.desc": "中子盡在掌中…"
+              "tooltip.avaritia.neutron_ring.desc": "中子盡在掌中…",
+              "item.avaritia.infinity_spear": "星辰貫穿之矛",
+              "item.avaritia.blaze_spear": "熾燼之穿骸矛",
+              "item.avaritia.crystal_spear": "雙鋒破界之矛",
+              "tooltip.avaritia.infinity_spear.desc": "星輝所向，寰宇盡穿。",
+              "tooltip.avaritia.blaze_spear.desc": "刺枯骸軀殼，燼焚盡殘形。",
+              "tooltip.avaritia.crystal_spear.desc": "寒芒所向，破界無拘；矛鋒所貫，眾敵難棲。",
+              "tooltip.avaritia.tool.lunge": "突進",
+              "tooltip.avaritia.tool.infinity_spear_lunge": "突進",
+              "tooltip.avaritia.infinity_spear_lunge.active": "突進模式已啟用",
+              "tooltip.avaritia.tool.crystal_shatter": "晶爆",
+              "tooltip.avaritia.crystal_shatter.active": "晶爆已啟用",
+              "tooltip.avaritia.tool.crystal_spear_normal": "普通",
+              "tooltip.avaritia.tool.crystal_spear_sevenfold": "七進七出",
+              "tooltip.avaritia.crystal_spear_sevenfold.remaining": "七進七出——剩餘標記突刺：%s/14",
+              "message.avaritia.crystal_spear.locked": "已鎖定目標：%s",
+              "message.avaritia.crystal_spear.target_unavailable": "鎖定目標暫時無法使用",
+              "message.avaritia.crystal_spear.target_invalid": "鎖定目標已失效",
+              "message.avaritia.crystal_spear.exhausted": "七進七出已完成，目標鎖定解除",
+              "tooltip.avaritia.tool.blaze_spear_blast": "炎爆",
+              "tooltip.avaritia.blaze_spear_blast.active": "炎爆模式已啟用",
+              "tooltip.avaritia.tool.infinity_shield_normal": "普通",
+              "tooltip.avaritia.tool.infinity_shield_defending": "防禦",
+              "tooltip.avaritia.tool.infinity_shield_definite_defending": "終極防禦",
+              "tooltip.avaritia.tool.infinity_shield_float": "漂浮",
+              "item.avaritia.neutron_nautilus_armor": "中子鸚鵡螺鎧",
+              "item.avaritia.neutron_wolf_armor": "中子戰狼鎧",
+              "item.avaritia.neutron_harness": "中子戰魂鎧"
             }
             """;
             case "uk_ua" -> """
@@ -3219,7 +3327,34 @@ public class AvaritiaLanguageProvider implements DataProvider {
               "title.avaritia.item_filter": "Фільтр інструментів нескінченності",
               "title.avaritia.item_select": "Вибір предмета",
               "tooltip.avaritia.jade.collector_output": "Вихід: %s",
-              "tooltip.avaritia.neutron_ring.desc": "Нейтрони у вашій долоні..."
+              "tooltip.avaritia.neutron_ring.desc": "Нейтрони у вашій долоні...",
+              "item.avaritia.infinity_spear": "Спис зоряного пронизування",
+              "item.avaritia.blaze_spear": "Вогняний спис",
+              "item.avaritia.crystal_spear": "Кристальний спис",
+              "tooltip.avaritia.infinity_spear.desc": "Куди проникає зоряне світло, там поступається сам космос.",
+              "tooltip.avaritia.blaze_spear.desc": "Пронизує кістяні оболонки та спалює всі рештки.",
+              "tooltip.avaritia.crystal_spear.desc": "Холодне світло долає всі межі; удар списа пронизує кожного ворога.",
+              "tooltip.avaritia.tool.lunge": "Ривок",
+              "tooltip.avaritia.tool.infinity_spear_lunge": "Ривок",
+              "tooltip.avaritia.infinity_spear_lunge.active": "Режим ривка активовано",
+              "tooltip.avaritia.tool.crystal_shatter": "Кристальний вибух",
+              "tooltip.avaritia.crystal_shatter.active": "Кристальний вибух активовано",
+              "tooltip.avaritia.tool.crystal_spear_normal": "Звичайний",
+              "tooltip.avaritia.tool.crystal_spear_sevenfold": "Сім входів, сім виходів",
+              "tooltip.avaritia.crystal_spear_sevenfold.remaining": "Сім входів, сім виходів — залишилось випадів: %s/14",
+              "message.avaritia.crystal_spear.locked": "Ціль зафіксовано: %s",
+              "message.avaritia.crystal_spear.target_unavailable": "Зафіксована ціль тимчасово недоступна.",
+              "message.avaritia.crystal_spear.target_invalid": "Зафіксована ціль більше недійсна.",
+              "message.avaritia.crystal_spear.exhausted": "Сім входів, сім виходів завершено. Фіксацію цілі знято.",
+              "tooltip.avaritia.tool.blaze_spear_blast": "Вибух",
+              "tooltip.avaritia.blaze_spear_blast.active": "Режим вибуху активовано",
+              "tooltip.avaritia.tool.infinity_shield_normal": "Звичайний",
+              "tooltip.avaritia.tool.infinity_shield_defending": "Захист",
+              "tooltip.avaritia.tool.infinity_shield_definite_defending": "Абсолютний захист",
+              "tooltip.avaritia.tool.infinity_shield_float": "Ширяння",
+              "item.avaritia.neutron_nautilus_armor": "Нейтронна броня наутилуса",
+              "item.avaritia.neutron_wolf_armor": "Нейтронна броня вовка",
+              "item.avaritia.neutron_harness": "Нейтронна упряж"
             }
             """;
             default -> "{}";
