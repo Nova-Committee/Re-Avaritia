@@ -37,7 +37,7 @@ public class AvaritiaAdvancementProvider implements AdvancementSubProvider {
                 .display(ModItems.infinity_catalyst.get(),
                         Component.translatable("advancements.avaritia.start.title"),
                         Component.translatable("advancements.avaritia.start.desc"),
-                        Const.rl("gui/advancements/backgrounds/neutron"),
+                        Const.rl("block/resource/neutron"),
                         AdvancementType.TASK,
                         false,
                         false,

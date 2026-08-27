@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SpearTargetReferenceTest {
     @Test
-    void persistentCodecPreservesUnlimitedTargetReference() {
-        SpearTargetReference expected = target(UUID.randomUUID(), 24, -13);
+    void persistentCodecPreservesOwnerExpiryAndTargetReference() {
+        SpearTargetReference expected = target(UUID.randomUUID(), UUID.randomUUID(), 24, -13, 1_200L);
 
         var encoded = SpearTargetReference.CODEC.encodeStart(NbtOps.INSTANCE, expected).getOrThrow();
         SpearTargetReference decoded = SpearTargetReference.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow();
@@ -21,8 +23,8 @@ class SpearTargetReferenceTest {
     }
 
     @Test
-    void networkCodecPreservesUnlimitedTargetReference() {
-        SpearTargetReference expected = target(UUID.randomUUID(), -21, 47);
+    void networkCodecPreservesOwnerExpiryAndTargetReference() {
+        SpearTargetReference expected = target(UUID.randomUUID(), UUID.randomUUID(), -21, 47, 2_400L);
         var buffer = Unpooled.buffer();
         try {
             SpearTargetReference.STREAM_CODEC.encode(buffer, expected);
@@ -33,6 +35,16 @@ class SpearTargetReferenceTest {
     }
 
     @Test
+    void ownerAndExpiryMustBothMatch() {
+        UUID owner = UUID.randomUUID();
+        SpearTargetReference reference = target(UUID.randomUUID(), owner, 0, 0, 600L);
+
+        assertTrue(reference.isOwnedBy(owner, 599L));
+        assertFalse(reference.isOwnedBy(owner, 600L));
+        assertFalse(reference.isOwnedBy(UUID.randomUUID(), 599L));
+    }
+
+    @Test
     void blockCoordinatesUseSignedMinecraftChunkCoordinates() {
         assertEquals(20, SpearTargetReference.blockToChunk(321));
         assertEquals(-9, SpearTargetReference.blockToChunk(-129));
@@ -40,11 +52,14 @@ class SpearTargetReferenceTest {
         assertEquals(31, SpearTargetReference.blockToChunk(511));
     }
 
-    private static SpearTargetReference target(UUID targetId, int chunkX, int chunkZ) {
+    private static SpearTargetReference target(UUID targetId, UUID ownerId,
+                                               int chunkX, int chunkZ, long expiresAt) {
         return new SpearTargetReference(
                 targetId,
+                ownerId,
                 Identifier.withDefaultNamespace("overworld"),
                 chunkX,
-                chunkZ);
+                chunkZ,
+                expiresAt);
     }
 }

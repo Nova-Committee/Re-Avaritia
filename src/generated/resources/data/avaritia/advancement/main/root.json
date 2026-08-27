@@ -13,7 +13,7 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "avaritia:gui/advancements/backgrounds/neutron",
+    "background": "avaritia:block/resource/neutron",
     "description": {
       "translate": "advancements.avaritia.start.desc"
     },

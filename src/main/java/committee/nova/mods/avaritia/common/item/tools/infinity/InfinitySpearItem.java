@@ -4,8 +4,10 @@ import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.common.component.SpearMark;
 import committee.nova.mods.avaritia.common.component.SpearTargetReference;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.common.item.tools.SpearMarkUtils;
 import committee.nova.mods.avaritia.common.item.tools.SpearThrustUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
@@ -26,7 +28,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -38,11 +39,9 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -82,9 +81,6 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
             cycleMode(level, player, hand, MODES);
-            if (!level.isClientSide() && !isActive(stack, MODE_LONG_RANGE)) {
-                stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-            }
             return InteractionResult.SUCCESS;
         }
 
@@ -97,27 +93,34 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
 
         ServerLevel serverLevel = (ServerLevel) level;
         ServerPlayer serverPlayer = (ServerPlayer) player;
-        SpearTargetReference lockedTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-        if (lockedTarget != null) {
-            if (!lockedTarget.dimension().equals(level.dimension().identifier())) {
+        SpearTargetReference markedTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+        if (markedTarget != null) {
+            if (!markedTarget.isOwnedBy(player.getUUID(), level.getGameTime())) {
+                stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+                markedTarget = null;
+            } else if (!markedTarget.dimension().equals(level.dimension().identifier())) {
                 player.sendOverlayMessage(Component.translatable(
                         "message.avaritia.infinity_spear.target_unavailable"));
                 return InteractionResult.SUCCESS_SERVER;
             }
+        }
 
-            LivingEntity target = lockedTarget.resolve(level);
+        if (markedTarget != null) {
+            LivingEntity target = markedTarget.resolve(level);
             if (target == null) {
-                loadTargetChunkAndAttack(serverLevel, serverPlayer, hand, stack, lockedTarget);
+                loadTargetChunkAndAttack(serverLevel, serverPlayer, hand, stack, markedTarget);
                 return InteractionResult.SUCCESS_SERVER;
             }
-            if (isEligibleTarget(player, target)) {
+            if (SpearThrustUtils.isEligibleTarget(player, target)
+                    && SpearMarkUtils.isMarkedBy(target, player)) {
                 tryAttackTarget(serverLevel, serverPlayer, hand, target);
                 return InteractionResult.SUCCESS_SERVER;
             }
             stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
         }
 
-        LivingEntity target = selectLongRangeTarget(serverLevel, serverPlayer);
+        LivingEntity target = SpearThrustUtils.selectRandomTarget(
+                serverLevel, serverPlayer, AUTO_TARGET_RANGE, AUTO_TARGET_POOL_SIZE);
         if (target == null) {
             player.sendOverlayMessage(Component.translatable("message.avaritia.infinity_spear.no_target"));
             return InteractionResult.SUCCESS_SERVER;
@@ -128,7 +131,7 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
 
     private static void tryAttackTarget(ServerLevel level, ServerPlayer player, InteractionHand hand,
                                         LivingEntity target) {
-        if (!isEligibleTarget(player, target) || target.level() != level) {
+        if (!SpearThrustUtils.isEligibleTarget(player, target) || target.level() != level) {
             player.sendOverlayMessage(Component.translatable(
                     "message.avaritia.infinity_spear.target_unavailable"));
             return;
@@ -139,36 +142,9 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
             return;
         }
 
-        float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        if (player.stabAttack(hand.asEquipmentSlot(), target, damage, true, false, false)) {
+        if (SpearThrustUtils.stabTarget(player, hand, target)) {
             player.onAttack();
         }
-    }
-
-    private static @Nullable LivingEntity selectLongRangeTarget(ServerLevel level, ServerPlayer player) {
-        AABB searchBox = player.getBoundingBox().inflate(AUTO_TARGET_RANGE);
-        List<LivingEntity> nearestTargets = level.getEntitiesOfClass(
-                        LivingEntity.class,
-                        searchBox,
-                        target -> isEligibleTarget(player, target))
-                .stream()
-                .sorted(Comparator.comparingDouble(player::distanceToSqr))
-                .limit(AUTO_TARGET_POOL_SIZE)
-                .toList();
-        if (nearestTargets.isEmpty()) {
-            return null;
-        }
-        return nearestTargets.get(level.getRandom().nextInt(nearestTargets.size()));
-    }
-
-    private static boolean isEligibleTarget(Player player, LivingEntity target) {
-        return target != player
-                && target.isAlive()
-                && !target.isRemoved()
-                && !target.isSpectator()
-                && !(target instanceof ArmorStand)
-                && !player.isAlliedTo(target)
-                && !(target instanceof Player targetPlayer && targetPlayer.isCreative());
     }
 
     private static void loadTargetChunkAndAttack(ServerLevel level, ServerPlayer player, InteractionHand hand,
@@ -183,7 +159,8 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                     }
 
                     SpearTargetReference currentTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-                    if (currentTarget == null || !currentTarget.targetId().equals(requestedTarget.targetId())) {
+                    if (currentTarget == null || !currentTarget.equals(requestedTarget)
+                            || !currentTarget.isOwnedBy(player.getUUID(), level.getGameTime())) {
                         return;
                     }
                     if (error != null) {
@@ -193,7 +170,10 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                     }
 
                     LivingEntity target = currentTarget.resolve(level);
-                    if (target == null) {
+                    if (target == null
+                            || !SpearThrustUtils.isEligibleTarget(player, target)
+                            || !SpearMarkUtils.isMarkedBy(target, player)) {
+                        stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
                         player.sendOverlayMessage(Component.translatable(
                                 "message.avaritia.infinity_spear.target_unavailable"));
                         return;
@@ -205,21 +185,25 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel level, @NotNull Entity owner,
                               @Nullable EquipmentSlot slot) {
-        if (!isActive(stack, MODE_LONG_RANGE)) {
-            stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-            super.inventoryTick(stack, level, owner, slot);
-            return;
-        }
+        SpearTargetReference markedTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+        if (markedTarget != null) {
+            if (!(owner instanceof Player player)
+                    || !markedTarget.isOwnedBy(player.getUUID(), level.getGameTime())) {
+                stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+                super.inventoryTick(stack, level, owner, slot);
+                return;
+            }
 
-        SpearTargetReference lockedTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-        if (lockedTarget != null) {
-            LivingEntity target = lockedTarget.resolve(level);
+            LivingEntity target = markedTarget.resolve(level);
             if (target != null) {
-                if (!(owner instanceof Player player) || !isEligibleTarget(player, target)) {
+                SpearMark mark = SpearMarkUtils.getActiveMark(target);
+                if (!SpearThrustUtils.isEligibleTarget(player, target)
+                        || mark == null
+                        || !mark.isOwnedBy(player.getUUID(), level.getGameTime())) {
                     stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
                 } else {
-                    SpearTargetReference refreshedTarget = lockedTarget.refreshPosition(target);
-                    if (refreshedTarget != lockedTarget) {
+                    SpearTargetReference refreshedTarget = markedTarget.refreshPosition(target, mark.expiresAt());
+                    if (refreshedTarget != markedTarget) {
                         stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(), refreshedTarget);
                     }
                 }
@@ -244,17 +228,14 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
     @Override
     public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         if (attacker instanceof Player player && target.level() instanceof ServerLevel serverLevel) {
-            if (isActive(stack, MODE_LONG_RANGE) && target.isAlive()) {
-                SpearTargetReference currentTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
-                if (currentTarget == null || !currentTarget.matches(target)) {
-                    stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(), SpearTargetReference.of(target));
+            if (target.isAlive()) {
+                boolean newlyMarked = !SpearMarkUtils.isMarkedBy(target, player);
+                SpearMark mark = SpearMarkUtils.apply(target, player);
+                stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(),
+                        SpearTargetReference.of(target, player.getUUID(), mark.expiresAt()));
+                if (newlyMarked) {
                     player.sendOverlayMessage(Component.translatable(
-                            "message.avaritia.infinity_spear.locked", target.getDisplayName()));
-                } else {
-                    SpearTargetReference refreshedTarget = currentTarget.refreshPosition(target);
-                    if (refreshedTarget != currentTarget) {
-                        stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(), refreshedTarget);
-                    }
+                            "message.avaritia.infinity_spear.marked", target.getDisplayName()));
                 }
             }
             // 获取是否启用无限伤害的配置选项
@@ -271,10 +252,14 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                 // 直接强制杀死目标
                 InfinityDamageUtils.forceKill(serverLevel, target, damageSource);
             } else if (target instanceof EnderDragon dragon) {
-                dragon.hurt(serverLevel, dragon.head, damageSource, ModToolTiers.INFINITY.attackDamageBonus());
+                dragon.hurt(serverLevel, dragon.head, damageSource,
+                        ModToolTiers.INFINITY.attackDamageBonus()
+                                * SpearThrustUtils.remoteDamageMultiplier(player, target));
             } else {
                 target.invulnerableTime = 0;
-                target.hurtServer(serverLevel, damageSource, ModToolTiers.INFINITY.attackDamageBonus());
+                target.hurtServer(serverLevel, damageSource,
+                        ModToolTiers.INFINITY.attackDamageBonus()
+                                * SpearThrustUtils.remoteDamageMultiplier(player, target));
             }
         }
         super.hurtEnemy(stack, target, attacker);

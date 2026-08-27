@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,10 +27,10 @@ class AvaritiaAdvancementProviderTest {
     private static final List<String> LOCALES = List.of("en_us", "zh_cn", "zh_tw", "ja_jp", "uk_ua");
 
     @Test
-    void rootUsesNeutronGuiSpriteAndEarlyProgressCriterion() throws IOException {
+    void rootUsesDirectNeutronBlockTextureAndEarlyProgressCriterion() throws IOException {
         JsonObject root = read(ADVANCEMENT_ROOT.resolve("main/root.json"));
 
-        assertEquals("avaritia:gui/advancements/backgrounds/neutron",
+        assertEquals("avaritia:block/resource/neutron",
                 root.getAsJsonObject("display").get("background").getAsString());
         assertEquals("avaritia:compressed_crafting_table",
                 root.getAsJsonObject("criteria")
@@ -39,12 +40,12 @@ class AvaritiaAdvancementProviderTest {
                         .get(0).getAsJsonObject()
                         .get("items").getAsString());
 
-        JsonObject guiAtlas = read(GENERATED_RESOURCES.resolve("assets/minecraft/atlases/gui.json"));
-        JsonArray sources = guiAtlas.getAsJsonArray("sources");
-        assertTrue(containsSpriteAlias(sources,
-                        "avaritia:block/resource/neutron",
-                        "avaritia:gui/advancements/backgrounds/neutron"),
-                "GUI atlas must expose the neutron block texture as the advancement background sprite");
+        Path texture = Path.of("src/main/resources/assets/avaritia/textures/block/resource/neutron.png");
+        assertTrue(Files.exists(texture), "advancement background must resolve to an existing direct texture");
+        assertArrayEquals(new byte[]{(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A},
+                java.util.Arrays.copyOf(Files.readAllBytes(texture), 8));
+        assertFalse(Files.exists(GENERATED_RESOURCES.resolve("assets/minecraft/atlases/gui.json")),
+                "advancement backgrounds are direct textures and must not depend on the GUI atlas");
     }
 
     @Test
@@ -90,18 +91,6 @@ class AvaritiaAdvancementProviderTest {
                 assertTranslationExists(locale, entry.getKey(), "description", display, translations);
             }
         }
-    }
-
-    private static boolean containsSpriteAlias(JsonArray sources, String resource, String sprite) {
-        for (var element : sources) {
-            JsonObject source = element.getAsJsonObject();
-            if ("minecraft:single".equals(source.get("type").getAsString())
-                    && resource.equals(source.get("resource").getAsString())
-                    && sprite.equals(source.get("sprite").getAsString())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static Map<String, JsonObject> loadAdvancements() throws IOException {

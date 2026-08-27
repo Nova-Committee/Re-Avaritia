@@ -29,6 +29,7 @@ public class Avaritia {
         // 注册模组配置
         ModConfig.register(modContainer);
 
+        ModDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.registerBlockItems();

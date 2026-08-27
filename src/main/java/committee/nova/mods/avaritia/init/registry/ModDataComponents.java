@@ -48,6 +48,13 @@ public class ModDataComponents {
                             .networkSynchronized(CrystalSpearTarget.STREAM_CODEC)
                             .cacheEncoding()
                             .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CRYSTAL_SPEAR_REMAINING_THRUSTS =
+            DATA_COMPONENTS.register("crystal_spear_remaining_thrusts",
+                    () -> DataComponentType.<Integer>builder()
+                            .persistent(Codec.intRange(0, CrystalSpearTarget.MAX_THRUSTS))
+                            .networkSynchronized(ByteBufCodecs.VAR_INT)
+                            .cacheEncoding()
+                            .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SpearTargetReference>> INFINITY_SPEAR_TARGET =
             DATA_COMPONENTS.register("infinity_spear_target",
                     () -> DataComponentType.<SpearTargetReference>builder()

@@ -7,19 +7,25 @@ import committee.nova.mods.avaritia.common.block.compressor.NeutronCompressorBlo
 import committee.nova.mods.avaritia.common.block.craft.TierCraftTableBlock;
 import committee.nova.mods.avaritia.common.block.extreme.ExtremeSmithingTableBlock;
 import committee.nova.mods.avaritia.common.crafting.recipe.ExtremeSmithingRecipe;
+import committee.nova.mods.avaritia.common.component.SpearMark;
+import committee.nova.mods.avaritia.common.item.tools.SpearMarkUtils;
 import committee.nova.mods.avaritia.common.tile.NeutronCollectorTile;
 import committee.nova.mods.avaritia.common.tile.NeutronCompressorTile;
 import committee.nova.mods.avaritia.common.tile.TierCraftTile;
 import committee.nova.mods.avaritia.compat.ClientRecipeMaps;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaPlugin;
@@ -39,6 +45,7 @@ public class JadeCompat implements IWailaPlugin {
         registration.registerBlockComponent(CompressorComponentProvider.INSTANCE, NeutronCompressorBlock.class);
         registration.registerBlockComponent(CraftingComponentProvider.INSTANCE, TierCraftTableBlock.class);
         registration.registerBlockComponent(ExtremeSmithingComponentProvider.INSTANCE, ExtremeSmithingTableBlock.class);
+        registration.registerEntityComponent(SpearMarkComponentProvider.INSTANCE, LivingEntity.class);
     }
 
     public enum CollectorComponentProvider implements IBlockComponentProvider {
@@ -139,6 +146,31 @@ public class JadeCompat implements IWailaPlugin {
         @Override
         public Identifier getUid() {
             return Const.rl("extreme_smithing");
+        }
+    }
+
+    public enum SpearMarkComponentProvider implements IEntityComponentProvider {
+        INSTANCE;
+
+        @Override
+        public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
+            if (!(accessor.getEntity() instanceof LivingEntity target)) {
+                return;
+            }
+
+            SpearMark mark = SpearMarkUtils.getActiveMark(target);
+            if (mark == null) {
+                return;
+            }
+
+            long remainingSeconds = (mark.remainingTicks(target.level().getGameTime()) + 19L) / 20L;
+            tooltip.add(Component.translatable("tooltip.avaritia.jade.spear_mark", remainingSeconds)
+                    .withStyle(ChatFormatting.RED));
+        }
+
+        @Override
+        public Identifier getUid() {
+            return Const.rl("spear_mark");
         }
     }
 

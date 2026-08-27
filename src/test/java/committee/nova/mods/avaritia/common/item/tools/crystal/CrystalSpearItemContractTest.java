@@ -20,26 +20,54 @@ class CrystalSpearItemContractTest {
             "src/main/java/committee/nova/mods/avaritia/common/item/tools/SpearThrustUtils.java");
 
     @Test
-    void lockedAttackIsServerAuthoritativeAndHasNoRangeOrSightGate() throws IOException {
-        String source = compact(Files.readString(SPEAR_SOURCE));
+    void sevenfoldRandomlyThrustsAtNearbyEligibleTargetsWithoutALock() throws IOException {
+        String spear = compact(Files.readString(SPEAR_SOURCE));
         String movement = compact(Files.readString(THRUST_UTILS_SOURCE));
-        int movementIndex = source.indexOf("SpearThrustUtils.movePlayerToTarget(level,player,target)");
-        int attackIndex = source.indexOf(
-                "player.stabAttack(hand.asEquipmentSlot(),target,damage,true,false,false)");
 
         assertAll(
-                () -> assertTrue(source.contains("if(level.isClientSide()){returnInteractionResult.SUCCESS;}")),
-                () -> assertTrue(source.contains("booleanattacked=player.stabAttack(hand.asEquipmentSlot(),target,damage,true,false,false);")),
-                () -> assertTrue(movementIndex >= 0 && movementIndex < attackIndex),
-                () -> assertTrue(movement.contains(
-                        "level.noCollision(player,playerDimensions.makeBoundingBox(destination))")),
-                () -> assertTrue(movement.contains("player.teleportTo(level,destination.x,destination.y,destination.z")),
-                () -> assertTrue(source.contains("target.level()!=level")),
-                () -> assertTrue(source.contains("addTicketAndLoadWithRadius(TicketType.PORTAL,requestedTarget.lastKnownChunk(),0)")),
-                () -> assertFalse(source.contains("distanceTo")),
-                () -> assertFalse(source.contains("ProjectileUtil")),
-                () -> assertFalse(source.contains("ClipContext")),
-                () -> assertFalse(source.contains("privatestaticbooleanmovePlayerToTarget"))
+                () -> assertTrue(spear.contains("if(level.isClientSide()){returnInteractionResult.SUCCESS;}")),
+                () -> assertTrue(spear.contains(
+                        "SpearThrustUtils.selectRandomTarget(serverLevel,serverPlayer,AUTO_TARGET_RANGE,AUTO_TARGET_POOL_SIZE)")),
+                () -> assertTrue(spear.contains("AUTO_TARGET_RANGE=128.0D")),
+                () -> assertTrue(spear.contains("SpearThrustUtils.movePlayerToTarget(serverLevel,serverPlayer,target)")),
+                () -> assertTrue(movement.contains(".sorted(Comparator.comparingDouble(player::distanceToSqr))")),
+                () -> assertTrue(movement.contains("!player.isAlliedTo(target)")),
+                () -> assertTrue(movement.contains("!(targetinstanceofArmorStand)")),
+                () -> assertFalse(spear.contains("TicketType")),
+                () -> assertFalse(spear.contains("lockedTarget"))
+        );
+    }
+
+    @Test
+    void fourteenUseBudgetIsIndependentAndOnlySuccessfulThrustsConsumeIt() throws IOException {
+        String spear = compact(Files.readString(SPEAR_SOURCE));
+        String components = compact(Files.readString(COMPONENT_SOURCE));
+        int attackIndex = spear.indexOf("if(SpearThrustUtils.stabTarget(serverPlayer,hand,target)){");
+        int decrementIndex = spear.indexOf("intnextRemaining=remainingThrusts-1", attackIndex);
+
+        assertAll(
+                () -> assertTrue(spear.contains(
+                        "stack.set(ModDataComponents.CRYSTAL_SPEAR_REMAINING_THRUSTS.get(),CrystalSpearTarget.MAX_THRUSTS)")),
+                () -> assertTrue(attackIndex >= 0 && decrementIndex > attackIndex),
+                () -> assertTrue(spear.contains("if(remainingThrusts<=0)")),
+                () -> assertTrue(spear.contains("message.avaritia.crystal_spear.exhausted")),
+                () -> assertTrue(components.contains("Codec.intRange(0,CrystalSpearTarget.MAX_THRUSTS)")),
+                () -> assertTrue(components.contains("networkSynchronized(ByteBufCodecs.VAR_INT)"))
+        );
+    }
+
+    @Test
+    void everyLivingHitRefreshesTheOwnerMarkAndRemoteDamageDoublesTogether() throws IOException {
+        String spear = compact(Files.readString(SPEAR_SOURCE));
+        String movement = compact(Files.readString(THRUST_UTILS_SOURCE));
+
+        assertAll(
+                () -> assertTrue(spear.contains("booleannewlyMarked=!SpearMarkUtils.isMarkedBy(target,player)")),
+                () -> assertTrue(spear.contains("SpearMarkUtils.apply(target,player)")),
+                () -> assertTrue(spear.contains("message.avaritia.crystal_spear.marked")),
+                () -> assertTrue(spear.contains("floatremoteMultiplier=SpearThrustUtils.remoteDamageMultiplier(player,target)")),
+                () -> assertTrue(spear.contains("calculateBonusDamage(baseDamage,target)*remoteMultiplier")),
+                () -> assertTrue(movement.contains("SpearMarkUtils.isMarkedBy(target,player)?2.0F:1.0F"))
         );
     }
 
@@ -51,54 +79,9 @@ class CrystalSpearItemContractTest {
         assertAll(
                 () -> assertTrue(source.contains("ARMOR_BONUS=0.025F")),
                 () -> assertTrue(source.contains("TOUGHNESS_BONUS=0.04F")),
-                () -> assertTrue(source.contains(
-                        "1.0F+target.getArmorValue()*ARMOR_BONUS+(float)target.getAttributeValue(Attributes.ARMOR_TOUGHNESS)*TOUGHNESS_BONUS")),
                 () -> assertFalse(source.contains("ARMOR_BONUS=0.25F")),
                 () -> assertFalse(source.contains("TOUGHNESS_BONUS=0.40F")),
                 () -> assertEquals(1.82F, multiplier, 0.0001F)
-        );
-    }
-
-    @Test
-    void sevenfoldModeCyclesExplicitlyAndOwnsTheTargetLock() throws IOException {
-        String source = compact(Files.readString(SPEAR_SOURCE));
-
-        assertAll(
-                () -> assertTrue(source.contains(
-                        "List.of(MODE_NORMAL,MODE_SHATTER,MODE_SEVENFOLD)")),
-                () -> assertTrue(source.contains("cycleMode(level,player,hand,MODES)")),
-                () -> assertTrue(source.contains(
-                        "if(isActive(stack,MODE_SEVENFOLD)){CrystalSpearTargetcurrentTarget=")),
-                () -> assertTrue(source.contains(
-                        "if(!level.isClientSide()&&!isActive(stack,MODE_SEVENFOLD)){stack.remove")),
-                () -> assertTrue(source.contains(
-                        "tooltip.avaritia.tool.crystal_spear_sevenfold"))
-        );
-    }
-
-    @Test
-    void onlySuccessfulLockedAttacksConsumeTheFourteenUseBudget() throws IOException {
-        String source = compact(Files.readString(SPEAR_SOURCE));
-
-        assertAll(
-                () -> assertTrue(source.contains("if(!attacked){returntrue;}")),
-                () -> assertTrue(source.contains("currentTarget.consumeThrust()")),
-                () -> assertTrue(source.contains(
-                        "if(nextTarget==null){stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get())")),
-                () -> assertTrue(source.contains("message.avaritia.crystal_spear.exhausted"))
-        );
-    }
-
-    @Test
-    void firstHitStoresAReplaceablePersistentTargetReference() throws IOException {
-        String spear = compact(Files.readString(SPEAR_SOURCE));
-        String components = compact(Files.readString(COMPONENT_SOURCE));
-
-        assertAll(
-                () -> assertTrue(spear.contains("stack.set(ModDataComponents.CRYSTAL_SPEAR_TARGET.get(),CrystalSpearTarget.of(target));")),
-                () -> assertTrue(spear.contains("currentTarget==null||!currentTarget.matches(target)")),
-                () -> assertTrue(components.contains("persistent(CrystalSpearTarget.CODEC)")),
-                () -> assertTrue(components.contains("networkSynchronized(CrystalSpearTarget.STREAM_CODEC)"))
         );
     }
 
