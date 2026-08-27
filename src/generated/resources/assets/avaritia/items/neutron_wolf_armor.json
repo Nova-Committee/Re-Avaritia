@@ -1,11 +1,6 @@
 {
   "model": {
-    "type": "avaritia:halo",
-    "color": -1711276033,
-    "model": "avaritia:item/neutron_wolf_armor",
-    "pulse": false,
-    "size": 6,
-    "texture": "avaritia:misc/halo_noise"
-  },
-  "oversized_in_gui": true
+    "type": "minecraft:model",
+    "model": "avaritia:item/neutron_wolf_armor"
+  }
 }

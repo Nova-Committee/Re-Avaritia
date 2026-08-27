@@ -41,7 +41,6 @@ public class AvaritiaLanguageProvider implements DataProvider {
         JsonObject language = JsonParser.parseString(legacyJson(locale)).getAsJsonObject();
         JsonObject extras = JsonParser.parseString(extraJson(locale)).getAsJsonObject();
         for (var entry : extras.entrySet()) {
-            // ??????????????????????????????
             if (!language.has(entry.getKey())) {
                 language.add(entry.getKey(), entry.getValue());
             }

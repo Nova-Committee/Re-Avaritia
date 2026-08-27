@@ -16,7 +16,7 @@
       "minecraft:blue_ice"
     ]
   },
-  "base": "minecraft:netherite_horse_armor",
+  "base": "minecraft:diamond_horse_armor",
   "result": {
     "id": "avaritia:neutron_horse_armor"
   },

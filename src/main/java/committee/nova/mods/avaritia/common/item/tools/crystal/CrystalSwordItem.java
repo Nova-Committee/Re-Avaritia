@@ -32,7 +32,7 @@ public class CrystalSwordItem extends Item implements ITooltip, ISwitchable {
                         .rarity(ModRarities.EPIC)
                         .stacksTo(1)
                         .fireResistant()
-                        .sword(ModToolTiers.CRYSTAL, 0, ModToolTiers.CRYSTAL.speed())
+                        .sword(ModToolTiers.CRYSTAL, ModToolTiers.CRYSTAL.attackDamageBonus(), ModToolTiers.CRYSTAL.speed())
         );
     }
 
