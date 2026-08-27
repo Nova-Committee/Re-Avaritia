@@ -57,8 +57,8 @@ void main (void)
 
     int uvtiles = 16;
 
-    // background color
-    vec4 col = vec4(0.1,0.0,0.0,1.0);
+    // Keep the substrate transparent; only sampled stars contribute alpha.
+    vec4 col = vec4(0.1,0.0,0.0,0.0);
 
     float pulse = mod(time,400)/400.0;
 
