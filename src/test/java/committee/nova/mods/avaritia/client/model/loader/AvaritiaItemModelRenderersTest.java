@@ -44,9 +44,37 @@ class AvaritiaItemModelRenderersTest {
         }
     }
 
+    @Test
+    @DisplayName("deduplicates item and block atlas render types for the effect barrier")
+    void effectBarrierDeduplicatesBaseRenderTypes() {
+        assertEffectBarrierRenderType(TextureAtlas.LOCATION_ITEMS, "effect_barrier_item_atlas_test");
+        assertEffectBarrierRenderType(TextureAtlas.LOCATION_BLOCKS, "effect_barrier_block_atlas_test");
+    }
+
+    private static void assertEffectBarrierRenderType(Identifier atlas, String name) {
+        NativeImage image = new NativeImage(16, 16, false);
+        SpriteContents contents = new SpriteContents(
+                Identifier.withDefaultNamespace(name),
+                new FrameSize(16, 16),
+                image
+        );
+
+        try (TextureAtlasSprite sprite = new TestSprite(atlas, contents)) {
+            BakedQuad quad = ItemQuadBakery.bakeItem(sprite).getFirst();
+            List<RenderType> renderTypes = AvaritiaItemModelRenderers.itemRenderTypes(List.of(quad, quad));
+
+            assertEquals(1, renderTypes.size());
+            assertSame(quad.materialInfo().itemRenderType(), renderTypes.getFirst());
+        }
+    }
+
     private static final class TestSprite extends TextureAtlasSprite {
         private TestSprite(SpriteContents contents) {
-            super(TextureAtlas.LOCATION_ITEMS, contents, 256, 256, 32, 64, 0);
+            this(TextureAtlas.LOCATION_ITEMS, contents);
+        }
+
+        private TestSprite(Identifier atlas, SpriteContents contents) {
+            super(atlas, contents, 256, 256, 32, 64, 0);
         }
     }
 }

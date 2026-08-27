@@ -19,8 +19,8 @@ import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 public class AvaritiaShaders {
     private static final DepthStencilState TRANSLUCENT_EFFECT_DEPTH =
             new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
-    private static final DepthStencilState ITEM_EFFECT_OVERLAY_DEPTH =
-            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true);
+    static final DepthStencilState ITEM_EFFECT_OVERLAY_DEPTH =
+            new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
 
     public static final float[] COSMIC_UVS = new float[40];
     public static TextureAtlasSprite[] COSMIC_SPRITES = new TextureAtlasSprite[10];

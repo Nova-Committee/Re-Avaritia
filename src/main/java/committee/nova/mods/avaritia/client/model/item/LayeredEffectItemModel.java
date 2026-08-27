@@ -97,7 +97,9 @@ public final class LayeredEffectItemModel implements ItemModel {
 
         // effectQuads 由 mask 烘焙而来，只在 mask 区域绘制动态星空/永恒等效果。
         if (shouldRenderEffectLayer(tridentGeometry)) {
-            appendEffectLayer(renderState, displayContext, this.effect.createArgument(this.effectQuads, level, owner, displayContext, stack), this.effectExtents);
+            appendEffectLayer(renderState, displayContext,
+                    this.effect.createArgument(this.effectQuads, this.baseQuads, level, owner, displayContext, stack),
+                    this.effectExtents);
         }
 
         if (shouldRenderArc(displayContext)) {

@@ -49,7 +49,8 @@ public enum ItemEffect {
         };
     }
 
-    public AvaritiaItemModelRenderers.EffectLayerArgument createArgument(List<BakedQuad> quads, @Nullable ClientLevel level,
+    public AvaritiaItemModelRenderers.EffectLayerArgument createArgument(List<BakedQuad> quads, List<BakedQuad> baseQuads,
+                                                                         @Nullable ClientLevel level,
                                                                          @Nullable ItemOwner owner,
                                                                          ItemDisplayContext displayContext, ItemStack stack) {
         long time = level != null ? level.getGameTime() : 0L;
@@ -60,6 +61,7 @@ public enum ItemEffect {
         float scale = displayContext == ItemDisplayContext.GUI ? 100.0F : 1.0F;
         return new AvaritiaItemModelRenderers.EffectLayerArgument(
                 quads,
+                AvaritiaItemModelRenderers.itemRenderTypes(baseQuads),
                 this.newRenderType(),
                 this.uniformEffect(),
                 time % Integer.MAX_VALUE,

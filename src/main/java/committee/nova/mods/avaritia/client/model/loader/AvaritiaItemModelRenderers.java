@@ -12,7 +12,9 @@ import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -28,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -54,7 +57,8 @@ public final class AvaritiaItemModelRenderers {
     private AvaritiaItemModelRenderers() {
     }
 
-    public record EffectLayerArgument(List<BakedQuad> quads, RenderType renderType, AvaritiaShaderUniforms.Effect effect,
+    public record EffectLayerArgument(List<BakedQuad> quads, List<RenderType> baseRenderTypes,
+                               RenderType renderType, AvaritiaShaderUniforms.Effect effect,
                                float time, float yaw, float pitch, float scale,
                                float opacity, float[] uvs) {
         /**
@@ -81,6 +85,14 @@ public final class AvaritiaItemModelRenderers {
             grouped.replaceAll((renderType, group) -> List.copyOf(group));
             return Collections.unmodifiableMap(grouped);
         }
+    }
+
+    public static List<RenderType> itemRenderTypes(List<BakedQuad> quads) {
+        LinkedHashSet<RenderType> renderTypes = new LinkedHashSet<>();
+        for (BakedQuad quad : quads) {
+            renderTypes.add(quad.materialInfo().itemRenderType());
+        }
+        return List.copyOf(renderTypes);
     }
 
     public record TridentLayerArgument(Map<String, SimpleMesh> models, ItemDisplayContext displayContext) {
@@ -279,6 +291,7 @@ public final class AvaritiaItemModelRenderers {
             // order(1) 与无深度写入的 effect RenderType 配合，保证基础模型和遮罩效果同时可见。
             submitNodeCollector.order(ITEM_EFFECT_OVERLAY_SUBMIT_ORDER)
                     .submitCustomGeometry(poseStack, argument.renderType(), (pose, buffer) -> {
+                        flushBaseLayers(argument.baseRenderTypes(), hasFoil);
                         QuadInstance instance = new QuadInstance();
                         instance.setColor(-1);
                         instance.setLightCoords(lightCoords);
@@ -288,6 +301,17 @@ public final class AvaritiaItemModelRenderers {
                             buffer.putBakedQuad(pose, quad, instance);
                         }
                     });
+        }
+
+        private static void flushBaseLayers(List<RenderType> baseRenderTypes, boolean hasFoil) {
+            // 26.1 会晚于动态共享缓冲区刷新固定物品缓冲区，因此必须在写入覆盖层前定向结束基础层。
+            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            for (RenderType baseRenderType : baseRenderTypes) {
+                bufferSource.endBatch(baseRenderType);
+                if (hasFoil) {
+                    bufferSource.endBatch(ItemFeatureRenderer.getFoilRenderType(baseRenderType, true));
+                }
+            }
         }
 
         @Override
