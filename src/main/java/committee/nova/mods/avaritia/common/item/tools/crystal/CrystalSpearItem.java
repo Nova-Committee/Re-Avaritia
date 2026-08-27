@@ -9,19 +9,23 @@ import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import lombok.NonNull;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -31,10 +35,12 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.init.registry.ModToolTiers.CRYSTAL;
@@ -58,9 +64,13 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
                         .build()));
     }
     /** 每点护甲值增加的伤害倍率 */
-    private static final float ARMOR_BONUS = 0.25F;
+    private static final float ARMOR_BONUS = 0.025F;
     /** 每点盔甲韧性增加的伤害倍率 */
-    private static final float TOUGHNESS_BONUS = 0.40F;
+    private static final float TOUGHNESS_BONUS = 0.04F;
+    /** 突刺落点与目标碰撞箱之间的间隔 */
+    private static final double THRUST_TARGET_GAP = 0.25D;
+    /** 水平方向过短时使用默认接近方向 */
+    private static final double MIN_DIRECTION_LENGTH_SQR = 1.0E-6D;
     /** 远距离目标区块加载期间避免重复提交同一攻击 */
     private static final int TARGET_LOAD_COOLDOWN_TICKS = 10;
     public ToolMaterial getTier() {
@@ -90,7 +100,8 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
         }
 
         ServerLevel serverLevel = (ServerLevel) level;
-        if (tryAttackLockedTarget(serverLevel, player, hand, stack, lockedTarget)) {
+        ServerPlayer serverPlayer = (ServerPlayer) player;
+        if (tryAttackLockedTarget(serverLevel, serverPlayer, hand, stack, lockedTarget)) {
             return InteractionResult.SUCCESS_SERVER;
         }
         if (!lockedTarget.dimension().equals(level.dimension().identifier())) {
@@ -98,11 +109,11 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             return InteractionResult.SUCCESS_SERVER;
         }
 
-        loadTargetChunkAndAttack(serverLevel, player, hand, stack, lockedTarget);
+        loadTargetChunkAndAttack(serverLevel, serverPlayer, hand, stack, lockedTarget);
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    private static boolean tryAttackLockedTarget(ServerLevel level, Player player, InteractionHand hand,
+    private static boolean tryAttackLockedTarget(ServerLevel level, ServerPlayer player, InteractionHand hand,
                                                  ItemStack stack, CrystalSpearTarget lockedTarget) {
         LivingEntity target = lockedTarget.resolve(level);
         if (target == null || target.level() != level) {
@@ -111,6 +122,11 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
         if (target == player || !target.isAlive() || target.isRemoved()) {
             stack.remove(ModDataComponents.CRYSTAL_SPEAR_TARGET.get());
             player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.target_invalid"));
+            return true;
+        }
+
+        if (!movePlayerToTarget(level, player, target)) {
+            player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.target_unavailable"));
             return true;
         }
 
@@ -136,7 +152,37 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
         return true;
     }
 
-    private static void loadTargetChunkAndAttack(ServerLevel level, Player player, InteractionHand hand,
+    private static boolean movePlayerToTarget(ServerLevel level, ServerPlayer player, LivingEntity target) {
+        Vec3 toTarget = target.position().subtract(player.position());
+        Vec3 horizontalDirection = new Vec3(toTarget.x, 0.0D, toTarget.z);
+        if (horizontalDirection.lengthSqr() < MIN_DIRECTION_LENGTH_SQR) {
+            horizontalDirection = new Vec3(0.0D, 0.0D, 1.0D);
+        } else {
+            horizontalDirection = horizontalDirection.normalize();
+        }
+
+        double targetDistance = (player.getBbWidth() + target.getBbWidth()) * 0.5D + THRUST_TARGET_GAP;
+        EntityDimensions playerDimensions = player.getDimensions(player.getPose());
+        for (int quarterTurn = 0; quarterTurn < 4; quarterTurn++) {
+            Vec3 approachDirection = horizontalDirection.yRot(Mth.HALF_PI * quarterTurn);
+            Vec3 destination = target.position().subtract(approachDirection.scale(targetDistance));
+            if (!level.noCollision(player, playerDimensions.makeBoundingBox(destination))) {
+                continue;
+            }
+            if (!player.teleportTo(level, destination.x, destination.y, destination.z,
+                    Set.of(), player.getYRot(), player.getXRot(), false)) {
+                continue;
+            }
+
+            player.setDeltaMovement(Vec3.ZERO);
+            player.resetFallDistance();
+            player.lookAt(EntityAnchorArgument.Anchor.EYES, target.getEyePosition());
+            return true;
+        }
+        return false;
+    }
+
+    private static void loadTargetChunkAndAttack(ServerLevel level, ServerPlayer player, InteractionHand hand,
                                                  ItemStack stack, CrystalSpearTarget requestedTarget) {
         player.getCooldowns().addCooldown(stack, TARGET_LOAD_COOLDOWN_TICKS);
         level.getChunkSource()
@@ -214,14 +260,10 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
 
             float baseDamage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
-            // 每点护甲 +25% 伤害、每点韧性 +40% 伤害，可叠加
-            float multiplier = 1.0F + target.getArmorValue() * ARMOR_BONUS
-                    + (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS) * TOUGHNESS_BONUS;
-
             DamageSource voidDamage = target.level().damageSources().fellOutOfWorld();
 
             target.invulnerableTime = 0; // 重置无敌帧，防止伤害丢失
-            target.hurtServer(serverLevel, voidDamage, baseDamage * multiplier);
+            target.hurtServer(serverLevel, voidDamage, calculateBonusDamage(baseDamage, target));
 
             // 水晶粒子
             serverLevel.sendParticles(ParticleTypes.ENCHANTED_HIT,
@@ -235,15 +277,19 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
                         LivingEntity.class, aoeBox,
                         e -> e != target && e != player && e.isAlive());
                 for (LivingEntity e : nearby) {
-                    float eMultiplier = 1.0F + e.getArmorValue() * ARMOR_BONUS
-                            + (float) e.getAttributeValue(Attributes.ARMOR_TOUGHNESS) * TOUGHNESS_BONUS;
                     e.invulnerableTime = 0;
-                    e.hurtServer(serverLevel, voidDamage, baseDamage * 0.5F * eMultiplier);
+                    e.hurtServer(serverLevel, voidDamage, calculateBonusDamage(baseDamage * 0.5F, e));
                 }
             }
 
         }
         super.hurtEnemy(stack, target, attacker);
+    }
+
+    private static float calculateBonusDamage(float baseDamage, LivingEntity target) {
+        float multiplier = 1.0F + target.getArmorValue() * ARMOR_BONUS
+                + (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS) * TOUGHNESS_BONUS;
+        return baseDamage * multiplier;
     }
 
     // ==================== 外观 ====================

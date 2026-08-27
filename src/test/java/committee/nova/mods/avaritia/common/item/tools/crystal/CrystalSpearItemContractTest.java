@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,15 +20,38 @@ class CrystalSpearItemContractTest {
     @Test
     void lockedAttackIsServerAuthoritativeAndHasNoRangeOrSightGate() throws IOException {
         String source = compact(Files.readString(SPEAR_SOURCE));
+        int movementIndex = source.indexOf("movePlayerToTarget(level,player,target)");
+        int attackIndex = source.indexOf(
+                "player.stabAttack(hand.asEquipmentSlot(),target,damage,true,false,false)");
 
         assertAll(
                 () -> assertTrue(source.contains("if(level.isClientSide()){returnInteractionResult.SUCCESS;}")),
                 () -> assertTrue(source.contains("booleanattacked=player.stabAttack(hand.asEquipmentSlot(),target,damage,true,false,false);")),
+                () -> assertTrue(movementIndex >= 0 && movementIndex < attackIndex),
+                () -> assertTrue(source.contains(
+                        "level.noCollision(player,playerDimensions.makeBoundingBox(destination))")),
+                () -> assertTrue(source.contains("player.teleportTo(level,destination.x,destination.y,destination.z")),
                 () -> assertTrue(source.contains("target.level()!=level")),
                 () -> assertTrue(source.contains("addTicketAndLoadWithRadius(TicketType.PORTAL,requestedTarget.lastKnownChunk(),0)")),
                 () -> assertFalse(source.contains("distanceTo")),
                 () -> assertFalse(source.contains("ProjectileUtil")),
                 () -> assertFalse(source.contains("ClipContext"))
+        );
+    }
+
+    @Test
+    void armorAndToughnessScalingUsesReducedCoefficients() throws IOException {
+        String source = compact(Files.readString(SPEAR_SOURCE));
+        float multiplier = 1.0F + 20.0F * 0.025F + 8.0F * 0.04F;
+
+        assertAll(
+                () -> assertTrue(source.contains("ARMOR_BONUS=0.025F")),
+                () -> assertTrue(source.contains("TOUGHNESS_BONUS=0.04F")),
+                () -> assertTrue(source.contains(
+                        "1.0F+target.getArmorValue()*ARMOR_BONUS+(float)target.getAttributeValue(Attributes.ARMOR_TOUGHNESS)*TOUGHNESS_BONUS")),
+                () -> assertFalse(source.contains("ARMOR_BONUS=0.25F")),
+                () -> assertFalse(source.contains("TOUGHNESS_BONUS=0.40F")),
+                () -> assertEquals(1.82F, multiplier, 0.0001F)
         );
     }
 
