@@ -81,6 +81,7 @@ public class AvaritiaModelProvider implements DataProvider {
             Map.entry("infinity_bow", "item/tools/infinity_bow/idle"),
             Map.entry("infinity_crossbow", "item/tools/infinity_crossbow/standby"),
             Map.entry("infinity_shield", "item/tools/infinity_shield/layer_0"),
+            Map.entry("infinity_spear", "item/tools/infinity_spear/infinity_spear"),
             Map.entry("infinity_trident", "item/tools/infinity_trident/layer_0"),
             Map.entry("infinity_mace", "item/tools/infinity_mace/layer_0"),
             Map.entry("crystal_sword", "item/tools/crystal_sword/layer_0"),
@@ -89,12 +90,14 @@ public class AvaritiaModelProvider implements DataProvider {
             Map.entry("crystal_shovel", "item/tools/crystal_shovel/layer_0"),
             Map.entry("crystal_axe", "item/tools/crystal_axe/layer_0"),
             Map.entry("crystal_bow", "item/tools/crystal_bow/crystal_bow"),
+            Map.entry("crystal_spear", "item/tools/crystal_spear/crystal_spear"),
             Map.entry("blaze_sword", "item/tools/blaze_sword/layer_0"),
             Map.entry("blaze_hoe", "item/tools/blaze_hoe/layer_0"),
             Map.entry("blaze_pickaxe", "item/tools/blaze_pickaxe/layer_0"),
             Map.entry("blaze_shovel", "item/tools/blaze_shovel/layer_0"),
             Map.entry("blaze_axe", "item/tools/blaze_axe/layer_0"),
             Map.entry("blaze_bow", "item/tools/blaze_bow/blaze_bow"),
+            Map.entry("blaze_spear", "item/tools/blaze_spear/blaze_spear"),
             Map.entry("infinity_helmet", "item/armor/helmet/layer_0"),
             Map.entry("infinity_chestplate", "item/armor/chestplate/layer_0"),
             Map.entry("infinity_pants", "item/armor/legs/layer_0"),
@@ -175,6 +178,8 @@ public class AvaritiaModelProvider implements DataProvider {
         Identifier model = switch (id.getPath()) {
             case "singularity" -> twoLayerItem(item, id, "singularity_overlay");
             case "eternal_singularity" -> twoLayerItem(item, id, "eternal_singularity2");
+            case "blaze_spear", "crystal_spear", "infinity_spear" ->
+                    flatModel(id.getPath(), ITEM_TEXTURES.get(id.getPath()), true);
             case "infinity_trident" -> tridentModel("infinity_trident", "item/tools/infinity_trident/layer_0");
             default -> ModelTemplates.FLAT_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
@@ -187,7 +192,7 @@ public class AvaritiaModelProvider implements DataProvider {
                     "item/tools/infinity_sword/layer_0",
                     "item/tools/infinity_sword/layer_1");
             case "infinity_crossbow" -> crossbowModel("infinity_crossbow", "item/tools/infinity_crossbow/standby");
-            case "infinity_shield" -> Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/infinity_shield");
+            case "infinity_shield" -> shieldModel("infinity_shield", false);
             case "blaze_bow", "crystal_bow" -> bowModel(id.getPath(), itemTexture(id).getPath());
             default -> ModelTemplates.FLAT_HANDHELD_ITEM.create(modelLocation(item), layer0(id), this.generatedModels::put);
         };
@@ -200,9 +205,11 @@ public class AvaritiaModelProvider implements DataProvider {
             case "infinity_bow" -> infinityBowModel();
             case "infinity_crossbow" -> infinityCrossbowModel(model);
             case "blaze_bow", "crystal_bow" -> simpleBowModel(id.getPath(), model);
+            case "blaze_spear", "crystal_spear" -> simpleSpearModel(id.getPath(), model);
+            case "infinity_spear" -> infinitySpearModel(model);
             case "infinity_pickaxe" -> modeModel("infinity_pickaxe_hammer", handheldModel("infinity_pickaxe/hammer", "item/tools/infinity_pickaxe/hammer"), model);
             case "infinity_shovel" -> modeModel("infinity_shovel_destroyer", handheldModel("infinity_shovel/destroyer", "item/tools/infinity_shovel/destroyer"), model);
-            case "infinity_shield" -> infinityShieldModel(model);
+            case "infinity_shield" -> infinityShieldModel();
             case "infinity_umbrella" -> infinityUmbrellaModel(model);
             case "infinity_clock" -> infinityClockModel(model);
             case "infinity_trident" -> infinityTridentModel(model);
@@ -305,17 +312,14 @@ public class AvaritiaModelProvider implements DataProvider {
                 ItemModelUtils.override(storm, 3.0F));
     }
 
-    private ItemModel.Unbaked infinityShieldModel(Identifier model) {
+    private ItemModel.Unbaked infinityShieldModel() {
         return ItemModelUtils.conditional(ItemModelUtils.isUsingItem(),
                 shieldModeModels(true),
                 shieldModeModels(false));
     }
 
     private ItemModel.Unbaked shieldModeModels(boolean blocking) {
-        Identifier baseId = Identifier.fromNamespaceAndPath(
-                Const.MOD_ID,
-                "item/" + (blocking ? "infinity_shield_blocking" : "infinity_shield")
-        );
+        Identifier baseId = shieldModel(blocking ? "infinity_shield_blocking" : "infinity_shield", blocking);
         ItemModel.Unbaked base = ItemModelUtils.specialModel(baseId, new InfinityShieldRender.Unbaked());
 
         return ItemModelUtils.rangeSelect(new ItemOverrideHandler.ShieldMode(),
@@ -348,6 +352,31 @@ public class AvaritiaModelProvider implements DataProvider {
     private ItemModel.Unbaked matterClusterFullModel() {
         Identifier model = flatModel("matter_cluster/full", "item/misc/matter_cluster/full_matter_cluster", false);
         return new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("matter_cluster_full_mask")));
+    }
+
+    private ItemModel.Unbaked simpleSpearModel(String itemName, Identifier model) {
+        Identifier inHandModel = spearInHandModel(itemName, false);
+        return spearDisplayContextDispatch(ItemModelUtils.plainModel(model), ItemModelUtils.plainModel(inHandModel));
+    }
+
+    private ItemModel.Unbaked infinitySpearModel(Identifier model) {
+        Identifier inHandModel = spearInHandModel("infinity_spear", true);
+        ItemModel.Unbaked normal = ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_spear_lunge"),
+                new AvaritiaItemModelLoaders.Hell(model, List.of(mask("infinity_spear_mask"))),
+                new AvaritiaItemModelLoaders.Cosmic(model, List.of(mask("infinity_spear_mask"))));
+        ItemModel.Unbaked inHand = ItemModelUtils.conditional(new ItemOverrideHandler.ModeFlag("infinity_spear_lunge"),
+                new AvaritiaItemModelLoaders.Hell(inHandModel, List.of(mask("infinity_spear_in_hand_mask"))),
+                new AvaritiaItemModelLoaders.Cosmic(inHandModel, List.of(mask("infinity_spear_in_hand_mask"))));
+        return spearDisplayContextDispatch(normal, inHand);
+    }
+
+    private ItemModel.Unbaked spearDisplayContextDispatch(ItemModel.Unbaked itemModel, ItemModel.Unbaked holdingModel) {
+        return ItemModelUtils.select(
+                new DisplayContext(),
+                holdingModel,
+                ItemModelUtils.when(List.of(ItemDisplayContext.GUI, ItemDisplayContext.GROUND,
+                        ItemDisplayContext.FIXED, ItemDisplayContext.ON_SHELF), itemModel)
+        );
     }
 
     private ItemModel.Unbaked haloModel(Identifier model, int size, boolean pulse) {
@@ -437,6 +466,29 @@ public class AvaritiaModelProvider implements DataProvider {
         Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + modelPath);
         this.generatedModels.put(model, () -> tridentThrowingModelJson(texturePath));
         return model;
+    }
+
+    private Identifier spearInHandModel(String itemName, boolean handheld) {
+        Identifier model = Identifier.fromNamespaceAndPath(Const.MOD_ID, "item/" + itemName + "_in_hand");
+        this.generatedModels.put(model, () -> spearInHandModelJson(itemName, handheld));
+        return model;
+    }
+
+    private JsonObject spearInHandModelJson(String itemName, boolean handheld) {
+        JsonObject root = new JsonObject();
+        root.addProperty("parent", handheld ? "minecraft:item/handheld" : "minecraft:item/generated");
+
+        JsonObject textures = new JsonObject();
+        textures.addProperty("layer0", Const.MOD_ID + ":item/tools/" + itemName + "/" + itemName + "_in_hand");
+        root.add("textures", textures);
+
+        JsonObject display = new JsonObject();
+        display.add("firstperson_righthand", transform(new double[]{-20, 90, -35}, new double[]{3.13, 2, 0.13}, new double[]{1.36, 1.36, 0.68}));
+        display.add("firstperson_lefthand", transform(new double[]{-20, -90, 35}, new double[]{3.13, 2, 0.13}, new double[]{1.36, 1.36, 0.68}));
+        display.add("thirdperson_righthand", transform(new double[]{5, 270, -40}, new double[]{0, 2, 2}, new double[]{1.7, 1.7, 0.85}));
+        display.add("thirdperson_lefthand", transform(new double[]{5, -270, 40}, new double[]{0, 2, 2}, new double[]{1.7, 1.7, 0.85}));
+        root.add("display", display);
+        return root;
     }
 
     private JsonObject tridentModelJson(String texturePath) {
@@ -532,8 +584,14 @@ public class AvaritiaModelProvider implements DataProvider {
     }
 
     private void clientItem(Item item, ItemModel.Unbaked model) {
-        ClientItem.Properties properties = hasHaloLayer(model)
-                ? new ClientItem.Properties(true, true, 1.0F)
+        String itemName = BuiltInRegistries.ITEM.getKey(item).getPath();
+        float swapAnimationScale = switch (itemName) {
+            case "blaze_spear", "crystal_spear", "infinity_spear" -> 1.95F;
+            default -> 1.0F;
+        };
+        boolean oversizedInGui = hasHaloLayer(model);
+        ClientItem.Properties properties = oversizedInGui || swapAnimationScale != 1.0F
+                ? new ClientItem.Properties(true, oversizedInGui, swapAnimationScale)
                 : ClientItem.Properties.DEFAULT;
         this.generatedClientItems.put(BuiltInRegistries.ITEM.getKey(item), new ClientItem(model, properties));
     }

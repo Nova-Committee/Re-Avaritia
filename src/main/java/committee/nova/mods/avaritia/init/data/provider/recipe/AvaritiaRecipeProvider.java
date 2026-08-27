@@ -389,6 +389,15 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('D', Items.BLAZE_POWDER)
                         .put('E', Blocks.SOUL_SOIL),
                 "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_pickaxe");
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.blaze_spear.get(), 2,
+                new String[]{" A DC", " ADCD", "  ED ", " E AA", "B    "},
+                keyMap()
+                        .put('A', Blocks.BONE_BLOCK)
+                        .put('B', ModItems.diamond_lattice.get())
+                        .put('C', ModItems.blaze_cube.get())
+                        .put('D', Items.BLAZE_POWDER)
+                        .put('E', Blocks.SOUL_SOIL),
+                "has_blaze_cube", has(ModItems.blaze_cube.get()), "blaze_spear");
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.crystal_sword.get(), 3,
                 new String[]{"     CA", "    CAC", " C CAC ", " CCAC  ", "CAAC   ", " BACC  ", "A C    "},
                 keyMap().put('A', ModBlocks.crystal_matrix.get()).put('B', ModBlocks.neutron.get()).put('C', ModItems.crystal_matrix_ingot.get()),
@@ -401,6 +410,13 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('C', ModItems.crystal_matrix_ingot.get())
                         .put('D', ModBlocks.neutron.get()),
                 "has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()), "crystal_pickaxe");
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.crystal_spear.get(), 3,
+                new String[]{"   C CA", "   CCAC", "  CAAC ", "   BACC", "  B C  ", " B     ", "A      "},
+                keyMap()
+                        .put('A', ModBlocks.crystal_matrix.get())
+                        .put('B', ModBlocks.neutron.get())
+                        .put('C', ModItems.crystal_matrix_ingot.get()),
+                "has_crystal_matrix_ingot", has(ModItems.crystal_matrix_ingot.get()), "crystal_spear");
 
         extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_axe.get(), 4,
                 new String[]{"    II   ", "   II  B ", "  IIIAA  ", "  IIAXA  ", "  I AAII ", "   N  II ", "  N      ", " N       ", "A        "},
@@ -427,6 +443,15 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                         .put('N', ModItems.neutron_ingot.get())
                         .put('P', Items.HEART_OF_THE_SEA),
                 "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_trident");
+        extremeShaped(output, RecipeCategory.TOOLS, ModItems.infinity_spear.get(), 4,
+                new String[]{"    C  II", "    CCIII", "   CAAXI ", "     NAC ", "    N ACC", "   N  C  ", "  N      ", "CN       ", "AC       "},
+                keyMap()
+                        .put('A', ModBlocks.crystal_matrix.get())
+                        .put('C', ModItems.crystal_matrix_ingot.get())
+                        .put('I', ModItems.infinity_ingot.get())
+                        .put('N', ModItems.neutron_ingot.get())
+                        .put('X', ModItems.infinity_catalyst.get()),
+                "has_infinity_ingot", has(ModItems.infinity_ingot.get()), "infinity_spear");
 
         infinityArmorRecipes(output);
     }
@@ -738,6 +763,23 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
                 CompoundIngredient.of(Ingredient.of(ModItems.full_matter_cluster.get()), Ingredient.of(ModItems.enhancement_core.get()), Ingredient.of(ModBlocks.neutron.get())),
                 template(ModBlocks.extreme_anvil.get())), RecipeCategory.MISC,
                 "has_upgrade_smithing_template", has(ModItems.upgrade_smithing_template.get()));
+
+        extremeSmithing(output, "neutron_harness", new TagIngredient(ItemTags.HARNESSES).toVanilla(), ModItems.neutron_harness.get(),
+                DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS,
+                        new PotionContents(Potions.SLOW_FALLING), Items.POTION),
+                Ingredient.of(ModItems.enhancement_core.get()),
+                Ingredient.of(Items.FEATHER));
+        extremeSmithing(output, "neutron_nautilus_armor", Ingredient.of(Items.NETHERITE_NAUTILUS_ARMOR),
+                ModItems.neutron_nautilus_armor.get(),
+                DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS,
+                        new PotionContents(Potions.WATER_BREATHING), Items.POTION),
+                Ingredient.of(ModItems.enhancement_core.get()),
+                Ingredient.of(Items.WATER_BUCKET));
+        extremeSmithing(output, "neutron_wolf_armor", Ingredient.of(Items.WOLF_ARMOR), ModItems.neutron_wolf_armor.get(),
+                DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS,
+                        new PotionContents(Potions.SWIFTNESS), Items.POTION),
+                Ingredient.of(ModItems.enhancement_core.get()),
+                Ingredient.of(Blocks.BONE_BLOCK));
     }
 
     private void singularityRecipes(RecipeOutput output) {
@@ -824,9 +866,13 @@ public class AvaritiaRecipeProvider extends RecipeProvider {
     }
 
     private void extremeSmithing(RecipeOutput output, String name, ItemLike base, ItemLike result, Ingredient... additions) {
+        extremeSmithing(output, name, Ingredient.of(base), result, additions);
+    }
+
+    private void extremeSmithing(RecipeOutput output, String name, Ingredient base, ItemLike result, Ingredient... additions) {
         save(output, name, new ExtremeSmithingRecipe(
                 Ingredient.of(ModItems.upgrade_smithing_template.get()),
-                Ingredient.of(base),
+                base,
                 CompoundIngredient.of(additions),
                 template(result)), RecipeCategory.MISC,
                 "has_upgrade_smithing_template", has(ModItems.upgrade_smithing_template.get()));

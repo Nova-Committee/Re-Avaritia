@@ -1,42 +1,55 @@
 {
   "model": {
     "type": "minecraft:select",
-    "property": "minecraft:display_context",
-    "fallback": {
-      "type": "minecraft:condition",
-      "property": "avaritia:mode_flag",
-      "key": "infinity_spear_lunge",
-      "on_false": {
-        "type": "avaritia:cosmic",
-        "mask": ["avaritia:mask/item/infinity_spear_in_hand_mask"],
-        "model": "avaritia:item/infinity_spear_in_hand"
-      },
-      "on_true": {
-        "type": "avaritia:hell",
-        "mask": ["avaritia:mask/item/infinity_spear_in_hand_mask"],
-        "model": "avaritia:item/infinity_spear_in_hand"
-      }
-    },
     "cases": [
       {
-        "when": ["gui", "ground", "fixed", "on_shelf"],
         "model": {
           "type": "minecraft:condition",
-          "property": "avaritia:mode_flag",
           "key": "infinity_spear_lunge",
           "on_false": {
             "type": "avaritia:cosmic",
-            "mask": ["avaritia:mask/item/infinity_spear_mask"],
+            "mask": [
+              "avaritia:mask/item/infinity_spear_mask"
+            ],
             "model": "avaritia:item/infinity_spear"
           },
           "on_true": {
             "type": "avaritia:hell",
-            "mask": ["avaritia:mask/item/infinity_spear_mask"],
+            "mask": [
+              "avaritia:mask/item/infinity_spear_mask"
+            ],
             "model": "avaritia:item/infinity_spear"
-          }
-        }
+          },
+          "property": "avaritia:mode_flag"
+        },
+        "when": [
+          "gui",
+          "ground",
+          "fixed",
+          "on_shelf"
+        ]
       }
-    ]
+    ],
+    "fallback": {
+      "type": "minecraft:condition",
+      "key": "infinity_spear_lunge",
+      "on_false": {
+        "type": "avaritia:cosmic",
+        "mask": [
+          "avaritia:mask/item/infinity_spear_in_hand_mask"
+        ],
+        "model": "avaritia:item/infinity_spear_in_hand"
+      },
+      "on_true": {
+        "type": "avaritia:hell",
+        "mask": [
+          "avaritia:mask/item/infinity_spear_in_hand_mask"
+        ],
+        "model": "avaritia:item/infinity_spear_in_hand"
+      },
+      "property": "avaritia:mode_flag"
+    },
+    "property": "minecraft:display_context"
   },
   "swap_animation_scale": 1.95
 }

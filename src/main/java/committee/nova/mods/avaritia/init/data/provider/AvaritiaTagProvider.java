@@ -99,6 +99,7 @@ public class AvaritiaTagProvider implements DataProvider {
                 tag(ModTags.IMMORTAL_ITEM).add(
                         // 无尽工具
                         ModItems.infinity_sword.get(),
+                        ModItems.infinity_spear.get(),
                         ModItems.infinity_hoe.get(),
                         ModItems.infinity_pickaxe.get(),
                         ModItems.infinity_shovel.get(),
