@@ -150,6 +150,10 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         Item chestItem = state.chestEquipment.getItem();
         Item legsItem = state.legsEquipment.getItem();
         Item feetItem = state.feetEquipment.getItem();
+        boolean fullInfinityArmor = headItem == ModItems.infinity_helmet.get()
+                && chestItem == ModItems.infinity_chestplate.get()
+                && legsItem == ModItems.infinity_pants.get()
+                && feetItem == ModItems.infinity_boots.get();
 
         long time = mc.level != null ? mc.level.getGameTime() : System.currentTimeMillis() / 50L;
 
@@ -170,7 +174,7 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
         AvaritiaShaderUniforms.set(AvaritiaShaderUniforms.Effect.COSMIC_ARMOR, time % Integer.MAX_VALUE, yaw, pitch, scale, 1.25F, AvaritiaShaders.COSMIC_UVS);
 
         boolean flying = Boolean.TRUE.equals(state.getRenderData(AvaritiaClient.INFINITY_ARMOR_FLYING)) || state.isFallFlying;
-        if (chestItem == ModItems.infinity_chestplate.get() && flying) {
+        if (fullInfinityArmor && flying) {
             poseStack.pushPose();
             ModelPart leftWing = root.getChild("left_wing");
             ModelPart rightWing = root.getChild("right_wing");
@@ -237,7 +241,7 @@ public class InfinityArmorModel<S extends HumanoidRenderState> extends HumanoidM
             poseStack.popPose();
         }
 
-        if (headItem == ModItems.infinity_helmet.get() && chestItem == ModItems.infinity_chestplate.get() && legsItem == ModItems.infinity_pants.get() && feetItem == ModItems.infinity_boots.get()) {
+        if (fullInfinityArmor) {
             submitBodyParts(poseStack, output, cosmicArmorRenderType, Res.ARMOR_MASK_INV::wrap, packedLight, packedOverlay, WHITE);
         }
     }
