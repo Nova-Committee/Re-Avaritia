@@ -48,7 +48,6 @@ public class AvaritiaBlockStateProvider implements DataProvider {
             Map.entry("refined_coal_block", mod("block/resource/refined_coal_block")),
             Map.entry("compressed_crafting_table", mod("block/machine/craft/compressed")),
             Map.entry("double_compressed_crafting_table", mod("block/machine/craft/double_compressed")),
-            Map.entry("soul_farmland", mod("block/resource/soul_farmland")),
             Map.entry("fake_bedrock", vanilla("block/bedrock")),
             Map.entry("fake_end_portal", vanilla("block/black_concrete"))
     );
@@ -203,6 +202,7 @@ public class AvaritiaBlockStateProvider implements DataProvider {
             case "extreme_anvil" -> extremeAnvilModel();
             case "compressed_chest" -> compressedChestModel();
             case "infinity_chest" -> infinityChestModel();
+            case "soul_farmland" -> soulFarmlandModel(id);
             case "fake_end_portal_frame" -> topModel(id, vanilla("block/end_portal_frame_top"), vanilla("block/end_portal_frame_side"));
             case "endless_cake" -> endlessCakeModel();
             default -> cubeAllModel(id, CUBE_ALL_TEXTURES.getOrDefault(path, mod("block/" + path)));
@@ -289,6 +289,14 @@ public class AvaritiaBlockStateProvider implements DataProvider {
     private Identifier cubeAllModel(Identifier id, Identifier texture) {
         Identifier modelId = id.withPrefix("block/");
         ModelTemplates.CUBE_ALL.create(modelId, new TextureMapping().put(TextureSlot.ALL, texture(texture)), this.generatedModels::put);
+        return modelId;
+    }
+
+    private Identifier soulFarmlandModel(Identifier id) {
+        Identifier modelId = id.withPrefix("block/");
+        ModelTemplates.FARMLAND.create(modelId, new TextureMapping()
+                .put(TextureSlot.DIRT, texture(vanilla("block/soul_soil")))
+                .put(TextureSlot.TOP, texture(mod("block/resource/soul_farmland"))), this.generatedModels::put);
         return modelId;
     }
 

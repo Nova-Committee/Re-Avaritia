@@ -28,7 +28,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_HEIGHT;
 import static committee.nova.mods.avaritia.client.screen.InfinityChestScreenLayout.SORT_BUTTON_WIDTH;
@@ -115,7 +114,7 @@ public class InfinityChestScreen extends AbstractContainerScreen<InfinityChestMe
             ItemStack stack = hoveredSlot.getItem();
             long amount = menu.getChestContainer().amount(menu.virtualIndex(hoveredSlot));
             List<Component> tooltip = new ArrayList<>(getTooltipFromContainerItem(stack));
-            tooltip.add(Component.literal("%,d".formatted(Locale.ROOT, amount)));
+            tooltip.add(Component.literal(InfinityChestContainer.formatExactAmount(amount)));
             graphics.setTooltipForNextFrame(font, tooltip, stack.getTooltipImage(), stack, mouseX, mouseY,
                     stack.get(DataComponents.TOOLTIP_STYLE));
             return;

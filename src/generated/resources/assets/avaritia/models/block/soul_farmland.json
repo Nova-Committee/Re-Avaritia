@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/template_farmland",
   "textures": {
-    "all": "avaritia:block/resource/soul_farmland"
+    "dirt": "minecraft:block/soul_soil",
+    "top": "avaritia:block/resource/soul_farmland"
   }
 }

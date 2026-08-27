@@ -28,7 +28,11 @@ class InfinityChestMenuTest {
                 () -> assertEquals("1K", InfinityChestContainer.formatAmount(1_000L)),
                 () -> assertEquals("12.3K", InfinityChestContainer.formatAmount(12_345L)),
                 () -> assertEquals("1G", InfinityChestContainer.formatAmount(1_000_000_000L)),
-                () -> assertEquals("MAX", InfinityChestContainer.formatAmount(Long.MAX_VALUE))
+                () -> assertEquals("MAX", InfinityChestContainer.formatAmount(Long.MAX_VALUE)),
+                () -> assertEquals("0", InfinityChestContainer.formatExactAmount(0L)),
+                () -> assertEquals("1,234", InfinityChestContainer.formatExactAmount(1_234L)),
+                () -> assertEquals("9,223,372,036,854,775,807",
+                        InfinityChestContainer.formatExactAmount(Long.MAX_VALUE))
         );
     }
 

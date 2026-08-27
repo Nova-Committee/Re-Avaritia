@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
+import committee.nova.mods.avaritia.client.tint.RainbowTintSource;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.object.chest.ChestModel;
 import net.minecraft.client.renderer.Sheets;
@@ -33,7 +34,8 @@ public class InfinityChestItemRender implements NoDataSpecialModelRenderer {
 
     @Override
     public void submit(@NotNull PoseStack poseStack, @NotNull SubmitNodeCollector output, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
-        output.submitModel(this.model, 0.0F, poseStack, packedLight, packedOverlay, -1, INFINITY_CHEST_SPRITE, this.sprites, outlineColor, null);
+        output.submitModel(this.model, 0.0F, poseStack, packedLight, packedOverlay,
+                RainbowTintSource.currentColor(), INFINITY_CHEST_SPRITE, this.sprites, outlineColor, null);
     }
 
     @Override

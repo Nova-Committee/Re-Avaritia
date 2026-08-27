@@ -10,12 +10,21 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 
 public record RainbowTintSource() implements ItemTintSource {
+    private static final long CYCLE_MILLIS = 18_000L;
     public static final MapCodec<RainbowTintSource> CODEC = MapCodec.unit(RainbowTintSource::new);
+
+    public static int currentColor() {
+        return colorAt(System.currentTimeMillis());
+    }
+
+    static int colorAt(long timeMillis) {
+        float hue = Math.floorMod(timeMillis, CYCLE_MILLIS) / (float) CYCLE_MILLIS;
+        return Color.HSBtoRGB(hue, 1.0F, 1.0F);
+    }
 
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
-        float hue = (System.currentTimeMillis() % 18000L) / 18000.0F;
-        return Color.HSBtoRGB(hue, 1.0F, 1.0F);
+        return currentColor();
     }
 
     @Override

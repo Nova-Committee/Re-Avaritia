@@ -123,6 +123,10 @@ public final class InfinityChestContainer extends SimpleContainer {
         return number + suffixes[Math.max(0, suffix)];
     }
 
+    public static String formatExactAmount(long amount) {
+        return String.format(Locale.ROOT, "%,d", amount);
+    }
+
     private void rebuildVisible() {
         int start = maximumRowOffset() == 0 ? 0 : (int) Math.round(scroll * maximumRowOffset()) * WIDTH;
         visible.clear();

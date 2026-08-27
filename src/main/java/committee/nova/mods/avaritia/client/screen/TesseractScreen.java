@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.container.DummyChannelContainer;
+import committee.nova.mods.avaritia.common.container.InfinityChestContainer;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -195,7 +196,7 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
                 }
                 String unit = entry.kind() == DummyChannelContainer.Kind.FLUID ? " mB"
                         : entry.kind() == DummyChannelContainer.Kind.ENERGY ? " FE" : "";
-                lines.add(Component.literal(String.format(Locale.ROOT, "%,d", entry.amount()) + unit));
+                lines.add(Component.literal(InfinityChestContainer.formatExactAmount(entry.amount()) + unit));
                 graphics.setTooltipForNextFrame(font, lines, Optional.empty(), mouseX, mouseY);
                 return;
             }
