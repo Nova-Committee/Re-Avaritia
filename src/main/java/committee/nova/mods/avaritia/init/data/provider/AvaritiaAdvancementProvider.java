@@ -37,12 +37,12 @@ public class AvaritiaAdvancementProvider implements AdvancementSubProvider {
                 .display(ModItems.infinity_catalyst.get(),
                         Component.translatable("advancements.avaritia.start.title"),
                         Component.translatable("advancements.avaritia.start.desc"),
-                        Const.rl("textures/block/resource/neutron.png"),
+                        Const.rl("gui/advancements/backgrounds/neutron"),
                         AdvancementType.TASK,
                         false,
                         false,
                         false)
-                .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.infinity_catalyst.get()))
+                .addCriterion("main", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.compressed_crafting_table.get()))
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .save(writer, Const.MOD_ID + ":main/root");
 
@@ -63,8 +63,8 @@ public class AvaritiaAdvancementProvider implements AdvancementSubProvider {
         AdvancementHolder extreme = item(end, writer, "extreme_crafting_table", ModBlocks.extreme_crafting_table.get(), AdvancementType.TASK, "main");
         AdvancementHolder collector = item(extreme, writer, "neutron_collector", ModBlocks.neutron_collector.get(), AdvancementType.TASK, "main");
         AdvancementHolder pile = item(collector, writer, "neutron_pile", ModItems.neutron_pile.get(), AdvancementType.TASK, "main");
-        item(pile, writer, "neutron_ingot", ModItems.neutron_ingot.get(), AdvancementType.TASK, "main");
-        AdvancementHolder compressor = item(pile, writer, "neutron_compressor", ModBlocks.neutron_compressor.get(), AdvancementType.TASK, "main");
+        AdvancementHolder neutronIngot = item(pile, writer, "neutron_ingot", ModItems.neutron_ingot.get(), AdvancementType.TASK, "main");
+        AdvancementHolder compressor = item(neutronIngot, writer, "neutron_compressor", ModBlocks.neutron_compressor.get(), AdvancementType.TASK, "main");
         AdvancementHolder singularity = singularity(compressor, writer, itemRegistry);
 
         AdvancementHolder infinityCatalyst = item(singularity, writer, "infinity_catalyst", ModItems.infinity_catalyst.get(), AdvancementType.TASK, "singularity");

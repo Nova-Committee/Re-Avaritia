@@ -4,7 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": "avaritia:infinity_catalyst"
+            "items": "avaritia:compressed_crafting_table"
           }
         ]
       },
@@ -13,7 +13,7 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "avaritia:textures/block/resource/neutron.png",
+    "background": "avaritia:gui/advancements/backgrounds/neutron",
     "description": {
       "translate": "advancements.avaritia.start.desc"
     },

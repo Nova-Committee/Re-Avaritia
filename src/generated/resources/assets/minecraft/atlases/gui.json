@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "avaritia:block/resource/neutron",
+      "sprite": "avaritia:gui/advancements/backgrounds/neutron"
+    }
+  ]
+}

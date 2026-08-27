@@ -26,6 +26,10 @@ public class AvaritiaSpriteSourceProvider extends SpriteSourceProvider {
         atlas(Const.HALO_ATLAS_INFO)
                 .addSource(new SingleFile(Const.rl("misc/halo"), Optional.empty()))
                 .addSource(new SingleFile(Const.rl("misc/halo_noise"), Optional.empty()));
+        atlas(AtlasIds.GUI).addSource(new SingleFile(
+                Const.rl("block/resource/neutron"),
+                Optional.of(Const.rl("gui/advancements/backgrounds/neutron"))
+        ));
         addChestSprite("compressed_chest");
         addChestSprite("infinity_chest");
     }
