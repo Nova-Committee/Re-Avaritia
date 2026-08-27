@@ -27,11 +27,11 @@ class TesseractScreenTest {
     }
 
     @Test
-    @DisplayName("both background compositions fill the current 256 pixel screen")
+    @DisplayName("both background compositions continuously fill the current 256 pixel screen")
     void fillsCurrentScreenHeight() {
         assertAll(
-                () -> assertEquals(TesseractScreenLayout.HEIGHT, bottomOfLastSlice(false)),
-                () -> assertEquals(TesseractScreenLayout.HEIGHT, bottomOfLastSlice(true)),
+                () -> assertContinuousBackground(false),
+                () -> assertContinuousBackground(true),
                 () -> assertEquals(240, TesseractScreenLayout.VIEW_Y + TesseractScreenLayout.CONTROL_SIZE),
                 () -> assertEquals(TesseractScreenLayout.CONTROL_SIZE,
                         TesseractScreenLayout.LOCK_Y - TesseractScreenLayout.CRAFTING_TOGGLE_Y),
@@ -42,9 +42,32 @@ class TesseractScreenTest {
         );
     }
 
-    private static int bottomOfLastSlice(boolean crafting) {
+    @Test
+    @DisplayName("player inventory and hotbar keep the complete legacy texture regions")
+    void keepsCompletePlayerInventoryTexture() {
+        assertAll(
+                () -> assertPlayerInventorySlices(false),
+                () -> assertPlayerInventorySlices(true),
+                () -> assertEquals(174, TesseractScreenLayout.INVENTORY_LABEL_Y)
+        );
+    }
+
+    private static void assertContinuousBackground(boolean crafting) {
         TesseractScreenLayout.BackgroundSlice[] slices = TesseractScreenLayout.background(crafting);
-        TesseractScreenLayout.BackgroundSlice last = slices[slices.length - 1];
-        return last.destinationY() + last.height();
+        int expectedDestinationY = 0;
+        for (TesseractScreenLayout.BackgroundSlice slice : slices) {
+            assertEquals(expectedDestinationY, slice.destinationY());
+            expectedDestinationY += slice.height();
+        }
+        assertEquals(TesseractScreenLayout.HEIGHT, expectedDestinationY);
+    }
+
+    private static void assertPlayerInventorySlices(boolean crafting) {
+        TesseractScreenLayout.BackgroundSlice[] slices = TesseractScreenLayout.background(crafting);
+        TesseractScreenLayout.BackgroundSlice inventory = slices[slices.length - 2];
+        TesseractScreenLayout.BackgroundSlice hotbar = slices[slices.length - 1];
+        assertEquals(new TesseractScreenLayout.BackgroundSlice(182, 125, 54), inventory);
+        assertEquals(new TesseractScreenLayout.BackgroundSlice(236, 190, 20), hotbar);
+        assertEquals(210, hotbar.sourceY() + hotbar.height());
     }
 }

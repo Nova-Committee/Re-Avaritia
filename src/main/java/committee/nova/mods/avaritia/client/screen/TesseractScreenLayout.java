@@ -9,6 +9,7 @@ final class TesseractScreenLayout {
     static final int SEARCH_Y = 4;
     static final int SEARCH_WIDTH = 90;
     static final int SEARCH_HEIGHT = 12;
+    static final int INVENTORY_LABEL_Y = 174;
 
     static final int CONTROL_X = 198;
     static final int CONTROL_SIZE = 16;
@@ -42,18 +43,17 @@ final class TesseractScreenLayout {
             new BackgroundSlice(119, 17, 51),
             new BackgroundSlice(170, 122, 6),
             new BackgroundSlice(176, 122, 6),
-            new BackgroundSlice(182, 122, 3),
-            new BackgroundSlice(185, 125, 54),
-            new BackgroundSlice(239, 190, 17)
+            new BackgroundSlice(182, 125, 54),
+            new BackgroundSlice(236, 190, 20)
     };
 
     private static final BackgroundSlice[] CRAFTING_BACKGROUND = {
             new BackgroundSlice(0, 0, 68),
             new BackgroundSlice(68, 17, 51),
-            new BackgroundSlice(119, 17, 17),
-            new BackgroundSlice(133, 69, 52),
-            new BackgroundSlice(185, 125, 54),
-            new BackgroundSlice(239, 190, 17)
+            new BackgroundSlice(119, 17, 14),
+            new BackgroundSlice(133, 69, 49),
+            new BackgroundSlice(182, 125, 54),
+            new BackgroundSlice(236, 190, 20)
     };
 
     private TesseractScreenLayout() {

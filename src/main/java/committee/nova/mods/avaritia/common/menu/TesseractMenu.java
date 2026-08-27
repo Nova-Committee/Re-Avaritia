@@ -50,6 +50,8 @@ public class TesseractMenu extends AbstractContainerMenu {
     public static final int RESULT_SLOT = 45;
     public static final int CHANNEL_START = 46;
     public static final int CHANNEL_SLOTS = DummyChannelContainer.SIZE;
+    static final int PLAYER_INVENTORY_Y = 185;
+    static final int PLAYER_HOTBAR_Y = 237;
 
     private static final int[] CRAFT_COUNTS = {1, 8, 64, 512};
 
@@ -124,11 +126,12 @@ public class TesseractMenu extends AbstractContainerMenu {
         // Keep player slots first so virtual channel slots never participate in vanilla transfers.
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 23 + column * 17, 188 + row * 17));
+                addSlot(new Slot(inventory, column + row * 9 + 9,
+                        23 + column * 17, PLAYER_INVENTORY_Y + row * 17));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 23 + column * 17, 240));
+            addSlot(new Slot(inventory, column, 23 + column * 17, PLAYER_HOTBAR_Y));
         }
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {

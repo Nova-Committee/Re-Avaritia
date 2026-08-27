@@ -41,7 +41,7 @@ public final class TesseractScreen extends BaseContainerScreen<TesseractMenu> {
     public TesseractScreen(TesseractMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, null, WIDTH, HEIGHT, WIDTH, HEIGHT);
         inventoryLabelX = 23;
-        inventoryLabelY = 177;
+        inventoryLabelY = INVENTORY_LABEL_Y;
         titleLabelX = 8;
         titleLabelY = 5;
     }
