@@ -16,11 +16,14 @@ class CrystalSpearItemContractTest {
             "src/main/java/committee/nova/mods/avaritia/common/item/tools/crystal/CrystalSpearItem.java");
     private static final Path COMPONENT_SOURCE = Path.of(
             "src/main/java/committee/nova/mods/avaritia/init/registry/ModDataComponents.java");
+    private static final Path THRUST_UTILS_SOURCE = Path.of(
+            "src/main/java/committee/nova/mods/avaritia/common/item/tools/SpearThrustUtils.java");
 
     @Test
     void lockedAttackIsServerAuthoritativeAndHasNoRangeOrSightGate() throws IOException {
         String source = compact(Files.readString(SPEAR_SOURCE));
-        int movementIndex = source.indexOf("movePlayerToTarget(level,player,target)");
+        String movement = compact(Files.readString(THRUST_UTILS_SOURCE));
+        int movementIndex = source.indexOf("SpearThrustUtils.movePlayerToTarget(level,player,target)");
         int attackIndex = source.indexOf(
                 "player.stabAttack(hand.asEquipmentSlot(),target,damage,true,false,false)");
 
@@ -28,14 +31,15 @@ class CrystalSpearItemContractTest {
                 () -> assertTrue(source.contains("if(level.isClientSide()){returnInteractionResult.SUCCESS;}")),
                 () -> assertTrue(source.contains("booleanattacked=player.stabAttack(hand.asEquipmentSlot(),target,damage,true,false,false);")),
                 () -> assertTrue(movementIndex >= 0 && movementIndex < attackIndex),
-                () -> assertTrue(source.contains(
+                () -> assertTrue(movement.contains(
                         "level.noCollision(player,playerDimensions.makeBoundingBox(destination))")),
-                () -> assertTrue(source.contains("player.teleportTo(level,destination.x,destination.y,destination.z")),
+                () -> assertTrue(movement.contains("player.teleportTo(level,destination.x,destination.y,destination.z")),
                 () -> assertTrue(source.contains("target.level()!=level")),
                 () -> assertTrue(source.contains("addTicketAndLoadWithRadius(TicketType.PORTAL,requestedTarget.lastKnownChunk(),0)")),
                 () -> assertFalse(source.contains("distanceTo")),
                 () -> assertFalse(source.contains("ProjectileUtil")),
-                () -> assertFalse(source.contains("ClipContext"))
+                () -> assertFalse(source.contains("ClipContext")),
+                () -> assertFalse(source.contains("privatestaticbooleanmovePlayerToTarget"))
         );
     }
 

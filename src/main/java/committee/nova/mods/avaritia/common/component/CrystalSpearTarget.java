@@ -7,7 +7,6 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -51,42 +50,42 @@ public record CrystalSpearTarget(UUID targetId, Identifier dimension, int chunkX
     }
 
     public static CrystalSpearTarget of(LivingEntity target) {
+        SpearTargetReference reference = SpearTargetReference.of(target);
         return new CrystalSpearTarget(
-                target.getUUID(),
-                target.level().dimension().identifier(),
-                blockToChunk(target.getBlockX()),
-                blockToChunk(target.getBlockZ()),
+                reference.targetId(),
+                reference.dimension(),
+                reference.chunkX(),
+                reference.chunkZ(),
                 MAX_THRUSTS);
     }
 
     public boolean matches(LivingEntity target) {
-        return this.targetId.equals(target.getUUID());
+        return this.reference().matches(target);
     }
 
     public @Nullable LivingEntity resolve(Level level) {
-        Entity target = level.getEntityInAnyDimension(this.targetId);
-        return target instanceof LivingEntity livingTarget ? livingTarget : null;
+        return this.reference().resolve(level);
     }
 
     public ChunkPos lastKnownChunk() {
-        return new ChunkPos(this.chunkX, this.chunkZ);
+        return this.reference().lastKnownChunk();
     }
 
     public CrystalSpearTarget refreshPosition(LivingEntity target) {
-        if (!this.matches(target)) {
+        SpearTargetReference currentReference = this.reference();
+        if (!currentReference.matches(target)) {
             return of(target);
         }
-
-        Identifier currentDimension = target.level().dimension().identifier();
-        int currentChunkX = blockToChunk(target.getBlockX());
-        int currentChunkZ = blockToChunk(target.getBlockZ());
-        if (this.dimension.equals(currentDimension)
-                && this.chunkX == currentChunkX
-                && this.chunkZ == currentChunkZ) {
+        SpearTargetReference refreshedReference = currentReference.refreshPosition(target);
+        if (refreshedReference == currentReference) {
             return this;
         }
         return new CrystalSpearTarget(
-                this.targetId, currentDimension, currentChunkX, currentChunkZ, this.remainingThrusts);
+                refreshedReference.targetId(),
+                refreshedReference.dimension(),
+                refreshedReference.chunkX(),
+                refreshedReference.chunkZ(),
+                this.remainingThrusts);
     }
 
     public @Nullable CrystalSpearTarget consumeThrust() {
@@ -98,6 +97,10 @@ public record CrystalSpearTarget(UUID targetId, Identifier dimension, int chunkX
     }
 
     static int blockToChunk(int coordinate) {
-        return coordinate >> 4;
+        return SpearTargetReference.blockToChunk(coordinate);
+    }
+
+    private SpearTargetReference reference() {
+        return new SpearTargetReference(this.targetId, this.dimension, this.chunkX, this.chunkZ);
     }
 }

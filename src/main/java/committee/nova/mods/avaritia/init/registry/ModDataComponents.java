@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.common.component.ClusterContainerContents;
 import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
 import committee.nova.mods.avaritia.common.component.InfinityContainerContents;
 import committee.nova.mods.avaritia.common.component.InfinityChestReference;
+import committee.nova.mods.avaritia.common.component.SpearTargetReference;
 import committee.nova.mods.avaritia.init.registry.modes.InfinityMode;
 import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
 import com.mojang.serialization.Codec;
@@ -45,6 +46,13 @@ public class ModDataComponents {
                     () -> DataComponentType.<CrystalSpearTarget>builder()
                             .persistent(CrystalSpearTarget.CODEC)
                             .networkSynchronized(CrystalSpearTarget.STREAM_CODEC)
+                            .cacheEncoding()
+                            .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SpearTargetReference>> INFINITY_SPEAR_TARGET =
+            DATA_COMPONENTS.register("infinity_spear_target",
+                    () -> DataComponentType.<SpearTargetReference>builder()
+                            .persistent(SpearTargetReference.CODEC)
+                            .networkSynchronized(SpearTargetReference.STREAM_CODEC)
                             .cacheEncoding()
                             .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> IS_CREATIVE_TAB_ICON =

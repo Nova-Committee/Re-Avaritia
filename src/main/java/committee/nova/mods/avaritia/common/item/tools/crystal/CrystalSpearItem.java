@@ -3,29 +3,26 @@ package committee.nova.mods.avaritia.common.item.tools.crystal;
 import committee.nova.mods.avaritia.api.iface.ITooltip;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.common.component.CrystalSpearTarget;
+import committee.nova.mods.avaritia.common.item.tools.SpearThrustUtils;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import lombok.NonNull;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -35,12 +32,10 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.init.registry.ModToolTiers.CRYSTAL;
@@ -67,10 +62,6 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
     private static final float ARMOR_BONUS = 0.025F;
     /** 每点盔甲韧性增加的伤害倍率 */
     private static final float TOUGHNESS_BONUS = 0.04F;
-    /** 突刺落点与目标碰撞箱之间的间隔 */
-    private static final double THRUST_TARGET_GAP = 0.25D;
-    /** 水平方向过短时使用默认接近方向 */
-    private static final double MIN_DIRECTION_LENGTH_SQR = 1.0E-6D;
     /** 远距离目标区块加载期间避免重复提交同一攻击 */
     private static final int TARGET_LOAD_COOLDOWN_TICKS = 10;
     public ToolMaterial getTier() {
@@ -125,7 +116,7 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             return true;
         }
 
-        if (!movePlayerToTarget(level, player, target)) {
+        if (!SpearThrustUtils.movePlayerToTarget(level, player, target)) {
             player.sendOverlayMessage(Component.translatable("message.avaritia.crystal_spear.target_unavailable"));
             return true;
         }
@@ -150,36 +141,6 @@ public class CrystalSpearItem extends Item implements ITooltip, ISwitchable {
             stack.set(ModDataComponents.CRYSTAL_SPEAR_TARGET.get(), nextTarget);
         }
         return true;
-    }
-
-    private static boolean movePlayerToTarget(ServerLevel level, ServerPlayer player, LivingEntity target) {
-        Vec3 toTarget = target.position().subtract(player.position());
-        Vec3 horizontalDirection = new Vec3(toTarget.x, 0.0D, toTarget.z);
-        if (horizontalDirection.lengthSqr() < MIN_DIRECTION_LENGTH_SQR) {
-            horizontalDirection = new Vec3(0.0D, 0.0D, 1.0D);
-        } else {
-            horizontalDirection = horizontalDirection.normalize();
-        }
-
-        double targetDistance = (player.getBbWidth() + target.getBbWidth()) * 0.5D + THRUST_TARGET_GAP;
-        EntityDimensions playerDimensions = player.getDimensions(player.getPose());
-        for (int quarterTurn = 0; quarterTurn < 4; quarterTurn++) {
-            Vec3 approachDirection = horizontalDirection.yRot(Mth.HALF_PI * quarterTurn);
-            Vec3 destination = target.position().subtract(approachDirection.scale(targetDistance));
-            if (!level.noCollision(player, playerDimensions.makeBoundingBox(destination))) {
-                continue;
-            }
-            if (!player.teleportTo(level, destination.x, destination.y, destination.z,
-                    Set.of(), player.getYRot(), player.getXRot(), false)) {
-                continue;
-            }
-
-            player.setDeltaMovement(Vec3.ZERO);
-            player.resetFallDistance();
-            player.lookAt(EntityAnchorArgument.Anchor.EYES, target.getEyePosition());
-            return true;
-        }
-        return false;
     }
 
     private static void loadTargetChunkAndAttack(ServerLevel level, ServerPlayer player, InteractionHand hand,

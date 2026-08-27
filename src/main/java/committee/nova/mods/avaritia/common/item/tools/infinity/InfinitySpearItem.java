@@ -4,7 +4,9 @@ import committee.nova.mods.avaritia.api.common.enchant.InitEnchantment;
 import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.api.iface.item.IUndamageable;
 import committee.nova.mods.avaritia.api.iface.item.InitEnchantItem;
+import committee.nova.mods.avaritia.common.component.SpearTargetReference;
 import committee.nova.mods.avaritia.common.entity.ImmortalItemEntity;
+import committee.nova.mods.avaritia.common.item.tools.SpearThrustUtils;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.*;
 import committee.nova.mods.avaritia.util.InfinityDamageUtils;
@@ -15,13 +17,16 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -33,14 +38,26 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static committee.nova.mods.avaritia.init.registry.ModToolTiers.INFINITY;
 
 public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitchable, IUndamageable {
+    private static final String MODE_NORMAL = "infinity_spear_normal";
+    private static final String MODE_LUNGE = "infinity_spear_lunge";
+    private static final String MODE_LONG_RANGE = "infinity_spear_long_range";
+    private static final List<String> MODES = List.of(MODE_NORMAL, MODE_LUNGE, MODE_LONG_RANGE);
+    private static final double AUTO_TARGET_RANGE = 128.0D;
+    private static final int AUTO_TARGET_POOL_SIZE = 5;
+    private static final int TARGET_LOAD_COOLDOWN_TICKS = 10;
+    private static final int LUNGE_LEVEL = 10;
+
     public InfinitySpearItem() {
         super(ModItems.properties()
                 .rarity(ModRarities.COSMIC.getValue())
@@ -54,8 +71,6 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
                         .build()
                         ));
     }
-    private static final String MODE_LUNGE = "infinity_spear_lunge";
-    private static final int LUNGE_LEVEL = 10;
     private final InitEnchantment initEnchantment = new InitEnchantment(Enchantments.LOOTING, 10);
 
     public ToolMaterial getTier() {
@@ -64,12 +79,153 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
     // ==================== 模式切换：shift+右键 ====================
     @Override
     public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        var heldItem = player.getItemInHand(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            switchMode(level, player, hand, MODE_LUNGE);
+            cycleMode(level, player, hand, MODES);
+            if (!level.isClientSide() && !isActive(stack, MODE_LONG_RANGE)) {
+                stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+            }
             return InteractionResult.SUCCESS;
         }
-        return super.use(level, player, hand);
+
+        if (!isActive(stack, MODE_LONG_RANGE)) {
+            return super.use(level, player, hand);
+        }
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        ServerLevel serverLevel = (ServerLevel) level;
+        ServerPlayer serverPlayer = (ServerPlayer) player;
+        SpearTargetReference lockedTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+        if (lockedTarget != null) {
+            if (!lockedTarget.dimension().equals(level.dimension().identifier())) {
+                player.sendOverlayMessage(Component.translatable(
+                        "message.avaritia.infinity_spear.target_unavailable"));
+                return InteractionResult.SUCCESS_SERVER;
+            }
+
+            LivingEntity target = lockedTarget.resolve(level);
+            if (target == null) {
+                loadTargetChunkAndAttack(serverLevel, serverPlayer, hand, stack, lockedTarget);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+            if (isEligibleTarget(player, target)) {
+                tryAttackTarget(serverLevel, serverPlayer, hand, target);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+            stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+        }
+
+        LivingEntity target = selectLongRangeTarget(serverLevel, serverPlayer);
+        if (target == null) {
+            player.sendOverlayMessage(Component.translatable("message.avaritia.infinity_spear.no_target"));
+            return InteractionResult.SUCCESS_SERVER;
+        }
+        tryAttackTarget(serverLevel, serverPlayer, hand, target);
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
+    private static void tryAttackTarget(ServerLevel level, ServerPlayer player, InteractionHand hand,
+                                        LivingEntity target) {
+        if (!isEligibleTarget(player, target) || target.level() != level) {
+            player.sendOverlayMessage(Component.translatable(
+                    "message.avaritia.infinity_spear.target_unavailable"));
+            return;
+        }
+        if (!SpearThrustUtils.movePlayerToTarget(level, player, target)) {
+            player.sendOverlayMessage(Component.translatable(
+                    "message.avaritia.infinity_spear.target_unavailable"));
+            return;
+        }
+
+        float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        if (player.stabAttack(hand.asEquipmentSlot(), target, damage, true, false, false)) {
+            player.onAttack();
+        }
+    }
+
+    private static @Nullable LivingEntity selectLongRangeTarget(ServerLevel level, ServerPlayer player) {
+        AABB searchBox = player.getBoundingBox().inflate(AUTO_TARGET_RANGE);
+        List<LivingEntity> nearestTargets = level.getEntitiesOfClass(
+                        LivingEntity.class,
+                        searchBox,
+                        target -> isEligibleTarget(player, target))
+                .stream()
+                .sorted(Comparator.comparingDouble(player::distanceToSqr))
+                .limit(AUTO_TARGET_POOL_SIZE)
+                .toList();
+        if (nearestTargets.isEmpty()) {
+            return null;
+        }
+        return nearestTargets.get(level.getRandom().nextInt(nearestTargets.size()));
+    }
+
+    private static boolean isEligibleTarget(Player player, LivingEntity target) {
+        return target != player
+                && target.isAlive()
+                && !target.isRemoved()
+                && !target.isSpectator()
+                && !(target instanceof ArmorStand)
+                && !player.isAlliedTo(target)
+                && !(target instanceof Player targetPlayer && targetPlayer.isCreative());
+    }
+
+    private static void loadTargetChunkAndAttack(ServerLevel level, ServerPlayer player, InteractionHand hand,
+                                                 ItemStack stack, SpearTargetReference requestedTarget) {
+        player.getCooldowns().addCooldown(stack, TARGET_LOAD_COOLDOWN_TICKS);
+        level.getChunkSource()
+                .addTicketAndLoadWithRadius(TicketType.PORTAL, requestedTarget.lastKnownChunk(), 0)
+                .whenComplete((ignored, error) -> level.getServer().execute(() -> {
+                    if (player.isRemoved() || player.level() != level || player.getItemInHand(hand) != stack
+                            || !ISwitchable.isMode(stack, MODE_LONG_RANGE)) {
+                        return;
+                    }
+
+                    SpearTargetReference currentTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+                    if (currentTarget == null || !currentTarget.targetId().equals(requestedTarget.targetId())) {
+                        return;
+                    }
+                    if (error != null) {
+                        player.sendOverlayMessage(Component.translatable(
+                                "message.avaritia.infinity_spear.target_unavailable"));
+                        return;
+                    }
+
+                    LivingEntity target = currentTarget.resolve(level);
+                    if (target == null) {
+                        player.sendOverlayMessage(Component.translatable(
+                                "message.avaritia.infinity_spear.target_unavailable"));
+                        return;
+                    }
+                    tryAttackTarget(level, player, hand, target);
+                }));
+    }
+
+    @Override
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel level, @NotNull Entity owner,
+                              @Nullable EquipmentSlot slot) {
+        if (!isActive(stack, MODE_LONG_RANGE)) {
+            stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+            super.inventoryTick(stack, level, owner, slot);
+            return;
+        }
+
+        SpearTargetReference lockedTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+        if (lockedTarget != null) {
+            LivingEntity target = lockedTarget.resolve(level);
+            if (target != null) {
+                if (!(owner instanceof Player player) || !isEligibleTarget(player, target)) {
+                    stack.remove(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+                } else {
+                    SpearTargetReference refreshedTarget = lockedTarget.refreshPosition(target);
+                    if (refreshedTarget != lockedTarget) {
+                        stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(), refreshedTarget);
+                    }
+                }
+            }
+        }
+        super.inventoryTick(stack, level, owner, slot);
     }
 
     // ==================== Looting 10 常驻 + 突进模式才生效的原版 LUNGE ====================
@@ -88,6 +244,19 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
     @Override
     public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         if (attacker instanceof Player player && target.level() instanceof ServerLevel serverLevel) {
+            if (isActive(stack, MODE_LONG_RANGE) && target.isAlive()) {
+                SpearTargetReference currentTarget = stack.get(ModDataComponents.INFINITY_SPEAR_TARGET.get());
+                if (currentTarget == null || !currentTarget.matches(target)) {
+                    stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(), SpearTargetReference.of(target));
+                    player.sendOverlayMessage(Component.translatable(
+                            "message.avaritia.infinity_spear.locked", target.getDisplayName()));
+                } else {
+                    SpearTargetReference refreshedTarget = currentTarget.refreshPosition(target);
+                    if (refreshedTarget != currentTarget) {
+                        stack.set(ModDataComponents.INFINITY_SPEAR_TARGET.get(), refreshedTarget);
+                    }
+                }
+            }
             // 获取是否启用无限伤害的配置选项
             var endlessDamage = ModConfig.isSwordAttackEndless.get();
             // 创建伤害源
@@ -156,6 +325,12 @@ public class InfinitySpearItem extends Item implements InitEnchantItem, ISwitcha
             }
             tooltipComponents.accept(Component.translatable("tooltip.avaritia.infinity_spear_lunge.active")
                     .withStyle(ChatFormatting.RED));
+        }
+        if (isActive(stack, MODE_LONG_RANGE)) {
+            tooltipComponents.accept(Component.translatable("tooltip.avaritia.tool.infinity_spear_long_range")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltipComponents.accept(Component.translatable("tooltip.avaritia.infinity_spear_long_range.desc")
+                    .withStyle(ChatFormatting.AQUA));
         }
     }
 }
