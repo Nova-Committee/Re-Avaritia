@@ -25,7 +25,9 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
     private final CyclingSlotBackground additionalIcon2 = new CyclingSlotBackground(3);
     private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
-    private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = Identifier.tryParse("item/empty_slot_smithing_template_netherite_upgrade");
+    private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = Identifier.withDefaultNamespace(
+            "container/slot/smithing_template_netherite_upgrade"
+    );
     private static final List<Identifier> EMPTY_SLOT_SMITHING_TEMPLATES = List.of(EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE);
     private static final Component MISSING_TEMPLATE_TOOLTIP = Component.translatable("container.upgrade.missing_template_tooltip");
     private static final Component ERROR_TOOLTIP = Component.translatable("container.upgrade.error_tooltip");
@@ -54,8 +56,11 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
         super.containerTick();
         Optional<SmithingTemplateItem> optional = this.getTemplateItem();
         this.templateIcon.tick(EMPTY_SLOT_SMITHING_TEMPLATES);
-        //this.baseIcon.tick(optional.map(InfinitySmithingTemplateItem::getBaseSlotEmptyIcons).orElse(List.of()));
-        //this.additionalIcon1.tick(optional.map(InfinitySmithingTemplateItem::getAdditionalSlotEmptyIcons).orElse(List.of()));
+        this.baseIcon.tick(optional.map(SmithingTemplateItem::getBaseSlotEmptyIcons).orElse(List.of()));
+        List<Identifier> additionIcons = optional.map(SmithingTemplateItem::getAdditionalSlotEmptyIcons).orElse(List.of());
+        this.additionalIcon1.tick(additionIcons);
+        this.additionalIcon2.tick(additionIcons);
+        this.additionalIcon3.tick(additionIcons);
     }
 
     private Optional<SmithingTemplateItem> getTemplateItem() {

@@ -66,8 +66,8 @@ public class ExtremeSmithingRecipeCategory implements IRecipeCategory<RecipeHold
         var additions = recipe.getAdditionIngredients();
         builder.addSlot(RecipeIngredientRole.INPUT, 27, 23).add(recipe.template);
         builder.addSlot(RecipeIngredientRole.INPUT, 45, 23).add(recipe.base);
-        builder.addSlot(RecipeIngredientRole.INPUT, 45, 5).add(additions.get(0));
         builder.addSlot(RecipeIngredientRole.INPUT, 63, 23).add(additions.get(1));
+        builder.addSlot(RecipeIngredientRole.INPUT, 45, 5).add(additions.get(0));
         builder.addSlot(RecipeIngredientRole.INPUT, 45, 41).add(additions.get(2));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 117, 23).add(getResultItem(recipe));
         builder.moveRecipeTransferButton(160, 68);

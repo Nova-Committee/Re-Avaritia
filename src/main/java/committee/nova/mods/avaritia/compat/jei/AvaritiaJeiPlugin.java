@@ -125,7 +125,15 @@ public class AvaritiaJeiPlugin implements IModPlugin {
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.nether_crafting_tile_table.get(), NetherCraftingTableCategory.RECIPE_TYPE, 1, 25, 26, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.end_crafting_tile_table.get(), EndCraftingTableCategory.RECIPE_TYPE, 1, 49, 50, 36);
         registration.addRecipeTransferHandler(TierCraftMenu.class, ModMenus.extreme_crafting_table.get(), ExtremeCraftingTableCategory.RECIPE_TYPE, 1, 81, 82, 36);
-        registration.addRecipeTransferHandler(ExtremeSmithingMenu.class, ModMenus.extreme_smithing_table.get(), ExtremeSmithingRecipeCategory.RECIPE_TYPE, 1, 5, 6, 36);
+        registration.addRecipeTransferHandler(
+                ExtremeSmithingMenu.class,
+                ModMenus.extreme_smithing_table.get(),
+                ExtremeSmithingRecipeCategory.RECIPE_TYPE,
+                ExtremeSmithingMenu.TEMPLATE_SLOT,
+                ExtremeSmithingMenu.INPUT_SLOT_COUNT,
+                ExtremeSmithingMenu.PLAYER_INVENTORY_SLOT_START,
+                ExtremeSmithingMenu.PLAYER_INVENTORY_SLOT_COUNT
+        );
         registration.addRecipeTransferHandler(ExtremeAnvilMenu.class, ModMenus.extreme_anvil.get(), RecipeTypes.ANVIL, 0, 2, 3, 36);
     }
 
