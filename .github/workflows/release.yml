@@ -81,6 +81,31 @@ jobs:
       - name: Build project
         run: ./gradlew build --no-daemon
 
+      - name: Remove existing Modrinth version
+        shell: bash
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MODRINTH_PROJECT_ID: QeB3NRC5
+          PUBLISH_VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          existing_version_id="$(
+            curl --fail-with-body --silent --show-error \
+              --header "Authorization: $MODRINTH_TOKEN" \
+              "https://api.modrinth.com/v2/project/$MODRINTH_PROJECT_ID/version?include_changelog=false" \
+              | jq --raw-output --arg version "$PUBLISH_VERSION" \
+                  '.[] | select(.version_number == $version) | .id' \
+              | head -n 1
+          )"
+
+          if [[ -n "$existing_version_id" ]]; then
+            curl --fail-with-body --silent --show-error \
+              --request DELETE \
+              --header "Authorization: $MODRINTH_TOKEN" \
+              "https://api.modrinth.com/v2/version/$existing_version_id"
+          fi
+
       - name: Publish release
         uses: Kira-NT/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3.3.1
         with:
