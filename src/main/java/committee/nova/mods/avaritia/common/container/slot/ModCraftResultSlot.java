@@ -1,5 +1,6 @@
 package committee.nova.mods.avaritia.common.container.slot;
 
+import committee.nova.mods.avaritia.api.common.crafting.TierInput;
 import committee.nova.mods.avaritia.common.container.ModCraftContainer;
 import committee.nova.mods.avaritia.common.menu.TierCraftMenu;
 import committee.nova.mods.avaritia.init.registry.ModRecipeTypes;
@@ -46,6 +47,10 @@ public class ModCraftResultSlot extends Slot {
 
     @Override
     public @NotNull ItemStack remove(int pAmount) {
+        if (!this.mayPickup(this.player)) {
+            return ItemStack.EMPTY;
+        }
+
         if (this.hasItem()) {
             this.removeCount += Math.min(pAmount, this.getItem().getCount());
         }
@@ -70,8 +75,15 @@ public class ModCraftResultSlot extends Slot {
         var level = player.level();
         var inventory = this.craftContainer.asCraftInput();
         CommonHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> remaining = level.getRecipeManager().getRemainingItemsFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, level);
-        CommonHooks.setCraftingPlayer(null);
+        NonNullList<ItemStack> remaining;
+        try {
+            remaining = level.getRecipeManager()
+                    .getRecipeFor(ModRecipeTypes.CRAFTING_TABLE_RECIPE.get(), inventory, level)
+                    .map(recipe -> recipe.value().getRemainingItems(inventory))
+                    .orElseGet(() -> defaultRemainingItems(inventory));
+        } finally {
+            CommonHooks.setCraftingPlayer(null);
+        }
 
         for (int k = 0; k < inventory.height(); k++) {
             for (int l = 0; l < inventory.width(); l++) {
@@ -98,6 +110,17 @@ public class ModCraftResultSlot extends Slot {
         }
 
         this.container.slotsChanged(this.craftContainer);
+    }
+
+    static NonNullList<ItemStack> defaultRemainingItems(TierInput inventory) {
+        NonNullList<ItemStack> remaining = NonNullList.withSize(inventory.size(), ItemStack.EMPTY);
+        for (int index = 0; index < remaining.size(); index++) {
+            ItemStack input = inventory.getItem(index);
+            if (input.hasCraftingRemainingItem()) {
+                remaining.set(index, input.getCraftingRemainingItem());
+            }
+        }
+        return remaining;
     }
 
     @Override
