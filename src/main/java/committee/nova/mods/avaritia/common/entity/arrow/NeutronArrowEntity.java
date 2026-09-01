@@ -10,10 +10,21 @@ import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 
 public class NeutronArrowEntity extends Arrow {
+    private static final int MAX_LIFETIME_TICKS = 1200;
+
     public NeutronArrowEntity(EntityType<? extends Arrow> entityType, Level level) {
         super(entityType, level);
         this.setNoGravity(true);
     }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide() && this.tickCount >= MAX_LIFETIME_TICKS) {
+            this.discard();
+        }
+    }
+
     @Override
     public @NotNull ItemStack getPickupItem() {
         return ItemStack.EMPTY;
@@ -27,12 +38,13 @@ public class NeutronArrowEntity extends Arrow {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        super.onHitEntity(result);
         Entity entity = result.getEntity();
 
         if (this.getOwner() != null && entity.equals(this.getOwner())) {
             return;
         }
+
+        super.onHitEntity(result);
 
         if (this.getOwner() != null) {
             if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
