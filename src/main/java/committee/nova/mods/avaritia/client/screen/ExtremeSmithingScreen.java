@@ -8,9 +8,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SmithingTemplateItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -21,10 +19,6 @@ import java.util.Optional;
  */
 public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMenu> {
     private final CyclingSlotBackground templateIcon = new CyclingSlotBackground(0);
-    private final CyclingSlotBackground baseIcon = new CyclingSlotBackground(1);
-    private final CyclingSlotBackground additionalIcon1 = new CyclingSlotBackground(2);
-    private final CyclingSlotBackground additionalIcon2 = new CyclingSlotBackground(3);
-    private final CyclingSlotBackground additionalIcon3 = new CyclingSlotBackground(4);
     private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE = Identifier.withDefaultNamespace(
             "container/slot/smithing_template_netherite_upgrade"
     );
@@ -54,25 +48,7 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     @Override
     public void containerTick() {
         super.containerTick();
-        Optional<SmithingTemplateItem> optional = this.getTemplateItem();
         this.templateIcon.tick(EMPTY_SLOT_SMITHING_TEMPLATES);
-        this.baseIcon.tick(optional.map(SmithingTemplateItem::getBaseSlotEmptyIcons).orElse(List.of()));
-        List<Identifier> additionIcons = optional.map(SmithingTemplateItem::getAdditionalSlotEmptyIcons).orElse(List.of());
-        this.additionalIcon1.tick(additionIcons);
-        this.additionalIcon2.tick(additionIcons);
-        this.additionalIcon3.tick(additionIcons);
-    }
-
-    private Optional<SmithingTemplateItem> getTemplateItem() {
-        ItemStack itemStack = this.menu.getSlot(0).getItem();
-        if (!itemStack.isEmpty()) {
-            Item item = itemStack.getItem();
-            if (item instanceof SmithingTemplateItem smithingTemplateItem) {
-                return Optional.of(smithingTemplateItem);
-            }
-        }
-
-        return Optional.empty();
     }
 
     @Override
@@ -85,10 +61,6 @@ public class ExtremeSmithingScreen extends ItemCombinerScreen<ExtremeSmithingMen
     public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         this.templateIcon.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
-        this.baseIcon.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
-        this.additionalIcon1.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
-        this.additionalIcon2.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
-        this.additionalIcon3.extractRenderState(this.menu, graphics, partialTick, this.leftPos, this.topPos);
     }
 
     private void extractOnboardingTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
