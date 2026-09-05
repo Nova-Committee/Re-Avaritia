@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.client.AvaritiaModClient;
 import committee.nova.mods.avaritia.client.model.entity.InfinityShieldModel;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -24,6 +25,9 @@ public class InfinityShieldRender extends BlockEntityWithoutLevelRenderer {
 
     @Override
     public void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay) {
+        if (InfinityShieldItem.getShieldMode(stack) != InfinityShieldItem.MODE_NORMAL) {
+            return;
+        }
         poseStack.pushPose();
         poseStack.scale(1.0F, -1.0F, -1.0F);
         VertexConsumer vertexconsumer = ItemRenderer.getFoilBufferDirect(buffer, this.model.renderType(Res.SHIELD_TEX), false, stack.hasFoil());

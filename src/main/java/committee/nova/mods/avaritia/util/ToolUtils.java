@@ -8,6 +8,7 @@ import committee.nova.mods.avaritia.common.entity.EndestPearlEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.HeavenSubArrowEntity;
 import committee.nova.mods.avaritia.common.entity.arrow.TraceArrowEntity;
 import committee.nova.mods.avaritia.common.item.tools.InfinityArmorItem;
+import committee.nova.mods.avaritia.api.iface.item.ISwitchable;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
 import committee.nova.mods.avaritia.init.registry.ModEntities;
@@ -780,70 +781,57 @@ public class ToolUtils {
     }
 
     /**
-     * 炽热 自动识别可进行的熔炉配方进行处理（如：原矿-矿物锭）
-     *
-     * @param state  原矿状态
-     * @param world  世界
-     * @param pos    点击坐标
-     * @param player 玩家
-     * @param tool   使用的工具
+     * Replaces vanilla block drops with auto-smelt products instead of spawning extra items.
+     * Pre-fix: {@code melting} spawned smelted ItemEntities during {@code mineBlock}, then
+     * vanilla {@code playerDestroy} also dropped the original loot (1 ore -> ingot + raw).
      */
-    public static void melting(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool) {
-        if (!state.getBlock().canHarvestBlock(state, world, pos, player) || state.getBlock() instanceof CropBlock) return;
-        List<ItemStack> drops = Block.getDrops(state, (ServerLevel) world, pos, null);
-        Holder<Enchantment> fortune =
-                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.FORTUNE);
-        int unLuck = EnchantmentHelper.getTagEnchantmentLevel(fortune, tool);
-        //霉运影响
-        boolean flag = unLuck > 0 && world.random.nextDouble() < unLuck * 0.2; //霉运判断结果 true触发
-        if (drops.isEmpty() || flag) return;
-        drops.forEach(itemStack -> {
-            ItemStack dropStack = getMeltingItem(player, world, itemStack, tool);
-            if (!dropStack.equals(itemStack)) {
-                ToolUtils.meltingAchieve(world, player, pos);
-                world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, dropStack));
+    public static boolean applyAutoSmeltDrops(Player player, ServerLevel world, BlockPos pos, BlockState state, ItemStack tool, List<ItemEntity> drops) {
+        if (!(tool.is(ModItems.blaze_pickaxe.get()) || tool.is(ModItems.blaze_axe.get()) || tool.is(ModItems.blaze_hoe.get()))
+                || !ISwitchable.isMode(tool, "smelt") || state.getBlock() instanceof CropBlock || drops.isEmpty()) {
+            return false;
+        }
+
+        if (tool.is(ModItems.blaze_axe.get()) && state.is(BlockTags.LOGS)) {
+            drops.clear();
+            drops.add(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(ModItems.refined_coal.get())));
+            meltingAchieve(world, player, pos);
+            return true;
+        }
+
+        boolean changed = false;
+        for (ItemEntity drop : drops) {
+            ItemStack original = drop.getItem();
+            ItemStack smelted = getMeltingItem(world, original);
+            if (smelted != original && !smelted.isEmpty()) {
+                drop.setItem(smelted);
+                changed = true;
             }
-        });
+        }
+        if (changed) {
+            meltingAchieve(world, player, pos);
+        }
+        return changed;
     }
+
 
     /**
      * 获取物品烧炼后产物
      *
      * @param world     world
      * @param itemStack 烧炼前物品
-     * @param tool      使用工具
      * @return 烧炼产物
      */
-    public static ItemStack getMeltingItem(Player player, Level world, ItemStack itemStack, ItemStack tool) {
-        ItemStack dropStack = world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
+    public static ItemStack getMeltingItem(Level world, ItemStack itemStack) {
+        // Loot has already applied Fortune. Smelting only converts that quantity by the recipe ratio.
+        return world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(itemStack), world)
                 .map(smeltingRecipe -> smeltingRecipe.value().getResultItem(world.registryAccess())).filter(e -> !e.isEmpty())
-                .map(e -> e.copyWithCount(tool.getCount() * e.getCount()))
+                .map(e -> e.copyWithCount(itemStack.getCount() * e.getCount()))
                 .orElse(itemStack);
-        Holder<Enchantment> fortuneEnchant =
-                player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.FORTUNE);
-        int fortune = EnchantmentHelper.getTagEnchantmentLevel(fortuneEnchant, tool);
-        if (fortune > 0) { //时运影响产物数量
-            RandomSource random = RandomSource.create();
-            int count = 1;
-            if (random.nextDouble() < 0.3 + fortune * 0.1)
-                count += Mth.nextInt(random, 0, fortune + 1);
-            if (random.nextDouble() < 0.1 + fortune * 0.05) { //触发暴击
-                count *= Mth.nextInt(random, 1, fortune);
-            }
-            dropStack.setCount(count);
-        }
-        return dropStack;
     }
 
 
     /**
-     * 熔炼附魔的伪实现 通过取消方块破坏事件，同时生成掉落物
-     *
-     * @param world  世界
-     * @param player 玩家
-     * @param pos    坐标
+     * Auto-smelt FX only. The broken block is already gone; do not spawn extra items or re-set air.
      */
     public static void meltingAchieve(Level world, Player player, BlockPos pos) {
         if (!world.isClientSide) {
@@ -854,8 +842,8 @@ public class ToolUtils {
             }
         }
         world.playSound(player, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
-        world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); //设置此坐标为空气
     }
+
 
     /**
      * 发射剑气

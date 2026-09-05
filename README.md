@@ -52,6 +52,19 @@
 ## **🦀Discord:**
 * [Discord](https://discord.gg/u5GN2Wqsbx)
 
+## Infinity Shield
+
+Sneak-right-click to cycle through four modes; right-click normally to block. Both main-hand and off-hand use are supported.
+
+| Mode | Effect |
+| --- | --- |
+| Normal | Active shield blocking. |
+| Defending | Reflects blocked damage and deflects incoming projectiles while held. |
+| Ultimate defending | Prevents most damage while held; Infinity damage and damage that bypasses invulnerability remain exceptions. |
+| Floating | Prevents fall damage, slows descent, hovers while sneaking, and provides buoyancy in water and lava. |
+
+Blocking takes effect immediately, does not slow movement, and allows sprinting. Piercing arrows and shield-bypassing damage retain their exceptions. Raising and lowering this shield emit no item-interaction vibrations. Floating mode does not grant creative flight.
+
 ## **⚙️Develop:**
 ### **Singularities:**
 Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.

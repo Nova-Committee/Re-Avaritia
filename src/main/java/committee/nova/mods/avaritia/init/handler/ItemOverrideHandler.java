@@ -6,6 +6,7 @@ import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.common.item.misc.InfinityUmbrellaItem;
 import committee.nova.mods.avaritia.common.item.resources.MatterClusterItem;
 import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityCrossBowItem;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
@@ -51,6 +52,8 @@ public class ItemOverrideHandler {
             setPropertyOverride(ModItems.infinity_shield.get(), Const.rl("blocking"), (itemStack, world, livingEntity, d) -> {
                 return livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F;
             });
+            setPropertyOverride(ModItems.infinity_shield.get(), Const.rl("mode"),
+                    (stack, world, entity, seed) -> InfinityShieldItem.getShieldMode(stack));
             ItemProperties.register(ModItems.infinity_umbrella.get(),
                     Const.rl("mode"),
                     (stack, world, entity, seed) -> {

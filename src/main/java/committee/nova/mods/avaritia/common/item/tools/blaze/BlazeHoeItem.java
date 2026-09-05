@@ -9,7 +9,6 @@ import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModRarities;
 import committee.nova.mods.avaritia.init.registry.ModToolTiers;
 import committee.nova.mods.avaritia.init.registry.modes.ToolMode;
-import committee.nova.mods.avaritia.util.ToolUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -18,7 +17,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
@@ -116,11 +114,4 @@ public class BlazeHoeItem extends HoeItem implements ITooltip, ISwitchable, Init
         return super.useOn(pContext);
     }
 
-    @Override
-    public boolean mineBlock(@NotNull ItemStack stack, @NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull LivingEntity miningEntity) {
-        if (isActive(stack, "smelt") && miningEntity instanceof Player player) {
-            ToolUtils.melting(state, level, pos, player, stack);
-        }
-        return super.mineBlock(stack, level, state, pos, miningEntity);
-    }
 }

@@ -48,6 +48,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import static net.minecraft.world.entity.LivingEntity.getSlotForHand;
@@ -157,6 +158,14 @@ public class InfinityHandler {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onBlockDrops(BlockDropsEvent event) {
+        if (!(event.getBreaker() instanceof Player player)) {
+            return;
+        }
+        ToolUtils.applyAutoSmeltDrops(player, event.getLevel(), event.getPos(), event.getState(), event.getTool(), event.getDrops());
     }
 
     //合并物质团
