@@ -47,6 +47,45 @@
         "avaritia:blocking": 1
       },
       "model": "avaritia:item/infinity_shield_blocking"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 1
+      },
+      "model": "avaritia:item/infinity_shield_defending"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 1,
+        "avaritia:blocking": 1
+      },
+      "model": "avaritia:item/infinity_shield_defending_blocking"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 2
+      },
+      "model": "avaritia:item/infinity_shield_definite_defending"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 2,
+        "avaritia:blocking": 1
+      },
+      "model": "avaritia:item/infinity_shield_definite_defending_blocking"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 3
+      },
+      "model": "avaritia:item/infinity_shield_float"
+    },
+    {
+      "predicate": {
+        "avaritia:mode": 3,
+        "avaritia:blocking": 1
+      },
+      "model": "avaritia:item/infinity_shield_float_blocking"
     }
   ]
 }

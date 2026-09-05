@@ -25,6 +25,17 @@
 * <span style="color: #ff0000;">This mod adds all from Avaritia.</span>
 * This mod is <span style="color: #ff6600;">unofficial</span>!
 
+## **Infinity Shield:**
+
+Sneak + use cycles through four modes. Existing shields without mode data default to Normal.
+
+- **Normal:** the original shield appearance and active blocking.
+- **Defending:** reflects blocked damage while raised and deflects projectiles while held.
+- **Ultimate Defense:** grants passive protection while held, except against Infinity damage and damage that bypasses invulnerability.
+- **Floating:** prevents sinking in water/lava, hovers while sneaking, slows falling, and prevents fall damage. Creative flight and swimming movement are left unchanged.
+
+Active blocking is immediate and omnidirectional, does not slow movement, and permits sprinting. Piercing arrows and shield-bypassing damage still bypass active blocking. Raising and lowering the shield do not emit item-interaction vibrations.
+
 ## **✏️Authors:**
 
 - Programmer: `cnlimiter` `IAFEnvoy` `Frostbite-time` `cu6` `MikhailTapio` `Asek3` 

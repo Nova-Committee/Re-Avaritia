@@ -514,37 +514,6 @@ public class InfinityHandler {
                 }
             }
         }
-        //无尽盾
-        if (event.getEntity() instanceof Player player) {
-
-            if (player.isUsingItem() && player.getUseItem().getItem() instanceof InfinityShieldItem) {
-                Level level = player.level();
-                if (!level.isClientSide) {
-                    level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                            SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
-
-                    DamageSource source = event.getSource();
-                    LivingEntity attacker = source.getDirectEntity() instanceof LivingEntity ?
-                            (LivingEntity) source.getDirectEntity() : null;
-
-                    if (attacker != null && attacker != player) {
-                        float reflectedDamage = event.getAmount();
-                        DamageSource reflectedSource = player.level().damageSources().playerAttack(player);
-                        attacker.hurt(reflectedSource, reflectedDamage);
-                    }
-                    event.setAmount(0);
-                }
-            }
-        }
     }
 
-    //无尽盾取消击退
-    @SubscribeEvent
-    public static void onLivingKnockBack(LivingKnockBackEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            if (player.isUsingItem() && player.getUseItem().getItem() instanceof InfinityShieldItem) {
-                event.setCanceled(true);
-            }
-        }
-    }
 }

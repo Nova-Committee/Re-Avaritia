@@ -266,7 +266,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
                     int markAmount = transmitAmount;
                     ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
                     int slots = iItemHandler.getSlots();
-                    for (int i = 0; i < slots; i++) {
+                    for (int i = 0; i < slots && transmitAmount > 0; i++) {
                         for (int j = 0; j < 64; j++) {
                             ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
                             if (remainingItem.getCount() == transmitAmount) break;
@@ -351,7 +351,7 @@ public class InfinityChestMenu extends AbstractContainerMenu {
 
     public void onDragCloneDummySlot(String id) {
         ItemStack carried = getCarried();
-        if (carried.isEmpty()) return;
+        if (carried.isEmpty() || !player.isCreative()) return;
         ItemStack itemStack = carried.copy();
         itemStack.setCount(itemStack.getMaxStackSize());
         chest.addItem(itemStack);

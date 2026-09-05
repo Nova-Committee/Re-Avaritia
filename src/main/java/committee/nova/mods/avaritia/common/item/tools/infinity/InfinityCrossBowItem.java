@@ -253,6 +253,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     //箭
     private void shootArrow(Level level, Player player, float velocity, float inaccuracy, float angle) {
         Arrow arrow = new Arrow(level, player);
+        arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         arrow.setEffectsFromItem(new ItemStack(Items.ARROW));
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot() + angle, 0.0F, velocity, inaccuracy);
         level.addFreshEntity(arrow);
@@ -275,6 +276,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     //光灵箭
     private void shootSpectralArrow(Level level, Player player, float velocity, float inaccuracy, float angle) {
         SpectralArrow arrow = new SpectralArrow(level, player);
+        arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot() + angle, 0.0F, velocity, inaccuracy);
         level.addFreshEntity(arrow);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -284,6 +286,7 @@ public class InfinityCrossBowItem extends CrossbowItem implements InitEnchantIte
     //药水箭
     private void shootTippedArrow(Level level, Player player, ItemStack ammo, float velocity, float inaccuracy, float angle) {
         Arrow arrow = new Arrow(level, player);
+        arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         arrow.setEffectsFromItem(ammo);
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot() + angle, 0.0F, velocity, inaccuracy);
         level.addFreshEntity(arrow);

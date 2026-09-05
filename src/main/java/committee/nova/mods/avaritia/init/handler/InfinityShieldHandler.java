@@ -1,0 +1,195 @@
+package committee.nova.mods.avaritia.init.handler;
+
+import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.item.tools.infinity.InfinityShieldItem;
+import committee.nova.mods.avaritia.init.registry.ModDamageTypes;
+import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.entity.PartEntity;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.ShieldBlockEvent;
+import net.minecraftforge.event.TickEvent;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * 无尽盾的扩展模式：
+ * 防御：举盾时反弹近战伤害并自动弹开弹射物。
+ * 终极防御：无需举盾，免除除无尽伤害和绕过无敌之外的伤害。
+ * 漂浮：水/岩浆面行走，潜行悬停，缓慢下落。
+ */
+@Mod.EventBusSubscriber(modid = Const.MOD_ID)
+public final class InfinityShieldHandler {
+    private InfinityShieldHandler() {
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onDefiniteDefendingDamage(LivingAttackEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        DamageSource source = event.getSource();
+        // 保留虚空、/kill 等绕过无敌的伤害，也保留模组自己的无尽伤害，避免反射递归。
+        if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(ModDamageTypes.INFINITY)) {
+            return;
+        }
+
+        ItemStack shield = heldInfinityShield(player);
+        if (!shield.isEmpty() && InfinityShieldItem.isDefiniteDefendingMode(shield)) {
+            event.setCanceled(true);
+            player.hurtTime = 0;
+            player.deathTime = 0;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDefendingShieldBlock(ShieldBlockEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        ItemStack shield = player.getUseItem();
+        if (!shield.is(ModItems.infinity_shield.get())) {
+            return;
+        }
+        event.setShieldTakesDamage(false);
+        if (!InfinityShieldItem.isDefendingMode(shield)) {
+            return;
+        }
+
+        if (!(player.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        Entity attacker = event.getDamageSource().getEntity();
+        if (attacker == null) {
+            attacker = event.getDamageSource().getDirectEntity();
+        }
+
+        LivingEntity target = resolveLivingTarget(attacker);
+        if (target == null || target == player) {
+            return;
+        }
+
+        float blocked = event.getBlockedDamage();
+        target.invulnerableTime = 0;
+        serverLevel.getServer().execute(() -> {
+            if (target.isAlive()) {
+                target.hurt(ModDamageTypes.causeRandomDamage(serverLevel, player), blocked);
+            }
+        });
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onDefendingProjectile(ProjectileImpactEvent event) {
+        if (event.getProjectile().level().isClientSide()) {
+            return;
+        }
+
+        if (!(event.getRayTraceResult() instanceof EntityHitResult hit)) {
+            return;
+        }
+
+        if (!(hit.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        ItemStack shield = heldInfinityShield(player);
+        if (shield.isEmpty() || !InfinityShieldItem.isDefendingMode(shield)) {
+            return;
+        }
+
+        Projectile projectile = event.getProjectile();
+        projectile.setDeltaMovement(projectile.getDeltaMovement().scale(-0.9D));
+        event.setImpactResult(ProjectileImpactEvent.ImpactResult.SKIP_ENTITY);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onFloatFall(LivingFallEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        ItemStack shield = heldInfinityShield(player);
+        if (shield.isEmpty() || !InfinityShieldItem.isFloatMode(shield)) {
+            return;
+        }
+
+        event.setCanceled(true);
+        event.setDistance(0.0F);
+        event.setDamageMultiplier(0.0F);
+        player.fallDistance = 0.0F;
+    }
+
+    @SubscribeEvent
+    public static void onFloatTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        Player player = event.player;
+
+        ItemStack shield = heldInfinityShield(player);
+        if (shield.isEmpty() || !InfinityShieldItem.isFloatMode(shield)) {
+            return;
+        }
+
+        // 创造飞行、游泳时不干扰。
+        if (player.getAbilities().flying || player.isSwimming()) {
+            return;
+        }
+
+        Vec3 motion = player.getDeltaMovement();
+
+        // 水面 / 岩浆表面行走：停止下沉，并视为站在地面上。
+        if ((player.isInWater() || player.isInLava()) && motion.y <= 0.0D) {
+            player.setDeltaMovement(motion.x, 0.0D, motion.z);
+            player.setOnGround(true);
+            player.fallDistance = 0.0F;
+            return;
+        }
+
+        // 空中：潜行悬停，否则缓慢下落。
+        if (!player.onGround()) {
+            if (player.isCrouching()) {
+                player.setDeltaMovement(motion.x, 0.0D, motion.z);
+                player.fallDistance = 0.0F;
+            } else if (motion.y < 0.0D) {
+                player.setDeltaMovement(motion.x, -0.15D, motion.z);
+            }
+        }
+    }
+
+    private static ItemStack heldInfinityShield(Player player) {
+        ItemStack mainHand = player.getMainHandItem();
+        if (mainHand.is(ModItems.infinity_shield.get())) {
+            return mainHand;
+        }
+
+        ItemStack offhand = player.getOffhandItem();
+        return offhand.is(ModItems.infinity_shield.get()) ? offhand : ItemStack.EMPTY;
+    }
+
+    private static @Nullable LivingEntity resolveLivingTarget(@Nullable Entity entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            return livingEntity;
+        }
+        if (entity instanceof PartEntity<?> part && part.getParent() instanceof LivingEntity livingEntity) {
+            return livingEntity;
+        }
+        return null;
+    }
+}

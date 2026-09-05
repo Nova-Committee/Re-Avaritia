@@ -359,8 +359,7 @@ public class TesseractMenu extends AbstractContainerMenu {
             carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
                 FluidStack resultFluidStack = iFluidHandlerItem.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
                 if (iFluidHandlerItem instanceof FluidBucketWrapper) {
-                    channel.addFluid(resultFluidStack);
-                    setCarried(new ItemStack(Items.BUCKET));
+                    emptyBucketIntoChannel(resultFluidStack);
                     canal.set(true);
                     return;
                 }
@@ -414,6 +413,15 @@ public class TesseractMenu extends AbstractContainerMenu {
             });
             if (canal.get()) return;
             channel.addItem(carried);
+        }
+    }
+
+    private void emptyBucketIntoChannel(FluidStack fluid) {
+        int amount = fluid.getAmount();
+        // Buckets are indivisible; require full capacity and acceptance before replacing the carried bucket.
+        if (amount > 0 && channel.canStorageRealAmount(fluid) >= amount
+                && channel.addFluid(fluid) == amount) {
+            setCarried(new ItemStack(Items.BUCKET));
         }
     }
 
@@ -537,7 +545,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                         int markAmount = transmitAmount;
                         ItemStack tryInsertItem = new ItemStack(StorageUtils.getItem(id), transmitAmount);
                         int slots = iItemHandler.getSlots();
-                        for (int i = 0; i < slots; i++) {
+                        for (int i = 0; i < slots && transmitAmount > 0; i++) {
                             for (int j = 0; j < 64; j++) {
                                 ItemStack remainingItem = iItemHandler.insertItem(i, tryInsertItem, false);
                                 if (remainingItem.getCount() == transmitAmount) break;
@@ -592,8 +600,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             carried.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
                 FluidStack resultFluidStack = iFluidHandlerItem.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
                 if (iFluidHandlerItem instanceof FluidBucketWrapper) {
-                    channel.addFluid(resultFluidStack);
-                    setCarried(new ItemStack(Items.BUCKET));
+                    emptyBucketIntoChannel(resultFluidStack);
+                    canal.set(true);
                     return;
                 }
                 if (!resultFluidStack.isEmpty()) {
@@ -730,7 +738,7 @@ public class TesseractMenu extends AbstractContainerMenu {
 
     public void onDragCloneDummySlot(String type, String id) {
         ItemStack carried = getCarried();
-        if (carried.isEmpty()) return;
+        if (carried.isEmpty() || !player.isCreative()) return;
         ItemStack itemStack = carried.copy();
         itemStack.setCount(itemStack.getMaxStackSize());
         channel.addItem(itemStack);
