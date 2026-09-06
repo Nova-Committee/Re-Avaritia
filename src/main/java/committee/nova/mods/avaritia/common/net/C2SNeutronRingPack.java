@@ -29,6 +29,7 @@ public record C2SNeutronRingPack(int action, String id, String name, int hand, U
     public static final int DELETE = 2;
     public static final int DESELECT = 3;
     public static final int SET_SIZE = 4;
+    public static final int PREVIEW = 5;
 
     public static final Type<C2SNeutronRingPack> TYPE = new Type<>(Const.rl("c2s_neutron_ring"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SNeutronRingPack> STREAM_CODEC = StreamCodec.composite(
@@ -62,6 +63,7 @@ public record C2SNeutronRingPack(int action, String id, String name, int hand, U
                 }
                 NeutronRingSavedData store = NeutronRingSavedData.get(player.server);
                 UUID library = data.storageId();
+                boolean refreshLibrary = true;
                 switch (packet.action) {
                     case SELECT -> store.get(library, packet.id).ifPresent(space ->
                             stack.set(ModDataComponents.NEUTRON_RING.get(),
@@ -80,11 +82,19 @@ public record C2SNeutronRingPack(int action, String id, String name, int hand, U
                     case DESELECT -> stack.set(ModDataComponents.NEUTRON_RING.get(), data.deselect());
                     case SET_SIZE -> {
                     }
+                    case PREVIEW -> {
+                        refreshLibrary = false;
+                        store.get(library, packet.id).ifPresentOrElse(
+                                space -> S2CNeutronRingPreviewPack.send(player, packet.id, space.template()),
+                                () -> PacketDistributor.sendToPlayer(player, S2CNeutronRingPreviewPack.missing(packet.id)));
+                    }
                     default -> {
                     }
                 }
-                PacketDistributor.sendToPlayer(player, S2CNeutronRingOpenPack.from(player.server,
-                        NeutronRingItem.bind(player, stack), handOf(packet.hand)));
+                if (refreshLibrary) {
+                    PacketDistributor.sendToPlayer(player, S2CNeutronRingOpenPack.from(player.server,
+                            NeutronRingItem.bind(player, stack), handOf(packet.hand)));
+                }
             });
         }
 

@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.common.net;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.common.component.NeutronRingContents;
 import committee.nova.mods.avaritia.common.item.misc.NeutronRingSavedData;
-import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreview;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,14 +18,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/** Opens the Neutron Ring library with metadata and a compact top-down preview. */
+/** Opens the Neutron Ring library with metadata only. Full previews are fetched lazily. */
 public record S2CNeutronRingOpenPack(List<Entry> spaces, Optional<String> selectedId, int hand, UUID storageId,
                                      NeutronRingContents.Size size) implements CustomPacketPayload {
-    public record Entry(String id, String name, NeutronSpacePreview preview) {
+    public record Entry(String id, String name, int sizeX, int sizeY, int sizeZ, int blocks) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Entry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8, Entry::id,
                 ByteBufCodecs.STRING_UTF8, Entry::name,
-                NeutronSpacePreview.STREAM_CODEC, Entry::preview,
+                ByteBufCodecs.VAR_INT, Entry::sizeX,
+                ByteBufCodecs.VAR_INT, Entry::sizeY,
+                ByteBufCodecs.VAR_INT, Entry::sizeZ,
+                ByteBufCodecs.VAR_INT, Entry::blocks,
                 Entry::new);
     }
 
@@ -41,7 +43,7 @@ public record S2CNeutronRingOpenPack(List<Entry> spaces, Optional<String> select
 
     public static S2CNeutronRingOpenPack from(MinecraftServer server, NeutronRingContents data, InteractionHand hand) {
         List<Entry> spaces = NeutronRingSavedData.get(server).list(data.storageId()).stream()
-                .map(info -> new Entry(info.id(), info.name(), info.preview()))
+                .map(info -> new Entry(info.id(), info.name(), info.sizeX(), info.sizeY(), info.sizeZ(), info.blocks()))
                 .toList();
         return new S2CNeutronRingOpenPack(spaces, data.selectedId(), hand.ordinal(), data.storageId(), data.size());
     }

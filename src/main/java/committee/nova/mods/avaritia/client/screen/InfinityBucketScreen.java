@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
@@ -46,10 +47,12 @@ import java.util.Objects;
 
 public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu> {
     private static final int LIST_X = 8;
-    private static final int LIST_Y = 44;
+    private static final int SEARCH_Y = 44;
+    private static final int SEARCH_HEIGHT = 20;
+    private static final int LIST_Y = SEARCH_Y + SEARCH_HEIGHT + 4;
     private static final int LIST_WIDTH = 232;
     private static final int ROW_HEIGHT = 18;
-    private static final int VISIBLE_ROWS = 5;
+    private static final int VISIBLE_ROWS = 4;
     private static final int LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS;
     private static final int SCROLL_X = 244;
     private static final int SCROLL_WIDTH = 6;
@@ -61,6 +64,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     private final List<Row> rows = new ArrayList<>();
     private final Map<EntityType<?>, ItemStack> creatureIcons = new HashMap<>();
     private SimpleScrollBar scrollBar;
+    private EditBox searchBox;
     private Button fluidsTab;
     private Button creaturesTab;
     private boolean creaturesTabActive;
@@ -76,8 +80,6 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     private Modal modal = Modal.NONE;
     private Component modalTitle = CommonComponents.EMPTY;
     private Component modalMessage = CommonComponents.EMPTY;
-    private String searchDraft = "";
-    private EditBox modalInput;
     private Button modalAccept;
     private Button modalCancel;
     private DeleteTarget deleteTarget;
@@ -101,6 +103,12 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
                 Component.translatable("gui.avaritia.infinity_bucket.tab.creatures"), button -> switchTab(true)));
         fluidsTab.active = creaturesTabActive;
         creaturesTab.active = !creaturesTabActive;
+        Component searchTitle = Component.translatable("gui.avaritia.infinity_bucket.search");
+        searchBox = addRenderableWidget(new EditBox(font, leftPos + LIST_X, topPos + SEARCH_Y, LIST_WIDTH, SEARCH_HEIGHT, searchTitle));
+        searchBox.setMaxLength(64);
+        searchBox.setHint(searchTitle);
+        searchBox.setValue(query);
+        searchBox.setResponder(this::filter);
         scrollBar = new SimpleScrollBar(leftPos + SCROLL_X, topPos + LIST_Y, SCROLL_WIDTH, LIST_HEIGHT) {
             @Override
             public void draggedTo(double scrolledOn) {
@@ -255,10 +263,12 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         int x = leftPos + LIST_X;
         int y = topPos + LIST_Y;
         if (rows.isEmpty()) {
+            graphics.enableScissor(x, y, x + LIST_WIDTH, y + LIST_HEIGHT);
             Component empty = Component.translatable(sourceCount == 0
                     ? "gui.avaritia.infinity_bucket.empty" : "gui.avaritia.infinity_bucket.no_results");
-            graphics.drawCenteredString(font, empty, x + LIST_WIDTH / 2, y + 24, PortableUi.TEXT);
-            graphics.drawWordWrap(font, HINT, x + 12, y + 42, LIST_WIDTH - 24, PortableUi.MUTED);
+            graphics.drawCenteredString(font, empty, x + LIST_WIDTH / 2, y + 14, PortableUi.TEXT);
+            graphics.drawWordWrap(font, HINT, x + 12, y + 32, LIST_WIDTH - 24, PortableUi.MUTED);
+            graphics.disableScissor();
             return;
         }
         graphics.enableScissor(x, y, x + LIST_WIDTH, y + LIST_HEIGHT);
@@ -287,7 +297,14 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     private boolean transferCarried(@Nullable Row row) {
         ItemStack carried = menu.getCarried();
-        if (creaturesTabActive || carried.isEmpty() || carried.is(ModItems.infinity_bucket.get()) || !canOperate()) {
+        if (carried.isEmpty() || carried.is(ModItems.infinity_bucket.get()) || !canOperate()) {
+            return false;
+        }
+        if (carried.getItem() instanceof MobBucketItem) {
+            sendAction(InfinityBucketMenu.ACTION_INSERT_CARRIED);
+            return true;
+        }
+        if (creaturesTabActive) {
             return false;
         }
         IFluidHandlerItem handler = FluidUtil.getFluidHandler(carried.copyWithCount(1)).orElse(null);
@@ -316,7 +333,6 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             }
             entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_bucket.delete", () -> requestDelete(row)));
         }
-        entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_bucket.search", this::requestSearch));
         if (!query.isEmpty()) {
             entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_bucket.clear_filter", () -> filter("")));
         }
@@ -327,19 +343,19 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     }
 
     private void filter(String value) {
-        query = value.trim();
+        if (searchBox != null && !searchBox.getValue().equals(value)) {
+            searchBox.setValue(value);
+            return;
+        }
+        String next = value.trim();
+        if (query.equals(next)) {
+            return;
+        }
+        query = next;
         scroll = 0;
         focusedIndex = -1;
         cacheValid = false;
         ensureCache();
-    }
-
-    private void requestSearch() {
-        modal = Modal.SEARCH;
-        modalTitle = Component.translatable("gui.avaritia.infinity_bucket.search");
-        modalMessage = CommonComponents.EMPTY;
-        searchDraft = query;
-        layoutModal();
     }
 
     private void requestDelete(Row row) {
@@ -365,7 +381,6 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     /** Stays inside this container screen so carried items and the server menu remain open. */
     private void layoutModal() {
-        modalInput = null;
         modalAccept = null;
         modalCancel = null;
         if (modal == Modal.NONE) {
@@ -374,46 +389,27 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         contextMenu.close();
         setFocused(null);
         modalWidth = Math.min(280, width - 16);
-        modalHeight = modal == Modal.SEARCH ? 108
-                : Math.min(height - 16, 76 + font.split(modalMessage, modalWidth - 28).size() * font.lineHeight);
+        modalHeight = Math.min(height - 16, 76 + font.split(modalMessage, modalWidth - 28).size() * font.lineHeight);
         modalX = (width - modalWidth) / 2;
         modalY = (height - modalHeight) / 2;
         int buttonWidth = (modalWidth - 32) / 2;
         int buttonY = modalY + modalHeight - 30;
         modalCancel = PortableUi.button(modalX + 12, buttonY, buttonWidth, 20,
                 CommonComponents.GUI_CANCEL, button -> closeModal());
-        Component acceptLabel = Component.translatable("gui.avaritia.portable.confirm");
-        modalAccept = modal == Modal.SEARCH
-                ? PortableUi.button(modalX + modalWidth - buttonWidth - 12, buttonY, buttonWidth, 20, acceptLabel, button -> acceptModal())
-                : PortableUi.dangerButton(modalX + modalWidth - buttonWidth - 12, buttonY, buttonWidth, 20, acceptLabel, button -> acceptModal());
-        if (modal == Modal.SEARCH) {
-            modalInput = new EditBox(font, modalX + 12, modalY + 32, modalWidth - 24, 20, modalTitle);
-            modalInput.setMaxLength(64);
-            modalInput.setValue(searchDraft);
-            modalInput.setResponder(value -> searchDraft = value);
-            modalInput.setFocused(true);
-            setFocused(modalInput);
-        } else {
-            modalCancel.setFocused(true);
-        }
+        modalAccept = PortableUi.dangerButton(modalX + modalWidth - buttonWidth - 12, buttonY, buttonWidth, 20,
+                Component.translatable("gui.avaritia.portable.confirm"), button -> acceptModal());
+        modalCancel.setFocused(true);
     }
 
     private void closeModal() {
         modal = Modal.NONE;
         deleteTarget = null;
-        modalInput = null;
         modalAccept = null;
         modalCancel = null;
         setFocused(null);
     }
 
     private void acceptModal() {
-        if (modal == Modal.SEARCH) {
-            String value = searchDraft;
-            closeModal();
-            filter(value);
-            return;
-        }
         ensureCache();
         if (canOperate()) {
             if (modal == Modal.CLEAR) {
@@ -436,11 +432,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         graphics.fill(0, 0, width, height, 0xA0000000);
         PortableUi.panel(graphics, modalX, modalY, modalWidth, modalHeight);
         PortableUi.header(graphics, font, modalTitle, modalX + 4, modalY + 4, modalWidth - 8);
-        if (modalInput != null) {
-            modalInput.render(graphics, mouseX, mouseY, partialTick);
-        } else {
-            graphics.drawWordWrap(font, modalMessage, modalX + 14, modalY + 29, modalWidth - 28, PortableUi.TEXT);
-        }
+        graphics.drawWordWrap(font, modalMessage, modalX + 14, modalY + 29, modalWidth - 28, PortableUi.TEXT);
         modalCancel.render(graphics, mouseX, mouseY, partialTick);
         modalAccept.render(graphics, mouseX, mouseY, partialTick);
         graphics.flush();
@@ -454,9 +446,6 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (modal != Modal.NONE) {
-            if (modalInput != null) {
-                modalInput.mouseClicked(mouseX, mouseY, button);
-            }
             if (!modalCancel.mouseClicked(mouseX, mouseY, button) && modalAccept != null) {
                 modalAccept.mouseClicked(mouseX, mouseY, button);
             }
@@ -464,6 +453,12 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         }
         if (contextMenu.mouseClicked(mouseX, mouseY, button)) {
             return true;
+        }
+        if (searchBox != null && searchBox.isFocused() && !searchBox.isMouseOver(mouseX, mouseY)) {
+            searchBox.setFocused(false);
+            if (getFocused() == searchBox) {
+                setFocused(null);
+            }
         }
         ensureCache();
         Row row = hoveredRow(mouseX, mouseY);
@@ -478,7 +473,8 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             return true;
         }
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && mouseX >= leftPos && mouseX < leftPos + imageWidth
-                && mouseY >= topPos && mouseY < topPos + InfinityBucketMenu.PLAYER_INV_Y - 12) {
+                && mouseY >= topPos && mouseY < topPos + InfinityBucketMenu.PLAYER_INV_Y - 12
+                && (searchBox == null || !searchBox.isMouseOver(mouseX, mouseY))) {
             openActions(null, mouseX, mouseY);
             return true;
         }
@@ -487,12 +483,11 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (overlayOpen() || insideList(mouseX, mouseY)) {
+        boolean handled = super.mouseReleased(mouseX, mouseY, button);
+        if (scrollBar != null) {
             scrollBar.setScrolling(false);
-            setDragging(false);
-            return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return handled || overlayOpen() || insideList(mouseX, mouseY);
     }
 
     @Override
@@ -527,23 +522,34 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 closeModal();
             } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-                if (modal == Modal.SEARCH || modalAccept.isFocused()) {
+                if (modalAccept.isFocused()) {
                     acceptModal();
                 } else {
                     closeModal();
                 }
-            } else if (keyCode == GLFW.GLFW_KEY_TAB && modal != Modal.SEARCH) {
+            } else if (keyCode == GLFW.GLFW_KEY_TAB) {
                 boolean acceptFocused = !modalAccept.isFocused();
                 modalAccept.setFocused(acceptFocused);
                 modalCancel.setFocused(!acceptFocused);
-            } else if (modalInput != null) {
-                modalInput.keyPressed(keyCode, scanCode, modifiers);
             }
             return true;
         }
         if (contextMenu.isOpen()) {
             contextMenu.keyPressed(keyCode);
             return true;
+        }
+        if (searchBox != null && searchBox.isFocused()) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                searchBox.setFocused(false);
+                setFocused(null);
+                return true;
+            }
+            if (searchBox.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+            if (keyCode != GLFW.GLFW_KEY_TAB && searchBox.canConsumeInput()) {
+                return true;
+            }
         }
         if (keyCode == GLFW.GLFW_KEY_MENU || (keyCode == GLFW.GLFW_KEY_F10 && hasShiftDown())) {
             Row row = rows.stream().filter(entry -> entry.index == focusedIndex).findFirst().orElse(null);
@@ -555,14 +561,14 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (modal != Modal.NONE) {
-            return modalInput == null || modalInput.charTyped(codePoint, modifiers);
+        if (modal != Modal.NONE || contextMenu.isOpen()) {
+            return true;
         }
-        return contextMenu.isOpen() || super.charTyped(codePoint, modifiers);
+        return super.charTyped(codePoint, modifiers);
     }
 
     private enum Modal {
-        NONE, SEARCH, DELETE, CLEAR
+        NONE, DELETE, CLEAR
     }
 
     private static final class Row {

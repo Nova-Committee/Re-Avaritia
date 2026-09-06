@@ -36,6 +36,8 @@ public class NetworkHandler {
                 new S2CUpdateDimensionsPack.Handler());
         registrar.playToClient(S2CNeutronRingOpenPack.TYPE, S2CNeutronRingOpenPack.STREAM_CODEC,
                 new S2CNeutronRingOpenPack.Handler());
+        registrar.playToClient(S2CNeutronRingPreviewPack.TYPE, S2CNeutronRingPreviewPack.STREAM_CODEC,
+                new S2CNeutronRingPreviewPack.Handler());
         registrar.playToClient(S2CTotemPack.TYPE, S2CTotemPack.STREAM_CODEC,
                 new S2CTotemPack.Handler());
         registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,

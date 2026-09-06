@@ -195,8 +195,7 @@ public class NeutronRingItem extends ResourceItem {
         NeutronRingContents.Size captureSize = NeutronRingContents.Size.DEFAULT;
         String name = Component.translatable("gui.avaritia.neutron_ring.default_name", store.list(library).size() + 1)
                 .getString();
-        if (!store.add(library, name, NeutronRingSpaces.capture(serverLevel, base, captureSize),
-                NeutronSpacePreview.capture(serverLevel, base, captureSize))) {
+        if (!store.add(library, name, NeutronRingSpaces.capture(serverLevel, base, captureSize))) {
             player.displayClientMessage(Component.translatable("message.avaritia.neutron_ring.full"), true);
             return false;
         }

@@ -11,6 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MobBucketItem;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -186,6 +188,13 @@ public class InfinityBucketMenu extends BaseMenu {
             return false;
         }
         ItemStack one = carried.copyWithCount(1);
+        if (one.getItem() instanceof MobBucketItem) {
+            if (fluidIndex >= 0 || !InfinityBucketItem.tryStoreMobBucket(bucket, one, player)) {
+                return false;
+            }
+            finishCarriedTransfer(carried, new ItemStack(Items.BUCKET));
+            return true;
+        }
         IFluidHandlerItem itemHandler = FluidUtil.getFluidHandler(one).orElse(null);
         IFluidHandlerItem bucketHandler = FluidUtil.getFluidHandler(bucket).orElse(null);
         if (itemHandler == null || bucketHandler == null) {
@@ -213,7 +222,11 @@ public class InfinityBucketMenu extends BaseMenu {
         if (moved.isEmpty()) {
             return false;
         }
-        ItemStack result = itemHandler.getContainer();
+        finishCarriedTransfer(carried, itemHandler.getContainer());
+        return true;
+    }
+
+    private void finishCarriedTransfer(ItemStack carried, ItemStack result) {
         carried.shrink(1);
         if (carried.isEmpty()) {
             setCarried(result);
@@ -223,7 +236,6 @@ public class InfinityBucketMenu extends BaseMenu {
                 player.getInventory().placeItemBackInInventory(result);
             }
         }
-        return true;
     }
 
     @Override

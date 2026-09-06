@@ -7,6 +7,7 @@ import committee.nova.mods.avaritia.common.component.NeutronRingContents;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreview;
 import committee.nova.mods.avaritia.common.net.C2SNeutronRingPack;
 import committee.nova.mods.avaritia.common.net.S2CNeutronRingOpenPack;
+import committee.nova.mods.avaritia.common.net.S2CNeutronRingPreviewPack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -20,19 +21,29 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 /** Player-bound space library. Browsing never changes the server's selected placement by itself. */
 public final class NeutronRingManageScreen extends Screen {
     private final List<S2CNeutronRingOpenPack.Entry> spaces = new ArrayList<>();
+    private final Map<String, NeutronSpacePreview> previews = new HashMap<>();
+    private final NeutronSpacePreviewRenderer renderer = new NeutronSpacePreviewRenderer();
     private final UUID storageId;
     private int hand;
     @Nullable
     private String selectedId;
     @Nullable
     private S2CNeutronRingOpenPack.Entry previewEntry;
+    @Nullable
+    private String pendingId;
+    @Nullable
+    private PreviewAssembly assembly;
+    private boolean previewMissing;
     private SpaceList list;
     private String query = "";
     private int panelX;
@@ -65,6 +76,12 @@ public final class NeutronRingManageScreen extends Screen {
         }
     }
 
+    public static void acceptPreview(S2CNeutronRingPreviewPack packet) {
+        if (PortableUi.root(Minecraft.getInstance().screen) instanceof NeutronRingManageScreen screen) {
+            screen.handlePreview(packet);
+        }
+    }
+
     private void accept(S2CNeutronRingOpenPack packet) {
         String previewId = previewEntry == null ? null : previewEntry.id();
         spaces.clear();
@@ -78,12 +95,83 @@ public final class NeutronRingManageScreen extends Screen {
         if (previewEntry == null && !spaces.isEmpty()) {
             previewEntry = spaces.getFirst();
         }
+        previews.keySet().removeIf(id -> find(id) == null);
+        if (assembly != null && find(assembly.id) == null) {
+            assembly = null;
+        }
         menu.close();
         if (list != null) {
             double scroll = list.getScrollAmount();
             list.populate();
             list.setScrollAmount(scroll);
         }
+        if (previewEntry != null) {
+            loadPreview(previewEntry.id());
+        } else {
+            renderer.setPreview(null);
+            pendingId = null;
+            previewMissing = false;
+        }
+    }
+
+    private void handlePreview(S2CNeutronRingPreviewPack packet) {
+        if (!matchesPreview(packet.id())) {
+            return;
+        }
+        if (!packet.available() || packet.chunkCount() <= 0) {
+            previewMissing = true;
+            previews.remove(packet.id());
+            renderer.setPreview(null);
+            assembly = null;
+            if (packet.id().equals(pendingId)) {
+                pendingId = null;
+            }
+            return;
+        }
+        int maxChunks = (NeutronSpacePreview.MAX_CELLS + NeutronSpacePreview.CELLS_PER_CHUNK - 1)
+                / NeutronSpacePreview.CELLS_PER_CHUNK;
+        if (packet.chunkCount() > maxChunks || packet.chunkIndex() < 0 || packet.chunkIndex() >= packet.chunkCount()) {
+            return;
+        }
+        if (assembly == null || !assembly.id.equals(packet.id()) || assembly.parts.length != packet.chunkCount()) {
+            assembly = new PreviewAssembly(packet.id(), packet.chunkCount());
+        }
+        assembly.parts[packet.chunkIndex()] = packet.preview();
+        if (!assembly.complete()) {
+            return;
+        }
+        NeutronSpacePreview preview = NeutronSpacePreview.assemble(assembly.parts[0], Arrays.asList(assembly.parts));
+        previews.put(packet.id(), preview);
+        assembly = null;
+        if (packet.id().equals(pendingId)) {
+            pendingId = null;
+        }
+        if (previewEntry != null && previewEntry.id().equals(packet.id())) {
+            previewMissing = false;
+            renderer.setPreview(preview);
+        }
+    }
+
+    private boolean matchesPreview(String id) {
+        return id.equals(pendingId) || previewEntry != null && previewEntry.id().equals(id);
+    }
+
+    private void loadPreview(String id) {
+        NeutronSpacePreview preview = previews.get(id);
+        if (preview != null) {
+            previewMissing = false;
+            pendingId = null;
+            renderer.setPreview(preview);
+            return;
+        }
+        renderer.setPreview(null);
+        previewMissing = false;
+        if (id.equals(pendingId)) {
+            return;
+        }
+        pendingId = id;
+        assembly = null;
+        send(C2SNeutronRingPack.PREVIEW, id, "");
     }
 
     @Nullable
@@ -118,6 +206,17 @@ public final class NeutronRingManageScreen extends Screen {
         list.setScrollAmount(scroll);
         addRenderableWidget(PortableUi.button(panelX + panelWidth - 82, panelY + panelHeight - 29, 70, 20,
                 CommonComponents.GUI_DONE, button -> onClose()));
+        if (previewEntry != null) {
+            loadPreview(previewEntry.id());
+        }
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        renderer.close();
+        pendingId = null;
+        assembly = null;
     }
 
     private void resetView() {
@@ -158,12 +257,21 @@ public final class NeutronRingManageScreen extends Screen {
         } else {
             PortableUi.text(graphics, font, Component.literal(previewEntry.name()), previewX, panelY + 33,
                     previewW, PortableUi.TEXT);
-            NeutronSpacePreview preview = previewEntry.preview();
             PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.preview_size",
-                            preview.sizeX(), preview.sizeY(), preview.sizeZ(), preview.blocks()),
+                            previewEntry.sizeX(), previewEntry.sizeY(), previewEntry.sizeZ(), previewEntry.blocks()),
                     previewX + 4, panelY + 55, previewW - 8, PortableUi.MUTED);
-            NeutronSpacePreviewRenderer.draw(graphics, preview, previewX + 4, previewY,
-                    previewW - 8, previewH, yaw, pitch, zoom);
+            NeutronSpacePreview preview = previews.get(previewEntry.id());
+            if (previewMissing && preview == null) {
+                graphics.fill(previewX + 4, previewY, previewX + previewW - 4, previewY + previewH, PortableUi.INSET_BG);
+                graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
+                        previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
+            } else if (preview == null) {
+                graphics.fill(previewX + 4, previewY, previewX + previewW - 4, previewY + previewH, PortableUi.INSET_BG);
+                graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
+                        previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
+            } else {
+                renderer.draw(graphics, previewX + 4, previewY, previewW - 8, previewH, yaw, pitch, zoom);
+            }
             PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.preview_controls"),
                     previewX + 4, panelY + panelHeight - 49, previewW - 8, PortableUi.MUTED);
         }
@@ -278,6 +386,7 @@ public final class NeutronRingManageScreen extends Screen {
 
     private void focus(S2CNeutronRingOpenPack.Entry space) {
         previewEntry = space;
+        loadPreview(space.id());
     }
 
     private void select(S2CNeutronRingOpenPack.Entry space) {
@@ -340,6 +449,25 @@ public final class NeutronRingManageScreen extends Screen {
                 List.of(OperationMenu.Entry.of("gui.avaritia.neutron_ring.reset_view", this::resetView)));
     }
 
+    private static final class PreviewAssembly {
+        private final String id;
+        private final NeutronSpacePreview[] parts;
+
+        private PreviewAssembly(String id, int chunkCount) {
+            this.id = id;
+            this.parts = new NeutronSpacePreview[chunkCount];
+        }
+
+        private boolean complete() {
+            for (NeutronSpacePreview part : parts) {
+                if (part == null) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     private final class SpaceList extends ObjectSelectionList<SpaceList.SpaceEntry> {
         SpaceList(int width, int height, int y) {
             super(NeutronRingManageScreen.this.minecraft, width, height, y, 28);
@@ -363,7 +491,7 @@ public final class NeutronRingManageScreen extends Screen {
         public void setSelected(@Nullable SpaceEntry entry) {
             super.setSelected(entry);
             if (entry != null) {
-                previewEntry = entry.space;
+                focus(entry.space);
             }
         }
 
@@ -420,8 +548,7 @@ public final class NeutronRingManageScreen extends Screen {
 
             SpaceEntry(S2CNeutronRingOpenPack.Entry space) {
                 this.space = space;
-                NeutronSpacePreview preview = space.preview();
-                dimensions = Component.literal(preview.sizeX() + "×" + preview.sizeY() + "×" + preview.sizeZ());
+                dimensions = Component.literal(space.sizeX() + "×" + space.sizeY() + "×" + space.sizeZ());
             }
 
             @Override

@@ -23,13 +23,13 @@ public final class NeutronRingSavedData extends SavedData {
     private static final String NAME = "avaritia_neutron_ring";
     private final Map<UUID, List<Space>> libraries = new HashMap<>();
 
-    public record Space(String id, String name, CompoundTag template, NeutronSpacePreview preview) {
+    public record Space(String id, String name, CompoundTag template, NeutronSpacePreview.Meta meta) {
         public Space withName(String newName) {
-            return new Space(id, newName, template, preview);
+            return new Space(id, newName, template, meta);
         }
     }
 
-    public record SpaceInfo(String id, String name, NeutronSpacePreview preview) {
+    public record SpaceInfo(String id, String name, int sizeX, int sizeY, int sizeZ, int blocks) {
     }
 
     public static NeutronRingSavedData get(MinecraftServer server) {
@@ -43,7 +43,10 @@ public final class NeutronRingSavedData extends SavedData {
         if (spaces == null) {
             return List.of();
         }
-        return spaces.stream().map(space -> new SpaceInfo(space.id, space.name, space.preview)).toList();
+        return spaces.stream().map(space -> {
+            NeutronSpacePreview.Meta meta = space.meta;
+            return new SpaceInfo(space.id, space.name, meta.sizeX(), meta.sizeY(), meta.sizeZ(), meta.blocks());
+        }).toList();
     }
 
     public Optional<Space> get(UUID storageId, String id) {
@@ -54,12 +57,12 @@ public final class NeutronRingSavedData extends SavedData {
         return spaces.stream().filter(space -> space.id.equals(id)).findFirst();
     }
 
-    public boolean add(UUID storageId, String name, CompoundTag template, NeutronSpacePreview preview) {
+    public boolean add(UUID storageId, String name, CompoundTag template) {
         List<Space> spaces = libraries.computeIfAbsent(storageId, ignored -> new ArrayList<>());
         if (spaces.size() >= MAX_SPACES) {
             return false;
         }
-        spaces.add(new Space(UUID.randomUUID().toString(), name, template, preview));
+        spaces.add(new Space(UUID.randomUUID().toString(), name, template, NeutronSpacePreview.meta(template)));
         setDirty();
         return true;
     }
@@ -126,7 +129,6 @@ public final class NeutronRingSavedData extends SavedData {
                 entry.putString("Id", space.id);
                 entry.putString("Name", space.name);
                 entry.put("Template", space.template);
-                entry.put("Preview", space.preview.save());
                 spacesTag.add(entry);
             }
             library.put("Spaces", spacesTag);
@@ -136,7 +138,7 @@ public final class NeutronRingSavedData extends SavedData {
         return tag;
     }
 
-    private static NeutronRingSavedData load(CompoundTag tag, HolderLookup.Provider provider) {
+    static NeutronRingSavedData load(CompoundTag tag, HolderLookup.Provider provider) {
         NeutronRingSavedData data = new NeutronRingSavedData();
         ListTag librariesTag = tag.getList("Libraries", Tag.TAG_COMPOUND);
         for (int i = 0; i < librariesTag.size(); i++) {
@@ -146,8 +148,8 @@ public final class NeutronRingSavedData extends SavedData {
             ListTag spacesTag = library.getList("Spaces", Tag.TAG_COMPOUND);
             for (int j = 0; j < spacesTag.size(); j++) {
                 CompoundTag entry = spacesTag.getCompound(j);
-                spaces.add(new Space(entry.getString("Id"), entry.getString("Name"),
-                        entry.getCompound("Template"), NeutronSpacePreview.load(entry.getCompound("Preview"))));
+                CompoundTag template = entry.getCompound("Template");
+                spaces.add(new Space(entry.getString("Id"), entry.getString("Name"), template, NeutronSpacePreview.meta(template)));
             }
             data.libraries.put(storageId, spaces);
         }

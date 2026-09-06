@@ -659,6 +659,8 @@
   "gui.avaritia.neutron_ring.library": "已儲存空間 · %s",
   "gui.avaritia.neutron_ring.reset_view": "復位",
   "gui.avaritia.neutron_ring.preview_controls": "拖曳旋轉 · 滾輪縮放",
+  "gui.avaritia.neutron_ring.preview_loading": "正在載入結構…",
+  "gui.avaritia.neutron_ring.preview_missing": "無法載入該結構預覽。",
   "gui.avaritia.neutron_ring.empty_list": "還沒有儲存的空間。",
   "gui.avaritia.neutron_ring.active": "已選取",
   "gui.avaritia.neutron_ring.delete_message": "確定永久刪除「%s」？此操作無法復原。",
@@ -684,5 +686,5 @@
   "gui.avaritia.infinity_ring.right_click_hint": "右鍵開啟操作。",
   "gui.avaritia.infinity_ring.create_hint": "右鍵面板以建立此維度。",
   "gui.avaritia.infinity_bucket.clear_filter": "清除篩選",
-  "gui.avaritia.infinity_bucket.list_hint": "滑鼠拿起容器，右鍵流體取出或存入；不拿容器時右鍵管理項目。"
+  "gui.avaritia.infinity_bucket.list_hint": "拿起生物桶，右鍵清單存入；流體容器在流體頁右鍵取放。"
 }

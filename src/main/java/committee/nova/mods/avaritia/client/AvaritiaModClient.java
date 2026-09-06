@@ -17,6 +17,7 @@ import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.InfinityRingControlScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronRingManageScreen;
+import committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer;
 import committee.nova.mods.avaritia.common.net.ClientPacketProxy;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
 import committee.nova.mods.avaritia.core.singularity.Singularity;
@@ -32,6 +33,7 @@ import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -82,11 +84,17 @@ public class AvaritiaModClient {
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
         ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
+        ClientPacketProxy.neutronRingPreview = NeutronRingManageScreen::acceptPreview;
         ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
         ModList.get().getModContainerById(Const.MOD_ID).orElseThrow().registerExtensionPoint(IConfigScreenFactory.class,
                 (container, last) -> new AvaritiaConfigScreen(last));
         ModEntities.onClientSetup();
         ModTileEntities.onClientSetup();
+    }
+
+    @SubscribeEvent
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) manager -> NeutronSpacePreviewRenderer.invalidate());
     }
 
     @SubscribeEvent

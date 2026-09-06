@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "avaritia_gametest"
+version = "1.0"
+displayName = "Avaritia GameTests"
+authors = "Nova Committee"
+description = '''Isolated GameTests for Avaritia. Not packaged in the production jar.'''
+
+[[dependencies.avaritia_gametest]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.avaritia_gametest]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.avaritia_gametest]]
+modId = "avaritia"
+type = "required"
+versionRange = "[1.4,)"
+ordering = "AFTER"
+side = "BOTH"

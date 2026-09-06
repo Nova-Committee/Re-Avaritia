@@ -43,6 +43,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -555,13 +556,56 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         return true;
     }
 
-    private boolean tryCapture(ItemStack stack, Player player, LivingEntity target) {
-        if (!canCaptureAt(player, stack, target) || !(player.level() instanceof ServerLevel)) {
+    /** Stores a mob bucket's creature and fluid together, without spawning or consuming its source stack. */
+    public static boolean tryStoreMobBucket(ItemStack stack, ItemStack source, Player player) {
+        if (!(player.level() instanceof ServerLevel level) || !(stack.getItem() instanceof InfinityBucketItem)
+                || stack.getCount() != 1 || source.getCount() != 1
+                || !(source.getItem() instanceof MobBucketItem mobBucket)) {
             return false;
         }
+        List<InfinityBucketCreature> creatures = getCreatures(stack);
+        if (creatures.size() >= InfinityBucketBudget.MAX_CREATURE_ENTRIES) {
+            notifyOverCapacity(player);
+            return false;
+        }
+        Entity entity = mobBucket.type.create(level);
+        if (!(entity instanceof LivingEntity living) || !(entity instanceof Bucketable bucketable)) {
+            return false;
+        }
+        EntityType.createDefaultStackConfig(level, source, player).accept(entity);
+        CustomData bucketData = source.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY);
+        bucketable.loadFromBucketTag(bucketData.copyTag());
+        bucketable.setFromBucket(true);
+        if (!isCapturable(living)) {
+            return false;
+        }
+        CompoundTag tag = saveCreatureData(living);
+        if (tag == null) {
+            return false;
+        }
+        tag.put(BUCKETABLE_DATA_KEY, bucketData.copyTag());
+        creatures.add(new InfinityBucketCreature(BuiltInRegistries.ENTITY_TYPE.getKey(living.getType()), tag));
+
+        ItemStack proposed = stack.copy();
+        if (!trySetCreatures(proposed, creatures)) {
+            notifyOverCapacity(player);
+            return false;
+        }
+        FluidStack fluid = new FluidStack(mobBucket.content, FluidType.BUCKET_VOLUME);
+        if (!fluid.isEmpty() && new InfinityBucketWrapper(proposed).fill(fluid, IFluidHandler.FluidAction.EXECUTE) != fluid.getAmount()) {
+            notifyOverCapacity(player);
+            return false;
+        }
+        setControl(proposed, getControl(proposed).selectCreature(creatures.size() - 1));
+        copyStoredState(proposed, stack);
+        return true;
+    }
+
+    @Nullable
+    private static CompoundTag saveCreatureData(LivingEntity target) {
         CompoundTag tag = new CompoundTag();
         if (!target.save(tag)) {
-            return false;
+            return null;
         }
         tag.remove("Passengers");
         tag.remove("UUID");
@@ -571,6 +615,17 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         tag.remove("Motion");
         tag.remove("Dimension");
         tag.remove("PortalCooldown");
+        return tag;
+    }
+
+    private boolean tryCapture(ItemStack stack, Player player, LivingEntity target) {
+        if (!canCaptureAt(player, stack, target) || !(player.level() instanceof ServerLevel)) {
+            return false;
+        }
+        CompoundTag tag = saveCreatureData(target);
+        if (tag == null) {
+            return false;
+        }
         ResourceLocation typeId = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
         if (target instanceof Bucketable bucketable) {
             ItemStack bucketTag = bucketable.getBucketItemStack();

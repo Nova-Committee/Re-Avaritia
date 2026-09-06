@@ -15,10 +15,23 @@ base {
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets {
+    gameTest
+}
+
+configurations {
+    gameTestImplementation.extendsFrom implementation
+    gameTestCompileOnly.extendsFrom compileOnly
+    gameTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 neoForge {
     version = project.neo_version
+    addModdingDependenciesTo sourceSets.gameTest
+
 
     parchment {
         mappingsVersion = project.parchment_mappings_version
@@ -27,36 +40,46 @@ neoForge {
 
     //accessTransformers.add('src/main/resources/META-INF/accesstransformer.cfg')
 
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+        "${mod_id}_gametest" {
+            sourceSet(sourceSets.gameTest)
+        }
+    }
+
     runs {
         client {
             client()
+            loadedMods = [mods."${mod_id}"]
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         server {
             server()
+            loadedMods = [mods."${mod_id}"]
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         gameTestServer {
             type = "gameTestServer"
+            gameDirectory = project.file('build/gametest')
+            sourceSet = sourceSets.gameTest
+            loadedMods = [mods."${mod_id}", mods."${mod_id}_gametest"]
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+
         data {
             data()
+            loadedMods = [mods."${mod_id}"]
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             logLevel = Level.DEBUG
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
         }
     }
 
@@ -126,6 +149,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    gameTestImplementation sourceSets.main.output
 
     implementation ("com.blamejared.crafttweaker:CraftTweaker-neoforge-${minecraft_version}:${crafttweaker_version}")
     implementation ("curse.maven:jade-324717:${jade_id}")

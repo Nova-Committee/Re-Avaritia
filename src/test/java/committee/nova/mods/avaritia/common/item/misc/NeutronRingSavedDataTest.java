@@ -1,6 +1,12 @@
 package committee.nova.mods.avaritia.common.item.misc;
 
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.level.block.Blocks;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -15,8 +21,8 @@ class NeutronRingSavedDataTest {
         NeutronRingSavedData data = new NeutronRingSavedData();
         UUID from = UUID.randomUUID();
         UUID to = UUID.randomUUID();
-        assertTrue(data.add(from, "keep", new CompoundTag(), NeutronSpacePreview.EMPTY));
-        assertTrue(data.add(to, "existing", new CompoundTag(), NeutronSpacePreview.EMPTY));
+        assertTrue(data.add(from, "keep", new CompoundTag()));
+        assertTrue(data.add(to, "existing", new CompoundTag()));
 
         assertTrue(data.adopt(from, to));
         assertEquals(2, data.list(to).size());
@@ -29,13 +35,69 @@ class NeutronRingSavedDataTest {
         UUID from = UUID.randomUUID();
         UUID to = UUID.randomUUID();
         for (int i = 0; i < NeutronRingSavedData.MAX_SPACES; i++) {
-            assertTrue(data.add(to, "owned-" + i, new CompoundTag(), NeutronSpacePreview.EMPTY));
+            assertTrue(data.add(to, "owned-" + i, new CompoundTag()));
         }
-        assertTrue(data.add(from, "overflow", new CompoundTag(), NeutronSpacePreview.EMPTY));
+        assertTrue(data.add(from, "overflow", new CompoundTag()));
 
         assertFalse(data.adopt(from, to));
         assertEquals(NeutronRingSavedData.MAX_SPACES, data.list(to).size());
         assertEquals(1, data.list(from).size());
         assertEquals("overflow", data.list(from).getFirst().name());
+    }
+
+    @Test
+    void loadIgnoresLegacyRgbPreviewAndKeepsTemplate() {
+        UUID storageId = UUID.randomUUID();
+        CompoundTag template = new CompoundTag();
+        ListTag size = new ListTag();
+        size.add(IntTag.valueOf(1));
+        size.add(IntTag.valueOf(1));
+        size.add(IntTag.valueOf(1));
+        template.put("size", size);
+        ListTag palette = new ListTag();
+        palette.add(NbtUtils.writeBlockState(Blocks.CHEST.defaultBlockState()));
+        template.put("palette", palette);
+        ListTag blocks = new ListTag();
+        CompoundTag cell = new CompoundTag();
+        ListTag pos = new ListTag();
+        pos.add(IntTag.valueOf(0));
+        pos.add(IntTag.valueOf(0));
+        pos.add(IntTag.valueOf(0));
+        cell.put("pos", pos);
+        cell.putInt("state", 0);
+        blocks.add(cell);
+        template.put("blocks", blocks);
+
+        CompoundTag preview = new CompoundTag();
+        preview.putInt("X", 1);
+        preview.putInt("Y", 1);
+        preview.putInt("Z", 1);
+        preview.putInt("Blocks", 1);
+        preview.putIntArray("Top", new int[]{0xFF00AA00});
+        preview.putIntArray("Height", new int[]{1});
+
+        CompoundTag entry = new CompoundTag();
+        entry.putString("Id", "space-1");
+        entry.putString("Name", "Chest");
+        entry.put("Template", template);
+        entry.put("Preview", preview);
+        ListTag spaces = new ListTag();
+        spaces.add(entry);
+        CompoundTag library = new CompoundTag();
+        library.put("Id", net.minecraft.nbt.NbtUtils.createUUID(storageId));
+        library.put("Spaces", spaces);
+        ListTag libraries = new ListTag();
+        libraries.add(library);
+        CompoundTag root = new CompoundTag();
+        root.put("Libraries", libraries);
+
+        NeutronRingSavedData data = NeutronRingSavedData.load(root,
+                RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
+        assertEquals(1, data.list(storageId).size());
+        assertEquals("Chest", data.list(storageId).getFirst().name());
+        assertEquals("space-1", data.list(storageId).getFirst().id());
+        assertEquals(Blocks.CHEST.defaultBlockState(),
+                NeutronSpacePreview.fromTemplate(data.get(storageId, "space-1").orElseThrow().template(),
+                        RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)).stateAt(0, 0, 0));
     }
 }
