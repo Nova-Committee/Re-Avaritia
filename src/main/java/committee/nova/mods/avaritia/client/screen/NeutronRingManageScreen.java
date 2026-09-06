@@ -54,10 +54,21 @@ public final class NeutronRingManageScreen extends Screen {
     private int previewY;
     private int previewW;
     private int previewH;
-    private float yaw = 35.0F;
-    private float pitch = 25.0F;
-    private float zoom = 1.0F;
-    private boolean draggingPreview;
+    private static final float DEFAULT_YAW = 35.0F;
+    private static final float DEFAULT_PITCH = 25.0F;
+    private static final float DEFAULT_ZOOM = 1.0F;
+    private static final float PITCH_LIMIT = 85.0F;
+    private static final float ZOOM_MIN = 0.4F;
+    private static final float ZOOM_MAX = 2.5F;
+    private static final float ZOOM_STEP = 1.15F;
+    private float yaw = DEFAULT_YAW;
+    private float pitch = DEFAULT_PITCH;
+    private float zoom = DEFAULT_ZOOM;
+    private float panX;
+    private float panY;
+    private Drag drag = Drag.NONE;
+    private boolean panMoved;
+    private enum Drag { NONE, ORBIT, PAN }
     private final OperationMenu menu = new OperationMenu();
 
     public NeutronRingManageScreen(S2CNeutronRingOpenPack packet) {
@@ -190,17 +201,19 @@ public final class NeutronRingManageScreen extends Screen {
     protected void init() {
         double scroll = list == null ? 0 : list.getScrollAmount();
         menu.close();
-        draggingPreview = false;
+        stopDrag();
         panelWidth = Math.min(540, width - 16);
         panelHeight = Math.min(330, height - 16);
         panelX = (width - panelWidth) / 2;
         panelY = (height - panelHeight) / 2;
         int listWidth = Math.min(172, Math.max(112, panelWidth / 3));
+        int listY = panelY + 47;
+        int listH = panelHeight - 83;
         previewX = panelX + listWidth + 20;
-        previewY = panelY + 67;
+        previewY = listY;
         previewW = panelWidth - listWidth - 32;
-        previewH = panelHeight - 123;
-        list = addRenderableWidget(new SpaceList(listWidth, panelHeight - 83, panelY + 47));
+        previewH = listH;
+        list = addRenderableWidget(new SpaceList(listWidth, listH, listY));
         list.setX(panelX + 12);
         list.populate();
         list.setScrollAmount(scroll);
@@ -219,10 +232,19 @@ public final class NeutronRingManageScreen extends Screen {
         assembly = null;
     }
 
+    @Override
+    public void tick() {
+        if (drag != Drag.NONE && !mouseHeld(GLFW.GLFW_MOUSE_BUTTON_LEFT) && !mouseHeld(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+            finishDrag();
+        }
+    }
+
     private void resetView() {
-        yaw = 35.0F;
-        pitch = 25.0F;
-        zoom = 1.0F;
+        yaw = DEFAULT_YAW;
+        pitch = DEFAULT_PITCH;
+        zoom = DEFAULT_ZOOM;
+        panX = 0.0F;
+        panY = 0.0F;
     }
 
     private void applyQuery(String value) {
@@ -243,7 +265,7 @@ public final class NeutronRingManageScreen extends Screen {
         graphics.fill(0, 0, width, height, 0xA0000000);
         PortableUi.panel(graphics, panelX, panelY, panelWidth, panelHeight);
         PortableUi.header(graphics, font, title, panelX + 4, panelY + 4, panelWidth - 8);
-        PortableUi.inset(graphics, previewX - 2, panelY + 49, previewW + 4, panelHeight - 87);
+        PortableUi.inset(graphics, previewX - 2, previewY - 2, previewW + 4, previewH + 4);
     }
 
     @Override
@@ -255,25 +277,24 @@ public final class NeutronRingManageScreen extends Screen {
             graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.empty"),
                     previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
         } else {
-            PortableUi.text(graphics, font, Component.literal(previewEntry.name()), previewX, panelY + 33,
-                    previewW, PortableUi.TEXT);
-            PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.preview_size",
-                            previewEntry.sizeX(), previewEntry.sizeY(), previewEntry.sizeZ(), previewEntry.blocks()),
-                    previewX + 4, panelY + 55, previewW - 8, PortableUi.MUTED);
+            PortableUi.text(graphics, font, Component.literal(previewEntry.name() + " · "
+                            + previewEntry.sizeX() + "×" + previewEntry.sizeY() + "×" + previewEntry.sizeZ()),
+                    previewX, panelY + 33, previewW, PortableUi.TEXT);
             NeutronSpacePreview preview = previews.get(previewEntry.id());
             if (previewMissing && preview == null) {
-                graphics.fill(previewX + 4, previewY, previewX + previewW - 4, previewY + previewH, PortableUi.INSET_BG);
+                graphics.fill(previewX + 4, previewY + 4, previewX + previewW - 4, previewY + previewH - 4, PortableUi.INSET_BG);
                 graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
                         previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
             } else if (preview == null) {
-                graphics.fill(previewX + 4, previewY, previewX + previewW - 4, previewY + previewH, PortableUi.INSET_BG);
+                graphics.fill(previewX + 4, previewY + 4, previewX + previewW - 4, previewY + previewH - 4, PortableUi.INSET_BG);
                 graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
                         previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
             } else {
-                renderer.draw(graphics, previewX + 4, previewY, previewW - 8, previewH, yaw, pitch, zoom);
+                renderer.draw(graphics, previewX + 4, previewY + 4, previewW - 8, previewH - 8,
+                        yaw, pitch, zoom, panX, panY);
             }
             PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.preview_controls"),
-                    previewX + 4, panelY + panelHeight - 49, previewW - 8, PortableUi.MUTED);
+                    previewX, panelY + panelHeight - 24, Math.max(40, previewW - 86), PortableUi.MUTED);
         }
         if (list.children().isEmpty()) {
             graphics.drawWordWrap(font, Component.translatable(query.isBlank()
@@ -289,24 +310,24 @@ public final class NeutronRingManageScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (menu.mouseClicked(mouseX, mouseY, button)) {
+            stopDrag();
             return true;
         }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && insidePreviewChrome(mouseX, mouseY)) {
-            if (previewEntry != null) {
-                openPreviewMenu(mouseX, mouseY);
-            } else {
-                openBlankMenu(mouseX, mouseY);
+        if (previewEntry != null && insidePreviewChrome(mouseX, mouseY)) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                startDrag(hasShiftDown() ? Drag.PAN : Drag.ORBIT);
+                return true;
             }
-            return true;
-        }
-        if (previewEntry != null && button == GLFW.GLFW_MOUSE_BUTTON_LEFT && insidePreview(mouseX, mouseY)) {
-            draggingPreview = true;
-            return true;
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                startDrag(Drag.PAN);
+                return true;
+            }
         }
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && insidePanel(mouseX, mouseY)) {
+            stopDrag();
             openBlankMenu(mouseX, mouseY);
             return true;
         }
@@ -315,15 +336,24 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        draggingPreview = false;
+        if (drag != Drag.NONE && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+            finishDrag();
+            return true;
+        }
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (draggingPreview && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            yaw = (yaw + (float) dragX) % 360.0F;
-            pitch = Mth.clamp(pitch + (float) dragY, -80.0F, 80.0F);
+        if (menu.isOpen()) {
+            return true;
+        }
+        if (drag == Drag.ORBIT && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            orbitPreview(dragX, dragY);
+            return true;
+        }
+        if (drag == Drag.PAN && (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
+            panPreview(dragX, dragY);
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -331,11 +361,11 @@ public final class NeutronRingManageScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (menu.mouseScrolled(scrollY)) {
-            return true;
+        if (menu.isOpen()) {
+            return menu.mouseScrolled(scrollY);
         }
-        if (previewEntry != null && insidePreview(mouseX, mouseY)) {
-            zoom = Mth.clamp(zoom + (float) scrollY * 0.1F, 0.5F, 2.0F);
+        if (previewEntry != null && (drag != Drag.NONE || insidePreviewChrome(mouseX, mouseY))) {
+            zoomPreview(scrollY);
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
@@ -361,17 +391,10 @@ public final class NeutronRingManageScreen extends Screen {
         return false;
     }
 
-    private boolean insidePreview(double mouseX, double mouseY) {
-        return mouseX >= previewX && mouseX < previewX + previewW
-                && mouseY >= previewY && mouseY < previewY + previewH;
-    }
 
     private boolean insidePreviewChrome(double mouseX, double mouseY) {
-        int x = previewX - 2;
-        int y = panelY + 49;
-        int w = previewW + 4;
-        int h = panelHeight - 87;
-        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+        return mouseX >= previewX - 2 && mouseX < previewX + previewW + 2
+                && mouseY >= previewY - 2 && mouseY < previewY + previewH + 2;
     }
 
     private boolean insidePanel(double mouseX, double mouseY) {
@@ -379,12 +402,65 @@ public final class NeutronRingManageScreen extends Screen {
                 && mouseY >= panelY && mouseY < panelY + panelHeight;
     }
 
+    private void startDrag(Drag next) {
+        drag = next;
+        panMoved = false;
+        setFocused(null);
+        setDragging(true);
+    }
+
+    private void finishDrag() {
+        boolean openReset = drag == Drag.PAN && !panMoved;
+        stopDrag();
+        if (openReset && previewEntry != null) {
+            openPreviewMenu(minecraft.mouseHandler.xpos() / minecraft.getWindow().getGuiScale(),
+                    minecraft.mouseHandler.ypos() / minecraft.getWindow().getGuiScale());
+        }
+    }
+
+    private void stopDrag() {
+        drag = Drag.NONE;
+        panMoved = false;
+        setDragging(false);
+    }
+
+    private boolean mouseHeld(int button) {
+        return GLFW.glfwGetMouseButton(minecraft.getWindow().getWindow(), button) == GLFW.GLFW_PRESS;
+    }
+
+    private void orbitPreview(double dragX, double dragY) {
+        float viewW = Math.max(1.0F, previewW - 8.0F);
+        float viewH = Math.max(1.0F, previewH);
+        yaw = Mth.wrapDegrees(yaw + (float) (dragX * 180.0 / viewW));
+        pitch = Mth.clamp(pitch + (float) (dragY * 90.0 / viewH), -PITCH_LIMIT, PITCH_LIMIT);
+    }
+
+    private void panPreview(double dragX, double dragY) {
+        if (Math.abs(dragX) + Math.abs(dragY) > 0.5) {
+            panMoved = true;
+        }
+        float limitX = Math.max(8.0F, previewW * zoom);
+        float limitY = Math.max(8.0F, previewH * zoom);
+        panX = Mth.clamp(panX + (float) dragX, -limitX, limitX);
+        panY = Mth.clamp(panY + (float) dragY, -limitY, limitY);
+    }
+
+    private void zoomPreview(double scrollY) {
+        if (scrollY == 0.0) {
+            return;
+        }
+        zoom = Mth.clamp(zoom * (float) Math.pow(ZOOM_STEP, scrollY), ZOOM_MIN, ZOOM_MAX);
+    }
+
     private void send(int action, String id, String name) {
         PacketDistributor.sendToServer(new C2SNeutronRingPack(action, id, name, hand, storageId,
                 NeutronRingContents.Size.DEFAULT));
     }
-
     private void focus(S2CNeutronRingOpenPack.Entry space) {
+        if (previewEntry == null || !previewEntry.id().equals(space.id())) {
+            panX = 0.0F;
+            panY = 0.0F;
+        }
         previewEntry = space;
         loadPreview(space.id());
     }
@@ -508,6 +584,14 @@ public final class NeutronRingManageScreen extends Screen {
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
+        public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+            if (!isMouseOver(mouseX, mouseY)) {
+                return false;
+            }
+            return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
 
         @Override

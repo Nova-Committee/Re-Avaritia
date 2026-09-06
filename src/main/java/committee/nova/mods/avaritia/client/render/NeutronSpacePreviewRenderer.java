@@ -56,6 +56,7 @@ public final class NeutronSpacePreviewRenderer {
     private @Nullable ByteBufferBuilder sortingBuffer;
     private float sortedYaw = Float.NaN;
     private float sortedPitch = Float.NaN;
+    private float fitSpan = 1.0F;
 
     public static void invalidate() {
         reloadGeneration++;
@@ -67,6 +68,9 @@ public final class NeutronSpacePreviewRenderer {
         }
         closeMesh();
         this.preview = preview;
+        fitSpan = preview == null ? 1.0F : (float) Math.hypot(
+                Math.hypot(Math.max(1, preview.sizeX()), Math.max(1, preview.sizeZ())),
+                Math.max(1, preview.sizeY()));
         this.level = null;
         this.boundWorld = null;
         bakedGeneration = -1;
@@ -76,7 +80,8 @@ public final class NeutronSpacePreviewRenderer {
         setPreview(null);
     }
 
-    public void draw(GuiGraphics graphics, int x, int y, int w, int h, float yaw, float pitch, float zoom) {
+    public void draw(GuiGraphics graphics, int x, int y, int w, int h, float yaw, float pitch, float zoom,
+                     float panX, float panY) {
         graphics.fill(x, y, x + w, y + h, PortableUi.INSET_BG);
         graphics.flush();
         bindSnapshot();
@@ -91,15 +96,8 @@ public final class NeutronSpacePreviewRenderer {
         graphics.enableScissor(x, y, x + w, y + h);
         var pose = graphics.pose();
         pose.pushPose();
-        pose.translate(x + w / 2.0F, y + h / 2.0F, 150.0F);
-        float sinYaw = Math.abs((float) Math.sin(Math.toRadians(yaw)));
-        float cosYaw = Math.abs((float) Math.cos(Math.toRadians(yaw)));
-        float projectedWidth = cosYaw * sizeX + sinYaw * sizeZ;
-        float projectedDepth = sinYaw * sizeX + cosYaw * sizeZ;
-        float projectedHeight = Math.abs((float) Math.cos(Math.toRadians(pitch))) * sizeY
-                + Math.abs((float) Math.sin(Math.toRadians(pitch))) * projectedDepth;
-        float scale = zoom * Math.min(Math.max(1, w - 12) / Math.max(1, projectedWidth),
-                Math.max(1, h - 12) / Math.max(1, projectedHeight));
+        pose.translate(x + w / 2.0F + panX, y + h / 2.0F + panY, 150.0F);
+        float scale = zoom * Math.min(Math.max(1, w - 12), Math.max(1, h - 12)) / fitSpan;
         pose.scale(scale, -scale, scale);
         pose.mulPose(Axis.XP.rotationDegrees(pitch));
         pose.mulPose(Axis.YP.rotationDegrees(yaw));

@@ -116,8 +116,7 @@ public final class InfinityRingDimensions {
         BlockPos spawn = buildSpawn(level, terrain);
         level.setDefaultSpawnPos(spawn, 0.0F);
         rememberReturn(player);
-        player.server.execute(() -> player.teleportTo(level, spawn.getX() + 0.5, spawn.getY() + 1, spawn.getZ() + 0.5,
-                player.getYRot(), player.getXRot()));
+        teleportToPersonalSpawn(player, level);
         return true;
     }
 
@@ -139,9 +138,7 @@ public final class InfinityRingDimensions {
         if (level.getLevelData() instanceof PersonalLevelData personal && settings != null) {
             personal.apply(settings, player.server.overworld());
         }
-        BlockPos spawn = level.getSharedSpawnPos();
-        player.server.execute(() -> player.teleportTo(level, spawn.getX() + 0.5, spawn.getY() + 1, spawn.getZ() + 0.5,
-                player.getYRot(), player.getXRot()));
+        teleportToPersonalSpawn(player, level);
     }
 
     public static boolean visit(ServerPlayer actor, String ownerName) {
@@ -166,9 +163,7 @@ public final class InfinityRingDimensions {
             rememberReturn(actor);
         }
         ServerLevel level = getOrCreateLevel(actor.server, owner.get());
-        BlockPos spawn = level.getSharedSpawnPos();
-        actor.server.execute(() -> actor.teleportTo(level, spawn.getX() + 0.5, spawn.getY() + 1, spawn.getZ() + 0.5,
-                actor.getYRot(), actor.getXRot()));
+        teleportToPersonalSpawn(actor, level);
         return true;
     }
 
@@ -402,17 +397,64 @@ public final class InfinityRingDimensions {
         return cache.get(name).map(profile -> profile.getId());
     }
 
-    private static BlockPos buildSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {
-        BlockPos origin = new BlockPos(0, 64, 0);
-        if (terrain == InfinityRingSettings.Terrain.FLAT) {
-            return new BlockPos(0, 4, 0);
+    public static double standingFeetY(ServerLevel level, BlockPos spawn) {
+        int x = spawn.getX();
+        int z = spawn.getZ();
+        level.getChunkAt(spawn);
+        int min = level.getMinBuildHeight() + 1;
+        int max = level.getMaxBuildHeight() - 2;
+        int start = Math.max(min, Math.min(max, spawn.getY()));
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(x, start, z);
+        if (!level.getBlockState(cursor).getCollisionShape(level, cursor).isEmpty()) {
+            for (int y = start + 1; y <= max; y++) {
+                cursor.setY(y);
+                if (level.getBlockState(cursor).isAir() && level.getBlockState(cursor.above()).isAir()) {
+                    return y;
+                }
+            }
+            return start + 1;
         }
+        for (int y = start; y >= min; y--) {
+            cursor.setY(y - 1);
+            if (level.getBlockState(cursor).getCollisionShape(level, cursor).isEmpty()) {
+                continue;
+            }
+            cursor.setY(y);
+            if (level.getBlockState(cursor).isAir() && level.getBlockState(cursor.above()).isAir()) {
+                return y;
+            }
+            for (int up = y + 1; up <= max; up++) {
+                cursor.setY(up);
+                if (level.getBlockState(cursor).isAir() && level.getBlockState(cursor.above()).isAir()) {
+                    return up;
+                }
+            }
+            return y;
+        }
+        return start;
+    }
+
+    private static void teleportToPersonalSpawn(ServerPlayer player, ServerLevel level) {
+        BlockPos spawn = level.getSharedSpawnPos();
+        double y = standingFeetY(level, spawn);
+        player.server.execute(() -> player.teleportTo(level, spawn.getX() + 0.5, y, spawn.getZ() + 0.5,
+                player.getYRot(), player.getXRot()));
+    }
+
+    private static BlockPos buildSpawn(ServerLevel level, InfinityRingSettings.Terrain terrain) {
+        if (terrain == InfinityRingSettings.Terrain.FLAT) {
+            BlockPos origin = BlockPos.ZERO;
+            level.getChunkAt(origin);
+            int feet = (int) Math.floor(standingFeetY(level, origin));
+            return new BlockPos(0, Math.max(level.getMinBuildHeight(), feet - 1), 0);
+        }
+        BlockPos origin = new BlockPos(0, 64, 0);
         if (terrain == InfinityRingSettings.Terrain.VOID) {
             placePlatform(level, origin, 2);
             return origin;
         }
         placePlatform(level, origin, 4);
-        BlockPos sapling = origin.above();
+        BlockPos sapling = origin.offset(3, 1, 0);
         BlockState oak = Blocks.OAK_SAPLING.defaultBlockState();
         level.setBlock(sapling, oak, 3);
         if (oak.getBlock() instanceof SaplingBlock saplingBlock) {

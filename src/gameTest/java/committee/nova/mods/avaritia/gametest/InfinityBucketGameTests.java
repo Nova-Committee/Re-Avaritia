@@ -14,7 +14,8 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.TropicalFish;
@@ -25,6 +26,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
@@ -33,8 +36,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -67,12 +68,10 @@ public final class InfinityBucketGameTests {
                 "stored creature should be a tropical fish");
 
         BlockPos water = new BlockPos(8, 2, 4);
-        helper.setBlock(water.below(), Blocks.WATER);
         helper.setBlock(water, Blocks.WATER);
-        helper.setBlock(water.above(), Blocks.WATER);
-        helper.assertTrue(tryRelease(fixture.bucket, fixture.player, helper.getLevel(), helper.absolutePos(water),
-                        creatures.getFirst()),
-                "tryRelease should spawn the stored fish into water");
+        helper.assertTrue(useLookingDownAt(helper, fixture, water).consumesAction(),
+                "using the bucket on source water should release the selected fish");
+        helper.assertBlockPresent(Blocks.WATER, water);
 
         List<TropicalFish> fish = helper.getEntities(EntityType.TROPICAL_FISH);
         helper.assertTrue(fish.size() == 1, "exactly one live tropical fish should spawn");
@@ -186,6 +185,105 @@ public final class InfinityBucketGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = TEMPLATE, timeoutTicks = 100)
+    public static void blockedCreatureReleaseDoesNotCollectWater(GameTestHelper helper) {
+        Fixture fixture = fixture(helper);
+        fixture.menu.setCarried(tropicalFishBucket());
+        helper.assertTrue(fixture.menu.clickMenuButton(fixture.player, InfinityBucketMenu.ACTION_INSERT_CARRIED),
+                "tropical fish should deposit");
+        ItemStack before = fixture.bucket.copy();
+        BlockPos target = new BlockPos(8, 2, 4);
+        BlockState blockedWater = Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.WATERLOGGED, true);
+        helper.setBlock(target, blockedWater);
+
+        helper.assertTrue(useLookingDownAt(helper, fixture, target) == InteractionResult.FAIL,
+                "a colliding creature must not be released or fall back to collecting water");
+        helper.assertTrue(ItemStack.matches(before, fixture.bucket),
+                "failed release must preserve the creature, stored fluid and selection");
+        helper.assertTrue(helper.getBlockState(target).equals(blockedWater),
+                "failed release must leave the target waterlogged");
+        helper.assertEntityNotPresent(EntityType.TROPICAL_FISH);
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 100)
+    public static void fluidSelectionStillCollectsSourceWater(GameTestHelper helper) {
+        Fixture fixture = fixture(helper);
+        BlockPos water = new BlockPos(8, 2, 4);
+        helper.setBlock(water, Blocks.WATER);
+
+        helper.assertTrue(useLookingDownAt(helper, fixture, water).consumesAction(),
+                "fluid mode should still collect source water");
+        helper.assertTrue(helper.getBlockState(water).isAir(), "collected water source should be removed");
+        assertStoredWater(helper, fixture.bucket, FluidType.BUCKET_VOLUME);
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 100)
+    public static void emptyBucketExtractsNamedTropicalFish(GameTestHelper helper) {
+        Fixture fixture = fixture(helper);
+        fixture.menu.setCarried(tropicalFishBucket());
+        helper.assertTrue(fixture.menu.clickMenuButton(fixture.player, InfinityBucketMenu.ACTION_INSERT_CARRIED),
+                "named tropical fish should deposit");
+        fixture.menu.setCarried(new ItemStack(Items.BUCKET));
+        helper.assertTrue(fixture.menu.clickMenuButton(fixture.player, InfinityBucketMenu.ACTION_EXTRACT_CREATURE),
+                "empty bucket should extract the stored fish");
+        ItemStack extracted = fixture.menu.getCarried();
+        helper.assertTrue(extracted.is(Items.TROPICAL_FISH_BUCKET) && extracted.getCount() == 1,
+                "cursor should hold the tropical fish bucket");
+        helper.assertTrue(extracted.has(DataComponents.CUSTOM_NAME)
+                        && "Harbor fish".equals(extracted.getHoverName().getString()),
+                "extracted bucket should keep the custom name");
+        helper.assertTrue(extracted.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)
+                        .copyTag().getInt("BucketVariantTag") == TROPICAL_VARIANT,
+                "extracted bucket should keep the variant");
+        helper.assertTrue(InfinityBucketItem.getCreatures(fixture.bucket).isEmpty(),
+                "extracted creature should leave the list");
+        helper.assertTrue(InfinityBucketItem.getFluids(fixture.bucket).isEmpty(),
+                "extracting a fish bucket should consume one bucket of water");
+        helper.assertEntityNotPresent(EntityType.TROPICAL_FISH);
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 100)
+    public static void stackedEmptyBucketsExtractOneAxolotl(GameTestHelper helper) {
+        Fixture fixture = fixture(helper);
+        fixture.menu.setCarried(axolotlBucket());
+        helper.assertTrue(fixture.menu.clickMenuButton(fixture.player, InfinityBucketMenu.ACTION_INSERT_CARRIED),
+                "axolotl should deposit");
+        fixture.menu.setCarried(new ItemStack(Items.BUCKET, 2));
+        helper.assertTrue(fixture.menu.clickMenuButton(fixture.player, InfinityBucketMenu.ACTION_EXTRACT_CREATURE),
+                "stacked empty buckets should extract one axolotl");
+        helper.assertTrue(fixture.menu.getCarried().is(Items.BUCKET) && fixture.menu.getCarried().getCount() == 1,
+                "cursor should keep the remaining empty bucket");
+        ItemStack extracted = ItemStack.EMPTY;
+        for (int i = 0; i < fixture.player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = fixture.player.getInventory().getItem(i);
+            if (stack.is(Items.AXOLOTL_BUCKET)) {
+                extracted = stack;
+                break;
+            }
+        }
+        helper.assertTrue(extracted.is(Items.AXOLOTL_BUCKET) && extracted.getCount() == 1,
+                "exactly one axolotl bucket should enter inventory");
+        CompoundTag data = extracted.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY).copyTag();
+        helper.assertTrue(data.getInt("Variant") == 4 && data.getInt("Age") == -1200 && data.getFloat("Health") == 7.0F,
+                "extracted axolotl should keep variant, age and health");
+        helper.assertTrue(InfinityBucketItem.getCreatures(fixture.bucket).isEmpty(),
+                "extracted axolotl should leave the list");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 100)
+    public static void extractCreatureRejectsWhenWaterMissing(GameTestHelper helper) {
+        Fixture fixture = fixture(helper);
+        helper.assertTrue(InfinityBucketItem.trySetCreatures(fixture.bucket, dummyCreatures(1)),
+                "fixture should own a stored creature");
+        assertRejected(helper, fixture, new ItemStack(Items.BUCKET), InfinityBucketMenu.ACTION_EXTRACT_CREATURE,
+                "extracting a fish requires a bucket of matching fluid");
+        helper.succeed();
+    }
+
     private static void assertRejected(GameTestHelper helper, Fixture fixture, ItemStack source, int action, String message) {
         ItemStack carriedBefore = source.copy();
         ItemStack bucketBefore = fixture.bucket.copy();
@@ -247,21 +345,12 @@ public final class InfinityBucketGameTests {
         return count;
     }
 
-    private static boolean tryRelease(ItemStack bucket, Player player, ServerLevel level, BlockPos pos,
-                                      InfinityBucketCreature creature) {
-        try {
-            Method method = InfinityBucketItem.class.getDeclaredMethod("tryRelease", ItemStack.class, Player.class,
-                    ServerLevel.class, BlockPos.class, InfinityBucketCreature.class);
-            method.setAccessible(true);
-            return Boolean.TRUE.equals(method.invoke(bucket.getItem(), bucket, player, level, pos, creature));
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof RuntimeException runtime) {
-                throw runtime;
-            }
-            throw new RuntimeException(e.getCause());
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+    private static InteractionResult useLookingDownAt(GameTestHelper helper, Fixture fixture, BlockPos target) {
+        BlockPos above = helper.absolutePos(target.above(2));
+        fixture.player.setPos(above.getX() + 0.5D, above.getY(), above.getZ() + 0.5D);
+        fixture.player.setYRot(0.0F);
+        fixture.player.setXRot(90.0F);
+        return fixture.bucket.use(helper.getLevel(), fixture.player, InteractionHand.MAIN_HAND).getResult();
     }
 
     private static Fixture fixture(GameTestHelper helper) {

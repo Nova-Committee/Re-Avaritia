@@ -7,11 +7,11 @@ import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
 import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -21,19 +21,17 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/** Owner / admin control panel with World and Permissions tabs. */
+/** Owner / admin control panel: settings and actions on the left, player roster on the right. */
 public final class InfinityRingControlScreen extends Screen {
     private static final int MARGIN = 8;
     private static final int HEADER_H = 20;
-    private static final int TAB_H = 16;
-    private static final int FOOTER_H = 22;
-    private static final int ROW_H = 18;
+    private static final int FOOTER_H = 24;
+    private static final int BTN_H = 20;
     private static final int GAP = 3;
 
     private int time;
@@ -42,7 +40,6 @@ public final class InfinityRingControlScreen extends Screen {
     private final List<String> friends;
     private final UUID owner;
     private boolean canDelete;
-    private int tab;
     private String nameInput = "";
     private String filter = "";
     @Nullable
@@ -52,19 +49,11 @@ public final class InfinityRingControlScreen extends Screen {
     private int panelY;
     private int panelW;
     private int panelH;
-    private int tabWorldX;
-    private int tabAccessX;
-    private int tabW;
-    private int insetX;
-    private int insetY;
-    private int insetW;
-    private int insetH;
-    private int filterX;
-    private int filterY;
-    private int filterW;
 
     @Nullable
     private PlayerList playerList;
+    @Nullable
+    private EditBox searchBox;
     @Nullable
     private String menuName;
     @Nullable
@@ -127,6 +116,9 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     private void captureTransientState() {
+        if (searchBox != null) {
+            filter = searchBox.getValue().trim();
+        }
         if (playerList != null) {
             listScroll = playerList.getScrollAmount();
             PlayerList.PlayerEntry selected = playerList.getSelected();
@@ -139,115 +131,90 @@ public final class InfinityRingControlScreen extends Screen {
     @Override
     protected void init() {
         playerList = null;
-        panelW = Math.min(360, width - MARGIN * 2);
-        panelH = Math.min(180, height - MARGIN * 2);
+        panelW = Math.min(400, width - MARGIN * 2);
+        panelH = Math.min(224, height - MARGIN * 2);
         panelX = (width - panelW) / 2;
         panelY = (height - panelH) / 2;
         int innerX = panelX + 8;
         int innerW = panelW - 16;
-        int tabsY = panelY + HEADER_H + 2;
-        tabW = Math.max(60, (innerW - GAP) / 2);
-        tabWorldX = innerX;
-        tabAccessX = innerX + tabW + GAP;
-        insetX = panelX + 6;
-        insetY = panelY + HEADER_H + TAB_H + 6;
-        insetW = panelW - 12;
-        insetH = Math.max(40, panelH - HEADER_H - TAB_H - FOOTER_H - 8);
-
-        Button worldTab = addRenderableWidget(PortableUi.button(tabWorldX, tabsY, tabW, TAB_H,
-                Component.translatable("gui.avaritia.infinity_ring.tab.world"), button -> switchTab(0)));
-        Button accessTab = addRenderableWidget(PortableUi.button(tabAccessX, tabsY, tabW, TAB_H,
-                Component.translatable("gui.avaritia.infinity_ring.tab.access"), button -> switchTab(1)));
-        worldTab.active = tab != 0;
-        accessTab.active = tab != 1;
-
-        int contentY = tabsY + TAB_H + GAP;
+        int contentY = panelY + HEADER_H + 2;
         int footerY = panelY + panelH - FOOTER_H;
         int contentH = Math.max(48, footerY - contentY - GAP);
-        if (tab == 0) {
-            initWorldTab(innerX, contentY, innerW);
-        } else {
-            initAccessTab(innerX, contentY, innerW, contentH);
-        }
-        int doneW = 80;
-        addRenderableWidget(PortableUi.button(panelX + panelW - 8 - doneW, footerY, doneW, 20,
-                CommonComponents.GUI_DONE, button -> onClose()));
-    }
+        int colGap = 6;
+        int leftW = Math.min(168, Math.max(120, (innerW - colGap) / 2));
+        int listW = Math.max(80, innerW - leftW - colGap);
+        leftW = innerW - listW - colGap;
+        int listX = innerX + leftW + colGap;
+        int rows = 4;
+        int rowGap = Math.max(1, Math.min(GAP, (contentH - rows * BTN_H) / Math.max(1, rows - 1)));
+        int step = BTN_H + rowGap;
 
-    private void initWorldTab(int x, int y, int w) {
-        addRenderableWidget(new OptionRow<>(x, y, w, ROW_H,
+        int cursor = contentY;
+        addCycle(innerX, cursor, leftW,
                 "gui.avaritia.infinity_ring.option.time", "gui.avaritia.infinity_ring.time.",
                 InfinityRingSettings.TimeMode.values(), InfinityRingSettings.TimeMode.byId(time), value -> {
                     time = value.ordinal();
                     sendModes();
-                }));
-        addRenderableWidget(new OptionRow<>(x, y + ROW_H + GAP, w, ROW_H,
+                });
+        cursor += step;
+        addCycle(innerX, cursor, leftW,
                 "gui.avaritia.infinity_ring.option.weather", "gui.avaritia.infinity_ring.weather.",
                 InfinityRingSettings.WeatherMode.values(), InfinityRingSettings.WeatherMode.byId(weather), value -> {
                     weather = value.ordinal();
                     sendModes();
-                }));
-    }
-
-    private void initAccessTab(int x, int y, int w, int h) {
-        int cursor = y;
-        addRenderableWidget(new OptionRow<>(x, cursor, w, ROW_H,
+                });
+        cursor += step;
+        addCycle(innerX, cursor, leftW,
                 "gui.avaritia.infinity_ring.option.access", "gui.avaritia.infinity_ring.access.",
                 InfinityRingSettings.Access.values(), InfinityRingSettings.Access.byId(access), value -> {
                     access = value.ordinal();
                     sendModes();
-                }));
-        cursor += ROW_H + GAP;
-        filterX = x;
-        filterY = cursor;
-        filterW = w;
-        if (!filter.isBlank()) {
-            cursor += font.lineHeight + GAP;
-        }
-        int listH = Math.max(32, h - (cursor - y));
-        playerList = addRenderableWidget(new PlayerList(w, listH, cursor));
-        playerList.setX(x);
-        playerList.setScrollAmount(listScroll);
-        if (selectedName != null) {
-            for (PlayerList.PlayerEntry entry : playerList.children()) {
-                if (entry.name.equals(selectedName)) {
-                    playerList.setSelected(entry);
-                    break;
-                }
-            }
-        }
-    }
+                });
+        cursor += step;
+        Button delete = addRenderableWidget(PortableUi.dangerButton(innerX, cursor, leftW, BTN_H,
+                Component.translatable("gui.avaritia.infinity_ring.delete"),
+                button -> confirmDelete()));
+        delete.active = canDelete;
 
-    private void switchTab(int next) {
-        if (tab == next) {
-            return;
-        }
-        captureTransientState();
-        menu.close();
-        menuName = null;
-        menuRole = null;
-        tab = next;
-        rebuildWidgets();
+        int doneW = 80;
+        addRenderableWidget(PortableUi.button(panelX + panelW - 8 - doneW, footerY, doneW, BTN_H,
+                CommonComponents.GUI_DONE, button -> onClose()));
+
+        int searchH = BTN_H;
+        int listY = contentY + searchH + GAP;
+        int listH = Math.max(16, contentH - searchH - GAP);
+        Component searchTitle = Component.translatable("gui.avaritia.infinity_ring.search_players");
+        searchBox = addRenderableWidget(new EditBox(font, listX, contentY, listW, searchH, searchTitle));
+        searchBox.setMaxLength(32);
+        searchBox.setHint(searchTitle);
+        searchBox.setValue(filter);
+        searchBox.setResponder(value -> {
+            String next = value.trim();
+            if (filter.equals(next)) {
+                return;
+            }
+            filter = next;
+            listScroll = 0;
+            if (playerList != null) {
+                playerList.populate();
+                playerList.setScrollAmount(0);
+            }
+        });
+        playerList = addRenderableWidget(new PlayerList(listW, listH, listY));
+        playerList.setX(listX);
+        playerList.setScrollAmount(listScroll);
     }
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (tab == 1) {
-            if (!filter.isBlank()) {
-                PortableUi.text(graphics, font, Component.translatable("gui.avaritia.infinity_ring.filter", filter),
-                        filterX, filterY, filterW, PortableUi.MUTED);
-            }
-            if (playerList != null && playerList.children().isEmpty()) {
-                int textY = playerList.getY() + 6;
-                int textW = Math.max(40, playerList.getWidth() - 8);
-                PortableUi.text(graphics, font, Component.translatable(friends.isEmpty()
-                                ? "gui.avaritia.infinity_ring.empty_players"
-                                : "gui.avaritia.infinity_ring.no_matching_players"),
-                        playerList.getX() + 4, textY, textW, PortableUi.MUTED);
-                PortableUi.text(graphics, font, Component.translatable("gui.avaritia.infinity_ring.right_click_hint"),
-                        playerList.getX() + 4, textY + font.lineHeight + 2, textW, PortableUi.MUTED);
-            }
+        if (playerList != null && playerList.children().isEmpty()) {
+            int textY = playerList.getY() + 6;
+            int textW = Math.max(40, playerList.getWidth() - 8);
+            PortableUi.text(graphics, font, Component.translatable(friends.isEmpty()
+                            ? "gui.avaritia.infinity_ring.empty_players"
+                            : "gui.avaritia.infinity_ring.no_matching_players"),
+                    playerList.getX() + 4, textY, textW, PortableUi.MUTED);
         }
         menu.render(graphics, font, mouseX, mouseY);
     }
@@ -256,22 +223,26 @@ public final class InfinityRingControlScreen extends Screen {
     protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
         PortableUi.panel(graphics, panelX, panelY, panelW, panelH);
         PortableUi.header(graphics, font, title, panelX, panelY, panelW);
-        PortableUi.inset(graphics, insetX, insetY, insetW, insetH);
+        if (searchBox != null && playerList != null) {
+            int top = searchBox.getY() - 2;
+            int bottom = playerList.getY() + playerList.getHeight() + 2;
+            PortableUi.inset(graphics, playerList.getX() - 2, top,
+                    playerList.getWidth() + 4, bottom - top);
+        }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (searchBox != null && searchBox.isFocused() && !searchBox.isMouseOver(mouseX, mouseY)) {
+            searchBox.setFocused(false);
+            if (getFocused() == searchBox) {
+                setFocused(null);
+            }
+        }
         if (menu.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && tab == 1 && inInset(mouseX, mouseY)) {
-            openPanelMenu((int) mouseX, (int) mouseY);
-            return true;
-        }
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -297,11 +268,11 @@ public final class InfinityRingControlScreen extends Screen {
         if (keyCode == GLFW.GLFW_KEY_MENU || (keyCode == GLFW.GLFW_KEY_F10 && Screen.hasShiftDown())) {
             PlayerList.PlayerEntry selected = playerList == null ? null : playerList.getSelected();
             if (selected != null) {
-                openPlayerMenu(selected.name, selected.role, selected.menuX(), selected.menuY());
-                return true;
-            }
-            if (tab == 1) {
-                openPanelMenu(insetX + 8, insetY + 8);
+                if (selected.addCandidate) {
+                    addFriend(selected.name);
+                } else {
+                    openPlayerMenu(selected.name, selected.role, selected.menuX(), selected.menuY());
+                }
                 return true;
             }
         }
@@ -313,10 +284,6 @@ public final class InfinityRingControlScreen extends Screen {
         return false;
     }
 
-    private boolean inInset(double mouseX, double mouseY) {
-        return mouseX >= insetX && mouseX < insetX + insetW && mouseY >= insetY && mouseY < insetY + insetH;
-    }
-
     private void sendModes() {
         PacketDistributor.sendToServer(pack(C2SInfinityRingPack.SET_MODES, access, ""));
     }
@@ -325,47 +292,7 @@ public final class InfinityRingControlScreen extends Screen {
         return new C2SInfinityRingPack(action, 0, time, weather, extra, name, owner);
     }
 
-    private void openPanelMenu(int mouseX, int mouseY) {
-        menuName = null;
-        menuRole = null;
-        List<OperationMenu.Entry> entries = new ArrayList<>();
-        entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_ring.add_friend",
-                () -> promptName(Component.translatable("gui.avaritia.infinity_ring.add_friend"), this::addFriend)));
-        entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_ring.ban",
-                () -> promptName(Component.translatable("gui.avaritia.infinity_ring.ban"), this::confirmBan)));
-        entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_ring.visit",
-                () -> promptName(Component.translatable("gui.avaritia.infinity_ring.visit"), this::visitNamed)));
-        entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_ring.search_players", this::promptSearch));
-        if (!filter.isBlank()) {
-            entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_ring.clear_filter", this::clearFilter));
-        }
-        if (canDelete) {
-            entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_ring.delete", this::confirmDelete));
-        }
-        menu.open(mouseX, mouseY, width, height, font, entries);
-    }
 
-    private void promptName(Component title, Consumer<String> chosen) {
-        PortableUi.prompt(this, title, nameInput, 32, false, playerNames(), value -> {
-            nameInput = value;
-            chosen.accept(value.trim());
-        });
-    }
-
-    private void promptSearch() {
-        PortableUi.prompt(this, Component.translatable("gui.avaritia.infinity_ring.search_players"),
-                filter, 32, true, playerNames(), value -> {
-                    filter = value.trim();
-                    listScroll = 0;
-                    rebuildWidgets();
-                });
-    }
-
-    private void clearFilter() {
-        filter = "";
-        listScroll = 0;
-        rebuildWidgets();
-    }
 
     private void addFriend(String name) {
         if (name.isEmpty()) {
@@ -385,6 +312,9 @@ public final class InfinityRingControlScreen extends Screen {
     }
 
     private void confirmDelete() {
+        if (!canDelete) {
+            return;
+        }
         PortableUi.confirm(this,
                 Component.translatable("gui.avaritia.infinity_ring.delete"),
                 Component.translatable("gui.avaritia.infinity_ring.delete_message"),
@@ -412,17 +342,6 @@ public final class InfinityRingControlScreen extends Screen {
                 () -> PacketDistributor.sendToServer(pack(C2SInfinityRingPack.REMOVE_FRIEND, access, name)));
     }
 
-    private List<String> playerNames() {
-        LinkedHashSet<String> names = new LinkedHashSet<>();
-        for (String raw : friends) {
-            names.add(nameOf(raw));
-        }
-        if (minecraft != null && minecraft.getConnection() != null) {
-            minecraft.getConnection().getOnlinePlayers()
-                    .forEach(info -> names.add(info.getProfile().getName()));
-        }
-        return new ArrayList<>(names);
-    }
 
     private void selectPlayer(PlayerList.PlayerEntry entry) {
         selectedName = entry.name;
@@ -500,92 +419,42 @@ public final class InfinityRingControlScreen extends Screen {
         return Component.translatable("gui.avaritia.infinity_ring.role." + role.toLowerCase(Locale.ROOT));
     }
 
-    private <T extends Enum<T>> void openOptionMenu(int mouseX, int mouseY, String valuePrefix,
-                                                    T[] values, T current, Consumer<T> changed) {
-        menuName = null;
-        menuRole = null;
-        List<OperationMenu.Entry> entries = new ArrayList<>();
-        for (T value : values) {
-            if (value == current) {
-                continue;
-            }
-            T chosen = value;
-            entries.add(new OperationMenu.Entry(
-                    Component.translatable(valuePrefix + value.name().toLowerCase(Locale.ROOT)),
-                    () -> changed.accept(chosen)));
-        }
-        menu.open(mouseX, mouseY, width, height, font, entries);
+    private <T extends Enum<T>> void addCycle(int x, int y, int w, String optionKey, String valuePrefix,
+                                              T[] values, T current, Consumer<T> changed) {
+        addRenderableWidget(CycleButton.builder((T value) -> Component.translatable(
+                        valuePrefix + value.name().toLowerCase(Locale.ROOT)))
+                .withValues(values)
+                .withInitialValue(current)
+                .withTooltip(value -> Tooltip.create(Component.translatable(
+                        valuePrefix + value.name().toLowerCase(Locale.ROOT) + ".info")))
+                .create(x, y, w, BTN_H, Component.translatable(optionKey),
+                        (ignored, value) -> changed.accept(value)));
     }
-
-    private final class OptionRow<T extends Enum<T>> extends AbstractWidget {
-        private final String optionKey;
-        private final String valuePrefix;
-        private final T[] values;
-        private final Consumer<T> changed;
-        private T current;
-
-        private OptionRow(int x, int y, int width, int height, String optionKey, String valuePrefix,
-                          T[] values, T current, Consumer<T> changed) {
-            super(x, y, width, height, Component.empty());
-            this.optionKey = optionKey;
-            this.valuePrefix = valuePrefix;
-            this.values = values;
-            this.current = current;
-            this.changed = changed;
-            refreshMessage();
-        }
-
-        private void refreshMessage() {
-            setMessage(Component.translatable("options.generic_value",
-                    Component.translatable(optionKey),
-                    Component.translatable(valuePrefix + current.name().toLowerCase(Locale.ROOT))));
-            setTooltip(Tooltip.create(Component.translatable(
-                    valuePrefix + current.name().toLowerCase(Locale.ROOT) + ".info")));
-        }
-
-        @Override
-        protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            PortableUi.row(graphics, getX(), getY(), getWidth(), getHeight(), isHovered(), isFocused());
-            PortableUi.text(graphics, font, getMessage(), getX() + 4, getY() + (getHeight() - font.lineHeight) / 2,
-                    getWidth() - 8, PortableUi.TEXT);
-        }
-
-        @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!active || !visible || !clicked(mouseX, mouseY)) {
-                return false;
-            }
-            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                playDownSound(Minecraft.getInstance().getSoundManager());
-                setFocused(true);
-                return true;
-            }
-            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                playDownSound(Minecraft.getInstance().getSoundManager());
-                openOptionMenu((int) mouseX, (int) mouseY, valuePrefix, values, current, value -> {
-                    current = value;
-                    refreshMessage();
-                    changed.accept(value);
-                });
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
-            defaultButtonNarrationText(output);
-        }
-    }
-
     private final class PlayerList extends ObjectSelectionList<PlayerList.PlayerEntry> {
         PlayerList(int width, int height, int y) {
             super(InfinityRingControlScreen.this.minecraft, width, height, y, 16);
             this.centerListVertically = false;
+            populate();
+        }
+
+        void populate() {
+            clearEntries();
+            boolean exact = false;
             for (String raw : friends) {
-                if (matchesFilter(nameOf(raw))) {
-                    addEntry(new PlayerEntry(raw));
+                String name = nameOf(raw);
+                if (matchesFilter(name)) {
+                    PlayerEntry entry = new PlayerEntry(raw, false);
+                    addEntry(entry);
+                    if (entry.name.equals(selectedName) && !entry.addCandidate) {
+                        setSelected(entry);
+                    }
                 }
+                if (!filter.isBlank() && name.equalsIgnoreCase(filter)) {
+                    exact = true;
+                }
+            }
+            if (!filter.isBlank() && !exact) {
+                addEntry(new PlayerEntry(filter, true));
             }
         }
 
@@ -619,12 +488,14 @@ public final class InfinityRingControlScreen extends Screen {
         private final class PlayerEntry extends ObjectSelectionList.Entry<PlayerEntry> {
             private final String name;
             private final String role;
+            private final boolean addCandidate;
             private int lastLeft;
             private int lastTop;
 
-            private PlayerEntry(String raw) {
-                this.name = nameOf(raw);
-                this.role = roleOf(raw);
+            private PlayerEntry(String raw, boolean addCandidate) {
+                this.addCandidate = addCandidate;
+                this.name = addCandidate ? raw : nameOf(raw);
+                this.role = addCandidate ? "ADD" : roleOf(raw);
             }
 
             private int menuX() {
@@ -640,8 +511,14 @@ public final class InfinityRingControlScreen extends Screen {
                                int mouseX, int mouseY, boolean hovering, float partialTick) {
                 lastLeft = left;
                 lastTop = top;
-                boolean selected = name.equals(selectedName);
+                boolean selected = !addCandidate && name.equals(selectedName);
                 PortableUi.row(graphics, left, top, width, height, hovering, selected);
+                if (addCandidate) {
+                    PortableUi.text(graphics, font,
+                            Component.translatable("gui.avaritia.infinity_ring.add_candidate", name),
+                            left + 4, top + 4, Math.max(20, width - 8), PortableUi.TEXT);
+                    return;
+                }
                 int nameW = Math.max(20, width - 8 - font.width(roleLabel(role)) - 6);
                 PortableUi.text(graphics, font, Component.literal(name), left + 4, top + 4, nameW, PortableUi.TEXT);
                 PortableUi.text(graphics, font, roleLabel(role),
@@ -651,6 +528,13 @@ public final class InfinityRingControlScreen extends Screen {
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                if (addCandidate) {
+                    if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                        addFriend(name);
+                        return true;
+                    }
+                    return false;
+                }
                 if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     selectPlayer(this);
                     return true;
@@ -665,7 +549,9 @@ public final class InfinityRingControlScreen extends Screen {
 
             @Override
             public @NotNull Component getNarration() {
-                return Component.literal(name).append(" ").append(roleLabel(role));
+                return addCandidate
+                        ? Component.translatable("gui.avaritia.infinity_ring.add_candidate", name)
+                        : Component.literal(name).append(" ").append(roleLabel(role));
             }
         }
     }

@@ -28,6 +28,7 @@ public class InfinityBucketMenu extends BaseMenu {
     public static final int ACTION_EXTRACT_FLUID = 3000;
     public static final int ACTION_DELETE_FLUID = 4000;
     public static final int ACTION_DELETE_CREATURE = 5000;
+    public static final int ACTION_EXTRACT_CREATURE = 6000;
 
     public static final int PLAYER_INV_X = 49;
     public static final int PLAYER_INV_Y = 156;
@@ -136,6 +137,9 @@ public class InfinityBucketMenu extends BaseMenu {
             InfinityBucketItem.setControl(bucket, InfinityBucketItem.getControl(bucket).selectFluid(0));
             return true;
         }
+        if (id >= ACTION_EXTRACT_CREATURE) {
+            return extractCreature(bucket, id - ACTION_EXTRACT_CREATURE);
+        }
         if (id >= ACTION_DELETE_CREATURE) {
             return deleteEntry(bucket, true, id - ACTION_DELETE_CREATURE);
         }
@@ -223,6 +227,19 @@ public class InfinityBucketMenu extends BaseMenu {
             return false;
         }
         finishCarriedTransfer(carried, itemHandler.getContainer());
+        return true;
+    }
+
+    private boolean extractCreature(ItemStack bucket, int creatureIndex) {
+        ItemStack carried = getCarried();
+        if (carried.isEmpty() || carried.is(ModItems.infinity_bucket.get())) {
+            return false;
+        }
+        ItemStack filled = InfinityBucketItem.tryExtractMobBucket(bucket, carried.copyWithCount(1), player, creatureIndex);
+        if (filled.isEmpty()) {
+            return false;
+        }
+        finishCarriedTransfer(carried, filled);
         return true;
     }
 

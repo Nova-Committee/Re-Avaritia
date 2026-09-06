@@ -603,11 +603,10 @@
   "gui.avaritia.infinity_ring.confirm": "建立",
   "gui.avaritia.infinity_ring.player": "玩家名",
   "gui.avaritia.infinity_ring.add_friend": "新增好友",
+  "gui.avaritia.infinity_ring.add_candidate": "新增 %s？",
   "gui.avaritia.infinity_ring.remove_friend": "移除好友",
   "gui.avaritia.infinity_ring.visit": "造訪",
   "gui.avaritia.infinity_ring.friends": "好友：%s",
-  "gui.avaritia.infinity_ring.tab.world": "世界",
-  "gui.avaritia.infinity_ring.tab.access": "權限",
   "gui.avaritia.infinity_ring.option.terrain": "世界類型",
   "gui.avaritia.infinity_ring.option.time": "時間",
   "gui.avaritia.infinity_ring.option.weather": "天氣",
@@ -658,7 +657,7 @@
   "gui.avaritia.portable.no_results": "沒有符合的空間。",
   "gui.avaritia.neutron_ring.library": "已儲存空間 · %s",
   "gui.avaritia.neutron_ring.reset_view": "復位",
-  "gui.avaritia.neutron_ring.preview_controls": "拖曳旋轉 · 滾輪縮放",
+  "gui.avaritia.neutron_ring.preview_controls": "左鍵拖曳旋轉 · 右鍵拖曳平移 · 滾輪縮放",
   "gui.avaritia.neutron_ring.preview_loading": "正在載入結構…",
   "gui.avaritia.neutron_ring.preview_missing": "無法載入該結構預覽。",
   "gui.avaritia.neutron_ring.empty_list": "還沒有儲存的空間。",
@@ -683,8 +682,6 @@
   "gui.avaritia.infinity_ring.clear_filter": "清除篩選",
   "gui.avaritia.infinity_ring.filter": "篩選：%s",
   "gui.avaritia.infinity_ring.no_matching_players": "沒有符合的玩家。",
-  "gui.avaritia.infinity_ring.right_click_hint": "右鍵開啟操作。",
-  "gui.avaritia.infinity_ring.create_hint": "右鍵面板以建立此維度。",
   "gui.avaritia.infinity_bucket.clear_filter": "清除篩選",
-  "gui.avaritia.infinity_bucket.list_hint": "拿起生物桶，右鍵清單存入；流體容器在流體頁右鍵取放。"
+  "gui.avaritia.infinity_bucket.list_hint": "拿起生物桶，右鍵清單存入；拿起空桶右鍵生物取出。流體容器在流體頁右鍵取放。"
 }

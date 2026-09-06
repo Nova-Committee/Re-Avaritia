@@ -44,6 +44,7 @@ import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MobBucketItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -406,7 +407,7 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         if (!pLevel.mayInteract(pPlayer, hitPos) || !pPlayer.mayUseItemAt(hitPos, side, itemStack)) {
             return InteractionResultHolder.fail(itemStack);
         }
-        if (pLevel.getFluidState(hitPos).isSource()) {
+        if (!getControl(itemStack).creatureSelected() && pLevel.getFluidState(hitPos).isSource()) {
             if (tryCollectFromWorld(pPlayer, pLevel, itemStack, hitPos, side)) {
                 return InteractionResultHolder.success(itemStack);
             }
@@ -599,6 +600,79 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         setControl(proposed, getControl(proposed).selectCreature(creatures.size() - 1));
         copyStoredState(proposed, stack);
         return true;
+    }
+
+    /** Fills one empty bucket with a stored Bucketable creature and one bucket of its fluid. */
+    public static ItemStack tryExtractMobBucket(ItemStack stack, ItemStack destination, Player player, int creatureIndex) {
+        if (!(player.level() instanceof ServerLevel level) || !(stack.getItem() instanceof InfinityBucketItem)
+                || stack.getCount() != 1 || destination.getCount() != 1 || !destination.is(Items.BUCKET)) {
+            return ItemStack.EMPTY;
+        }
+        List<InfinityBucketCreature> creatures = getCreatures(stack);
+        if (creatureIndex < 0 || creatureIndex >= creatures.size()) {
+            return ItemStack.EMPTY;
+        }
+        InfinityBucketCreature creature = creatures.get(creatureIndex);
+        ItemStack filled = toMobBucket(creature, level);
+        if (filled.isEmpty() || !(filled.getItem() instanceof MobBucketItem mobBucket)) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack proposed = stack.copy();
+        FluidStack contained = new FluidStack(mobBucket.content, FluidType.BUCKET_VOLUME);
+        if (!contained.isEmpty()) {
+            InfinityBucketWrapper wrapper = new InfinityBucketWrapper(proposed);
+            FluidStack drained = wrapper.drain(contained, IFluidHandler.FluidAction.SIMULATE);
+            if (drained.getAmount() != contained.getAmount() || !FluidStack.isSameFluidSameComponents(drained, contained)) {
+                return ItemStack.EMPTY;
+            }
+            wrapper.drain(contained, IFluidHandler.FluidAction.EXECUTE);
+        }
+        List<InfinityBucketCreature> next = getCreatures(proposed);
+        if (creatureIndex >= next.size() || !next.get(creatureIndex).equals(creature)) {
+            return ItemStack.EMPTY;
+        }
+        next.remove(creatureIndex);
+        if (!trySetCreatures(proposed, next)) {
+            return ItemStack.EMPTY;
+        }
+        copyStoredState(proposed, stack);
+        return filled;
+    }
+
+    private static ItemStack toMobBucket(InfinityBucketCreature creature, ServerLevel level) {
+        Entity entity = creature.entityType().create(level);
+        try {
+            if (!(entity instanceof LivingEntity) || !(entity instanceof Bucketable bucketable)) {
+                return ItemStack.EMPTY;
+            }
+            CompoundTag tag = creature.entityData();
+            if (tag.contains(BUCKETABLE_DATA_KEY, Tag.TAG_COMPOUND)) {
+                bucketable.loadFromBucketTag(tag.getCompound(BUCKETABLE_DATA_KEY));
+            }
+            ItemStack filled = bucketable.getBucketItemStack();
+            if (tag.contains(BUCKETABLE_DATA_KEY, Tag.TAG_COMPOUND)) {
+                CompoundTag data = tag.getCompound(BUCKETABLE_DATA_KEY);
+                if (!data.isEmpty()) {
+                    filled.set(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(data.copy()));
+                }
+            } else {
+                bucketable.saveToBucketTag(filled);
+            }
+            if (tag.contains("CustomName", Tag.TAG_STRING)) {
+                try {
+                    Component name = Component.Serializer.fromJson(tag.getString("CustomName"), level.registryAccess());
+                    if (name != null) {
+                        filled.set(DataComponents.CUSTOM_NAME, name);
+                    }
+                } catch (RuntimeException ignored) {
+                }
+            }
+            return filled;
+        } finally {
+            if (entity != null) {
+                entity.discard();
+            }
+        }
     }
 
     @Nullable

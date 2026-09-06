@@ -51,6 +51,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     private static final int SEARCH_HEIGHT = 20;
     private static final int LIST_Y = SEARCH_Y + SEARCH_HEIGHT + 4;
     private static final int LIST_WIDTH = 232;
+    private static final int SEARCH_WIDTH = 244;
     private static final int ROW_HEIGHT = 18;
     private static final int VISIBLE_ROWS = 4;
     private static final int LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS;
@@ -104,7 +105,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         fluidsTab.active = creaturesTabActive;
         creaturesTab.active = !creaturesTabActive;
         Component searchTitle = Component.translatable("gui.avaritia.infinity_bucket.search");
-        searchBox = addRenderableWidget(new EditBox(font, leftPos + LIST_X, topPos + SEARCH_Y, LIST_WIDTH, SEARCH_HEIGHT, searchTitle));
+        searchBox = addRenderableWidget(new EditBox(font, leftPos + LIST_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT, searchTitle));
         searchBox.setMaxLength(64);
         searchBox.setHint(searchTitle);
         searchBox.setValue(query);
@@ -305,6 +306,10 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             return true;
         }
         if (creaturesTabActive) {
+            if (row != null && row.creature != null && carried.is(Items.BUCKET)) {
+                sendAction(InfinityBucketMenu.ACTION_EXTRACT_CREATURE + row.index);
+                return true;
+            }
             return false;
         }
         IFluidHandlerItem handler = FluidUtil.getFluidHandler(carried.copyWithCount(1)).orElse(null);
