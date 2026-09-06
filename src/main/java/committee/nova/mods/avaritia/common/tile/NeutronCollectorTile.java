@@ -19,6 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -172,8 +173,8 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
         this.setChangedAndDispatch();
 
         // 同步给客户端
-        if (!this.level.isClientSide()) {
-            NetworkHandler.sendSideConfigSync(this.worldPosition, config);
+        if (this.level instanceof ServerLevel serverLevel) {
+            NetworkHandler.sendSideConfigSync(serverLevel, this.worldPosition, config);
         }
     }
 
@@ -203,8 +204,8 @@ public class NeutronCollectorTile extends BaseInventoryTileEntity implements ITi
         this.setChangedAndDispatch();
 
         // 同步给客户端
-        if (!this.level.isClientSide()) {
-            NetworkHandler.sendSideConfigSync(this.worldPosition, sideConfig);
+        if (this.level instanceof ServerLevel serverLevel) {
+            NetworkHandler.sendSideConfigSync(serverLevel, this.worldPosition, sideConfig);
         }
     }
 

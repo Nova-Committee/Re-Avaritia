@@ -10,6 +10,7 @@ import committee.nova.mods.avaritia.init.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
@@ -23,11 +24,22 @@ public class NoConsumeCatalystShapedRecipe extends ShapedTableCraftingRecipe {
 
     @Override
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull TierInput inventory) {
-        NonNullList<ItemStack> remaining = super.getRemainingItems(inventory);
+        return retainSingleCatalyst(
+                inventory,
+                super.getRemainingItems(inventory),
+                ModItems.infinity_catalyst.get()
+        );
+    }
+
+    static NonNullList<ItemStack> retainSingleCatalyst(
+            TierInput inventory,
+            NonNullList<ItemStack> remaining,
+            Item catalyst
+    ) {
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getItem(i);
-            if (stack.is(ModItems.infinity_catalyst.get())) {
-                remaining.set(i, stack.copy());
+            if (stack.is(catalyst)) {
+                remaining.set(i, stack.copyWithCount(1));
             }
         }
         return remaining;

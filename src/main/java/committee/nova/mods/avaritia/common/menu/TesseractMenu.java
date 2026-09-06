@@ -380,8 +380,7 @@ public class TesseractMenu extends AbstractContainerMenu {
                 FluidStack resultFluidStack = iFluidHandlerItem.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
 
                 if (iFluidHandlerItem instanceof FluidBucketWrapper) {
-                    channel.addFluid(resultFluidStack);
-                    setCarried(new ItemStack(Items.BUCKET));
+                    emptyBucketIntoChannel(resultFluidStack);
                     canal.set(true);
                     return;
                 }
@@ -436,6 +435,15 @@ public class TesseractMenu extends AbstractContainerMenu {
             });
             if (canal.get()) return;
             channel.addItem(carried);
+        }
+    }
+
+    private void emptyBucketIntoChannel(FluidStack fluid) {
+        int amount = fluid.getAmount();
+        // Buckets are indivisible; require full capacity and acceptance before replacing the carried bucket.
+        if (amount > 0 && channel.canStorageRealAmount(fluid) >= amount
+                && channel.addFluid(fluid) == amount) {
+            setCarried(new ItemStack(Items.BUCKET));
         }
     }
 
@@ -620,8 +628,8 @@ public class TesseractMenu extends AbstractContainerMenu {
             Optional.ofNullable(carried.getCapability(Capabilities.FluidHandler.ITEM)).ifPresent(iFluidHandlerItem -> {
                 FluidStack resultFluidStack = iFluidHandlerItem.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
                 if (iFluidHandlerItem instanceof FluidBucketWrapper) {
-                    channel.addFluid(resultFluidStack);
-                    setCarried(new ItemStack(Items.BUCKET));
+                    emptyBucketIntoChannel(resultFluidStack);
+                    canal.set(true);
                     return;
                 }
                 if (!resultFluidStack.isEmpty()) {

@@ -9,6 +9,8 @@ import committee.nova.mods.avaritia.common.net.channel.*;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -28,6 +30,12 @@ public class NetworkHandler {
 
         registrar.playToClient(S2CSingularitiesPack.TYPE, S2CSingularitiesPack.STREAM_CODEC,
                 new S2CSingularitiesPack.Handler());
+        registrar.playToClient(S2CInfinityRingOpenPack.TYPE, S2CInfinityRingOpenPack.STREAM_CODEC,
+                new S2CInfinityRingOpenPack.Handler());
+        registrar.playToClient(S2CUpdateDimensionsPack.TYPE, S2CUpdateDimensionsPack.STREAM_CODEC,
+                new S2CUpdateDimensionsPack.Handler());
+        registrar.playToClient(S2CNeutronRingOpenPack.TYPE, S2CNeutronRingOpenPack.STREAM_CODEC,
+                new S2CNeutronRingOpenPack.Handler());
         registrar.playToClient(S2CTotemPack.TYPE, S2CTotemPack.STREAM_CODEC,
                 new S2CTotemPack.Handler());
         registrar.playToClient(S2CSideConfigSyncPacket.TYPE, S2CSideConfigSyncPacket.STREAM_CODEC,
@@ -45,6 +53,10 @@ public class NetworkHandler {
 
         registrar.playToServer(C2SSetTimePacket.TYPE, C2SSetTimePacket.STREAM_CODEC,
                 new C2SSetTimePacket.Handler());
+        registrar.playToServer(C2SInfinityRingPack.TYPE, C2SInfinityRingPack.STREAM_CODEC,
+                new C2SInfinityRingPack.Handler());
+        registrar.playToServer(C2SNeutronRingPack.TYPE, C2SNeutronRingPack.STREAM_CODEC,
+                new C2SNeutronRingPack.Handler());
         registrar.playToServer(C2SSideConfigPacket.TYPE, C2SSideConfigPacket.STREAM_CODEC,
                 new C2SSideConfigPacket.Handler());
         registrar.playToServer(C2SCompressorLockPacket.TYPE, C2SCompressorLockPacket.STREAM_CODEC,
@@ -100,7 +112,8 @@ public class NetworkHandler {
         PacketDistributor.sendToServer(new C2SSideConfigPacket(blockPos, sideConfig));
     }
 
-    public static void sendSideConfigSync(BlockPos pos, SideConfiguration sideConfig) {
-        PacketDistributor.sendToAllPlayers(new S2CSideConfigSyncPacket(pos, sideConfig));
+    public static void sendSideConfigSync(ServerLevel level, BlockPos pos, SideConfiguration sideConfig) {
+        PacketDistributor.sendToPlayersTrackingChunk(level, new ChunkPos(pos),
+                new S2CSideConfigSyncPacket(pos, sideConfig));
     }
 }

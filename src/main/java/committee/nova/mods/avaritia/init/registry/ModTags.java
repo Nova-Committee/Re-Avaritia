@@ -37,4 +37,5 @@ public class ModTags {
     public static final TagKey<Block> NEEDS_INFINITY_TOOL = BlockTags.create(Const.rl("needs_infinity_tool"));
 
     public static final TagKey<EntityType<?>> NEUTRAL_CREATURES = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c","neutral_creatures"));
+    public static final TagKey<EntityType<?>> INFINITY_BUCKET_AQUATIC = TagKey.create(Registries.ENTITY_TYPE, Const.rl("infinity_bucket_aquatic"));
 }

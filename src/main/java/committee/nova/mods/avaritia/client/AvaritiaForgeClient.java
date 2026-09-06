@@ -2,6 +2,7 @@ package committee.nova.mods.avaritia.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import committee.nova.mods.avaritia.Const;
+import committee.nova.mods.avaritia.common.net.C2SOpenRingPack;
 import committee.nova.mods.avaritia.api.iface.IFilterItem;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.ItemFilterScreen;
@@ -56,12 +57,9 @@ public class AvaritiaForgeClient {
     public static boolean inventoryRender = false;
     private static float darknessIntensity = 0.0f;
     private static boolean keepFlying = false;
-
-    // region 定义按键绑定
     public static final KeyMapping FILTER_KEY = new KeyMapping("key.avaritia.filter", InputConstants.KEY_H, CATEGORIES);
     public static final KeyMapping RING_KEY = new KeyMapping("key.avaritia.neutron_ring", InputConstants.KEY_N, CATEGORIES);
     public static final KeyMapping CONFIG_KEY = new KeyMapping("key.avaritia.config", InputConstants.KEY_O, CATEGORIES);
-    // endregion
 
     /**
      * 在客户端Tick事件触发时执行
@@ -79,6 +77,9 @@ public class AvaritiaForgeClient {
             mc.setScreen(new AvaritiaConfigScreen(mc.screen));
         }
 
+        while (RING_KEY.consumeClick()) {
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(new C2SOpenRingPack());
+        }
         // region filter 过滤界面
         while (FILTER_KEY.consumeClick()) {
             if (!player.getMainHandItem().isEmpty() && player.getMainHandItem().getItem() instanceof IFilterItem) {
@@ -292,3 +293,4 @@ public class AvaritiaForgeClient {
 
 
 }
+

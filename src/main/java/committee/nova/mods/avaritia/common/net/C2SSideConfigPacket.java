@@ -3,7 +3,6 @@ package committee.nova.mods.avaritia.common.net;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
-import committee.nova.mods.avaritia.init.handler.NetworkHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -60,8 +59,6 @@ public record C2SSideConfigPacket(BlockPos pos, SideConfiguration sideConfig) im
                             // 标记方块实体为已更改，触发保存
                             tileIO.setIOChange();
 
-                            // 同步给附近的所有玩家
-                            NetworkHandler.sendSideConfigSync(packet.pos, packet.sideConfig);
                         }
                     }
                 }

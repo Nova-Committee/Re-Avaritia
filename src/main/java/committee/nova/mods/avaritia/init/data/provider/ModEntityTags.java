@@ -33,7 +33,6 @@ public class ModEntityTags extends EntityTypeTagsProvider {
         return "Avaritia Entity Type Tags";
     }
 
-    @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         //vanilla
         tag(EntityTypeTags.IMPACT_PROJECTILES).add(ModEntities.ENDER_PEARL.get());
@@ -42,5 +41,8 @@ public class ModEntityTags extends EntityTypeTagsProvider {
                 tag(ModTags.NEUTRAL_CREATURES).add(entityType);
             }
         });
+        tag(ModTags.INFINITY_BUCKET_AQUATIC)
+                .addTag(EntityTypeTags.AQUATIC)
+                .add(net.minecraft.world.entity.EntityType.SQUID, net.minecraft.world.entity.EntityType.GLOW_SQUID, net.minecraft.world.entity.EntityType.DOLPHIN);
     }
 }
