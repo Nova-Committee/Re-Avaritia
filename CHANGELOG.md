@@ -10,9 +10,10 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * Support immediate shield blocking, full-speed movement and sprinting while blocking, damage reflection, projectile deflection, and floating-mode fall protection.
 * Preserve piercing-arrow bypass and suppress shield interaction vibrations, matching the 26.1.2 use effects.
 * Bind Neutron Ring captured spaces to the player UUID so a replacement ring still opens the same library. N opens the matching ring from main hand, offhand, curios, then inventory.
-* Rebuild the Neutron Ring GUI: left list, solid 3D column preview with drag rotation, click-to-select, and right-click rename/delete via OperationMenu.
-* Infinity Ring control/create screens with World/Access tabs, player-name suggestions, and right-click roster actions including unban for banned entries.
-* Infinity Bucket management menu on Shift + right-click, with fluid/creature tabs, search, selected output, confirmed delete/clear, force-placement toggle, and portable-container transfer in both directions. Right-click a fluid source to collect, a non-source block to output the selected fluid or release a selected creature into water, and air misses do nothing. Capture eligible aquatic creatures independently of placement.
+* Rebuild the Neutron Ring GUI with vanilla panels, a left library, and a solid 3D preview with drag rotation and scroll zoom. Left-click previews only; selection, deselection, rename, delete, search, and preview reset use right-click menus.
+* Use vanilla-styled Infinity Ring control/create screens with World/Access tabs and player-name suggestions. Move world/access edits, creation, player search, and roster management into right-click menus.
+* Infinity Bucket management on Shift + right-click uses vanilla panels and fluid/creature lists, with no transfer slot. Pick up a portable fluid container and right-click the list to deposit, or a fluid row to extract; search and confirmed delete/clear are right-click actions. Right-click a fluid source in the world to collect, a non-source block to output the selected fluid or release a selected creature into water, and air misses do nothing.
+* Always ignore terrain placement restrictions, including Nether water vaporization, without a GUI toggle. Preserve edit permissions, placement-event cancellation and rollback, and solid-target protection; legacy saved force flags are ignored.
 * Capture eligible aquatic creatures (Bucketable, aquatic tags, squid/dolphin) while excluding players, bosses, capturing-not-supported targets, and mounted graphs; release into existing water with full entity data.
 
 
@@ -20,6 +21,8 @@ All notable changes to this project will be documented in this file，ChangeLog 
 
 * Persist complete FluidStack id, amount, and components on the Infinity Bucket, migrating legacy Id/Amount entries without merging distinct component patches.
 * Reject stacked Infinity Bucket fluid fills and empty resources independently for both simulation and execution.
+* Preserve the selected Infinity Bucket output when earlier list entries are removed. Reject stale menu ownership and conserve stacked containers during direct cursor transfers.
+* Let prompt suggestions coexist with Enter submission, one-click confirmation, and keyboard-focused cancellation.
 
 
 * Replace vanilla block drops when blaze-tool auto-smelting is enabled instead of spawning an additional set of drops. Convert the already-enchanted loot quantity by the smelting recipe ratio, without random skips or a second Fortune roll.

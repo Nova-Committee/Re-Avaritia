@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreview;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -18,8 +19,8 @@ public final class NeutronSpacePreviewRenderer {
     }
 
     public static void draw(GuiGraphics graphics, NeutronSpacePreview preview, int x, int y, int w, int h,
-                            float yaw, float pitch) {
-        graphics.fill(x, y, x + w, y + h, 0xFF101010);
+                            float yaw, float pitch, float zoom) {
+        graphics.fill(x, y, x + w, y + h, PortableUi.INSET_BG);
         graphics.flush();
         int sizeX = Math.max(1, preview.sizeX());
         int sizeZ = Math.max(1, preview.sizeZ());
@@ -31,7 +32,13 @@ public final class NeutronSpacePreviewRenderer {
         var pose = graphics.pose();
         pose.pushPose();
         pose.translate(x + w / 2.0F, y + h / 2.0F, 150.0F);
-        float scale = Math.min(w, h) / (Math.max(Math.max(sizeX, sizeZ), maxH) + 3.0F);
+        float sinYaw = Math.abs((float) Math.sin(Math.toRadians(yaw)));
+        float cosYaw = Math.abs((float) Math.cos(Math.toRadians(yaw)));
+        float projectedWidth = cosYaw * sizeX + sinYaw * sizeZ;
+        float projectedHeight = Math.abs((float) Math.cos(Math.toRadians(pitch))) * maxH
+                + Math.abs((float) Math.sin(Math.toRadians(pitch))) * (sinYaw * sizeX + cosYaw * sizeZ);
+        float scale = zoom * Math.min(Math.max(1, w - 12) / Math.max(1, projectedWidth),
+                Math.max(1, h - 12) / Math.max(1, projectedHeight));
         pose.mulPose(Axis.ZP.rotationDegrees(180.0F));
         pose.scale(scale, scale, scale);
         pose.mulPose(Axis.XP.rotationDegrees(pitch));

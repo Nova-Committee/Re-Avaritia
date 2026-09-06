@@ -2,97 +2,106 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.component.InfinityBucketControl;
 import committee.nova.mods.avaritia.common.component.InfinityBucketCreature;
+import committee.nova.mods.avaritia.common.component.InfinityBucketCreatures;
+import committee.nova.mods.avaritia.common.component.InfinityBucketFluids;
 import committee.nova.mods.avaritia.common.item.misc.InfinityBucketItem;
 import committee.nova.mods.avaritia.common.menu.InfinityBucketMenu;
+import committee.nova.mods.avaritia.init.registry.ModDataComponents;
+import committee.nova.mods.avaritia.init.registry.ModItems;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu> {
-    private static final ResourceLocation INVENTORY_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
     private static final int LIST_X = 8;
-    private static final int LIST_Y = 40;
-    private static final int LIST_WIDTH = 152;
+    private static final int LIST_Y = 44;
+    private static final int LIST_WIDTH = 232;
     private static final int ROW_HEIGHT = 18;
-    private static final int VISIBLE_ROWS = 3;
-    private static final int LIST_HEIGHT = VISIBLE_ROWS * ROW_HEIGHT;
-    private static final int SELECTED_Y = 96;
-    private static final int ACTION_Y = 112;
-    private static final int DELETE_Y = 128;
-    private static final int TRANSFER_SLOT_X = 152;
-    private static final int TRANSFER_SLOT_Y = 128;
+    private static final int VISIBLE_ROWS = 5;
+    private static final int LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS;
+    private static final int SCROLL_X = 244;
+    private static final int SCROLL_WIDTH = 6;
+    private static final Component SELECTED = Component.translatable("gui.avaritia.infinity_bucket.selected");
+    private static final Component HINT = Component.translatable("gui.avaritia.infinity_bucket.list_hint");
 
-    private EditBox searchBox;
+    private final DecimalFormat amountFormat = new DecimalFormat();
+    private final OperationMenu contextMenu = new OperationMenu();
+    private final List<Row> rows = new ArrayList<>();
+    private final Map<EntityType<?>, ItemStack> creatureIcons = new HashMap<>();
     private SimpleScrollBar scrollBar;
     private Button fluidsTab;
     private Button creaturesTab;
-    private Button forceButton;
-    private Button deleteButton;
-    private Button clearButton;
-    private Button transferInButton;
-    private Button transferOutButton;
     private boolean creaturesTabActive;
+    private String query = "";
     private double scroll;
-    private int pendingConfirm;
-    private String lastQuery = "";
+    private int focusedIndex = -1;
+    private boolean cacheValid;
+    private InfinityBucketFluids cachedFluids;
+    private InfinityBucketCreatures cachedCreatures;
+    private InfinityBucketControl control = InfinityBucketControl.DEFAULT;
+    private int sourceCount;
+
+    private Modal modal = Modal.NONE;
+    private Component modalTitle = CommonComponents.EMPTY;
+    private Component modalMessage = CommonComponents.EMPTY;
+    private String searchDraft = "";
+    private EditBox modalInput;
+    private Button modalAccept;
+    private Button modalCancel;
+    private DeleteTarget deleteTarget;
+    private int modalX;
+    private int modalY;
+    private int modalWidth;
+    private int modalHeight;
 
     public InfinityBucketScreen(InfinityBucketMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, null, 176, 240, 256, 256);
-        this.inventoryLabelY = 147;
-        this.titleLabelY = 5;
+        super(menu, inventory, title, null, 260, 240, 256, 256);
+        inventoryLabelX = InfinityBucketMenu.PLAYER_INV_X;
+        inventoryLabelY = InfinityBucketMenu.PLAYER_INV_Y - 12;
     }
 
     @Override
     protected void subInit() {
-        searchBox = new EditBox(font, leftPos + 8, topPos + 28, 160, 10, Component.translatable("gui.avaritia.infinity_bucket.search"));
-        searchBox.setMaxLength(64);
-        searchBox.setBordered(true);
-        addRenderableWidget(searchBox);
-
-        fluidsTab = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.infinity_bucket.tab.fluids"), button -> {
-            creaturesTabActive = false;
-            pendingConfirm = 0;
-            scroll = 0;
-        }).bounds(leftPos + 8, topPos + 15, 70, 12).build());
-        creaturesTab = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.infinity_bucket.tab.creatures"), button -> {
-            creaturesTabActive = true;
-            pendingConfirm = 0;
-            scroll = 0;
-        }).bounds(leftPos + 80, topPos + 15, 88, 12).build());
-
-        forceButton = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.infinity_bucket.force"),
-                button -> sendAction(InfinityBucketMenu.ACTION_TOGGLE_FORCE)).bounds(leftPos + 8, topPos + ACTION_Y, 76, 14).build());
-        deleteButton = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.infinity_bucket.delete"),
-                button -> confirmOrSend(InfinityBucketMenu.ACTION_DELETE)).bounds(leftPos + 8, topPos + DELETE_Y, 52, 14).build());
-        clearButton = addRenderableWidget(Button.builder(Component.translatable("gui.avaritia.infinity_bucket.clear"),
-                button -> confirmOrSend(InfinityBucketMenu.ACTION_CLEAR)).bounds(leftPos + 62, topPos + DELETE_Y, 52, 14).build());
-        transferInButton = addRenderableWidget(Button.builder(Component.literal("<<"),
-                button -> sendAction(InfinityBucketMenu.ACTION_TRANSFER_IN)).bounds(leftPos + 116, topPos + DELETE_Y, 14, 14).build());
-        transferInButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.infinity_bucket.transfer.in")));
-        transferOutButton = addRenderableWidget(Button.builder(Component.literal(">>"),
-                button -> sendAction(InfinityBucketMenu.ACTION_TRANSFER_OUT)).bounds(leftPos + 132, topPos + DELETE_Y, 14, 14).build());
-        transferOutButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.infinity_bucket.transfer.out")));
-
-        scrollBar = new SimpleScrollBar(leftPos + 162, topPos + LIST_Y, 6, LIST_HEIGHT) {
+        contextMenu.close();
+        fluidsTab = addRenderableWidget(PortableUi.button(leftPos + 8, topPos + 24, 114, 16,
+                Component.translatable("gui.avaritia.infinity_bucket.tab.fluids"), button -> switchTab(false)));
+        creaturesTab = addRenderableWidget(PortableUi.button(leftPos + 126, topPos + 24, 126, 16,
+                Component.translatable("gui.avaritia.infinity_bucket.tab.creatures"), button -> switchTab(true)));
+        fluidsTab.active = creaturesTabActive;
+        creaturesTab.active = !creaturesTabActive;
+        scrollBar = new SimpleScrollBar(leftPos + SCROLL_X, topPos + LIST_Y, SCROLL_WIDTH, LIST_HEIGHT) {
             @Override
             public void draggedTo(double scrolledOn) {
                 scroll = scrolledOn;
@@ -103,261 +112,516 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             }
         };
         addRenderableWidget(scrollBar);
-        updateButtons();
+        cacheValid = false;
+        ensureCache();
+        layoutModal();
     }
 
-    private void confirmOrSend(int action) {
-        if (pendingConfirm == action) {
-            pendingConfirm = 0;
-            sendAction(action);
-            updateButtons();
-            return;
+    private void switchTab(boolean creatures) {
+        if (creaturesTabActive != creatures) {
+            creaturesTabActive = creatures;
+            focusedIndex = -1;
+            scroll = 0;
+            cacheValid = false;
+            contextMenu.close();
+            fluidsTab.active = creatures;
+            creaturesTab.active = !creatures;
         }
-        pendingConfirm = action;
-        updateButtons();
+    }
+
+    private boolean canOperate() {
+        // Slot synchronization replaces client stack instances. Reference ownership stays on the server.
+        ItemStack bucket = menu.getBucket();
+        return bucket.is(ModItems.infinity_bucket.get()) && bucket.getCount() == 1;
     }
 
     private void sendAction(int id) {
-        if (minecraft != null && minecraft.gameMode != null) {
+        if (canOperate() && minecraft != null && minecraft.gameMode != null) {
             minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
         }
-        pendingConfirm = 0;
-        updateButtons();
     }
 
-    private ItemStack bucket() {
-        return menu.getBucket();
-    }
-
-    private List<FluidStack> filteredFluids() {
-        String query = searchBox == null ? "" : searchBox.getValue().toLowerCase(Locale.ROOT);
-        List<FluidStack> fluids = InfinityBucketItem.getFluids(bucket());
-        if (query.isEmpty()) {
-            return fluids;
+    private void ensureCache() {
+        ItemStack bucket = menu.getBucket();
+        InfinityBucketFluids fluids = bucket.getOrDefault(ModDataComponents.INFINITY_BUCKET_FLUIDS.get(), InfinityBucketFluids.EMPTY);
+        InfinityBucketCreatures creatures = bucket.getOrDefault(ModDataComponents.INFINITY_BUCKET_CREATURES.get(), InfinityBucketCreatures.EMPTY);
+        control = InfinityBucketItem.getControl(bucket);
+        if (cacheValid && fluids == cachedFluids && creatures == cachedCreatures) {
+            return;
         }
-        List<FluidStack> filtered = new ArrayList<>();
-        for (FluidStack fluid : fluids) {
-            String name = fluid.getHoverName().getString().toLowerCase(Locale.ROOT);
-            String id = InfinityBucketItem.getFluidName(fluid).toLowerCase(Locale.ROOT);
-            if (name.contains(query) || id.contains(query)) {
-                filtered.add(fluid);
+        if (fluids != cachedFluids || creatures != cachedCreatures) {
+            contextMenu.close();
+        }
+        cachedFluids = fluids;
+        cachedCreatures = creatures;
+        rows.clear();
+        String filter = query.toLowerCase(Locale.ROOT);
+        if (creaturesTabActive) {
+            sourceCount = creatures.size();
+            for (int i = 0; i < creatures.size(); i++) {
+                InfinityBucketCreature creature = creatures.creatures().get(i);
+                Component name = creature.displayName();
+                String id = creature.typeId().toString();
+                if (matches(filter, name, id)) {
+                    ItemStack icon = creatureIcons.computeIfAbsent(creature.entityType(), type -> {
+                        SpawnEggItem egg = SpawnEggItem.byId(type);
+                        return new ItemStack(egg != null ? egg : Items.WATER_BUCKET);
+                    });
+                    rows.add(new Row(i, null, creature, name, Component.literal(id), id, icon));
+                }
+            }
+        } else {
+            sourceCount = fluids.size();
+            for (int i = 0; i < fluids.size(); i++) {
+                FluidStack fluid = fluids.fluids().get(i);
+                Component name = fluid.getHoverName();
+                String id = InfinityBucketItem.getFluidName(fluid);
+                if (matches(filter, name, id)) {
+                    rows.add(new Row(i, fluid, null, name,
+                            Component.literal(amountFormat.format(fluid.getAmount()) + " mB"), id, ItemStack.EMPTY));
+                }
             }
         }
-        return filtered;
-    }
-
-    private List<IndexedCreature> filteredCreatures() {
-        String query = searchBox == null ? "" : searchBox.getValue().toLowerCase(Locale.ROOT);
-        List<InfinityBucketCreature> creatures = InfinityBucketItem.getCreatures(bucket());
-        List<IndexedCreature> filtered = new ArrayList<>();
-        for (int i = 0; i < creatures.size(); i++) {
-            InfinityBucketCreature creature = creatures.get(i);
-            String name = creature.displayName().getString().toLowerCase(Locale.ROOT);
-            String id = creature.typeId().toString().toLowerCase(Locale.ROOT);
-            if (query.isEmpty() || name.contains(query) || id.contains(query)) {
-                filtered.add(new IndexedCreature(i, creature));
-            }
+        cacheValid = true;
+        if (rows.size() <= VISIBLE_ROWS) {
+            scroll = 0;
         }
-        return filtered;
+        scrollBar.setScrolledOn(scroll);
+        scrollBar.setScrollTagSize(rows.size() <= VISIBLE_ROWS ? LIST_HEIGHT
+                : Math.max(8, LIST_HEIGHT * VISIBLE_ROWS / (double) rows.size()));
     }
 
-    private int filteredCount() {
-        return creaturesTabActive ? filteredCreatures().size() : filteredFluids().size();
+    private static boolean matches(String filter, Component name, String id) {
+        return filter.isEmpty() || name.getString().toLowerCase(Locale.ROOT).contains(filter)
+                || id.toLowerCase(Locale.ROOT).contains(filter);
+    }
+
+    private boolean active(Row row) {
+        return control.creatureSelected() == (row.creature != null) && control.selectedIndex() == row.index;
     }
 
     private int rowStart() {
-        int extra = Math.max(0, filteredCount() - VISIBLE_ROWS);
-        return extra == 0 ? 0 : (int) Math.round(scroll * extra);
+        return (int) Math.round(scroll * Math.max(0, rows.size() - VISIBLE_ROWS));
     }
 
-    private void updateButtons() {
-        ItemStack bucket = bucket();
-        InfinityBucketControl control = InfinityBucketItem.getControl(bucket);
-        if (forceButton != null) {
-            forceButton.setTooltip(Tooltip.create(Component.translatable(control.forcePlacement()
-                    ? "gui.avaritia.infinity_bucket.force.on"
-                    : "gui.avaritia.infinity_bucket.force.off")));
-            fluidsTab.active = creaturesTabActive;
-            creaturesTab.active = !creaturesTabActive;
-            deleteButton.setMessage(Component.translatable(pendingConfirm == InfinityBucketMenu.ACTION_DELETE
-                    ? "gui.avaritia.infinity_bucket.delete.confirm"
-                    : "gui.avaritia.infinity_bucket.delete"));
-            clearButton.setMessage(Component.translatable(pendingConfirm == InfinityBucketMenu.ACTION_CLEAR
-                    ? "gui.avaritia.infinity_bucket.clear.confirm"
-                    : "gui.avaritia.infinity_bucket.clear"));
+    @Nullable
+    private Row hoveredRow(double mouseX, double mouseY) {
+        if (mouseX < leftPos + LIST_X || mouseX >= leftPos + LIST_X + LIST_WIDTH
+                || mouseY < topPos + LIST_Y || mouseY >= topPos + LIST_Y + LIST_HEIGHT) {
+            return null;
         }
+        int index = rowStart() + (int) ((mouseY - topPos - LIST_Y) / ROW_HEIGHT);
+        return index < rows.size() ? rows.get(index) : null;
+    }
+
+    private boolean insideList(double mouseX, double mouseY) {
+        return mouseX >= leftPos + LIST_X && mouseX < leftPos + SCROLL_X + SCROLL_WIDTH
+                && mouseY >= topPos + LIST_Y && mouseY < topPos + LIST_Y + LIST_HEIGHT;
     }
 
     @Override
-    protected void containerTick() {
-        super.containerTick();
-        String query = searchBox.getValue();
-        if (!query.equals(lastQuery)) {
-            lastQuery = query;
-            scroll = 0;
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        ensureCache();
+        super.render(graphics, mouseX, mouseY, partialTick);
+        if (!overlayOpen()) {
+            Row row = hoveredRow(mouseX, mouseY);
+            if (row != null) {
+                graphics.renderComponentTooltip(font, active(row) ? row.activeTooltip : row.tooltip, mouseX, mouseY);
+            }
         }
-        updateButtons();
+        renderModal(graphics, mouseX, mouseY, partialTick);
+        contextMenu.render(graphics, font, mouseX, mouseY);
     }
 
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + 154, 0xFF2B2B2B);
-        graphics.fill(leftPos + LIST_X - 1, topPos + LIST_Y - 1, leftPos + LIST_X + LIST_WIDTH + 1, topPos + LIST_Y + LIST_HEIGHT + 1, 0xFF101010);
-        graphics.fill(leftPos + TRANSFER_SLOT_X - 1, topPos + TRANSFER_SLOT_Y - 1,
-                leftPos + TRANSFER_SLOT_X + 17, topPos + TRANSFER_SLOT_Y + 17, 0xFF8B8B8B);
-        graphics.fill(leftPos + TRANSFER_SLOT_X, topPos + TRANSFER_SLOT_Y,
-                leftPos + TRANSFER_SLOT_X + 16, topPos + TRANSFER_SLOT_Y + 16, 0xFF373737);
-        graphics.blit(INVENTORY_TEXTURE, leftPos, topPos + 144, 0, 126, 176, 96, 256, 256);
+        PortableUi.panel(graphics, leftPos, topPos, imageWidth, imageHeight);
+        PortableUi.header(graphics, font, title, leftPos, topPos, imageWidth);
+        PortableUi.inset(graphics, leftPos + LIST_X - 1, topPos + LIST_Y - 1, LIST_WIDTH + 2, LIST_HEIGHT + 2);
+        for (Slot slot : menu.slots) {
+            if (slot.isActive()) {
+                PortableUi.slot(graphics, leftPos + slot.x - 1, topPos + slot.y - 1);
+            }
+        }
     }
 
     @Override
     protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 0xFFFFFF, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+        PortableUi.text(graphics, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 164, PortableUi.MUTED);
     }
 
     @Override
     protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        ItemStack bucket = bucket();
-        InfinityBucketControl control = InfinityBucketItem.getControl(bucket);
-        DecimalFormat format = new DecimalFormat();
+        int x = leftPos + LIST_X;
+        int y = topPos + LIST_Y;
+        if (rows.isEmpty()) {
+            Component empty = Component.translatable(sourceCount == 0
+                    ? "gui.avaritia.infinity_bucket.empty" : "gui.avaritia.infinity_bucket.no_results");
+            graphics.drawCenteredString(font, empty, x + LIST_WIDTH / 2, y + 24, PortableUi.TEXT);
+            graphics.drawWordWrap(font, HINT, x + 12, y + 42, LIST_WIDTH - 24, PortableUi.MUTED);
+            return;
+        }
+        graphics.enableScissor(x, y, x + LIST_WIDTH, y + LIST_HEIGHT);
         int start = rowStart();
-        if (creaturesTabActive) {
-            List<IndexedCreature> creatures = filteredCreatures();
-            for (int row = 0; row < VISIBLE_ROWS; row++) {
-                int index = start + row;
-                if (index >= creatures.size()) {
-                    break;
-                }
-                IndexedCreature entry = creatures.get(index);
-                int y = topPos + LIST_Y + row * ROW_HEIGHT;
-                boolean selected = control.creatureSelected() && control.selectedIndex() == entry.index;
-                if (selected) {
-                    graphics.fill(leftPos + LIST_X, y, leftPos + LIST_X + LIST_WIDTH, y + ROW_HEIGHT, 0x6655FFFF);
-                }
-                renderCreatureIcon(graphics, entry.creature, leftPos + LIST_X, y);
-                graphics.drawString(font, font.plainSubstrByWidth(entry.creature.displayName().getString(), 90), leftPos + LIST_X + 18, y + 1, 0xFFFFFF, false);
-                graphics.drawString(font, font.plainSubstrByWidth(entry.creature.typeId().toString(), 130), leftPos + LIST_X + 18, y + 10, 0xAAAAAA, false);
-            }
-        } else {
-            List<FluidStack> fluids = filteredFluids();
-            List<FluidStack> all = InfinityBucketItem.getFluids(bucket);
-            for (int row = 0; row < VISIBLE_ROWS; row++) {
-                int index = start + row;
-                if (index >= fluids.size()) {
-                    break;
-                }
-                FluidStack fluid = fluids.get(index);
-                int y = topPos + LIST_Y + row * ROW_HEIGHT;
-                int realIndex = indexOfFluid(all, fluid);
-                boolean selected = !control.creatureSelected() && realIndex == control.selectedIndex();
-                if (selected) {
-                    graphics.fill(leftPos + LIST_X, y, leftPos + LIST_X + LIST_WIDTH, y + ROW_HEIGHT, 0x6655FFFF);
-                }
-                FluidItemRender.renderFluid(fluid, graphics.pose(), leftPos + LIST_X, y, 0);
-                graphics.drawString(font, font.plainSubstrByWidth(fluid.getHoverName().getString(), 80), leftPos + LIST_X + 18, y + 1, 0xFFFFFF, false);
-                graphics.drawString(font, format.format(fluid.getAmount()) + " mB", leftPos + LIST_X + 18, y + 10, 0xAAAAAA, false);
+        for (int i = 0; i < VISIBLE_ROWS && start + i < rows.size(); i++) {
+            Row row = rows.get(start + i);
+            int top = y + i * ROW_HEIGHT;
+            boolean hovered = !overlayOpen() && hoveredRow(mouseX, mouseY) == row;
+            PortableUi.row(graphics, x, top, LIST_WIDTH, ROW_HEIGHT, hovered, row.index == focusedIndex);
+            PortableUi.text(graphics, font, row.name, x + 20, top + 1, LIST_WIDTH - 24, PortableUi.TEXT);
+            PortableUi.text(graphics, font, active(row) ? row.activeDetail : row.detail,
+                    x + 20, top + 10, LIST_WIDTH - 24, PortableUi.MUTED);
+        }
+        graphics.flush();
+        for (int i = 0; i < VISIBLE_ROWS && start + i < rows.size(); i++) {
+            Row row = rows.get(start + i);
+            int top = y + i * ROW_HEIGHT;
+            if (row.fluid != null) {
+                FluidItemRender.renderFluid(row.fluid, graphics.pose(), x + 1, top + 1, 0);
+            } else {
+                graphics.renderItem(row.icon, x + 1, top + 1);
             }
         }
-
-        Component selectedLabel = Component.translatable("gui.avaritia.infinity_bucket.selected");
-        graphics.drawString(font, selectedLabel, leftPos + 8, topPos + SELECTED_Y + 4, 0xFFFFFF, false);
-        if (control.creatureSelected()) {
-            InfinityBucketCreature creature = InfinityBucketItem.getSelectedCreature(bucket);
-            if (creature != null) {
-                renderCreatureIcon(graphics, creature, leftPos + 70, topPos + SELECTED_Y);
-                graphics.drawString(font, font.plainSubstrByWidth(creature.displayName().getString(), 80), leftPos + 88, topPos + SELECTED_Y + 4, 0xFFFFFF, false);
-            } else {
-                graphics.drawString(font, Component.translatable("gui.avaritia.infinity_bucket.empty"), leftPos + 70, topPos + SELECTED_Y + 4, 0xAAAAAA, false);
-            }
-        } else {
-            FluidStack selected = InfinityBucketItem.getSelectedFluid(bucket);
-            if (!selected.isEmpty()) {
-                FluidItemRender.renderFluid(selected, graphics.pose(), leftPos + 70, topPos + SELECTED_Y, 0);
-                graphics.drawString(font, font.plainSubstrByWidth(selected.getHoverName().getString() + " " + format.format(selected.getAmount()) + " mB", 90),
-                        leftPos + 88, topPos + SELECTED_Y + 4, 0xFFFFFF, false);
-            } else {
-                graphics.drawString(font, Component.translatable("gui.avaritia.infinity_bucket.empty"), leftPos + 70, topPos + SELECTED_Y + 4, 0xAAAAAA, false);
-            }
-        }
-        int extra = Math.max(0, filteredCount() - VISIBLE_ROWS);
-        scrollBar.setScrollTagSize(extra <= 0 ? LIST_HEIGHT : Math.max(8, LIST_HEIGHT * VISIBLE_ROWS / (double) filteredCount()));
-        scrollBar.setScrolledOn(scroll);
+        graphics.disableScissor();
     }
 
-    private int indexOfFluid(List<FluidStack> all, FluidStack fluid) {
-        for (int i = 0; i < all.size(); i++) {
-            if (FluidStack.matches(all.get(i), fluid)) {
-                return i;
-            }
+    private boolean transferCarried(@Nullable Row row) {
+        ItemStack carried = menu.getCarried();
+        if (creaturesTabActive || carried.isEmpty() || carried.is(ModItems.infinity_bucket.get()) || !canOperate()) {
+            return false;
         }
-        return -1;
+        IFluidHandlerItem handler = FluidUtil.getFluidHandler(carried.copyWithCount(1)).orElse(null);
+        if (handler == null) {
+            return false;
+        }
+        if (row != null && row.fluid != null && handler.fill(row.fluid, IFluidHandler.FluidAction.SIMULATE) > 0) {
+            sendAction(InfinityBucketMenu.ACTION_EXTRACT_FLUID + row.index);
+            return true;
+        }
+        if (!handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).isEmpty()) {
+            sendAction(InfinityBucketMenu.ACTION_INSERT_CARRIED);
+            return true;
+        }
+        return false;
     }
 
-    private void renderCreatureIcon(GuiGraphics graphics, InfinityBucketCreature creature, int x, int y) {
-        EntityType<?> type = creature.entityType();
-        SpawnEggItem egg = SpawnEggItem.byId(type);
-        ItemStack icon = egg != null ? new ItemStack(egg) : new ItemStack(Items.WATER_BUCKET);
-        graphics.renderItem(icon, x, y);
+    private void openActions(@Nullable Row row, double mouseX, double mouseY) {
+        List<OperationMenu.Entry> entries = new ArrayList<>();
+        if (row != null) {
+            focusedIndex = row.index;
+            if (!active(row)) {
+                entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_bucket.select", () ->
+                        sendAction((row.creature == null ? InfinityBucketMenu.ACTION_SELECT_FLUID
+                                : InfinityBucketMenu.ACTION_SELECT_CREATURE) + row.index)));
+            }
+            entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_bucket.delete", () -> requestDelete(row)));
+        }
+        entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_bucket.search", this::requestSearch));
+        if (!query.isEmpty()) {
+            entries.add(OperationMenu.Entry.of("gui.avaritia.infinity_bucket.clear_filter", () -> filter("")));
+        }
+        if (!cachedFluids.isEmpty() || !cachedCreatures.isEmpty()) {
+            entries.add(OperationMenu.Entry.danger("gui.avaritia.infinity_bucket.clear", this::requestClear));
+        }
+        contextMenu.open((int) mouseX, (int) mouseY, width, height, font, entries);
+    }
+
+    private void filter(String value) {
+        query = value.trim();
+        scroll = 0;
+        focusedIndex = -1;
+        cacheValid = false;
+        ensureCache();
+    }
+
+    private void requestSearch() {
+        modal = Modal.SEARCH;
+        modalTitle = Component.translatable("gui.avaritia.infinity_bucket.search");
+        modalMessage = CommonComponents.EMPTY;
+        searchDraft = query;
+        layoutModal();
+    }
+
+    private void requestDelete(Row row) {
+        if (!canOperate()) {
+            return;
+        }
+        deleteTarget = new DeleteTarget(row);
+        modal = Modal.DELETE;
+        modalTitle = Component.translatable("gui.avaritia.infinity_bucket.delete.confirm");
+        modalMessage = Component.translatable("gui.avaritia.infinity_bucket.delete.confirm.message", deleteTarget.name);
+        layoutModal();
+    }
+
+    private void requestClear() {
+        if (!canOperate()) {
+            return;
+        }
+        modal = Modal.CLEAR;
+        modalTitle = Component.translatable("gui.avaritia.infinity_bucket.clear.confirm");
+        modalMessage = Component.translatable("gui.avaritia.infinity_bucket.clear.confirm.message");
+        layoutModal();
+    }
+
+    /** Stays inside this container screen so carried items and the server menu remain open. */
+    private void layoutModal() {
+        modalInput = null;
+        modalAccept = null;
+        modalCancel = null;
+        if (modal == Modal.NONE) {
+            return;
+        }
+        contextMenu.close();
+        setFocused(null);
+        modalWidth = Math.min(280, width - 16);
+        modalHeight = modal == Modal.SEARCH ? 108
+                : Math.min(height - 16, 76 + font.split(modalMessage, modalWidth - 28).size() * font.lineHeight);
+        modalX = (width - modalWidth) / 2;
+        modalY = (height - modalHeight) / 2;
+        int buttonWidth = (modalWidth - 32) / 2;
+        int buttonY = modalY + modalHeight - 30;
+        modalCancel = PortableUi.button(modalX + 12, buttonY, buttonWidth, 20,
+                CommonComponents.GUI_CANCEL, button -> closeModal());
+        Component acceptLabel = Component.translatable("gui.avaritia.portable.confirm");
+        modalAccept = modal == Modal.SEARCH
+                ? PortableUi.button(modalX + modalWidth - buttonWidth - 12, buttonY, buttonWidth, 20, acceptLabel, button -> acceptModal())
+                : PortableUi.dangerButton(modalX + modalWidth - buttonWidth - 12, buttonY, buttonWidth, 20, acceptLabel, button -> acceptModal());
+        if (modal == Modal.SEARCH) {
+            modalInput = new EditBox(font, modalX + 12, modalY + 32, modalWidth - 24, 20, modalTitle);
+            modalInput.setMaxLength(64);
+            modalInput.setValue(searchDraft);
+            modalInput.setResponder(value -> searchDraft = value);
+            modalInput.setFocused(true);
+            setFocused(modalInput);
+        } else {
+            modalCancel.setFocused(true);
+        }
+    }
+
+    private void closeModal() {
+        modal = Modal.NONE;
+        deleteTarget = null;
+        modalInput = null;
+        modalAccept = null;
+        modalCancel = null;
+        setFocused(null);
+    }
+
+    private void acceptModal() {
+        if (modal == Modal.SEARCH) {
+            String value = searchDraft;
+            closeModal();
+            filter(value);
+            return;
+        }
+        ensureCache();
+        if (canOperate()) {
+            if (modal == Modal.CLEAR) {
+                sendAction(InfinityBucketMenu.ACTION_CLEAR);
+            } else if (modal == Modal.DELETE && deleteTarget != null && deleteTarget.stillPresent(menu.getBucket())) {
+                sendAction((deleteTarget.creature ? InfinityBucketMenu.ACTION_DELETE_CREATURE
+                        : InfinityBucketMenu.ACTION_DELETE_FLUID) + deleteTarget.index);
+            }
+        }
+        closeModal();
+    }
+
+    private void renderModal(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if (modal == Modal.NONE) {
+            return;
+        }
+        graphics.flush();
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 500);
+        graphics.fill(0, 0, width, height, 0xA0000000);
+        PortableUi.panel(graphics, modalX, modalY, modalWidth, modalHeight);
+        PortableUi.header(graphics, font, modalTitle, modalX + 4, modalY + 4, modalWidth - 8);
+        if (modalInput != null) {
+            modalInput.render(graphics, mouseX, mouseY, partialTick);
+        } else {
+            graphics.drawWordWrap(font, modalMessage, modalX + 14, modalY + 29, modalWidth - 28, PortableUi.TEXT);
+        }
+        modalCancel.render(graphics, mouseX, mouseY, partialTick);
+        modalAccept.render(graphics, mouseX, mouseY, partialTick);
+        graphics.flush();
+        graphics.pose().popPose();
+    }
+
+    private boolean overlayOpen() {
+        return modal != Modal.NONE || contextMenu.isOpen();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseX >= leftPos + LIST_X && mouseX < leftPos + LIST_X + LIST_WIDTH
-                && mouseY >= topPos + LIST_Y && mouseY < topPos + LIST_Y + LIST_HEIGHT) {
-            int row = (int) ((mouseY - (topPos + LIST_Y)) / ROW_HEIGHT);
-            int index = rowStart() + row;
-            if (creaturesTabActive) {
-                List<IndexedCreature> creatures = filteredCreatures();
-                if (index >= 0 && index < creatures.size()) {
-                    sendAction(InfinityBucketMenu.ACTION_SELECT_CREATURE + creatures.get(index).index);
-                    return true;
-                }
-            } else {
-                List<FluidStack> fluids = filteredFluids();
-                List<FluidStack> all = InfinityBucketItem.getFluids(bucket());
-                if (index >= 0 && index < fluids.size()) {
-                    int realIndex = indexOfFluid(all, fluids.get(index));
-                    if (realIndex >= 0) {
-                        sendAction(InfinityBucketMenu.ACTION_SELECT_FLUID + realIndex);
-                        return true;
-                    }
-                }
+        if (modal != Modal.NONE) {
+            if (modalInput != null) {
+                modalInput.mouseClicked(mouseX, mouseY, button);
             }
-        } else if (pendingConfirm != 0
-                && (mouseX < deleteButton.getX() || mouseX > clearButton.getX() + clearButton.getWidth()
-                || mouseY < deleteButton.getY() || mouseY > deleteButton.getY() + deleteButton.getHeight())) {
-            pendingConfirm = 0;
-            updateButtons();
+            if (!modalCancel.mouseClicked(mouseX, mouseY, button) && modalAccept != null) {
+                modalAccept.mouseClicked(mouseX, mouseY, button);
+            }
+            return true;
+        }
+        if (contextMenu.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        ensureCache();
+        Row row = hoveredRow(mouseX, mouseY);
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && insideList(mouseX, mouseY)) {
+            if (!transferCarried(row)) {
+                openActions(row, mouseX, mouseY);
+            }
+            return true;
+        }
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && row != null) {
+            focusedIndex = row.index;
+            return true;
+        }
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && mouseX >= leftPos && mouseX < leftPos + imageWidth
+                && mouseY >= topPos && mouseY < topPos + InfinityBucketMenu.PLAYER_INV_Y - 12) {
+            openActions(null, mouseX, mouseY);
+            return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (overlayOpen() || insideList(mouseX, mouseY)) {
+            scrollBar.setScrolling(false);
+            setDragging(false);
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        return overlayOpen() || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {
+        return !overlayOpen() && super.isHovering(x, y, width, height, mouseX, mouseY);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (mouseX >= leftPos + LIST_X && mouseX < leftPos + LIST_X + LIST_WIDTH + 8
-                && mouseY >= topPos + LIST_Y && mouseY < topPos + LIST_Y + LIST_HEIGHT) {
-            int extra = Math.max(0, filteredCount() - VISIBLE_ROWS);
+        if (modal != Modal.NONE || contextMenu.mouseScrolled(scrollY)) {
+            return true;
+        }
+        if (insideList(mouseX, mouseY)) {
+            int extra = Math.max(0, rows.size() - VISIBLE_ROWS);
             if (extra > 0) {
-                scroll = Mth.clamp(scroll - Math.signum(scrollY) / extra, 0.0D, 1.0D);
+                scroll = Mth.clamp(scroll - Math.signum(scrollY) / extra, 0, 1);
                 scrollBar.setScrolledOn(scroll);
             }
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return false;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (searchBox != null && searchBox.isFocused()) {
-            if (minecraft != null && minecraft.options.keyInventory.matches(keyCode, scanCode)) {
-                return true;
+        if (modal != Modal.NONE) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                closeModal();
+            } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+                if (modal == Modal.SEARCH || modalAccept.isFocused()) {
+                    acceptModal();
+                } else {
+                    closeModal();
+                }
+            } else if (keyCode == GLFW.GLFW_KEY_TAB && modal != Modal.SEARCH) {
+                boolean acceptFocused = !modalAccept.isFocused();
+                modalAccept.setFocused(acceptFocused);
+                modalCancel.setFocused(!acceptFocused);
+            } else if (modalInput != null) {
+                modalInput.keyPressed(keyCode, scanCode, modifiers);
             }
-            return searchBox.keyPressed(keyCode, scanCode, modifiers);
+            return true;
+        }
+        if (contextMenu.isOpen()) {
+            contextMenu.keyPressed(keyCode);
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_MENU || (keyCode == GLFW.GLFW_KEY_F10 && hasShiftDown())) {
+            Row row = rows.stream().filter(entry -> entry.index == focusedIndex).findFirst().orElse(null);
+            openActions(row, leftPos + LIST_X + 8, topPos + LIST_Y + 8);
+            return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private record IndexedCreature(int index, InfinityBucketCreature creature) {
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (modal != Modal.NONE) {
+            return modalInput == null || modalInput.charTyped(codePoint, modifiers);
+        }
+        return contextMenu.isOpen() || super.charTyped(codePoint, modifiers);
+    }
+
+    private enum Modal {
+        NONE, SEARCH, DELETE, CLEAR
+    }
+
+    private static final class Row {
+        private final int index;
+        private final FluidStack fluid;
+        private final InfinityBucketCreature creature;
+        private final Component name;
+        private final Component detail;
+        private final Component activeDetail;
+        private final ItemStack icon;
+        private final List<Component> tooltip;
+        private final List<Component> activeTooltip;
+
+        private Row(int index, @Nullable FluidStack fluid, @Nullable InfinityBucketCreature creature,
+                    Component name, Component detail, String id, ItemStack icon) {
+            this.index = index;
+            this.fluid = fluid;
+            this.creature = creature;
+            this.name = name;
+            this.detail = detail;
+            this.activeDetail = detail.copy().append(" · ").append(SELECTED);
+            this.icon = icon;
+            Component registry = Component.literal(id).withStyle(ChatFormatting.GRAY);
+            Component hint = HINT.copy().withStyle(ChatFormatting.GRAY);
+            Component selected = SELECTED.copy().withStyle(ChatFormatting.YELLOW);
+            this.tooltip = fluid == null ? List.of(name, registry, hint) : List.of(name, registry, detail, hint);
+            this.activeTooltip = fluid == null ? List.of(name, registry, selected, hint)
+                    : List.of(name, registry, detail, selected, hint);
+        }
+    }
+
+    private static final class DeleteTarget {
+        private final boolean creature;
+        private final int index;
+        private final FluidStack fluid;
+        private final ResourceLocation typeId;
+        private final CompoundTag entityData;
+        private final Component name;
+
+        private DeleteTarget(Row row) {
+            creature = row.creature != null;
+            index = row.index;
+            fluid = row.fluid == null ? FluidStack.EMPTY : row.fluid.copy();
+            typeId = creature ? row.creature.typeId() : null;
+            entityData = creature ? row.creature.entityData().copy() : null;
+            name = creature ? row.name : row.name.copy().append(" (").append(row.detail).append(")");
+        }
+
+        private boolean stillPresent(ItemStack bucket) {
+            if (creature) {
+                List<InfinityBucketCreature> creatures = InfinityBucketItem.getCreatures(bucket);
+                if (index >= creatures.size()) {
+                    return false;
+                }
+                InfinityBucketCreature live = creatures.get(index);
+                return live.typeId().equals(typeId) && Objects.equals(live.entityData(), entityData);
+            }
+            List<FluidStack> fluids = InfinityBucketItem.getFluids(bucket);
+            return index < fluids.size() && FluidStack.matches(fluids.get(index), fluid);
+        }
     }
 }

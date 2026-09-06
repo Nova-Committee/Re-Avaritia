@@ -119,13 +119,29 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         if (!InfinityBucketBudget.canStore(fluids, getCreatures(stack))) {
             return false;
         }
+        InfinityBucketControl control = getControl(stack);
+        InfinityBucketFluids previous = stack.getOrDefault(ModDataComponents.INFINITY_BUCKET_FLUIDS.get(), InfinityBucketFluids.EMPTY);
         InfinityBucketFluids stored = new InfinityBucketFluids(fluids);
         if (stored.isEmpty()) {
             stack.remove(ModDataComponents.INFINITY_BUCKET_FLUIDS.get());
         } else {
             stack.set(ModDataComponents.INFINITY_BUCKET_FLUIDS.get(), stored);
         }
-        setControl(stack, getControl(stack));
+        int selectedIndex = control.selectedIndex();
+        if (!control.creatureSelected() && selectedIndex >= 0 && selectedIndex < previous.size()) {
+            FluidStack selected = previous.fluids().get(selectedIndex);
+            // Removing another row must not change which fluid is used outside the GUI.
+            if (selectedIndex >= stored.size()
+                    || !FluidStack.isSameFluidSameComponents(selected, stored.fluids().get(selectedIndex))) {
+                for (int i = 0; i < stored.size(); i++) {
+                    if (FluidStack.isSameFluidSameComponents(selected, stored.fluids().get(i))) {
+                        control = control.selectFluid(i);
+                        break;
+                    }
+                }
+            }
+        }
+        setControl(stack, control);
         return true;
     }
 
@@ -141,13 +157,25 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         if (!InfinityBucketBudget.canStore(getFluids(stack), creatures)) {
             return false;
         }
+        InfinityBucketControl control = getControl(stack);
+        InfinityBucketCreatures previous = stack.getOrDefault(ModDataComponents.INFINITY_BUCKET_CREATURES.get(), InfinityBucketCreatures.EMPTY);
         InfinityBucketCreatures stored = new InfinityBucketCreatures(creatures);
         if (stored.isEmpty()) {
             stack.remove(ModDataComponents.INFINITY_BUCKET_CREATURES.get());
         } else {
             stack.set(ModDataComponents.INFINITY_BUCKET_CREATURES.get(), stored);
         }
-        setControl(stack, getControl(stack));
+        int selectedIndex = control.selectedIndex();
+        if (control.creatureSelected() && selectedIndex >= 0 && selectedIndex < previous.size()) {
+            InfinityBucketCreature selected = previous.creatures().get(selectedIndex);
+            if (selectedIndex >= stored.size() || !selected.equals(stored.creatures().get(selectedIndex))) {
+                int newIndex = stored.creatures().indexOf(selected);
+                if (newIndex >= 0) {
+                    control = control.selectCreature(newIndex);
+                }
+            }
+        }
+        setControl(stack, control);
         return true;
     }
 
@@ -309,9 +337,6 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         HolderLookup.Provider registries = context != null ? context.registries() : null;
         migrateLegacyFluids(pStack, registries);
         InfinityBucketControl control = getControl(pStack);
-        if (control.forcePlacement()) {
-            pTooltipComponents.add(Component.translatable("tooltip.avaritia.infinity_bucket.force"));
-        }
         NumberFormat formater = DecimalFormat.getInstance();
         List<FluidStack> fluids = getFluids(pStack, registries);
         for (int i = 0; i < fluids.size(); i++) {
@@ -456,16 +481,16 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
         if (!level.mayInteract(player, placePos) || !player.mayUseItemAt(placePos, side, stack)) {
             return false;
         }
-        return placeWorldFluid(player, level, hand, placePos, stack, toPlace, getControl(stack).forcePlacement());
+        return placeWorldFluid(player, level, hand, placePos, stack, toPlace);
     }
 
     private boolean canBlockContainFluid(Player player, Level level, BlockPos pos, BlockState state, Fluid fluid) {
         return state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(player, level, pos, state, fluid);
     }
 
-    private boolean placeWorldFluid(Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource, boolean force) {
+    private boolean placeWorldFluid(Player player, Level level, InteractionHand hand, BlockPos pos, ItemStack container, FluidStack resource) {
         Fluid fluid = resource.getFluid();
-        if (fluid == Fluids.EMPTY || !fluid.getFluidType().canBePlacedInLevel(level, pos, resource)) {
+        if (fluid == Fluids.EMPTY) {
             return false;
         }
         if (player instanceof ServerPlayer serverPlayer && !PlayerUtils.hasEditPermission(serverPlayer, pos)) {
@@ -486,18 +511,13 @@ public class InfinityBucketItem extends ResourceItem implements IItemCapability 
             return false;
         }
 
-        if (!force && fluid.getFluidType().isVaporizedOnPlacement(level, pos, resource)) {
-            FluidStack result = source.drain(resource, IFluidHandler.FluidAction.EXECUTE);
-            if (!result.isEmpty()) {
-                result.getFluidType().onVaporize(player, level, pos, result);
-                return true;
-            }
-            return false;
-        }
-
         BlockState placedState = fluid.getFluidType().getBlockForFluidState(level, pos, fluid.defaultFluidState());
         if (!canDestContainFluid && placedState.isAir()) {
-            return false;
+            // Ignore positional vetoes, but still require a real fluid block.
+            placedState = fluid.defaultFluidState().createLegacyBlock();
+            if (placedState.isAir()) {
+                return false;
+            }
         }
         if (!placeProtectedFluid(player, level, pos, destBlockState, placedState, fluid, canDestContainFluid)) {
             return false;

@@ -16,7 +16,6 @@ import committee.nova.mods.avaritia.client.render.tile.CompressedChestRenderer;
 import committee.nova.mods.avaritia.client.render.tile.InfinityChestBlockRender;
 import committee.nova.mods.avaritia.client.screen.AvaritiaConfigScreen;
 import committee.nova.mods.avaritia.client.screen.InfinityRingControlScreen;
-import committee.nova.mods.avaritia.client.screen.InfinityRingCreateScreen;
 import committee.nova.mods.avaritia.client.screen.NeutronRingManageScreen;
 import committee.nova.mods.avaritia.common.net.ClientPacketProxy;
 import committee.nova.mods.avaritia.client.shader.AvaritiaShaders;
@@ -82,18 +81,8 @@ public class AvaritiaModClient {
 
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
-        ClientPacketProxy.neutronRingOpen = packet -> Minecraft.getInstance().setScreen(
-                new NeutronRingManageScreen(packet));
-        ClientPacketProxy.infinityRingOpen = packet -> {
-            if (packet.create()) {
-                Minecraft.getInstance().setScreen(new InfinityRingCreateScreen(
-                        packet.terrain(), packet.time(), packet.weather(), packet.access()));
-            } else {
-                Minecraft.getInstance().setScreen(new InfinityRingControlScreen(
-                        packet.terrain(), packet.time(), packet.weather(), packet.access(), packet.friends(),
-                        packet.owner(), packet.canDelete()));
-            }
-        };
+        ClientPacketProxy.neutronRingOpen = NeutronRingManageScreen::open;
+        ClientPacketProxy.infinityRingOpen = InfinityRingControlScreen::open;
         ModList.get().getModContainerById(Const.MOD_ID).orElseThrow().registerExtensionPoint(IConfigScreenFactory.class,
                 (container, last) -> new AvaritiaConfigScreen(last));
         ModEntities.onClientSetup();
