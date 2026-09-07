@@ -1,10 +1,8 @@
 package committee.nova.mods.avaritia.api.client.screen;
 
-import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.api.utils.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,11 +33,11 @@ public class StringInputScreen extends Screen {
     /**
      * 标题
      */
-    private final Text titleText;
+    private final Component titleText;
     /**
      * 提示
      */
-    private final Text messageText;
+    private final Component messageText;
     /**
      * 输入数据校验
      */
@@ -71,7 +69,7 @@ public class StringInputScreen extends Screen {
     /**
      * 输入错误提示
      */
-    private Text errorText;
+    private Component errorText;
     private ScreenRectangle panel;
     private ScreenRectangle content;
     private ScreenRectangle errorBounds;
@@ -79,7 +77,7 @@ public class StringInputScreen extends Screen {
     private List<FormattedCharSequence> errorLines = List.of();
 
 
-    public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, Consumer<String> onDataReceived) {
+    public StringInputScreen(Screen callbackScreen, Component titleText, Component messageText, String validator, Consumer<String> onDataReceived) {
         super(Component.literal("StringInputScreen"));
         this.previousScreen = callbackScreen;
         this.onDataReceived1 = onDataReceived;
@@ -91,7 +89,7 @@ public class StringInputScreen extends Screen {
         this.shouldClose = null;
     }
 
-    public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Consumer<String> onDataReceived) {
+    public StringInputScreen(Screen callbackScreen, Component titleText, Component messageText, String validator, String defaultValue, Consumer<String> onDataReceived) {
         super(Component.literal("StringInputScreen"));
         this.previousScreen = callbackScreen;
         this.onDataReceived1 = onDataReceived;
@@ -103,7 +101,7 @@ public class StringInputScreen extends Screen {
         this.shouldClose = null;
     }
 
-    public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Consumer<String> onDataReceived, Supplier<Boolean> shouldClose) {
+    public StringInputScreen(Screen callbackScreen, Component titleText, Component messageText, String validator, String defaultValue, Consumer<String> onDataReceived, Supplier<Boolean> shouldClose) {
         super(Component.literal("StringInputScreen"));
         this.previousScreen = callbackScreen;
         this.onDataReceived1 = onDataReceived;
@@ -115,7 +113,7 @@ public class StringInputScreen extends Screen {
         this.shouldClose = shouldClose;
     }
 
-    public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, Function<String, String> onDataReceived) {
+    public StringInputScreen(Screen callbackScreen, Component titleText, Component messageText, String validator, Function<String, String> onDataReceived) {
         super(Component.literal("StringInputScreen"));
         this.previousScreen = callbackScreen;
         this.onDataReceived1 = null;
@@ -127,7 +125,7 @@ public class StringInputScreen extends Screen {
         this.shouldClose = null;
     }
 
-    public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Function<String, String> onDataReceived) {
+    public StringInputScreen(Screen callbackScreen, Component titleText, Component messageText, String validator, String defaultValue, Function<String, String> onDataReceived) {
         super(Component.literal("StringInputScreen"));
         this.previousScreen = callbackScreen;
         this.onDataReceived1 = null;
@@ -139,7 +137,7 @@ public class StringInputScreen extends Screen {
         this.shouldClose = null;
     }
 
-    public StringInputScreen(Screen callbackScreen, Text titleText, Text messageText, String validator, String defaultValue, Function<String, String> onDataReceived, Supplier<Boolean> shouldClose) {
+    public StringInputScreen(Screen callbackScreen, Component titleText, Component messageText, String validator, String defaultValue, Function<String, String> onDataReceived, Supplier<Boolean> shouldClose) {
         super(Component.literal("StringInputScreen"));
         this.previousScreen = callbackScreen;
         this.onDataReceived1 = null;
@@ -163,7 +161,7 @@ public class StringInputScreen extends Screen {
         errorBounds = PortableLayout.inset(content, 0, 28, 0, 0);
         footer = PortableLayout.inset(panel, 12, Math.max(0, panel.height() - 32), 12, 12);
         this.inputField = new EditBox(font, content.left(), content.top(), content.width(),
-                Math.min(20, content.height()), GuiUtils.textToComponent(messageText));
+                Math.min(20, content.height()), messageText);
         this.inputField.setMaxLength(Integer.MAX_VALUE);
         if (StringUtils.isNotNullOrEmpty(validator)) {
             this.inputField.setFilter(s -> s.matches(validator));
@@ -185,7 +183,7 @@ public class StringInputScreen extends Screen {
                 } else if (onDataReceived2 != null) {
                     String result = onDataReceived2.apply(value);
                     if (StringUtils.isNotNullOrEmpty(result)) {
-                        this.errorText = Text.literal(result).setColor(0xFFFF0000);
+                        this.errorText = Component.literal(result).withStyle(net.minecraft.ChatFormatting.RED);
                         updateErrorLines();
                     } else {
                         // 关闭当前屏幕并返回到调用者的 Screen
@@ -204,13 +202,13 @@ public class StringInputScreen extends Screen {
 
     private void updateErrorLines() {
         errorLines = errorText == null || errorBounds.width() == 0 ? List.of()
-                : font.split(GuiUtils.textToComponent(errorText), errorBounds.width());
+                : font.split(errorText, errorBounds.width());
     }
 
     @Override
     protected void renderMenuBackground(GuiGraphics graphics) {
         PortableUi.panel(graphics, panel);
-        PortableUi.header(graphics, font, GuiUtils.textToComponent(titleText), panel.left(), panel.top(), panel.width());
+        PortableUi.header(graphics, font, titleText, panel.left(), panel.top(), panel.width());
         UiInspector.region("input.panel", panel, null, false);
     }
 
@@ -227,7 +225,7 @@ public class StringInputScreen extends Screen {
             graphics.disableScissor();
             UiInspector.region("input.error", errorBounds, errorBounds, false);
             if (PortableLayout.contains(errorBounds, mouseX, mouseY)) {
-                graphics.renderTooltip(font, GuiUtils.textToComponent(errorText), mouseX, mouseY);
+                graphics.renderTooltip(font, errorText, mouseX, mouseY);
             }
         }
     }

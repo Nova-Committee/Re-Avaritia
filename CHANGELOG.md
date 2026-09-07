@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * Share portable player/library list framing while retaining vanilla scrolling and selection; arrange Infinity Ring creation and control forms with vanilla GridLayout.
 * Apply portable framing and named inspection regions to side configuration, string input, item filters/selectors and the config page. Keep selection/query/scroll state through dialog returns, compute item-cell geometry before rendering, and reuse config controls while scrolling or resizing.
 * Name machine, clock, combiner and storage controls for inspection, sharing progress/error/scroll regions with their rendering and hover logic while retaining atlas coordinates, native slots and network action IDs.
+* Replace the item filter/selector OperationButton stack with a shared native PortableItemGrid and PortableUi buttons. Retain item components on selection, cancel stale press/release gestures after remapping, and migrate string input titles/messages to native Components.
+* Remove OperationButton, OperationButtonType, Text, Coordinate, TextureCoordinate, GuiUtils and the retired texture-pixel hit-test cache; unrelated texture-atlas renderer utilities remain.
 
 
 ### Fixed

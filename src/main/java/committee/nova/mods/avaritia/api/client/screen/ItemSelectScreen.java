@@ -2,13 +2,10 @@ package committee.nova.mods.avaritia.api.client.screen;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
-import committee.nova.mods.avaritia.api.client.screen.component.OperationButton;
-import committee.nova.mods.avaritia.api.client.screen.component.OperationButtonType;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableItemGrid;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
-import committee.nova.mods.avaritia.api.client.screen.component.Text;
 import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
-import committee.nova.mods.avaritia.api.client.util.GuiUtils;
 import committee.nova.mods.avaritia.api.utils.ItemUtils;
 import committee.nova.mods.avaritia.api.utils.StringUtils;
 import lombok.Getter;
@@ -16,7 +13,10 @@ import lombok.NonNull;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -24,11 +24,17 @@ import net.minecraft.client.multiplayer.SessionSearchTrees;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.searchtree.SearchTree;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
@@ -36,8 +42,12 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -55,99 +65,38 @@ import static committee.nova.mods.avaritia.Const.GSON;
 public class ItemSelectScreen extends Screen {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    // 每行显示数量
-    private final int itemPerLine = 9;
-    // 每页显示行数
-    private final int maxLine = 5;
+    private static final int GRID_COLUMNS = 9;
+    private static final int GRID_ROWS = 5;
+    private static final int GRID_WIDTH = GRID_COLUMNS * 19 + 12;
+    private static final int GRID_HEIGHT = GRID_ROWS * 19 + 3;
+    private static final int SIDE_WIDTH = 64;
+    private static final int BUTTON = 20;
+    private static final int GAP = 4;
+    private static final int PAD = 12;
+    private static final int PANEL_WIDTH = PAD + SIDE_WIDTH + GAP + GRID_WIDTH + PAD;
+    private static final int PANEL_HEIGHT = PAD + BUTTON + GAP + GRID_HEIGHT + GAP + BUTTON + PAD;
+    private static final int MAX_COUNT = 64 * 9 * 5;
 
-    /**
-     * 父级 Screen
-     */
     private final Screen previousScreen;
-    /**
-     * 输入数据回调1
-     */
     private final Consumer<ItemStack> onDataReceived1;
-    /**
-     * 是否要显示该界面, 若为false则直接关闭当前界面并返回到调用者的 Screen
-     */
     private final Supplier<Boolean> shouldClose;
-    /**
-     * 显示种类
-     */
     private final ResourceKey<CreativeModeTab> tabs;
-    /**
-     * 背包模式
-     */
     private final boolean useInventoryMode;
     private boolean inventoryMode = false;
-    /**
-     * 输入框
-     */
     private EditBox inputField;
-    /**
-     * 输入框文本
-     */
     private String inputFieldText = "";
-    /**
-     * 搜索结果
-     */
     private final List<ItemStack> itemList = new ArrayList<>();
-    /**
-     * 操作按钮
-     */
-    private final Map<Integer, OperationButton> OP_BUTTONS = new HashMap<>();
-    /**
-     * 物品按钮
-     */
-    private final List<OperationButton> ITEM_BUTTONS = new ArrayList<>();
-    /**
-     * 显示的标签
-     */
     private final Set<TagKey<Item>> visibleTags = new HashSet<>();
-    /**
-     * 当前选择的物品 ID
-     */
     @Getter
     private String selectedItemId;
-    /**
-     * 当前选择的物品
-     */
     private ItemStack currentItem;
-
-
-    private int bgX;
-    private int bgY;
-    private final double margin = 3;
-    private double itemBgX = this.bgX + margin;
-    private double itemBgY = this.bgY + 20;
-    private ScreenRectangle panel;
-    private ScreenRectangle grid;
-    private ScreenRectangle footer;
-    private ScreenRectangle scrollbar;
-
-    // region 滚动条相关
-
-    /**
-     * 当前滚动偏移量
-     */
-    @Getter
     private int scrollOffset = 0;
-    // 鼠标按下时的X坐标
-    private double mouseDownX = -1;
-    // 鼠标按下时的Y坐标
-    private double mouseDownY = -1;
-
-    // Y坐标偏移
-    private double scrollOffsetOld;
-    private double outScrollX;
-    private double outScrollY;
-    private int outScrollWidth = 5;
-    private int outScrollHeight;
-    private double inScrollHeight;
-    private double inScrollY;
-
-    // endregion 滚动条相关
+    private ScreenRectangle panel;
+    private PortableItemGrid itemGrid;
+    private Button typeButton;
+    private Button itemButton;
+    private Button countButton;
+    private Button nbtButton;
 
     public ItemSelectScreen(@NonNull Screen callbackScreen, @NonNull Consumer<ItemStack> onDataReceived,
                             @NonNull ItemStack defaultItem) {
@@ -168,6 +117,10 @@ public class ItemSelectScreen extends Screen {
         this.useInventoryMode = useInventoryMode;
     }
 
+    public int getScrollOffset() {
+        return itemGrid != null ? itemGrid.getScrollOffset() : scrollOffset;
+    }
+
     @Override
     protected void init() {
         if (this.shouldClose != null && Boolean.TRUE.equals(this.shouldClose.get())) {
@@ -177,34 +130,51 @@ public class ItemSelectScreen extends Screen {
         if (this.inputField != null) {
             this.inputFieldText = this.inputField.getValue();
         }
-        int previousScroll = this.scrollOffset;
+        this.scrollOffset = getScrollOffset();
         this.rebuildItemList();
-        this.updateLayout();
-        this.setScrollOffset(previousScroll);
-        // 创建文本输入框
-        this.inputField = new EditBox(this.font, bgX, bgY, 180, 15, Component.literal(""));
+        this.panel = PortableLayout.centered(this.width, this.height, PANEL_WIDTH, PANEL_HEIGHT, 8);
+        ScreenRectangle inner = PortableLayout.inset(this.panel, PAD, PAD, PAD, PAD);
+        int gridX = inner.left() + SIDE_WIDTH + GAP;
+        int gridY = inner.top() + BUTTON + GAP;
+        ScreenRectangle footer = new ScreenRectangle(inner.left(), inner.bottom() - BUTTON, inner.width(), BUTTON);
+
+        this.inputField = new EditBox(this.font, gridX, inner.top(), GRID_WIDTH, BUTTON, Component.literal(""));
+        this.inputField.setMaxLength(256);
         this.inputField.setValue(this.inputFieldText);
+        this.inputField.setResponder(text -> this.inputFieldText = text);
         this.addRenderableWidget(UiInspector.name(this.inputField, "selector.search"));
-        int footerY = footer.top();
-        int buttonWidth = (int) (90 - this.margin * 2);
-        // 创建提交按钮
-        this.addRenderableWidget(UiInspector.name(PortableUi.button(footer.left() + 90, footerY, buttonWidth, footer.height()
-                , GuiUtils.textToComponent(Text.i18n("提交")), button -> {
-                    if (this.currentItem == null) {
-                        // 关闭当前屏幕并返回到调用者的 Screen
-                        Minecraft.getInstance().setScreen(previousScreen);
-                    } else {
-                        // 获取选择的数据，并执行回调
-                        if (onDataReceived1 != null) {
-                            onDataReceived1.accept(this.currentItem);
-                            Minecraft.getInstance().setScreen(previousScreen);
-                        }
-                    }
-                }), "selector.submit"));
-        // 创建取消按钮
-        this.addRenderableWidget(UiInspector.name(PortableUi.button(footer.left(), footerY, buttonWidth, footer.height()
-                , GuiUtils.textToComponent(Text.i18n("取消"))
-                , button -> Minecraft.getInstance().setScreen(previousScreen)), "selector.cancel"));
+
+        GridLayout side = new GridLayout(inner.left(), inner.top()).rowSpacing(2);
+        this.typeButton = UiInspector.name(PortableUi.button(0, 0, SIDE_WIDTH, BUTTON, typeLabel(),
+                button -> toggleInventoryMode()), "selector.type");
+        this.typeButton.active = this.useInventoryMode;
+        this.itemButton = UiInspector.name(PortableUi.button(0, 0, SIDE_WIDTH, BUTTON, Component.literal("JSON"),
+                button -> openJsonEditor()), "selector.item");
+        this.countButton = UiInspector.name(PortableUi.button(0, 0, SIDE_WIDTH, BUTTON, Component.literal(""),
+                button -> openCountEditor()), "selector.count");
+        this.nbtButton = UiInspector.name(PortableUi.button(0, 0, SIDE_WIDTH, BUTTON, Component.literal("NBT"),
+                button -> openNbtEditor()), "selector.nbt");
+        side.addChild(this.typeButton, 0, 0);
+        side.addChild(this.itemButton, 1, 0);
+        side.addChild(this.countButton, 2, 0);
+        side.addChild(this.nbtButton, 3, 0);
+        side.arrangeElements();
+        side.visitWidgets(this::addRenderableWidget);
+
+        this.itemGrid = this.addRenderableWidget(UiInspector.name(
+                new PortableItemGrid(this.minecraft, gridX, gridY, GRID_COLUMNS, GRID_ROWS, "selector", this::onItemSelected),
+                "selector.grid"));
+        this.itemGrid.setTooltipProvider(this::tooltipFor);
+        this.itemGrid.setItems(this.itemList);
+        this.itemGrid.setSelected(this.currentItem);
+        this.itemGrid.setScrollOffset(this.scrollOffset);
+
+        int buttonWidth = Math.max(0, (footer.width() - GAP) / 2);
+        this.addRenderableWidget(UiInspector.name(PortableUi.button(footer.left(), footer.top(), buttonWidth, footer.height(),
+                CommonComponents.GUI_CANCEL, button -> Minecraft.getInstance().setScreen(previousScreen)), "selector.cancel"));
+        this.addRenderableWidget(UiInspector.name(PortableUi.button(footer.right() - buttonWidth, footer.top(), buttonWidth, footer.height(),
+                Component.literal("提交"), button -> submit()), "selector.submit"));
+        this.refreshActionButtons();
     }
 
     @Override
@@ -213,99 +183,39 @@ public class ItemSelectScreen extends Screen {
         super.renderTransparentBackground(graphics);
         PortableUi.panel(graphics, panel);
         UiInspector.region("selector.panel", panel, null, false);
-        PortableUi.inset(graphics, grid);
-        UiInspector.region("selector.grid", grid, grid, true);
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.render(graphics, mouseX, mouseY, delta);
-        this.inputFieldText = this.inputField.getValue();
-
-        this.renderButton(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
-        this.setScrollOffset(this.getScrollOffset() - deltaY);
-        return true;
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        AtomicBoolean flag = new AtomicBoolean(false);
-        if (button == GLFW.GLFW_MOUSE_BUTTON_4) {
-            Minecraft.getInstance().setScreen(previousScreen);
-            flag.set(true);
-        } else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            OP_BUTTONS.forEach((key, value) -> {
-                if (isActiveOperation(value) && value.isMouseOverEx(mouseX, mouseY)) {
-                    value.setPressed(true);
-                    // 若是滑块
-                    if (key == OperationButtonType.SLIDER.getCode()) {
-                        this.scrollOffsetOld = this.getScrollOffset();
-                        this.mouseDownX = mouseX;
-                        this.mouseDownY = mouseY;
-                    }
-                }
-            });
-            ITEM_BUTTONS.forEach(bt -> bt.setPressed(isItemCellHit(bt, mouseX, mouseY)));
+        if (this.itemGrid != null) {
+            this.itemGrid.renderTooltip(graphics, mouseX, mouseY);
         }
-        return flag.get() ? flag.get() : super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        AtomicBoolean flag = new AtomicBoolean(false);
-        AtomicBoolean updateSearchResults = new AtomicBoolean(false);
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            OP_BUTTONS.forEach((key, value) -> {
-                if (value.isPressed() && isActiveOperation(value) && value.isMouseOverEx(mouseX, mouseY)) {
-                    this.handleOperation(value, button, flag, updateSearchResults);
-                }
-                value.setPressed(false);
-            });
-            ITEM_BUTTONS.forEach(bt -> {
-                if (bt.isPressed() && isItemCellHit(bt, mouseX, mouseY)) {
-                    this.handleItem(bt, button, flag);
-                }
-                bt.setPressed(false);
-            });
-            this.mouseDownX = -1;
-            this.mouseDownY = -1;
-            if (updateSearchResults.get()) {
-                this.updateSearchResults();
-            }
-        }
-        return flag.get() ? flag.get() : super.mouseReleased(mouseX, mouseY, button);
+        boolean handled = super.mouseReleased(mouseX, mouseY, button);
+        itemGrid.cancelInteraction();
+        return handled;
     }
 
     @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        OP_BUTTONS.forEach((key, value) -> {
-            value.setHovered(isActiveOperation(value) && value.isMouseOverEx(mouseX, mouseY));
-            if (key == OperationButtonType.SLIDER.getCode()) {
-                if (value.isPressed() && this.mouseDownX != -1 && this.mouseDownY != -1) {
-                    // 一个像素对应多少滚动偏移量
-                    double scale = Math.ceil((double) (itemList.size() - itemPerLine * maxLine) / itemPerLine) / (this.outScrollHeight - 2);
-                    this.setScrollOffset(this.scrollOffsetOld + (mouseY - this.mouseDownY) * scale);
-                }
-            }
-        });
-        ITEM_BUTTONS.forEach(bt -> bt.setHovered(isItemCellHit(bt, mouseX, mouseY)));
-        super.mouseMoved(mouseX, mouseY);
-    }
-
-    /**
-     * 重写键盘事件
-     */
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (keyCode == GLFW.GLFW_KEY_BACKSPACE && !this.inputField.isFocused())) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_4) {
             Minecraft.getInstance().setScreen(previousScreen);
             return true;
-        } else if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.inputField.isFocused()) {
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (keyCode == GLFW.GLFW_KEY_BACKSPACE && (this.inputField == null || !this.inputField.isFocused()))) {
+            Minecraft.getInstance().setScreen(previousScreen);
+            return true;
+        } else if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.inputField != null && this.inputField.isFocused()) {
             this.updateSearchResults();
             return true;
         } else {
@@ -321,6 +231,40 @@ public class ItemSelectScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    private void submit() {
+        if (this.currentItem == null) {
+            Minecraft.getInstance().setScreen(previousScreen);
+        } else if (onDataReceived1 != null) {
+            onDataReceived1.accept(this.currentItem);
+            Minecraft.getInstance().setScreen(previousScreen);
+        }
+    }
+
+    private void onItemSelected(ItemStack stack) {
+        this.currentItem = stack;
+        this.selectedItemId = ItemUtils.getId(stack);
+        this.refreshActionButtons();
+    }
+
+    private void toggleInventoryMode() {
+        if (!this.useInventoryMode) {
+            return;
+        }
+        this.inventoryMode = !this.inventoryMode;
+        this.updateSearchResults();
+    }
+
+    private void updateSearchResults() {
+        this.rebuildItemList();
+        this.scrollOffset = 0;
+        if (this.itemGrid != null) {
+            this.itemGrid.setItems(this.itemList);
+            this.itemGrid.setSelected(this.currentItem);
+            this.itemGrid.setScrollOffset(0);
+        }
+        this.refreshActionButtons();
     }
 
     private Collection<ItemStack> getAllItemList() {
@@ -343,123 +287,6 @@ public class ItemSelectScreen extends Screen {
         return result;
     }
 
-    /**
-     * 设置排列方式
-     */
-    private void updateLayout() {
-        this.bgX = this.width / 2 - 92;
-        this.bgY = this.height / 2 - 65;
-        this.itemBgX = this.bgX + margin;
-        this.itemBgY = this.bgY + 20;
-        this.panel = new ScreenRectangle((int) (this.bgX - this.margin), (int) (this.bgY - this.margin),
-                (int) (180 + this.margin * 2), (int) (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + 20 + margin * 2 + 5));
-        this.grid = new ScreenRectangle((int) (this.itemBgX - this.margin), (int) (this.itemBgY - this.margin),
-                (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.itemPerLine + this.margin),
-                (int) ((GuiUtils.ITEM_ICON_SIZE + this.margin) * this.maxLine + this.margin));
-        int footerY = (int) (this.bgY + (20 + (GuiUtils.ITEM_ICON_SIZE + 3) * 5 + margin));
-        this.footer = new ScreenRectangle((int) (this.bgX + this.margin), footerY, (int) (180 - this.margin * 2), 20);
-
-        this.OP_BUTTONS.put(OperationButtonType.TYPE.getCode(), new OperationButton(OperationButtonType.TYPE.getCode(), context -> {
-            int lineColor = context.button().isHovered() ? 0xEEFFFFFF : 0xEE000000;
-            GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 0xEE707070, 2);
-            GuiUtils.fillOutLine(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 1, lineColor, 2);
-            ItemStack itemStack = new ItemStack(this.inventoryMode ? Items.CHEST : Items.COMPASS);
-            context.graphics().renderItem(itemStack, (int) context.button().getX() + 2, (int) context.button().getY() + 2);
-            Text text = this.inventoryMode ? Text.i18n("列出模式\n物品栏 (%s)", getPlayerItemList().size()) : Text.i18n("列出模式\n所有物品 (%s)", getAllItemList().size());
-            context.button().setTooltip(text);
-            inspectOperation("selector.type", context.button());
-        }).setX(this.bgX - GuiUtils.ITEM_ICON_SIZE - 2 - margin - 3).setY(this.bgY + margin).setWidth(GuiUtils.ITEM_ICON_SIZE + 4).setHeight(GuiUtils.ITEM_ICON_SIZE + 4));
-        this.OP_BUTTONS.put(OperationButtonType.ITEM.getCode(), new OperationButton(OperationButtonType.ITEM.getCode(), context -> {
-            int lineColor = context.button().isHovered() ? 0xEEFFFFFF : 0xEE000000;
-            GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 0xEE707070, 2);
-            GuiUtils.fillOutLine(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 1, lineColor, 2);
-            context.graphics().renderItem(this.currentItem, (int) context.button().getX() + 2, (int) context.button().getY() + 2);
-            context.button().setTooltip(GuiUtils.componentToText(this.currentItem.getHoverName().copy()));
-            inspectOperation("selector.item", context.button());
-        }).setX(this.bgX - GuiUtils.ITEM_ICON_SIZE - 2 - margin - 3).setY(this.bgY + margin + GuiUtils.ITEM_ICON_SIZE + 4 + 1).setWidth(GuiUtils.ITEM_ICON_SIZE + 4).setHeight(GuiUtils.ITEM_ICON_SIZE + 4));
-        this.OP_BUTTONS.put(OperationButtonType.COUNT.getCode(), new OperationButton(OperationButtonType.COUNT.getCode(), context -> {
-            int lineColor = context.button().isHovered() ? 0xEEFFFFFF : 0xEE000000;
-            GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 0xEE707070, 2);
-            GuiUtils.fillOutLine(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 1, lineColor, 2);
-            ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK);
-            context.graphics().renderItem(itemStack, (int) context.button().getX() + 2, (int) context.button().getY() + 2);
-            Text text = Text.i18n("设置数量\n当前 %s", this.currentItem.getCount());
-            context.button().setTooltip(text);
-            inspectOperation("selector.count", context.button());
-        }).setX(this.bgX - GuiUtils.ITEM_ICON_SIZE - 2 - margin - 3).setY(this.bgY + margin + (GuiUtils.ITEM_ICON_SIZE + 4 + 1) * 2).setWidth(GuiUtils.ITEM_ICON_SIZE + 4).setHeight(GuiUtils.ITEM_ICON_SIZE + 4));
-        this.OP_BUTTONS.put(OperationButtonType.NBT.getCode(), new OperationButton(OperationButtonType.NBT.getCode(), context -> {
-            int lineColor = context.button().isHovered() ? 0xEEFFFFFF : 0xEE000000;
-            GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 0xEE707070, 2);
-            GuiUtils.fillOutLine(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), 1, lineColor, 2);
-            ItemStack itemStack = new ItemStack(Items.NAME_TAG);
-            context.graphics().renderItem(itemStack, (int) context.button().getX() + 2, (int) context.button().getY() + 2);
-            Text text = Text.i18n("编辑NBT");
-            context.button().setTooltip(text);
-            inspectOperation("selector.nbt", context.button());
-        }).setX(this.bgX - GuiUtils.ITEM_ICON_SIZE - 2 - margin - 3).setY(this.bgY + margin + (GuiUtils.ITEM_ICON_SIZE + 4 + 1) * 3).setWidth(GuiUtils.ITEM_ICON_SIZE + 4).setHeight(GuiUtils.ITEM_ICON_SIZE + 4));
-
-        this.OP_BUTTONS.put(OperationButtonType.SLIDER.getCode(), new OperationButton(OperationButtonType.SLIDER.getCode(), context -> {
-            GuiUtils.fill(context.graphics(), (int) this.outScrollX, (int) this.outScrollY, this.outScrollWidth, this.outScrollHeight, 0xCC232323);
-            int color = context.button().isHovered() ? 0xCCFFFFFF : 0xCC8B8B8B;
-            GuiUtils.fill(context.graphics(), (int) this.outScrollX, (int) Math.ceil(this.inScrollY), this.outScrollWidth, (int) this.inScrollHeight, color);
-            inspectOperation("selector.scrollbar", context.button());
-        }));
-
-        this.ITEM_BUTTONS.clear();
-        for (int i = 0; i < maxLine; i++) {
-            for (int j = 0; j < itemPerLine; j++) {
-                ITEM_BUTTONS.add(new OperationButton(itemPerLine * i + j, context -> {
-                    int index = this.itemIndex(context.button());
-                    if (index < 0 || index >= itemList.size() || context.button().getWidth() <= 0 || context.button().getHeight() <= 0) {
-                        context.button().setCustomPopupFunction(null);
-                        return;
-                    }
-                    ItemStack itemStack = itemList.get(index);
-                    int bgColor;
-                    if (context.button().isHovered() || ItemUtils.getId(itemStack).equalsIgnoreCase(this.getSelectedItemId())) {
-                        bgColor = 0xEE7CAB7C;
-                    } else {
-                        bgColor = 0xEE707070;
-                    }
-
-                    GuiUtils.fill(context.graphics(), (int) context.button().getX(), (int) context.button().getY(), (int) context.button().getWidth(), (int) context.button().getHeight(), bgColor);
-                    context.graphics().renderItem(itemStack, (int) context.button().getX() + 1, (int) context.button().getY() + 1);
-                    context.button().setCustomPopupFunction(() -> {
-                        if (context.button().isHovered()) {
-                            List<Component> list = itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level.registryAccess()), Minecraft.getInstance().player, Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
-                            List<Component> list1 = Lists.newArrayList(list);
-                            this.visibleTags.forEach((itemITag) -> {
-                                if (itemStack.is(itemITag)) {
-                                    list1.add(1, (Component.literal("#" + itemITag.location())).withStyle(ChatFormatting.DARK_PURPLE));
-                                }
-                            });
-                            for (CreativeModeTab modeTab : CreativeModeTabs.allTabs()) {
-                                if (modeTab.contains(itemStack)) {
-                                    list1.add(1, modeTab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
-                                }
-                            }
-                            context.graphics().renderTooltip(font, list1, itemStack.getTooltipImage(), itemStack, (int) context.mouseX(), (int) context.mouseY());
-                        }
-                    });
-                    UiInspector.row("selector.grid", null, index,
-                            (int) context.button().getRealX(), (int) context.button().getRealY(),
-                            (int) context.button().getRealWidth(), (int) context.button().getRealHeight(),
-                            grid, true);
-                }));
-            }
-        }
-        this.updateScrollbar();
-        this.updateItemCells();
-    }
-
-    /**
-     * 更新搜索结果
-     */
-    private void updateSearchResults() {
-        this.rebuildItemList();
-        this.setScrollOffset(0);
-    }
-
     private void rebuildItemList() {
         String s = this.inputField != null ? this.inputField.getValue() : this.inputFieldText;
         this.inputFieldText = s == null ? "" : s;
@@ -477,12 +304,24 @@ public class ItemSelectScreen extends Screen {
                 } else {
                     isearchtree = sessionsearchtrees.creativeNameSearch();
                 }
-                this.itemList.addAll(isearchtree.search(s.toLowerCase(Locale.ROOT)));
+                List<ItemStack> found = isearchtree.search(s.toLowerCase(Locale.ROOT));
+                if (this.inventoryMode) {
+                    Set<Item> matching = new HashSet<>();
+                    for (ItemStack stack : found) {
+                        matching.add(stack.getItem());
+                    }
+                    for (ItemStack owned : this.getPlayerItemList()) {
+                        if (matching.contains(owned.getItem())) {
+                            this.itemList.add(owned);
+                        }
+                    }
+                } else {
+                    this.itemList.addAll(found);
+                }
             }
         } else {
             this.itemList.addAll(this.inventoryMode ? this.getPlayerItemList() : this.getAllItemList());
         }
-        this.clearItemPressState();
     }
 
     private void updateVisibleTags(String string) {
@@ -498,182 +337,114 @@ public class ItemSelectScreen extends Screen {
         BuiltInRegistries.ITEM.getTagNames().filter((tagKey) -> predicate.test(tagKey.location())).forEach(this.visibleTags::add);
     }
 
-    private void setScrollOffset(double offset) {
-        int next = (int) Math.max(Math.min(offset, (int) Math.ceil((double) (itemList.size() - itemPerLine * maxLine) / itemPerLine)), 0);
-        if (next != this.scrollOffset) {
-            this.clearItemPressState();
-        }
-        this.scrollOffset = next;
-        this.updateItemCells();
-        this.updateScrollbar();
-    }
-
-    private void updateScrollbar() {
-        double bgWidth = (GuiUtils.ITEM_ICON_SIZE + margin) * itemPerLine;
-        double bgHeight = (GuiUtils.ITEM_ICON_SIZE + margin) * maxLine - margin;
-        this.outScrollX = itemBgX + bgWidth + 2;
-        this.outScrollY = itemBgY - this.margin + 1;
-        this.outScrollWidth = 5;
-        this.outScrollHeight = (int) (bgHeight + this.margin + 1);
-        double inScrollWidthScale = itemList.size() > itemPerLine * maxLine ? (double) itemPerLine * maxLine / itemList.size() : 1;
-        double outLine = Math.max((int) Math.ceil((double) (itemList.size() - itemPerLine * maxLine) / itemPerLine), 0);
-        double outCellHeight = outLine == 0 ? 0 : (1 - inScrollWidthScale) * (outScrollHeight - 2) / outLine;
-        double inScrollTopHeight = this.getScrollOffset() * outCellHeight;
-        this.inScrollHeight = Math.max(2, (outScrollHeight - 2) * inScrollWidthScale);
-        this.inScrollY = outScrollY + inScrollTopHeight + 1;
-        this.scrollbar = new ScreenRectangle((int) this.outScrollX, (int) this.outScrollY, this.outScrollWidth, this.outScrollHeight);
-        OperationButton slider = this.OP_BUTTONS.get(OperationButtonType.SLIDER.getCode());
-        if (slider != null) {
-            slider.setX(this.outScrollX).setY(this.outScrollY).setWidth(this.outScrollWidth).setHeight(this.outScrollHeight);
-        }
-    }
-
-    private void updateItemCells() {
-        for (OperationButton button : ITEM_BUTTONS) {
-            int i1 = button.getOperation() / itemPerLine;
-            int j1 = button.getOperation() % itemPerLine;
-            int index = this.itemIndex(button);
-            if (index >= 0 && index < itemList.size()) {
-                ItemStack itemStack = itemList.get(index);
-                String id = ItemUtils.getId(itemStack);
-                if (!id.equals(button.getId())) {
-                    button.setPressed(false);
-                }
-                double itemX = itemBgX + j1 * (GuiUtils.ITEM_ICON_SIZE + margin);
-                double itemY = itemBgY + i1 * (GuiUtils.ITEM_ICON_SIZE + margin);
-                button.setX(itemX - 1).setY(itemY - 1).setWidth(GuiUtils.ITEM_ICON_SIZE + 2).setHeight(GuiUtils.ITEM_ICON_SIZE + 2)
-                        .setId(id);
-            } else {
-                if (button.isPressed() || StringUtils.isNotNullOrEmpty(button.getId())) {
-                    button.setPressed(false);
-                }
-                button.setHovered(false);
-                button.setX(0).setY(0).setWidth(0).setHeight(0).setId("");
-                button.setCustomPopupFunction(null);
+    private List<Component> tooltipFor(ItemStack itemStack) {
+        List<Component> list = itemStack.getTooltipLines(
+                Item.TooltipContext.of(this.minecraft.level.registryAccess()),
+                this.minecraft.player,
+                this.minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
+        List<Component> list1 = Lists.newArrayList(list);
+        this.visibleTags.forEach((itemITag) -> {
+            if (itemStack.is(itemITag)) {
+                list1.add(1, Component.literal("#" + itemITag.location()).withStyle(ChatFormatting.DARK_PURPLE));
+            }
+        });
+        for (CreativeModeTab modeTab : CreativeModeTabs.allTabs()) {
+            if (modeTab.contains(itemStack)) {
+                list1.add(1, modeTab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
             }
         }
+        return list1;
     }
 
-    private int itemIndex(OperationButton button) {
-        int i1 = button.getOperation() / itemPerLine;
-        int j1 = button.getOperation() % itemPerLine;
-        return ((itemList.size() > itemPerLine * maxLine ? this.getScrollOffset() : 0) + i1) * itemPerLine + j1;
+    private Component typeLabel() {
+        return this.inventoryMode ? Component.literal("物品栏") : Component.literal("所有物品");
     }
 
-    private boolean isActiveOperation(OperationButton button) {
-        return button.getRealWidth() > 0 && button.getRealHeight() > 0;
-    }
-
-    private boolean isItemCellHit(OperationButton button, double mouseX, double mouseY) {
-        if (button.getRealWidth() <= 0 || button.getRealHeight() <= 0) {
-            return false;
+    private void refreshActionButtons() {
+        if (this.typeButton != null) {
+            this.typeButton.setMessage(typeLabel());
+            int size = this.inventoryMode ? this.getPlayerItemList().size() : this.getAllItemList().size();
+            Component tip = this.inventoryMode
+                    ? Component.literal("列出模式\n物品栏 (" + size + ")")
+                    : Component.literal("列出模式\n所有物品 (" + size + ")");
+            this.typeButton.setTooltip(Tooltip.create(tip));
         }
-        int index = this.itemIndex(button);
-        if (index < 0 || index >= this.itemList.size()) {
-            return false;
+        if (this.itemButton != null && this.currentItem != null) {
+            this.itemButton.setTooltip(Tooltip.create(this.currentItem.getHoverName().copy()));
         }
-        return PortableLayout.contains(grid, mouseX, mouseY) && button.isMouseOverEx(mouseX, mouseY);
-    }
-
-    private void clearItemPressState() {
-        for (OperationButton button : ITEM_BUTTONS) {
-            button.setPressed(false);
+        if (this.countButton != null && this.currentItem != null) {
+            this.countButton.setMessage(Component.literal(String.valueOf(this.currentItem.getCount())));
+            this.countButton.setTooltip(Tooltip.create(Component.literal("设置数量\n当前 " + this.currentItem.getCount())));
+        }
+        if (this.nbtButton != null) {
+            this.nbtButton.setTooltip(Tooltip.create(Component.literal("编辑NBT")));
         }
     }
 
-    private static void inspectOperation(String id, OperationButton button) {
-        UiInspector.region(id, (int) button.getRealX(), (int) button.getRealY(),
-                (int) button.getRealWidth(), (int) button.getRealHeight(), null, true);
-    }
-
-    /**
-     * 绘制按钮
-     */
-    private void renderButton(GuiGraphics graphics, int mouseX, int mouseY) {
-        for (OperationButton button : OP_BUTTONS.values()) button.render(graphics, mouseX, mouseY);
-        for (OperationButton button : ITEM_BUTTONS) button.render(graphics, mouseX, mouseY);
-        for (OperationButton button : OP_BUTTONS.values())
-            button.renderPopup(graphics, this.font, mouseX, mouseY);
-        for (OperationButton button : ITEM_BUTTONS)
-            button.renderPopup(graphics, this.font, mouseX, mouseY);
-    }
-
-    private void handleItem(OperationButton bt, int button, AtomicBoolean flag) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            this.selectedItemId = bt.getId();
-            if (StringUtils.isNotNullOrEmpty(this.selectedItemId)) {
-                this.currentItem = ItemUtils.getItemStack(selectedItemId);
-                this.currentItem.setCount(1);
-                flag.set(true);
-
+    private void openJsonEditor() {
+        String itemRewardJsonString = ItemUtils.serialize(this.currentItem).toString();
+        Minecraft.getInstance().setScreen(new StringInputScreen(this,
+                Component.literal("请输入物品Json"), Component.literal("请输入"), "", itemRewardJsonString, input -> {
+            String result = "";
+            if (StringUtils.isNotNullOrEmpty(input)) {
+                ItemStack itemStack;
+                try {
+                    JsonObject jsonObject = GSON.fromJson(input, JsonObject.class);
+                    itemStack = ItemUtils.deserialize(jsonObject);
+                } catch (Exception e) {
+                    LOGGER.error("Invalid Json: {}", input);
+                    itemStack = null;
+                }
+                if (itemStack != null && itemStack.getItem() != Items.AIR) {
+                    this.currentItem = itemStack;
+                    this.selectedItemId = ItemUtils.getId(this.currentItem);
+                } else {
+                    result = String.format("物品Json[%s]输入有误", input);
+                }
             }
-        }
+            return result;
+        }));
     }
 
-    private void handleOperation(OperationButton bt, int button, AtomicBoolean flag, AtomicBoolean updateSearchResults) {
-        if (this.useInventoryMode && bt.getOperation() == OperationButtonType.TYPE.getCode()) {
-            this.inventoryMode = !this.inventoryMode;
-            updateSearchResults.set(true);
-            flag.set(true);
-        } else if (bt.getOperation() == OperationButtonType.ITEM.getCode()) {
-            String itemRewardJsonString = ItemUtils.serialize(this.currentItem).toString();
-            Minecraft.getInstance().setScreen(new StringInputScreen(this, Text.i18n("请输入物品Json").setShadow(true), Text.i18n("请输入"), "", itemRewardJsonString, input -> {
-                String result = "";
-                if (StringUtils.isNotNullOrEmpty(input)) {
-                    ItemStack itemStack;
-                    try {
-                        JsonObject jsonObject = GSON.fromJson(input, JsonObject.class);
-                        itemStack = ItemUtils.deserialize(jsonObject);
-                    } catch (Exception e) {
-                        LOGGER.error("Invalid Json: {}", input);
-                        itemStack = null;
-                    }
-                    if (itemStack != null && itemStack.getItem() != Items.AIR) {
-                        this.currentItem = itemStack;
-                        this.selectedItemId = ItemUtils.getId(this.currentItem);
-                    } else {
-                        result = String.format("物品Json[%s]输入有误", input);
-                    }
+    private void openCountEditor() {
+        Minecraft.getInstance().setScreen(new StringInputScreen(this,
+                Component.literal("请输入物品数量"), Component.literal("请输入"), "\\d{0,4}",
+                String.valueOf(this.currentItem.getCount()), input -> {
+            String result = "";
+            if (StringUtils.isNotNullOrEmpty(input)) {
+                int count = StringUtils.toInt(input);
+                if (count > 0 && count <= MAX_COUNT) {
+                    this.currentItem.setCount(count);
+                } else {
+                    result = String.format("物品数量[%s]输入有误", input);
                 }
-                return result;
-            }));
-        } else if (bt.getOperation() == OperationButtonType.COUNT.getCode()) {
-            Minecraft.getInstance().setScreen(new StringInputScreen(this, Text.i18n("请输入物品数量").setShadow(true), Text.i18n("请输入"), "\\d{0,4}", String.valueOf(this.currentItem.getCount()), input -> {
-                String result = "";
-                if (StringUtils.isNotNullOrEmpty(input)) {
-                    int count = StringUtils.toInt(input);
-                    if (count > 0 && count <= 64 * 9 * 5) {
-                        this.currentItem.setCount(count);
-                    } else {
-                        result = String.format("物品数量[%s]输入有误", input);
-                    }
+            }
+            return result;
+        }));
+    }
+
+    private void openNbtEditor() {
+        String itemNbtJsonString = ItemUtils.getNbtString(this.currentItem);
+        Minecraft.getInstance().setScreen(new StringInputScreen(this,
+                Component.literal("请输入物品NBT"), Component.literal("请输入"), "", itemNbtJsonString, input -> {
+            String result = "";
+            if (StringUtils.isNotNullOrEmpty(input)) {
+                ItemStack itemStack;
+                try {
+                    itemStack = ItemUtils.getItemStack(ItemUtils.getId(this.currentItem.getItem()) + input, true);
+                    itemStack.setCount(this.currentItem.getCount());
+                } catch (Exception e) {
+                    LOGGER.error("Invalid NBT: {}", input);
+                    itemStack = null;
                 }
-                return result;
-            }));
-        } else if (bt.getOperation() == OperationButtonType.NBT.getCode()) {
-            String itemNbtJsonString = ItemUtils.getNbtString(this.currentItem);
-            Minecraft.getInstance().setScreen(new StringInputScreen(this, Text.i18n("请输入物品NBT").setShadow(true), Text.i18n("请输入"), "", itemNbtJsonString, input -> {
-                String result = "";
-                if (StringUtils.isNotNullOrEmpty(input)) {
-                    ItemStack itemStack;
-                    try {
-                        itemStack = ItemUtils.getItemStack(ItemUtils.getId(this.currentItem.getItem()) + input, true);
-                        itemStack.setCount(this.currentItem.getCount());
-                    } catch (Exception e) {
-                        LOGGER.error("Invalid NBT: {}", input);
-                        itemStack = null;
-                    }
-                    if (itemStack != null
-                            //&& itemStack.hasTag()
-                    ) {
-                        this.currentItem = itemStack;
-                        this.selectedItemId = ItemUtils.getId(this.currentItem);
-                    } else {
-                        result = String.format("物品NBT[%s]输入有误", input);
-                    }
+                if (itemStack != null) {
+                    this.currentItem = itemStack;
+                    this.selectedItemId = ItemUtils.getId(this.currentItem);
+                } else {
+                    result = String.format("物品NBT[%s]输入有误", input);
                 }
-                return result;
-            }));
-        }
+            }
+            return result;
+        }));
     }
 }

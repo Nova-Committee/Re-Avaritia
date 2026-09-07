@@ -1,7 +1,6 @@
 package committee.nova.mods.avaritia.api.client.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.NativeImage;
 import committee.nova.mods.avaritia.api.client.util.color.Color;
 import committee.nova.mods.avaritia.api.client.util.color.ColorARGB;
 import net.minecraft.client.Minecraft;
@@ -39,7 +38,6 @@ public class TextureUtils {
     /**
      * 自定义贴图缓存
      */
-    private static final Map<ResourceLocation, NativeImage> CACHE = new HashMap<>();
     private static final Map<ResourceLocation, BufferedImage> BUFFER_CACHE = new HashMap<>();
 
 
@@ -91,29 +89,6 @@ public class TextureUtils {
         }
     }
 
-    /**
-     * 从资源中加载纹理并转换为 NativeImage。
-     *
-     * @param texture 纹理的 ResourceLocation
-     * @return 纹理对应的 NativeImage 或 null
-     */
-    public static NativeImage getTextureImage(ResourceLocation texture) {
-        // 优先从缓存中获取
-        if (CACHE.containsKey(texture)) {
-            return CACHE.get(texture);
-        }
-        try {
-            // 打开资源输入流并加载为 NativeImage
-            try (InputStream inputStream = ResourceUtils.getResourceAsStream(texture)) {
-                NativeImage nativeImage = NativeImage.read(inputStream);
-                CACHE.put(texture, nativeImage);
-                return nativeImage;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to load texture: {}", texture);
-            return null;
-        }
-    }
 
     public static BufferedImage getBufferedImage(InputStream in) throws IOException {
         BufferedImage img = ImageIO.read(in);
