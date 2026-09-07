@@ -4,6 +4,8 @@ import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.component.InfinityBucketControl;
 import committee.nova.mods.avaritia.common.component.InfinityBucketCreature;
@@ -14,11 +16,12 @@ import committee.nova.mods.avaritia.common.menu.InfinityBucketMenu;
 import committee.nova.mods.avaritia.init.registry.ModDataComponents;
 import committee.nova.mods.avaritia.init.registry.ModItems;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -77,17 +80,14 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     private InfinityBucketCreatures cachedCreatures;
     private InfinityBucketControl control = InfinityBucketControl.DEFAULT;
     private int sourceCount;
+    private ScreenRectangle panel;
+    private ScreenRectangle list;
+    private ScreenRectangle listFrame;
+    private ScreenRectangle listInput;
+    private ScreenRectangle search;
+    private ScreenRectangle scrollbar;
+    private ScreenRectangle actions;
 
-    private Modal modal = Modal.NONE;
-    private Component modalTitle = CommonComponents.EMPTY;
-    private Component modalMessage = CommonComponents.EMPTY;
-    private Button modalAccept;
-    private Button modalCancel;
-    private DeleteTarget deleteTarget;
-    private int modalX;
-    private int modalY;
-    private int modalWidth;
-    private int modalHeight;
 
     public InfinityBucketScreen(InfinityBucketMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, null, 260, 240, 256, 256);
@@ -98,19 +98,29 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
     @Override
     protected void subInit() {
         contextMenu.close();
+        panel = new ScreenRectangle(getGuiLeft(), getGuiTop(), imageWidth, imageHeight);
+        list = PortableLayout.translate(new ScreenRectangle(LIST_X, LIST_Y, LIST_WIDTH, LIST_HEIGHT), panel.left(), panel.top());
+        listFrame = PortableLayout.inset(list, -1, -1, -1, -1);
+        search = PortableLayout.translate(new ScreenRectangle(LIST_X, SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT), panel.left(), panel.top());
+        scrollbar = PortableLayout.translate(new ScreenRectangle(SCROLL_X, LIST_Y, SCROLL_WIDTH, LIST_HEIGHT), panel.left(), panel.top());
+        listInput = new ScreenRectangle(list.left(), list.top(), scrollbar.right() - list.left(), list.height());
+        actions = PortableLayout.inset(panel, 0, 0, 0, imageHeight - InfinityBucketMenu.PLAYER_INV_Y + 12);
         fluidsTab = addRenderableWidget(PortableUi.button(leftPos + 8, topPos + 24, 114, 16,
                 Component.translatable("gui.avaritia.infinity_bucket.tab.fluids"), button -> switchTab(false)));
         creaturesTab = addRenderableWidget(PortableUi.button(leftPos + 126, topPos + 24, 126, 16,
                 Component.translatable("gui.avaritia.infinity_bucket.tab.creatures"), button -> switchTab(true)));
+        UiInspector.name(fluidsTab, "bucket.tab.fluids");
+        UiInspector.name(creaturesTab, "bucket.tab.creatures");
         fluidsTab.active = creaturesTabActive;
         creaturesTab.active = !creaturesTabActive;
         Component searchTitle = Component.translatable("gui.avaritia.infinity_bucket.search");
-        searchBox = addRenderableWidget(new EditBox(font, leftPos + LIST_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT, searchTitle));
+        searchBox = addRenderableWidget(new EditBox(font, search.left(), search.top(), search.width(), search.height(), searchTitle));
+        UiInspector.name(searchBox, "bucket.search");
         searchBox.setMaxLength(64);
         searchBox.setHint(searchTitle);
         searchBox.setValue(query);
         searchBox.setResponder(this::filter);
-        scrollBar = new SimpleScrollBar(leftPos + SCROLL_X, topPos + LIST_Y, SCROLL_WIDTH, LIST_HEIGHT) {
+        scrollBar = new SimpleScrollBar(scrollbar.left(), scrollbar.top(), scrollbar.width(), scrollbar.height()) {
             @Override
             public void draggedTo(double scrolledOn) {
                 scroll = scrolledOn;
@@ -121,9 +131,9 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             }
         };
         addRenderableWidget(scrollBar);
+        UiInspector.name(scrollBar, "bucket.scrollbar");
         cacheValid = false;
         ensureCache();
-        layoutModal();
     }
 
     private void switchTab(boolean creatures) {
@@ -215,17 +225,15 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Nullable
     private Row hoveredRow(double mouseX, double mouseY) {
-        if (mouseX < leftPos + LIST_X || mouseX >= leftPos + LIST_X + LIST_WIDTH
-                || mouseY < topPos + LIST_Y || mouseY >= topPos + LIST_Y + LIST_HEIGHT) {
+        if (!PortableLayout.contains(list, mouseX, mouseY)) {
             return null;
         }
-        int index = rowStart() + (int) ((mouseY - topPos - LIST_Y) / ROW_HEIGHT);
+        int index = rowStart() + (int) ((mouseY - list.top()) / ROW_HEIGHT);
         return index < rows.size() ? rows.get(index) : null;
     }
 
     private boolean insideList(double mouseX, double mouseY) {
-        return mouseX >= leftPos + LIST_X && mouseX < leftPos + SCROLL_X + SCROLL_WIDTH
-                && mouseY >= topPos + LIST_Y && mouseY < topPos + LIST_Y + LIST_HEIGHT;
+        return PortableLayout.contains(listInput, mouseX, mouseY);
     }
 
     @Override
@@ -238,15 +246,15 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
                 graphics.renderComponentTooltip(font, active(row) ? row.activeTooltip : row.tooltip, mouseX, mouseY);
             }
         }
-        renderModal(graphics, mouseX, mouseY, partialTick);
         contextMenu.render(graphics, font, mouseX, mouseY);
     }
 
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        PortableUi.panel(graphics, leftPos, topPos, imageWidth, imageHeight);
-        PortableUi.header(graphics, font, title, leftPos, topPos, imageWidth);
-        PortableUi.inset(graphics, leftPos + LIST_X - 1, topPos + LIST_Y - 1, LIST_WIDTH + 2, LIST_HEIGHT + 2);
+        PortableUi.panel(graphics, panel);
+        UiInspector.region("bucket.panel", panel, null, false);
+        PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
+        PortableUi.inset(graphics, listFrame);
         for (Slot slot : menu.slots) {
             if (slot.isActive()) {
                 PortableUi.slot(graphics, leftPos + slot.x - 1, topPos + slot.y - 1);
@@ -261,10 +269,11 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Override
     protected void renderFg(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        int x = leftPos + LIST_X;
-        int y = topPos + LIST_Y;
+        int x = list.left();
+        int y = list.top();
+        UiInspector.region("bucket.list", list, list, true);
         if (rows.isEmpty()) {
-            graphics.enableScissor(x, y, x + LIST_WIDTH, y + LIST_HEIGHT);
+            graphics.enableScissor(list.left(), list.top(), list.right(), list.bottom());
             Component empty = Component.translatable(sourceCount == 0
                     ? "gui.avaritia.infinity_bucket.empty" : "gui.avaritia.infinity_bucket.no_results");
             graphics.drawCenteredString(font, empty, x + LIST_WIDTH / 2, y + 14, PortableUi.TEXT);
@@ -272,13 +281,16 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             graphics.disableScissor();
             return;
         }
-        graphics.enableScissor(x, y, x + LIST_WIDTH, y + LIST_HEIGHT);
+        graphics.enableScissor(list.left(), list.top(), list.right(), list.bottom());
         int start = rowStart();
         for (int i = 0; i < VISIBLE_ROWS && start + i < rows.size(); i++) {
             Row row = rows.get(start + i);
             int top = y + i * ROW_HEIGHT;
             boolean hovered = !overlayOpen() && hoveredRow(mouseX, mouseY) == row;
             PortableUi.row(graphics, x, top, LIST_WIDTH, ROW_HEIGHT, hovered, row.index == focusedIndex);
+            if (UiInspector.enabled()) {
+                UiInspector.row("bucket.list", null, row.index, x, top, LIST_WIDTH, ROW_HEIGHT, list, true);
+            }
             PortableUi.text(graphics, font, row.name, x + 20, top + 1, LIST_WIDTH - 24, PortableUi.TEXT);
             PortableUi.text(graphics, font, active(row) ? row.activeDetail : row.detail,
                     x + 20, top + 10, LIST_WIDTH - 24, PortableUi.MUTED);
@@ -367,95 +379,40 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         if (!canOperate()) {
             return;
         }
-        deleteTarget = new DeleteTarget(row);
-        modal = Modal.DELETE;
-        modalTitle = Component.translatable("gui.avaritia.infinity_bucket.delete.confirm");
-        modalMessage = Component.translatable("gui.avaritia.infinity_bucket.delete.confirm.message", deleteTarget.name);
-        layoutModal();
+        DeleteTarget target = new DeleteTarget(row);
+        contextMenu.close();
+        PortableUi.confirm(this,
+                Component.translatable("gui.avaritia.infinity_bucket.delete.confirm"),
+                Component.translatable("gui.avaritia.infinity_bucket.delete.confirm.message", target.name), () -> {
+                    ensureCache();
+                    if (canOperate() && target.stillPresent(menu.getBucket())) {
+                        sendAction((target.creature ? InfinityBucketMenu.ACTION_DELETE_CREATURE
+                                : InfinityBucketMenu.ACTION_DELETE_FLUID) + target.index);
+                    }
+                });
     }
 
     private void requestClear() {
         if (!canOperate()) {
             return;
         }
-        modal = Modal.CLEAR;
-        modalTitle = Component.translatable("gui.avaritia.infinity_bucket.clear.confirm");
-        modalMessage = Component.translatable("gui.avaritia.infinity_bucket.clear.confirm.message");
-        layoutModal();
-    }
-
-    /** Stays inside this container screen so carried items and the server menu remain open. */
-    private void layoutModal() {
-        modalAccept = null;
-        modalCancel = null;
-        if (modal == Modal.NONE) {
-            return;
-        }
         contextMenu.close();
-        setFocused(null);
-        modalWidth = Math.min(280, width - 16);
-        modalHeight = Math.min(height - 16, 76 + font.split(modalMessage, modalWidth - 28).size() * font.lineHeight);
-        modalX = (width - modalWidth) / 2;
-        modalY = (height - modalHeight) / 2;
-        int buttonWidth = (modalWidth - 32) / 2;
-        int buttonY = modalY + modalHeight - 30;
-        modalCancel = PortableUi.button(modalX + 12, buttonY, buttonWidth, 20,
-                CommonComponents.GUI_CANCEL, button -> closeModal());
-        modalAccept = PortableUi.dangerButton(modalX + modalWidth - buttonWidth - 12, buttonY, buttonWidth, 20,
-                Component.translatable("gui.avaritia.portable.confirm"), button -> acceptModal());
-        modalCancel.setFocused(true);
+        PortableUi.confirm(this,
+                Component.translatable("gui.avaritia.infinity_bucket.clear.confirm"),
+                Component.translatable("gui.avaritia.infinity_bucket.clear.confirm.message"), () -> {
+                    if (canOperate()) {
+                        sendAction(InfinityBucketMenu.ACTION_CLEAR);
+                    }
+                });
     }
 
-    private void closeModal() {
-        modal = Modal.NONE;
-        deleteTarget = null;
-        modalAccept = null;
-        modalCancel = null;
-        setFocused(null);
-    }
-
-    private void acceptModal() {
-        ensureCache();
-        if (canOperate()) {
-            if (modal == Modal.CLEAR) {
-                sendAction(InfinityBucketMenu.ACTION_CLEAR);
-            } else if (modal == Modal.DELETE && deleteTarget != null && deleteTarget.stillPresent(menu.getBucket())) {
-                sendAction((deleteTarget.creature ? InfinityBucketMenu.ACTION_DELETE_CREATURE
-                        : InfinityBucketMenu.ACTION_DELETE_FLUID) + deleteTarget.index);
-            }
-        }
-        closeModal();
-    }
-
-    private void renderModal(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        if (modal == Modal.NONE) {
-            return;
-        }
-        graphics.flush();
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 500);
-        graphics.fill(0, 0, width, height, 0xA0000000);
-        PortableUi.panel(graphics, modalX, modalY, modalWidth, modalHeight);
-        PortableUi.header(graphics, font, modalTitle, modalX + 4, modalY + 4, modalWidth - 8);
-        graphics.drawWordWrap(font, modalMessage, modalX + 14, modalY + 29, modalWidth - 28, PortableUi.TEXT);
-        modalCancel.render(graphics, mouseX, mouseY, partialTick);
-        modalAccept.render(graphics, mouseX, mouseY, partialTick);
-        graphics.flush();
-        graphics.pose().popPose();
-    }
 
     private boolean overlayOpen() {
-        return modal != Modal.NONE || contextMenu.isOpen();
+        return contextMenu.isOpen() || Minecraft.getInstance().screen != this;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (modal != Modal.NONE) {
-            if (!modalCancel.mouseClicked(mouseX, mouseY, button) && modalAccept != null) {
-                modalAccept.mouseClicked(mouseX, mouseY, button);
-            }
-            return true;
-        }
         if (contextMenu.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
@@ -477,8 +434,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
             focusedIndex = row.index;
             return true;
         }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && mouseX >= leftPos && mouseX < leftPos + imageWidth
-                && mouseY >= topPos && mouseY < topPos + InfinityBucketMenu.PLAYER_INV_Y - 12
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && PortableLayout.contains(actions, mouseX, mouseY)
                 && (searchBox == null || !searchBox.isMouseOver(mouseX, mouseY))) {
             openActions(null, mouseX, mouseY);
             return true;
@@ -507,7 +463,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (modal != Modal.NONE || contextMenu.mouseScrolled(scrollY)) {
+        if (contextMenu.mouseScrolled(scrollY)) {
             return true;
         }
         if (insideList(mouseX, mouseY)) {
@@ -523,22 +479,6 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (modal != Modal.NONE) {
-            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-                closeModal();
-            } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-                if (modalAccept.isFocused()) {
-                    acceptModal();
-                } else {
-                    closeModal();
-                }
-            } else if (keyCode == GLFW.GLFW_KEY_TAB) {
-                boolean acceptFocused = !modalAccept.isFocused();
-                modalAccept.setFocused(acceptFocused);
-                modalCancel.setFocused(!acceptFocused);
-            }
-            return true;
-        }
         if (contextMenu.isOpen()) {
             contextMenu.keyPressed(keyCode);
             return true;
@@ -558,7 +498,7 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
         }
         if (keyCode == GLFW.GLFW_KEY_MENU || (keyCode == GLFW.GLFW_KEY_F10 && hasShiftDown())) {
             Row row = rows.stream().filter(entry -> entry.index == focusedIndex).findFirst().orElse(null);
-            openActions(row, leftPos + LIST_X + 8, topPos + LIST_Y + 8);
+            openActions(row, list.left() + 8, list.top() + 8);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -566,15 +506,12 @@ public class InfinityBucketScreen extends BaseContainerScreen<InfinityBucketMenu
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (modal != Modal.NONE || contextMenu.isOpen()) {
+        if (contextMenu.isOpen()) {
             return true;
         }
         return super.charTyped(codePoint, modifiers);
     }
 
-    private enum Modal {
-        NONE, DELETE, CLEAR
-    }
 
     private static final class Row {
         private final int index;

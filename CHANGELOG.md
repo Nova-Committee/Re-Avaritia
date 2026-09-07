@@ -16,6 +16,11 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * Always ignore terrain placement restrictions, including Nether water vaporization, without a GUI toggle. Preserve edit permissions, placement-event cancellation and rollback, and solid-target protection; legacy saved force flags are ignored.
 * Capture eligible aquatic creatures (Bucketable, aquatic tags, squid/dolphin) while excluding players, bosses, capturing-not-supported targets, and mounted graphs; release into existing water with full entity data.
 * Keep portable item and structure preview regressions in an isolated `src/gameTest` source set. Run `./gradlew runGameTestServer`; its test mod and fixtures are excluded from production JARs and normal client/server runs.
+* Add development-only portable UI geometry inspection via `runClient -PuiInspect=true`, using an isolated `build/ui-preview` game directory. Ctrl+Alt+F8 shows recorded bounds; Ctrl+Alt+F9 requests local plain/annotated PNGs and a same-frame, privacy-limited JSON snapshot. Production launches keep inspection disabled.
+* Use native NeoForge GUI layers for portable confirmations, prompts, channel naming and machine side configuration. Keep parent containers open, default destructive confirmation focus to Cancel, and finish dialog callbacks at most once.
+* Share portable player/library list framing while retaining vanilla scrolling and selection; arrange Infinity Ring creation and control forms with vanilla GridLayout.
+* Apply portable framing and named inspection regions to side configuration, string input, item filters/selectors and the config page. Keep selection/query/scroll state through dialog returns, compute item-cell geometry before rendering, and reuse config controls while scrolling or resizing.
+* Name machine, clock, combiner and storage controls for inspection, sharing progress/error/scroll regions with their rendering and hover logic while retaining atlas coordinates, native slots and network action IDs.
 
 
 ### Fixed
@@ -32,6 +37,13 @@ All notable changes to this project will be documented in this file，ChangeLog 
 * Scale Neutron Ring drag rotation to the preview viewport, use proportional wheel zoom, and keep the model's fitted size steady while rotating.
 * Place Infinity Ring arrivals on generated terrain: superflat uses the real surface instead of Y=5, and sky-island trees no longer occupy the spawn block. Re-entry uses the heightmap so the player stands on land.
 * Reposition and clip the Infinity Bucket empty-state help inside the four-row list, including long English text.
+* Draw side-configuration Clear/Back icons at their actual button bounds and expose the side-config entry button through the existing viewer exclusion contract. Keep input error text inside its own area with full-text hover, and prevent config descriptions or partially visible controls from covering the footer.
+* Fix item-filter submission disconnects by registering its own serverbound payload instead of reusing the clientbound totem ID. Accept items without custom data, write filter components back without mutating prior snapshots, and reload saved filters when reopening the screen.
+* Populate the item selector's default all-items mode from the creative Search tab instead of the empty Inventory tab, retaining mod-provided creative entries and variants.
+* Share panel, list, clipping, popup and preview geometry across portable screens, preserving the Infinity Bucket's distinct search/list widths. Use fractional half-open cursor bounds and the window/GUI ratio for the Neutron Ring reset-menu position.
+* Let NeoForge render the shared container background once, removing the duplicate base-screen pass that drew portable panels twice and produced duplicate inspector region IDs.
+* Render the Infinity Clock input and Tesseract backgrounds once; keep anvil naming editable across resize. Derive the Infinity Chest scroll viewport from its actual storage slots and use vanilla slot hit bounds, while preserving GUI-scale restoration.
+* Restore the Tesseract panel's missing lower hotbar border and padding by retaining the final nine atlas rows in both storage and crafting backgrounds; slot coordinates remain unchanged.
 * Let prompt suggestions coexist with Enter submission, one-click confirmation, and keyboard-focused cancellation.
 
 

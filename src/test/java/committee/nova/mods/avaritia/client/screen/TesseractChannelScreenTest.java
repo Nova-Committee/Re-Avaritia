@@ -6,15 +6,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DisplayName("超立方体旧版频道选择布局")
+@DisplayName("超立方体频道滚动")
 class TesseractChannelScreenTest {
     @Test
-    @DisplayName("视口与滚动范围保持 1.20.1 的九行布局")
-    void keepsLegacyViewportContract() {
+    @DisplayName("空列表不产生负偏移，长列表可以滚动到底")
+    void scrollRangeReachesLastRow() {
         assertAll(
-                () -> assertEquals(88, TesseractChannelScreen.WIDTH),
-                () -> assertEquals(154, TesseractChannelScreen.HEIGHT),
-                () -> assertEquals(9, TesseractChannelScreen.ROWS),
                 () -> assertEquals(0, TesseractChannelScreen.maxScrollOffset(0)),
                 () -> assertEquals(0, TesseractChannelScreen.maxScrollOffset(9)),
                 () -> assertEquals(5, TesseractChannelScreen.maxScrollOffset(14))

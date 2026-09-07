@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.render.FluidItemRender;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.TesseractMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SChannelFilterPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannel;
@@ -13,6 +15,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -41,6 +44,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     private Button craftToInventoryButton;
     private Button craftAndDropButton;
     private String previousFilter = "";
+    private ScreenRectangle storageViewport;
+    private ScreenRectangle craftingStorageViewport;
 
     public TesseractScreen(TesseractMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -57,6 +62,8 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         super.init();
         leftPos = (width - imageWidth + 4) / 2;
         topPos = Math.max(0, (height - imageHeight) / 2);
+        storageViewport = PortableLayout.translate(new ScreenRectangle(5, 17, 210, 154), leftPos, topPos);
+        craftingStorageViewport = PortableLayout.translate(new ScreenRectangle(5, 17, 210, 120), leftPos, topPos);
         craftingButtons.clear();
 
         searchBox = new EditBox(font, leftPos + SEARCH_X, topPos + SEARCH_Y, SEARCH_WIDTH, SEARCH_HEIGHT,
@@ -65,23 +72,23 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         searchBox.setBordered(false);
         searchBox.setValue(menu.filter);
         previousFilter = menu.filter;
-        addRenderableWidget(searchBox);
+        addRenderableWidget(UiInspector.name(searchBox, "tesseract.search"));
 
-        addLegacyButton(CONTROL_X, CRAFTING_TOGGLE_Y, CONTROL_SIZE, CONTROL_SIZE,
+        UiInspector.name(addLegacyButton(CONTROL_X, CRAFTING_TOGGLE_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> toggleTextureX(menu.craftingMode), () -> CRAFTING_ICON_TEXTURE_Y,
-                this::toggleCraftingMode, null);
-        addLegacyButton(CONTROL_X, LOCK_Y, CONTROL_SIZE, CONTROL_SIZE,
+                this::toggleCraftingMode, null), "tesseract.crafting");
+        UiInspector.name(addLegacyButton(CONTROL_X, LOCK_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> toggleTextureX(menu.locked), () -> LOCK_ICON_TEXTURE_Y,
-                this::toggleLock, Component.translatable("gui.avaritia.owner", menu.player.getName()));
-        addLegacyButton(CONTROL_X, CHANNEL_Y, CONTROL_SIZE, CONTROL_SIZE,
+                this::toggleLock, Component.translatable("gui.avaritia.owner", menu.player.getName())), "tesseract.lock");
+        UiInspector.name(addLegacyButton(CONTROL_X, CHANNEL_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> ICON_TEXTURE_X, () -> CHANNEL_ICON_TEXTURE_Y,
-                () -> sendMenuButton(5), Component.translatable("gui.avaritia.channel.tip1", menu.channel.getName()));
-        addLegacyButton(CONTROL_X, SORT_Y, CONTROL_SIZE, CONTROL_SIZE,
+                () -> sendMenuButton(5), Component.translatable("gui.avaritia.channel.tip1", menu.channel.getName())), "tesseract.channel");
+        UiInspector.name(addLegacyButton(CONTROL_X, SORT_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> ICON_TEXTURE_X, () -> sortTextureY(menu.sortType),
-                this::cycleSort, Component.translatable("gui.avaritia.sort.tip1"));
-        addLegacyButton(CONTROL_X, VIEW_Y, CONTROL_SIZE, CONTROL_SIZE,
+                this::cycleSort, Component.translatable("gui.avaritia.sort.tip1")), "tesseract.sort");
+        UiInspector.name(addLegacyButton(CONTROL_X, VIEW_Y, CONTROL_SIZE, CONTROL_SIZE,
                 () -> ICON_TEXTURE_X, () -> viewTextureY(menu.viewType),
-                this::changeViewType, Component.translatable("gui.avaritia.view.all"));
+                this::changeViewType, Component.translatable("gui.avaritia.view.all")), "tesseract.view");
 
         craftToChannelButton = addCraftButton(CRAFT_TO_CHANNEL_Y, CRAFT_TO_CHANNEL_TEXTURE_Y, 6,
                 Component.translatable("gui.avaritia.craft.channel"));
@@ -89,6 +96,9 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
                 Component.translatable("gui.avaritia.craft.inv"));
         craftAndDropButton = addCraftButton(CRAFT_AND_DROP_Y, CRAFT_AND_DROP_TEXTURE_Y, 14,
                 Component.translatable("gui.avaritia.craft.drop"));
+        UiInspector.name(craftToChannelButton, "tesseract.craft.channel");
+        UiInspector.name(craftToInventoryButton, "tesseract.craft.inventory");
+        UiInspector.name(craftAndDropButton, "tesseract.craft.drop");
         updateCraftingButtons();
         menu.dummyChannelContainer.refreshContainer(true);
     }
@@ -167,12 +177,17 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
         updateCraftingButtons();
     }
 
+    private ScreenRectangle storageBounds() {
+        return menu.craftingMode ? craftingStorageViewport : storageViewport;
+    }
+
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         for (BackgroundSlice slice : background(menu.craftingMode)) {
             graphics.blit(GUI_IMG, leftPos, topPos + slice.destinationY(), 0, slice.sourceY(),
                     imageWidth, slice.height(), TEXTURE_SIZE, TEXTURE_SIZE);
         }
+        UiInspector.region("tesseract.storage", storageBounds(), null, true);
     }
 
     @Override
@@ -183,7 +198,6 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         renderFluids(graphics);
         renderStoredCounts(graphics);
@@ -243,8 +257,7 @@ public class TesseractScreen extends AbstractContainerScreen<TesseractMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int visibleSlots = menu.craftingMode ? 77 : 99;
-        if (mouseX >= leftPos + 5 && mouseX <= leftPos + 214
-                && mouseY >= topPos + 17 && mouseY <= topPos + (menu.craftingMode ? 136 : 170)
+        if (PortableLayout.contains(storageBounds(), mouseX, mouseY)
                 && menu.dummyChannelContainer.sortedObject.size() > visibleSlots) {
             menu.dummyChannelContainer.onMouseScrolled(scrollY > 0);
             return true;

@@ -63,6 +63,21 @@
 举盾立即生效，不降低移动速度，且允许疾跑；穿透箭和绕过盾牌的伤害保留例外。举盾和收盾不会发出物品交互振动。浮空模式不等同于创造飞行。
 
 ## **⚙️开发:**
+
+### UI 几何检查（仅开发环境）
+
+运行 `./gradlew runClient -PuiInspect=true`（Windows 使用 `gradlew.bat`）。该模式使用独立的 `build/ui-preview` 游戏目录；请在其中新建专用检查世界，不打开已有存档。
+
+* **Ctrl+Alt+F8** 切换控件边界、裁剪框、命中框和节点状态。
+* **Ctrl+Alt+F9** 请求导出同一渲染帧的无标注 PNG、标注 PNG 和 schemaVersion=1 的 JSON，保存到 `build/ui-inspection`。不覆盖已有文件；两张 PNG 写完后才写 JSON，收到成功路径后再使用导出。
+* 静态控件 ID 在其 `screenInstance` 内定位；结合 `layoutRevision` 和 `frameId` 排除旧坐标。匿名 widget/行 ID 不保证重建后稳定。出现 `duplicate_id` 或 `invalid_bounds` 时不能作为自动定位依据；隐藏、完全裁剪或输入被阻挡的节点不提供建议点击点。
+* GUI 绘制按 `guiScale` 换算，鼠标按 GUI/窗口尺寸比例换算。`scissorPixels` 使用 OpenGL 左下角原点及原版整数截断。`pixelMappingValid=false` 时只提供 GUI 几何；桌面/DPI 坐标必须另行校准。
+* JSON 不包含输入值、名字、物品内容、NBT 或服务器地址；PNG 可能包含屏幕上可见的私密信息。导出仅保存在本机，分享前请自行检查。
+
+检查器仅提供观察，不替代输入分发，也不证明未知第三方绘制。普通 `runClient` 和生产安装不启用检查器，生产环境即使设置系统属性也不会开启。
+
+继续推广界面前，应在真实容器中检查 F8/F9、按观察到的槽位拿放物品，并在改变窗口/GUI 缩放后再次导出。编译与服务端 GameTests 不能验证截图或客户端输入。
+
 ### **Singularities**
 数据包定义位于 `data/<命名空间>/singularities/<路径>.json`。JSON 内的 `name` 必须等于文件资源 ID，且 `count`、`timeCost` 必须大于 0。
 ```json

@@ -2,11 +2,14 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.client.screen.side.SideConfigButton;
 import committee.nova.mods.avaritia.common.menu.NeutronCollectorMenu;
 import committee.nova.mods.avaritia.init.registry.ModTooltips;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,7 +26,7 @@ import java.util.List;
  */
 public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollectorMenu> {
     private Button configButton;
-
+    private ScreenRectangle progress;
     public NeutronCollectorScreen(NeutronCollectorMenu container, Inventory inventory, Component title) {
         super(container, inventory, title, Res.NEUTRON_COLLECTOR_TEX);
     }
@@ -33,19 +36,14 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
         super.init();
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
-
-        // 添加配置按钮
-        this.configButton = new SideConfigButton(this, x - 20, y);
-
+        this.progress = PortableLayout.translate(new ScreenRectangle(99, 31, 4, 18), x, y);
+        this.configButton = UiInspector.name(new SideConfigButton(this, x - 20, y), "collector.config");
         this.addRenderableWidget(this.configButton);
     }
 
     @Override
     protected void renderFg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
-
-        if (pMouseX > x + 99 && pMouseX < x + 104 && pMouseY > y + 30 && pMouseY < y + 50) {
+        if (PortableLayout.contains(this.progress, pMouseX, pMouseY)) {
             List<Component> tooltip = new ArrayList<>();
 
             if (this.getProgress() > 0) {
@@ -68,12 +66,11 @@ public class NeutronCollectorScreen extends BaseContainerScreen<NeutronCollector
 
     @Override
     protected void renderBgs(GuiGraphics pGuiGraphics, float pPartialTick, int pX, int pY) {
-        int i = this.getGuiLeft();
-        int j = this.getGuiTop();
         if (this.getProgress() > 0) {
-            int i2 = this.getProgressBarScaled(18);
-            pGuiGraphics.blit(Res.NEUTRON_COLLECTOR_TEX, i + 99, j + 49 - i2, 176, 18 - i2, 4, i2);
+            int filled = this.getProgressBarScaled(this.progress.height());
+            pGuiGraphics.blit(Res.NEUTRON_COLLECTOR_TEX, this.progress.left(), this.progress.bottom() - filled, 176, 18 - filled, this.progress.width(), filled);
         }
+        UiInspector.region("collector.progress", this.progress, null, true);
     }
 
     public int getProgress() {

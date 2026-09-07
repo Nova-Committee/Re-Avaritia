@@ -55,6 +55,8 @@ public class NetworkHandler {
 
         registrar.playToServer(C2SSetTimePacket.TYPE, C2SSetTimePacket.STREAM_CODEC,
                 new C2SSetTimePacket.Handler());
+        registrar.playToServer(C2SItemFilterPack.TYPE, C2SItemFilterPack.STREAM_CODEC,
+                new C2SItemFilterPack.Handler());
         registrar.playToServer(C2SInfinityRingPack.TYPE, C2SInfinityRingPack.STREAM_CODEC,
                 new C2SInfinityRingPack.Handler());
         registrar.playToServer(C2SNeutronRingPack.TYPE, C2SNeutronRingPack.STREAM_CODEC,
@@ -86,7 +88,6 @@ public class NetworkHandler {
 
         registrar.playBidirectional(NbtDataPack.TYPE, NbtDataPack.STREAM_CODEC, new NbtDataPack.Handler());
         //CHANNEL.registerMessage(itemSuper++, NbtDataPack.class, NbtDataPack::write, NbtDataPack::new, NbtDataPack::run);
-        //CHANNEL.registerMessage(itemSuper++, C2SItemFilterPack.class, C2SItemFilterPack::write, C2SItemFilterPack::new, C2SItemFilterPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 //        CHANNEL.registerMessage(itemSuper++, C2SWipChestActionPack.class, C2SWipChestActionPack::write, C2SWipChestActionPack::new, C2SWipChestActionPack::run, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 //        CHANNEL.registerMessage(itemSuper++, S2CChannelActionPack.class, S2CChannelActionPack::write, S2CChannelActionPack::new, S2CChannelActionPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 //        CHANNEL.registerMessage(itemSuper++, S2CChannelListPack.class, S2CChannelListPack::write, S2CChannelListPack::new, S2CChannelListPack::run, Optional.of(NetworkDirection.PLAY_TO_CLIENT));

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -47,8 +48,16 @@ public final class PortableUi {
         sprite(graphics, PANEL, x, y, width, height);
     }
 
+    public static void panel(GuiGraphics graphics, ScreenRectangle bounds) {
+        panel(graphics, bounds.left(), bounds.top(), bounds.width(), bounds.height());
+    }
+
     public static void inset(GuiGraphics graphics, int x, int y, int width, int height) {
         sprite(graphics, INSET, x, y, width, height);
+    }
+
+    public static void inset(GuiGraphics graphics, ScreenRectangle bounds) {
+        inset(graphics, bounds.left(), bounds.top(), bounds.width(), bounds.height());
     }
 
     public static void slot(GuiGraphics graphics, int x, int y) {
@@ -89,7 +98,10 @@ public final class PortableUi {
     }
 
     public static void confirm(Screen parent, Component title, Component message, Runnable confirmed) {
-        Minecraft.getInstance().setScreen(new Confirmation(parent, title, message, confirmed));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen == parent) {
+            minecraft.pushGuiLayer(new Confirmation(parent, title, message, confirmed));
+        }
     }
 
     public static void prompt(Screen parent, Component title, String initial, int maxLength,
@@ -99,7 +111,10 @@ public final class PortableUi {
 
     public static void prompt(Screen parent, Component title, String initial, int maxLength,
                               boolean allowBlank, List<String> suggestions, Consumer<String> confirmed) {
-        Minecraft.getInstance().setScreen(new Prompt(parent, title, initial, maxLength, allowBlank, suggestions, confirmed));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen == parent) {
+            minecraft.pushGuiLayer(new Prompt(parent, title, initial, maxLength, allowBlank, suggestions, confirmed));
+        }
     }
 
     @Nullable
@@ -112,6 +127,7 @@ public final class PortableUi {
 
     private abstract static class Dialog extends Screen {
         protected final Screen parent;
+        private boolean finished;
 
         Dialog(Screen parent, Component title) {
             super(title);
@@ -120,7 +136,23 @@ public final class PortableUi {
 
         @Override
         public void onClose() {
-            Minecraft.getInstance().setScreen(parent);
+            finish();
+        }
+
+        protected final boolean finish() {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (finished || minecraft.screen != this) {
+                return false;
+            }
+            finished = true;
+            minecraft.popGuiLayer();
+            return true;
+        }
+
+        @Override
+        public void removed() {
+            finished = true;
+            super.removed();
         }
 
         @Override
@@ -132,10 +164,8 @@ public final class PortableUi {
     private static final class Confirmation extends Dialog {
         private final Component message;
         private final Runnable confirmed;
-        private int panelX;
-        private int panelY;
-        private int panelWidth;
-        private int panelHeight;
+        private ScreenRectangle panel;
+        private ScreenRectangle content;
 
         Confirmation(Screen parent, Component title, Component message, Runnable confirmed) {
             super(parent, title);
@@ -145,28 +175,37 @@ public final class PortableUi {
 
         @Override
         protected void init() {
-            panelWidth = Math.min(300, width - 16);
-            panelHeight = Math.min(height - 16, 76 + font.split(message, panelWidth - 28).size() * font.lineHeight);
-            panelX = (width - panelWidth) / 2;
-            panelY = (height - panelHeight) / 2;
-            int buttonWidth = (panelWidth - 32) / 2;
-            addRenderableWidget(button(panelX + 12, panelY + panelHeight - 30, buttonWidth, 20,
-                    CommonComponents.GUI_CANCEL, button -> onClose()));
-            addRenderableWidget(dangerButton(panelX + panelWidth - buttonWidth - 12, panelY + panelHeight - 30,
+            int preferredHeight = 76 + font.split(message, Math.max(1, Math.min(300, width - 16) - 28)).size() * font.lineHeight;
+            panel = PortableLayout.centered(width, height, 300, preferredHeight, 8);
+            content = PortableLayout.inset(panel, 12, 28, 12, 36);
+            int panelX = panel.left();
+            int panelY = panel.top();
+            int panelWidth = panel.width();
+            int panelHeight = panel.height();
+            int buttonWidth = Math.max(0, (panelWidth - 32) / 2);
+            Button cancel = addRenderableWidget(UiInspector.name(button(panelX + 12, panelY + panelHeight - 30, buttonWidth, 20,
+                    CommonComponents.GUI_CANCEL, button -> onClose()), "dialog.cancel"));
+            setInitialFocus(cancel);
+            addRenderableWidget(UiInspector.name(dangerButton(panelX + panelWidth - buttonWidth - 12, panelY + panelHeight - 30,
                     buttonWidth, 20, Component.translatable("gui.avaritia.portable.confirm"), button -> {
-                        onClose();
-                        confirmed.run();
-                    }));
+                        if (finish()) {
+                            confirmed.run();
+                        }
+                    }), "dialog.confirm"));
         }
 
         @Override
         protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
             graphics.fill(0, 0, width, height, 0xA0000000);
-            panel(graphics, panelX, panelY, panelWidth, panelHeight);
-            header(graphics, font, title, panelX + 4, panelY + 4, panelWidth - 8);
-            graphics.enableScissor(panelX + 12, panelY + 28, panelX + panelWidth - 12, panelY + panelHeight - 36);
-            graphics.drawWordWrap(font, message, panelX + 14, panelY + 29, panelWidth - 28, TEXT);
-            graphics.disableScissor();
+            panel(graphics, panel);
+            UiInspector.region("dialog.panel", panel, null, false);
+            header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
+            if (content.width() > 0 && content.height() > 0) {
+                graphics.enableScissor(content.left(), content.top(), content.right(), content.bottom());
+                graphics.drawWordWrap(font, message, content.left() + 2, content.top() + 1,
+                        Math.max(1, content.width() - 4), TEXT);
+                graphics.disableScissor();
+            }
         }
     }
 
@@ -175,13 +214,11 @@ public final class PortableUi {
         private final boolean allowBlank;
         private final List<String> candidates;
         private final Consumer<String> confirmed;
-        private final OperationMenu suggestions = new OperationMenu();
+        private final OperationMenu suggestions = new OperationMenu("dialog.suggestions");
         private String value;
         private EditBox input;
         private Button accept;
-        private int panelX;
-        private int panelY;
-        private int panelWidth;
+        private ScreenRectangle panel;
 
         Prompt(Screen parent, Component title, String initial, int maxLength, boolean allowBlank,
                List<String> candidates, Consumer<String> confirmed) {
@@ -196,17 +233,18 @@ public final class PortableUi {
         @Override
         protected void init() {
             suggestions.close();
-            panelWidth = Math.min(300, width - 16);
-            panelX = (width - panelWidth) / 2;
-            panelY = (height - 108) / 2;
-            input = addRenderableWidget(new EditBox(font, panelX + 12, panelY + 32, panelWidth - 24, 20, title));
+            panel = PortableLayout.centered(width, height, 300, 108, 8);
+            ScreenRectangle inputBounds = PortableLayout.inset(panel, 12, 32, 12, 56);
+            ScreenRectangle footer = PortableLayout.inset(panel, 12, Math.max(0, panel.height() - 32), 12, 12);
+            input = addRenderableWidget(UiInspector.name(new EditBox(font, inputBounds.left(), inputBounds.top(),
+                    inputBounds.width(), inputBounds.height(), title), "dialog.input"));
             input.setMaxLength(maxLength);
             input.setValue(value);
-            int buttonWidth = (panelWidth - 32) / 2;
-            addRenderableWidget(button(panelX + 12, panelY + 76, buttonWidth, 20,
-                    CommonComponents.GUI_CANCEL, button -> onClose()));
-            accept = addRenderableWidget(button(panelX + panelWidth - buttonWidth - 12, panelY + 76,
-                    buttonWidth, 20, Component.translatable("gui.avaritia.portable.confirm"), button -> submit()));
+            int buttonWidth = Math.max(0, (footer.width() - 8) / 2);
+            addRenderableWidget(UiInspector.name(button(footer.left(), footer.top(), buttonWidth, footer.height(),
+                    CommonComponents.GUI_CANCEL, button -> onClose()), "dialog.cancel"));
+            accept = addRenderableWidget(UiInspector.name(button(footer.right() - buttonWidth, footer.top(),
+                    buttonWidth, footer.height(), Component.translatable("gui.avaritia.portable.confirm"), button -> submit()), "dialog.confirm"));
             accept.active = allowBlank || !value.isBlank();
             input.setResponder(text -> {
                 value = text;
@@ -243,16 +281,18 @@ public final class PortableUi {
             if (allowBlank || !value.isBlank()) {
                 suggestions.close();
                 String result = value.trim();
-                onClose();
-                confirmed.accept(result);
+                if (finish()) {
+                    confirmed.accept(result);
+                }
             }
         }
 
         @Override
         protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
             graphics.fill(0, 0, width, height, 0xA0000000);
-            panel(graphics, panelX, panelY, panelWidth, 108);
-            header(graphics, font, title, panelX + 4, panelY + 4, panelWidth - 8);
+            panel(graphics, panel);
+            UiInspector.region("dialog.panel", panel, null, false);
+            header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
         }
 
         @Override
@@ -263,9 +303,6 @@ public final class PortableUi {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (suggestions.isOpen() && !suggestions.isMouseOver(mouseX, mouseY)) {
-                suggestions.close();
-            }
             return suggestions.mouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
         }
 

@@ -1,15 +1,22 @@
 package committee.nova.mods.avaritia.client.screen;
 
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.init.config.ModConfig;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +39,11 @@ public class AvaritiaConfigScreen extends Screen {
 
     // 滚动条变量
     private boolean isDraggingScrollbar = false;
-    private int scrollbarX;
-    private int scrollbarY;
-    private int scrollbarHeight;
-    private int scrollbarHandleHeight;
+    private ScreenRectangle panel;
+    private ScreenRectangle viewport;
+    private ScreenRectangle footer;
+    private ScreenRectangle scrollbar;
+    private ScreenRectangle scrollbarHandle;
     private int maxScrollOffset;
     private double scrollVelocity = 0.0;
     private long lastScrollTime = 0;
@@ -304,33 +312,89 @@ public class AvaritiaConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        clearWidgets();
-
-        resetButton = addRenderableWidget(Button.builder(
-                Component.translatable("controls.reset"),
-                btn -> {
+        updateLayout();
+        resetButton = addRenderableWidget(UiInspector.name(PortableUi.button(0, 0, 100, 20,
+                Component.translatable("controls.reset"), btn -> {
                     resetToDefaults();
                     updateWidgetValues();
                     ModConfig.save();
-                }
-        ).bounds(width / 2 - 102, height - 30, 100, 20).build());
-
-        backButton = addRenderableWidget(Button.builder(
-                Component.translatable("gui.back"),
-                btn -> {
-                    ModConfig.save();
-                    minecraft.setScreen(parent);
-                }
-        ).bounds(width / 2 + 2, height - 30, 100, 20).build());
-
+                }), "config.reset"));
+        backButton = addRenderableWidget(UiInspector.name(PortableUi.button(0, 0, 100, 20,
+                Component.translatable("gui.back"), btn -> onClose()), "config.back"));
         for (int i = 0; i < configEntries.size(); i++) {
             ConfigEntry<?> entry = configEntries.get(i);
-            int x = MARGIN;
-            int y = START_Y + i * ENTRY_HEIGHT - scrollOffset;
-            if (y + ENTRY_HEIGHT > START_Y && y < height - 40) {
-                entry.initWidgets(this, x, y, width - 2 * MARGIN);
+            if (entry.control() == null) {
+                entry.initWidgets(this, viewport.left(), viewport.top() + i * ENTRY_HEIGHT - scrollOffset, viewport.width());
+            } else {
+                addRenderableWidget(entry.control());
+            }
+            if (UiInspector.enabled() && entry.control() != null && entry.title.getContents() instanceof TranslatableContents translated) {
+                UiInspector.name(entry.control(), translated.getKey());
             }
         }
+        updateFooter();
+        updateControlPositions();
+    }
+
+    @Override
+    protected void repositionElements() {
+        updateLayout();
+    }
+
+    private void updateLayout() {
+        panel = PortableLayout.centered(width, height, width, height, 8);
+        viewport = new ScreenRectangle(MARGIN, START_Y, Math.max(0, width - 2 * MARGIN), Math.max(0, height - START_Y - 40));
+        footer = new ScreenRectangle(MARGIN, height - 30, Math.max(0, width - 2 * MARGIN), 20);
+        scrollbar = new ScreenRectangle(viewport.right() + 4, viewport.top(), 4, viewport.height());
+        maxScrollOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - viewport.height());
+        scrollOffset = Math.max(0, Math.min(maxScrollOffset, scrollOffset));
+        isDraggingScrollbar = false;
+        for (ConfigEntry<?> entry : configEntries) {
+            entry.descriptionLines = font.split(entry.description, Math.max(1, viewport.width() - 120));
+        }
+        updateFooter();
+        updateControlPositions();
+    }
+
+    private void updateFooter() {
+        if (resetButton != null && backButton != null) {
+            int buttonWidth = Math.min(100, Math.max(0, (footer.width() - 4) / 2));
+            int center = footer.left() + footer.width() / 2;
+            resetButton.setRectangle(buttonWidth, footer.height(), center - buttonWidth - 2, footer.top());
+            backButton.setRectangle(buttonWidth, footer.height(), center + 2, footer.top());
+        }
+    }
+
+    private void updateControlPositions() {
+        for (int i = 0; i < configEntries.size(); i++) {
+            AbstractWidget control = configEntries.get(i).control();
+            if (control == null) {
+                continue;
+            }
+            int x = viewport.right() - control.getWidth();
+            int y = viewport.top() + i * ENTRY_HEIGHT - scrollOffset + 10;
+            boolean visible = viewport.width() > 0 && viewport.height() > 0
+                    && x >= viewport.left() && y >= viewport.top() && y + control.getHeight() <= viewport.bottom();
+            if (!visible && control.isFocused()) {
+                control.setFocused(false);
+                if (getFocused() == control) {
+                    setFocused(null);
+                }
+            }
+            control.setPosition(x, y);
+            control.visible = visible;
+        }
+        int totalHeight = configEntries.size() * ENTRY_HEIGHT;
+        int handleHeight = totalHeight == 0 ? viewport.height()
+                : Math.min(viewport.height(), Math.max(20, viewport.height() * viewport.height() / totalHeight));
+        int handleOffset = maxScrollOffset == 0 ? 0
+                : (int) ((double) scrollOffset / maxScrollOffset * (viewport.height() - handleHeight));
+        scrollbarHandle = new ScreenRectangle(scrollbar.left(), scrollbar.top() + handleOffset, scrollbar.width(), handleHeight);
+    }
+
+    private void setScrollOffset(int offset) {
+        scrollOffset = Math.max(0, Math.min(maxScrollOffset, offset));
+        updateControlPositions();
     }
 
 
@@ -341,110 +405,86 @@ public class AvaritiaConfigScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // 处理惯性滚动
-        if (Math.abs(scrollVelocity) > MIN_VELOCITY) {
-            int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-            scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset + scrollVelocity));
-            scrollVelocity *= FRICTION; // 应用摩擦力
+    protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
+        PortableUi.panel(graphics, panel);
+        PortableUi.header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
+        PortableUi.inset(graphics, viewport);
+        UiInspector.region("config.panel", panel, null, false);
+        UiInspector.region("config.viewport", viewport, viewport, true);
+    }
 
+    @Override
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (Math.abs(scrollVelocity) > MIN_VELOCITY) {
+            setScrollOffset((int) (scrollOffset + scrollVelocity));
+            scrollVelocity *= FRICTION;
             if (Math.abs(scrollVelocity) < MIN_VELOCITY) {
                 scrollVelocity = 0;
             }
-
-            init(); // 重新初始化组件位置
         }
         for (ConfigEntry<?> entry : configEntries) {
-            if (entry instanceof IntConfigEntry intEntry && intEntry.editBox != null) {
-                intEntry.editBox.customTick();
-            } else if (entry instanceof DoubleConfigEntry doubleEntry && doubleEntry.editBox != null) {
-                doubleEntry.editBox.customTick();
-            } else if (entry instanceof LongConfigEntry longEntry && longEntry.editBox != null) {
-                longEntry.editBox.customTick();
+            if (entry.control() instanceof RangedEditBox editBox) {
+                editBox.customTick();
             }
         }
-        renderBackground(guiGraphics, 0, 0,0);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-
-        guiGraphics.drawCenteredString(font, title, width / 2, 20, 0xFFFFFF);
-
-        for (int i = 0; i < configEntries.size(); i++) {
-            ConfigEntry<?> entry = configEntries.get(i);
-            int y = START_Y + i * ENTRY_HEIGHT - scrollOffset;
-            if (y + ENTRY_HEIGHT > START_Y - 20 && y < height - 20) {
-                entry.render(guiGraphics, mouseX, mouseY, MARGIN, y, width - 2 * MARGIN, ENTRY_HEIGHT, font);
+        if (viewport.width() > 0 && viewport.height() > 0) {
+            guiGraphics.enableScissor(viewport.left(), viewport.top(), viewport.right(), viewport.bottom());
+            for (int i = 0; i < configEntries.size(); i++) {
+                ConfigEntry<?> entry = configEntries.get(i);
+                int y = viewport.top() + i * ENTRY_HEIGHT - scrollOffset;
+                if (y + ENTRY_HEIGHT > viewport.top() && y < viewport.bottom()) {
+                    entry.render(guiGraphics, mouseX, mouseY, viewport.left(), y, viewport.width(), ENTRY_HEIGHT, font);
+                    if (entry.descriptionLines.size() > (ENTRY_HEIGHT - 20) / font.lineHeight
+                            && PortableLayout.contains(viewport, mouseX, mouseY)
+                            && mouseX < viewport.right() - 120 && mouseY >= y + 20 && mouseY < y + ENTRY_HEIGHT) {
+                        setTooltipForNextRenderPass(entry.description);
+                    }
+                }
             }
+            guiGraphics.disableScissor();
         }
-
-        if (configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
-
-            maxScrollOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-            int visibleHeight = height - START_Y - 40;
-            scrollbarHeight = visibleHeight;
-            scrollbarHandleHeight = Math.max(20, visibleHeight * visibleHeight / (configEntries.size() * ENTRY_HEIGHT));
-            int scrollBarYOffset = (int) ((double) scrollOffset / maxScrollOffset * (visibleHeight - scrollbarHandleHeight));
-            scrollbarY = START_Y + scrollBarYOffset;
-            scrollbarX = width - 8;
-
-            guiGraphics.fill(scrollbarX, START_Y, scrollbarX + 4, START_Y + scrollbarHeight, 0x88888888);
-            guiGraphics.fill(scrollbarX, scrollbarY, scrollbarX + 4, scrollbarY + scrollbarHandleHeight, 0xFFAAAAAA);
+        if (maxScrollOffset > 0) {
+            guiGraphics.fill(scrollbar.left(), scrollbar.top(), scrollbar.right(), scrollbar.bottom(), PortableUi.MUTED);
+            guiGraphics.fill(scrollbarHandle.left(), scrollbarHandle.top(), scrollbarHandle.right(), scrollbarHandle.bottom(), 0xFFAAAAAA);
+            UiInspector.region("config.scrollbar", scrollbar, null, true);
         }
-
-        resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
-        backButton.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (!PortableLayout.contains(viewport, mouseX, mouseY) && !PortableLayout.contains(scrollbar, mouseX, mouseY)) {
+            return false;
+        }
         long currentTime = System.currentTimeMillis();
         double scrollDelta = -scrollY * ENTRY_HEIGHT / 8.0;
-
-        if (currentTime - lastScrollTime < 200) {
-            scrollVelocity += scrollDelta * 0.5;
-        } else {
-            scrollVelocity = scrollDelta;
-        }
-
+        scrollVelocity = currentTime - lastScrollTime < 200 ? scrollVelocity + scrollDelta * 0.5 : scrollDelta;
         lastScrollTime = currentTime;
-
-        int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-        scrollOffset = (int) Math.max(0, Math.min(maxOffset, scrollOffset + scrollDelta));
-        init();
+        setScrollOffset((int) (scrollOffset + scrollDelta));
         return true;
     }
 
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
-            if (mouseX >= scrollbarX && mouseX <= scrollbarX + 4 &&
-                    mouseY >= scrollbarY && mouseY <= scrollbarY + scrollbarHandleHeight) {
-                isDraggingScrollbar = true;
-                return true;
+        if (button == 0 && maxScrollOffset > 0 && PortableLayout.contains(scrollbar, mouseX, mouseY)) {
+            scrollVelocity = 0;
+            if (!PortableLayout.contains(scrollbarHandle, mouseX, mouseY)) {
+                setScrollOffset((int) ((mouseY - scrollbar.top()) / Math.max(1, scrollbar.height()) * maxScrollOffset));
             }
-            else if (mouseX >= scrollbarX && mouseX <= scrollbarX + 4 &&
-                    mouseY >= START_Y && mouseY <= START_Y + scrollbarHeight) {
-                int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-                double clickPosition = (mouseY - START_Y) / scrollbarHeight;
-                scrollOffset = (int) (clickPosition * maxOffset);
-                scrollOffset = Math.max(0, Math.min(maxOffset, scrollOffset));
-                init();
-                isDraggingScrollbar = true;
-                return true;
-            }
+            isDraggingScrollbar = true;
+            return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (isDraggingScrollbar && configEntries.size() * ENTRY_HEIGHT > height - START_Y - 40) {
+        if (isDraggingScrollbar && maxScrollOffset > 0) {
             scrollVelocity = 0;
-            int maxOffset = Math.max(0, configEntries.size() * ENTRY_HEIGHT - (height - START_Y - 40));
-            double positionRatio = (mouseY - START_Y - (double) scrollbarHandleHeight / 2) / (scrollbarHeight - scrollbarHandleHeight);
-            scrollOffset = (int) (positionRatio * maxOffset);
-            scrollOffset = Math.max(0, Math.min(maxOffset, scrollOffset));
-            init();
+            double positionRatio = (mouseY - scrollbar.top() - scrollbarHandle.height() / 2.0)
+                    / Math.max(1, scrollbar.height() - scrollbarHandle.height());
+            setScrollOffset((int) (positionRatio * maxScrollOffset));
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -471,6 +511,7 @@ public class AvaritiaConfigScreen extends Screen {
         final Consumer<T> onValueChange;
         final Supplier<T> valueSupplier;
         final ModConfigSpec.ConfigValue<T> configValue;
+        List<FormattedCharSequence> descriptionLines = List.of();
 
         ConfigEntry(Component title, Component description, T initialValue, Consumer<T> onValueChange, Supplier<T> valueSupplier,
                 ModConfigSpec.ConfigValue<T> configValue) {
@@ -484,7 +525,16 @@ public class AvaritiaConfigScreen extends Screen {
 
         abstract void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width);
 
-        abstract void render(GuiGraphics gui, int mouseX, int mouseY, int x, int y, int width, int height, Font font);
+        @Nullable
+        abstract AbstractWidget control();
+
+        void render(GuiGraphics gui, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
+            PortableUi.text(gui, font, title, x, y + 5, Math.max(0, width - 120), PortableUi.TEXT);
+            int rows = Math.min(descriptionLines.size(), Math.max(0, (height - 20) / font.lineHeight));
+            for (int i = 0; i < rows; i++) {
+                gui.drawString(font, descriptionLines.get(i), x, y + 20 + i * font.lineHeight, PortableUi.MUTED, false);
+            }
+        }
 
         abstract void updateWidgetValue();
 
@@ -506,13 +556,19 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
+        @Nullable
+        AbstractWidget control() {
+            return null;
+        }
+
+        @Override
         void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
         }
 
         @Override
         void render(GuiGraphics gui, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
-            gui.drawString(font, title, x, y + 5, 0xFFFFA0);
-            gui.fill(x, y + 20, x + width, y + 22, 0xFFA0A0A0);
+            PortableUi.text(gui, font, title, x, y + 5, width, PortableUi.TEXT);
+            gui.fill(x, y + 20, x + width, y + 22, PortableUi.MUTED);
         }
 
         @Override
@@ -528,6 +584,11 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
+        AbstractWidget control() {
+            return checkBox;
+        }
+
+        @Override
         void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
             checkBox = Button.builder(
                     getButtonText(),
@@ -540,14 +601,6 @@ public class AvaritiaConfigScreen extends Screen {
             screen.addRenderableWidget(checkBox);
         }
 
-        @Override
-        void render(GuiGraphics gui, int mouseX, int mouseY, int x, int y, int width, int height, Font font) {
-            gui.drawString(font, title, x, y + 5, 0xFFFFFF);
-            List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
-            for (int i = 0; i < wrappedDesc.size(); i++) {
-                gui.drawString(font, wrappedDesc.get(i), x, y + 20 + i * 10, 0xAAAAAA);
-            }
-        }
 
         private Component getButtonText() {
             return currentValue ?
@@ -579,6 +632,11 @@ public class AvaritiaConfigScreen extends Screen {
         }
 
         @Override
+        AbstractWidget control() {
+            return editBox;
+        }
+
+        @Override
         void initWidgets(AvaritiaConfigScreen screen, int x, int y, int width) {
             editBox = new RangedEditBox(screen.font, x + width - 100, y + 10, 100, 20, Component.empty(), min, max, true);
             editBox.setMaxLength(10);
@@ -603,14 +661,6 @@ public class AvaritiaConfigScreen extends Screen {
             screen.addRenderableWidget(editBox);
         }
 
-        @Override
-        void render(GuiGraphics gui, int mouseX, int mouseY, int x, int yPos, int width, int height, Font font) {
-            gui.drawString(font, title, x, yPos + 5, 0xFFFFFF);
-            List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
-            for (int i = 0; i < wrappedDesc.size(); i++) {
-                gui.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
-            }
-        }
 
 
         @Override
@@ -632,6 +682,11 @@ public class AvaritiaConfigScreen extends Screen {
             super(title, description, initialValue, onValueChange, valueSupplier,configValue);
             this.min = min;
             this.max = max;
+        }
+
+        @Override
+        AbstractWidget control() {
+            return editBox;
         }
 
         @Override
@@ -660,14 +715,6 @@ public class AvaritiaConfigScreen extends Screen {
             screen.addRenderableWidget(editBox);
         }
 
-        @Override
-        void render(GuiGraphics gui, int mouseX, int mouseY, int x, int yPos, int width, int height, Font font) {
-            gui.drawString(font, title, x, yPos + 5, 0xFFFFFF);
-            List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
-            for (int i = 0; i < wrappedDesc.size(); i++) {
-                gui.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
-            }
-        }
 
         @Override
         void updateWidgetValue() {
@@ -688,6 +735,11 @@ public class AvaritiaConfigScreen extends Screen {
             super(title, description, initialValue, onValueChange, valueSupplier,configValue);
             this.min = min;
             this.max = max;
+        }
+
+        @Override
+        AbstractWidget control() {
+            return editBox;
         }
 
         @Override
@@ -715,14 +767,6 @@ public class AvaritiaConfigScreen extends Screen {
             screen.addRenderableWidget(editBox);
         }
 
-        @Override
-        void render(GuiGraphics gui, int mouseX, int mouseY, int x, int yPos, int width, int height, Font font) {
-            gui.drawString(font, title, x, yPos + 5, 0xFFFFFF);
-            List<FormattedCharSequence> wrappedDesc = font.split(description, width - 120);
-            for (int i = 0; i < wrappedDesc.size(); i++) {
-                gui.drawString(font, wrappedDesc.get(i), x, yPos + 20 + i * 10, 0xAAAAAA);
-            }
-        }
 
         @Override
         void updateWidgetValue() {

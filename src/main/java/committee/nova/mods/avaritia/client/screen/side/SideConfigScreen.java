@@ -2,6 +2,8 @@ package committee.nova.mods.avaritia.client.screen.side;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import committee.nova.mods.avaritia.Res;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.api.iface.ITileIO;
 import committee.nova.mods.avaritia.core.io.SideConfiguration;
 import committee.nova.mods.avaritia.init.handler.NetworkHandler;
@@ -9,6 +11,7 @@ import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,6 +40,7 @@ public class SideConfigScreen extends Screen {
     private int guiTop;
     private int imageWidth = 156;
     private int imageHeight = 117;
+    private ScreenRectangle panel;
 
     // 六个面配置按钮
     private SideButton northButton;
@@ -57,9 +61,9 @@ public class SideConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        // 计算居中位置（Screen没有getGuiLeft()方法，我们需要自己计算）
-        this.guiLeft = (this.width - this.imageWidth) / 2;
-        this.guiTop = (this.height - this.imageHeight) / 2;
+        panel = PortableLayout.centered(width, height, imageWidth, imageHeight, 0);
+        this.guiLeft = panel.left();
+        this.guiTop = panel.top();
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
 
@@ -67,7 +71,7 @@ public class SideConfigScreen extends Screen {
         createSideButtons(x, y);
 
         // 添加一键清除配置按钮
-        this.addRenderableWidget(
+        this.addRenderableWidget(UiInspector.name(
                 new ImageButton(x + 135, y + 93, 17, 18,
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> setAllSides(SideConfiguration.SideMode.OFF)) {
@@ -82,13 +86,13 @@ public class SideConfigScreen extends Screen {
                         }
 
                         RenderSystem.enableDepthTest();
-                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 17, i, width, height, 256, 256);
+                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, getX(), getY(), 17, i, getWidth(), getHeight(), 256, 256);
                     }
                 }
 
-        );
+        , "side.clear"));
         // 添加返回按钮
-        this.addRenderableWidget(
+        this.addRenderableWidget(UiInspector.name(
                 new ImageButton(x + 4, y + 4, 17, 18,
                         new WidgetSprites(Res.SIDE_CONFIG_TEX, Res.SIDE_CONFIG_TEX),
                         (button) -> onClose()) {
@@ -103,10 +107,10 @@ public class SideConfigScreen extends Screen {
                         }
 
                         RenderSystem.enableDepthTest();
-                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, i, width, height, 256, 256);
+                        guiGraphics.blit(Res.SIDE_CONFIG_TEX, getX(), getY(), 0, i, getWidth(), getHeight(), 256, 256);
                     }
                 }
-        );
+        , "side.back"));
     }
 
     /**
@@ -118,27 +122,27 @@ public class SideConfigScreen extends Screen {
 
         // 上（顶部视图）
         upButton = new SideButton(centerX, centerY - 24, Direction.UP, sideConfig.getSideMode(Direction.UP), this);
-        this.addRenderableWidget(upButton);
+        this.addRenderableWidget(UiInspector.name(upButton, "side.up"));
 
         // 下（底部视图）
         downButton = new SideButton(centerX, centerY + 24, Direction.DOWN, sideConfig.getSideMode(Direction.DOWN), this);
-        this.addRenderableWidget(downButton);
+        this.addRenderableWidget(UiInspector.name(downButton, "side.down"));
 
         // 北（前面）
         northButton = new SideButton(centerX, centerY, Direction.NORTH, sideConfig.getSideMode(Direction.NORTH), this);
-        this.addRenderableWidget(northButton);
+        this.addRenderableWidget(UiInspector.name(northButton, "side.north"));
 
         // 南（后面）
         southButton = new SideButton(centerX - 23, centerY + 24, Direction.SOUTH, sideConfig.getSideMode(Direction.SOUTH), this);
-        this.addRenderableWidget(southButton);
+        this.addRenderableWidget(UiInspector.name(southButton, "side.south"));
 
         // 西（左面）
         westButton = new SideButton(centerX - 23, centerY, Direction.WEST, sideConfig.getSideMode(Direction.WEST), this);
-        this.addRenderableWidget(westButton);
+        this.addRenderableWidget(UiInspector.name(westButton, "side.west"));
 
         // 东（右面）
         eastButton = new SideButton(centerX + 23, centerY, Direction.EAST, sideConfig.getSideMode(Direction.EAST), this);
-        this.addRenderableWidget(eastButton);
+        this.addRenderableWidget(UiInspector.name(eastButton, "side.east"));
     }
 
     /**
@@ -187,6 +191,7 @@ public class SideConfigScreen extends Screen {
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
         guiGraphics.blit(Res.SIDE_CONFIG_TEX, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+        UiInspector.region("side.panel", panel, null, false);
     }
 
     @Override
@@ -196,7 +201,9 @@ public class SideConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(parentScreen);
+        if (this.minecraft.screen == this) {
+            this.minecraft.popGuiLayer();
+        }
     }
 
 }

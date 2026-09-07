@@ -2,6 +2,9 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
 import committee.nova.mods.avaritia.client.render.NeutronSpacePreviewRenderer;
 import committee.nova.mods.avaritia.common.component.NeutronRingContents;
 import committee.nova.mods.avaritia.common.item.misc.NeutronSpacePreview;
@@ -11,6 +14,7 @@ import committee.nova.mods.avaritia.common.net.S2CNeutronRingPreviewPack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -46,14 +50,11 @@ public final class NeutronRingManageScreen extends Screen {
     private boolean previewMissing;
     private SpaceList list;
     private String query = "";
-    private int panelX;
-    private int panelY;
-    private int panelWidth;
-    private int panelHeight;
-    private int previewX;
-    private int previewY;
-    private int previewW;
-    private int previewH;
+    private ScreenRectangle panel;
+    private ScreenRectangle library;
+    private ScreenRectangle previewOuter;
+    private ScreenRectangle previewContent;
+    private ScreenRectangle previewHint;
     private static final float DEFAULT_YAW = 35.0F;
     private static final float DEFAULT_PITCH = 25.0F;
     private static final float DEFAULT_ZOOM = 1.0F;
@@ -202,23 +203,21 @@ public final class NeutronRingManageScreen extends Screen {
         double scroll = list == null ? 0 : list.getScrollAmount();
         menu.close();
         stopDrag();
-        panelWidth = Math.min(540, width - 16);
-        panelHeight = Math.min(330, height - 16);
-        panelX = (width - panelWidth) / 2;
-        panelY = (height - panelHeight) / 2;
-        int listWidth = Math.min(172, Math.max(112, panelWidth / 3));
-        int listY = panelY + 47;
-        int listH = panelHeight - 83;
-        previewX = panelX + listWidth + 20;
-        previewY = listY;
-        previewW = panelWidth - listWidth - 32;
-        previewH = listH;
-        list = addRenderableWidget(new SpaceList(listWidth, listH, listY));
-        list.setX(panelX + 12);
+        panel = PortableLayout.centered(width, height, 540, 330, 8);
+        int listWidth = Math.min(172, Math.max(112, panel.width() / 3));
+        library = PortableLayout.inset(panel, 12, 47, panel.width() - listWidth - 12, 36);
+        ScreenRectangle preview = PortableLayout.inset(panel, listWidth + 20, 47, 12, 36);
+        previewOuter = PortableLayout.inset(preview, -2, -2, -2, -2);
+        previewContent = PortableLayout.inset(preview, 4, 4, 4, 4);
+        previewHint = new ScreenRectangle(previewOuter.left() + 2, panel.bottom() - 24,
+                Math.max(40, previewOuter.width() - 90), font.lineHeight);
+        list = addRenderableWidget(new SpaceList(library.width(), library.height(), library.top()));
+        UiInspector.name(list, "neutron.library");
+        list.setX(library.left());
         list.populate();
         list.setScrollAmount(scroll);
-        addRenderableWidget(PortableUi.button(panelX + panelWidth - 82, panelY + panelHeight - 29, 70, 20,
-                CommonComponents.GUI_DONE, button -> onClose()));
+        addRenderableWidget(UiInspector.name(PortableUi.button(panel.right() - 82, panel.bottom() - 29, 70, 20,
+                CommonComponents.GUI_DONE, button -> onClose()), "neutron.done"));
         if (previewEntry != null) {
             loadPreview(previewEntry.id());
         }
@@ -263,38 +262,42 @@ public final class NeutronRingManageScreen extends Screen {
     @Override
     protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
         graphics.fill(0, 0, width, height, 0xA0000000);
-        PortableUi.panel(graphics, panelX, panelY, panelWidth, panelHeight);
-        PortableUi.header(graphics, font, title, panelX + 4, panelY + 4, panelWidth - 8);
-        PortableUi.inset(graphics, previewX - 2, previewY - 2, previewW + 4, previewH + 4);
+        PortableUi.panel(graphics, panel);
+        UiInspector.region("neutron.panel", panel, null, false);
+        PortableUi.header(graphics, font, title, panel.left() + 4, panel.top() + 4, panel.width() - 8);
+        PortableUi.inset(graphics, previewOuter);
+        UiInspector.region("neutron.preview.outer", previewOuter, null, previewEntry != null);
     }
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.library", spaces.size()),
-                panelX + 12, panelY + 33, list.getWidth(), PortableUi.MUTED);
+                library.left(), panel.top() + 33, library.width(), PortableUi.MUTED);
+        UiInspector.region("neutron.preview.content", previewContent, previewContent, previewEntry != null);
         if (previewEntry == null) {
             graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.empty"),
-                    previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
+                    previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
         } else {
             PortableUi.text(graphics, font, Component.literal(previewEntry.name() + " · "
                             + previewEntry.sizeX() + "×" + previewEntry.sizeY() + "×" + previewEntry.sizeZ()),
-                    previewX, panelY + 33, previewW, PortableUi.TEXT);
+                    previewOuter.left() + 2, panel.top() + 33, previewOuter.width() - 4, PortableUi.TEXT);
             NeutronSpacePreview preview = previews.get(previewEntry.id());
             if (previewMissing && preview == null) {
-                graphics.fill(previewX + 4, previewY + 4, previewX + previewW - 4, previewY + previewH - 4, PortableUi.INSET_BG);
+                graphics.fill(previewContent.left(), previewContent.top(), previewContent.right(), previewContent.bottom(), PortableUi.INSET_BG);
                 graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_missing"),
-                        previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
+                        previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
             } else if (preview == null) {
-                graphics.fill(previewX + 4, previewY + 4, previewX + previewW - 4, previewY + previewH - 4, PortableUi.INSET_BG);
+                graphics.fill(previewContent.left(), previewContent.top(), previewContent.right(), previewContent.bottom(), PortableUi.INSET_BG);
                 graphics.drawWordWrap(font, Component.translatable("gui.avaritia.neutron_ring.preview_loading"),
-                        previewX + 8, previewY + 8, previewW - 16, PortableUi.MUTED);
+                        previewContent.left() + 4, previewContent.top() + 4, Math.max(1, previewContent.width() - 8), PortableUi.MUTED);
             } else {
-                renderer.draw(graphics, previewX + 4, previewY + 4, previewW - 8, previewH - 8,
+                renderer.draw(graphics, previewContent.left(), previewContent.top(), previewContent.width(), previewContent.height(),
                         yaw, pitch, zoom, panX, panY);
             }
             PortableUi.text(graphics, font, Component.translatable("gui.avaritia.neutron_ring.preview_controls"),
-                    previewX, panelY + panelHeight - 24, Math.max(40, previewW - 86), PortableUi.MUTED);
+                    previewHint.left(), previewHint.top(), previewHint.width(), PortableUi.MUTED);
+            UiInspector.region("neutron.preview.hint", previewHint, null, false);
         }
         if (list.children().isEmpty()) {
             graphics.drawWordWrap(font, Component.translatable(query.isBlank()
@@ -393,13 +396,11 @@ public final class NeutronRingManageScreen extends Screen {
 
 
     private boolean insidePreviewChrome(double mouseX, double mouseY) {
-        return mouseX >= previewX - 2 && mouseX < previewX + previewW + 2
-                && mouseY >= previewY - 2 && mouseY < previewY + previewH + 2;
+        return PortableLayout.contains(previewOuter, mouseX, mouseY);
     }
 
     private boolean insidePanel(double mouseX, double mouseY) {
-        return mouseX >= panelX && mouseX < panelX + panelWidth
-                && mouseY >= panelY && mouseY < panelY + panelHeight;
+        return PortableLayout.contains(panel, mouseX, mouseY);
     }
 
     private void startDrag(Drag next) {
@@ -413,8 +414,8 @@ public final class NeutronRingManageScreen extends Screen {
         boolean openReset = drag == Drag.PAN && !panMoved;
         stopDrag();
         if (openReset && previewEntry != null) {
-            openPreviewMenu(minecraft.mouseHandler.xpos() / minecraft.getWindow().getGuiScale(),
-                    minecraft.mouseHandler.ypos() / minecraft.getWindow().getGuiScale());
+            openPreviewMenu(minecraft.mouseHandler.xpos() * width / minecraft.getWindow().getScreenWidth(),
+                    minecraft.mouseHandler.ypos() * height / minecraft.getWindow().getScreenHeight());
         }
     }
 
@@ -429,8 +430,8 @@ public final class NeutronRingManageScreen extends Screen {
     }
 
     private void orbitPreview(double dragX, double dragY) {
-        float viewW = Math.max(1.0F, previewW - 8.0F);
-        float viewH = Math.max(1.0F, previewH);
+        float viewW = Math.max(1.0F, previewContent.width());
+        float viewH = Math.max(1.0F, previewOuter.height() - 4);
         yaw = Mth.wrapDegrees(yaw + (float) (dragX * 180.0 / viewW));
         pitch = Mth.clamp(pitch + (float) (dragY * 90.0 / viewH), -PITCH_LIMIT, PITCH_LIMIT);
     }
@@ -439,8 +440,8 @@ public final class NeutronRingManageScreen extends Screen {
         if (Math.abs(dragX) + Math.abs(dragY) > 0.5) {
             panMoved = true;
         }
-        float limitX = Math.max(8.0F, previewW * zoom);
-        float limitY = Math.max(8.0F, previewH * zoom);
+        float limitX = Math.max(8.0F, (previewOuter.width() - 4) * zoom);
+        float limitY = Math.max(8.0F, (previewOuter.height() - 4) * zoom);
         panX = Mth.clamp(panX + (float) dragX, -limitX, limitX);
         panY = Mth.clamp(panY + (float) dragY, -limitY, limitY);
     }
@@ -544,9 +545,9 @@ public final class NeutronRingManageScreen extends Screen {
         }
     }
 
-    private final class SpaceList extends ObjectSelectionList<SpaceList.SpaceEntry> {
+    private final class SpaceList extends PortableSelectionList<SpaceList.SpaceEntry> {
         SpaceList(int width, int height, int y) {
-            super(NeutronRingManageScreen.this.minecraft, width, height, y, 28);
+            super(NeutronRingManageScreen.this.minecraft, width, height, y, 28, 10, 8, true);
         }
 
         void populate() {
@@ -572,11 +573,6 @@ public final class NeutronRingManageScreen extends Screen {
         }
 
         @Override
-        protected boolean isValidMouseClick(int button) {
-            return button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT;
-        }
-
-        @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && isMouseOver(mouseX, mouseY)
                     && getEntryAtPosition(mouseX, mouseY) == null) {
@@ -584,39 +580,6 @@ public final class NeutronRingManageScreen extends Screen {
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);
-        }
-
-        @Override
-        public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-            if (!isMouseOver(mouseX, mouseY)) {
-                return false;
-            }
-            return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-        }
-
-        @Override
-        protected void renderListBackground(GuiGraphics graphics) {
-            PortableUi.inset(graphics, getX(), getY(), getWidth(), getHeight());
-        }
-
-        @Override
-        protected void renderListSeparators(GuiGraphics graphics) {
-            // The inset sprite already draws the list border.
-        }
-
-        @Override
-        protected void renderSelection(GuiGraphics graphics, int top, int width, int height, int outerColor, int innerColor) {
-            // SpaceEntry draws preview-focus highlighting; skip the vanilla selection box.
-        }
-
-        @Override
-        public int getRowWidth() {
-            return getWidth() - 20;
-        }
-
-        @Override
-        protected int getScrollbarPosition() {
-            return getX() + getWidth() - 8;
         }
 
         void renderNameTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -640,6 +603,9 @@ public final class NeutronRingManageScreen extends Screen {
                                int mouseX, int mouseY, boolean hovering, float partialTick) {
                 boolean active = space.id().equals(selectedId);
                 PortableUi.row(graphics, left, top, width, height, hovering, getSelected() == this);
+                if (UiInspector.enabled()) {
+                    UiInspector.row("neutron.library", space.id(), index, left, top, width, height, library, true);
+                }
                 PortableUi.text(graphics, font, Component.literal(space.name()), left + 4, top + 3, width - 8, PortableUi.TEXT);
                 PortableUi.text(graphics, font, active ? Component.translatable("gui.avaritia.neutron_ring.active") : dimensions,
                         left + 4, top + 14, width - 8, active ? PortableUi.ACCENT : PortableUi.MUTED);

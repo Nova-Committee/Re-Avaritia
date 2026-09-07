@@ -78,7 +78,7 @@ class SideButton extends ImageButton {
             texY += 23; // 悬停状态
         }
 
-        pGuiGraphics.blit(Res.SIDE_CONFIG_TEX, this.getX(), this.getY(), texX, texY, this.width, this.height, 256, 256);
+        pGuiGraphics.blit(Res.SIDE_CONFIG_TEX, getX(), getY(), texX, texY, getWidth(), getHeight(), 256, 256);
 
         if (this.isHovered) {
             sideConfigScreen.setTooltipForNextRenderPass(tooltip);

@@ -12,21 +12,15 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * C2SJEIGhostPacket
- *
- * @author cnlimiter
- * @version 1.0
- * @description
- * @date 2024/3/28 14:02
- */
+/** Serverbound edits to a held tool's registry-keyed custom-data filters. */
 public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<C2SItemFilterPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("s2c_totem"));
+    public static final CustomPacketPayload.Type<C2SItemFilterPack> TYPE = new CustomPacketPayload.Type<>(Const.rl("c2s_item_filter"));
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SItemFilterPack> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
             C2SItemFilterPack::stack,
@@ -44,29 +38,29 @@ public record C2SItemFilterPack(ItemStack stack, int action) implements CustomPa
         @Override
         public void handle(@NotNull C2SItemFilterPack packet, IPayloadContext context) {
             context.enqueueWork(() -> {
-                var player = context.player();
-                if (player instanceof ServerPlayer serverPlayer) {
-                    if (serverPlayer.getMainHandItem().getItem() instanceof IFilterItem) {
-                        var tag = player.getMainHandItem().getOrDefault(ModDataComponents.TOOL_FILTERS.get(), new CompoundTag());
-                        switch(packet.action) {
-                            case 0 -> {
-                                if (!tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                    tag.put(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString(), packet.stack.get(DataComponents.CUSTOM_DATA).copyTag());
-                                }
-                            }
-                            case 1 -> {
-                                if (tag.contains(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString())){
-                                    tag.remove(BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString());
-                                }
-                            }
-                            case 2 -> {
-                                tag.getAllKeys().forEach(tag::remove);
-                            }
-                        }
-
-                    }
+                if (!(context.player() instanceof ServerPlayer player)) {
+                    return;
                 }
-
+                ItemStack tool = player.getMainHandItem();
+                if (!(tool.getItem() instanceof IFilterItem) || packet.action < 0 || packet.action > 2
+                        || packet.action != 2 && packet.stack.isEmpty()) {
+                    return;
+                }
+                CompoundTag stored = tool.get(ModDataComponents.TOOL_FILTERS.get());
+                String itemId = BuiltInRegistries.ITEM.getKey(packet.stack.getItem()).toString();
+                if (packet.action == 0 && stored != null && stored.contains(itemId)
+                        || packet.action == 1 && (stored == null || !stored.contains(itemId))
+                        || packet.action == 2 && (stored == null || stored.isEmpty())) {
+                    return;
+                }
+                CompoundTag updated = stored == null || packet.action == 2 ? new CompoundTag() : stored.copy();
+                switch (packet.action) {
+                    case 0 -> updated.put(itemId, packet.stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag());
+                    case 1 -> updated.remove(itemId);
+                }
+                tool.set(ModDataComponents.TOOL_FILTERS.get(), updated);
+                player.getInventory().setChanged();
+                player.containerMenu.broadcastChanges();
             });
         }
     }

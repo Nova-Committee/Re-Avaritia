@@ -3,7 +3,7 @@ package committee.nova.mods.avaritia.client.screen;
 /** 1.20.1 超立方体主界面的布局与材质坐标契约。 */
 final class TesseractScreenLayout {
     static final int WIDTH = 218;
-    static final int HEIGHT = 256;
+    static final int HEIGHT = 265;
 
     static final int SEARCH_X = 104;
     static final int SEARCH_Y = 4;
@@ -44,7 +44,7 @@ final class TesseractScreenLayout {
             new BackgroundSlice(176, 122, 6),
             new BackgroundSlice(182, 122, 3),
             new BackgroundSlice(185, 125, 54),
-            new BackgroundSlice(239, 190, 17)
+            new BackgroundSlice(239, 190, 26)
     };
 
     private static final BackgroundSlice[] CRAFTING_BACKGROUND = {
@@ -53,7 +53,7 @@ final class TesseractScreenLayout {
             new BackgroundSlice(119, 17, 17),
             new BackgroundSlice(133, 69, 52),
             new BackgroundSlice(185, 125, 54),
-            new BackgroundSlice(239, 190, 17)
+            new BackgroundSlice(239, 190, 26)
     };
 
     private TesseractScreenLayout() {

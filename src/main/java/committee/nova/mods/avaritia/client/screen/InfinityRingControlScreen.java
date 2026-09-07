@@ -2,6 +2,9 @@ package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.api.client.screen.component.OperationMenu;
 import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableSelectionList;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.dimension.InfinityRingSettings;
 import committee.nova.mods.avaritia.common.net.C2SInfinityRingPack;
 import committee.nova.mods.avaritia.common.net.S2CInfinityRingOpenPack;
@@ -12,6 +15,8 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -45,10 +50,8 @@ public final class InfinityRingControlScreen extends Screen {
     @Nullable
     private String selectedName;
     private double listScroll;
-    private int panelX;
-    private int panelY;
-    private int panelW;
-    private int panelH;
+    private ScreenRectangle panel;
+    private ScreenRectangle roster;
 
     @Nullable
     private PlayerList playerList;
@@ -131,10 +134,11 @@ public final class InfinityRingControlScreen extends Screen {
     @Override
     protected void init() {
         playerList = null;
-        panelW = Math.min(400, width - MARGIN * 2);
-        panelH = Math.min(224, height - MARGIN * 2);
-        panelX = (width - panelW) / 2;
-        panelY = (height - panelH) / 2;
+        panel = PortableLayout.centered(width, height, 400, 224, MARGIN);
+        int panelX = panel.left();
+        int panelY = panel.top();
+        int panelW = panel.width();
+        int panelH = panel.height();
         int innerX = panelX + 8;
         int innerW = panelW - 16;
         int contentY = panelY + HEADER_H + 2;
@@ -147,44 +151,44 @@ public final class InfinityRingControlScreen extends Screen {
         int listX = innerX + leftW + colGap;
         int rows = 4;
         int rowGap = Math.max(1, Math.min(GAP, (contentH - rows * BTN_H) / Math.max(1, rows - 1)));
-        int step = BTN_H + rowGap;
-
-        int cursor = contentY;
-        addCycle(innerX, cursor, leftW,
+        GridLayout left = new GridLayout(innerX, contentY);
+        left.rowSpacing(rowGap);
+        left.addChild(addCycle(leftW,
                 "gui.avaritia.infinity_ring.option.time", "gui.avaritia.infinity_ring.time.",
                 InfinityRingSettings.TimeMode.values(), InfinityRingSettings.TimeMode.byId(time), value -> {
                     time = value.ordinal();
                     sendModes();
-                });
-        cursor += step;
-        addCycle(innerX, cursor, leftW,
+                }), 0, 0);
+        left.addChild(addCycle(leftW,
                 "gui.avaritia.infinity_ring.option.weather", "gui.avaritia.infinity_ring.weather.",
                 InfinityRingSettings.WeatherMode.values(), InfinityRingSettings.WeatherMode.byId(weather), value -> {
                     weather = value.ordinal();
                     sendModes();
-                });
-        cursor += step;
-        addCycle(innerX, cursor, leftW,
+                }), 1, 0);
+        left.addChild(addCycle(leftW,
                 "gui.avaritia.infinity_ring.option.access", "gui.avaritia.infinity_ring.access.",
                 InfinityRingSettings.Access.values(), InfinityRingSettings.Access.byId(access), value -> {
                     access = value.ordinal();
                     sendModes();
-                });
-        cursor += step;
-        Button delete = addRenderableWidget(PortableUi.dangerButton(innerX, cursor, leftW, BTN_H,
+                }), 2, 0);
+        Button delete = PortableUi.dangerButton(0, 0, leftW, BTN_H,
                 Component.translatable("gui.avaritia.infinity_ring.delete"),
-                button -> confirmDelete()));
+                button -> confirmDelete());
         delete.active = canDelete;
+        left.addChild(UiInspector.name(delete, "ring.control.delete"), 3, 0);
+        left.arrangeElements();
+        left.visitWidgets(this::addRenderableWidget);
 
         int doneW = 80;
-        addRenderableWidget(PortableUi.button(panelX + panelW - 8 - doneW, footerY, doneW, BTN_H,
-                CommonComponents.GUI_DONE, button -> onClose()));
+        addRenderableWidget(UiInspector.name(PortableUi.button(panelX + panelW - 8 - doneW, footerY, doneW, BTN_H,
+                CommonComponents.GUI_DONE, button -> onClose()), "ring.control.done"));
 
         int searchH = BTN_H;
         int listY = contentY + searchH + GAP;
         int listH = Math.max(16, contentH - searchH - GAP);
         Component searchTitle = Component.translatable("gui.avaritia.infinity_ring.search_players");
         searchBox = addRenderableWidget(new EditBox(font, listX, contentY, listW, searchH, searchTitle));
+        UiInspector.name(searchBox, "ring.control.search");
         searchBox.setMaxLength(32);
         searchBox.setHint(searchTitle);
         searchBox.setValue(filter);
@@ -201,8 +205,10 @@ public final class InfinityRingControlScreen extends Screen {
             }
         });
         playerList = addRenderableWidget(new PlayerList(listW, listH, listY));
+        UiInspector.name(playerList, "ring.control.players");
         playerList.setX(listX);
         playerList.setScrollAmount(listScroll);
+        roster = new ScreenRectangle(listX - 2, contentY - 2, listW + 4, listY + listH - contentY + 4);
     }
 
     @Override
@@ -221,14 +227,10 @@ public final class InfinityRingControlScreen extends Screen {
 
     @Override
     protected void renderMenuBackground(@NotNull GuiGraphics graphics) {
-        PortableUi.panel(graphics, panelX, panelY, panelW, panelH);
-        PortableUi.header(graphics, font, title, panelX, panelY, panelW);
-        if (searchBox != null && playerList != null) {
-            int top = searchBox.getY() - 2;
-            int bottom = playerList.getY() + playerList.getHeight() + 2;
-            PortableUi.inset(graphics, playerList.getX() - 2, top,
-                    playerList.getWidth() + 4, bottom - top);
-        }
+        PortableUi.panel(graphics, panel);
+        UiInspector.region("ring.control.panel", panel, null, false);
+        PortableUi.header(graphics, font, title, panel.left(), panel.top(), panel.width());
+        PortableUi.inset(graphics, roster);
     }
 
     @Override
@@ -419,20 +421,24 @@ public final class InfinityRingControlScreen extends Screen {
         return Component.translatable("gui.avaritia.infinity_ring.role." + role.toLowerCase(Locale.ROOT));
     }
 
-    private <T extends Enum<T>> void addCycle(int x, int y, int w, String optionKey, String valuePrefix,
+    private <T extends Enum<T>> CycleButton<T> addCycle(int w, String optionKey, String valuePrefix,
                                               T[] values, T current, Consumer<T> changed) {
-        addRenderableWidget(CycleButton.builder((T value) -> Component.translatable(
+        CycleButton<T> cycle = CycleButton.builder((T value) -> Component.translatable(
                         valuePrefix + value.name().toLowerCase(Locale.ROOT)))
                 .withValues(values)
                 .withInitialValue(current)
                 .withTooltip(value -> Tooltip.create(Component.translatable(
                         valuePrefix + value.name().toLowerCase(Locale.ROOT) + ".info")))
-                .create(x, y, w, BTN_H, Component.translatable(optionKey),
-                        (ignored, value) -> changed.accept(value)));
+                .create(0, 0, w, BTN_H, Component.translatable(optionKey),
+                        (ignored, value) -> changed.accept(value));
+        if (UiInspector.enabled()) {
+            UiInspector.name(cycle, "ring.control." + optionKey.substring(optionKey.lastIndexOf('.') + 1));
+        }
+        return cycle;
     }
-    private final class PlayerList extends ObjectSelectionList<PlayerList.PlayerEntry> {
+    private final class PlayerList extends PortableSelectionList<PlayerList.PlayerEntry> {
         PlayerList(int width, int height, int y) {
-            super(InfinityRingControlScreen.this.minecraft, width, height, y, 16);
+            super(InfinityRingControlScreen.this.minecraft, width, height, y, 16, 4, 6, false);
             this.centerListVertically = false;
             populate();
         }
@@ -456,33 +462,6 @@ public final class InfinityRingControlScreen extends Screen {
             if (!filter.isBlank() && !exact) {
                 addEntry(new PlayerEntry(filter, true));
             }
-        }
-
-        @Override
-        public int getRowWidth() {
-            return Math.max(40, this.getWidth() - 8);
-        }
-
-        @Override
-        protected int getScrollbarPosition() {
-            return this.getX() + this.getWidth() - 6;
-        }
-
-        @Override
-        protected boolean isValidMouseClick(int button) {
-            return button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT;
-        }
-
-        @Override
-        protected void renderListBackground(@NotNull GuiGraphics graphics) {
-        }
-
-        @Override
-        protected void renderListSeparators(@NotNull GuiGraphics graphics) {
-        }
-
-        @Override
-        protected void renderSelection(@NotNull GuiGraphics graphics, int top, int width, int height, int outerColor, int innerColor) {
         }
 
         private final class PlayerEntry extends ObjectSelectionList.Entry<PlayerEntry> {
@@ -513,6 +492,10 @@ public final class InfinityRingControlScreen extends Screen {
                 lastTop = top;
                 boolean selected = !addCandidate && name.equals(selectedName);
                 PortableUi.row(graphics, left, top, width, height, hovering, selected);
+                if (UiInspector.enabled()) {
+                    UiInspector.row("ring.control.players", name.toLowerCase(Locale.ROOT), index,
+                            left, top, width, height, PlayerList.this.getRectangle(), true);
+                }
                 if (addCandidate) {
                     PortableUi.text(graphics, font,
                             Component.translatable("gui.avaritia.infinity_ring.add_candidate", name),

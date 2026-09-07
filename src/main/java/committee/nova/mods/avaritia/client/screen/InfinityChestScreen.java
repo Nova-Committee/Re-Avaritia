@@ -7,6 +7,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import committee.nova.mods.avaritia.Const;
 import committee.nova.mods.avaritia.Res;
 import committee.nova.mods.avaritia.api.client.screen.BaseContainerScreen;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.api.client.widget.SimpleScrollBar;
 import committee.nova.mods.avaritia.common.menu.InfinityChestMenu;
 import committee.nova.mods.avaritia.common.net.chest.C2SInfinityChestFilterPack;
@@ -22,6 +24,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +59,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     private ItemScrollBar scrollBar;
     private EditBox searchBox;
     private Integer originalGuiScale;
+    private ScreenRectangle storageViewport;
 
     public InfinityChestScreen(InfinityChestMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, null, 302, 274, 550, 550);
@@ -101,19 +105,31 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         super.subInit();
         this.leftPos = Math.max(0, (this.width - this.imageWidth) / 2);
         this.topPos = Math.max(0, (this.height - this.imageHeight) / 2);
+        int minX = imageWidth;
+        int minY = imageHeight;
+        int maxX = 0;
+        int maxY = 0;
+        for (int i = InfinityChestMenu.CONTAINER_SLOT_START; i < menu.slots.size(); i++) {
+            Slot slot = menu.slots.get(i);
+            minX = Math.min(minX, slot.x - 1);
+            minY = Math.min(minY, slot.y - 1);
+            maxX = Math.max(maxX, slot.x + 17);
+            maxY = Math.max(maxY, slot.y + 17);
+        }
+        storageViewport = new ScreenRectangle(leftPos + minX, topPos + minY, Math.max(0, maxX - minX), Math.max(0, maxY - minY));
 
         this.scrollBar = new ItemScrollBar(leftPos + 282, topPos + 16, 12, 160);
         this.scrollBar.setScrolledOn(menu.chestContainer.getScrollOn());
-        this.addRenderableWidget(scrollBar);
-        this.addRenderableWidget(new ToggleLockButton(this.leftPos + 231, this.topPos + 187));
+        this.addRenderableWidget(UiInspector.name(scrollBar, "chest.scrollbar"));
+        this.addRenderableWidget(UiInspector.name(new ToggleLockButton(this.leftPos + 231, this.topPos + 187), "chest.lock"));
         this.sortButton = new SortButton(this.leftPos + 249, this.topPos + 187);
-        this.addRenderableWidget(sortButton);
+        this.addRenderableWidget(UiInspector.name(sortButton, "chest.sort"));
 
         this.searchBox = new EditBox(this.font, leftPos + 187, topPos + 4, 89, 10, Component.translatable("gui.avaritia.search"));
         this.searchBox.setMaxLength(64);
         this.searchBox.setBordered(false);
         this.searchBox.setValue(menu.filter);
-        this.addRenderableWidget(searchBox);
+        this.addRenderableWidget(UiInspector.name(searchBox, "chest.search"));
         menu.chestContainer.refreshContainer(true);
 
         // 创建两侧避让区
@@ -130,6 +146,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
         int x = this.getGuiLeft();
         int y = this.getGuiTop();
         pGuiGraphics.blit(GUI_IMG, x, y, this.blitOffset, 0, 0,  this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
+        UiInspector.region("chest.storage", storageViewport, null, true);
     }
 
     @Override
@@ -325,7 +342,7 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (mouseX >= leftPos + 5 && mouseX <= leftPos + 214 && mouseY >= topPos + 17 && mouseY <= topPos + 18 + 119 && scrollBar.canScroll()) {
+        if (PortableLayout.contains(storageViewport, mouseX, mouseY) && scrollBar.canScroll()) {
             if (scrollY <= 0) scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(false));
             else scrollBar.setScrolledOn(menu.chestContainer.onMouseScrolled(true));
             return true;
@@ -333,14 +350,6 @@ public class InfinityChestScreen extends BaseContainerScreen<InfinityChestMenu> 
     }
 
 
-    @Override
-    protected boolean isHovering(int pX, int pY, int pWidth, int pHeight, double pMouseX, double pMouseY) {
-        int i = this.leftPos;
-        int j = this.topPos;
-        pMouseX -= i;
-        pMouseY -= j;
-        return pMouseX >= (double) pX && pMouseX < (double) (pX + pWidth) && pMouseY >= (double) pY && pMouseY < (double) (pY + pHeight);
-    }
 
     private void toggleLock() {
         if (menu.owner.equals(menu.player.getUUID()) || menu.owner.equals(Const.AVARITIA_FAKE_PLAYER.getId())) {

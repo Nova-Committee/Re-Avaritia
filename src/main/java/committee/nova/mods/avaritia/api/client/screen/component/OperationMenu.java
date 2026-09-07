@@ -3,6 +3,7 @@ package committee.nova.mods.avaritia.api.client.screen.component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
@@ -27,15 +28,22 @@ public final class OperationMenu {
     private static final int ITEM_HEIGHT = 18;
     private static final int PAD = 4;
     private List<Entry> entries = List.of();
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private ScreenRectangle bounds = ScreenRectangle.empty();
+    private ScreenRectangle content = ScreenRectangle.empty();
     private int visibleRows;
     private int firstRow;
     private int selected = -1;
     private int lastMouseX = Integer.MIN_VALUE;
     private int lastMouseY = Integer.MIN_VALUE;
+    private final String inspectorId;
+
+    public OperationMenu() {
+        this("popup.context");
+    }
+
+    OperationMenu(String inspectorId) {
+        this.inspectorId = inspectorId;
+    }
 
     public boolean isOpen() {
         return !entries.isEmpty();
@@ -46,7 +54,7 @@ public final class OperationMenu {
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return isOpen() && mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+        return isOpen() && PortableLayout.contains(bounds, mouseX, mouseY);
     }
 
     public void close() {
@@ -65,11 +73,17 @@ public final class OperationMenu {
         for (Entry entry : entries) {
             labelWidth = Math.max(labelWidth, font.width(entry.label()) + PAD * 2 + 8);
         }
-        width = Math.min(labelWidth, Math.max(24, screenWidth - PAD * 2));
-        visibleRows = Math.min(entries.size(), Math.max(1, (screenHeight - PAD * 4) / ITEM_HEIGHT));
-        height = visibleRows * ITEM_HEIGHT + PAD * 2;
-        x = Mth.clamp(mouseX, PAD, Math.max(PAD, screenWidth - width - PAD));
-        y = Mth.clamp(mouseY, PAD, Math.max(PAD, screenHeight - height - PAD));
+        int width = Math.min(labelWidth, Math.max(0, screenWidth - PAD * 2));
+        visibleRows = Math.min(entries.size(), Math.max(0, (screenHeight - PAD * 4) / ITEM_HEIGHT));
+        int height = visibleRows * ITEM_HEIGHT + PAD * 2;
+        int x = Mth.clamp(mouseX, PAD, Math.max(PAD, screenWidth - width - PAD));
+        int y = Mth.clamp(mouseY, PAD, Math.max(PAD, screenHeight - height - PAD));
+        bounds = new ScreenRectangle(x, y, width, height);
+        content = PortableLayout.inset(bounds, PAD, PAD, PAD, PAD);
+        if (content.width() == 0 || content.height() == 0) {
+            close();
+            return;
+        }
         lastMouseX = mouseX;
         lastMouseY = mouseY;
     }
@@ -86,11 +100,19 @@ public final class OperationMenu {
         graphics.flush();
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 600);
-        PortableUi.panel(graphics, x, y, width, height);
+        int x = bounds.left();
+        int y = bounds.top();
+        int width = bounds.width();
+        int height = bounds.height();
+        PortableUi.panel(graphics, bounds);
+        UiInspector.popup(inspectorId, bounds);
         for (int row = 0; row < visibleRows; row++) {
             int index = firstRow + row;
             int top = y + PAD + row * ITEM_HEIGHT;
             PortableUi.row(graphics, x + PAD, top, width - PAD * 2, ITEM_HEIGHT, index == selected, false);
+            if (UiInspector.enabled()) {
+                UiInspector.row(inspectorId, null, index, x + PAD, top, width - PAD * 2, ITEM_HEIGHT, content, true);
+            }
             PortableUi.text(graphics, font, entries.get(index).label(), x + PAD + 4, top + 5,
                     width - PAD * 2 - 8, PortableUi.TEXT);
         }
@@ -109,10 +131,10 @@ public final class OperationMenu {
     }
 
     private int rowAt(double mouseX, double mouseY) {
-        if (mouseX < x + PAD || mouseX >= x + width - PAD || mouseY < y + PAD || mouseY >= y + height - PAD) {
+        if (!PortableLayout.contains(content, mouseX, mouseY)) {
             return -1;
         }
-        return firstRow + (int) ((mouseY - y - PAD) / ITEM_HEIGHT);
+        return firstRow + (int) ((mouseY - content.top()) / ITEM_HEIGHT);
     }
 
     private void activate(int index) {

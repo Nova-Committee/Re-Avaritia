@@ -1,19 +1,20 @@
 package committee.nova.mods.avaritia.client.screen;
 
 import committee.nova.mods.avaritia.Res;
-import committee.nova.mods.avaritia.api.client.screen.StringInputScreen;
-import committee.nova.mods.avaritia.api.client.screen.component.Text;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableUi;
+import committee.nova.mods.avaritia.api.client.screen.component.PortableLayout;
+import committee.nova.mods.avaritia.api.client.screen.component.UiInspector;
 import committee.nova.mods.avaritia.common.menu.TesseractChannelMenu;
 import committee.nova.mods.avaritia.common.net.channel.C2SAddChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SRenameChannelPack;
 import committee.nova.mods.avaritia.common.net.channel.C2SSetChannelPack;
 import committee.nova.mods.avaritia.core.channel.ClientChannelManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -50,6 +51,10 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
     private EditBox searchBox;
     private int scrollOffset;
     private boolean draggingScrollbar;
+    private ScreenRectangle panel;
+    private ScreenRectangle listBounds;
+    private ScreenRectangle scrollbar;
+    private ScreenRectangle scrollbarHandle;
 
     public TesseractChannelScreen(TesseractChannelMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -59,22 +64,28 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
 
     @Override
     protected void init() {
+        String query = searchBox == null ? "" : searchBox.getValue();
         super.init();
         leftPos = (width - imageWidth) / 2;
         topPos = (height - imageHeight) / 2;
+        panel = new ScreenRectangle(getGuiLeft(), getGuiTop(), imageWidth, imageHeight);
+        listBounds = PortableLayout.translate(new ScreenRectangle(ROW_X, ROW_Y, ROW_WIDTH, ROW_HEIGHT * ROWS), panel.left(), panel.top());
+        scrollbar = PortableLayout.translate(new ScreenRectangle(SCROLLBAR_X, SCROLLBAR_Y, SCROLLBAR_WIDTH, SCROLLBAR_HEIGHT), panel.left(), panel.top());
+        draggingScrollbar = false;
 
         searchBox = new EditBox(font, leftPos + 7, topPos + 118, 76, 12,
                 Component.translatable("gui.avaritia.search"));
         searchBox.setMaxLength(64);
         searchBox.setBordered(false);
         searchBox.setHint(Component.translatable("gui.avaritia.search"));
+        searchBox.setValue(query);
         searchBox.setResponder(ignored -> updateChannelList());
-        addRenderableWidget(searchBox);
+        addRenderableWidget(UiInspector.name(searchBox, "channels.search"));
 
         channelButtons.clear();
         for (int row = 0; row < ROWS; row++) {
-            ChannelRowButton button = new ChannelRowButton(leftPos + ROW_X,
-                    topPos + ROW_Y + row * ROW_HEIGHT, row);
+            ChannelRowButton button = new ChannelRowButton(listBounds.left(),
+                    listBounds.top() + row * ROW_HEIGHT, row);
             channelButtons.add(button);
             addRenderableWidget(button);
         }
@@ -83,40 +94,34 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
                 18, 18, 202, 0, 18, this::openAddDialog);
         addButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.addChannel.tip2")
                 .append("\n").append(Component.translatable("gui.avaritia.addChannel.tip3"))));
-        addRenderableWidget(addButton);
-        addRenderableWidget(new LegacyIconButton(leftPos + 27, topPos + 131,
-                16, 16, 202, 34, 16, this::openRenameDialog));
-        addRenderableWidget(new LegacyIconButton(leftPos + 47, topPos + 131,
-                16, 16, 202, 18, 16, () -> sendMenuButton(0)));
+        addRenderableWidget(UiInspector.name(addButton, "channels.add"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 27, topPos + 131,
+                16, 16, 202, 34, 16, this::openRenameDialog), "channels.rename"));
+        addRenderableWidget(UiInspector.name(new LegacyIconButton(leftPos + 47, topPos + 131,
+                16, 16, 202, 18, 16, () -> sendMenuButton(0)), "channels.delete"));
         LegacyIconButton backButton = new LegacyIconButton(leftPos + 67, topPos + 131,
                 16, 16, 202, 50, 16, () -> sendMenuButton(1));
         backButton.setTooltip(Tooltip.create(Component.translatable("gui.avaritia.backChannel.tip1")));
-        addRenderableWidget(backButton);
+        addRenderableWidget(UiInspector.name(backButton, "channels.back"));
 
         channelManager.addScreenRefresh(this::updateChannelList);
         updateChannelList();
     }
 
     private void openAddDialog() {
-        Minecraft.getInstance().setScreen(new StringInputScreen(this,
-                Text.literal("Channel name").setShadow(true),
-                Text.literal("Enter a channel name"), ".{0,64}", "Channel", input -> {
-            if (!input.isBlank()) {
-                PacketDistributor.sendToServer(new C2SAddChannelPack(menu.containerId, input, hasShiftDown()));
-            }
-        }));
+        PortableUi.prompt(this, Component.literal("Channel name"), "Channel", 64, false,
+                input -> PacketDistributor.sendToServer(new C2SAddChannelPack(menu.containerId, input, hasShiftDown())));
     }
 
     private void openRenameDialog() {
         if (channelManager.selectedChannelID < 0) return;
-        Minecraft.getInstance().setScreen(new StringInputScreen(this,
-                Text.literal("Rename channel").setShadow(true),
-                Text.literal("Enter a new channel name"), ".{0,64}",
-                channelManager.selectedChannelName, input -> {
-            if (!input.isBlank()) {
+        int selectedId = channelManager.selectedChannelID;
+        int selectedType = channelManager.selectedChannelType;
+        PortableUi.prompt(this, Component.literal("Rename channel"), channelManager.selectedChannelName, 64, false, input -> {
+            if (channelManager.selectedChannelID == selectedId && channelManager.selectedChannelType == selectedType) {
                 PacketDistributor.sendToServer(new C2SRenameChannelPack(menu.containerId, input));
             }
-        }));
+        });
     }
 
     private void sendMenuButton(int id) {
@@ -164,17 +169,16 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
         for (int row = 0; row < channelButtons.size(); row++) {
             channelButtons.get(row).visible = rowEntry(row) != null;
         }
+        updateScrollbar();
     }
 
-    private int scrollbarHandleHeight() {
-        if (filteredChannels.size() <= ROWS) return SCROLLBAR_HEIGHT;
-        return Math.max(8, ROWS * SCROLLBAR_HEIGHT / filteredChannels.size());
-    }
-
-    private int scrollbarHandleY() {
+    private void updateScrollbar() {
+        int handleHeight = filteredChannels.size() <= ROWS ? scrollbar.height()
+                : Math.max(8, ROWS * scrollbar.height() / filteredChannels.size());
         int maximumOffset = maxScrollOffset(filteredChannels.size());
-        int travel = SCROLLBAR_HEIGHT - scrollbarHandleHeight();
-        return topPos + SCROLLBAR_Y + (maximumOffset == 0 ? 0 : scrollOffset * travel / maximumOffset);
+        int travel = scrollbar.height() - handleHeight;
+        int handleY = scrollbar.top() + (maximumOffset == 0 ? 0 : scrollOffset * travel / maximumOffset);
+        scrollbarHandle = new ScreenRectangle(scrollbar.left(), handleY, scrollbar.width(), handleHeight);
     }
 
     private void updateScrollFromMouse(double mouseY) {
@@ -183,16 +187,15 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
             setScrollOffset(0);
             return;
         }
-        int handleHeight = scrollbarHandleHeight();
-        double ratio = (mouseY - topPos - SCROLLBAR_Y - handleHeight / 2.0D)
-                / (SCROLLBAR_HEIGHT - handleHeight);
+        int handleHeight = scrollbarHandle.height();
+        double ratio = (mouseY - scrollbar.top() - handleHeight / 2.0D)
+                / Math.max(1, scrollbar.height() - handleHeight);
         setScrollOffset((int) Math.round(Math.max(0.0D, Math.min(1.0D, ratio)) * maximumOffset));
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (scrollY != 0.0D && mouseX >= leftPos && mouseX < leftPos + WIDTH
-                && mouseY >= topPos && mouseY < topPos + HEIGHT) {
+        if (scrollY != 0.0D && PortableLayout.contains(panel, mouseX, mouseY)) {
             setScrollOffset(scrollOffset + (scrollY > 0.0D ? -1 : 1));
             return true;
         }
@@ -206,10 +209,7 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
             searchBox.setFocused(true);
             return true;
         }
-        if (button == 0 && mouseX >= leftPos + SCROLLBAR_X
-                && mouseX < leftPos + SCROLLBAR_X + SCROLLBAR_WIDTH
-                && mouseY >= topPos + SCROLLBAR_Y
-                && mouseY < topPos + SCROLLBAR_Y + SCROLLBAR_HEIGHT) {
+        if (button == 0 && PortableLayout.contains(scrollbar, mouseX, mouseY)) {
             draggingScrollbar = true;
             updateScrollFromMouse(mouseY);
             return true;
@@ -234,7 +234,9 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
 
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.blit(GUI_IMG, leftPos, topPos, 0, 0, imageWidth, imageHeight, TEXTURE_SIZE, TEXTURE_SIZE);
+        graphics.blit(GUI_IMG, panel.left(), panel.top(), 0, 0, panel.width(), panel.height(), TEXTURE_SIZE, TEXTURE_SIZE);
+        UiInspector.region("channels.list", listBounds, listBounds, true);
+        UiInspector.region("channels.scrollbar", scrollbar, null, filteredChannels.size() > ROWS);
     }
 
     @Override
@@ -243,7 +245,6 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         renderScrollbar(graphics);
         renderTooltip(graphics, mouseX, mouseY);
@@ -251,12 +252,10 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
 
     private void renderScrollbar(GuiGraphics graphics) {
         if (filteredChannels.size() <= ROWS) return;
-        int handleY = scrollbarHandleY();
-        int handleHeight = scrollbarHandleHeight();
-        graphics.fill(leftPos + SCROLLBAR_X + 2, handleY,
-                leftPos + SCROLLBAR_X + SCROLLBAR_WIDTH - 2, handleY + handleHeight, 0xFF777777);
-        graphics.renderOutline(leftPos + SCROLLBAR_X + 1, handleY - 1,
-                SCROLLBAR_WIDTH - 2, handleHeight + 2, 0xFF202020);
+        graphics.fill(scrollbarHandle.left() + 2, scrollbarHandle.top(),
+                scrollbarHandle.right() - 2, scrollbarHandle.bottom(), 0xFF777777);
+        graphics.renderOutline(scrollbarHandle.left() + 1, scrollbarHandle.top() - 1,
+                scrollbarHandle.width() - 2, scrollbarHandle.height() + 2, 0xFF202020);
     }
 
     @Override
@@ -272,7 +271,7 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
         private final int row;
 
         private ChannelRowButton(int x, int y, int row) {
-            super(x, y, ROW_WIDTH, ROW_HEIGHT, legacySprites, ignored -> selectChannel(row));
+            super(x, y, listBounds.width(), ROW_HEIGHT, legacySprites, ignored -> selectChannel(row));
             this.row = row;
         }
 
@@ -287,12 +286,16 @@ public class TesseractChannelScreen extends AbstractContainerScreen<TesseractCha
             }
             graphics.blit(GUI_IMG, getX(), getY(), 0, vOffset,
                     width, height, TEXTURE_SIZE, TEXTURE_SIZE);
+            if (UiInspector.enabled()) {
+                long key = ((long) entry.type << 32) | Integer.toUnsignedLong(entry.id);
+                UiInspector.row("channels.list", key, scrollOffset + row, getX(), getY(), getWidth(), getHeight(), listBounds, active);
+            }
             int color = switch (entry.type) {
                 case 0 -> 0x55FF55;
                 case 1 -> 0xFF5555;
                 default -> 0xFFFFFF;
             };
-            String label = font.plainSubstrByWidth(entry.name, ROW_WIDTH - 8);
+            String label = font.plainSubstrByWidth(entry.name, getWidth() - 8);
             graphics.drawString(font, label, getX() + 4, getY() + 2, color, false);
         }
     }

@@ -66,6 +66,21 @@ Sneak-right-click to cycle through four modes; right-click normally to block. Bo
 Blocking takes effect immediately, does not slow movement, and allows sprinting. Piercing arrows and shield-bypassing damage retain their exceptions. Raising and lowering this shield emit no item-interaction vibrations. Floating mode does not grant creative flight.
 
 ## **⚙️Develop:**
+
+### UI geometry inspection (development only)
+
+Run `./gradlew runClient -PuiInspect=true` (`gradlew.bat` on Windows). This uses the isolated `build/ui-preview` game directory; create a disposable review world there instead of opening existing saves.
+
+* **Ctrl+Alt+F8** toggles GUI bounds, clip bounds, hit bounds, and node status.
+* **Ctrl+Alt+F9** requests a plain PNG, annotated PNG, and schema-version-1 JSON from the same rendered frame in `build/ui-inspection`. Files are never overwritten; JSON is written after both PNGs. Wait for the success path before using an export.
+* Locate named controls within their `screenInstance`; use `layoutRevision` and `frameId` to reject stale coordinates. Anonymous widget/row IDs are not stable across rebuilding. `duplicate_id` or `invalid_bounds` issues disqualify automatic location; hidden, clipped, or input-blocked nodes provide no suggested click.
+* GUI rendering uses `guiScale`, while mouse positions use the GUI/window-size ratio. `scissorPixels` uses OpenGL's bottom-left origin and Minecraft's integer truncation. `pixelMappingValid=false` means only GUI geometry is available; desktop/DPI coordinates require separate calibration.
+* JSON omits entered text, names, item contents, NBT, and server addresses. PNGs can contain visible private information. Exports stay local; inspect them before sharing.
+
+This is an observation tool, not an input dispatcher or proof of unknown third-party rendering. Normal `runClient` and production installations leave it disabled, including production launches with the inspector system property set.
+
+Before further screen migrations, verify F8/F9 in an actual container, move an item through an observed slot, and repeat the export after resize/GUI-scale changes. Compilation and server GameTests do not validate screenshots or client input.
+
 ### **Singularities:**
 Datapack definitions live at `data/<namespace>/singularities/<path>.json`. The JSON `name` must equal `<namespace>:<path>`, and both `count` and `timeCost` must be greater than zero.
 ```json

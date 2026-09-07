@@ -54,6 +54,11 @@ neoForge {
             client()
             loadedMods = [mods."${mod_id}"]
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            if (providers.gradleProperty('uiInspect').map { it.toBoolean() }.getOrElse(false)) {
+                systemProperty 'avaritia.ui.inspect', 'true'
+                systemProperty 'avaritia.ui.inspectOutput', layout.buildDirectory.dir('ui-inspection').get().asFile.absolutePath
+                gameDirectory = layout.buildDirectory.dir('ui-preview').get().asFile
+            }
         }
 
         server {
